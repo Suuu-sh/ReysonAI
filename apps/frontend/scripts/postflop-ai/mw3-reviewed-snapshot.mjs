@@ -3,6 +3,7 @@ import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadMw3Inputs, mw3Sha } from './mw3-inputs.mjs';
+import { mw3SourceDependencies, MW3_IMPORT_PARSER_RECORDS } from './mw3-source-dependencies.mjs';
 import { mw3Contract, mw3ImplementationHash, verifyMw3Artifact } from './mw3-artifacts.mjs';
 import { MW3_PILOT_AUTHORSHIP } from '../data/mw3-co-btn-bb-authored.mjs';
 import { resolveMw3AuthorIdentity } from './mw3-authored-source.mjs';
@@ -30,10 +31,20 @@ export function currentMw3ArchiveIdentity(spotId) {
   return { ...recipe, inputs, implementationHash, verificationHash, gateDirectory,
     sourceFiles: recipe.sourceFiles ?? recipe.author.sourceFiles, verificationFiles };
 }
-function sourcePathsFor(identity) {
-  const found = new Set(), visit = path => {
+export function sourcePathsFor(identity) {
+  const found = new Set(), visit = (path, importer) => {
     path = path.replaceAll('\\', '/');
     if (!safeRelativePath(path) || path.includes('/.local/') || path.includes('/node_modules/')) throw new Error('Mw3 source dependency escaped repository source');
+    // UI roots stay outside numerical approval. A retained source may not reach
+    // into that excluded scope: reject the edge before silently losing a bound
+    // dependency. This includes type imports, re-exports and dynamic imports.
+    if (/^apps\/frontend\/src\/.+\.(?:tsx|css)$/.test(path)) {
+      if (importer) throw new Error(`Mw3 protected source imports excluded presentation dependency: ${importer} -> ${path}`);
+      return;
+    }
+    // Keep reachable JSON: recipes/configuration/compatibility evidence must
+    // remain bound. Type/declaration closures are still conservative, including
+    // shared locale imports; a blanket JSON filter would unbind dependencies.
     if (found.has(path) || inputPaths.includes(path)) return;
     assertSafeFile(MW3_REPOSITORY, path); found.add(path);
     // Declaration files are provenance only, but their type dependencies are bound.
@@ -43,25 +54,25 @@ function sourcePathsFor(identity) {
     }
     if (!/\.(?:mjs|ts|tsx|js|d\.mts)$/.test(path)) return;
     const text = readSafeFile(MW3_REPOSITORY, path).toString('utf8');
-    const imports = /(?:\bimport\s+(?:[^;]*?\s+from\s+)?|\bexport\s+[^;]*?\s+from\s+)["']([^"']+)["']|\bimport\s*\(\s*["']([^"']+)["']\s*\)/g;
-    for (const match of text.matchAll(imports)) {
-      const name = match[1] ?? match[2];
-      if (name.startsWith('.')) visit(relative(MW3_REPOSITORY, resolve(MW3_REPOSITORY, dirname(path), name)));
+    for (const dependency of mw3SourceDependencies(path, text)) {
+      if (dependency.path) visit(dependency.path, path);
+      else if (dependency.specifier.startsWith('.')) visit(relative(MW3_REPOSITORY,
+        resolve(MW3_REPOSITORY, dirname(path), dependency.specifier)), path);
     }
   };
-  [...MW3_CURRENT_IDENTITY_PATHS, ...MW3_COMPATIBILITY_SOURCE_PATHS].forEach(visit);
+  [...MW3_CURRENT_IDENTITY_PATHS, ...MW3_COMPATIBILITY_SOURCE_PATHS, ...MW3_IMPORT_PARSER_RECORDS].forEach(path => visit(path));
   const roots = [
     'mw3-reviewed-archive.mjs', 'mw3-reviewed-snapshot.mjs', 'mw3-reviewed-delivery.mjs', 'mw3-reviewed-restore.mjs', 'mw3-snapshot-cli.mjs', 'mw3-draft-pins.mjs', 'mw3-acceptance-evidence.mjs', 'mw3-browser-inputs.mjs', 'mw3-transport.mjs', 'mw3-delivery.mjs'];
   roots.forEach(name => visit(relative(MW3_REPOSITORY, resolve(MW3_REPOSITORY, FRONTEND, 'scripts/postflop-ai', name))));
   identity.sourceFiles.forEach(path => visit(FRONTEND + path));
-  // Binding the consumer/backend source independently keeps presentation out of
-  // the numerical hash while preventing unreviewed transport dispatch changes.
-  ['apps/backend/src/index.ts', 'apps/backend/src/mw3-transport.ts', 'apps/backend/scripts/sql/mw3-schema.sql', 'apps/shared/mw3-approved.ts',
-    `${FRONTEND}src/estimated/mw3-browser.ts`, `${FRONTEND}src/estimated/Mw3RangeView.tsx`, `${FRONTEND}src/estimated/RangeWorkspace.tsx`,
-    `${FRONTEND}src/agent/mw3-hand.ts`, `${FRONTEND}src/agent/hand.ts`, `${FRONTEND}src/agent/AgentTable.tsx`,
+  // Protect dedicated delivery/runtime boundaries. General application dispatch
+  // is covered by mw3-index.test.mjs, rather than binding unrelated backend UI
+  // and product changes into every saved numerical approval.
+  ['apps/backend/src/mw3-transport.ts', 'apps/backend/scripts/sql/mw3-schema.sql', 'apps/shared/mw3-approved.ts',
+    `${FRONTEND}src/estimated/mw3-browser.ts`, `${FRONTEND}src/agent/mw3-hand.ts`,
     `${FRONTEND}scripts/ci/postflop-command-supervisor.py`, `${FRONTEND}scripts/ci/mw3-local-command.mjs`,
     `${FRONTEND}scripts/ci/mw3-api-oracle.mjs`, `${FRONTEND}scripts/ci/mw3-registry-mode.mjs`, `${FRONTEND}scripts/ci/mw3-local-d1-oracle.mjs`, `${FRONTEND}scripts/verify-mw3-local-d1.mjs`,
-    `${FRONTEND}package.json`, `${FRONTEND}package-lock.json`, 'configs/cash-6max-100bb.json', '.gitattributes'].forEach(visit);
+    `${FRONTEND}package.json`, `${FRONTEND}package-lock.json`, 'configs/cash-6max-100bb.json', '.gitattributes'].forEach(path => visit(path));
   return [...found].sort();
 }
 function verifyBodies(identity, spot, files) {

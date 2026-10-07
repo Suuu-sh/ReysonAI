@@ -1,0 +1,1877 @@
+{
+  "status": "PASS",
+  "source_commit": "0b13156724bcf1f9c468df8cfd545192e9d4159c",
+  "source_tree": "87329a5ca48774811982cb186234d9ce8247f5be",
+  "node": "v24.19.0",
+  "platform": "linux",
+  "completed_at": "2026-10-06T19:12:51.373Z",
+  "raw_files": 112,
+  "raw_bytes": 235515283,
+  "archives": 16,
+  "canonical_compressed_bytes_identical": true,
+  "pins": 32,
+  "joint_warnings": 561,
+  "strategy_generation": false,
+  "new_simulation": false,
+  "old_source_trees": [
+    "5146a5295fc6f9e10b622ab2446d4c06cb6d4e26"
+  ],
+  "subjects": [
+    {
+      "spot": "CO_open_BTN_call_BB_call",
+      "slug": "co-btn-bb-mw3-srp-v1",
+      "manifest": "drafts/mw3-co-btn-bb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "bbea2282f6e0f490b3fd3b45770ac92e0a8dd1250bd9cd30c2c818fe473fa99e",
+      "sources_sha256": "0f47f10df22dab5dcec0aba0f1a69edaad39b05c29904f66f59e3a0c5d39578e",
+      "content_sha256": "3c28ae74a9ea4e87c6c4f25ea64455528a3adbe457e80f7a1c825d6602b0b4fe",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "archive": {
+        "path": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 363593,
+        "sha256": "b8adf765d22a128a88ce346ffda9f67615b98ada1e6579d56461da8910db8d9b"
+      },
+      "raw_artifacts": [
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/co-btn-bb-mw3-srp-v1-later-policy.json",
+          "kind": "laterCandidate",
+          "spot": "CO_open_BTN_call_BB_call",
+          "bytes": 12187418,
+          "sha256": "0db36c711160d8e2f818818edc9812ba192c73aed2c636f4b9f85229739d14a9",
+          "entry": "objects/0db36c711160d8e2f818818edc9812ba192c73aed2c636f4b9f85229739d14a9"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/co-btn-bb-mw3-srp-v1-policy.json",
+          "kind": "candidate",
+          "spot": "CO_open_BTN_call_BB_call",
+          "bytes": 2588625,
+          "sha256": "660ed0e712cce29d863a0bceecc59b5e94d4334e2be2b0261251ab3c80578718",
+          "entry": "objects/660ed0e712cce29d863a0bceecc59b5e94d4334e2be2b0261251ab3c80578718"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/pilot-gate/v4-9826ec09f4b8-4ec6b527f8e2-0f35a9371c02/all-flops.json",
+          "kind": "all-flops",
+          "spot": "CO_open_BTN_call_BB_call",
+          "bytes": 905,
+          "sha256": "8a99bac81a26ae00079d85c48e622a9ed3b5ddf231ae5420b1dd04a1bb284ca8",
+          "entry": "objects/8a99bac81a26ae00079d85c48e622a9ed3b5ddf231ae5420b1dd04a1bb284ca8"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/pilot-gate/v4-9826ec09f4b8-4ec6b527f8e2-0f35a9371c02/joint-defence.json",
+          "kind": "joint-defence",
+          "spot": "CO_open_BTN_call_BB_call",
+          "bytes": 80474,
+          "sha256": "9a81d70f726d3222a62242877f506405370a17962bf02f90b648fb0aa79310cf",
+          "entry": "objects/9a81d70f726d3222a62242877f506405370a17962bf02f90b648fb0aa79310cf"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/pilot-gate/v4-9826ec09f4b8-4ec6b527f8e2-0f35a9371c02/later-runouts.json",
+          "kind": "later-runouts",
+          "spot": "CO_open_BTN_call_BB_call",
+          "bytes": 23408,
+          "sha256": "ea1a32284514c4276708ff6fa9b6b2cffa9ca9d3ef444495d05fe5e70bf2c317",
+          "entry": "objects/ea1a32284514c4276708ff6fa9b6b2cffa9ca9d3ef444495d05fe5e70bf2c317"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/pilot-gate/v4-9826ec09f4b8-4ec6b527f8e2-0f35a9371c02/simulation-replay.json",
+          "kind": "simulation-replay",
+          "spot": "CO_open_BTN_call_BB_call",
+          "bytes": 717,
+          "sha256": "136441f619437c337574c7f67d92df5c5e5ab202b17f1c491d1d9e420205fc2c",
+          "entry": "objects/136441f619437c337574c7f67d92df5c5e5ab202b17f1c491d1d9e420205fc2c"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/pilot-gate/v4-9826ec09f4b8-4ec6b527f8e2-0f35a9371c02/simulation.json",
+          "kind": "simulation",
+          "spot": "CO_open_BTN_call_BB_call",
+          "bytes": 9109,
+          "sha256": "087acf5b37e7d89db9e457635e726af3f5253208263a12d0c7e9ccda6d56cdf4",
+          "entry": "objects/087acf5b37e7d89db9e457635e726af3f5253208263a12d0c7e9ccda6d56cdf4"
+        }
+      ],
+      "pins": [
+        {
+          "spotId": "CO_open_BTN_call_BB_call",
+          "stage": "flop",
+          "deliveryHash": "4c8d43795b1d11d85d938c877431a72be30bc68269d10f7e4bc26de1cdeed8ad",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "3682c70f1cd131a825d67dc564bb45706d5b8885c0de4ef6bfe8493fe13fef06",
+          "sourceHash": "9826ec09f4b8420f866c8ac656e6f755966423c2d843bcb604eff97dbd6a89c3"
+        },
+        {
+          "spotId": "CO_open_BTN_call_BB_call",
+          "stage": "later",
+          "deliveryHash": "bcdeb4ca96a84c211ef508bc422436a40a355c1e343218cd0fee509a422d8148",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "d840d8174ff3ad1fe983e5fbd0696b9c28296f5e4d8af394b12d76e070b18582",
+          "sourceHash": "9826ec09f4b8420f866c8ac656e6f755966423c2d843bcb604eff97dbd6a89c3"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 39,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      },
+      "prior_receipt": {
+        "path": "configs/mw3-co-btn-bb-mw3-srp-v1.review.json",
+        "bytes": 13462,
+        "sha256": "3c3301ff9f892d2a0fa4d07ca21f4de3a3f40ae46b63c8e3adca2b9bda0d3a58"
+      }
+    },
+    {
+      "spot": "CO_open_BTN_call_SB_call",
+      "slug": "co-btn-sb-mw3-srp-v1",
+      "manifest": "drafts/mw3-co-btn-sb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "e89c8d5f3067fc810638322652a854cf22bbfd1459d7ca05661c9aa4f09efd07",
+      "sources_sha256": "c402d755dd43d36c6f92717488b87485ee2c225f0bb574c10f9c77ff870f5f57",
+      "content_sha256": "2c366aa20cdbaa00954763f7f11bed6a350e126e0847e06c50d4f4c2a329918a",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "archive": {
+        "path": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 352115,
+        "sha256": "71b7423b1450638f8f2a6077c0d6c87b6715ebc81c9462a0f35cd5d83ddf1e7f"
+      },
+      "raw_artifacts": [
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/co-btn-sb-mw3-srp-v1-later-policy.json",
+          "kind": "laterCandidate",
+          "spot": "CO_open_BTN_call_SB_call",
+          "bytes": 12161873,
+          "sha256": "1d2fe3b4ac8e1a3f88a8ce17ef0b032387e74820f27876d37bae6b2d58d8d0f9",
+          "entry": "objects/1d2fe3b4ac8e1a3f88a8ce17ef0b032387e74820f27876d37bae6b2d58d8d0f9"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/co-btn-sb-mw3-srp-v1-policy.json",
+          "kind": "candidate",
+          "spot": "CO_open_BTN_call_SB_call",
+          "bytes": 2485638,
+          "sha256": "3fc706750bde296880afbb450185329de95082453f6665828e9e2b33c41f8581",
+          "entry": "objects/3fc706750bde296880afbb450185329de95082453f6665828e9e2b33c41f8581"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/co-btn-sb-mw3-srp-v1/v1-3573dde63573-4ec6b527f8e2-92b946dfc5c8-30e3416551c9/all-flops.json",
+          "kind": "all-flops",
+          "spot": "CO_open_BTN_call_SB_call",
+          "bytes": 1005,
+          "sha256": "d1a555396e968c35dc3bcb472125c550ad2fc68f0b0e453f8ec2e57a76fca8d9",
+          "entry": "objects/d1a555396e968c35dc3bcb472125c550ad2fc68f0b0e453f8ec2e57a76fca8d9"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/co-btn-sb-mw3-srp-v1/v1-3573dde63573-4ec6b527f8e2-92b946dfc5c8-30e3416551c9/joint-defence.json",
+          "kind": "joint-defence",
+          "spot": "CO_open_BTN_call_SB_call",
+          "bytes": 80417,
+          "sha256": "ebaeb785dc4ff872cf54b92baf1f02a4597d9b0c2354f915cd855dc9ae4f89ff",
+          "entry": "objects/ebaeb785dc4ff872cf54b92baf1f02a4597d9b0c2354f915cd855dc9ae4f89ff"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/co-btn-sb-mw3-srp-v1/v1-3573dde63573-4ec6b527f8e2-92b946dfc5c8-30e3416551c9/later-runouts.json",
+          "kind": "later-runouts",
+          "spot": "CO_open_BTN_call_SB_call",
+          "bytes": 23508,
+          "sha256": "33881fd3a28615796b26febcb22a9d1b7062c47189c1aeae684621362a02bc27",
+          "entry": "objects/33881fd3a28615796b26febcb22a9d1b7062c47189c1aeae684621362a02bc27"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/co-btn-sb-mw3-srp-v1/v1-3573dde63573-4ec6b527f8e2-92b946dfc5c8-30e3416551c9/simulation-replay.json",
+          "kind": "simulation-replay",
+          "spot": "CO_open_BTN_call_SB_call",
+          "bytes": 817,
+          "sha256": "3851b9bcb3cc911a341a2892fb75294301dc8ab05b1896927344b31ad31a2d7c",
+          "entry": "objects/3851b9bcb3cc911a341a2892fb75294301dc8ab05b1896927344b31ad31a2d7c"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/co-btn-sb-mw3-srp-v1/v1-3573dde63573-4ec6b527f8e2-92b946dfc5c8-30e3416551c9/simulation.json",
+          "kind": "simulation",
+          "spot": "CO_open_BTN_call_SB_call",
+          "bytes": 9190,
+          "sha256": "d166854ab0810c1aedf213e1b862387ed3867704624647e5bcb73cf3e7d4f71a",
+          "entry": "objects/d166854ab0810c1aedf213e1b862387ed3867704624647e5bcb73cf3e7d4f71a"
+        }
+      ],
+      "pins": [
+        {
+          "spotId": "CO_open_BTN_call_SB_call",
+          "stage": "flop",
+          "deliveryHash": "5d30c32819503b35eb4776cbb6ff3ccd65b83a30b4df48fa9ee57ad5b676735f",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "20fb64ba62887d36b0280c0b9c49b87d735713ec70f8797de22d0530654ee2bb",
+          "sourceHash": "3573dde6357353f3d848b0370205de4cc99ee11ced39267b35e65927bc235e0d"
+        },
+        {
+          "spotId": "CO_open_BTN_call_SB_call",
+          "stage": "later",
+          "deliveryHash": "300deabfd54fff4225a00ba8ff84d3aeef0f6c48517d592d446125b2fb2b6d23",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "214f4e53cea61b08d0941f6eaf083950eb24eeee95a7cab36f5dd6ba28bc7211",
+          "sourceHash": "3573dde6357353f3d848b0370205de4cc99ee11ced39267b35e65927bc235e0d"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 27,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      },
+      "prior_receipt": {
+        "path": "configs/mw3-co-btn-sb-mw3-srp-v1.review.json",
+        "bytes": 13622,
+        "sha256": "729d30c7c253e9a96a3703faa61a0ab078d6d716c8ac00f89c932059e0ce2d38"
+      }
+    },
+    {
+      "spot": "HJ_open_BTN_call_BB_call",
+      "slug": "hj-btn-bb-mw3-srp-v1",
+      "manifest": "drafts/mw3-hj-btn-bb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "4a11133a062e46d35b788ac367224e1f6686b57af48e30c6484f7b24dd80b6f3",
+      "sources_sha256": "176842d763cfe901f6bc7085c15d38bf1d696a802ffdaf3da6e857fe2168e069",
+      "content_sha256": "dd3177e83b4b3eb7f12d8f0d3bc68e6198ccf0dce98665a6cb33f084e6d78fe2",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "archive": {
+        "path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 357921,
+        "sha256": "a1d6d54a8d169260c7bf38cfb062915c2ab9e64f116dfb8101c7b63dad6fbb0a"
+      },
+      "raw_artifacts": [
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-btn-bb-mw3-srp-v1/v1-6762971b2c93-4ec6b527f8e2-92b946dfc5c8-6ed2c1b57e8d/all-flops.json",
+          "kind": "all-flops",
+          "spot": "HJ_open_BTN_call_BB_call",
+          "bytes": 1005,
+          "sha256": "f5c631b3f9bf1f478838b0901e491877bc47766cb0693fe48657ad4aa223ad08",
+          "entry": "objects/f5c631b3f9bf1f478838b0901e491877bc47766cb0693fe48657ad4aa223ad08"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-btn-bb-mw3-srp-v1/v1-6762971b2c93-4ec6b527f8e2-92b946dfc5c8-6ed2c1b57e8d/joint-defence.json",
+          "kind": "joint-defence",
+          "spot": "HJ_open_BTN_call_BB_call",
+          "bytes": 80541,
+          "sha256": "fbf183a79a554bc5d571f020d2f0e72cbf01857399098262464d87d8726d8ae5",
+          "entry": "objects/fbf183a79a554bc5d571f020d2f0e72cbf01857399098262464d87d8726d8ae5"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-btn-bb-mw3-srp-v1/v1-6762971b2c93-4ec6b527f8e2-92b946dfc5c8-6ed2c1b57e8d/later-runouts.json",
+          "kind": "later-runouts",
+          "spot": "HJ_open_BTN_call_BB_call",
+          "bytes": 23508,
+          "sha256": "6bd77eca5e7784731e2255985ec8918fbdc2ea86b7642afef1f8a3ec98ffe65a",
+          "entry": "objects/6bd77eca5e7784731e2255985ec8918fbdc2ea86b7642afef1f8a3ec98ffe65a"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-btn-bb-mw3-srp-v1/v1-6762971b2c93-4ec6b527f8e2-92b946dfc5c8-6ed2c1b57e8d/simulation-replay.json",
+          "kind": "simulation-replay",
+          "spot": "HJ_open_BTN_call_BB_call",
+          "bytes": 817,
+          "sha256": "d6747f149c91ca4ebcb22982093e7f6f8c98264cfb289d51f623f147f2742048",
+          "entry": "objects/d6747f149c91ca4ebcb22982093e7f6f8c98264cfb289d51f623f147f2742048"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-btn-bb-mw3-srp-v1/v1-6762971b2c93-4ec6b527f8e2-92b946dfc5c8-6ed2c1b57e8d/simulation.json",
+          "kind": "simulation",
+          "spot": "HJ_open_BTN_call_BB_call",
+          "bytes": 9206,
+          "sha256": "872c83cb82e922d7b0a259823e1bb9cff613373b21c10f0bcecd28303126262b",
+          "entry": "objects/872c83cb82e922d7b0a259823e1bb9cff613373b21c10f0bcecd28303126262b"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/hj-btn-bb-mw3-srp-v1-later-policy.json",
+          "kind": "laterCandidate",
+          "spot": "HJ_open_BTN_call_BB_call",
+          "bytes": 12187549,
+          "sha256": "ba643e6498a4c13f2f65916e7e685d508ef49ad5ed65c4ca786724a4107180b0",
+          "entry": "objects/ba643e6498a4c13f2f65916e7e685d508ef49ad5ed65c4ca786724a4107180b0"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/hj-btn-bb-mw3-srp-v1-policy.json",
+          "kind": "candidate",
+          "spot": "HJ_open_BTN_call_BB_call",
+          "bytes": 2588525,
+          "sha256": "bdbf6d3bab4cedccb6ad2b58fe3cffc0ef3922a0cac63006ce7dc2cbfeb1ec2a",
+          "entry": "objects/bdbf6d3bab4cedccb6ad2b58fe3cffc0ef3922a0cac63006ce7dc2cbfeb1ec2a"
+        }
+      ],
+      "pins": [
+        {
+          "spotId": "HJ_open_BTN_call_BB_call",
+          "stage": "flop",
+          "deliveryHash": "da4cba6972420b5ff615d6392d47dc963b0638a29c747b9314f2cf871d95e7cc",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "6f6a824c47368119bfe3ac6761e0ac5993f9eec3a352d505ce949e5c0b76b593",
+          "sourceHash": "6762971b2c93bc1d26aec6a2e82cc9292a03fb22e6cc497c9b0e346ae3f9df45"
+        },
+        {
+          "spotId": "HJ_open_BTN_call_BB_call",
+          "stage": "later",
+          "deliveryHash": "c53b9061809b04c62af049e0a9eec8c37f4295e977384a5c3497f6132737b6ba",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "764e2765a604e30c5e981b481946918de916004e135d7b98619aa9670185b33c",
+          "sourceHash": "6762971b2c93bc1d26aec6a2e82cc9292a03fb22e6cc497c9b0e346ae3f9df45"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 37,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      },
+      "prior_receipt": {
+        "path": "configs/mw3-hj-btn-bb-mw3-srp-v1.review.json",
+        "bytes": 13625,
+        "sha256": "9e898c4cc8a57ca563b9045efdfdd7f7459586173c1d73da3563b574962ac421"
+      }
+    },
+    {
+      "spot": "HJ_open_BTN_call_SB_call",
+      "slug": "hj-btn-sb-mw3-srp-v1",
+      "manifest": "drafts/mw3-hj-btn-sb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "9006b124043ccf7a9fea12682b4e6aa339a6c3cb1f3bba264e0feb20dcf04ead",
+      "sources_sha256": "7d49cd07513336dca3de8dc77272761278acc042439dcab606afcaded941052a",
+      "content_sha256": "e904aca2812a80f54f22aa94bc42d90513f693fef431513c32079760f4a59431",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "archive": {
+        "path": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 349739,
+        "sha256": "f3ec418992730e69f548e354508c95e0a42e4963cb7dd6b8d15cacc3d500d45e"
+      },
+      "raw_artifacts": [
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-btn-sb-mw3-srp-v1/v1-380bee458c9d-4ec6b527f8e2-92b946dfc5c8-dd65eb138113/all-flops.json",
+          "kind": "all-flops",
+          "spot": "HJ_open_BTN_call_SB_call",
+          "bytes": 1005,
+          "sha256": "b5f25c9c269d3916ad9d5bf144e9ee21b9e23a2e0df010cd7f8aaeddc73cb770",
+          "entry": "objects/b5f25c9c269d3916ad9d5bf144e9ee21b9e23a2e0df010cd7f8aaeddc73cb770"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-btn-sb-mw3-srp-v1/v1-380bee458c9d-4ec6b527f8e2-92b946dfc5c8-dd65eb138113/joint-defence.json",
+          "kind": "joint-defence",
+          "spot": "HJ_open_BTN_call_SB_call",
+          "bytes": 80498,
+          "sha256": "cff4fa581277f0f072f4ac4d0bc973a3f0923a9e1c87b9ecb4b9fce499de7bf9",
+          "entry": "objects/cff4fa581277f0f072f4ac4d0bc973a3f0923a9e1c87b9ecb4b9fce499de7bf9"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-btn-sb-mw3-srp-v1/v1-380bee458c9d-4ec6b527f8e2-92b946dfc5c8-dd65eb138113/later-runouts.json",
+          "kind": "later-runouts",
+          "spot": "HJ_open_BTN_call_SB_call",
+          "bytes": 23508,
+          "sha256": "cff6bac2f9a17049f2896454f45c3739899fc35611a20aff99184cad1ac0e9e9",
+          "entry": "objects/cff6bac2f9a17049f2896454f45c3739899fc35611a20aff99184cad1ac0e9e9"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-btn-sb-mw3-srp-v1/v1-380bee458c9d-4ec6b527f8e2-92b946dfc5c8-dd65eb138113/simulation-replay.json",
+          "kind": "simulation-replay",
+          "spot": "HJ_open_BTN_call_SB_call",
+          "bytes": 817,
+          "sha256": "5ae480a67c55693b414d37ddbfc17f73e94e484ccb0fd4b5d8ac970b059e6166",
+          "entry": "objects/5ae480a67c55693b414d37ddbfc17f73e94e484ccb0fd4b5d8ac970b059e6166"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-btn-sb-mw3-srp-v1/v1-380bee458c9d-4ec6b527f8e2-92b946dfc5c8-dd65eb138113/simulation.json",
+          "kind": "simulation",
+          "spot": "HJ_open_BTN_call_SB_call",
+          "bytes": 9173,
+          "sha256": "d49d1ac6a4ec75d47137af572eb2bad7d8393e95f7b005f5b1ca233019c9cebc",
+          "entry": "objects/d49d1ac6a4ec75d47137af572eb2bad7d8393e95f7b005f5b1ca233019c9cebc"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/hj-btn-sb-mw3-srp-v1-later-policy.json",
+          "kind": "laterCandidate",
+          "spot": "HJ_open_BTN_call_SB_call",
+          "bytes": 12162258,
+          "sha256": "d7655c789015d05fba56b525e09f6b4dde40cac9d4690ce3cb7111adc3e0ec28",
+          "entry": "objects/d7655c789015d05fba56b525e09f6b4dde40cac9d4690ce3cb7111adc3e0ec28"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/hj-btn-sb-mw3-srp-v1-policy.json",
+          "kind": "candidate",
+          "spot": "HJ_open_BTN_call_SB_call",
+          "bytes": 2485682,
+          "sha256": "de43414dd2986a182f241d686857fd6be0805237b17dede25b21c330f05482e2",
+          "entry": "objects/de43414dd2986a182f241d686857fd6be0805237b17dede25b21c330f05482e2"
+        }
+      ],
+      "pins": [
+        {
+          "spotId": "HJ_open_BTN_call_SB_call",
+          "stage": "flop",
+          "deliveryHash": "cee641a36e91368a41b1f7e79622dd90b464d425c4f5b127956ff4c90b9323c2",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "2b74e501f33fb5713bca56c692ff5834ace14ac146dbbe8dc73fbdc4cf3156e5",
+          "sourceHash": "380bee458c9d5e112d268dab4e0d4ef201a45a58babe78234c5e6af0c91f6235"
+        },
+        {
+          "spotId": "HJ_open_BTN_call_SB_call",
+          "stage": "later",
+          "deliveryHash": "2e6ce4d41eb9857465199f2774e702590b738530df09429c6b3523761b441cfc",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "2bcb06e852bc7de9a4dcf47b37016be0fea2d413e925971a921d0131d22b3234",
+          "sourceHash": "380bee458c9d5e112d268dab4e0d4ef201a45a58babe78234c5e6af0c91f6235"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 32,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      },
+      "prior_receipt": {
+        "path": "configs/mw3-hj-btn-sb-mw3-srp-v1.review.json",
+        "bytes": 13620,
+        "sha256": "256e57be48c495b41f81998e8e83418c8036e9907778010507aedce13bc9b7d2"
+      }
+    },
+    {
+      "spot": "HJ_open_CO_call_BB_call",
+      "slug": "hj-co-bb-mw3-srp-v1",
+      "manifest": "drafts/mw3-hj-co-bb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "29fe62f821a91bcba6c560c0fbc7d7114e538ffe7f65fddecd087a36481abce4",
+      "sources_sha256": "7bd765f1633249b976e0b6173695711dd10a94f3a9beaddb614c5b02b26ad29a",
+      "content_sha256": "4e512a203baefd216322e2c14aa7046459e44f4d3eabd6e38f06696a18c73ed2",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "archive": {
+        "path": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 355876,
+        "sha256": "9e12080a2e5fbd5d642339a17508e7bd7cdff2aacf7739e3e416df816282ec0c"
+      },
+      "raw_artifacts": [
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-co-bb-mw3-srp-v1/v1-23bc49a7a78a-4ec6b527f8e2-92b946dfc5c8-ca64537c3042/all-flops.json",
+          "kind": "all-flops",
+          "spot": "HJ_open_CO_call_BB_call",
+          "bytes": 1004,
+          "sha256": "6113b0c56555f0c469aba181745a856c529fde3e21b4269a144dfd97444ecf7a",
+          "entry": "objects/6113b0c56555f0c469aba181745a856c529fde3e21b4269a144dfd97444ecf7a"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-co-bb-mw3-srp-v1/v1-23bc49a7a78a-4ec6b527f8e2-92b946dfc5c8-ca64537c3042/joint-defence.json",
+          "kind": "joint-defence",
+          "spot": "HJ_open_CO_call_BB_call",
+          "bytes": 80493,
+          "sha256": "54710b466326e6dab1d121cc6804ca4e839f71ca6bff76720d51979a00094188",
+          "entry": "objects/54710b466326e6dab1d121cc6804ca4e839f71ca6bff76720d51979a00094188"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-co-bb-mw3-srp-v1/v1-23bc49a7a78a-4ec6b527f8e2-92b946dfc5c8-ca64537c3042/later-runouts.json",
+          "kind": "later-runouts",
+          "spot": "HJ_open_CO_call_BB_call",
+          "bytes": 23507,
+          "sha256": "e8b543ba99c57ec7dc44b3d14da1a1780a55aabc25e8a306d40ac91e063b6f5d",
+          "entry": "objects/e8b543ba99c57ec7dc44b3d14da1a1780a55aabc25e8a306d40ac91e063b6f5d"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-co-bb-mw3-srp-v1/v1-23bc49a7a78a-4ec6b527f8e2-92b946dfc5c8-ca64537c3042/simulation-replay.json",
+          "kind": "simulation-replay",
+          "spot": "HJ_open_CO_call_BB_call",
+          "bytes": 816,
+          "sha256": "5af2295c46190554daefde4594a425a4e5dad8bc40769e33f8c2db4634f1fd24",
+          "entry": "objects/5af2295c46190554daefde4594a425a4e5dad8bc40769e33f8c2db4634f1fd24"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-co-bb-mw3-srp-v1/v1-23bc49a7a78a-4ec6b527f8e2-92b946dfc5c8-ca64537c3042/simulation.json",
+          "kind": "simulation",
+          "spot": "HJ_open_CO_call_BB_call",
+          "bytes": 9172,
+          "sha256": "f86c769cad86021febeee2f0d3dbf7b47c6b7eee53d5e21af64513e72cb2bb2e",
+          "entry": "objects/f86c769cad86021febeee2f0d3dbf7b47c6b7eee53d5e21af64513e72cb2bb2e"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/hj-co-bb-mw3-srp-v1-later-policy.json",
+          "kind": "laterCandidate",
+          "spot": "HJ_open_CO_call_BB_call",
+          "bytes": 12187952,
+          "sha256": "4e584f57668c78d48a221277cdcfce2ddfe5e5a8845e403a4bcb686e4cdff33f",
+          "entry": "objects/4e584f57668c78d48a221277cdcfce2ddfe5e5a8845e403a4bcb686e4cdff33f"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/hj-co-bb-mw3-srp-v1-policy.json",
+          "kind": "candidate",
+          "spot": "HJ_open_CO_call_BB_call",
+          "bytes": 2588562,
+          "sha256": "113fddefcedabb8f36243491f0095b58cc2e5468c5c7ac6e19a325c78faac813",
+          "entry": "objects/113fddefcedabb8f36243491f0095b58cc2e5468c5c7ac6e19a325c78faac813"
+        }
+      ],
+      "pins": [
+        {
+          "spotId": "HJ_open_CO_call_BB_call",
+          "stage": "flop",
+          "deliveryHash": "75fffa9b7c5af63da62d254fc23b06dfe85d79313bbde5e72ff2536556ed12e1",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "ddee6d15195c7b205e52b0c2d8da2dc32258ac1a1cdaeb61f3213877a65e4b0f",
+          "sourceHash": "23bc49a7a78a03506d6f0d73dfd541dc5cc81397b26a7338f47810f7326843c2"
+        },
+        {
+          "spotId": "HJ_open_CO_call_BB_call",
+          "stage": "later",
+          "deliveryHash": "7df78fdad444be2866905f02df9a05dd6d3e3b3de76103f5ba83cacf82da2607",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "c97fae4f58b39daaab0497253ae27e84b48527b492ccb687dffccd70c87d7403",
+          "sourceHash": "23bc49a7a78a03506d6f0d73dfd541dc5cc81397b26a7338f47810f7326843c2"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 39,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      },
+      "prior_receipt": {
+        "path": "configs/mw3-hj-co-bb-mw3-srp-v1.review.json",
+        "bytes": 13611,
+        "sha256": "1d83fd6cc776d774e7675e23f6fd97ec2388cbd91befd61f2fe1d409223a86d4"
+      }
+    },
+    {
+      "spot": "HJ_open_CO_call_BTN_call",
+      "slug": "hj-co-btn-mw3-srp-v1",
+      "manifest": "drafts/mw3-hj-co-btn-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "4468bad63a478b1e50c58b371eb18c38b30a1c0e5ac5b9884c5c212fc06b34df",
+      "sources_sha256": "cd76dc0259c00ca2e73b600630f42482ce3ed5cf174ffbadad95a11255602bcb",
+      "content_sha256": "e27e6f828002e19811d2c95d500920f4ccf65f83a090451b3cd16342a79fdd3c",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "archive": {
+        "path": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 346320,
+        "sha256": "b0ad2b74cdc937f228aa4cb862502390ba03606dc548218d713da5875e1a4d00"
+      },
+      "raw_artifacts": [
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-co-btn-mw3-srp-v1/v1-278b706399c3-4ec6b527f8e2-92b946dfc5c8-dd0aceb21f10/all-flops.json",
+          "kind": "all-flops",
+          "spot": "HJ_open_CO_call_BTN_call",
+          "bytes": 1005,
+          "sha256": "967d7482e8c5b10621a74b2d1c5ef312d38cbb05899588befa31edb4bd043000",
+          "entry": "objects/967d7482e8c5b10621a74b2d1c5ef312d38cbb05899588befa31edb4bd043000"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-co-btn-mw3-srp-v1/v1-278b706399c3-4ec6b527f8e2-92b946dfc5c8-dd0aceb21f10/joint-defence.json",
+          "kind": "joint-defence",
+          "spot": "HJ_open_CO_call_BTN_call",
+          "bytes": 87212,
+          "sha256": "4161977d9e822faf695ae401e617924471b1c6b7d3756c9d715de4509c64f567",
+          "entry": "objects/4161977d9e822faf695ae401e617924471b1c6b7d3756c9d715de4509c64f567"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-co-btn-mw3-srp-v1/v1-278b706399c3-4ec6b527f8e2-92b946dfc5c8-dd0aceb21f10/later-runouts.json",
+          "kind": "later-runouts",
+          "spot": "HJ_open_CO_call_BTN_call",
+          "bytes": 23508,
+          "sha256": "e20dbb1baca18153c2b9c438c90dd0ed7754f921dc95e9e4a5ae0893d6100451",
+          "entry": "objects/e20dbb1baca18153c2b9c438c90dd0ed7754f921dc95e9e4a5ae0893d6100451"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-co-btn-mw3-srp-v1/v1-278b706399c3-4ec6b527f8e2-92b946dfc5c8-dd0aceb21f10/simulation-replay.json",
+          "kind": "simulation-replay",
+          "spot": "HJ_open_CO_call_BTN_call",
+          "bytes": 817,
+          "sha256": "97c7b346f6006971f70cd39526c263290e68e5ab376c0aa316b3e10656a7c364",
+          "entry": "objects/97c7b346f6006971f70cd39526c263290e68e5ab376c0aa316b3e10656a7c364"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-co-btn-mw3-srp-v1/v1-278b706399c3-4ec6b527f8e2-92b946dfc5c8-dd0aceb21f10/simulation.json",
+          "kind": "simulation",
+          "spot": "HJ_open_CO_call_BTN_call",
+          "bytes": 9198,
+          "sha256": "e5cffc126da8eb61151dad76654241f8ff3d1d0adc0d64b03367d35e696be423",
+          "entry": "objects/e5cffc126da8eb61151dad76654241f8ff3d1d0adc0d64b03367d35e696be423"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/hj-co-btn-mw3-srp-v1-later-policy.json",
+          "kind": "laterCandidate",
+          "spot": "HJ_open_CO_call_BTN_call",
+          "bytes": 12024624,
+          "sha256": "23dfe0e6bae0748de9ca0efc73606599252301021eb1fff2cc0162069823cefa",
+          "entry": "objects/23dfe0e6bae0748de9ca0efc73606599252301021eb1fff2cc0162069823cefa"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/hj-co-btn-mw3-srp-v1-policy.json",
+          "kind": "candidate",
+          "spot": "HJ_open_CO_call_BTN_call",
+          "bytes": 2251477,
+          "sha256": "bcf532047d39f1a45ce1dcbfa283d506075dd4f01538826fa0c1a6b8439fcdb5",
+          "entry": "objects/bcf532047d39f1a45ce1dcbfa283d506075dd4f01538826fa0c1a6b8439fcdb5"
+        }
+      ],
+      "pins": [
+        {
+          "spotId": "HJ_open_CO_call_BTN_call",
+          "stage": "flop",
+          "deliveryHash": "e7773c69bd680c1271612c3ebfc15c899872aa1655737b146d70497a673a323e",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "4d70d9c413145446820b4c528c98dad9f3b87f7968230bc4e7ac5b29c98645de",
+          "sourceHash": "278b706399c3efc7907abdc072b0060e2f40e188cb6b4fa05a633544ef86080d"
+        },
+        {
+          "spotId": "HJ_open_CO_call_BTN_call",
+          "stage": "later",
+          "deliveryHash": "7e499cb944dd020b96ac35b55cdfd26f2699e55acf251b123d4c18a0ef5ac216",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "c6c3a9dbba07d11d6ae3534f6c580fc7c5aa0c7ebc6094a3bd5eab80794e590c",
+          "sourceHash": "278b706399c3efc7907abdc072b0060e2f40e188cb6b4fa05a633544ef86080d"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 99,
+        "zeroSupportEvents": 9,
+        "jointWarningCount": 39,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      },
+      "prior_receipt": {
+        "path": "configs/mw3-hj-co-btn-mw3-srp-v1.review.json",
+        "bytes": 13619,
+        "sha256": "37212a07065c940c0a50e60d0218dde01069be531c31210220e37edac4f8e0d6"
+      }
+    },
+    {
+      "spot": "HJ_open_CO_call_SB_call",
+      "slug": "hj-co-sb-mw3-srp-v1",
+      "manifest": "drafts/mw3-hj-co-sb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "fc54d9406d98c2dedda52b64e20378392256e69914c5c4282a438dde239f70b3",
+      "sources_sha256": "b44c097f55322dd2a246633d0572ecd061ea20f3b36ddd468b976fbe3455a84e",
+      "content_sha256": "04040da20b6f9e5b202949eb7e5a40c2b6958f2fca0fdf69ddda07d632728681",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "archive": {
+        "path": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 349456,
+        "sha256": "2c41876d803519c8f05f347ecbf55404d29e17baf6f588089782d727f3ab13d7"
+      },
+      "raw_artifacts": [
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-co-sb-mw3-srp-v1/v1-d9d3209ec490-4ec6b527f8e2-92b946dfc5c8-b1ca0839a100/all-flops.json",
+          "kind": "all-flops",
+          "spot": "HJ_open_CO_call_SB_call",
+          "bytes": 1004,
+          "sha256": "1ca4772cde929a1a8bc9b15624ce6664f0af2d27f996f2b80d17860741bb17b0",
+          "entry": "objects/1ca4772cde929a1a8bc9b15624ce6664f0af2d27f996f2b80d17860741bb17b0"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-co-sb-mw3-srp-v1/v1-d9d3209ec490-4ec6b527f8e2-92b946dfc5c8-b1ca0839a100/joint-defence.json",
+          "kind": "joint-defence",
+          "spot": "HJ_open_CO_call_SB_call",
+          "bytes": 80330,
+          "sha256": "77eb44c8e92e8a1bc8dacec87f557dd23d0ad60d1d32e4393e96ca91d486e906",
+          "entry": "objects/77eb44c8e92e8a1bc8dacec87f557dd23d0ad60d1d32e4393e96ca91d486e906"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-co-sb-mw3-srp-v1/v1-d9d3209ec490-4ec6b527f8e2-92b946dfc5c8-b1ca0839a100/later-runouts.json",
+          "kind": "later-runouts",
+          "spot": "HJ_open_CO_call_SB_call",
+          "bytes": 23507,
+          "sha256": "f920d860e4eadd9315be5afb894c34830c665e939abf9f3e64e20132567ae933",
+          "entry": "objects/f920d860e4eadd9315be5afb894c34830c665e939abf9f3e64e20132567ae933"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-co-sb-mw3-srp-v1/v1-d9d3209ec490-4ec6b527f8e2-92b946dfc5c8-b1ca0839a100/simulation-replay.json",
+          "kind": "simulation-replay",
+          "spot": "HJ_open_CO_call_SB_call",
+          "bytes": 816,
+          "sha256": "f3f5083bf692219fc31fd8d7f812e334b15abd8741ffb0c4947a11585cf609f4",
+          "entry": "objects/f3f5083bf692219fc31fd8d7f812e334b15abd8741ffb0c4947a11585cf609f4"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-co-sb-mw3-srp-v1/v1-d9d3209ec490-4ec6b527f8e2-92b946dfc5c8-b1ca0839a100/simulation.json",
+          "kind": "simulation",
+          "spot": "HJ_open_CO_call_SB_call",
+          "bytes": 9147,
+          "sha256": "eca74d7fe6c8e56b851f29186e0258cf587160b2f5af0a8ad440b82cc65a6543",
+          "entry": "objects/eca74d7fe6c8e56b851f29186e0258cf587160b2f5af0a8ad440b82cc65a6543"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/hj-co-sb-mw3-srp-v1-later-policy.json",
+          "kind": "laterCandidate",
+          "spot": "HJ_open_CO_call_SB_call",
+          "bytes": 12162577,
+          "sha256": "e7065606016f7bc89ca116cbb19abaa7baa8718e377066ce5df10e68ffd9cc71",
+          "entry": "objects/e7065606016f7bc89ca116cbb19abaa7baa8718e377066ce5df10e68ffd9cc71"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/hj-co-sb-mw3-srp-v1-policy.json",
+          "kind": "candidate",
+          "spot": "HJ_open_CO_call_SB_call",
+          "bytes": 2485694,
+          "sha256": "c6623fe05f3ac9ecf48f187c8607efcf6a093d6cca4f1d3edee6c8bf589eada3",
+          "entry": "objects/c6623fe05f3ac9ecf48f187c8607efcf6a093d6cca4f1d3edee6c8bf589eada3"
+        }
+      ],
+      "pins": [
+        {
+          "spotId": "HJ_open_CO_call_SB_call",
+          "stage": "flop",
+          "deliveryHash": "ce8132397a2eccb7c3b2c41dbb3d1058f4292d2c22100eb5292869cb16155704",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "78a92f687a5a4fcc623ae4b91608d12eead3592c8ab9b07244e1b2858a8a33fa",
+          "sourceHash": "d9d3209ec4900d28ca2d8259c813c5bd48d4019528f2123cc6ed168e22c8cbb1"
+        },
+        {
+          "spotId": "HJ_open_CO_call_SB_call",
+          "stage": "later",
+          "deliveryHash": "9029fab129d6d3dfc9b5cfb057343e4cac14500da275708cd40b7c0421e9ed94",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "1382306ac507d03a34e8222e9543e809c6fdd164470df7eaafafe76f69fb2586",
+          "sourceHash": "d9d3209ec4900d28ca2d8259c813c5bd48d4019528f2123cc6ed168e22c8cbb1"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 30,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      },
+      "prior_receipt": {
+        "path": "configs/mw3-hj-co-sb-mw3-srp-v1.review.json",
+        "bytes": 13613,
+        "sha256": "c61d12648e90ac4404b32ba5340565443429a275f3e4ddd9e72a629510caabff"
+      }
+    },
+    {
+      "spot": "UTG_open_BTN_call_BB_call",
+      "slug": "utg-btn-bb-mw3-srp-v1",
+      "manifest": "drafts/mw3-utg-btn-bb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "b8ee1b9312787e32584bc8d3cae61ff2cbb181faf327d3b28b302d09f14681a7",
+      "sources_sha256": "54f1fdef48f2969ab45fa6ff117e43e4f7aa22f14c2975371f6eb954d6d6b994",
+      "content_sha256": "4d8564d98e6b2940903ee9e8005a9c1a6bffbe53c0eebdb1dc75a7442f1e1a59",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 356007,
+        "sha256": "1a8ca191895c386944c903e6de9b9c7e1d25e77ce1f471a21036ee9321a4b69e"
+      },
+      "raw_artifacts": [
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-btn-bb-mw3-srp-v1/v1-3effc9977afa-4ec6b527f8e2-92b946dfc5c8-d89bb2631ca4/all-flops.json",
+          "kind": "all-flops",
+          "spot": "UTG_open_BTN_call_BB_call",
+          "bytes": 1006,
+          "sha256": "c5deba83fe1054bb04b5368dcdfd1a80c32f908f2d777cb2e26a8564a30e7b87",
+          "entry": "objects/c5deba83fe1054bb04b5368dcdfd1a80c32f908f2d777cb2e26a8564a30e7b87"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-btn-bb-mw3-srp-v1/v1-3effc9977afa-4ec6b527f8e2-92b946dfc5c8-d89bb2631ca4/joint-defence.json",
+          "kind": "joint-defence",
+          "spot": "UTG_open_BTN_call_BB_call",
+          "bytes": 80603,
+          "sha256": "64fd6658c8598ac3c20d05a330722e33797a88e5ca9ca349faf55c9cdf70263a",
+          "entry": "objects/64fd6658c8598ac3c20d05a330722e33797a88e5ca9ca349faf55c9cdf70263a"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-btn-bb-mw3-srp-v1/v1-3effc9977afa-4ec6b527f8e2-92b946dfc5c8-d89bb2631ca4/later-runouts.json",
+          "kind": "later-runouts",
+          "spot": "UTG_open_BTN_call_BB_call",
+          "bytes": 23509,
+          "sha256": "b83d6c2d7637d8645e54e3d19d97c0e16ced48ca93ec99a63c2dc7de5221e3f2",
+          "entry": "objects/b83d6c2d7637d8645e54e3d19d97c0e16ced48ca93ec99a63c2dc7de5221e3f2"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-btn-bb-mw3-srp-v1/v1-3effc9977afa-4ec6b527f8e2-92b946dfc5c8-d89bb2631ca4/simulation-replay.json",
+          "kind": "simulation-replay",
+          "spot": "UTG_open_BTN_call_BB_call",
+          "bytes": 818,
+          "sha256": "f9aead71a41a7effd6e7b0e5b4587d4ee135fa4359b0cff17a7f3baceeb55cc1",
+          "entry": "objects/f9aead71a41a7effd6e7b0e5b4587d4ee135fa4359b0cff17a7f3baceeb55cc1"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-btn-bb-mw3-srp-v1/v1-3effc9977afa-4ec6b527f8e2-92b946dfc5c8-d89bb2631ca4/simulation.json",
+          "kind": "simulation",
+          "spot": "UTG_open_BTN_call_BB_call",
+          "bytes": 9225,
+          "sha256": "4bcbacf1f6c51bd63ccbc31869622cd4b9096781384df843544545e80c907a5c",
+          "entry": "objects/4bcbacf1f6c51bd63ccbc31869622cd4b9096781384df843544545e80c907a5c"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-btn-bb-mw3-srp-v1-later-policy.json",
+          "kind": "laterCandidate",
+          "spot": "UTG_open_BTN_call_BB_call",
+          "bytes": 12187880,
+          "sha256": "f01cba150ba7f85db4959266f2669849af3f8a76aea6c052f0151487f0bc315c",
+          "entry": "objects/f01cba150ba7f85db4959266f2669849af3f8a76aea6c052f0151487f0bc315c"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-btn-bb-mw3-srp-v1-policy.json",
+          "kind": "candidate",
+          "spot": "UTG_open_BTN_call_BB_call",
+          "bytes": 2588506,
+          "sha256": "9df37fa4b4a1ed7137367b8e4f65531b21e363faa09b5f974c22d22eed3a7eaa",
+          "entry": "objects/9df37fa4b4a1ed7137367b8e4f65531b21e363faa09b5f974c22d22eed3a7eaa"
+        }
+      ],
+      "pins": [
+        {
+          "spotId": "UTG_open_BTN_call_BB_call",
+          "stage": "flop",
+          "deliveryHash": "4aa2ec01bfe9d59f86193b3a170390084cfed23513f3236353f34364b78517d5",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "5405d51426d387f652d4447e0afc54186c2a6ed22637083d9aed3e628824be70",
+          "sourceHash": "3effc9977afa66aa817c2e1c697f6789a593bdf3418741ab33fe34236dd5b7f2"
+        },
+        {
+          "spotId": "UTG_open_BTN_call_BB_call",
+          "stage": "later",
+          "deliveryHash": "d7c52388810b7944b23e242862e9e112b6a08fa26d73ca5a61ee373bd9c6df15",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "282afaf9fa0cecc7ae680a18707a1aa71a16bb4fc7dd15463031d7fddfe898aa",
+          "sourceHash": "3effc9977afa66aa817c2e1c697f6789a593bdf3418741ab33fe34236dd5b7f2"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 36,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      },
+      "prior_receipt": {
+        "path": "configs/mw3-utg-btn-bb-mw3-srp-v1.review.json",
+        "bytes": 13633,
+        "sha256": "6f752a7ec0df6a594cb4dbadb606a47946eda25954010ef43ff940880c29b818"
+      }
+    },
+    {
+      "spot": "UTG_open_BTN_call_SB_call",
+      "slug": "utg-btn-sb-mw3-srp-v1",
+      "manifest": "drafts/mw3-utg-btn-sb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "524165130b63ac4b241637d76e3f3394cf024697951d25791883a900f35d59e0",
+      "sources_sha256": "db50dfc8d45efbee855188842f233c6ab08643a1677226542ff1aca49f3a1076",
+      "content_sha256": "d24592e2352c2f9e7f7589feafeb7e9e4ec6c1aaf4e99fe8d49c3d949ece2f2a",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 349201,
+        "sha256": "fb452978edb7aaf29593c6af6c3cf8dbb5352009580606938b485aba5886095d"
+      },
+      "raw_artifacts": [
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-btn-sb-mw3-srp-v1/v1-2aa18f5793aa-4ec6b527f8e2-92b946dfc5c8-44ca4712c238/all-flops.json",
+          "kind": "all-flops",
+          "spot": "UTG_open_BTN_call_SB_call",
+          "bytes": 1006,
+          "sha256": "7e46a9c3d11e5bf779fddb70a34a4bf00132a43f0491b7072e06268dc1ef7273",
+          "entry": "objects/7e46a9c3d11e5bf779fddb70a34a4bf00132a43f0491b7072e06268dc1ef7273"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-btn-sb-mw3-srp-v1/v1-2aa18f5793aa-4ec6b527f8e2-92b946dfc5c8-44ca4712c238/joint-defence.json",
+          "kind": "joint-defence",
+          "spot": "UTG_open_BTN_call_SB_call",
+          "bytes": 80503,
+          "sha256": "f1ab1e4007a56cafe6f2c5e41a98b4418e8ec316aa8db9cb5b04d5eb16d8cd70",
+          "entry": "objects/f1ab1e4007a56cafe6f2c5e41a98b4418e8ec316aa8db9cb5b04d5eb16d8cd70"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-btn-sb-mw3-srp-v1/v1-2aa18f5793aa-4ec6b527f8e2-92b946dfc5c8-44ca4712c238/later-runouts.json",
+          "kind": "later-runouts",
+          "spot": "UTG_open_BTN_call_SB_call",
+          "bytes": 23509,
+          "sha256": "d534607a782befb937ebb2e2640f1d20f3774512b1dbc94309ef446ead446ac1",
+          "entry": "objects/d534607a782befb937ebb2e2640f1d20f3774512b1dbc94309ef446ead446ac1"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-btn-sb-mw3-srp-v1/v1-2aa18f5793aa-4ec6b527f8e2-92b946dfc5c8-44ca4712c238/simulation-replay.json",
+          "kind": "simulation-replay",
+          "spot": "UTG_open_BTN_call_SB_call",
+          "bytes": 818,
+          "sha256": "188147137b3349dfd0a84054aa95a944710dfb4189c4ad6cb8e244d1e5c961f4",
+          "entry": "objects/188147137b3349dfd0a84054aa95a944710dfb4189c4ad6cb8e244d1e5c961f4"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-btn-sb-mw3-srp-v1/v1-2aa18f5793aa-4ec6b527f8e2-92b946dfc5c8-44ca4712c238/simulation.json",
+          "kind": "simulation",
+          "spot": "UTG_open_BTN_call_SB_call",
+          "bytes": 9194,
+          "sha256": "3f4509cf0f72568ea6543d9302a8d86573cfb3a2e7eee7dc069a44ee8d761165",
+          "entry": "objects/3f4509cf0f72568ea6543d9302a8d86573cfb3a2e7eee7dc069a44ee8d761165"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-btn-sb-mw3-srp-v1-later-policy.json",
+          "kind": "laterCandidate",
+          "spot": "UTG_open_BTN_call_SB_call",
+          "bytes": 12162609,
+          "sha256": "641c221f964014593310b991c46f7a6acaa78ebffaebd4d4632fa930948db474",
+          "entry": "objects/641c221f964014593310b991c46f7a6acaa78ebffaebd4d4632fa930948db474"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-btn-sb-mw3-srp-v1-policy.json",
+          "kind": "candidate",
+          "spot": "UTG_open_BTN_call_SB_call",
+          "bytes": 2485703,
+          "sha256": "a4c9201c7bc9a56b505e1ff6368860a5d4c5243ed66099ea051b936f3ecce381",
+          "entry": "objects/a4c9201c7bc9a56b505e1ff6368860a5d4c5243ed66099ea051b936f3ecce381"
+        }
+      ],
+      "pins": [
+        {
+          "spotId": "UTG_open_BTN_call_SB_call",
+          "stage": "flop",
+          "deliveryHash": "029d0402b784532ad46b5e2ecce71c3a1540ea0a30539d64150bcf9d4811310e",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "c608d2b4eeaf2c9419f27fb7fa9ed818ee07ecb370e704db92268fcb806612d7",
+          "sourceHash": "2aa18f5793aa280d843bd3f175f391cc3409186c21e08bcc7b63570aab558858"
+        },
+        {
+          "spotId": "UTG_open_BTN_call_SB_call",
+          "stage": "later",
+          "deliveryHash": "08f2e05bd9745f5ad5d476b96930592bcf889325d984ca686acb61a287d7bfd3",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "2616b7536253785714314be66ae6084d7ae8004dbf8773cf5e183b22bc7396f7",
+          "sourceHash": "2aa18f5793aa280d843bd3f175f391cc3409186c21e08bcc7b63570aab558858"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 29,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      },
+      "prior_receipt": {
+        "path": "configs/mw3-utg-btn-sb-mw3-srp-v1.review.json",
+        "bytes": 13641,
+        "sha256": "490a5fbb5a01cdafe6d939ad7c75e8bd35627a3b1ab9f1b95de9acaddcf14b76"
+      }
+    },
+    {
+      "spot": "UTG_open_CO_call_BB_call",
+      "slug": "utg-co-bb-mw3-srp-v1",
+      "manifest": "drafts/mw3-utg-co-bb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "30951c024080fc7ea2b1f44e9c2d72698081a4a0dc08304c8f30b7127fabd09f",
+      "sources_sha256": "d24fdfe9e0cb18874d57fcc07452301c6f6a8368feabdf8dce1c53a81aeacba2",
+      "content_sha256": "48366aad3e46a267332008009d2c924f0ac4eff3c05c0e52772f2627f5cbc229",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 353793,
+        "sha256": "fab985466902709975e0e02e39d4eb9f5e41b0eb05f80d4d9f4824fe4d5913df"
+      },
+      "raw_artifacts": [
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-co-bb-mw3-srp-v1/v1-4ca502b9b4c2-4ec6b527f8e2-92b946dfc5c8-b216e439bce6/all-flops.json",
+          "kind": "all-flops",
+          "spot": "UTG_open_CO_call_BB_call",
+          "bytes": 1005,
+          "sha256": "1c99e164bbefa3008c87b8b25916a8e2226c50691f3c6d9fd173d4fbd0ce6ab8",
+          "entry": "objects/1c99e164bbefa3008c87b8b25916a8e2226c50691f3c6d9fd173d4fbd0ce6ab8"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-co-bb-mw3-srp-v1/v1-4ca502b9b4c2-4ec6b527f8e2-92b946dfc5c8-b216e439bce6/joint-defence.json",
+          "kind": "joint-defence",
+          "spot": "UTG_open_CO_call_BB_call",
+          "bytes": 80506,
+          "sha256": "50d752f9bca075de50a190d683d047f26296b68506fba8c5c2625861c9f508fa",
+          "entry": "objects/50d752f9bca075de50a190d683d047f26296b68506fba8c5c2625861c9f508fa"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-co-bb-mw3-srp-v1/v1-4ca502b9b4c2-4ec6b527f8e2-92b946dfc5c8-b216e439bce6/later-runouts.json",
+          "kind": "later-runouts",
+          "spot": "UTG_open_CO_call_BB_call",
+          "bytes": 23508,
+          "sha256": "97fde14b70d9e5dfb687edfad92704a807a8c6d8d9fac6c90326dba9a8ffd1c1",
+          "entry": "objects/97fde14b70d9e5dfb687edfad92704a807a8c6d8d9fac6c90326dba9a8ffd1c1"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-co-bb-mw3-srp-v1/v1-4ca502b9b4c2-4ec6b527f8e2-92b946dfc5c8-b216e439bce6/simulation-replay.json",
+          "kind": "simulation-replay",
+          "spot": "UTG_open_CO_call_BB_call",
+          "bytes": 817,
+          "sha256": "711dfb65eb716a0cf6540286261fc32aced126a280a49c28e20b07aa2026cfed",
+          "entry": "objects/711dfb65eb716a0cf6540286261fc32aced126a280a49c28e20b07aa2026cfed"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-co-bb-mw3-srp-v1/v1-4ca502b9b4c2-4ec6b527f8e2-92b946dfc5c8-b216e439bce6/simulation.json",
+          "kind": "simulation",
+          "spot": "UTG_open_CO_call_BB_call",
+          "bytes": 9190,
+          "sha256": "636914f51018da6291e2c6fd5ac56a71786e622f506df2d3c2140b6ad3857d4e",
+          "entry": "objects/636914f51018da6291e2c6fd5ac56a71786e622f506df2d3c2140b6ad3857d4e"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-co-bb-mw3-srp-v1-later-policy.json",
+          "kind": "laterCandidate",
+          "spot": "UTG_open_CO_call_BB_call",
+          "bytes": 12188318,
+          "sha256": "7bb9382790000baea490cd28dc8da7d745432a4a13161d0cda2638b7c826f577",
+          "entry": "objects/7bb9382790000baea490cd28dc8da7d745432a4a13161d0cda2638b7c826f577"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-co-bb-mw3-srp-v1-policy.json",
+          "kind": "candidate",
+          "spot": "UTG_open_CO_call_BB_call",
+          "bytes": 2588569,
+          "sha256": "ddba7d708d76153237b16f55f7b96b60b2debd40873d8d19ba45bbccac3fa643",
+          "entry": "objects/ddba7d708d76153237b16f55f7b96b60b2debd40873d8d19ba45bbccac3fa643"
+        }
+      ],
+      "pins": [
+        {
+          "spotId": "UTG_open_CO_call_BB_call",
+          "stage": "flop",
+          "deliveryHash": "bd91d467dbaf60b1ae5bb4e265d81ede9173befd88ac613eabdec459d16dafee",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "e8ad7a1aa002559e51f485ef68f4163ce9ba5955be5d0bcc7b83f4250bda48ef",
+          "sourceHash": "4ca502b9b4c22ca9d67058d9be52c52539549f2442cfb08983296d09afacd95d"
+        },
+        {
+          "spotId": "UTG_open_CO_call_BB_call",
+          "stage": "later",
+          "deliveryHash": "f669db4d3263a3049fcf3ccaa1bf898670dad7214cad87cbf41e8ff464f01fa8",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "a9aea007ce66ddaae4d08843e6280f777d10f38aa4c353aa737e8a22e21bb772",
+          "sourceHash": "4ca502b9b4c22ca9d67058d9be52c52539549f2442cfb08983296d09afacd95d"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 36,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      },
+      "prior_receipt": {
+        "path": "configs/mw3-utg-co-bb-mw3-srp-v1.review.json",
+        "bytes": 13619,
+        "sha256": "a954933145907a8bf76f676d32ee04b6b745795c526eed3a37680827f366c13e"
+      }
+    },
+    {
+      "spot": "UTG_open_CO_call_BTN_call",
+      "slug": "utg-co-btn-mw3-srp-v1",
+      "manifest": "drafts/mw3-utg-co-btn-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "0b8930a6afa841d56c22127e7c4d1939e0d07197233a71c92247136143fe8b50",
+      "sources_sha256": "37c58890c5cc33f6ed6ca2a148c8b83c8af9f191cf1c063d01810d9a73a7d9f0",
+      "content_sha256": "0d512c38a70a2e1b7980f8ebfd9c7089657811a8b52831c03cd36cd2d74d4ac4",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 343601,
+        "sha256": "3a3d6f4d1cabcfcff881b5b90470ad153748264734fce92f0bd6a816fbe58604"
+      },
+      "raw_artifacts": [
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-co-btn-mw3-srp-v1/v1-e1328f1fc8ad-4ec6b527f8e2-92b946dfc5c8-afbaf72c98a7/all-flops.json",
+          "kind": "all-flops",
+          "spot": "UTG_open_CO_call_BTN_call",
+          "bytes": 1006,
+          "sha256": "f26d2e1d257ddd6db29ee588120c0afe76e37bf7bed76fe50266ab9eee032dc9",
+          "entry": "objects/f26d2e1d257ddd6db29ee588120c0afe76e37bf7bed76fe50266ab9eee032dc9"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-co-btn-mw3-srp-v1/v1-e1328f1fc8ad-4ec6b527f8e2-92b946dfc5c8-afbaf72c98a7/joint-defence.json",
+          "kind": "joint-defence",
+          "spot": "UTG_open_CO_call_BTN_call",
+          "bytes": 85758,
+          "sha256": "cc3cd883fb5c8913d507dc686af4a888e2acf211d242e35904ff94a68c404d26",
+          "entry": "objects/cc3cd883fb5c8913d507dc686af4a888e2acf211d242e35904ff94a68c404d26"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-co-btn-mw3-srp-v1/v1-e1328f1fc8ad-4ec6b527f8e2-92b946dfc5c8-afbaf72c98a7/later-runouts.json",
+          "kind": "later-runouts",
+          "spot": "UTG_open_CO_call_BTN_call",
+          "bytes": 23509,
+          "sha256": "fff6d46fe2be45ff74fd93411bc38760c1694c1b8ca72072963eecbc0dcaa113",
+          "entry": "objects/fff6d46fe2be45ff74fd93411bc38760c1694c1b8ca72072963eecbc0dcaa113"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-co-btn-mw3-srp-v1/v1-e1328f1fc8ad-4ec6b527f8e2-92b946dfc5c8-afbaf72c98a7/simulation-replay.json",
+          "kind": "simulation-replay",
+          "spot": "UTG_open_CO_call_BTN_call",
+          "bytes": 818,
+          "sha256": "e3e1e58328af6bb56e73cbf4b667d64cd47edffe85089192b93169eecc1de42b",
+          "entry": "objects/e3e1e58328af6bb56e73cbf4b667d64cd47edffe85089192b93169eecc1de42b"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-co-btn-mw3-srp-v1/v1-e1328f1fc8ad-4ec6b527f8e2-92b946dfc5c8-afbaf72c98a7/simulation.json",
+          "kind": "simulation",
+          "spot": "UTG_open_CO_call_BTN_call",
+          "bytes": 9210,
+          "sha256": "0cbda603d3150895f1a58f7ac204f6632fd7ad9393de66a21d2c36f4ec54d421",
+          "entry": "objects/0cbda603d3150895f1a58f7ac204f6632fd7ad9393de66a21d2c36f4ec54d421"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-co-btn-mw3-srp-v1-later-policy.json",
+          "kind": "laterCandidate",
+          "spot": "UTG_open_CO_call_BTN_call",
+          "bytes": 12024892,
+          "sha256": "f91e89fe62bcfddb9b75675225a6b5154b4e5f1f818daab69c7f6166b9e2cea9",
+          "entry": "objects/f91e89fe62bcfddb9b75675225a6b5154b4e5f1f818daab69c7f6166b9e2cea9"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-co-btn-mw3-srp-v1-policy.json",
+          "kind": "candidate",
+          "spot": "UTG_open_CO_call_BTN_call",
+          "bytes": 2251486,
+          "sha256": "6dab08ad97c19f35572623be3fe082ef9248a82d7cf06a59aeb2e6cd65b74ebc",
+          "entry": "objects/6dab08ad97c19f35572623be3fe082ef9248a82d7cf06a59aeb2e6cd65b74ebc"
+        }
+      ],
+      "pins": [
+        {
+          "spotId": "UTG_open_CO_call_BTN_call",
+          "stage": "flop",
+          "deliveryHash": "76bb1356d12a275d0351fd48e9b7c5d8bd2ea42f646552197d35a217be56d8f8",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "5b7868e198248e206b68b42934d11ae51a250695f3e80da609192bfce5fc4527",
+          "sourceHash": "e1328f1fc8ad265f473579189abf32246e4b7bf5bdd2cdc108bea1b2b59f15ed"
+        },
+        {
+          "spotId": "UTG_open_CO_call_BTN_call",
+          "stage": "later",
+          "deliveryHash": "c196c22dd82a699ceeb828a43edfb53cbc72db52ee5a6166bbe10a31ef367a27",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "20925575ef96ecf8af3bc94e84bf390a1a8a411acd8d0699f1a685233db05297",
+          "sourceHash": "e1328f1fc8ad265f473579189abf32246e4b7bf5bdd2cdc108bea1b2b59f15ed"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 97,
+        "zeroSupportEvents": 11,
+        "jointWarningCount": 32,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      },
+      "prior_receipt": {
+        "path": "configs/mw3-utg-co-btn-mw3-srp-v1.review.json",
+        "bytes": 13642,
+        "sha256": "6557d1ec6975def5f978c2b6964b1adee7f001258164cbe77f4259ebf6e3add0"
+      }
+    },
+    {
+      "spot": "UTG_open_CO_call_SB_call",
+      "slug": "utg-co-sb-mw3-srp-v1",
+      "manifest": "drafts/mw3-utg-co-sb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "efcb73c0de244ac36ea3ac15c5f97f2ef1cc63a2613e80426bafba4bf1ab9d52",
+      "sources_sha256": "717bccca87df7ba51b72372caf14e0e3e6673ee2d803c6d62ef939143dc73fa5",
+      "content_sha256": "daa3b538894c6ede64a70889da86a76df5cf663ba86753db15e6aa5a9b6f608a",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 347918,
+        "sha256": "c859afc13e369cd1cf3ab8ea545d8115a5eaba4d55725de772f222a560f4b7a0"
+      },
+      "raw_artifacts": [
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-co-sb-mw3-srp-v1/v1-552657bcc5e1-4ec6b527f8e2-92b946dfc5c8-225612c4fa36/all-flops.json",
+          "kind": "all-flops",
+          "spot": "UTG_open_CO_call_SB_call",
+          "bytes": 1005,
+          "sha256": "0cbf0f5b4e7a4f9f52a48c8526e2e8b70295058cf095b39f7d8fdb85f1ba70dc",
+          "entry": "objects/0cbf0f5b4e7a4f9f52a48c8526e2e8b70295058cf095b39f7d8fdb85f1ba70dc"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-co-sb-mw3-srp-v1/v1-552657bcc5e1-4ec6b527f8e2-92b946dfc5c8-225612c4fa36/joint-defence.json",
+          "kind": "joint-defence",
+          "spot": "UTG_open_CO_call_SB_call",
+          "bytes": 80598,
+          "sha256": "68a86a81b96b4d0f0c1e7ad22ee63f5d21c46f5e9bd93d2a8409cedc87e8c383",
+          "entry": "objects/68a86a81b96b4d0f0c1e7ad22ee63f5d21c46f5e9bd93d2a8409cedc87e8c383"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-co-sb-mw3-srp-v1/v1-552657bcc5e1-4ec6b527f8e2-92b946dfc5c8-225612c4fa36/later-runouts.json",
+          "kind": "later-runouts",
+          "spot": "UTG_open_CO_call_SB_call",
+          "bytes": 23508,
+          "sha256": "42439ee711164ffe130ecacca1834cd25071bfcd20fae1d0dd5c12f0be9ad926",
+          "entry": "objects/42439ee711164ffe130ecacca1834cd25071bfcd20fae1d0dd5c12f0be9ad926"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-co-sb-mw3-srp-v1/v1-552657bcc5e1-4ec6b527f8e2-92b946dfc5c8-225612c4fa36/simulation-replay.json",
+          "kind": "simulation-replay",
+          "spot": "UTG_open_CO_call_SB_call",
+          "bytes": 817,
+          "sha256": "bb7c59645f3ea72a4eabcd0e68a2d2b129a770bcdba7f28c3f03af2e015c61c1",
+          "entry": "objects/bb7c59645f3ea72a4eabcd0e68a2d2b129a770bcdba7f28c3f03af2e015c61c1"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-co-sb-mw3-srp-v1/v1-552657bcc5e1-4ec6b527f8e2-92b946dfc5c8-225612c4fa36/simulation.json",
+          "kind": "simulation",
+          "spot": "UTG_open_CO_call_SB_call",
+          "bytes": 9139,
+          "sha256": "db2dc19038b13543f3891af0b55adfe2e6ef770d62c307e08c1b926fb637434e",
+          "entry": "objects/db2dc19038b13543f3891af0b55adfe2e6ef770d62c307e08c1b926fb637434e"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-co-sb-mw3-srp-v1-later-policy.json",
+          "kind": "laterCandidate",
+          "spot": "UTG_open_CO_call_SB_call",
+          "bytes": 12162781,
+          "sha256": "490e6befd9d6105b9a390150b893fc511c94165b206761e8a3548c7273b7b129",
+          "entry": "objects/490e6befd9d6105b9a390150b893fc511c94165b206761e8a3548c7273b7b129"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-co-sb-mw3-srp-v1-policy.json",
+          "kind": "candidate",
+          "spot": "UTG_open_CO_call_SB_call",
+          "bytes": 2485757,
+          "sha256": "26d359eae1cd2063036ef0bf9cb200db8e74fdcb95e61a82f5c8ac4e1c864ee2",
+          "entry": "objects/26d359eae1cd2063036ef0bf9cb200db8e74fdcb95e61a82f5c8ac4e1c864ee2"
+        }
+      ],
+      "pins": [
+        {
+          "spotId": "UTG_open_CO_call_SB_call",
+          "stage": "flop",
+          "deliveryHash": "0bb86ee2d5cb471d9954a7d7f3cc11a9629744f9934329662f2d1c55d6697a31",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "8c86933a924941071673fb70a6767b5c99a8db402fd5348a7c9a915d7b2574d0",
+          "sourceHash": "552657bcc5e1dd53785ecd44d152a9367e1296ec7e7263ef90d5b5b47394af60"
+        },
+        {
+          "spotId": "UTG_open_CO_call_SB_call",
+          "stage": "later",
+          "deliveryHash": "4141a16a5845c07afea24a466df27d0499e7ba4ff479561ede64e9800ed497fd",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "1968323969e89f53b7c792bccbf81ef7ea10555e19392b63d38a3e1b5b26b46d",
+          "sourceHash": "552657bcc5e1dd53785ecd44d152a9367e1296ec7e7263ef90d5b5b47394af60"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 37,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      },
+      "prior_receipt": {
+        "path": "configs/mw3-utg-co-sb-mw3-srp-v1.review.json",
+        "bytes": 13625,
+        "sha256": "4c863299cc0f1663937acdb47b4f884e9b253531d276a3b59ea2cf73ec4f9db6"
+      }
+    },
+    {
+      "spot": "UTG_open_HJ_call_BB_call",
+      "slug": "utg-hj-bb-mw3-srp-v1",
+      "manifest": "drafts/mw3-utg-hj-bb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "00f0c5c99dfdf45d27fd8a531f3bc29f09710e96fddcb57a1d4038966ffeea96",
+      "sources_sha256": "3ebfbebb5530e3dbab283711990243202ea2d225779165743e3b58294e0abba1",
+      "content_sha256": "259ef1620148ca1a6c1a4305eb13eacca73b20e010b6c9f1652156a58d9374a7",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 352915,
+        "sha256": "d84390b598755b265f5e5ae5e5601d05fc69e7346971b955c2ab0d4732ab577a"
+      },
+      "raw_artifacts": [
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-bb-mw3-srp-v1/v1-3d53be2b1a7c-4ec6b527f8e2-92b946dfc5c8-1384b24a402a/all-flops.json",
+          "kind": "all-flops",
+          "spot": "UTG_open_HJ_call_BB_call",
+          "bytes": 1005,
+          "sha256": "9141813c5769e7b416337c24259878a4208866d29d86b603f60262bd7223b52f",
+          "entry": "objects/9141813c5769e7b416337c24259878a4208866d29d86b603f60262bd7223b52f"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-bb-mw3-srp-v1/v1-3d53be2b1a7c-4ec6b527f8e2-92b946dfc5c8-1384b24a402a/joint-defence.json",
+          "kind": "joint-defence",
+          "spot": "UTG_open_HJ_call_BB_call",
+          "bytes": 80594,
+          "sha256": "12a44b158847abba0f1de330e480d0d8139770420ecab81bc556196a1a18128a",
+          "entry": "objects/12a44b158847abba0f1de330e480d0d8139770420ecab81bc556196a1a18128a"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-bb-mw3-srp-v1/v1-3d53be2b1a7c-4ec6b527f8e2-92b946dfc5c8-1384b24a402a/later-runouts.json",
+          "kind": "later-runouts",
+          "spot": "UTG_open_HJ_call_BB_call",
+          "bytes": 23508,
+          "sha256": "41c3a7d471c201ac4ebd4037d207136bd13e3fc074f9cfc8355468220b83a261",
+          "entry": "objects/41c3a7d471c201ac4ebd4037d207136bd13e3fc074f9cfc8355468220b83a261"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-bb-mw3-srp-v1/v1-3d53be2b1a7c-4ec6b527f8e2-92b946dfc5c8-1384b24a402a/simulation-replay.json",
+          "kind": "simulation-replay",
+          "spot": "UTG_open_HJ_call_BB_call",
+          "bytes": 817,
+          "sha256": "db69ec084a88784c1df0da41654facd56e4ed8304169a1ebd5101c8779301a81",
+          "entry": "objects/db69ec084a88784c1df0da41654facd56e4ed8304169a1ebd5101c8779301a81"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-bb-mw3-srp-v1/v1-3d53be2b1a7c-4ec6b527f8e2-92b946dfc5c8-1384b24a402a/simulation.json",
+          "kind": "simulation",
+          "spot": "UTG_open_HJ_call_BB_call",
+          "bytes": 9170,
+          "sha256": "a6156a25cb84302b41e702767acf3adc00cb0a450a3cf313137d5a7b5736eb00",
+          "entry": "objects/a6156a25cb84302b41e702767acf3adc00cb0a450a3cf313137d5a7b5736eb00"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-hj-bb-mw3-srp-v1-later-policy.json",
+          "kind": "laterCandidate",
+          "spot": "UTG_open_HJ_call_BB_call",
+          "bytes": 12188650,
+          "sha256": "e5e763f0a2949e0c84911d957ff10a96155b69ab153a11c4d3ea9415ae61c586",
+          "entry": "objects/e5e763f0a2949e0c84911d957ff10a96155b69ab153a11c4d3ea9415ae61c586"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-hj-bb-mw3-srp-v1-policy.json",
+          "kind": "candidate",
+          "spot": "UTG_open_HJ_call_BB_call",
+          "bytes": 2588612,
+          "sha256": "8385834e6472a5df72e3fa0403071a5e773205d762bdac2d8e76c0d7bd40bcd4",
+          "entry": "objects/8385834e6472a5df72e3fa0403071a5e773205d762bdac2d8e76c0d7bd40bcd4"
+        }
+      ],
+      "pins": [
+        {
+          "spotId": "UTG_open_HJ_call_BB_call",
+          "stage": "flop",
+          "deliveryHash": "281abf5777b51568dc98ae2a7b7fbc37727062e99a882431b49a5807c73cbdde",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "92cdeb04b45c836e4f6e266bc3b985ef463386544423140ed8a661a60f30c2fc",
+          "sourceHash": "3d53be2b1a7c90f5950be69b82850ef81fa535e3442d836368e914fdf55b2862"
+        },
+        {
+          "spotId": "UTG_open_HJ_call_BB_call",
+          "stage": "later",
+          "deliveryHash": "742daf0c4e7d7a4a3c4a9b7012e1adbdab5ea6ed08dac28414412d190d9bb8d3",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "c7039fc8732099fa9d5e2d34eb938fc7e9342baa2c0a3ec789050abe2b3f0840",
+          "sourceHash": "3d53be2b1a7c90f5950be69b82850ef81fa535e3442d836368e914fdf55b2862"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 40,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      },
+      "prior_receipt": {
+        "path": "configs/mw3-utg-hj-bb-mw3-srp-v1.review.json",
+        "bytes": 13622,
+        "sha256": "e2e7f844d52a0898df9d02ab08fdb9f083838ea4901598e1374b5c3304c912ee"
+      }
+    },
+    {
+      "spot": "UTG_open_HJ_call_BTN_call",
+      "slug": "utg-hj-btn-mw3-srp-v1",
+      "manifest": "drafts/mw3-utg-hj-btn-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "1f0395b35573816e531cfb26742a66607e277654d1d134e0e9f724b177f3ccb2",
+      "sources_sha256": "2e99926dae15d6161ff75b301e89db2e25065a352b5b584fa397a5d8c625f8e8",
+      "content_sha256": "e6b66ae5cd055e57d341c7d2f091e059b469a8b1a6068ed1050044ff88957c34",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 342470,
+        "sha256": "fae0fe5f2ce9fc718f68b9160e4f6e99ed14138b5319008cacb4684b1aca9f3e"
+      },
+      "raw_artifacts": [
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-btn-mw3-srp-v1/v1-bf2cc8a36a97-4ec6b527f8e2-92b946dfc5c8-7b047aa33e8c/all-flops.json",
+          "kind": "all-flops",
+          "spot": "UTG_open_HJ_call_BTN_call",
+          "bytes": 1006,
+          "sha256": "33339e7a6e32a5608bd31609b2e92b395ae6814f0571ce777bd1fdf24a055cf3",
+          "entry": "objects/33339e7a6e32a5608bd31609b2e92b395ae6814f0571ce777bd1fdf24a055cf3"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-btn-mw3-srp-v1/v1-bf2cc8a36a97-4ec6b527f8e2-92b946dfc5c8-7b047aa33e8c/joint-defence.json",
+          "kind": "joint-defence",
+          "spot": "UTG_open_HJ_call_BTN_call",
+          "bytes": 85833,
+          "sha256": "9f4a853c19907b5daeb3483963700ac55d713b7306f3cf3d1f322ff6c7049cd0",
+          "entry": "objects/9f4a853c19907b5daeb3483963700ac55d713b7306f3cf3d1f322ff6c7049cd0"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-btn-mw3-srp-v1/v1-bf2cc8a36a97-4ec6b527f8e2-92b946dfc5c8-7b047aa33e8c/later-runouts.json",
+          "kind": "later-runouts",
+          "spot": "UTG_open_HJ_call_BTN_call",
+          "bytes": 23509,
+          "sha256": "c8f8e1580778946c3c9c24599fbc381d8ada987f10e7fca691ba3d6c0d718412",
+          "entry": "objects/c8f8e1580778946c3c9c24599fbc381d8ada987f10e7fca691ba3d6c0d718412"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-btn-mw3-srp-v1/v1-bf2cc8a36a97-4ec6b527f8e2-92b946dfc5c8-7b047aa33e8c/simulation-replay.json",
+          "kind": "simulation-replay",
+          "spot": "UTG_open_HJ_call_BTN_call",
+          "bytes": 818,
+          "sha256": "052da9a3a616e65d2b550d199d130cfe113a90eb0f857fd727d3d6378c7cf185",
+          "entry": "objects/052da9a3a616e65d2b550d199d130cfe113a90eb0f857fd727d3d6378c7cf185"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-btn-mw3-srp-v1/v1-bf2cc8a36a97-4ec6b527f8e2-92b946dfc5c8-7b047aa33e8c/simulation.json",
+          "kind": "simulation",
+          "spot": "UTG_open_HJ_call_BTN_call",
+          "bytes": 9198,
+          "sha256": "441eafab7ced1857a98449c33f4d0bc63b81a559b1b161ec43850a515dc87703",
+          "entry": "objects/441eafab7ced1857a98449c33f4d0bc63b81a559b1b161ec43850a515dc87703"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-hj-btn-mw3-srp-v1-later-policy.json",
+          "kind": "laterCandidate",
+          "spot": "UTG_open_HJ_call_BTN_call",
+          "bytes": 12025005,
+          "sha256": "894a4209ee8ce53245757dd80cc954a3ef7ca56ad673ecec24ba735d3b4382c6",
+          "entry": "objects/894a4209ee8ce53245757dd80cc954a3ef7ca56ad673ecec24ba735d3b4382c6"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-hj-btn-mw3-srp-v1-policy.json",
+          "kind": "candidate",
+          "spot": "UTG_open_HJ_call_BTN_call",
+          "bytes": 2251462,
+          "sha256": "894aca33cdd2c4821a15a360703a7778ca2d9205047ea306e95720a52429a55b",
+          "entry": "objects/894aca33cdd2c4821a15a360703a7778ca2d9205047ea306e95720a52429a55b"
+        }
+      ],
+      "pins": [
+        {
+          "spotId": "UTG_open_HJ_call_BTN_call",
+          "stage": "flop",
+          "deliveryHash": "5439f957cdcbbc13d5d8ad23ec5b685e5b03a726e6111c96c1527134ac43cb9a",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "89473138898d53835332a3777235f611216427e2d653adc8808dfaafb3bc11d8",
+          "sourceHash": "bf2cc8a36a97c8b77c2ee525d9bebfb774814f3e21b1aea53cb46c1b21c45e8e"
+        },
+        {
+          "spotId": "UTG_open_HJ_call_BTN_call",
+          "stage": "later",
+          "deliveryHash": "234b4b1dde7a12b0d47fbbb508d7ee41c3616c369bb7eb3dc2f7acd3b9496068",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "8bdb93150f6528eb7613fae8a91a61a2f443a34ca6848526f63fb89063c0a287",
+          "sourceHash": "bf2cc8a36a97c8b77c2ee525d9bebfb774814f3e21b1aea53cb46c1b21c45e8e"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 97,
+        "zeroSupportEvents": 11,
+        "jointWarningCount": 39,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      },
+      "prior_receipt": {
+        "path": "configs/mw3-utg-hj-btn-mw3-srp-v1.review.json",
+        "bytes": 13642,
+        "sha256": "b60bb34a01a97106f7bf1da58f228038de75272953390fa401bf891d832dadf8"
+      }
+    },
+    {
+      "spot": "UTG_open_HJ_call_CO_call",
+      "slug": "utg-hj-co-mw3-srp-v1",
+      "manifest": "drafts/mw3-utg-hj-co-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "77b90204e34a04d19c36d33d2790c3e72461b0748ad542281e2738259a8d3d11",
+      "sources_sha256": "fa13261687fa37c7e7d63d1c3952238a56acf57aa42edef4e44566b1baa00345",
+      "content_sha256": "74425ba452281e20f929e0be200a911ef932c7d1521cf70b3f1aefc2a04690a9",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 340387,
+        "sha256": "a0531cb661d36f6beee9076196a40e7a8fef414cbe2c60ffb9283ac1037ac19b"
+      },
+      "raw_artifacts": [
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-co-mw3-srp-v1/v1-f8d9dc162bd8-4ec6b527f8e2-92b946dfc5c8-def619c6d11a/all-flops.json",
+          "kind": "all-flops",
+          "spot": "UTG_open_HJ_call_CO_call",
+          "bytes": 1005,
+          "sha256": "3d2b0ac71309e086eba4321adb369198663b5eb821afd05ee02d2697648d741f",
+          "entry": "objects/3d2b0ac71309e086eba4321adb369198663b5eb821afd05ee02d2697648d741f"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-co-mw3-srp-v1/v1-f8d9dc162bd8-4ec6b527f8e2-92b946dfc5c8-def619c6d11a/joint-defence.json",
+          "kind": "joint-defence",
+          "spot": "UTG_open_HJ_call_CO_call",
+          "bytes": 84884,
+          "sha256": "c7ffb2b4218c16f1077b074003d17de5b56d5dce6e899a732418a3a7262f377f",
+          "entry": "objects/c7ffb2b4218c16f1077b074003d17de5b56d5dce6e899a732418a3a7262f377f"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-co-mw3-srp-v1/v1-f8d9dc162bd8-4ec6b527f8e2-92b946dfc5c8-def619c6d11a/later-runouts.json",
+          "kind": "later-runouts",
+          "spot": "UTG_open_HJ_call_CO_call",
+          "bytes": 23508,
+          "sha256": "2ba2ae982793218816e2f85daa7859fd86327adb81d45e36f9959fe2f837322f",
+          "entry": "objects/2ba2ae982793218816e2f85daa7859fd86327adb81d45e36f9959fe2f837322f"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-co-mw3-srp-v1/v1-f8d9dc162bd8-4ec6b527f8e2-92b946dfc5c8-def619c6d11a/simulation-replay.json",
+          "kind": "simulation-replay",
+          "spot": "UTG_open_HJ_call_CO_call",
+          "bytes": 817,
+          "sha256": "c6f2532c82ff6b4b8755fd1f50c1468382277b24ffe16272259ed27015f41a02",
+          "entry": "objects/c6f2532c82ff6b4b8755fd1f50c1468382277b24ffe16272259ed27015f41a02"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-co-mw3-srp-v1/v1-f8d9dc162bd8-4ec6b527f8e2-92b946dfc5c8-def619c6d11a/simulation.json",
+          "kind": "simulation",
+          "spot": "UTG_open_HJ_call_CO_call",
+          "bytes": 9148,
+          "sha256": "94a0ff0e64bfb396c2eed5d84aa42d8d26b17b29d86b3c1c5c4032782c9d0e8c",
+          "entry": "objects/94a0ff0e64bfb396c2eed5d84aa42d8d26b17b29d86b3c1c5c4032782c9d0e8c"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-hj-co-mw3-srp-v1-later-policy.json",
+          "kind": "laterCandidate",
+          "spot": "UTG_open_HJ_call_CO_call",
+          "bytes": 12024940,
+          "sha256": "c3a9af55d41a44cd86ec7a86a230a71dffdfdf8b71b2ba6918b09a48c98b5abc",
+          "entry": "objects/c3a9af55d41a44cd86ec7a86a230a71dffdfdf8b71b2ba6918b09a48c98b5abc"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-hj-co-mw3-srp-v1-policy.json",
+          "kind": "candidate",
+          "spot": "UTG_open_HJ_call_CO_call",
+          "bytes": 2251518,
+          "sha256": "f00be89ae73a93574d3ed750ec0bc3de5f83615b52037e36e75c2b2bc505d31a",
+          "entry": "objects/f00be89ae73a93574d3ed750ec0bc3de5f83615b52037e36e75c2b2bc505d31a"
+        }
+      ],
+      "pins": [
+        {
+          "spotId": "UTG_open_HJ_call_CO_call",
+          "stage": "flop",
+          "deliveryHash": "f957d312947d1eec25b3341bbf3f6e8d757265688cbf939cf6e781ac2f272cbb",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "d6ee35e17d0287de2150fade7b14a1eb32dd047a866d67e33510240fe83a9205",
+          "sourceHash": "f8d9dc162bd8bb8e401972747dba8e8ce8b8d244d7419af718376ad368d08734"
+        },
+        {
+          "spotId": "UTG_open_HJ_call_CO_call",
+          "stage": "later",
+          "deliveryHash": "adc75543803c6dceae64be212bf0a2fd63869babbcd2f8a8fbf3523b119f5af7",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "e67aaaf82ed04e6c290675cc2f6dc68c33bb9ef751d84ada53ebc171eb9e3f0e",
+          "sourceHash": "f8d9dc162bd8bb8e401972747dba8e8ce8b8d244d7419af718376ad368d08734"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 96,
+        "zeroSupportEvents": 12,
+        "jointWarningCount": 32,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      },
+      "prior_receipt": {
+        "path": "configs/mw3-utg-hj-co-mw3-srp-v1.review.json",
+        "bytes": 13625,
+        "sha256": "f2e41e77cfde8bab05d9764674bf7c5500eaabcf654c3d433a781de132d46c13"
+      }
+    },
+    {
+      "spot": "UTG_open_HJ_call_SB_call",
+      "slug": "utg-hj-sb-mw3-srp-v1",
+      "manifest": "drafts/mw3-utg-hj-sb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "26da3caa41db88b9f36cca35598553240348e93467bef6181dc557065cbf9dd3",
+      "sources_sha256": "75f12615dab874c68ce724fc208f024e0f1a8c17d5e139872c02922feded43a0",
+      "content_sha256": "9099acf5f342386eed3ebc5a23e27958cc685154361aeca8e3681a49c5d0c22a",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 346992,
+        "sha256": "ed25dd6a611d329ec8f78614320d66c5f84284ee4f3e2cf14129cbd75d5b7afa"
+      },
+      "raw_artifacts": [
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-sb-mw3-srp-v1/v1-ced4f58d35c1-4ec6b527f8e2-92b946dfc5c8-92de70d45436/all-flops.json",
+          "kind": "all-flops",
+          "spot": "UTG_open_HJ_call_SB_call",
+          "bytes": 1005,
+          "sha256": "6727aa87b55cefb991e55214fd4ee204e1e2d44f5f8a97a89387374edfa88f7d",
+          "entry": "objects/6727aa87b55cefb991e55214fd4ee204e1e2d44f5f8a97a89387374edfa88f7d"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-sb-mw3-srp-v1/v1-ced4f58d35c1-4ec6b527f8e2-92b946dfc5c8-92de70d45436/joint-defence.json",
+          "kind": "joint-defence",
+          "spot": "UTG_open_HJ_call_SB_call",
+          "bytes": 80539,
+          "sha256": "327d9b2463c1e354e7f93868e62b76f286e5b806d08fbfe7c88bdea72e59d799",
+          "entry": "objects/327d9b2463c1e354e7f93868e62b76f286e5b806d08fbfe7c88bdea72e59d799"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-sb-mw3-srp-v1/v1-ced4f58d35c1-4ec6b527f8e2-92b946dfc5c8-92de70d45436/later-runouts.json",
+          "kind": "later-runouts",
+          "spot": "UTG_open_HJ_call_SB_call",
+          "bytes": 23508,
+          "sha256": "5d5839c1a12fc8347b57329604fcf296f50e9521f5137d8fcf4fa58c74be0c10",
+          "entry": "objects/5d5839c1a12fc8347b57329604fcf296f50e9521f5137d8fcf4fa58c74be0c10"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-sb-mw3-srp-v1/v1-ced4f58d35c1-4ec6b527f8e2-92b946dfc5c8-92de70d45436/simulation-replay.json",
+          "kind": "simulation-replay",
+          "spot": "UTG_open_HJ_call_SB_call",
+          "bytes": 817,
+          "sha256": "739f564315d4a14a0f3a8136b80dfa02ffdb4d2e3822f7f7ee1cc807f797d8f3",
+          "entry": "objects/739f564315d4a14a0f3a8136b80dfa02ffdb4d2e3822f7f7ee1cc807f797d8f3"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/gates/utg-hj-sb-mw3-srp-v1/v1-ced4f58d35c1-4ec6b527f8e2-92b946dfc5c8-92de70d45436/simulation.json",
+          "kind": "simulation",
+          "spot": "UTG_open_HJ_call_SB_call",
+          "bytes": 9123,
+          "sha256": "a29761d7537f0ad2b1fb826b317e07ca9d0e11505fca0d9001dccff68b123e5f",
+          "entry": "objects/a29761d7537f0ad2b1fb826b317e07ca9d0e11505fca0d9001dccff68b123e5f"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-hj-sb-mw3-srp-v1-later-policy.json",
+          "kind": "laterCandidate",
+          "spot": "UTG_open_HJ_call_SB_call",
+          "bytes": 12162771,
+          "sha256": "2be7100113c4612c4fccca9b74cd6d6c75dfed0da639590621438387eb7976ef",
+          "entry": "objects/2be7100113c4612c4fccca9b74cd6d6c75dfed0da639590621438387eb7976ef"
+        },
+        {
+          "path": "apps/frontend/.local/postflop-ai/mw3/utg-hj-sb-mw3-srp-v1-policy.json",
+          "kind": "candidate",
+          "spot": "UTG_open_HJ_call_SB_call",
+          "bytes": 2485809,
+          "sha256": "9821f092ac6a0046f87cea1fa98c5be8f281e483052dea603f60b439ea6d2f17",
+          "entry": "objects/9821f092ac6a0046f87cea1fa98c5be8f281e483052dea603f60b439ea6d2f17"
+        }
+      ],
+      "pins": [
+        {
+          "spotId": "UTG_open_HJ_call_SB_call",
+          "stage": "flop",
+          "deliveryHash": "70131b3742203fad717c5d2a418e270476ebd0f4906d9a99e55c21d7714ae9c8",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "a1e92759270e9fd3f0911b080cd42b46898bf0e3749ea7c403f0f6768dd688c1",
+          "sourceHash": "ced4f58d35c1636ee9b4197eef7c636823e8dd0a2f4718f39a3d0b84f5f267c9"
+        },
+        {
+          "spotId": "UTG_open_HJ_call_SB_call",
+          "stage": "later",
+          "deliveryHash": "af5e72db20253f928399c0fbba2413c232a323b5c0b8be005ccacfc28862b68b",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "5c7413b2881aa52304ff3ebe7d2911dace4bb9a2deda13a7a838bc0fd03ac5d9",
+          "sourceHash": "ced4f58d35c1636ee9b4197eef7c636823e8dd0a2f4718f39a3d0b84f5f267c9"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 37,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      },
+      "prior_receipt": {
+        "path": "configs/mw3-utg-hj-sb-mw3-srp-v1.review.json",
+        "bytes": 13625,
+        "sha256": "a38ab4c933dc03efd223d3adce96889d3edef098a739faf885defee4d6a174e2"
+      }
+    }
+  ]
+}

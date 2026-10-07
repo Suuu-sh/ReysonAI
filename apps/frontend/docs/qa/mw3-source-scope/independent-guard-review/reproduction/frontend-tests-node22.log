@@ -1,0 +1,1461 @@
+TAP version 13
+# (node:11) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: captured controller restores exact fake HTTP routes and completes two independent owned restart phases
+ok 1 - captured controller restores exact fake HTTP routes and completes two independent owned restart phases
+  ---
+  duration_ms: 1312.484383
+  type: 'test'
+  ...
+# Subtest: API-only intentional teardown never accepts controller SQL failure, signal, timeout or overflow
+ok 2 - API-only intentional teardown never accepts controller SQL failure, signal, timeout or overflow
+  ---
+  duration_ms: 1418.274864
+  type: 'test'
+  ...
+# Subtest: API teardown accepts a normal zero controller with a fast closed-stream double-fork only after owned reaping
+ok 3 - API teardown accepts a normal zero controller with a fast closed-stream double-fork only after owned reaping
+  ---
+  duration_ms: 114.582944
+  type: 'test'
+  ...
+# Subtest: a captured API controller rejects wrong HTTP body and retains worker cleanup and missing-completion evidence
+ok 4 - a captured API controller rejects wrong HTTP body and retains worker cleanup and missing-completion evidence
+  ---
+  duration_ms: 909.452467
+  type: 'test'
+  ...
+# Retained synthetic API lifecycle evidence: /tmp/mw3-api-last-response-nonzero-tiGiwn
+# Retained synthetic API lifecycle evidence: /tmp/mw3-api-last-response-signal-Y21gxw
+# Subtest: last-response normal worker failure and external signal never become accepted API lifecycle proof
+ok 5 - last-response normal worker failure and external signal never become accepted API lifecycle proof
+  ---
+  duration_ms: 1282.293529
+  type: 'test'
+  ...
+# Retained synthetic API lifecycle evidence: /tmp/mw3-api-precompletion-normal-nonzero-n44kIq
+# Retained synthetic API lifecycle evidence: /tmp/mw3-api-precompletion-external-signal-1BCWbG
+# Subtest: worker error or external SIGKILL in the final synchronous completion gap is rejected even with a completed success file
+ok 6 - worker error or external SIGKILL in the final synchronous completion gap is rejected even with a completed success file
+  ---
+  duration_ms: 1403.085544
+  type: 'test'
+  ...
+# Subtest: a graceful signal-handling worker normal exit zero is accepted only with exact controlled TERM and reaped evidence
+ok 7 - a graceful signal-handling worker normal exit zero is accepted only with exact controlled TERM and reaped evidence
+  ---
+  duration_ms: 755.788291
+  type: 'test'
+  ...
+# Subtest: activated synthetic API contract binds exact registry health and four bounded owned phases including corruption rejection
+ok 8 - activated synthetic API contract binds exact registry health and four bounded owned phases including corruption rejection
+  ---
+  duration_ms: 2599.029174
+  type: 'test'
+  ...
+# Subtest: activated health rejects the same registry count with a different captured source identity
+ok 9 - activated health rejects the same registry count with a different captured source identity
+  ---
+  duration_ms: 658.569104
+  type: 'test'
+  ...
+# Subtest: a generic signal-handling worker exit 143 is rejected despite complete HTTP and controlled owner TERM
+ok 10 - a generic signal-handling worker exit 143 is rejected despite complete HTTP and controlled owner TERM
+  ---
+  duration_ms: 686.492259
+  type: 'test'
+  ...
+# Subtest: only approved dedicated SRPs unlock third calls; fourth and 3bet/squeeze callers remain blocked
+ok 11 - only approved dedicated SRPs unlock third calls; fourth and 3bet/squeeze callers remain blocked
+  ---
+  duration_ms: 11.328613
+  type: 'test'
+  ...
+# Subtest: real deal retains all six legal hole pairs while the dedicated runtime sees exactly its three original keys
+ok 12 - real deal retains all six legal hole pairs while the dedicated runtime sees exactly its three original keys
+  ---
+  duration_ms: 22.616957
+  type: 'test'
+  ...
+# Subtest: human actions pause and replay through all streets; a preflop-folded human outside the original three never reaches a postflop prompt
+ok 13 - human actions pause and replay through all streets; a preflop-folded human outside the original three never reaches a postflop prompt
+  ---
+  duration_ms: 10.060674
+  type: 'test'
+  ...
+# Subtest: a human folding from the original three leaves a dedicated two-live-player path with unchanged roles
+ok 14 - a human folding from the original three leaves a dedicated two-live-player path with unchanged roles
+  ---
+  duration_ms: 116.635478
+  type: 'test'
+  ...
+# Subtest: uncalled wagers refund exactly before six-seat pot/rake settlement
+ok 15 - uncalled wagers refund exactly before six-seat pot/rake settlement
+  ---
+  duration_ms: 107.223391
+  type: 'test'
+  ...
+# Subtest: all-in aliases run out the board without invented river decisions and conserve all six seats
+ok 16 - all-in aliases run out the board without invented river decisions and conserve all six seats
+  ---
+  duration_ms: 118.581838
+  type: 'test'
+  ...
+# Subtest: nonblind three-player origins retain both folded blinds and all six settlement keys
+ok 17 - nonblind three-player origins retain both folded blinds and all six settlement keys
+  ---
+  duration_ms: 201.858053
+  type: 'test'
+  ...
+# Subtest: missing, unapproved, malformed or unsupported multiway hands stop before settlement and history writes
+ok 18 - missing, unapproved, malformed or unsupported multiway hands stop before settlement and history writes
+  ---
+  duration_ms: 6.533536
+  type: 'test'
+  ...
+# Subtest: Agent consumer retains at most two recent kits and never invalidates an active hand reference
+ok 19 - Agent consumer retains at most two recent kits and never invalidates an active hand reference
+  ---
+  duration_ms: 1.113179
+  type: 'test'
+  ...
+# Subtest: explicitly empty injected approval list rejects without fetching; URL parameters cannot authorize a candidate
+ok 20 - explicitly empty injected approval list rejects without fetching; URL parameters cannot authorize a candidate
+  ---
+  duration_ms: 1.404112
+  type: 'test'
+  ...
+# Subtest: only both trusted stages with full input/hash/node validation produce a usable kit
+ok 21 - only both trusted stages with full input/hash/node validation produce a usable kit
+  ---
+  duration_ms: 102.319854
+  type: 'test'
+  ...
+# Subtest: raw manifest bytes, each part identity and body hash are mandatory
+ok 22 - raw manifest bytes, each part identity and body hash are mandatory
+  ---
+  duration_ms: 266.388114
+  type: 'test'
+  ...
+# Subtest: source, implementation, schema, scope, policy and cross-stage pins cannot come from metadata
+ok 23 - source, implementation, schema, scope, policy and cross-stage pins cannot come from metadata
+  ---
+  duration_ms: 763.853582
+  type: 'test'
+  ...
+# Subtest: a self-consistent transported policy that omits a whole engine node is still unavailable
+ok 24 - a self-consistent transported policy that omits a whole engine node is still unavailable
+  ---
+  duration_ms: 96.12361
+  type: 'test'
+  ...
+# Subtest: cancelled view does not cancel another consumer; failures are retryable and successes shared
+ok 25 - cancelled view does not cancel another consumer; failures are retryable and successes shared
+  ---
+  duration_ms: 273.853949
+  type: 'test'
+  ...
+# Subtest: stream limit is measured in UTF8 bytes across chunks and cancels at boundary+1
+ok 26 - stream limit is measured in UTF8 bytes across chunks and cancels at boundary+1
+  ---
+  duration_ms: 32.396987
+  type: 'test'
+  ...
+# Subtest: verified success cache is a two-spot LRU; eviction preserves active consumer references
+ok 27 - verified success cache is a two-spot LRU; eviction preserves active consumer references
+  ---
+  duration_ms: 755.285386
+  type: 'test'
+  ...
+# Subtest: wire UTF8 BOM is preserved across chunks and cannot bypass exact raw manifest hashing
+ok 28 - wire UTF8 BOM is preserved across chunks and cannot bypass exact raw manifest hashing
+  ---
+  duration_ms: 80.754973
+  type: 'test'
+  ...
+# Subtest: three-origin dispatch is explicit and distinct from HU-origin multiway catalog
+ok 29 - three-origin dispatch is explicit and distinct from HU-origin multiway catalog
+  ---
+  duration_ms: 3.598383
+  type: 'test'
+  ...
+# Subtest: completed three-player context cannot enter HU pilot even when a candidate is absent
+ok 30 - completed three-player context cannot enter HU pilot even when a candidate is absent
+  ---
+  duration_ms: 6.457004
+  type: 'test'
+  ...
+# Subtest: three tables preserve original roles, own reach and exact saved combo mixes
+ok 31 - three tables preserve original roles, own reach and exact saved combo mixes
+  ---
+  duration_ms: 31.594042
+  type: 'test'
+  ...
+# Subtest: common chronological action blocks use actual chip amounts and retain MW3 after 3→2
+ok 32 - common chronological action blocks use actual chip amounts and retain MW3 after 3→2
+  ---
+  duration_ms: 1.52974
+  type: 'test'
+  ...
+# Subtest: merged all-ins have one physical option, aliases and truthful labels in four languages
+ok 33 - merged all-ins have one physical option, aliases and truthful labels in four languages
+  ---
+  duration_ms: 1.263413
+  type: 'test'
+  ...
+# Subtest: street transitions, board duplicates, illegal suffixes and partial paths fail closed
+ok 34 - street transitions, board duplicates, illegal suffixes and partial paths fail closed
+  ---
+  duration_ms: 2.480558
+  type: 'test'
+  ...
+# Subtest: three-player URL roundtrips full streets without invoking HU geometry or authorizing a delivery
+ok 35 - three-player URL roundtrips full streets without invoking HU geometry or authorizing a delivery
+  ---
+  duration_ms: 7.760778
+  type: 'test'
+  ...
+# Subtest: Range board IDs use the shared cdhs convention for every physical card
+ok 36 - Range board IDs use the shared cdhs convention for every physical card
+  ---
+  duration_ms: 5.729069
+  type: 'test'
+  ...
+# Subtest: visible flop/turn/river cards block those exact suit combinations in all participant tables
+ok 37 - visible flop/turn/river cards block those exact suit combinations in all participant tables
+  ---
+  duration_ms: 91.145814
+  type: 'test'
+  ...
+# ▲ [WARNING] Duplicate key "A 6-max table where every Agent plays the Reyson solver estimate." in object literal [duplicate-object-key]
+#     apps/frontend/src/locales/product-direct.json:1206:2:
+#       1206 │   "A 6-max table where every Agent plays the Reyson solver estim...
+#            ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#   The original key "A 6-max table where every Agent plays the Reyson solver estimate." is here:
+#     apps/frontend/src/locales/product-direct.json:906:2:
+#       906 │   "A 6-max table where every Agent plays the Reyson solver estima...
+#           ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ▲ [WARNING] Duplicate key "A 6-max table where every Agent plays the Reyson solver estimate." in object literal [duplicate-object-key]
+#     apps/frontend/src/locales/product-direct.json:1206:2:
+#       1206 │   "A 6-max table where every Agent plays the Reyson solver estim...
+#            ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#   The original key "A 6-max table where every Agent plays the Reyson solver estimate." is here:
+#     apps/frontend/src/locales/product-direct.json:906:2:
+#       906 │   "A 6-max table where every Agent plays the Reyson solver estima...
+#           ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Subtest: dedicated renderer shows three initial matrices, localized roles and exact combo controls without EV
+ok 38 - dedicated renderer shows three initial matrices, localized roles and exact combo controls without EV
+  ---
+  duration_ms: 626.015217
+  type: 'test'
+  ...
+# Subtest: empty registry renders each participant unavailable; no query can activate the delivery client
+ok 39 - empty registry renders each participant unavailable; no query can activate the delivery client
+  ---
+  duration_ms: 6.783008
+  type: 'test'
+  ...
+# Subtest: late source success/failure cannot replace a newer spot or a reset even if an injected reader ignores cancellation
+ok 40 - late source success/failure cannot replace a newer spot or a reset even if an injected reader ignores cancellation
+  ---
+  duration_ms: 1244.612354
+  type: 'test'
+  ...
+# Subtest: rewind and board replacement render only the newest numerical view and keep all original roles
+ok 41 - rewind and board replacement render only the newest numerical view and keep all original roles
+  ---
+  duration_ms: 292.004849
+  type: 'test'
+  ...
+# Subtest: waiting Agent completes a verified MW3 hand once after real human actions without reading or writing saved history
+ok 42 - waiting Agent completes a verified MW3 hand once after real human actions without reading or writing saved history
+  ---
+  duration_ms: 6906.887123
+  type: 'test'
+  ...
+# Subtest: superseded Agent loading cannot settle a remounted new hand or write points/history
+ok 43 - superseded Agent loading cannot settle a remounted new hand or write points/history
+  ---
+  duration_ms: 224.977969
+  type: 'test'
+  ...
+# Subtest: an injected interface cannot render an unverified copied policy kit
+ok 44 - an injected interface cannot render an unverified copied policy kit
+  ---
+  duration_ms: 23.71406
+  type: 'test'
+  ...
+# Subtest: shared chronological strip clicks all three seats, rewinds and reaches turn/river without a separate MW3 action row
+ok 45 - shared chronological strip clicks all three seats, rewinds and reaches turn/river without a separate MW3 action row
+  ---
+  duration_ms: 120.010094
+  type: 'test'
+  ...
+# Subtest: actual Agent A/B/A/C hand reuse touches Table and delivery LRU without replay loops
+ok 46 - actual Agent A/B/A/C hand reuse touches Table and delivery LRU without replay loops
+  ---
+  duration_ms: 1150.908891
+  type: 'test'
+  ...
+# (node:557) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: strict CLI requires every saved input and a pinned existing runtime, refusing reduced or remote coverage
+ok 47 - strict CLI requires every saved input and a pinned existing runtime, refusing reduced or remote coverage
+  ---
+  duration_ms: 3.023926
+  type: 'test'
+  ...
+# Subtest: runtime metadata pins actual Wrangler and its exact installed dependencies
+ok 48 - runtime metadata pins actual Wrangler and its exact installed dependencies
+  ---
+  duration_ms: 1.271375
+  type: 'test'
+  ...
+# Subtest: local config and environment exclude credentials, remote resources, assets and production settings
+ok 49 - local config and environment exclude credentials, remote resources, assets and production settings
+  ---
+  duration_ms: 2.606895
+  type: 'test'
+  ...
+# Subtest: zero launcher status, empty/partial output and failed JSON cannot masquerade as successful import
+ok 50 - zero launcher status, empty/partial output and failed JSON cannot masquerade as successful import
+  ---
+  duration_ms: 0.369861
+  type: 'test'
+  ...
+# Subtest: rollback requires full independently bound command evidence and never merely SQL diagnostics
+ok 51 - rollback requires full independently bound command evidence and never merely SQL diagnostics
+  ---
+  duration_ms: 0.562568
+  type: 'test'
+  ...
+# Subtest: existing migrations get a preservation sentinel in every application table including FastFold and human seasons
+ok 52 - existing migrations get a preservation sentinel in every application table including FastFold and human seasons
+  ---
+  duration_ms: 5.208973
+  type: 'test'
+  ...
+# Subtest: synthetic contract fixture: SQL comparison covers exact raw bytes and matching receipt identity
+ok 53 - synthetic contract fixture: SQL comparison covers exact raw bytes and matching receipt identity
+  ---
+  duration_ms: 18.521712
+  type: 'test'
+  ...
+# Subtest: synthetic SQLite reference: headers, ordered chunk hashes and full payload hashes match with exact retry
+ok 54 - synthetic SQLite reference: headers, ordered chunk hashes and full payload hashes match with exact retry
+  ---
+  duration_ms: 9.817241
+  type: 'test'
+  ...
+# Subtest: synthetic SQLite reference: missing, reordered, corrupt and extra chunks fail exact equality
+ok 55 - synthetic SQLite reference: missing, reordered, corrupt and extra chunks fail exact equality
+  ---
+  duration_ms: 18.638105
+  type: 'test'
+  ...
+# Subtest: synthetic SQLite reference: late immutable part and header conflicts expose whole-file rollback
+ok 56 - synthetic SQLite reference: late immutable part and header conflicts expose whole-file rollback
+  ---
+  duration_ms: 12.036347
+  type: 'test'
+  ...
+# Subtest: database value ledger includes unrelated schema, binary and Unicode row changes
+ok 57 - database value ledger includes unrelated schema, binary and Unicode row changes
+  ---
+  duration_ms: 53.013535
+  type: 'test'
+  ...
+# Subtest: ephemeral actual-route worker keeps the build registry empty and pins only a labelled localhost proof namespace
+ok 58 - ephemeral actual-route worker keeps the build registry empty and pins only a labelled localhost proof namespace
+  ---
+  duration_ms: 3.729247
+  type: 'test'
+  ...
+# Subtest: synthetic receipts cannot pass real saved snapshot preflight; outside inputs are rejected before runtime execution
+ok 59 - synthetic receipts cannot pass real saved snapshot preflight; outside inputs are rejected before runtime execution
+  ---
+  duration_ms: 3.249652
+  type: 'test'
+  ...
+# Subtest: captured reviewed source bytes survive later checkout mutation; isolated mutation fails closed
+ok 60 - captured reviewed source bytes survive later checkout mutation; isolated mutation fails closed
+  ---
+  duration_ms: 2.856797
+  type: 'test'
+  ...
+# Subtest: schema snapshot excludes only literal internal prefixes, never SQL LIKE wildcard matches
+ok 61 - schema snapshot excludes only literal internal prefixes, never SQL LIKE wildcard matches
+  ---
+  duration_ms: 3.996076
+  type: 'test'
+  ...
+# Subtest: the sole ownership implementation is the unchanged reviewed subreaper with anchored discovery
+ok 62 - the sole ownership implementation is the unchanged reviewed subreaper with anchored discovery
+  ---
+  duration_ms: 0.277864
+  type: 'test'
+  ...
+# Subtest: synthetic process fixture: supervisor retains successful stdout and stderr without discarding warnings
+ok 63 - synthetic process fixture: supervisor retains successful stdout and stderr without discarding warnings
+  ---
+  duration_ms: 89.597094
+  type: 'test'
+  ...
+# Subtest: synthetic process fixtures: NOT NULL text before killed, timed-out or interrupted children is never completed SQL proof
+ok 64 - synthetic process fixtures: NOT NULL text before killed, timed-out or interrupted children is never completed SQL proof
+  ---
+  duration_ms: 470.830113
+  type: 'test'
+  ...
+# Subtest: runtime pins follow wrangler-dist and Miniflare dependency resolution rather than sibling guesses
+ok 65 - runtime pins follow wrangler-dist and Miniflare dependency resolution rather than sibling guesses
+  ---
+  duration_ms: 669.01349
+  type: 'test'
+  ...
+# Subtest: the application oracle cannot start the strict gate from mutable live imports without its captured parent boundary
+ok 66 - the application oracle cannot start the strict gate from mutable live imports without its captured parent boundary
+  ---
+  duration_ms: 1.126699
+  type: 'test'
+  ...
+# Subtest: captured activated registry must match the receipt subject pair and actual evaluated immutable source authority
+ok 67 - captured activated registry must match the receipt subject pair and actual evaluated immutable source authority
+  ---
+  duration_ms: 20.747773
+  type: 'test'
+  ...
+# Subtest: mode-only phase expansion is bounded and exact API corruption fixtures restore every original database byte
+ok 68 - mode-only phase expansion is bounded and exact API corruption fixtures restore every original database byte
+  ---
+  duration_ms: 24.755638
+  type: 'test'
+  ...
+# Subtest: stub supervisor accepts genuine SQLite error with normal exits, including normal124/137
+ok 69 - stub supervisor accepts genuine SQLite error with normal exits, including normal124/137
+  ---
+  duration_ms: 435.383934
+  type: 'test'
+  ...
+# Subtest: expected SQL text followed by SIGKILL/SIGTERM/timeout is never completed rollback evidence
+ok 70 - expected SQL text followed by SIGKILL/SIGTERM/timeout is never completed rollback evidence
+  ---
+  duration_ms: 597.833701
+  type: 'test'
+  ...
+# Subtest: inner/outer deadlines and output overflow clean owned child and grandchild, preserving diagnostics
+ok 71 - inner/outer deadlines and output overflow clean owned child and grandchild, preserving diagnostics
+  ---
+  duration_ms: 1305.119164
+  type: 'test'
+  ...
+# Subtest: spawn/measurement/cleanup/resource failures retain original outcomes and never become SQL failures
+ok 72 - spawn/measurement/cleanup/resource failures retain original outcomes and never become SQL failures
+  ---
+  duration_ms: 832.334535
+  type: 'test'
+  ...
+# Subtest: zero child exit without valid JSON success remains outside expected SQL-failure proof
+ok 73 - zero child exit without valid JSON success remains outside expected SQL-failure proof
+  ---
+  duration_ms: 107.912662
+  type: 'test'
+  ...
+# Subtest: pure proc snapshots require birth-matching parents and include the adopted-child supervisor anchor
+ok 74 - pure proc snapshots require birth-matching parents and include the adopted-child supervisor anchor
+  ---
+  duration_ms: 36.306988
+  type: 'test'
+  ...
+# Subtest: fast setsid double-fork with closed streams is discovered and reaped on normal/inner/outer completion
+ok 75 - fast setsid double-fork with closed streams is discovered and reaped on normal/inner/outer completion
+  ---
+  duration_ms: 1284.190915
+  type: 'test'
+  ...
+# Subtest: abrupt supervisor SIGKILL rejects SQL and API completion; separate test containment cleans exact births
+ok 76 - abrupt supervisor SIGKILL rejects SQL and API completion; separate test containment cleans exact births
+  ---
+  duration_ms: 1208.764268
+  type: 'test'
+  ...
+# Subtest: a retry uses a fresh command ID while preserving the original completed SQL failure evidence
+ok 77 - a retry uses a fresh command ID while preserving the original completed SQL failure evidence
+  ---
+  duration_ms: 176.431526
+  type: 'test'
+  ...
+# Retained synthetic parent-boundary evidence: /tmp/mw3-parent-real-graph-swEydR
+# (node:889) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# (node:889) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# Subtest: the actual bootstrap keeps exact mandatory CLI inputs and no fixture or alternate-entry flag
+ok 78 - the actual bootstrap keeps exact mandatory CLI inputs and no fixture or alternate-entry flag
+  ---
+  duration_ms: 2.440837
+  type: 'test'
+  ...
+# Subtest: cached live version A cannot supply classifier logic while captured reviewed version B is attested
+ok 79 - cached live version A cannot supply classifier logic while captured reviewed version B is attested
+  ---
+  duration_ms: 12.550844
+  type: 'test'
+  ...
+# Subtest: load/capture disagreement fails before any module/D1 work and leaves the original bytes intact
+ok 80 - load/capture disagreement fails before any module/D1 work and leaves the original bytes intact
+  ---
+  duration_ms: 2.206999
+  type: 'test'
+  ...
+# Subtest: exact-buffer hooks support captured JSON and builtins while rejecting every undeclared local import
+ok 81 - exact-buffer hooks support captured JSON and builtins while rejecting every undeclared local import
+  ---
+  duration_ms: 2.795856
+  type: 'test'
+  ...
+# Subtest: captured import.meta root and read-only origin Git-object metadata preserve tree-relative provenance
+ok 82 - captured import.meta root and read-only origin Git-object metadata preserve tree-relative provenance
+  ---
+  duration_ms: 26.354726
+  type: 'test'
+  ...
+# Subtest: captured typed TS, relative TS and JSON dependencies evaluate from recorded stripped bytes despite live/replay changes
+ok 83 - captured typed TS, relative TS and JSON dependencies evaluate from recorded stripped bytes despite live/replay changes
+  ---
+  duration_ms: 50.014091
+  type: 'test'
+  ...
+# Subtest: the complete actual parent graph links under exact-buffer hooks, including the captured shared registry, migrated runtime modules and nonexecuting type provenance, without invoking the oracle
+ok 84 - the complete actual parent graph links under exact-buffer hooks, including the captured shared registry, migrated runtime modules and nonexecuting type provenance, without invoking the oracle
+  ---
+  duration_ms: 584.5301
+  type: 'test'
+  ...
+# Subtest: captured declaration provenance is retained but .d.ts and .d.mts can never execute
+ok 85 - captured declaration provenance is retained but .d.ts and .d.mts can never execute
+  ---
+  duration_ms: 2.189223
+  type: 'test'
+  ...
+# Subtest: all sixteen numerical source closures exclude display components, styles and general backend dispatch
+ok 86 - all sixteen numerical source closures exclude display components, styles and general backend dispatch
+  ---
+  duration_ms: 723.92839
+  type: 'test'
+  ...
+# Subtest: presentation roots are skipped before recording or following their imports
+ok 87 - presentation roots are skipped before recording or following their imports
+  ---
+  duration_ms: 46.060184
+  type: 'test'
+  ...
+# Subtest: protected imports into excluded UI fail at the dependency edge, before filtering or reading UI
+ok 88 - protected imports into excluded UI fail at the dependency edge, before filtering or reading UI
+  ---
+  duration_ms: 4686.848483
+  type: 'test'
+  ...
+# Subtest: AST dependency extraction ignores non-code and rejects unresolved or unsupported module targets
+ok 89 - AST dependency extraction ignores non-code and rejects unresolved or unsupported module targets
+  ---
+  duration_ms: 1.708827
+  type: 'test'
+  ...
+# Subtest: the vendored parser is the exact locked implementation with a byte-bound license and provenance
+ok 90 - the vendored parser is the exact locked implementation with a byte-bound license and provenance
+  ---
+  duration_ms: 2.578903
+  type: 'test'
+  ...
+# Subtest: official collection accepts the source inventory with all parser provenance and unchanged archive bytes
+ok 91 - official collection accepts the source inventory with all parser provenance and unchanged archive bytes
+  ---
+  duration_ms: 4051.078395
+  type: 'test'
+  ...
+# Subtest: the computed captured-parent import has one exact source, expression and target exception
+ok 92 - the computed captured-parent import has one exact source, expression and target exception
+  ---
+  duration_ms: 13.327132
+  type: 'test'
+  ...
+# Subtest: delivery, authority, shared executable dependencies and strict verification remain protected
+ok 93 - delivery, authority, shared executable dependencies and strict verification remain protected
+  ---
+  duration_ms: 163.860885
+  type: 'test'
+  ...
+# Subtest: required JSON exceptions preserve recipes, configuration, compatibility and captured runtime imports
+ok 94 - required JSON exceptions preserve recipes, configuration, compatibility and captured runtime imports
+  ---
+  duration_ms: 164.722819
+  type: 'test'
+  ...
+# Subtest: general backend wiring is still exercised by the dedicated integration test
+ok 95 - general backend wiring is still exercised by the dedicated integration test
+  ---
+  duration_ms: 0.494937
+  type: 'test'
+  ...
+# Subtest: the reduced ledger still executes the complete captured verification parent without a live-source fallback
+ok 96 - the reduced ledger still executes the complete captured verification parent without a live-source fallback
+  ---
+  duration_ms: 205.108779
+  type: 'test'
+  ...
+# (node:1207) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: actual pinned Wrangler has four owned activated local D1 phases, no module feedback, and narrow attested 143 teardown
+ok 97 - actual pinned Wrangler has four owned activated local D1 phases, no module feedback, and narrow attested 143 teardown # SKIP
+  ---
+  duration_ms: 0.645302
+  type: 'test'
+  ...
+# Subtest: single-spot archive has deterministic raw bytes and complete repeatable restore
+ok 98 - single-spot archive has deterministic raw bytes and complete repeatable restore
+  ---
+  duration_ms: 14.991724
+  type: 'test'
+  ...
+# Subtest: manifest requires exactly both policies and all five bound reports; cannot self-approve
+ok 99 - manifest requires exactly both policies and all five bound reports; cannot self-approve
+  ---
+  duration_ms: 10.492808
+  type: 'test'
+  ...
+# Subtest: decoder rejects traversal, symlinks, malformed headers and changed payloads
+ok 100 - decoder rejects traversal, symlinks, malformed headers and changed payloads
+  ---
+  duration_ms: 7.238408
+  type: 'test'
+  ...
+# Subtest: LFS pointer-only, truncated or mismatched compressed bytes never count as restored
+ok 101 - LFS pointer-only, truncated or mismatched compressed bytes never count as restored
+  ---
+  duration_ms: 1.37533
+  type: 'test'
+  ...
+# Subtest: restore preflights the full file set before writing and never overwrites a collision
+ok 102 - restore preflights the full file set before writing and never overwrites a collision
+  ---
+  duration_ms: 1.718441
+  type: 'test'
+  ...
+# Subtest: restore rejects parent and dangling-file symlinks
+ok 103 - restore rejects parent and dangling-file symlinks
+  ---
+  duration_ms: 2.311896
+  type: 'test'
+  ...
+# Subtest: single gzip framing rejects even empty concatenated members and zero padding
+ok 104 - single gzip framing rejects even empty concatenated members and zero padding
+  ---
+  duration_ms: 1.23504
+  type: 'test'
+  ...
+# Subtest: non-pilot CLI requires exact explicit identity; parser never imports an author or generates
+ok 105 - non-pilot CLI requires exact explicit identity; parser never imports an author or generates
+  ---
+  duration_ms: 2.333417
+  type: 'test'
+  ...
+# Subtest: each gate phase is explicit and cannot be duplicated or used as a scalar argument
+ok 106 - each gate phase is explicit and cannot be duplicated or used as a scalar argument
+  ---
+  duration_ms: 0.32166
+  type: 'test'
+  ...
+# Subtest: browser and Node input material/fingerprint are exactly identical without HU substitutions
+ok 107 - browser and Node input material/fingerprint are exactly identical without HU substitutions
+  ---
+  duration_ms: 290.197348
+  type: 'test'
+  ...
+# Subtest: browser rejects absent and stale source/implementation identities before decoding any policy
+ok 108 - browser rejects absent and stale source/implementation identities before decoding any policy
+  ---
+  duration_ms: 95.297179
+  type: 'test'
+  ...
+# Subtest: compact transport preserves exact rules, integers and JSON key order
+ok 109 - compact transport preserves exact rules, integers and JSON key order
+  ---
+  duration_ms: 3.404775
+  type: 'test'
+  ...
+# Subtest: malformed dictionaries cannot silently truncate, extend or alter saved policy coverage
+ok 110 - malformed dictionaries cannot silently truncate, extend or alter saved policy coverage
+  ---
+  duration_ms: 1.530512
+  type: 'test'
+  ...
+# Subtest: delivery parts verify missing, repeated, reordered and corrupted payloads before policy use
+ok 111 - delivery parts verify missing, repeated, reordered and corrupted payloads before policy use
+  ---
+  duration_ms: 9.500169
+  type: 'test'
+  ...
+# Subtest: multi-part Unicode transport never splits surrogate pairs and rejects duplicate/oversized parts
+ok 112 - multi-part Unicode transport never splits surrogate pairs and rejects duplicate/oversized parts
+  ---
+  duration_ms: 3.788817
+  type: 'test'
+  ...
+# Subtest: draft transport inventory requires all sixteen sources and exact 112 bounded unique raw paths
+ok 113 - draft transport inventory requires all sixteen sources and exact 112 bounded unique raw paths
+  ---
+  duration_ms: 2.170985
+  type: 'test'
+  ...
+# Subtest: draft transport inventory rejects incomplete, duplicate, escaped, stale and approval-shaped inputs
+ok 114 - draft transport inventory rejects incomplete, duplicate, escaped, stale and approval-shaped inputs
+  ---
+  duration_ms: 13.524507
+  type: 'test'
+  ...
+# Subtest: mw3 catalog covers exact persisted one-caller source paths and orders the reach proxy
+ok 115 - mw3 catalog covers exact persisted one-caller source paths and orders the reach proxy
+  ---
+  duration_ms: 1.466565
+  type: 'test'
+  ...
+# Subtest: catalog detects malformed sources and incompatible joint support without substituting HU calls
+ok 116 - catalog detects malformed sources and incompatible joint support without substituting HU calls
+  ---
+  duration_ms: 8.167443
+  type: 'test'
+  ...
+# Subtest: three checks finish each street and preserve SB/BB/UTG/HJ/CO/BTN order
+ok 117 - three checks finish each street and preserve SB/BB/UTG/HJ/CO/BTN order
+  ---
+  duration_ms: 2.811691
+  type: 'test'
+  ...
+# Subtest: a bet requires both live responders; a caller can face a later raise again
+ok 118 - a bet requires both live responders; a caller can face a later raise again
+  ---
+  duration_ms: 0.439685
+  type: 'test'
+  ...
+# Subtest: folds preserve the three-player-origin policy roles on later streets
+ok 119 - folds preserve the three-player-origin policy roles on later streets
+  ---
+  duration_ms: 0.528167
+  type: 'test'
+  ...
+# Subtest: maximum two raises, legal low-SPR all-ins, no pending all-in actors
+ok 120 - maximum two raises, legal low-SPR all-ins, no pending all-in actors
+  ---
+  duration_ms: 0.534587
+  type: 'test'
+  ...
+# Subtest: only uncalled excess returns, folded matching contributions stay in pot
+ok 121 - only uncalled excess returns, folded matching contributions stay in pot
+  ---
+  duration_ms: 0.319987
+  type: 'test'
+  ...
+# Subtest: three-way tie splits post-rake pot and folded players never win
+ok 122 - three-way tie splits post-rake pot and folded players never win
+  ---
+  duration_ms: 0.500576
+  type: 'test'
+  ...
+# Subtest: invalid cards, uneven starting stacks, and premature street/settlement fail closed
+ok 123 - invalid cards, uneven starting stacks, and premature street/settlement fail closed
+  ---
+  duration_ms: 0.702697
+  type: 'test'
+  ...
+# Subtest: full flop state graph probes all legal branches with unambiguous nodes
+ok 124 - full flop state graph probes all legal branches with unambiguous nodes
+  ---
+  duration_ms: 67.688775
+  type: 'test'
+  ...
+# Subtest: replay rejects every trailing, skipped or unknown street instead of ignoring it
+ok 125 - replay rejects every trailing, skipped or unknown street instead of ignoring it
+  ---
+  duration_ms: 0.542319
+  type: 'test'
+  ...
+# Subtest: cent rounding never offers an impossible raise into a matched all-in and rejection is atomic
+ok 126 - cent rounding never offers an impossible raise into a matched all-in and rejection is atomic
+  ---
+  duration_ms: 0.55737
+  type: 'test'
+  ...
+# Subtest: policy context distinguishes live position, response commitment and exact price/SPR boundaries
+ok 127 - policy context distinguishes live position, response commitment and exact price/SPR boundaries
+  ---
+  duration_ms: 0.544711
+  type: 'test'
+  ...
+# Subtest: identical low-SPR wagers aggregate their saved policy probabilities as one observable action
+ok 128 - identical low-SPR wagers aggregate their saved policy probabilities as one observable action
+  ---
+  duration_ms: 1.847163
+  type: 'test'
+  ...
+# Subtest: source ordering uses exact joint card removal while excluding unmodeled forced-fold probabilities
+ok 129 - source ordering uses exact joint card removal while excluding unmodeled forced-fold probabilities
+  ---
+  duration_ms: 0.384113
+  type: 'test'
+  ...
+# Subtest: Agent preflop history mapping requires one exact open plus two calls
+ok 130 - Agent preflop history mapping requires one exact open plus two calls
+  ---
+  duration_ms: 0.421588
+  type: 'test'
+  ...
+# Subtest: saved-evidence validator accepts complete synthetic shape without generating policies or running simulation
+ok 131 - saved-evidence validator accepts complete synthetic shape without generating policies or running simulation
+  ---
+  duration_ms: 23.664089
+  type: 'test'
+  ...
+# Subtest: acceptance evidence keeps structural, outside-seat and opponent-identity abstractions explicit
+ok 132 - acceptance evidence keeps structural, outside-seat and opponent-identity abstractions explicit
+  ---
+  duration_ms: 13.337348
+  type: 'test'
+  ...
+# Subtest: all phases must have current source/recipe identities and full board/event coverage
+ok 133 - all phases must have current source/recipe identities and full board/event coverage
+  ---
+  duration_ms: 111.040311
+  type: 'test'
+  ...
+# Subtest: joint evidence enforces minimum samples, finite intervals and exact warning/accounting metadata
+ok 134 - joint evidence enforces minimum samples, finite intervals and exact warning/accounting metadata
+  ---
+  duration_ms: 107.166418
+  type: 'test'
+  ...
+# Subtest: zero-support entries retain the full event coverage and disclose their review limitation
+ok 135 - zero-support entries retain the full event coverage and disclose their review limitation
+  ---
+  duration_ms: 17.293724
+  type: 'test'
+  ...
+# Subtest: three-player hand explanations cover every tier in all four product languages without HU or EV claims
+ok 136 - three-player hand explanations cover every tier in all four product languages without HU or EV claims
+  ---
+  duration_ms: 1.255101
+  type: 'test'
+  ...
+# Subtest: paired-board private pair strength uses the unpaired side card, not the shared pair rank
+ok 137 - paired-board private pair strength uses the unpaired side card, not the shared pair rank
+  ---
+  duration_ms: 15.850953
+  type: 'test'
+  ...
+# Subtest: shared trips/two-pair have explicit private-kicker facts and are never blindly monster
+ok 138 - shared trips/two-pair have explicit private-kicker facts and are never blindly monster
+  ---
+  duration_ms: 3.747566
+  type: 'test'
+  ...
+# Subtest: playsBoard is checked for every category and publicly locked boards are exact
+ok 139 - playsBoard is checked for every category and publicly locked boards are exact
+  ---
+  duration_ms: 18.056651
+  type: 'test'
+  ...
+# Subtest: draws require private card participation and never exist on the river
+ok 140 - draws require private card participation and never exist on the river
+  ---
+  duration_ms: 6.98469
+  type: 'test'
+  ...
+# Subtest: public-max nuts never conflates locked boards or claims blocker-conditional hands are beatable
+ok 141 - public-max nuts never conflates locked boards or claims blocker-conditional hands are beatable
+  ---
+  duration_ms: 2.375139
+  type: 'test'
+  ...
+# Subtest: cached blocker-conditioned nuts exactly match full legal-opponent enumeration
+ok 142 - cached blocker-conditioned nuts exactly match full legal-opponent enumeration
+  ---
+  duration_ms: 5.497434
+  type: 'test'
+  ...
+# Subtest: certified future locks include private blocker locks without stealing shared or public boards
+ok 143 - certified future locks include private blocker locks without stealing shared or public boards
+  ---
+  duration_ms: 15.507311
+  type: 'test'
+  ...
+# Subtest: bounded board ranking cache eviction changes no current-nuts result
+ok 144 - bounded board ranking cache eviction changes no current-nuts result
+  ---
+  duration_ms: 1.465334
+  type: 'test'
+  ...
+# Subtest: future upper bound dominates every river and opposing pair in six turn fixtures
+ok 145 - future upper bound dominates every river and opposing pair in six turn fixtures
+  ---
+  duration_ms: 57.736499
+  type: 'test'
+  ...
+# Subtest: independent mw3 complete three-street traversal: initial pot 8BB
+ok 146 - independent mw3 complete three-street traversal: initial pot 8BB
+  ---
+  duration_ms: 486.24365
+  type: 'test'
+  ...
+# {"spot":"CO_open_BTN_call_BB_call","uniqueStates":31487,"actionEdges":34206,"terminalStates":17214,"nodes":117}
+# Subtest: independent mw3 complete three-street traversal: initial pot 8.5BB
+ok 147 - independent mw3 complete three-street traversal: initial pot 8.5BB
+  ---
+  duration_ms: 360.894311
+  type: 'test'
+  ...
+# {"spot":"CO_open_BTN_call_SB_call","uniqueStates":31148,"actionEdges":33951,"terminalStates":17067,"nodes":117}
+# Subtest: independent mw3 complete three-street traversal: initial pot 9BB
+ok 148 - independent mw3 complete three-street traversal: initial pot 9BB
+  ---
+  duration_ms: 291.979523
+  type: 'test'
+  ...
+# {"spot":"HJ_open_CO_call_BTN_call","uniqueStates":27578,"actionEdges":30243,"terminalStates":14979,"nodes":117}
+# Subtest: joint sampler rejects the full tuple rather than resampling only the later conflicting hand
+ok 149 - joint sampler rejects the full tuple rather than resampling only the later conflicting hand
+  ---
+  duration_ms: 36.343555
+  type: 'test'
+  ...
+# Subtest: joint fold diagnostics use sequential policies within each legal tuple, with fixed 20,000 minimum
+ok 150 - joint fold diagnostics use sequential policies within each legal tuple, with fixed 20,000 minimum
+  ---
+  duration_ms: 854.255469
+  type: 'test'
+  ...
+# Subtest: materializer requires explicit exact pilot, Astra model and source identity without generating
+ok 151 - materializer requires explicit exact pilot, Astra model and source identity without generating
+  ---
+  duration_ms: 1.156744
+  type: 'test'
+  ...
+# Subtest: every witnessed flop node/tier requires an exact own-policy fallback
+ok 152 - every witnessed flop node/tier requires an exact own-policy fallback
+  ---
+  duration_ms: 10.555191
+  type: 'test'
+  ...
+# Subtest: equal-priority overlapping shape/height overrides and impossible context selectors fail
+ok 153 - equal-priority overlapping shape/height overrides and impossible context selectors fail
+  ---
+  duration_ms: 6.412818
+  type: 'test'
+  ...
+# Subtest: saved frequencies including facing fold/call are returned unchanged and no HU fallback exists
+ok 154 - saved frequencies including facing fold/call are returned unchanged and no HU fallback exists
+  ---
+  duration_ms: 9.200231
+  type: 'test'
+  ...
+# Subtest: higher-priority exact contexts override only their own stored mix
+ok 155 - higher-priority exact contexts override only their own stored mix
+  ---
+  duration_ms: 2.924589
+  type: 'test'
+  ...
+# Subtest: artifact checks pin source, complete policy, implementation semantics and Astra provenance
+ok 156 - artifact checks pin source, complete policy, implementation semantics and Astra provenance
+  ---
+  duration_ms: 798.317753
+  type: 'test'
+  ...
+# (node:1313) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: SQL requires an exact separate acceptance receipt and immutable paired delivery identity
+ok 157 - SQL requires an exact separate acceptance receipt and immutable paired delivery identity
+  ---
+  duration_ms: 11.101045
+  type: 'test'
+  ...
+# Subtest: SQLite reference: immutable delivery SQL repeats exactly and preserves unrelated HU tables
+ok 158 - SQLite reference: immutable delivery SQL repeats exactly and preserves unrelated HU tables
+  ---
+  duration_ms: 4.263544
+  type: 'test'
+  ...
+# Subtest: SQLite reference: a conflicting immutable part fails the transaction without partial writes
+ok 159 - SQLite reference: a conflicting immutable part fails the transaction without partial writes
+  ---
+  duration_ms: 4.87767
+  type: 'test'
+  ...
+# Subtest: private kicker facts exclude unused hole cards and cards used as a pair
+ok 160 - private kicker facts exclude unused hole cards and cards used as a pair
+  ---
+  duration_ms: 14.910272
+  type: 'test'
+  ...
+# Subtest: a straight completion that only plays the stronger board is not a private draw
+ok 161 - a straight completion that only plays the stronger board is not a private draw
+  ---
+  duration_ms: 5.134793
+  type: 'test'
+  ...
+# Subtest: turn private draw facts match legal one-card best-five improvements on varied boards
+ok 162 - turn private draw facts match legal one-card best-five improvements on varied boards
+  ---
+  duration_ms: 148.493979
+  type: 'test'
+  ...
+# Subtest: classifier rejects invalid, repeated and out-of-range cards before reporting facts
+ok 163 - classifier rejects invalid, repeated and out-of-range cards before reporting facts
+  ---
+  duration_ms: 0.713794
+  type: 'test'
+  ...
+# Subtest: dictionary key orders require strings instead of coercible nested arrays
+ok 164 - dictionary key orders require strings instead of coercible nested arrays
+  ---
+  duration_ms: 2.600426
+  type: 'test'
+  ...
+# Subtest: manifest street identity is an exact ordered array rather than comma-coerced text
+ok 165 - manifest street identity is an exact ordered array rather than comma-coerced text
+  ---
+  duration_ms: 9.943779
+  type: 'test'
+  ...
+# Subtest: fractional percentages and shuffled part transport preserve authored JSON bytes
+ok 166 - fractional percentages and shuffled part transport preserve authored JSON bytes
+  ---
+  duration_ms: 2.575068
+  type: 'test'
+  ...
+# Subtest: range adapter shows exactly three participants and distinguishes current strategy from historical reach
+ok 167 - range adapter shows exactly three participants and distinguishes current strategy from historical reach
+  ---
+  duration_ms: 34.004699
+  type: 'test'
+  ...
+# Subtest: Agent adapter is repeatable, pauses on the human, resumes through river and settles all three seats
+ok 168 - Agent adapter is repeatable, pauses on the human, resumes through river and settles all three seats
+  ---
+  duration_ms: 13.649483
+  type: 'test'
+  ...
+# Subtest: simulation rejects lower sample counts and ambiguous board lists before executing
+ok 169 - simulation rejects lower sample counts and ambiguous board lists before executing
+  ---
+  duration_ms: 1.98592
+  type: 'test'
+  ...
+# Subtest: zero-data inventory with an empty authority is valid and writes nothing
+ok 170 - zero-data inventory with an empty authority is valid and writes nothing
+  ---
+  duration_ms: 23.816966
+  type: 'test'
+  ...
+# Subtest: every incomplete manifest/archive/receipt subset and orphan SQL fails closed
+ok 171 - every incomplete manifest/archive/receipt subset and orphan SQL fails closed
+  ---
+  duration_ms: 154.645917
+  type: 'test'
+  ...
+# Subtest: unknown MW3 inventory, file links and directory links are rejected
+ok 172 - unknown MW3 inventory, file links and directory links are rejected
+  ---
+  duration_ms: 52.056572
+  type: 'test'
+  ...
+# Subtest: complete inventory identifies exact paths without treating HU files as MW3
+ok 173 - complete inventory identifies exact paths without treating HU files as MW3
+  ---
+  duration_ms: 22.232514
+  type: 'test'
+  ...
+# Subtest: seven-file losslessness rejects corruption, extra files and self-approved preservation
+ok 174 - seven-file losslessness rejects corruption, extra files and self-approved preservation
+  ---
+  duration_ms: 29.257123
+  type: 'test'
+  ...
+# Subtest: synthetic receipt cannot substitute for a real source/input/evidence snapshot
+ok 175 - synthetic receipt cannot substitute for a real source/input/evidence snapshot
+  ---
+  duration_ms: 221.721264
+  type: 'test'
+  ...
+# Subtest: shared authority accepts only complete exact independently accepted saved pairs
+ok 176 - shared authority accepts only complete exact independently accepted saved pairs
+  ---
+  duration_ms: 9.005862
+  type: 'test'
+  ...
+# Subtest: build-registry parser never executes expressions or reads alternate authority
+ok 177 - build-registry parser never executes expressions or reads alternate authority
+  ---
+  duration_ms: 3.641537
+  type: 'test'
+  ...
+# Subtest: committed captures reject dirty/untracked bytes and require the exact materialized LFS pin
+ok 178 - committed captures reject dirty/untracked bytes and require the exact materialized LFS pin
+  ---
+  duration_ms: 47.34151
+  type: 'test'
+  ...
+# Subtest: global restoration preflight preserves collisions before any first-spot write; exact retries work
+ok 179 - global restoration preflight preserves collisions before any first-spot write; exact retries work
+  ---
+  duration_ms: 31.981368
+  type: 'test'
+  ...
+# Subtest: bounded capture rejects oversized, parent-linked and dangling final-linked files
+ok 180 - bounded capture rejects oversized, parent-linked and dangling final-linked files
+  ---
+  duration_ms: 11.439393
+  type: 'test'
+  ...
+# Subtest: CI fetches real provenance and runs inventory validation without a missing-receipt skip
+ok 181 - CI fetches real provenance and runs inventory validation without a missing-receipt skip
+  ---
+  duration_ms: 0.562037
+  type: 'test'
+  ...
+# Subtest: committed inventory cannot disappear into false zero-data, including later-of-two deletion
+ok 182 - committed inventory cannot disappear into false zero-data, including later-of-two deletion
+  ---
+  duration_ms: 94.958147
+  type: 'test'
+  ...
+# Subtest: current committed source drift cannot be concealed by dirty historical rollback
+ok 183 - current committed source drift cannot be concealed by dirty historical rollback
+  ---
+  duration_ms: 65.779345
+  type: 'test'
+  ...
+# Subtest: strict LFS archives reject identical direct blobs and noncanonical or mismatched pointers
+ok 184 - strict LFS archives reject identical direct blobs and noncanonical or mismatched pointers
+  ---
+  duration_ms: 100.893652
+  type: 'test'
+  ...
+# Subtest: a later distinct spot collision prevents every earlier-spot write
+ok 185 - a later distinct spot collision prevents every earlier-spot write
+  ---
+  duration_ms: 35.115374
+  type: 'test'
+  ...
+# Subtest: compact spot ledgers never retain policies/reports/tar/raw receipt/archive buffers
+ok 186 - compact spot ledgers never retain policies/reports/tar/raw receipt/archive buffers
+  ---
+  duration_ms: 8.668414
+  type: 'test'
+  ...
+# Subtest: contract cache release preserves returned witnesses and identical recomputation
+ok 187 - contract cache release preserves returned witnesses and identical recomputation
+  ---
+  duration_ms: 9.307762
+  type: 'test'
+  ...
+# Subtest: independent report validator is pure and accepts a complete synthetic accounting fixture
+ok 188 - independent report validator is pure and accepts a complete synthetic accounting fixture
+  ---
+  duration_ms: 2.414178
+  type: 'test'
+  ...
+# Subtest: report identities, minimum samples, complete ordered boards and deterministic seeds are required
+ok 189 - report identities, minimum samples, complete ordered boards and deterministic seeds are required
+  ---
+  duration_ms: 0.795315
+  type: 'test'
+  ...
+# Subtest: winner totals, terminal overlap semantics and integer counters are checked independently
+ok 190 - winner totals, terminal overlap semantics and integer counters are checked independently
+  ---
+  duration_ms: 0.499525
+  type: 'test'
+  ...
+# Subtest: street action bounds and whole-hand fold accounting reject impossible logs
+ok 191 - street action bounds and whole-hand fold accounting reject impossible logs
+  ---
+  duration_ms: 0.948383
+  type: 'test'
+  ...
+# Subtest: rake cap, per-seat bounds and aggregate chip conservation catch missing or manufactured chips
+ok 192 - rake cap, per-seat bounds and aggregate chip conservation catch missing or manufactured chips
+  ---
+  duration_ms: 0.512263
+  type: 'test'
+  ...
+# Subtest: synthetic adapter fixture reconstructs all historical and actual-current groups exactly
+ok 193 - synthetic adapter fixture reconstructs all historical and actual-current groups exactly
+  ---
+  duration_ms: 39.955949
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects missing review
+ok 194 - synthetic fixture rejects missing review
+  ---
+  duration_ms: 5.574157
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects pending review
+ok 195 - synthetic fixture rejects pending review
+  ---
+  duration_ms: 6.626716
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects wrong reviewer model
+ok 196 - synthetic fixture rejects wrong reviewer model
+  ---
+  duration_ms: 6.943738
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects missing reviewer task
+ok 197 - synthetic fixture rejects missing reviewer task
+  ---
+  duration_ms: 6.956758
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects unknown review field
+ok 198 - synthetic fixture rejects unknown review field
+  ---
+  duration_ms: 6.856799
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects wrong inventory digest
+ok 199 - synthetic fixture rejects wrong inventory digest
+  ---
+  duration_ms: 6.953203
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects wrong adapter digest
+ok 200 - synthetic fixture rejects wrong adapter digest
+  ---
+  duration_ms: 6.222314
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects missing pair
+ok 201 - synthetic fixture rejects missing pair
+  ---
+  duration_ms: 8.264397
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects extra pair
+ok 202 - synthetic fixture rejects extra pair
+  ---
+  duration_ms: 8.059972
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects duplicate pair
+ok 203 - synthetic fixture rejects duplicate pair
+  ---
+  duration_ms: 6.869318
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects reordered pairs
+ok 204 - synthetic fixture rejects reordered pairs
+  ---
+  duration_ms: 7.828928
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects reordered group
+ok 205 - synthetic fixture rejects reordered group
+  ---
+  duration_ms: 6.498275
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects extra group
+ok 206 - synthetic fixture rejects extra group
+  ---
+  duration_ms: 7.526387
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects wrong current path
+ok 207 - synthetic fixture rejects wrong current path
+  ---
+  duration_ms: 8.4071
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects wrong historical key
+ok 208 - synthetic fixture rejects wrong historical key
+  ---
+  duration_ms: 11.050078
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects changed current bytes
+ok 209 - synthetic fixture rejects changed current bytes
+  ---
+  duration_ms: 6.130927
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects missing current source
+ok 210 - synthetic fixture rejects missing current source
+  ---
+  duration_ms: 5.869808
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects wrong current hash
+ok 211 - synthetic fixture rejects wrong current hash
+  ---
+  duration_ms: 7.316414
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects wrong current length
+ok 212 - synthetic fixture rejects wrong current length
+  ---
+  duration_ms: 8.852673
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects changed historical source
+ok 213 - synthetic fixture rejects changed historical source
+  ---
+  duration_ms: 7.607348
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects wrong historical hash
+ok 214 - synthetic fixture rejects wrong historical hash
+  ---
+  duration_ms: 7.896558
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects wrong historical length
+ok 215 - synthetic fixture rejects wrong historical length
+  ---
+  duration_ms: 8.050137
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects wrong gate classification
+ok 216 - synthetic fixture rejects wrong gate classification
+  ---
+  duration_ms: 9.663412
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects gate numerical body drift
+ok 217 - synthetic fixture rejects gate numerical body drift
+  ---
+  duration_ms: 7.302713
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects mismatched reviewed pair
+ok 218 - synthetic fixture rejects mismatched reviewed pair
+  ---
+  duration_ms: 7.0323
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects missing gate amendment evidence
+ok 219 - synthetic fixture rejects missing gate amendment evidence
+  ---
+  duration_ms: 6.128474
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects wrong evidence path despite matching hash
+ok 220 - synthetic fixture rejects wrong evidence path despite matching hash
+  ---
+  duration_ms: 8.110297
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects changed evidence bytes
+ok 221 - synthetic fixture rejects changed evidence bytes
+  ---
+  duration_ms: 5.948105
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects missing evidence
+ok 222 - synthetic fixture rejects missing evidence
+  ---
+  duration_ms: 5.700996
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects adapter drift
+ok 223 - synthetic fixture rejects adapter drift
+  ---
+  duration_ms: 5.674637
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects malformed review JSON
+ok 224 - synthetic fixture rejects malformed review JSON
+  ---
+  duration_ms: 4.583491
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects malformed inventory JSON
+ok 225 - synthetic fixture rejects malformed inventory JSON
+  ---
+  duration_ms: 3.696749
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects symlink source
+ok 226 - synthetic fixture rejects symlink source
+  ---
+  duration_ms: 14.288345
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects oversized evidence
+ok 227 - synthetic fixture rejects oversized evidence
+  ---
+  duration_ms: 9.622831
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects unknown group future
+ok 228 - synthetic fixture rejects unknown group future
+  ---
+  duration_ms: 4.687446
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects unknown group __proto__
+ok 229 - synthetic fixture rejects unknown group __proto__
+  ---
+  duration_ms: 4.136234
+  type: 'test'
+  ...
+# Subtest: synthetic fixture rejects unknown group constructor
+ok 230 - synthetic fixture rejects unknown group constructor
+  ---
+  duration_ms: 5.027663
+  type: 'test'
+  ...
+# Subtest: a successful call cannot cache authority after current source changes
+ok 231 - a successful call cannot cache authority after current source changes
+  ---
+  duration_ms: 13.958683
+  type: 'test'
+  ...
+# Subtest: raw inventory cannot diverge from the captured imported inventory
+ok 232 - raw inventory cannot diverge from the captured imported inventory
+  ---
+  duration_ms: 10.927446
+  type: 'test'
+  ...
+# Subtest: compatibility receipt stays outside the reserved saved-delivery namespace
+ok 233 - compatibility receipt stays outside the reserved saved-delivery namespace
+  ---
+  duration_ms: 4.02599
+  type: 'test'
+  ...
+# Subtest: provenance binds existing regular Git blob bytes rather than arbitrary commit-shaped text
+ok 234 - provenance binds existing regular Git blob bytes rather than arbitrary commit-shaped text
+  ---
+  duration_ms: 52.787713
+  type: 'test'
+  ...
+# Subtest: a changed local source or tree link cannot be relabeled as the pinned regular source
+ok 235 - a changed local source or tree link cannot be relabeled as the pinned regular source
+  ---
+  duration_ms: 30.113049
+  type: 'test'
+  ...
+# Subtest: replace refs cannot rewrite a pinned source tree or blob view
+ok 236 - replace refs cannot rewrite a pinned source tree or blob view
+  ---
+  duration_ms: 36.909299
+  type: 'test'
+  ...
+1..236
+# tests 236
+# suites 0
+# pass 235
+# fail 0
+# cancelled 0
+# skipped 1
+# todo 0
+# duration_ms 61741.647739

@@ -1,7 +1,7 @@
 name: Verify three-player postflop contracts
 on:
   pull_request:
-    branches: [development, main]
+    branches: [development, main, codex/multiway-postflop-stage1]
     paths:
       - 'apps/frontend/scripts/postflop-ai/**'
       - 'apps/frontend/scripts/lib/**'
@@ -31,6 +31,7 @@ on:
       - 'apps/frontend/src/estimated/**'
       - 'apps/frontend/src/agent/**'
       - 'apps/frontend/tests/mw3-consumer-*.test.mjs'
+      - 'apps/frontend/tests/mw3-source-scope.test.mjs'
       - 'apps/frontend/tests/mw3-local-d1.test.mjs'
       - 'apps/frontend/tests/mw3-owned-process.test.mjs'
       - 'apps/frontend/tests/mw3-api-lifecycle.test.mjs'
@@ -95,7 +96,7 @@ jobs:
       - name: Test sequential saved-ledger memory boundary with synthetic bytes only
         run: node --expose-gc apps/frontend/tests/helpers/mw3-saved-memory-fixture.mjs
       - name: Test isolated three-player engine, classifier, codecs and adapters
-        run: node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.mjs apps/frontend/tests/mw3-consumer-*.test.mjs apps/frontend/tests/mw3-local-d1.test.mjs apps/frontend/tests/mw3-owned-process.test.mjs apps/frontend/tests/mw3-api-lifecycle.test.mjs apps/frontend/tests/mw3-wrangler-startup.test.mjs apps/frontend/tests/mw3-parent-boundary.test.mjs
+        run: node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.mjs apps/frontend/tests/mw3-consumer-*.test.mjs apps/frontend/tests/mw3-local-d1.test.mjs apps/frontend/tests/mw3-owned-process.test.mjs apps/frontend/tests/mw3-api-lifecycle.test.mjs apps/frontend/tests/mw3-wrangler-startup.test.mjs apps/frontend/tests/mw3-parent-boundary.test.mjs apps/frontend/tests/mw3-source-scope.test.mjs
       - name: Test unpublished, fail-closed three-player delivery boundary
         run: node --experimental-strip-types --test apps/backend/tests/mw3-*.test.mjs
       # This workflow never compiles/authors saved candidates, runs the pilot gate,
