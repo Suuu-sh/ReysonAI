@@ -44,6 +44,21 @@
         "--strictPort"
       ],
       "port": 5187
+    },
+    {
+      "name": "frontend-guest",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "apps/frontend",
+        "run",
+        "dev:guest",
+        "--",
+        "--port",
+        "5175",
+        "--strictPort"
+      ],
+      "port": 5175
     }
   ]
 }

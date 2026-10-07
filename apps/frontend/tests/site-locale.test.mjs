@@ -150,7 +150,9 @@ test("all site locales render a selected native-language control and localized p
       const copy = SITE_COPY[locale];
       assert.ok(html.includes(`aria-label="${copy.common.languageLabel}"`));
       assert.ok(html.includes(`<option value="${locale}" lang="${locale}" selected="">${name}</option>`));
-      assert.equal((html.match(/<option /g) ?? []).length, 4);
+      // Header control plus the phone menu copy; each lists the four locales.
+      assert.equal((html.match(/<select /g) ?? []).length, 2);
+      assert.equal((html.match(/<option /g) ?? []).length, 8);
       assert.ok(html.includes(escaped(copy.hero.lead)));
       assert.ok(html.includes(escaped(copy.how.whyNote)));
       assert.ok(html.includes(escaped(copy.preview.notGto)));

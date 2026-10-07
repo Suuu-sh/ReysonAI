@@ -37,13 +37,15 @@ test("format backlog marks only built formats as done", () => {
   assert.ok(formats.filter(format => !format.built).every(format => format.spots === 10));
 });
 
-test("postflop backlog lists flop and turn/river policies for every reachable spot", async () => {
+test("postflop backlog lists flop and turn/river policies for every reachable legacy pot spot", async () => {
   const { POSTFLOP_SPOTS } = await import("../scripts/postflop-ai/spots.ts");
   const catalog = postflopCatalog(POSTFLOP_SPOTS, {
     "btn-bb-srp-v1-policy.json": "a", "co-bb-srp-v1-policy.json": "a", "hj-bb-srp-v1-policy.json": "a", "utg-bb-srp-v1-policy.json": "b",
   }, ["BTN_open_BB_call"]);
   const byKey = Object.fromEntries(catalog.categories.map(c => [c.key, c]));
-  const reachable = POSTFLOP_SPOTS.filter(spot => spot.reachable).length;
+  // The four legacy backlog buckets intentionally cover the baseline pot kinds;
+  // newly added heads-up-after-multiway kinds are tracked separately.
+  const reachable = POSTFLOP_SPOTS.filter(spot => spot.reachable && ["srp", "3bp", "4bp", "limp"].includes(spot.kind)).length;
   assert.equal(byKey.flop_srp.total + byKey.flop_3bp.total + byKey.flop_4bp.total + byKey.flop_limp.total, reachable);
   // BTN is the authored original, UTG has its own policy, CO/HJ are copies of BTN's.
   assert.equal(byKey.flop_srp.done, 2);

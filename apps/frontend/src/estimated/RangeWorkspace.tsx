@@ -1,3 +1,5 @@
+import { chooseContinuationAction, continuationRootForSelection } from "./continuation-flow.ts";
+import { continuationSavedRange, useContinuationRanges, withContinuationAvailability } from "./continuation-ranges.ts";
 import type { CSSProperties, MouseEvent, ReactNode } from "react";
 import type { Profile } from "../profile.ts";
 import type { MatrixModel } from "../data.ts";
@@ -18,7 +20,7 @@ type LocalEstimateResponse = { error?: string; data?: LocalEstimate; pending?: b
 type InlineFact = { key?: string; label: string; unit?: string; value: number | null | undefined };
 type WorkspaceActionBlock = Partial<Omit<ActionBlock, "key" | "kind">> & { key: string; kind: string; cards?: string[]; street?: string; potBb?: number; pending?: boolean; flopIndex?: number; laterIndex?: number };
 type WorkspaceProps = { profile?: Profile | null; onEditProfile?: () => void; onSectionChange?: (section: string) => void };
-type ActionPathProps = RangeBuildState & { leading?: ReactNode; expanded?: boolean; blocks?: WorkspaceActionBlock[]; selectedRangeBlock?: string | null; onSelectRangeBlock?: (key: string | null) => void; onRewindActionBlock?: ((block: WorkspaceActionBlock) => void) | null; onEnterPostflop?: (() => void) | null; onOpenFlopCards?: () => void; onOpenLaterCard?: (street: string) => void; onFlopAction?: (block: WorkspaceActionBlock, action: string) => void; onLaterAction?: (block: WorkspaceActionBlock, action: string) => void; onAct?: (position: string, action: string) => void; onContinuationAction?: (action: string) => void; onColdAction?: (value: RangeUrlSelection["coldAction"]) => void; onSqueezeResponse?: (role: string, action: string) => void; onFourBet?: () => void; onAllIn?: () => void; onShoveResponse?: (action: string) => void };
+type ActionPathProps = RangeBuildState & { leading?: ReactNode; expanded?: boolean; blocks?: WorkspaceActionBlock[]; selectedRangeBlock?: string | null; onSelectRangeBlock?: (key: string | null) => void; onRewindActionBlock?: ((block: WorkspaceActionBlock) => void) | null; onEnterPostflop?: (() => void) | null; onOpenFlopCards?: () => void; onOpenLaterCard?: (street: string) => void; onFlopAction?: (block: WorkspaceActionBlock, action: string) => void; onLaterAction?: (block: WorkspaceActionBlock, action: string) => void; onAct?: (position: string, action: string) => void; onContinuationAction?: (action: string) => void; onColdAction?: (value: RangeUrlSelection["coldAction"]) => void; onBoundedContinuation?: (block: WorkspaceActionBlock, action: string) => void; onSqueezeResponse?: (role: string, action: string) => void; onFourBet?: () => void; onAllIn?: () => void; onShoveResponse?: (action: string) => void };
 import { accountStorage } from "../account/session.ts";
 import { dataset as publishedDataset } from "./datasets.ts";
 import { useMemo, useState, useEffect, useRef } from "react";
@@ -114,7 +116,7 @@ export function selectedHandForRangeEntry(entry: RangeEntry, selected: string) {
 }
 const legacySelectionStorageKey = "reysonai-legacy:estimated-selection:v1";
 function restoredSelection(initialRangeType: string): Omit<RangeUrlSelection, "coldAction"> & Partial<Pick<RangeUrlSelection, "coldAction">> {
-  const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, limpReraiseAction: null, limpFourBetAction: null, squeezeResponse: [], selected: "AKo" };
+  const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, limpReraiseAction: null, limpFourBetAction: null, squeezeResponse: [], continuationActions: [], coldAction: null, selected: "AKo" };
   if (typeof window === "undefined") return fallback;
   try {
     const stored = window.sessionStorage.getItem(selectionStorageKey) ?? window.sessionStorage.getItem(legacySelectionStorageKey);
@@ -135,7 +137,9 @@ function restoredSelection(initialRangeType: string): Omit<RangeUrlSelection, "c
     const squeezeActions = ["fold", "call", "raise"];
     const squeezeResponse = pendingRaise === "squeeze" && Array.isArray(saved.squeezeResponse) && saved.squeezeResponse.length <= 2 &&
       saved.squeezeResponse.every((action: string) => squeezeActions.includes(action)) && !(saved.squeezeResponse[0] === "raise" && saved.squeezeResponse.length > 1) ? saved.squeezeResponse : [];
-    return { ...fallback, ...saved, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
+    const coldAction = saved.rangeType === "three_bet" && saved.coldAction && positions.indexOf(saved.coldAction.position) > positions.indexOf(saved.hero) && ["call", "raise"].includes(saved.coldAction.action) ? saved.coldAction : null;
+    const continuationActions = Array.isArray(saved.continuationActions) && saved.continuationActions.length <= 24 && saved.continuationActions.every((action: string) => ["fold", "call", "four_bet", "all_in"].includes(action)) ? saved.continuationActions : [];
+    return { ...fallback, ...saved, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, coldAction, selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
   } catch { return fallback; }
 }
 
@@ -285,7 +289,7 @@ function ActionDropdown({ position, options, onSelect }: { position: string; opt
   </div>;
 }
 
-export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onEnterPostflop = null, onOpenFlopCards = () => {}, onOpenLaterCard = () => {}, onFlopAction = () => {}, onLaterAction = () => {}, onAct = () => {}, onContinuationAction = () => {}, onColdAction = () => {}, onSqueezeResponse = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }: ActionPathProps) {
+export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onEnterPostflop = null, onOpenFlopCards = () => {}, onOpenLaterCard = () => {}, onFlopAction = () => {}, onLaterAction = () => {}, onAct = () => {}, onContinuationAction = () => {}, onColdAction = () => {}, onBoundedContinuation = () => {}, onSqueezeResponse = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }: ActionPathProps) {
   const blocks: WorkspaceActionBlock[] = providedBlocks ?? buildActionBlocks(state);
   const seatsRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -296,6 +300,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
     if (block.kind === "flop" && block.street) onLaterAction(block, action);
     else if (block.kind === "flop") onFlopAction(block, action);
     else if (block.stage === "limp-bb" || block.stage === "limp-sb-response" || block.stage === "limp-bb-reraise" || block.stage === "limp-sb-four-bet") onAct(block.position!, action);
+    else if (block.continuationNode) onBoundedContinuation(block, action);
     else if (block.kind === "squeeze-response") onSqueezeResponse(block.role!, action);
     else if (block.kind === "seat") onAct(block.position!, action);
     else if (block.kind === "cold") onColdAction(action === "fold" ? null : { position: block.position!, action });
@@ -414,6 +419,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [coldAction, setColdAction] = useState(initialSelection.coldAction ?? null);
   const [limpReraiseAction, setLimpReraiseAction] = useState(initialSelection.limpReraiseAction);
   const [limpFourBetAction, setLimpFourBetAction] = useState(initialSelection.limpFourBetAction);
+  const [continuationActions, setContinuationActions] = useState<string[]>(initialSelection.continuationActions ?? []);
   const [squeezeResponse, setSqueezeResponse] = useState(initialSelection.squeezeResponse);
   const [format, setFormat] = useState<GameFormat>(() => {
     if (initialUrlState) return initialUrlState.format;
@@ -473,7 +479,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setCallers([]);
     setFoldedHero(false);
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setContinuationActions([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
     setLimpAction(null); setLimpResponseAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
@@ -488,7 +494,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setOpener(value);
     setRangeType("open");
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setContinuationActions([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
     setLimpAction(null); setLimpResponseAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
@@ -498,11 +504,12 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   }
 
   function actAt(position: string, action: string) {
+    setContinuationActions([]);
     setShowFlop(false); setFlopDialogOpen(false); setFlopActions([]);
     const index = positions.indexOf(position);
     const next = positions[index + 1];
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setContinuationActions([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
     setFocusedRange(null);
     const limpTransition = limpActionTransition({ rangeType, opener, hero, limpAction, limpResponseAction, limpReraiseAction, position, action });
     if (limpTransition) {
@@ -541,6 +548,12 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   }
 
   function rewindToActionBlock(block: WorkspaceActionBlock) {
+    if (block.continuationNode) {
+      setShowFlop(false); setFlopDialogOpen(false); setStreetCardDialog(null); setFlopActions([]); setTurnActions([]); setRiverActions([]);
+      setFocusedRange(null); setSelectedRangeBlock(current => current === block.key ? null : block.key);
+      const next = chooseContinuationAction({ rangeType, opener, hero, squeezeResponse, continuationActions }, block, null);
+      setSqueezeResponse(next.squeezeResponse); setContinuationActions(next.continuationActions); return;
+    }
     if (block.kind === "flop" && block.street === "turn") {
       setTurnActions(current => current.slice(0, block.laterIndex ?? 0));
       setRiverCard(""); setRiverActions([]);
@@ -558,6 +571,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       return;
     }
     setShowFlop(false); setFlopDialogOpen(false); setFlopActions([]);
+    setContinuationActions([]);
     const transition = rewindActionBlockTransition({ rangeType, opener, hero, callers, squeezeResponse, block: block as ActionBlock });
     setFocusedRange(null);
     setColdAction(null);
@@ -582,7 +596,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setShowFlop(false); setFlopDialogOpen(false); setFlopActions([]);
     setRangeType("four_bet");
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setContinuationActions([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
     setLimpAction(null); setLimpResponseAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
@@ -611,8 +625,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const currentRequestKey = useRef(requestKey);
   currentRequestKey.current = requestKey;
   useEffect(() => {
-    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, selected }));
-  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, selected]);
+    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, coldAction, selected }));
+  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, coldAction, selected]);
   useEffect(() => { setLocalEstimate(null); setLocalEstimateRequestKey(null); setLocalStatus(activeGenerationRequest ? "checking" : "idle"); setLocalError(""); }, [requestKey]);
   useEffect(() => {
     if (!activeGenerationRequest || !requestKey) return;
@@ -653,17 +667,18 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     const candidate = dataset && positions.indexOf(position) > positions.indexOf(opener) ? findSpot(dataset!, opener, position) : null;
     return candidate?.hands.find(row => row.three_bet_size_bb !== null)?.three_bet_size_bb ?? null;
   };
-  const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, raiseSizeFor };
-  const actionBlocks = buildActionBlocks(actionState);
+  const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, raiseSizeFor };
+  const continuationSources = useContinuationRanges(Boolean(continuationRootForSelection(actionState)));
+  const actionBlocks = withContinuationAvailability(buildActionBlocks(actionState), continuationSources);
   const flopContext = !currentError ? completedFlopContext({ actionBlocks, rangeType, opener, hero,
-    callers, foldedHero, isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format), limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }) : null;
+    callers, foldedHero, pendingRaise, squeezeResponse, isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format), limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }) : null;
   const flopActive = showFlop && Boolean(flopContext);
   useEffect(() => {
     // Wait for dependent street resets before serializing a changed upstream path.
     if (flopChanged || turnChanged) return;
     replaceRangeUrl(encodeRangeUrl({ rangeType, opener, hero, callers, foldedHero, pendingRaise,
       continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction,
-      limpFourBetAction, squeezeResponse, selected, format, tableProfile, showFlop: flopActive,
+      limpFourBetAction, squeezeResponse, continuationActions, selected, format, tableProfile, showFlop: flopActive,
       flopCards, flopActions, turnCard, turnActions, riverCard, riverActions }, actionBlocks));
   }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse,
     coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse,
@@ -730,6 +745,20 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     } else {
       addSaved("SB", "opening", openerSpot, openerModel, "SB · オープンレンジ（リンプ選択）");
       addSaved("BB", "limp_response", bbLimpSpot, bbLimpModel, "BB · SBリンプへの応答");
+    }
+  } else if (actionBlocks.some(block => block.continuationNode)) {
+    // At a terminal show every live participant's latest saved range (the squeezer's
+    // squeeze is a root block, not a continuation node); otherwise the decisions so far.
+    const live = actionBlocks.find(block => block.continuationTerminal)?.continuationTerminal?.live_participants;
+    const shown = live
+      ? live.map(seat => [...actionBlocks].reverse().find(block => block.position === seat && block.rangeRef && ["bounded", "saved-source"].includes(block.rangeRef.kind))).filter((block): block is ActionBlock => Boolean(block))
+      : actionBlocks.filter(block => block.rangeRef && (block.active || block.continuationNode && block.chosen !== "fold"));
+    for (const block of shown) {
+      const ref = block.rangeRef!;
+      if (!["bounded", "saved-source"].includes(ref.kind)) continue;
+      const saved = continuationSources && continuationSavedRange(ref, continuationSources);
+      if (saved) addSaved(ref.position, ref.kind, saved.spot, saved.model, `${ref.position} · 保存済み応答`);
+      else rangeEntries.push({ position: ref.position, kind: "pending", title: `${ref.position} · 保存済み応答`, statusTitle: "レンジ未収録" });
     }
   } else if (isComparison && pendingRaise === "squeeze" && savedMultiway) {
     const [caller] = callers;
@@ -799,6 +828,10 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       rangeBlockKey: block.key,
     });
 
+    if (ref.kind === "bounded" || ref.kind === "saved-source") {
+      const saved = continuationSources && continuationSavedRange(ref, continuationSources);
+      return saved ? withContext({ position: ref.position, kind: ref.kind, spot: saved.spot, model: saved.model, title: `${ref.position} · 保存済み応答` }) : missing("保存済み応答");
+    }
     if (ref.kind === "opening") {
       const savedSpot = openingSpotFor(ref.position);
       return savedSpot ? withContext({ position: ref.position, kind: "opening", spot: savedSpot, model: openingModelFor(savedSpot), title: openingTitle(ref.position) }) : missing("オープンレンジ");
@@ -906,8 +939,9 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           onAct={actAt}
           onFourBet={selectFourBet}
           onAllIn={() => { setContinuationAction(null); setShoveResponse(null); setColdAction(null); setFocusedRange(null); setSelectedRangeBlock(null); setPendingRaise("all_in"); }}
+          onBoundedContinuation={(block, action) => { setShowFlop(false); setFlopDialogOpen(false); setStreetCardDialog(null); setFlopActions([]); setTurnActions([]); setRiverActions([]); const next = chooseContinuationAction(actionState, block, action); setSqueezeResponse(next.squeezeResponse); setContinuationActions(next.continuationActions); setFocusedRange(null); setSelectedRangeBlock(null); }}
           onSqueezeResponse={(role, action) => { setFocusedRange(null); setSelectedRangeBlock(null); setSqueezeResponse(current => role === "opener" ? [action] : [current[0], action]); }}
-          onColdAction={action => { setFocusedRange(null); setSelectedRangeBlock(null); setContinuationAction(null); setColdAction(action); }}
+          onColdAction={action => { setFocusedRange(null); setSelectedRangeBlock(null); setContinuationAction(null); setContinuationActions([]); setColdAction(action); }}
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
         </Panel>

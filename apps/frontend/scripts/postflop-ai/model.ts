@@ -123,13 +123,23 @@ export function handTier(hole: readonly number[], board: readonly number[], scor
     throw new Error("Invalid private hand or board");
   }
   const category = Math.floor((score ?? evaluate([...hole, ...board])) / 16 ** 5);
-  if (category >= 2) return "monster";
-  if (category === 1) {
-    let top = -Infinity;
-    for (const card of board) top = Math.max(top, card >> 2);
-    const a = hole[0] >> 2, b = hole[1] >> 2;
-    if (a === b && a > top || a === top || b === top) return "strong";
+  if (category > 3) return "monster";
+  let top = -Infinity;
+  for (const card of board) top = Math.max(top, card >> 2);
+  const a = hole[0] >> 2, b = hole[1] >> 2;
+  // Pairs and trips count only when a private card is part of them: on a paired board a
+  // pocket pair is one pair (QQ on KK4 is medium, not two pair) and the board pair is nobody's.
+  const made = category === 0 ? [] : [...new Set([a, b])].filter(rank => {
+    let count = a === b && a === rank ? 2 : 1;
+    for (const card of board) if (card >> 2 === rank) count++;
+    return count >= 2;
+  });
+  const trips = made.some(rank => (a === b && a === rank ? 2 : 1) + board.filter(card => card >> 2 === rank).length >= 3);
+  if (trips || made.length >= 2) return "monster";
+  if (made.length === 1) {
+    const rank = made[0];
+    if (a === b && a > top || rank === top) return "strong";
   }
   if (hasDraw(hole, board)) return "draw";
-  return category === 1 ? "medium" : "air";
+  return made.length === 1 ? "medium" : "air";
 }

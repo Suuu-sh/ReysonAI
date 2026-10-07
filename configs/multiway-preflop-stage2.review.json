@@ -197,6 +197,70 @@
           "runtime_evidence": "Reported real SQLite DO six-account binding, persisted reconnect and no-request alarm 1 pass zero skips, inspected by reviewer without rerun"
         },
         "limitations": "Narrow source-only approval does not certify reviewer-authored kernel, final frontend, final-head CI, production six-person play, production CPU, or strategy/GTO/EV quality. Original Astra and full-suite limitations remain. Experimental human rating; AI penalty0; Free quotas remain."
+      },
+      {
+        "date": "2026-10-07",
+        "reviewer": "Claude main session",
+        "reviewed_base_commit": "0c3ff26",
+        "report": "apps/frontend/docs/specs/hu-after-multiway-source-renewal.md",
+        "scope": "Source-only review of the HU-after-multiway postflop spot catalogue and input builder imported by the reviewed source graph. No preflop data generated or edited; no renewal of original Astra strategy/data-quality approval.",
+        "blocking_findings": 0,
+        "before_content_sha256": "a00b6da1995d096951742cfa51d5adeedaca591f3ce87d0052f956d2f3e67410",
+        "after_content_sha256": "86513ed7f3bcc831738a07c1a6551b6831deeb465bc1b5da8dd4691366655b89",
+        "source_identity": {
+          "previous": 103,
+          "current": 105,
+          "modified": 6,
+          "added": 2,
+          "removed": 0,
+          "unchanged": 97
+        },
+        "verification": {
+          "artifact_and_archive_identity": "All 1888 artifact records and the archive unchanged",
+          "existing_spots": "Existing 45 HU spot fingerprints and seat rows unchanged (fixture test)"
+        },
+        "limitations": "Source-only. Postflop policies are AI estimates, not GTO."
+      },
+      {
+        "date": "2026-10-07",
+        "reviewer": "Claude main session",
+        "reviewed_base_commit": "d913c51",
+        "scope": "Source-only review of the postflop tier fix: pairs and trips count only when a private card makes them (pocket pair on a paired board is one pair), with matching prompt wording. No preflop data generated or edited; no renewal of original Astra strategy/data-quality approval.",
+        "blocking_findings": 0,
+        "before_content_sha256": "bd5accc1cfed297f6079d7f5b0488cde553e9bcf712c608b0ac90acf15744ecd",
+        "after_content_sha256": "083e54993028c4bd76303236ec720bcfa4795342137426e7ed490e0386bf2fa5",
+        "modified_sources": [
+          "apps/frontend/scripts/postflop-ai/defence.ts",
+          "apps/frontend/scripts/postflop-ai/generate.mjs",
+          "apps/frontend/scripts/postflop-ai/model.ts"
+        ],
+        "verification": {
+          "artifact_and_archive_identity": "Artifact records and archive unchanged"
+        },
+        "limitations": "Source-only. Postflop policies are AI estimates, not GTO."
+      },
+      {
+        "date": "2026-10-07",
+        "reviewer": "Claude main session",
+        "reviewed_base_commit": "a31cd4c",
+        "report": "apps/frontend/docs/specs/hu-after-multiway-source-renewal.md",
+        "scope": "Source-only review of HU-after-multiway follow-ups (DEFENCE_VERSION 7 for private-card tiers, dev:guest script, Saved response translation). No preflop data generated or edited; no renewal of original Astra strategy/data-quality approval.",
+        "blocking_findings": 0,
+        "before_content_sha256": "083e54993028c4bd76303236ec720bcfa4795342137426e7ed490e0386bf2fa5",
+        "after_content_sha256": "9c8673060e5c926f68ea8a8031bb5727fde11660594b2474dc0a2d0e81bba031",
+        "source_identity": {
+          "previous": 109,
+          "current": 109,
+          "modified": 3,
+          "added": 0,
+          "removed": 0,
+          "unchanged": 106
+        },
+        "verification": {
+          "artifact_and_archive_identity": "All 1888 artifact records and the archive unchanged",
+          "existing_spots": "Existing 45 HU spot fingerprints and seat rows unchanged (fixture test)"
+        },
+        "limitations": "Source-only. Postflop policies are AI estimates, not GTO."
       }
     ],
     "copy_amendments": [
@@ -9791,8 +9855,8 @@
     },
     {
       "path": "apps/frontend/package.json",
-      "bytes": 2433,
-      "sha256": "a37d38086aa3b687f2a6ebdc32c7dc7c54ab6a8ef86e70f01a7e43b6b6c39547"
+      "bytes": 2514,
+      "sha256": "7aa07c287011bd5c2f303680bc6f3fa07203ddb7692ed53b38b8de0907222696"
     },
     {
       "path": "apps/frontend/scripts/build-continuations.mjs",
@@ -9808,6 +9872,11 @@
       "path": "apps/frontend/scripts/ci/preflop.wrangler.jsonc",
       "bytes": 315,
       "sha256": "421ac89d8d170f2550d112265ae3ff30dc95a1d1258473e9f746edd727562a39"
+    },
+    {
+      "path": "apps/frontend/scripts/data/hu-after-multiway-spots.json",
+      "bytes": 299507,
+      "sha256": "eb9af7d0c68a7c40e3d53f0c0e901ade41903045b802d7927ed448780ce19854"
     },
     {
       "path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
@@ -9901,8 +9970,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
-      "bytes": 12798,
-      "sha256": "43d545144ef153979e8f15191dc4374be12a9591175aab77279f0c56da58942f"
+      "bytes": 13153,
+      "sha256": "41b53527e91d688bb4b14dd0953beb6937e630f186c47e489681a483737c81fa"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/cached-values.ts",
@@ -9911,8 +9980,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/defence.ts",
-      "bytes": 55699,
-      "sha256": "0ed20c4f20f41cc3999a7e9efdb1935eee8c1d07931ba99c17c34f0343d536ba"
+      "bytes": 55596,
+      "sha256": "96c51fecb6c37f88d0c5348ed538168cb72cbe47d2b46c461c5a6b37234eb450"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/engine.ts",
@@ -9961,13 +10030,13 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
-      "bytes": 22700,
-      "sha256": "de51ecca43ae46f371ae180d3ce0f8dd4b67c72eea29da5075ead3ef5cb72e8b"
+      "bytes": 23960,
+      "sha256": "b5fcb8166ba9af9978eadfc9cc2737b38d524eb5ab367e647227293db38422ef"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
-      "bytes": 12372,
-      "sha256": "f05906d3c3f0589cbe2456727a98a66cb2ef548a48609041eb889168525a04cb"
+      "bytes": 12670,
+      "sha256": "317f491ac6b7a0cbcda3decc68513c375789f9223115606df48869200d13e5f0"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/later-policy.ts",
@@ -9981,8 +10050,13 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/model.ts",
-      "bytes": 7589,
-      "sha256": "fcbf13b6f8b1c3f72b8a81dcc626de89abc4c385d840163feb4bd78ca631732f"
+      "bytes": 8178,
+      "sha256": "bbc03f84174b2fa82caa6031ac7ba8d1a1a1e974f7a3098e28664afa6612e84b"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/multiway-inputs.mjs",
+      "bytes": 4246,
+      "sha256": "5cd8c946a63a16d8fbe8ed971991f421a5709a4edace6d9885ff086f3c43c87d"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/policy.ts",
@@ -10006,13 +10080,13 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/spots-core.ts",
-      "bytes": 11378,
-      "sha256": "762416428a128fd5b35b7ac8129e788c7291336ef763ce9938376ca4f0f29f7c"
+      "bytes": 12425,
+      "sha256": "3b210da79ea3bf179fdf81832feb87f88e74eacaa02f3224452177fba09ea834"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/spots.ts",
-      "bytes": 660,
-      "sha256": "011825689bb963b2b47df01f3611be74f1c8b19e2f12abedac81e58b09d2eb5a"
+      "bytes": 933,
+      "sha256": "14834a1075205411e00ba42c30f9914c343c57c504add92c58f0711cedaeda70"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/tree.ts",
@@ -10021,8 +10095,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/types.ts",
-      "bytes": 3417,
-      "sha256": "58681e547a478c539b3105475b29bdd5ca085da55c248b6913bda90c44abe309"
+      "bytes": 4416,
+      "sha256": "a628d76c9c08e1a9903ba205c8ecc134450b9fd5f31683991d7428901f319f78"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/views.ts",
@@ -10236,8 +10310,8 @@
     },
     {
       "path": "apps/frontend/src/locales/product-dictionary.json",
-      "bytes": 43279,
-      "sha256": "caf1cb5a84d2f20782cb4f02a011838369c30112e75bb819e0d7823121ccaeaf"
+      "bytes": 43357,
+      "sha256": "e670898fc830f5531b9ac93a096509461043ab7f3c67c6ce95987f0c4fbe41ab"
     },
     {
       "path": "apps/frontend/src/locales/product-direct.json",
@@ -10280,7 +10354,7 @@
       "sha256": "d828004fd7c382e565e66094e43c8b2917ed5ff3444b0c12c2e691499211ace7"
     }
   ],
-  "content_sha256": "bd5accc1cfed297f6079d7f5b0488cde553e9bcf712c608b0ac90acf15744ecd",
+  "content_sha256": "9c8673060e5c926f68ea8a8031bb5727fde11660594b2474dc0a2d0e81bba031",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
