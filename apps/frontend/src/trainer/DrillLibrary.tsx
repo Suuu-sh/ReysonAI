@@ -241,15 +241,6 @@ function RankedCard({ rank, busy, draft, onStart, onOpenRanking }: { rank: RankS
       <button type="button" className="mode-secondary" onClick={onOpenRanking}><Trophy size={15} />{localized("Leaderboard", "ランキング")}</button>
     </>}
     foot={<RankLadder rating={rank.rating} />}>
-    <div className="ranked-stats">
-      <div><span>{localized("Rating", "レート")}</span><strong>{rank.rating.toLocaleString()}</strong></div>
-      <div><span>{localized("Best", "自己最高")}</span><strong>{rank.peak.toLocaleString()}</strong></div>
-      <div className="ranked-next">
-        <span>{tier.next ? localized(`To ${localized((TIER_EN as Readonly<Record<string, string>>)[tier.next.name], tier.next.name)}`, `${tier.next.name}まで`) : localized("Top rank", "最高ランク")}</span>
-        <strong>{tier.next ? localized(`${tier.next.min - rank.rating} pts`, `あと${tier.next.min - rank.rating}`) : "—"}</strong>
-        <span className="ranked-bar" aria-hidden="true"><b style={{ width: `${Math.round(tier.progress * 100)}%` } as CSSProperties} /></span>
-      </div>
-    </div>
   </ModeBlock>;
 }
 

@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
 const read = path => readFileSync(new URL(path, import.meta.url), "utf8");
-test("all brand surfaces use the approved abstract symbol, not a suit icon", () => {
+test("all brand surfaces use the approved mascot mark, not a suit icon", () => {
   for (const path of ["../src/components/layout.tsx", "../src/components/Onboarding.tsx", "../src/site/ServiceSite.tsx"]) {
     const source = read(path);
     assert.match(source, /BrandIcon/);

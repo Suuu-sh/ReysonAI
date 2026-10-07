@@ -2,10 +2,12 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { FASTFOLD_DATASETS } from '../src/fastfold.ts';
+import { matchesDecisionFields, matchesPriorReviewedSource } from './lib/fastfold-readiness-sources.mjs';
 const args=process.argv.slice(2);
 const api=args.find(x=>x.startsWith('--api='))?.slice(6)??'https://api.reysonai.com';
 const origin=args.find(x=>x.startsWith('--origin='))?.slice(9)??'https://app.reysonai.com';
 const configured=args.includes('--configured');
+const predeployCompatible=args.includes('--predeploy-compatible');
 const config=readFileSync(new URL('../wrangler.jsonc',import.meta.url),'utf8');
 const enabled=configured?/"FASTFOLD_ENABLED"\s*:\s*"true"/.test(config):true;
 const fetchJson=async(path,options={})=>{
@@ -26,17 +28,26 @@ if(!enabled){
   // Match the exact reviewed publisher delivery bytes (publish-d1.mjs preflopDatasets), not pretty source whitespace.
   const expected=Buffer.from(JSON.stringify(JSON.parse(readFileSync(new URL(`../../frontend/src/estimated/${name}.json`,import.meta.url),'utf8'))));
   const expectedHash=createHash('sha256').update(expected).digest('hex');
-  if(catalog?.[name]?.hash!==expectedHash||catalog[name].bytes!==expected.length)throw Error(`Published source differs from exact reviewed checkout: ${name}`);
+  const published=catalog?.[name];
+  if(!published||!/^[0-9a-f]{64}$/.test(published.hash)||!Number.isSafeInteger(published.bytes)||published.bytes<1)throw Error(`Invalid published dataset metadata: ${name}`);
+  const exactSource=published.hash===expectedHash&&published.bytes===expected.length;
+  if(!predeployCompatible&&!exactSource)throw Error(`Published source differs from exact reviewed checkout: ${name}`);
+  if(predeployCompatible&&!exactSource&&!matchesPriorReviewedSource(name,published))throw Error(`Published source is not an approved compatible previous version: ${name}`);
   const response=await fetch(api+'/v1/preflop/datasets/'+encodeURIComponent(name),{signal:AbortSignal.timeout(15000)});
   if(!response.ok)throw Error(`Published parts incomplete: ${name}`);
   const text=await response.text();
-  if(createHash('sha256').update(text).digest('hex')!==expectedHash||Buffer.byteLength(text)!==expected.length)throw Error(`Published content/hash differs: ${name}`);
+  const bodyHash=createHash('sha256').update(text).digest('hex');
+  if(bodyHash!==published.hash||Buffer.byteLength(text)!==published.bytes)throw Error(`Published content/hash differs from its catalog: ${name}`);
   const value=JSON.parse(text);
   if(!Array.isArray(value.spots)||!value.spots.length||value.spots.some(s=>!s.id||s.hands?.length!==169||new Set(s.hands.map(r=>r.hand)).size!==169))throw Error(`Malformed published source: ${name}`);
+  if(bodyHash!==expectedHash||Buffer.byteLength(text)!==expected.length){
+   if(!predeployCompatible)throw Error(`Published content/hash differs from exact reviewed checkout: ${name}`);
+   if(!matchesPriorReviewedSource(name,published)||bodyHash!==published.hash||!matchesDecisionFields(value,JSON.parse(expected)))throw Error(`Predeploy source differs from the reviewed five-bet reason-copy version: ${name}`);
+  }
  }
  const preflight=await fetch(api+'/v1/fastfold/action',{method:'OPTIONS',headers:{Origin:origin,'Access-Control-Request-Method':'POST','Access-Control-Request-Headers':'content-type'},signal:AbortSignal.timeout(15000)});
  if(preflight.status!==204||preflight.headers.get('access-control-allow-origin')!==origin||preflight.headers.get('access-control-allow-credentials')!=='true'||!preflight.headers.get('access-control-allow-methods')?.includes('POST')||!preflight.headers.get('access-control-allow-headers')?.includes('content-type'))throw Error('FastFold browser action preflight failed');
  const anonymous=await fetchJson('/v1/fastfold/profile');
  if(anonymous.response.status!==401||anonymous.body.error!=='sign_in_required')throw Error('FastFold authentication boundary failed');
- console.log('FastFold API/schema, 38 exact published source hashes, CORS and anonymous rejection verified. Real signed-in match and CPU metrics are separate launch checks.');
+ console.log(predeployCompatible?'FastFold API/schema, 38 intact datasets, exact decision fields and the single approved five-bet prior payload, CORS and anonymous rejection verified; exact reviewed source identity is deferred until after import.':'FastFold API/schema, 38 exact published source hashes, CORS and anonymous rejection verified. Real signed-in match and CPU metrics are separate launch checks.');
 }
