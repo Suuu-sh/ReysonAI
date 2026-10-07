@@ -12,7 +12,7 @@ export const zh: SiteCopy = {
     { label: "价格", href: "#pricing" },
   ],
   hero: { title1: "Don't just play.", title2: "Understand the reason.", lead: "ReysonAI告诉你每手牌该怎么打，并用易懂的语言解释原因。理解了原因，坐到牌桌前也能记起该如何决策。", primary: "打开应用", secondary: "了解使用方法", note: "免费预览 · 无需账户 · 6人桌现金局，100BB" },
-  preview: { simpleMode: "简洁", matrixLabel: "13×13起手牌图表", scrollLabel: "图表，小屏幕上可横向滚动", selectedHand: "当前手牌", suited: "同花", offsuit: "非同花", pair: "口袋对子", frequencyLabel: "行动频率", why: "原因", k7s: "K7s是同花牌，翻牌后也有可玩性。在这份BTN开池估算中，它始终加注。", other: (spot: string, hand: string, action: string, value: number) => `在已保存的${spot}范围中，${hand}以${value}%的频率${action}。打开应用可查看这手牌的完整解释。`, explore: "在应用中查看此范围", saved: "已保存的AI估算", notGto: "并非GTO解", spotOpening: "BTN开池", spotResponse: "BB应对", actionPast: { raise: "加注", threeBet: "3bet", call: "跟注", fold: "弃牌" }, pauseTour: "暂停手牌自动演示", resumeTour: "继续手牌自动演示", touring: "正在自动演示手牌。点击任意格子即可自行操作。", manual: "点击任意手牌查看详情。" },
+  preview: { bet: "下注", check: "过牌", flop: "翻牌", unreachable: "此行动路径无法到达；无推荐", simpleMode: "简洁", matrixLabel: "13×13起手牌图表", scrollLabel: "图表，小屏幕上可横向滚动", selectedHand: "当前手牌", suited: "同花", offsuit: "非同花", pair: "口袋对子", frequencyLabel: "行动频率", why: "原因", k7s: "K7s是同花牌，翻牌后也有可玩性。在这份BTN开池估算中，它始终加注。", other: (spot: string, hand: string, action: string, value: number) => `在已保存的${spot}范围中，${hand}以${value}%的频率${action}。打开应用可查看这手牌的完整解释。`, explore: "在应用中查看此范围", saved: "已保存的AI估算", notGto: "并非GTO解", spotOpening: "BTN开池", spotResponse: "BB应对", actionPast: { raise: "加注", threeBet: "3bet", call: "跟注", fold: "弃牌" }, pauseTour: "暂停手牌自动演示", resumeTour: "继续手牌自动演示", touring: "正在自动演示手牌。点击任意格子即可自行操作。", manual: "点击任意手牌查看详情。" },
   how: {
     title1: "从局面到原因，", title2: "只需三步。",
     steps: [
@@ -37,10 +37,11 @@ export const zh: SiteCopy = {
     note: "想研究自定义博弈树的精确求解结果？基于求解器的应用更适合这一用途。",
   },
   ranked: {
-    status: "即将推出", title1: "排位对战，", title2: "靠实力赢得评分。",
-    description: "每个人在相同条件下挑战20题。决策明确的手牌几乎不影响评分，混合策略手牌的影响最大。从青铜一路升至大师。",
-    points: ["涵盖所有局面的20题，标准难度", "每天最多3场排位赛", "Elo式评分：难度越高的手牌权重越大", "每周及总排行榜"],
-    sample: "示例", rank: "段位", rating: "评分", peak: "最高评分", toNext: (points: number, tier: string) => `距离${tier}还差${points}分`, today: "今日剩余2 / 3场", lastMatch: "上一场", matchLine: (correct: number, total: number) => `${total}题答对${correct}题 · 正确率${Math.round(correct / total * 100)}%`,
+    status: "需认证登录及服务器就绪", title1: "真人排位，", title2: "实战手牌，不是答题。",
+    description: "与六名认证玩家进行真人FastFold β对战。实战后查看服务器记录的评分和结果。等待时可练习不计分的Agent对局。",
+    points: ["六人全部确认后才发牌", "逐手连续对战", "查看评分、计分手数、净收益和bb/100", "仅真人对局结果 · 不应用AI修正"],
+    sample: "示例 · 非实时数据", rank: "段位", mode: "真人FastFold β", rating: "当前评分", hands: "计分手数", toNext: (points: number, tier: string) => `距离${tier}还差${points}分`,
+    rewards: "计划提供段位奖励，内容及发放条件将另行公布。", note: "数字仅为示例。需认证登录及服务器就绪；AI比较仅作影子分析，不应用扣分。", legend: "传奇", legendRule: (count: number) => `大师前${count}名`,
     tiers: ["青铜", "白银", "黄金", "铂金", "钻石", "大师"],
   },
   agent: {

@@ -14,7 +14,7 @@ export const en = {
     { label: "Pricing", href: "#pricing" },
   ],
   hero: { title1: "Don't just play.", title2: "Understand the reason.", lead: "ReysonAI shows what to do with every hand, and explains why in plain words. When you know the reason, the decision is still there when you sit down at the table.", primary: "Open the app", secondary: "See how it works", note: "Free preview · No account needed · 6-max cash, 100BB" },
-  preview: { simpleMode: "Simple", matrixLabel: "13 by 13 starting-hand chart", scrollLabel: "chart, scrolls sideways on small screens", selectedHand: "Selected hand", suited: "Suited", offsuit: "Offsuit", pair: "Pair", frequencyLabel: "Action frequencies", why: "Why", k7s: "K7s is suited and playable after the flop. In this BTN opening estimate, it is raised every time.", other: (spot: string, hand: string, action: string, value: number) => `In this saved ${spot} range, ${hand} is ${action} ${value}% of the time. Open the app for the full hand-level explanation.`, explore: "Explore it in the app", saved: "Saved AI estimate", notGto: "Not a GTO solution", spotOpening: "BTN opening", spotResponse: "BB response", actionPast: { raise: "raised", threeBet: "3bet", call: "called", fold: "folded" }, pauseTour: "Pause hand tour", resumeTour: "Resume hand tour", touring: "Touring hands. Click any cell to take over.", manual: "Click any hand to see it." },
+  preview: { bet: "Bet", check: "Check", flop: "Flop", unreachable: "Unreachable in this action path; no recommendation", simpleMode: "Simple", matrixLabel: "13 by 13 starting-hand chart", scrollLabel: "chart, scrolls sideways on small screens", selectedHand: "Selected hand", suited: "Suited", offsuit: "Offsuit", pair: "Pair", frequencyLabel: "Action frequencies", why: "Why", k7s: "K7s is suited and playable after the flop. In this BTN opening estimate, it is raised every time.", other: (spot: string, hand: string, action: string, value: number) => `In this saved ${spot} range, ${hand} is ${action} ${value}% of the time. Open the app for the full hand-level explanation.`, explore: "Explore it in the app", saved: "Saved AI estimate", notGto: "Not a GTO solution", spotOpening: "BTN opening", spotResponse: "BB response", actionPast: { raise: "raised", threeBet: "3bet", call: "called", fold: "folded" }, pauseTour: "Pause hand tour", resumeTour: "Resume hand tour", touring: "Touring hands. Click any cell to take over.", manual: "Click any hand to see it." },
   how: {
     title1: "From spot to reason,", title2: "in three moves.",
     steps: [
@@ -39,10 +39,11 @@ export const en = {
     note: "Studying exact solver output for custom game trees? A solver-based app is the better tool for that.",
   },
   ranked: {
-    status: "Coming soon", title1: "Ranked matches.", title2: "A rating you earn.",
-    description: "Twenty questions under the same conditions for everyone. Clear-cut hands barely move your rating; mixed hands move it most. Climb from Bronze to Master.",
-    points: ["20 questions across every spot, standard difficulty", "Three ranked matches a day", "Elo-style rating: harder hands count for more", "Weekly and all-time leaderboard"],
-    sample: "Sample", rank: "Rank", rating: "Rating", peak: "Peak", toNext: (points: number, tier: string) => `${points} to ${tier}`, today: "2 / 3 matches left today", lastMatch: "Last match", matchLine: (correct: number, total: number) => `${correct} / ${total} correct · ${Math.round(correct / total * 100)}% accuracy`,
+    status: "Sign-in · server availability required", title1: "Human ranked.", title2: "Real hands, not quizzes.",
+    description: "Join Human FastFold β with six verified players. Play actual hands, then follow your server-recorded rating and results. Practice against unrated Agents while waiting.",
+    points: ["Six people accept before cards are dealt", "Continuous hand-by-hand gameplay", "Rating, rated hands, net result and bb/100", "Human results only · no applied AI correction"],
+    sample: "Sample · not live", rank: "Rank", mode: "Human FastFold β", rating: "Current rating", hands: "Rated hands", toNext: (points: number, tier: string) => `${points} to ${tier}`,
+    rewards: "Rank-based rewards are planned. Details and distribution conditions will be announced later.", note: "Illustrative numbers only. Verified sign-in and server readiness are required; AI comparison is shadow-only with no applied penalty.", legend: "Legend", legendRule: (count: number) => `Top ${count} Masters`,
     tiers: ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master"],
   },
   agent: {
