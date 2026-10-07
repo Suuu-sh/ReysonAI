@@ -250,7 +250,11 @@ test("the hero key describes only used action colors, not the situation", async 
   const preflop = renderToStaticMarkup(createElement(HeroActionLegend, { range: opening }));
   assert.match(preflop, /Raise/);
   assert.match(preflop, /Fold/);
-  assert.doesNotMatch(preflop, /Call|5bet|BTN_open/);
+  assert.doesNotMatch(preflop, /Call|allin|5bet|BTN_open/);
+  const allinRange = { ...preview.tour.find(range => range.stage === "fourBet"), actions: ["all_in", "call", "fold"] };
+  const allin = renderToStaticMarkup(createElement(HeroActionLegend, { range: allinRange }));
+  assert.match(allin, />allin<\/span>/);
+  assert.doesNotMatch(allin, /5bet|100BB/);
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
   assert.doesNotMatch(source, /PostflopRangeContext|site-range-board/);
 });
