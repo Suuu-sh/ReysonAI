@@ -736,3 +736,12 @@ Verification:
 ## 2026-10-07 — Equal preflop/postflop tour exposure
 - Shared desktop/mobile selector now draws preflop/postflop category50:50, then uniformly among that category's saved tables excluding the current table. Data remains50preflop/12postflop, initialBTN and1000ms/visuals unchanged.50:50 is per-draw probability, not forced alternation/exact short-run counts.
 - Targeted category-boundary/repeat-exclusion/tour/dataset tests3/build/diffcheck passed. No merge/deploy.
+
+## 2026-10-07 — Hero mobile pattern for every non-two-column width
+- Fresh branch after PR109/110 merged, based on latest main/development. Align hero-only responsive switch/CSS/cover mask query with existing two-column boundary960px:560/768/960 use the same full-width square dim decorative range, centered copy, hidden long description and question-cover mask;961+ retains right-hand two-column range.
+- Other-section compact rules remain≤560; no global tablet compaction.62savedranges/1000ms/50:50, reduced-motion/manual/offscreen boundaries retained. Taller squares on short landscape tablets may extend naturally; no clipping to force fit.
+- Targeted hero/boundary SSR tests5/build/diffcheck passed. No new rendered tablet/scroll measurement at commit time. No merge/deploy authorization for this new change.
+
+## 2026-10-07 — Restore moderate tablet right-column hero
+- User found≤960 full-width square too large. Hero/Explorer/cover query now≤720;721–960 uses compact two-column layout with a50vw right square (384px at768), left typography/padding/margins scaled and no viewport min-height. All copy stays normal flow without clipping;>960 original layout unchanged. Other-section≤560 compact rules untouched;62ranges/1000ms/50:50 retained.
+- Targeted hero/boundarySSR tests5/build/diffcheck passed, covering560/720/721/768/960/961. No new rendered geometry measurement at commit time; exceptionally long locale text can grow naturally rather than clip. No merge/deploy.
