@@ -603,8 +603,8 @@
   .site-hero-secondary { font-size: 13px; gap: 6px; }
   .site-hero-note { font-size: 11px; }
   /* Phones use the chart as a decorative backdrop, never an obscured control. */
-  .site-hero-main { position: relative; isolation: isolate; display: grid; place-items: center; min-height: calc(100svh - 64px); padding-block: 40px; }
-  .site-hero-copy { display: block; align-self: center; width: 100%; max-width: 440px; padding: 0 8px; text-align: center; }
+  .site-wrap.site-hero-main { position: relative; isolation: isolate; display: grid; place-items: center; width: 100%; margin: 0; min-height: 0; aspect-ratio: 1; padding: 0; gap: 0; }
+  .site-hero-copy { display: block; align-self: center; width: 100%; max-width: 440px; padding: 20px 24px; text-align: center; }
   .site-hero-range { position: absolute; top: 50%; left: 0; z-index: -1; width: 100%; max-width: none; transform: translateY(-50%); opacity: .18; pointer-events: none; }
   .site-hero-chart-frame, .site-hero-range .site-matrix-scroll { height: auto; }
   .site-hero-range .site-matrix-scroll { overflow: hidden; }
@@ -613,12 +613,14 @@
   .has-motion .site-hero-range .site-cell { animation: none; }
   .site-hero-range .site-legend { display: none; }
   .site-hero h1 { margin: 0; padding: 0; text-shadow: 0 2px 16px #09090b; }
-  .site-hero-opening { color: #a8a8b3; font-size: clamp(22px, 6.7vw, 30px); }
-  .site-hero h1 .site-line + .site-line { margin-top: 12px; font-size: clamp(44px, 12.5vw, 64px); line-height: 1.02; text-wrap: balance; }
+  .site-hero-opening { color: #a8a8b3; font-size: clamp(18px, 4.8vw, 26px); }
+  .site-hero h1 .site-line + .site-line { margin-top: 6px; font-size: clamp(30px, 8.6vw, 48px); line-height: 1.05; text-wrap: balance; }
   .site-hero h1 .site-hero-mark { color: var(--pink-bright); white-space: normal; }
-  .site-hero-lead, .site-ja .site-hero-lead { margin-top: 26px; color: var(--ink); }
-  .site-hero-actions { justify-content: center; margin-top: 24px; }
-  .site-hero-note { margin-top: 18px; color: #a8a8b3; }
+  .site-hero-lead, .site-ja .site-hero-lead { margin-top: 12px; color: var(--ink); font-size: 14px; line-height: 1.45; }
+  .site-hero-actions { justify-content: center; gap: 8px 16px; margin-top: 14px; }
+  .site-hero-actions .site-button { min-height: 44px; padding-inline: 14px; font-size: 13px; }
+  .site-hero-secondary { font-size: 12px; }
+  .site-hero-note { margin-top: 10px; color: #a8a8b3; font-size: 10px; line-height: 1.4; }
   .site-hand { gap: 20px; }
   .site-hero-deal { padding-inline: 4px; }
   .site-hero-deal .site-hand-cards { gap: 9px; }

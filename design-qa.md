@@ -547,3 +547,8 @@ Verification:
 - Disable chart/cell entrance animations on the mobile backdrop so animation fill modes cannot override its .18 opacity or cause a diagonal reveal. Restore copy align-self:center instead of desktop end-alignment.
 - Parent visual QA: 390×844 English centered composition/square backdrop; 375×667 Japanese text/CTAs/free note fit with square backdrop; 1280×720 desktop preserves separate copy/chart. Desktop clicking and physical Safari were not interactively verified. Media restoration inspected in code.
 - New decorative/square guard test and hostname SSR regression passed; production build and diff check passed.
+
+## 2026-10-07 — Flush square phone hero
+- Remove viewport-height spacing and the 16px outer inset on phones. The hero main is full-width with aspect-ratio 1, no external padding/margin, and compact centered typography/spacing. All copy still overlays the decorative square; CTA target remains 44px and no text clipping is introduced.
+- Parent visual QA: 390px English and 375px Japanese show all copy inside the full-width square, with Selected hand immediately below. Measured 375px Japanese: hero width=375, height=375, bottom=439; following detail top=439 (zero gap).
+- Targeted square/decorative guard test and build passed; diff check passed. Physical Safari remains unverified.

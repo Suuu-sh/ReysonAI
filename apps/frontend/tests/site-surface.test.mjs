@@ -49,6 +49,8 @@ test("phone hero uses an inert decorative chart behind centered copy and CTAs", 
   assert.match(mobile, /\.site-hero-actions \{ justify-content: center;/);
   assert.match(mobile, /\.site-hero-range \.site-matrix \{ height: auto; aspect-ratio: 1;/);
   assert.match(mobile, /\.has-motion \.site-hero-range \{ animation: none; \}/);
+  assert.match(mobile, /\.site-wrap\.site-hero-main \{[^}]*width: 100%; margin: 0; min-height: 0; aspect-ratio: 1; padding: 0;/);
+  assert.doesNotMatch(mobile.split("/* Compare")[0], /min-height: calc\(100svh - 64px\)/);
 });
 
 let server, ServiceSite, copies;
