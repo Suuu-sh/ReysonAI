@@ -710,3 +710,7 @@ Verification:
 ## 2026-10-07 — Question disappears immediately when scrolling starts
 - Latest request removes gradual fade: question/background/all text opacity1 only at original cover position; any positive scroll movement sets0 immediately, no transition. Scrolling back to original cover restores visibility. Pure touchstart without scroll is not treated as movement.
 - Existing matrix pin, opaque following content and reduced-motion natural/static flow retained. Targeted first-fractional-pixel/return-state/CSS-no-transition test1 and diffcheck passed; no repeated build/browser claim. No merge/deploy.
+
+## 2026-10-07 — Overlap-driven top-down question mask
+- Latest correction removes immediate whole-block opacity. Measure pinned square bottom−question top, clamp≥0; CSS/WebKit linear mask is transparent above edge−28px, transitions to solid at edge. Only overlapping top region disappears; unoverlapped lower region stays fully visible. Mask applies background/title/subtitle/hint together. Initial edge0 is fully visible; reverse scroll restores it.
+- Matrix pin until question range exits, square/62ranges/1000ms, opaque following content and reduced-motion static/natural behavior retained. Targeted overlap bounds/mask/opaque-next test1/build/diffcheck passed. No new browser claim; no merge/deploy.

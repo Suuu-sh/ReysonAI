@@ -3,7 +3,7 @@ export function shouldPinCover(stageTop: number, questionBottom: number, headerB
   return stageTop <= headerBottom && questionBottom > headerBottom;
 }
 
-/** Visible at the initial cover; disappear immediately once scrolling advances. */
-export function questionOpacity(questionTop: number, headerBottom: number, squareHeight: number): number {
-  return questionTop >= headerBottom + squareHeight ? 1 : 0;
+/** The top of the question disappears only where it overlaps the pinned square. */
+export function questionMaskEdge(questionTop: number, squareBottom: number, questionHeight: number): number {
+  return Math.min(questionHeight + 28, Math.max(0, squareBottom - questionTop));
 }

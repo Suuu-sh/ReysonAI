@@ -89,18 +89,18 @@ test("phone learner retains the full saved factual reason used on desktop", () =
   for (const locale of ["en", "ja", "es", "zh-CN"]) assert.ok(render(locale).includes(escapeText(copies[locale].how.whyNote)));
 });
 
-test("phone question disappears on the first scroll movement while later content stays opaque", async () => {
-  const { shouldPinCover, questionOpacity } = await server.ssrLoadModule("/src/site/cover-pin.ts");
+test("phone question is erased top-down only as it overlaps the pinned range", async () => {
+  const { shouldPinCover, questionMaskEdge } = await server.ssrLoadModule("/src/site/cover-pin.ts");
   for (const footerTop of [454, 300, 65]) assert.equal(shouldPinCover(0, footerTop, 64), true);
   assert.equal(shouldPinCover(-390, 64, 64), false);
   assert.equal(shouldPinCover(-391, 63, 64), false);
-  assert.equal(questionOpacity(454, 64, 390), 1);
-  assert.equal(questionOpacity(453.9, 64, 390), 0);
-  assert.equal(questionOpacity(259, 64, 390), 0);
-  assert.equal(questionOpacity(64, 64, 390), 0);
+  assert.equal(questionMaskEdge(454, 454, 390), 0);
+  assert.equal(questionMaskEdge(464, 454, 390), 0);
+  assert.equal(questionMaskEdge(354, 454, 390), 100);
+  assert.equal(questionMaskEdge(0, 454, 390), 418);
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
   const cover = css.slice(css.indexOf("/* Only the square pins"));
-  assert.match(cover, /site-cover-ending[^}]*z-index: 1; background: var\(--bg\); opacity: var\(--question-opacity, 1\); transition: none; pointer-events: none;/);
+  assert.match(cover, /site-cover-ending[^}]*mask-image: linear-gradient\(to bottom, transparent calc\(var\(--question-mask-edge, 0px\) - 28px\), #000 var\(--question-mask-edge, 0px\)\)/);
   assert.match(cover, /site-after-cover[^}]*z-index: 1; background: var\(--bg\)/);
   assert.doesNotMatch(cover, /height:|padding-bottom:|question-shift/);
 });
