@@ -22,7 +22,7 @@ test("Japanese service-site copy covers every English field", async () => {
   const ja = await loadCopy("content-ja.ts", "ja");
   assert.deepEqual(shapeOf(ja), shapeOf(en));
   assert.equal(en.hero.title1, "Don't just play.");
-  assert.equal(en.hero.title2, "Understand why.");
+  assert.equal(en.hero.title2, "Understand the reason.");
   assert.equal(ja.hero.title1, en.hero.title1);
   assert.equal(ja.hero.title2, en.hero.title2);
   assert.match(ja.preview.notGto, /GTO/);
@@ -98,7 +98,10 @@ for (const [locale, file, exportName] of [["zh-CN", "content-zh.ts", "zh"], ["es
     assert.ok(copy.drill.score(3, 20).includes("3"));
     assert.ok(copy.drill.score(3, 20).includes("20"));
     assert.ok(copy.drill.tableLabel("KTo").includes("KTo"));
-    assert.ok(copy.ranked.matchLine(16, 20).includes("80%"));
+    assert.ok(copy.ranked.hands);
+    assert.ok(copy.ranked.rewards);
+    assert.ok(copy.ranked.note);
+    assert.ok(copy.ranked.legendRule(10).includes("10"));
     assert.ok(copy.ranked.toNext(64, copy.ranked.tiers[3]).includes("64"));
     if (locale === "zh-CN") {
       assert.equal(copy.pricing.plans[1].price, "¥580");
@@ -142,7 +145,6 @@ test("all site locales render a selected native-language control and localized p
     const { ServiceSite } = await server.ssrLoadModule("/src/site/ServiceSite.tsx");
     const { SITE_COPY } = await server.ssrLoadModule("/src/site/locales.ts");
     const escaped = text => renderToStaticMarkup(createElement("span", null, text)).slice(6, -7);
-    const preview = JSON.parse(readFileSync(new URL("../src/site/range-preview.json", import.meta.url), "utf8"));
     for (const [locale, name] of [["en", "English"], ["ja", "日本語"], ["zh-CN", "简体中文"], ["es", "Español"]]) {
       const html = renderToStaticMarkup(createElement(ServiceSite, { locale, onLocaleChange() {} }));
       const copy = SITE_COPY[locale];
@@ -150,7 +152,6 @@ test("all site locales render a selected native-language control and localized p
       assert.ok(html.includes(`<option value="${locale}" lang="${locale}" selected="">${name}</option>`));
       assert.equal((html.match(/<option /g) ?? []).length, 4);
       assert.ok(html.includes(escaped(copy.hero.lead)));
-      assert.ok(html.includes(escaped(copy.preview.other(copy.preview.spotOpening, "A5o", copy.preview.actionPast.raise, preview.opening.A5o.open))));
       assert.ok(html.includes(escaped(copy.how.whyNote)));
       assert.ok(html.includes(escaped(copy.preview.notGto)));
       assert.ok(html.includes(escaped(copy.pricing.note)));

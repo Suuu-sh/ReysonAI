@@ -55,6 +55,16 @@ test("phone hero uses an inert decorative chart behind centered copy and CTAs", 
   assert.doesNotMatch(mobile.split("/* Compare")[0], /min-height: calc\(100svh - 64px\)/);
 });
 
+test("only the phone hero description is hidden, without removing locale copy or desktop presentation", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 560px)"));
+  assert.match(mobile, /\.site-hero-lead \{ display: none; \}/);
+  assert.doesNotMatch(css.split("@media screen and (max-width: 560px)")[0], /\.site-hero-lead[^}]*display: none/);
+  for (const locale of ["en", "ja", "es", "zh-CN"]) {
+    assert.ok(render(locale).includes(escapeText(copies[locale].hero.lead)));
+  }
+});
+
 test("hero and shared English taglines use Understand the reason", () => {
   for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
     const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");
@@ -73,13 +83,42 @@ test("phone selected-hand panel stays compact without shrinking its action targe
   assert.match(mobile, /\.site-hero-summary \.site-hand-action\.is-spacer \{ display: none; \}/);
 });
 
+test("phones hide only the illustrative analysis dashboard, retaining explanatory content", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.match(css, /@media \(max-width: 560px\) \{\s*\/\*[^]*?\*\/\s*\.site-analysis \.site-dash \{ display: none; \}/);
+  const analysis = source.slice(source.indexOf("function Analysis()"), source.indexOf("function Compare()"));
+  assert.match(analysis, /c\.analysis\.description/);
+  assert.match(analysis, /c\.analysis\.points\.map/);
+  assert.match(analysis, /c\.analysis\.note/);
+  assert.match(analysis, /site-mock site-dash/);
+});
+
+test("ranked preview mirrors human hand metrics, not legacy quiz scoring", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const ranked = source.slice(source.indexOf("function Ranked()"), source.indexOf("function AgentFeature()"));
+  assert.doesNotMatch(ranked, /matchLine|lastMatch|\.today|\.peak|site-rank-pips/);
+  for (const field of ["sample", "mode", "hands", "rewards", "note", "legendRule"]) assert.ok(ranked.includes(`c.ranked.${field}`));
+  assert.doesNotMatch(ranked, /site-rank-results|site-rank-queue|bb\/100|2 \/ 6/);
+  assert.match(source, /const tierMins = TIERS\.map/);
+  for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
+    const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");
+    const copy = content.slice(content.indexOf("  ranked: {"), content.indexOf("  agent: {"));
+    assert.doesNotMatch(copy, /matchLine|lastMatch|today:|peak:|80%|Elo|イロ/);
+    assert.match(copy, /FastFold β/);
+    assert.match(copy, /sample:/);
+  }
+});
+
 let server, ServiceSite, copies;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
   ({ ServiceSite } = await server.ssrLoadModule("/src/site/ServiceSite.tsx"));
   const { en } = await server.ssrLoadModule("/src/site/content.ts");
   const { ja } = await server.ssrLoadModule("/src/site/content-ja.ts");
-  copies = { en, ja };
+  const { es } = await server.ssrLoadModule("/src/site/content-es.ts");
+  const { zh } = await server.ssrLoadModule("/src/site/content-zh.ts");
+  copies = { en, ja, es, "zh-CN": zh };
 });
 after(async () => { await server?.close(); });
 const render = locale => renderToStaticMarkup(createElement(ServiceSite, { locale, onLocaleChange() {} }));
@@ -100,7 +139,7 @@ function renderWithMotionPreference(locale, reducedMotion) {
   const previousWindow = globalThis.window;
   const previousObserver = globalThis.IntersectionObserver;
   globalThis.window = {
-    matchMedia: () => ({ matches: reducedMotion }),
+    matchMedia: query => ({ matches: query.includes("prefers-reduced-motion") && reducedMotion }),
     localStorage: { getItem: () => null },
   };
   globalThis.IntersectionObserver = class {};
@@ -112,29 +151,124 @@ function renderWithMotionPreference(locale, reducedMotion) {
   }
 }
 
-test("the hand tour alternates spots, pauses offscreen, yields to interaction, and keeps playback intentional", () => {
+test("responsive hero mounts one matrix without the removed phone detail or playback", () => {
+  const previousWindow = globalThis.window;
+  try {
+    globalThis.window = { matchMedia: query => ({ matches: query === "(max-width: 560px)" }), localStorage: { getItem: () => null } };
+    const mobile = render("ja");
+    assert.equal((mobile.match(/class="site-matrix"/g) ?? []).length, 1);
+    assert.match(mobile, /class="site-hero-range" inert="" aria-hidden="true"/);
+    assert.doesNotMatch(mobile, /class="site-hero-detail"|class="site-hero-playback"/);
+    assert.doesNotMatch(mobile.split("</section>")[0], /class="site-mini-legend"/);
+    delete globalThis.window;
+    const desktop = render("en");
+    assert.equal((desktop.match(/class="site-matrix"/g) ?? []).length, 1);
+    assert.match(desktop, /class="site-mini-legend"/);
+    assert.doesNotMatch(desktop, /class="site-hero-detail"|inert=""/);
+  } finally { globalThis.window = previousWindow; }
+});
+
+test("the range tour randomly selects saved spots, pauses offscreen, yields to interaction, and keeps playback intentional", () => {
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
-  const explorer = source.split("function Explorer() {")[1].split("function Header()")[0];
+  const explorer = source.split("function DesktopExplorer() {")[1].split("const tourHands")[0];
   assert.match(explorer, /const isTouring = touring && motion/);
   assert.match(explorer, /if \(!isTouring \|\| !visible\) return/);
   assert.match(explorer, /window\.clearInterval\(timer\)/);
-  assert.match(explorer, /const tourStep = useRef\(0\)/);
-  assert.match(explorer, /const nextMode: RangeMode = step % 2 === 0 \? "opening" : "response"/);
-  assert.match(explorer, /setMode\(nextMode\)/);
-  assert.match(explorer, /setSelected\(hands\[Math\.floor\(step \/ 2\) % hands\.length\]\)/);
-  assert.match(explorer, /\}, 2800\)/);
+  assert.match(explorer, /setRangeIndex\(current => pickNextRangeIndex\(current, heroRanges.length\)\)/);
+  assert.match(explorer, /\}, 4000\)/);
   for (const event of ["pointerdown", "keydown"]) {
     assert.ok(explorer.includes(`addEventListener("${event}", stop)`));
     assert.ok(explorer.includes(`removeEventListener("${event}", stop)`));
   }
-  assert.match(explorer, /closest\("\[data-tour-toggle\]"\)\) return/);
   assert.match(explorer, /onSelect=\{hand => \{ setTouring\(false\); setSelected\(hand\); \}\}/);
   assert.doesNotMatch(explorer, /chooseMode|chooseDisplayMode|displayMode|site-explorer-bar|site-segment|localStorage/);
-  assert.match(explorer, /setTouring\(current => !current\)/);
   assert.match(explorer, /data-tour-running=\{isTouring && visible\}/);
-  assert.match(explorer, /aria-live=\{isTouring \? "off" : "polite"\}/,
-    "automatic hands must not repeatedly interrupt a screen reader");
   assert.doesNotMatch(explorer, /site-tour-progress|key=\{`\$\{mode\}-\$\{selected\}-\$\{isTouring\}`\}/);
+});
+
+test("random tour picks never repeat immediately, and its fifty ranges preserve saved frequencies/reach", async () => {
+  const { pickNextRangeIndex } = await server.ssrLoadModule("/src/site/range-tour.ts");
+  assert.equal(pickNextRangeIndex(0, 1), 0);
+  for (let current = 0; current < 50; current++) for (const random of [0, .2, .5, .999999]) {
+    const next = pickNextRangeIndex(current, 50, () => random);
+    assert.ok(next >= 0 && next < 50 && next !== current);
+  }
+  const sources = [
+    ["opening-ranges", "opening", "open"], ["preflop-ranges", "response", "three_bet"],
+    ["three-bet-responses", "threeBet", "four_bet"], ["four-bet-responses", "fourBet", "all_in"],
+  ];
+  assert.equal(preview.tour.length, 50);
+  const read = file => JSON.parse(readFileSync(new URL(`../src/estimated/${file}.json`, import.meta.url), "utf8")).spots;
+  for (const [file, stage, raiseAction] of sources) for (const spot of read(file)) {
+    const range = preview.tour.find(range => range.id === spot.id && range.stage === stage);
+    assert.ok(range);
+    assert.equal(Object.keys(range.hands).length, 169);
+    for (const row of spot.hands) assert.deepEqual(range.hands[row.hand], {
+      raise: raiseAction === "all_in" ? 0 : row[raiseAction], all_in: raiseAction === "all_in" ? row.all_in : 0,
+      call: row.call ?? 0, limp: row.limp ?? 0, fold: row.fold,
+    });
+    const previous = stage === "threeBet" ? read("opening-ranges").find(item => item.hero === spot.hero) : stage === "fourBet" ? read("preflop-ranges").find(item => item.id === spot.source_response_id) : null;
+    assert.deepEqual(range.unreachable, previous ? previous.hands.filter(row => (stage === "threeBet" ? row.open : row.three_bet) === 0).map(row => row.hand) : []);
+  }
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.match(source, /!unreachable && mixed.length > 1/);
+  assert.match(source, /unreachable \? copy.preview.unreachable/);
+  assert.match(source, /actionColor\(action\)/);
+});
+
+test("saved postflop previews retain canonical board-specific weighted mixes, reach and real bet colors", async () => {
+  const snapshot = JSON.parse(readFileSync(new URL("../src/site/postflop-preview.json", import.meta.url), "utf8"));
+  const { loadInputs } = await import("../scripts/postflop-ai/inputs.mjs");
+  assert.equal(snapshot.source_hash, loadInputs(snapshot.spot).fingerprint);
+  assert.equal(snapshot.ranges.length, 12);
+  const { RangeMatrix, HeroActionLegend } = await server.ssrLoadModule("/src/site/ServiceSite.tsx");
+  for (const range of snapshot.ranges) {
+    assert.equal(Object.keys(range.hands).length, 169);
+    assert.match(range.board, /^(?:[2-9TJQKA][cdhs]){3}$/);
+    assert.ok(["BTN", "BB"].includes(range.seat));
+    for (const [hand, mix] of Object.entries(range.hands)) {
+      assert.deepEqual(Object.keys(mix), range.actions);
+      const total = Object.values(mix).reduce((sum, value) => sum + value, 0);
+      assert.ok(Math.abs(total - (range.unreachable.includes(hand) ? 0 : 1)) < 1e-12);
+    }
+    const html = renderToStaticMarkup(createElement(RangeMatrix, { range, selected: "A5o", onSelect() {} }));
+    assert.equal((html.match(/class="site-cell /g) ?? []).length, 169);
+    assert.equal((html.match(/is-unreachable/g) ?? []).length, range.unreachable.length);
+    const context = renderToStaticMarkup(createElement(HeroActionLegend, { range }));
+    assert.match(context, /site-range-legend/);
+    assert.doesNotMatch(context, /site-card|BTN|BB|Flop|→/);
+    assert.ok(!context.includes(range.board));
+    assert.ok(html.includes(range.board), "board stays available to assistive technology");
+    assert.equal((context.match(/<i /g) ?? []).length, range.actions.filter(action => Object.entries(range.hands).some(([hand, mix]) => !range.unreachable.includes(hand) && mix[action] > 0)).length);
+  }
+  const betting = snapshot.ranges.find(range => range.id.endsWith(":btn_first"));
+  assert.deepEqual(betting.actions, ["check", "bet33", "bet75", "bet125"]);
+  const source = readFileSync(new URL("../scripts/build-site-postflop-preview.mjs", import.meta.url), "utf8");
+  assert.match(source, /flopNodes\(inputs, policy, parsed.cards\)/);
+  assert.match(source, /return \[row.hand, row.mix\]/);
+  assert.match(source, /!row.reachable/);
+});
+
+test("the hero key describes only used action colors, not the situation", async () => {
+  const { HeroActionLegend } = await server.ssrLoadModule("/src/site/ServiceSite.tsx");
+  const { color } = await server.ssrLoadModule("/src/components/action-format.ts");
+  const snapshot = JSON.parse(readFileSync(new URL("../src/site/postflop-preview.json", import.meta.url), "utf8"));
+  const range = snapshot.ranges.find(range => range.id.endsWith(":btn_first"));
+  const html = renderToStaticMarkup(createElement(HeroActionLegend, { range }));
+  for (const action of range.actions) if (Object.values(range.hands).some(mix => mix[action] > 0)) assert.ok(html.includes(`background:${color(action)}`));
+  assert.match(html, /Bet 33%|Bet 75%|Bet 125%/);
+  assert.match(html, /Check/);
+  const opening = { ...preview.tour.find(range => range.id === "BTN_open"), actions: ["all_in", "raise", "call", "limp", "fold"] };
+  const preflop = renderToStaticMarkup(createElement(HeroActionLegend, { range: opening }));
+  assert.match(preflop, /Raise/);
+  assert.match(preflop, /Fold/);
+  assert.doesNotMatch(preflop, /Call|allin|5bet|BTN_open/);
+  const allinRange = { ...preview.tour.find(range => range.stage === "fourBet"), actions: ["all_in", "call", "fold"] };
+  const allin = renderToStaticMarkup(createElement(HeroActionLegend, { range: allinRange }));
+  assert.match(allin, />allin<\/span>/);
+  assert.doesNotMatch(allin, /5bet|100BB/);
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /PostflopRangeContext|site-range-board/);
 });
 
 test("pinned training slides stay visible and the hero matrix remains square", () => {
@@ -144,13 +278,31 @@ test("pinned training slides stay visible and the hero matrix remains square", (
   assert.doesNotMatch(css, /site-tour-progress|@keyframes site-tour/);
 });
 
+test("the hero range fills its column without a separate action legend", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /\.site-hero\s*\{ padding: 0; \}/);
+  assert.match(css, /\.site-hero-main\s*\{[^}]*width: 100%; min-height: var\(--hero-height\); grid-template-columns: minmax\(0, 1fr\) var\(--hero-range-size\); align-items: center; gap: 0; padding: 0;/);
+  assert.match(css, /--header-height: 64px;/);
+  assert.match(css, /\.site-header\s*\{[^}]*height: var\(--header-height\);/);
+  assert.match(css, /--hero-height: calc\(100svh - var\(--header-height\)\); --hero-range-size: min\(var\(--hero-height\), calc\(100vw - min\(40vw, 480px\)\)\);/);
+  assert.match(css, /\.site-hero-copy\s*\{[^}]*align-self: center; transform: translateY\(28px\);/);
+  assert.doesNotMatch(css.split("@media screen and (max-width: 560px)")[0], /\.site-hero-range\s*\{[^}]*(?:max-width:|width: min\(|margin-top: -)/);
+  assert.match(css, /\.site-hero-main\s*\{ width: calc\(100% - var\(--page-gutter\) \* 2\); min-height: 0; grid-template-columns: 1fr;/);
+  for (const locale of ["en", "ja"]) {
+    const html = render(locale);
+    assert.doesNotMatch(html, /class="site-legend"/);
+    assert.match(html, /class="site-mini-legend"/);
+    assert.doesNotMatch(html, /class="site-hero-detail"|class="site-hero-playback"/);
+  }
+});
+
 test("production service-site app CTAs use the app host while previews keep their existing path", () => {
   const production = renderAtHostname("en", "reysonai.com");
-  assert.equal((production.match(/href="https:\/\/app\.reysonai\.com"/g) ?? []).length, 7);
+  assert.equal((production.match(/href="https:\/\/app\.reysonai\.com"/g) ?? []).length, 6);
   assert.doesNotMatch(production, /href="\/analyze\/ranges"/);
 
   const previewSite = renderAtHostname("ja", "preview.local");
-  assert.equal((previewSite.match(/href="\/analyze\/ranges"/g) ?? []).length, 7);
+  assert.equal((previewSite.match(/href="\/analyze\/ranges"/g) ?? []).length, 6);
   assert.doesNotMatch(previewSite, /href="https:\/\/app\.reysonai\.com"/);
 });
 
@@ -235,21 +387,20 @@ test("mobile comparison pairs columns with one visible sticky heading instead of
 });
 
 for (const locale of ["en", "ja"]) {
-  test(`${locale}: the live decision studio keeps its English heading and full-width hand detail after the chart`, () => {
+  test(`${locale}: the live decision studio keeps its English heading and matrix without the removed hand rail`, () => {
     const html = render(locale);
     const heading = html.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/)?.[0];
     assert.ok(heading);
     assert.match(heading, /id="site-hero-title"/);
     assert.match(heading, /lang="en"/);
-    for (const title of ["Don't just play.", "Understand why."]) assert.ok(heading.includes(escapeText(title)));
+    for (const title of ["Don't just play.", "Understand the reason."]) assert.ok(heading.includes(escapeText(title)));
     assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
     const main = html.indexOf('class="site-wrap site-hero-main"');
     const range = html.indexOf('class="site-hero-range"');
-    const detail = html.indexOf('class="site-hero-detail"');
-    const playback = html.indexOf('class="site-hero-playback"');
-    assert.ok(main > 0 && range > main && detail > range && playback > detail);
-    assert.match(html, /class="site-hero-deal"[\s\S]*?class="site-hero-summary"[\s\S]*?class="site-hero-reason"/);
-    assert.match(html, /class="site-hand" aria-live="polite" aria-atomic="true"/);
+    assert.ok(main > 0 && range > main);
+    assert.doesNotMatch(html, /class="site-hero-detail"|class="site-hero-playback"|class="site-hero-deal"/);
+    assert.ok(html.includes(escapeText(copies[locale].preview.saved)));
+    assert.ok(html.includes(escapeText(copies[locale].preview.notGto)));
     assert.ok(html.includes(escapeText(copies[locale].hero.lead)));
     assert.match(html, /class="site-hero-secondary" href="#how"/);
     assert.doesNotMatch(html, /class="site-explorer-body"|class="site-hero-product"/);
@@ -259,23 +410,19 @@ for (const locale of ["en", "ja"]) {
     const html = renderWithMotionPreference(locale, true);
     assert.doesNotMatch(html, /has-motion|class="site-tour-toggle"/);
     assert.match(html, /data-tour-running="false"/);
-    assert.match(html, /class="site-hand" aria-live="polite" aria-atomic="true"/);
     assert.equal((html.match(/class="site-cell /g) ?? []).length, 169);
-    assert.ok(html.includes(escapeText(copies[locale].preview.manual)));
     assert.ok(html.includes(escapeText(copies[locale].preview.notGto)));
 
     const animated = renderWithMotionPreference(locale, false);
     assert.match(animated, /has-motion/);
-    assert.match(animated, /class="site-hand" aria-live="off" aria-atomic="true"/);
-    const playback = animated.match(/<button\b[^>]*class="site-tour-toggle"[^>]*>/)?.[0];
-    assert.ok(playback);
-    assert.ok(playback.includes(`aria-label="${escapeText(copies[locale].preview.pauseTour)}"`));
+    assert.match(animated, /data-tour-running="false"/);
+    assert.doesNotMatch(animated, /class="site-tour-toggle"|class="site-hero-detail"/);
   });
 
   test(`${locale}: the fixed Standard hero preview keeps selectors hidden and exposes every saved opening frequency`, () => {
     const { common } = copies[locale];
     const html = render(locale);
-    const hero = html.split('class="site-wrap site-hero-main"')[1].split('class="site-hero-detail"')[0];
+    const hero = html.split('class="site-wrap site-hero-main"')[1].split('id="audience"')[0];
     const cells = html.match(/<button\b[^>]*class="site-cell [^"]*"[^>]*>[\s\S]*?<\/button>/g) ?? [];
     assert.equal(cells.length, 169);
     assert.equal(cells.filter(cell => cell.includes('aria-pressed="true"')).length, 1);
@@ -322,7 +469,7 @@ for (const locale of ["en", "ja"]) {
     const html = render(locale);
     assert.equal((html.match(/class="site-cell /g) ?? []).length, 169);
     assert.match(html, /aria-label="K7s: [^"]*100%"/);
-    assert.match(html, /class="site-hand" aria-live="polite"/);
+    assert.doesNotMatch(html, /class="site-hero-detail"/);
     assert.match(html, /class="site-plan is-planned"/);
     assert.match(html, /class="site-button is-disabled" aria-disabled="true"/);
     assert.match(html, /href="\/analyze\/ranges"/);

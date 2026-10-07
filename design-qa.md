@@ -563,3 +563,48 @@ Verification:
 - Only at ≤560px: reduce decorative card width, hand heading, frequency-row spacing, panel padding and Why spacing; remove the invisible spacer row. Keep all frequencies/explanations, Explore CTA minimum 44px, and playback controls. Desktop and square hero untouched.
 - Parent visual QA: 390px English Selected hand/Why/CTA/playback fit below the 390px square within the 844px viewport. 375px Japanese remains readable without overflow; CTA is reachable through normal scrolling. No exact percentage height reduction claimed.
 - Focused compact-panel regression test, production build and diff check passed. Physical Safari remains unverified.
+
+## 2026-10-07 — Flat SVG suits on service-site cards
+- Site variant only: use existing Phosphor filled Spade/Heart/Diamond/Club SVGs in the existing suit slot. SVG is aria-hidden/non-focusable; original suit text remains visually hidden. Trainer, Agent and text variants preserve their exact previous markup. Rank, gradients, colors and responsive sizes unchanged.
+- Parent browser QA: 390px mobile heart rendered flat; SVG viewBox=256 and aria-hidden confirmed. 1280px desktop layout preserved. Four different filled suit shapes and site-only behavior covered by six focused shared-card tests.
+- Focused tests, production build and diff check passed. Actual iPhone rendering is not verified; no claim of device testing.
+
+## 2026-10-07 — Hide phone analysis sample
+- At ≤560px hide only `.site-analysis .site-dash` with display:none. Keep the analysis heading, explanation, points and truthful practice-data note unchanged. Existing single-column phone grid has no remaining sample slot/gap; desktop sample remains in the DOM and restores normally.
+- Parent DOM QA: 390px sample display:none,height=0; 1280px display:block,height≈458px. No visual analysis-screen claim: viewport resizing shifted the screenshot to another section.
+- Focused hide-scope test, production build and diff check passed. No merge/deploy.
+
+## 2026-10-07 — Ranked preview matches current Human FastFold
+- Current source truth: TrainerPage routes ranked play to HumanRankArena. human-api status gate requires human-fastfold-v1/six_verified_humans/6 players/shadow comparison/no applied penalty; humanRankState adapts server records only. HumanRankArena displays current rating, rated hands, net bb and bb/100, plus queue participation and RankLadder. TrainerHome uses unrated Agent practice while waiting.
+- Replace site-only quiz scoring/quota/Peak/pips with a visibly non-live sample: rating/tier, 120 hands, +18bb and +15bb/100, example 2/6 human queue, shared tier thresholds and Legend top-10-Masters rule. Sample values are coherent illustrations, not fetched server data; availability still requires verified sign-in/server readiness and no AI penalty is applied. Update all four locale ranked copies; actual app/backend untouched.
+- Parent 390px English screenshot and scrolling: sample metrics/Legend/queue/shadow caveats fit with no horizontal overflow. Desktop existing layout retained; no new desktop visual check claimed.
+- Locale/surface tests: 38 passed. Update three stale hero-title expectations from the previously authorized reason-copy revision. Build/diff check passed; no merge/deploy.
+
+## 2026-10-07 — Trim ranked sample and label rewards as planned
+- User narrowed the sample to Human FastFold title, rating/rated-hands card and rank ladder. Remove result/bb100/queue panels and their unused copy/CSS. Keep Sample/not-live label; move availability/illustration/shadow caveats into the section explanation.
+- Add general rank-based rewards planned text in all four locales, with contents/distribution conditions to be announced. Current main/development contains no reward allocation/granting implementation. A separate unpublished historical preview is not treated as an authoritative offering; publish no exact allocation, Plus entitlement, cash/physical prize or issued-benefit claim.
+- Parent 390px English visual review: planned reward text visible and mock contains only requested card/ladder, no result/queue, fits without horizontal overflow.
+- Locale/surface tests: 38 passed. Production build and diff check passed; no merge/deploy.
+
+## 2026-10-07 — Reconcile desktop PR107 with mobile PR106
+- User-authorized integration of exact PR107 head ae698e61c277c22e2288ec845b21efb6407e2ebc into PR106; PR107 branch is untouched. Resolve ServiceSite.tsx, site.css and four locale conflicts individually: preserve desktop viewport-height saved-range/random-tour/legend work and latest reason wording, phone square inert backdrop/compact detail/playback, SVG suits, hidden phone analysis sample and truthful trimmed ranked/rewards-planned copy.
+- Responsive Explorer mounts one desktop or phone tree based on the same ≤560px media query; phone does not mount the desktop legend or additional estimate line, desktop does not mount the phone detail/focus targets. New shared saved preflop/postflop datasets and frequency/reach tests remain intact.
+- Locale/surface/shared-card tests: 48 passed; additional targeted responsive single-tree DOM guard: 1 passed. Production build passed (existing chunk-size warning). Diff check passed.
+- Attempted focused browser QA through CUA: IAB unavailable; fresh Chrome preview creation timed out and reset the kernel. No new 390/1280 rendered verification or actual iPhone claim. Responsive appearance remains unverified for this integration; prior standalone mobile screenshots do not prove the merged version.
+- No merge to development/main or deployment. PR106 now includes PR107 ancestry: review/merge ordering must account for this overlap rather than merging conflicting versions independently.
+
+- Parent merged visual QA: 390px phone preserved; 1280px desktop saved-range/legend layout visible. Longer retained reason tagline initially clipped; desktop mark now scales to copy-container width, with phone inheriting its existing size. Parent targeted 1280px desktop recheck confirms the full heading fits.
+- PR107 advanced externally to 4db2d488932f840b9899744e64d10504f595ef3f (allin label only). Inspected the two-file delta, merged its latest head; PR107 branch remains untouched. Targeted action-legend test passed.
+
+## 2026-10-07 — Hide only the phone hero description
+- At ≤560px hide `.site-hero-lead` in every locale. Keep headline, CTAs and preview note; desktop description and all translated source copy remain unchanged. Preserve square/fullbleed hero, compact rail and PR107 integration.
+- Parent computed-style QA: 390px description display:none; 1280px display:block. Targeted hide-scope/all-four-locale DOM test and diff check passed. CSS-only change: production build not repeated. No merge/deploy.
+
+## 2026-10-07 — Remove phone hero detail and playback
+- Remove the entire phone Selected hand/cards/frequencies/Why/explore/playback footer, matching desktop. Preserve decorative background tour behavior and square hero; saved/not-GTO caveat now uses the existing hero note like desktop. Drop unused rail explanation values/icon imports; other site sections unaffected.
+- Parent 390px visual: rail removed, square hero/caveat and following Audience retained. Existing Audience sticky-centering space is not a removed-rail leftover. Focused phone hero tests passed after scoping the no-desktop-legend assertion to the hero (other sections retain their legends). Production build/diff check passed. No merge/deploy.
+
+## 2026-10-07 — Fix CI sparse range typing
+- CI frontend typecheck on ee96017 failed TS2322: imported postflop JSON infers absent action keys as optional undefined, while HeroRange required all keys to be numeric. Model action mixes as Partial<Record<string,number>>, treating missing frequencies as zero only at numerical conversion/legend checks. No saved data, layout or tour changes.
+- Local exact typecheck initially could not find ignored continuation-responses.json; restored an existing local generated artifact for type-only checking, not committed. CI uses its authoritative reviewed-artifact restoration. Local typecheck and latest-SHA CI conclusions recorded below.
+- Local npm run typecheck passed after restoring the ignored type input; diff check passed. No repeated build or unrelated test suite. No merge/deploy.
