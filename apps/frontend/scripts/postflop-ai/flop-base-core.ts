@@ -5,13 +5,11 @@ import type { BaseHistory, BlockerPredictors, CodecView, FlopBase } from "./flop
 type StoredFact = FlopUiFacts | AverageFacts<FlopUiFacts>;
 export type BalancedFlopBase = FlopBase<StoredFact, number>;
 type HistoryData = { entry: Pick<BaseHistory<StoredFact>, "combo_facts" | "class_facts">; view: CodecView; indexes: Map<string, { index: number; rowIndex: number; weight: number }> };
-import { observableFlopRequest } from "./observable-view-paths.mjs";
-import { actionModelIdentity, usesObservableActions } from "./observable-actions.mjs";
 // Shared balanced-mode base data: deterministic strategies and the exact UI fact projection.
 // Offline authoring and browser fallback share this code; loading never authors a policy.
 import { sha } from "./browser-inputs.ts";
 import { EVALUATOR_VERSION } from "../lib/equity.ts";
-import { defenceVersionFor, FLOP_RUNOUTS } from "./defence.ts";
+import { DEFENCE_VERSION, FLOP_RUNOUTS } from "./defence.ts";
 import { canonicalFlop, ISOMORPHISM_VERSION, comboKey, remapFlopNode } from "./flop-isomorphism.ts";
 import { flopHistoryViews } from "./views.ts";
 import { flopUiComboFactsCanonical, averageFlopUiFacts, flopBlockerPredictors } from "./flop-ui-facts.ts";
@@ -19,18 +17,17 @@ import { packFrame, packView, unpackFrameRow, unpackView, compactFlopBase, hydra
 import { FLOP_BETS, historyFor, treeNodes } from "./tree.ts";
 import { referenceLaterPolicy } from "./later-policy.ts";
 
-// Version 7 normalizes impossible raises before computing defence in every
-// view/facts consumer. Older cached rows must not bypass the corrected live path.
-// No new bases are authored by this migration; stale bases use live computation.
-export const FLOP_BASE_VERSION = 7;
+// Version 6: the base stores strategies and explanation facts only. Postflop EV is not part of the
+// product (decision 2026-10-01), so any base that still carries EV (version 5) is stale.
+export const FLOP_BASE_VERSION = 6;
 const laterSizingHash = (config: PilotConfig) => sha(Object.fromEntries((["later_streets", "later_raise_multiplier", "later_all_in_merge_ratio"] as const).map(key => [key, config[key]])));
 
 export function flopBaseIdentity(inputs: Inputs, candidate: Candidate, laterCandidate?: Candidate<LaterPolicy> | null) {
-  return { generator_version: FLOP_BASE_VERSION, isomorphism_version: ISOMORPHISM_VERSION, ...actionModelIdentity(inputs.spot),
+  return { generator_version: FLOP_BASE_VERSION, isomorphism_version: ISOMORPHISM_VERSION,
     evaluator_version: EVALUATOR_VERSION,
     source_hash: inputs.fingerprint, policy_hash: candidate.metadata.policy_hash,
     later_policy_hash: sha(laterCandidate?.policy ?? referenceLaterPolicy()),
-    later_sizing_hash: laterSizingHash(inputs.config), defence_version: defenceVersionFor(inputs),
+    later_sizing_hash: laterSizingHash(inputs.config), defence_version: DEFENCE_VERSION,
     defence_config_hash: sha(inputs.config.defence_realization), seed: inputs.config.seed,
     explanation_precision: 4,
     samples: { defence_runouts: FLOP_RUNOUTS } };
@@ -41,6 +38,8 @@ export function isFreshFlopBase(data: Partial<BalancedFlopBase> | null | undefin
       !data.histories || !data.metadata) return false;
   const identity: Record<string, unknown> = flopBaseIdentity(inputs, candidate, laterCandidate);
   if (data.ev !== undefined) return false;
+  // Validation-only: a contradictory experimental marker cannot reuse a v7 base.
+  if (Object.hasOwn(data.metadata, "action_model_version")) return false;
   return Object.keys(identity).every(key => JSON.stringify(data.metadata![key]) === JSON.stringify(identity[key]));
 }
 
@@ -67,7 +66,7 @@ export function buildFlopBase({ board, inputs, candidate, laterCandidate }: { bo
       });
       averages.push(entries.length ? averageFlopUiFacts(entries) : null);
     }
-    predictors[history] = view.unavailable ? null : flopBlockerPredictors(inputs, candidate.policy, canonical.cards, history ? history.split(",") : [], view);
+    predictors[history] = flopBlockerPredictors(inputs, candidate.policy, canonical.cards, history ? history.split(",") : [], view);
     return [history, { view: packView(view), combo_facts: packFrame(facts), class_facts: packFrame(averages) }];
   }));
   return compactFlopBase<StoredFact>({ kind: "ai_estimate_not_gto", mode: "balanced", spot: inputs.spot.id, flop: canonical.key,
@@ -109,13 +108,9 @@ export function storedFlopNodes(base: BalancedFlopBase, inputs: Inputs, board: s
 export function storedFlopExplanation(base: BalancedFlopBase, { boardCards, node, cards, combos, prev = "bet33", history, inputs }: Omit<FlopFactOptions, "policy">) {
   const canonical = canonicalFlop(boardCards);
   if (base.flop !== canonical.key) return null;
-  let path = history ?? historyFor(inputs.spot.tree, node, prev);
-  if (usesObservableActions(inputs.spot)) {
-    try { ({ history: path, node } = observableFlopRequest(inputs.spot, node, path)); }
-    catch { return null; }
-  }
+  const path = history ?? historyFor(inputs.spot.tree, node, prev);
   const data = historyData(base, path.join(","));
-  if (!data || data.view.unavailable || data.view.node !== node) return null;
+  if (!data || data.view.node !== node) return null;
   const read = (actualCards: string) => {
     const key = comboKey(actualCards, canonical.toCanonical), item = data.indexes.get(key);
     if (!item) return null;

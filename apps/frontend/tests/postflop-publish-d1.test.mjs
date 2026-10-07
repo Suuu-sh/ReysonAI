@@ -44,3 +44,22 @@ test("partial A-to-B-to-A publications never reuse an old cache revision", () =>
   assert.equal(new Set([token(a1),token(b),token(a2)]).size,3);
   assert.equal(buildSql([entry],'2026-10-04T00:00:00Z','reviewed-publication-id'),buildSql([entry],'2026-10-04T00:00:00Z','reviewed-publication-id'));
 });
+
+
+test("duplicate publication tuples fail before generating SQL", () => {
+  assert.throws(()=>buildSql([entry,entry]),/Duplicate published postflop spot/);
+});
+
+test("both policy stages and report attribution are preserved within spot-scoped SQL", () => {
+  const policy={metadata:{policy_hash:'flop-hash',model:'gpt-6.1-sol',reasoning_effort:'high'},policy:{}};
+  const later={metadata:{policy_hash:'later-hash',flop_policy_hash:'flop-hash',model:'gpt-6.1-sol',reasoning_effort:'high'},policy:{}};
+  const report={kind:'ai_estimate_not_gto',defence_version:7,policy_hash:'flop-hash',later_policy_hash:'later-hash'};
+  const sql=buildSql([{spot,candidate:policy,laterCandidate:later,report}]);
+  assert.equal(sql.split('\n').filter(line=>line.startsWith('INSERT INTO postflop_policies')).length,2);
+  assert.match(sql,/"model":"gpt-6.1-sol"/);
+  assert.match(sql,/"defence_version":7/);
+  assert.doesNotMatch(sql,/gpt-6-astra|action_model_version/);
+  for(const line of sql.split('\n').filter(line=>line.startsWith('DELETE FROM postflop_'))) {
+    assert.match(line,/ WHERE spot_id = 'X_open_Y_call';$/);
+  }
+});

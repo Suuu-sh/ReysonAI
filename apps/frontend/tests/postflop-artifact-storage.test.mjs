@@ -135,8 +135,11 @@ test('postflop source graph binds archive tooling, numerical dependencies and co
   const paths = reviewedSourcePaths();
   for (const suffix of ['scripts/postflop-ai/defence.ts', 'scripts/postflop-ai/board-worker.mjs', 'scripts/postflop-ai/reviewed-postflop-archive.mjs',
     'scripts/data/postflop-ai-pilot.json', 'scripts/lib/equity.ts']) assert.ok(paths.includes('apps/frontend/' + suffix), suffix);
-  for (const name of ['exact-river-call-ev', 'multiway-inputs', 'observable-actions', 'observable-view-paths', 'range-support', 'street-state'])
+  for (const name of ['multiway-inputs', 'range-support', 'street-state'])
     assert.ok(paths.includes(`apps/frontend/scripts/postflop-ai/${name}.d.mts`), name);
+  assert.ok(paths.includes('apps/frontend/scripts/postflop-ai/hu-v7-street-state.ts'));
+  for (const name of ['observable-actions', 'observable-view-paths', 'exact-river-call-ev'])
+    assert.ok(!paths.includes(`apps/frontend/scripts/postflop-ai/${name}.mjs`), `dormant v10 helper must not enter adopted numeric closure: ${name}`);
   assert.ok(paths.includes('configs/cash-6max-100bb.json'));
   assert.ok(paths.includes('configs/multiway-preflop-stage2.json'));
   assert.equal(paths.some(path => path.includes('/.local/')), false);

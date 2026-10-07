@@ -6,7 +6,7 @@ export type DefenceFacts = {
   percentile: number | null; defence_frequency: number | null; mdf: number | null;
   bettor_range?: { value_pct?: number | null; bluff_pct?: number | null } | null;
   blockers?: { value_removed_pct?: number | null; bluff_removed_pct?: number | null } | null;
-  faced_action?: { aliases?: (string | null)[] | null; allIn?: boolean | null; wasReduced?: boolean | null; action?: string | null; capped?: boolean | null; alpha?: number | null; bluff_share_after_pct?: number | null } | null;
+  faced_action?: { action?: string | null; capped?: boolean | null; alpha?: number | null; bluff_share_after_pct?: number | null } | null;
 };
 export type ExplanationFacts = {
   kind?: string | null; spot?: string | null; board?: string | null; node?: string | null; street?: string | null; line?: string | null; cards?: string | null;

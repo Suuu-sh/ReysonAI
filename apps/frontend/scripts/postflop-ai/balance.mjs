@@ -1,5 +1,3 @@
-import { usesObservableActions, replayObservableStreet } from "./observable-actions.mjs";
-import { hasPostflopDeal } from "./range-support.mjs";
 // Deterministic range-weighted sanity checks for the locally authored postflop policies.
 // These checks describe balance heuristics, not solver targets or GTO requirements.
 import { seedFor, seededRandom } from "../lib/equity.ts";
@@ -11,7 +9,7 @@ import { referenceLaterTierMix, validateLaterPolicy } from "./later-policy.ts";
 import { NODES, nodeRole, policyMix, treeNodes, validatePolicy } from "./policy.ts";
 import { FLOP_BETS, flopBetFraction, flopState, raiseDepth, treeHistories } from "./tree.ts";
 import { createTable, playFlop } from "./engine.ts";
-import { defenceFor, replayOrNull, requiredEquity } from "./defence.ts";
+import { defenceFor, replayOrNull } from "./defence.ts";
 
 const pct = value => `${(value * 100).toFixed(1)}%`;
 const mean = values => values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
@@ -314,23 +312,6 @@ function cloneTable(inputs, source) {
 
 function replayLaterPath(table, street, path) {
   const { ip, oop } = table.spot;
-  if (usesObservableActions(table.spot)) {
-    if (!table.stacks[ip] || !table.stacks[oop] || table.winner) return table;
-    const replay = replayObservableStreet({ spot: table.spot, street, actions: path.actions, config,
-      start: { pot: table.pot, stacks: { ip: table.stacks[ip], oop: table.stacks[oop] },
-        lastAggressor: table.lastAggressor === ip ? 'ip' : table.lastAggressor === oop ? 'oop' : null } });
-    if (!replay.state.end) throw new Error(`Representative ${street} path did not finish`);
-    for (const role of ['ip', 'oop']) {
-      const seat = table.spot[role];
-      table.stacks[seat] = replay.stacks[role];
-      table.invested[seat] = Math.round((table.invested[seat] + replay.committed[role]) * 100) / 100;
-    }
-    table.pot = replay.pot;
-    table.path[street] = replay.actions;
-    table.lastAggressor = replay.lastAggressor ? table.spot[replay.lastAggressor] : null;
-    if (replay.state.end.winner) table.winner = table.spot[replay.state.end.winner];
-    return table;
-  }
   const committed = { [ip]: 0, [oop]: 0 };
   const streetStart = { ...table.invested };
   const cap = seat => Math.min(table.stacks[seat], table.stacks[table.other(seat)] + committed[table.other(seat)] - committed[seat]);
@@ -358,13 +339,6 @@ function replayLaterPath(table, street, path) {
   return table;
 }
 
-function observableAuditMix(defence, table, board, node, combo, base) {
-  const mix = defence.observableMix(table, board, node, combo, base);
-  return table.log.at(-1)?.observation
-    ? { ...Object.fromEntries((NODES[node] ?? LATER_NODES[node]).map(action => [action, 0])), ...mix } : mix;
-}
-const observationKey = (table, board) => `${board}|${table.path.flop}|${table.path.turn}|${table.path.river}`;
-
 // `boardList` replaces the 12 configured boards (e.g. one canonical flop at a time for the all-board audit).
 export function checkFlopBalance(inputs, flopPolicy, { boardList = boards() } = {}) {
   const policy = validatePolicy(flopPolicy, inputs.spot.tree);
@@ -372,27 +346,19 @@ export function checkFlopBalance(inputs, flopPolicy, { boardList = boards() } = 
   const histories = firstHistoryByNode(treeHistories(inputs.spot.tree));
   const tierFor = makeTierReader(), mixFor = makeFlopMixReader(policy, tierFor), collection = new Map();
   // Facing nodes are judged on the computed defence (defence.ts), not the tier mixes of the policy.
-  const defence = defenceFor(inputs, policy, null), observed = new Set();
-  for (const board of boardList.filter(board => !inputs.spot.history || hasPostflopDeal(inputs, board.cards))) for (const requestedNode of nodes) {
-    let node = requestedNode;
+  const defence = defenceFor(inputs, policy, null);
+  for (const board of boardList) for (const node of nodes) {
     const history = histories.get(node);
     if (!history) throw new Error(`No representative history for flop node: ${node}`);
     const state = flopState(inputs.spot.tree, history);
     const role = nodeRole(node), seat = inputs.spot[role];
     // Reach weights and mixes come from the engine table at the node (computed defence and bluff cap).
     const table = replayOrNull(inputs, board.cards, { flop: history });
-    if (usesObservableActions(inputs.spot)) {
-      if (!table) continue;
-      const key = observationKey(table, board.cards);
-      if (observed.has(key)) continue;
-      observed.add(key); node = table.log.at(-1).node;
-      if (isFlopFacingNode(node) && !defence.context(table, board.cards, node)) continue;
-    }
     const range = table ? defence.rangeItems(table, board.cards, seat)
       : scaleFlopPath(seatRange(inputs, seat, board.cards), role, state.steps, mixFor, board.cards);
-    const nodeMixFor = table ? (name, combo, cards) => observableAuditMix(defence, table, cards, name, combo, mixFor(name, combo, cards)) : mixFor;
+    const nodeMixFor = table ? (name, combo, cards) => defence.mix(table, cards, name, combo, mixFor(name, combo, cards)) : mixFor;
     const summary = summarize(range, NODES[node], nodeMixFor, tierFor, node, board.cards, null);
-    addSummary(collection, node, board.id, NODES[node], summary, {}, usesObservableActions(inputs.spot) ? defence.requirement(table, board.cards, node)?.mdf ?? null : flopMinimumDefense(node));
+    addSummary(collection, node, board.id, NODES[node], summary, {}, flopMinimumDefense(node));
   }
   return { findings: [...cappedCheckFindings(collection, nodes), ...raiseFindings(collection, nodes),
     ...overfoldFindings(collection, nodes), ...overcallFindings(collection, nodes)] };
@@ -432,8 +398,7 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
   const mixFor = makeLaterMixReader(later, tierFor), collection = new Map(), baseCache = new Map();
   // Facing nodes are judged on the computed defence (defence.ts), not the tier mixes of the policy.
   const defence = defenceFor(inputs, flop, later);
-  const defended = (table, name, combo, cards, line) => observableAuditMix(defence, table, cards, name, combo, mixFor(name, combo, cards, line));
-  const observed = new Set();
+  const defended = (table, name, combo, cards, line) => defence.mix(table, cards, name, combo, mixFor(name, combo, cards, line));
   const flopPaths = flopPathSamples(inputs.spot.tree), turnPaths = laterPathSamples("turn");
   const flopTableByPath = new Map(flopPaths.map(path => [path.actions.join(","), replayFlopPath(inputs, path)]));
   const turnHistoryByNode = firstHistoryByNode(streetHistories("turn"));
@@ -442,39 +407,21 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
   const turnCheckNodes = turnNodes.filter(node => node.endsWith("_first") || LATER_NODES[node].includes("raise") || isLaterFacingNode(node));
   const riverCheckNodes = riverNodes.filter(node => node.endsWith("_first") || isLaterFacingNode(node));
 
-  const coverage = { flops: boardList.length, reachable_flops: 0, turn_boards: 0, unreachable_turn_boards: 0, river_runouts: 0, unreachable_river_runouts: 0 };
   for (const flopBoard of boardList) {
-    if (inputs.spot.history && !hasPostflopDeal(inputs, flopBoard.cards)) continue;
-    coverage.reachable_flops++;
-    const sampledRunouts = representativeRunouts(flopBoard);
-    const sampledTurns = [...new Map(sampledRunouts.map(runout => [runout.turn, runout.turnBoard])).values()];
-    const turnBoards = sampledTurns.filter(board => !inputs.spot.history || hasPostflopDeal(inputs, board));
-    const runouts = sampledRunouts.filter(runout => !inputs.spot.history || hasPostflopDeal(inputs, runout.riverBoard));
-    coverage.turn_boards += turnBoards.length;
-    coverage.unreachable_turn_boards += sampledTurns.length - turnBoards.length;
-    coverage.river_runouts += runouts.length;
-    coverage.unreachable_river_runouts += sampledRunouts.length - runouts.length;
-    for (const turnBoard of turnBoards) for (const flopPath of flopPaths) for (const requestedNode of turnCheckNodes) {
-      let node = requestedNode;
+    const runouts = representativeRunouts(flopBoard);
+    const turnBoards = [...new Map(runouts.map(runout => [runout.turn, runout.turnBoard])).values()];
+    for (const turnBoard of turnBoards) for (const flopPath of flopPaths) for (const node of turnCheckNodes) {
       const history = turnHistoryByNode.get(node);
       const state = streetState("turn", history);
       const role = laterNodeRole(node), seat = inputs.spot[role];
       const line = lineFor(flopPath.aggressor, role);
       const table = replayOrNull(inputs, turnBoard, { flop: flopPath.actions, turn: history });
-      if (usesObservableActions(inputs.spot)) {
-        if (!table) continue;
-        const key = observationKey(table, turnBoard);
-        if (observed.has(key)) continue;
-        observed.add(key); node = table.log.at(-1).node;
-        if (isLaterFacingNode(node) && !defence.context(table, turnBoard, node)) continue;
-      }
       const items = table ? defence.rangeItems(table, turnBoard, seat)
         : scaleLaterPath(scaleFlopPath(cachedBaseRange(inputs, baseCache, seat, turnBoard), role, flopPath.steps, flopMixFor, flopBoard.cards),
           role, state.steps, mixFor, turnBoard, flopPath.aggressor);
       const nodeMixFor = table ? (name, combo, cards, cardLine) => defended(table, name, combo, cards, cardLine) : mixFor;
       const summary = summarize(items, LATER_NODES[node], nodeMixFor, tierFor, node, turnBoard, line, true);
-      const minimumDefense = usesObservableActions(inputs.spot) ? defence.requirement(table, turnBoard, node)?.mdf ?? null
-        : laterMinimumDefense(node, "turn", flopTableByPath.get(flopPath.actions.join(",")), inputs);
+      const minimumDefense = laterMinimumDefense(node, "turn", flopTableByPath.get(flopPath.actions.join(",")), inputs);
       addSummary(collection, node, flopBoard.id, LATER_NODES[node], summary, {}, minimumDefense);
     }
 
@@ -486,19 +433,12 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
           if (table.stacks[inputs.spot.ip] <= 0 || table.stacks[inputs.spot.oop] <= 0) continue;
           const riverAggressor = table.lastAggressor;
           const turnSteps = turnPath.steps;
-          for (const requestedNode of riverCheckNodes) {
-            let node = requestedNode;
+          for (const node of riverCheckNodes) {
             const history = riverHistoryByNode.get(node);
             const state = streetState("river", history);
             const role = laterNodeRole(node), seat = inputs.spot[role];
             const baseItems = cachedBaseRange(inputs, baseCache, seat, runout.riverBoard);
             const defenceTable = replayOrNull(inputs, runout.riverBoard, { flop: flopPath.actions, turn: turnPath.actions, river: history });
-            if (usesObservableActions(inputs.spot)) {
-              if (!defenceTable) continue;
-              const key = observationKey(defenceTable, runout.riverBoard);
-              if (observed.has(key)) continue;
-              observed.add(key); node = defenceTable.log.at(-1).node;
-            }
             let items;
             if (defenceTable) items = defence.rangeItems(defenceTable, runout.riverBoard, seat);
             else {
@@ -513,18 +453,11 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
             if (node.endsWith("_first")) for (const action of LATER_NODES[node].filter(value => value !== "check")) {
               const size = action === "allin" ? Math.min(table.stacks[inputs.spot.ip], table.stacks[inputs.spot.oop]) / table.pot
                 : betFraction("river", action);
-              if (usesObservableActions(inputs.spot)) {
-                const group = defenceTable.log.at(-1).observation.byAction[action];
-                if (group.action !== action) continue;
-                const otherRole = role === 'ip' ? 'oop' : 'ip';
-                const call = Math.min(group.stacks[otherRole], group.committed[role] - group.committed[otherRole]);
-                targets[action] = requiredEquity({ potBefore: defenceTable.pot, wager: group.paid, call }).required;
-              } else targets[action] = size / (1 + 2 * size);
+              targets[action] = size / (1 + 2 * size);
             }
             const nodeMixFor = defenceTable ? (name, combo, cards, cardLine) => defended(defenceTable, name, combo, cards, cardLine) : mixFor;
             const summary = summarize(items, LATER_NODES[node], nodeMixFor, tierFor, node, runout.riverBoard, line, true);
-            const minimumDefense = usesObservableActions(inputs.spot) ? defence.requirement(defenceTable, runout.riverBoard, node)?.mdf ?? null
-              : laterMinimumDefense(node, "river", table, inputs);
+            const minimumDefense = laterMinimumDefense(node, "river", table, inputs);
             addSummary(collection, node, flopBoard.id, LATER_NODES[node], summary, targets, minimumDefense);
           }
         }
@@ -536,5 +469,5 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
   findings.push(...cappedCheckFindings(collection, laterNodes), ...raiseFindings(collection, turnNodes),
     ...bluffFindings(collection, riverNodes), ...overfoldFindings(collection, laterNodes),
     ...overcallFindings(collection, laterNodes));
-  return { findings, ...(inputs.spot.history ? { coverage } : {}) };
+  return { findings };
 }

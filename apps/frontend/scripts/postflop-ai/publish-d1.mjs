@@ -1,12 +1,12 @@
-import { hasCurrentActionModel } from "./observable-actions.mjs";
-import { defenceVersionFor } from "./defence.ts";
+import { DEFENCE_VERSION } from "./defence.ts";
+import { EVALUATOR_VERSION } from "../lib/equity.ts";
 import { hasPostflopDeal } from "./range-support.mjs";
 // SQL for the canonical local postflop artifacts in the reysonai D1 database (schema:
 // apps/backend/migrations). Spots whose flop policy or report is missing or stale are
 // skipped. Run through scripts/publish-d1.mjs.
 import { createHash, randomUUID } from "node:crypto";
 import { loadInputs, readArtifact, config, boards, laterSizingHash } from "./inputs.mjs";
-import { loadCandidate, loadLaterCandidate } from "./generate.mjs";
+import { loadCandidate, loadLaterCandidate, sha as policySha } from "./generate.mjs";
 import { SIMULATION_VERSION, PROFILES } from "./simulation.mjs";
 import { POSTFLOP_SPOTS } from "./spots.ts";
 
@@ -33,16 +33,41 @@ export function spotArtifacts(spot) {
   if (spot.history && !laterCandidate) return { skip: "new HU spot requires its own later policy" };
   const report = readArtifact(spot, "report");
   if (!isFreshSimulationReport(inputs, candidate, laterCandidate, report)) return { skip: "report missing, stale or incomplete" };
-  if (spot.history && [candidate, laterCandidate].some(item => item.metadata.model !== "gpt-6-astra")) return { skip: "new HU policies require the requested Astra model" };
+  // These are the adopted development-v7 policies, not the abandoned v10 experiment.
+  // Retain the actual generator attribution; an independent reviewer is not a generator.
+  if (spot.history && [candidate, laterCandidate].some(item =>
+      item.metadata.model !== "gpt-6.1-sol" || item.metadata.reasoning_effort !== "high")) {
+    return { skip: "adopted HU-v7 policies require their recorded Sol/high attribution" };
+  }
   return { spot, candidate, laterCandidate, report };
 }
 
 // Cheap publication identity gate; full audit/replay remains a separate
-// acceptance step. A stale locally recovered legacy report must be skipped.
+// acceptance step. Version identities refer to the adopted development-v7 runtime,
+// including its evaluator. The unchanged v7 report schema has no evaluator field:
+// do not invent one or accept a v10 execution merely because a spot has history.
+const ADOPTED_RUNTIME = Object.freeze({ defence: 7, simulation: 3, evaluator: 2, config: 2 });
+const isHash = value => typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
+const hasActionModelMarker = value => value != null && Object.hasOwn(value, "action_model_version");
+
 export function isFreshSimulationReport(inputs, candidate, laterCandidate, report) {
+  if (DEFENCE_VERSION !== ADOPTED_RUNTIME.defence || SIMULATION_VERSION !== ADOPTED_RUNTIME.simulation ||
+      EVALUATOR_VERSION !== ADOPTED_RUNTIME.evaluator || config.version !== ADOPTED_RUNTIME.config) return false;
+  if (!inputs?.spot || !isHash(inputs.fingerprint) || !candidate?.policy || !candidate.metadata ||
+      candidate.metadata.kind !== "ai_estimate_not_gto" || candidate.metadata.config_version !== config.version ||
+      candidate.metadata.spot !== inputs.spot.id || candidate.metadata.tree !== inputs.spot.tree ||
+      candidate.metadata.source_hash !== inputs.fingerprint || !isHash(candidate.metadata.policy_hash) ||
+      candidate.metadata.policy_hash !== policySha(candidate.policy) || hasActionModelMarker(candidate.metadata)) return false;
+  if (inputs.spot.history && !laterCandidate) return false;
+  if (laterCandidate && (!laterCandidate.policy || !laterCandidate.metadata ||
+      laterCandidate.metadata.kind !== "ai_estimate_not_gto" || laterCandidate.metadata.config_version !== config.version ||
+      laterCandidate.metadata.spot !== inputs.spot.id || laterCandidate.metadata.source_hash !== inputs.fingerprint ||
+      laterCandidate.metadata.flop_policy_hash !== candidate.metadata.policy_hash || !isHash(laterCandidate.metadata.policy_hash) ||
+      laterCandidate.metadata.policy_hash !== policySha(laterCandidate.policy) || hasActionModelMarker(laterCandidate.metadata))) return false;
   if (!report || report.kind !== "ai_estimate_not_gto" || report.version !== 1 || report.spot !== inputs.spot.id ||
       report.policy_hash !== candidate.metadata.policy_hash || report.source_hash !== inputs.fingerprint ||
-      report.simulation_version !== SIMULATION_VERSION || !hasCurrentActionModel(inputs.spot, report) || report.defence_version !== defenceVersionFor(inputs) ||
+      report.simulation_version !== SIMULATION_VERSION || hasActionModelMarker(report) || report.defence_version !== DEFENCE_VERSION ||
+      (Object.hasOwn(report, "evaluator_version") && report.evaluator_version !== EVALUATOR_VERSION) ||
       report.later_sizing_hash !== laterSizingHash() || report.seed !== config.seed ||
       report.samples_per_board_profile_seat !== config.samples_per_board_profile_seat ||
       (report.later_policy_hash ?? null) !== (laterCandidate?.metadata.policy_hash ?? null)) return false;
@@ -53,6 +78,7 @@ export function isFreshSimulationReport(inputs, candidate, laterCandidate, repor
     [`${board.id}|${profile}|${hero}`, board.split]))));
   if (!Array.isArray(report.results) || report.results.length !== expected.size) return false;
   for (const row of report.results) {
+    if (!row || typeof row !== "object") return false;
     const key = `${row.board}|${row.opponent}|${row.hero}`;
     if (!expected.has(key) || row.split !== expected.get(key)) return false;
     expected.delete(key);

@@ -8,7 +8,6 @@ type BoardRequest = ComputeSource & { board: string; history?: string[] | null }
 type ExplainRequest = BoardRequest & { node: string; cards?: string; combos?: ComboInput[]; prev?: string };
 type LaterRequest = ComputeSource & { flop: string; flopActions?: string; turn?: string; turnActions?: string; river?: string; riverActions?: string };
 type LaterExplainRequest = LaterRequest & { cards?: string; combos?: ComboInput[] };
-import { assertPostflopDeal } from "../../scripts/postflop-ai/range-support.mjs";
 import { buildInputs, sha } from "../../scripts/postflop-ai/browser-inputs.ts";
 import { flopBetTable, flopUiFacts } from "../../scripts/postflop-ai/flop-ui-facts.ts";
 import { explainLaterCombo, explainLaterCombos, laterExplainContext } from "../../scripts/postflop-ai/explain-later.ts";
@@ -43,7 +42,6 @@ function policyForLater(inputs: Inputs, candidate: Candidate, laterCandidate?: C
 export function computeBoard({ spotId, board, history = null, datasets, flopCandidate, laterCandidate, flopBase }: BoardRequest) {
   const inputs = buildInputs(spotId, datasets);
   const selected = parseFlopBoard(board);
-  if (inputs.spot.history) assertPostflopDeal(inputs, selected.cards);
   const policy = validatePolicy(flopCandidate.policy, inputs.spot.tree);
   if (flopCandidate.metadata?.source_hash !== inputs.fingerprint || flopCandidate.metadata.policy_hash !== sha(policy)) {
     throw new Error("ローカル候補の入力または方針ハッシュが一致しません。");
@@ -63,7 +61,6 @@ export function computeBoard({ spotId, board, history = null, datasets, flopCand
 export function computeExplain({ spotId, board, node, cards, combos, prev, history, datasets, flopCandidate, laterCandidate, flopBase }: ExplainRequest) {
   const inputs = buildInputs(spotId, datasets);
   const selected = parseFlopBoard(board);
-  if (inputs.spot.history) assertPostflopDeal(inputs, selected.cards);
   const previous = (FLOP_BETS as readonly (string | undefined)[]).includes(prev) ? prev! : FLOP_BETS[0];
   const policy = validatePolicy(flopCandidate.policy, inputs.spot.tree);
   if (flopCandidate.metadata?.source_hash !== inputs.fingerprint || flopCandidate.metadata.policy_hash !== sha(policy)) {
@@ -108,14 +105,6 @@ export function computeLaterView({ spotId, flop, flopActions = "", turn = "", tu
   datasets, flopCandidate, laterCandidate }: LaterRequest) {
   const inputs = buildInputs(spotId, datasets);
   const { flopPolicy, laterPolicy } = policyForLater(inputs, flopCandidate, laterCandidate);
-  if (inputs.spot.history) {
-    const context = laterExplainContext({ flop, flopActions, turn, turnActions, river, riverActions }, inputs);
-    const { decision, board, street } = context;
-    const rows = laterMixRows({ actor: decision.actor, role: decision.role, board, node: decision.node, line: decision.line,
-      inputs, flopPolicy, laterPolicy, paths: { flop: context.flopPath, turn: context.turnPath, river: context.riverPath } });
-    return { kind: "ai_estimate_not_gto", street, node: decision.node, actor: decision.actor, line: decision.line,
-      texture: runoutTexture(board), pot_bb: decision.potBb, rows };
-  }
   const flopBoard = parseFlopBoard(flop);
   const used = new Set(flopBoard.cards);
   const turnCard = singleCard(turn, "ターン", used);

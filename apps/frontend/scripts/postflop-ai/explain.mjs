@@ -7,7 +7,6 @@ import { handTier } from "./hu-hand-tier.ts";
 import { NODES, policyMix, scaleByPath, treeNodes } from "./policy.ts";
 import { FLOP_BETS, facingNode, flopBetFraction, flopState, historyFor, nodeRole, otherRole, raiseDepth } from "./tree.ts";
 import { defenceFor, replayOrNull } from "./defence.ts";
-import { observableFlopRequest } from "./observable-view-paths.mjs";
 import { averageExplanationFacts } from "./explain-aggregate.ts";
 
 const RANKS = "23456789TJQKA";
@@ -53,7 +52,6 @@ function opponentRange(node, inputs, policy, flop, hero, prev) {
   // Reach weights with the bluff cap from the engine table at the hero's decision.
   const table = replayOrNull(inputs, flop, { flop: history });
   if (table) return defenceFor(inputs, policy, null).rangeItems(table, flop, spot[role]).filter(item => !item.combo.some(card => dead.has(card)));
-  if (spot.history) throw new Error("New-HU explanation has no observable pending decision");
   const { steps } = flopState(spot.tree, history);
   return scaleByPath(seatRange(inputs, spot[role], flop).filter(item => !item.combo.some(card => dead.has(card))), role, steps, policy, flop);
 }
@@ -94,7 +92,6 @@ function group(key, items, all) {
 export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, policy }) {
   if (!NODES[node] || !treeNodes(inputs.spot.tree).includes(node)) throw new Error("未対応の判断です。");
   const flop = boardCards;
-  if (inputs.spot.history) node = observableFlopRequest(inputs.spot, node, historyFor(inputs.spot.tree, node, prev)).node;
   const hero = parseCards(cards, 2);
   if (hero.some(card => flop.includes(card))) throw new Error("ボードと重なるカードです。");
   const boards = runouts(flop, hero, seedFor(`${cards}|${node}`));
@@ -114,7 +111,6 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
 
   const vsResponse = (responseNode, action, line) => {
     const table = replayOrNull(inputs, flop, { flop: [...history, ...line] });
-    if (inputs.spot.history && !table) return;
     const response = villains.map(item => {
       const base = policyMix(policy, responseNode, item.combo, flop);
       const mix = table ? defence.mix(table, flop, responseNode, item.combo, base) : base;
@@ -134,7 +130,7 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
   };
 
   if (FIRST_NODES[node]) {
-    for (const bet of table?.log.at(-1)?.observation ? table.log.at(-1).observation.classes.filter(group => group.family === "bet").map(group => group.action) : FLOP_BETS) vsResponse(facingNode(FIRST_NODES[node], bet), bet, [bet]);
+    for (const bet of FLOP_BETS) vsResponse(facingNode(FIRST_NODES[node], bet), bet, [bet]);
     actions.check = { groups: [group("ahead", ahead, total), group("behind", behind, total)] };
     if (table) bettingFacts = defence.bettingFacts(table, flop, node, hero);
   } else {
@@ -152,7 +148,7 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
     const caught = { groups: [group("ahead", ahead, total), group("behind", behind, total)], required };
     actions.call = caught;
     actions.fold = caught;
-    if ((table?.log.at(-1)?.observation ? table.log.at(-1).observation.classes.map(group => group.action) : NODES[node]).includes("raise")) {
+    if (NODES[node].includes("raise")) {
       const answer = flopState(inputs.spot.tree, [...history, "raise"]).node;
       if (answer) vsResponse(answer, "raise", ["raise"]);
     }

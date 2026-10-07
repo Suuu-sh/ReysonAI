@@ -10,7 +10,7 @@ import { loadCandidate, loadLaterCandidate, sha } from './generate.mjs';
 import { POSTFLOP_SPOTS } from './spots.ts';
 import { isFreshSimulationReport } from './publish-d1.mjs';
 import { SIMULATION_VERSION } from './simulation.mjs';
-import { defenceVersionFor } from './defence.ts';
+import { DEFENCE_VERSION } from './defence.ts';
 import { allBoardIdentity, writeImmutableAllBoardOutput } from './all-board-checkpoints.mjs';
 import { packageAllBoardCompanion } from './package-all-board-companion.mjs';
 import { summaryPathFor } from './all-board-companion.mjs';
@@ -41,7 +41,7 @@ function pair(id) {
     }
   }
   return { inputs, flop, later, value: { id, slug: spot.slug, stage: spot.stage, reach: spot.reach,
-    defence_version: defenceVersionFor(inputs),
+    defence_version: DEFENCE_VERSION,
     source_fingerprint: inputs.fingerprint, flop_policy_hash: flop.metadata.policy_hash, later_policy_hash: later.metadata.policy_hash,
     artifacts, report_path: localPath(paths.report), all_board_identity_hash: sha(allBoardIdentity(inputs, flop, later, 'all')) } };
 }

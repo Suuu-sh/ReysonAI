@@ -233,26 +233,18 @@ export function playHand(setup: HandSetup): HandResult {
     if (street !== currentStreet) { currentStreet = street; streetBase = { ...table.invested }; }
     const entry = table.log.at(-1);
     const actions: string[] = (street === "flop" ? NODES : LATER_NODES)[node].filter((act: string) => act !== "raise" || entry?.canRaise);
-    const observation = entry?.observation;
-    const publicOptions = observation?.classes.map(group => ({ key: group.action,
-      to: group.family === "check" || group.family === "fold" ? undefined : group.amountBb, allIn: group.allIn }));
     const bets = streetBets();
     let action: string;
     if (seat === setup.human) {
       const toCall = round(Math.max(...Object.values(bets)) - (bets[seat] ?? 0));
-      if (!humanQueue.length) throw new Await({ street, pos: seat, options: publicOptions ?? actions.map(key => ({ key, to: key === "fold" || key === "check" ? undefined : sizeOf(street, key, bets, seat) })),
+      if (!humanQueue.length) throw new Await({ street, pos: seat, options: actions.map(key => ({ key, to: key === "fold" || key === "check" ? undefined : sizeOf(street, key, bets, seat) })),
         pot: round(table.pot), board: boardSoFar(cards.length), toCall });
       action = humanQueue.shift()!;
       if (!actions.includes(action)) throw new Error(`Illegal ${street} action ${action} for ${seat}`);
     } else {
       action = setup.agents.postflop({ kit, table, street, seat, node, board: cards, hole: hole[seat], line, actions, random: drawFor() }).action;
     }
-    const observed = observation?.byAction[action];
-    pendingEntry = observed
-      ? { street, pos: seat, action: observed.action,
-        to: observed.family === "check" || observed.family === "fold" ? undefined : observed.amountBb,
-        allIn: observed.allIn, pot: table.pot }
-      : { street, pos: seat, action, to: action === "fold" || action === "check" ? undefined : sizeOf(street, action, bets, seat), pot: table.pot };
+    pendingEntry = { street, pos: seat, action, to: action === "fold" || action === "check" ? undefined : sizeOf(street, action, bets, seat), pot: table.pot };
     log.push(pendingEntry);
     if (setup.fastFold && seat === setup.human && action === "fold") throw new FastFold({ status: "done", holeCards: holeText, board: boardSoFar(cards.length), log, showdown: false, returns: { [seat]: -round((state.committed[seat] ?? 0) + table.invested[seat]) }, pot: round(table.pot) });
     return action;

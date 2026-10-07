@@ -7,7 +7,6 @@ type TierShares = Record<HandTier, number>;
 export type RangeFacts = { street: string; role: PlayerRole; pfr: PlayerRole | null; tiers: { hero: TierShares; opp: TierShares };
  hero_strong: number; opp_strong: number; spr?: number | null; runout_shift?: { hero: number; opp: number };
  sizes?: Record<string, { share: number; tiers: TierShares }> };
-import { assertPostflopDeal } from "./range-support.mjs";
 // Range-level facts of one decision (both players' reach ranges by hand tier, the bettor's composition per bet
 // size, SPR and how the last card shifted the ranges). Hero independent, cheap (one pass over each range) and
 // never stored: the stored flop base keeps its format. Used only by the advanced-style per-action explanations.
@@ -18,7 +17,6 @@ import { comboId, defenceFor, replayOrNull } from "./defence.ts";
 import { LATER_NODES, laterNodeRole } from "./later-tree.ts";
 import { laterPolicyMix } from "./later-policy.ts";
 import { NODES, nodeRole, policyMix } from "./policy.ts";
-import { canonicalNodeForTable } from "./observable-actions.mjs";
 import { historyFor } from "./tree.ts";
 
 const round4 = (v: number): number => Math.round(v * 1e4) / 1e4;
@@ -42,10 +40,7 @@ const strongOf = (t: Partial<TierShares>): number => (t.monster ?? 0) + (t.stron
 
 // { board, table, node, role, laterLine (null on the flop) } -> facts, or null when the line has no table.
 export function rangeFactsFor({ inputs, flopPolicy, laterPolicy = null, board, table, node, role, line = null }: { inputs: Inputs; flopPolicy: FlopPolicy; laterPolicy?: LaterPolicy | null; board: readonly number[]; table: Table | null; node: string; role: PlayerRole; line?: PreviousLine | null }): RangeFacts | null {
-  if (inputs.spot.history) assertPostflopDeal(inputs, board);
   if (!table) return null;
-  node = canonicalNodeForTable(table, node);
-  if (inputs.spot.history && table.log.at(-1)!.seat !== inputs.spot[role]) throw new Error("Observable actor does not match history");
   const defence = defenceFor(inputs, flopPolicy, laterPolicy);
   const heroSeat = inputs.spot[role], oppSeat = inputs.spot[role === "ip" ? "oop" : "ip"];
   const heroItems = comboRange(inputs.seatRows[heroSeat], "freq", board);
@@ -63,7 +58,7 @@ export function rangeFactsFor({ inputs, flopPolicy, laterPolicy = null, board, t
     const heroPrev = tiersOf(heroItems, heroDense, prev), oppPrev = tiersOf(oppItems, oppDense, prev);
     facts.runout_shift = { hero: round4(strongOf(hero) - strongOf(heroPrev)), opp: round4(strongOf(opp) - strongOf(oppPrev)) };
   }
-  const actions = (pending?.observation ? pending.observation.classes.map(group => group.action) : NODES[node] ?? LATER_NODES[node] ?? []).filter(aggressive);
+  const actions = (NODES[node] ?? LATER_NODES[node] ?? []).filter(aggressive);
   if (actions.length) {
     const sums = Object.fromEntries(actions.map(a => [a, { tiers: emptyTiers(), total: 0 }]));
     let reach = 0;
@@ -72,7 +67,7 @@ export function rangeFactsFor({ inputs, flopPolicy, laterPolicy = null, board, t
       if (!(w > 0)) continue;
       const base = line === null ? policyMix(flopPolicy, node, item.combo, board)
         : laterPolicyMix(laterPolicy!, node, item.combo, board, line);
-      const mix = defence.observableMix(table, board, node, item.combo, base);
+      const mix = defence.mix(table, board, node, item.combo, base);
       const tier = tierOf(item.combo, board);
       reach += w;
       for (const a of actions) { const x = w * (mix[a] ?? 0) / 100; sums[a].tiers[tier] += x; sums[a].total += x; }
@@ -91,7 +86,7 @@ export function flopRangeFacts({ inputs, policy, laterPolicy = null, boardCards,
   } catch { return null; }
 }
 
-export function laterRangeFacts({ inputs, flopPolicy, laterPolicy, context }: { inputs: Inputs; flopPolicy: FlopPolicy; laterPolicy: LaterPolicy; context: Pick<LaterExplainContext, "board" | "decision" | "flopPath" | "turnPath" | "riverPath" | "street"> }) {
+export function laterRangeFacts({ inputs, flopPolicy, laterPolicy, context }: { inputs: Inputs; flopPolicy: FlopPolicy; laterPolicy: LaterPolicy; context: LaterExplainContext }) {
   try {
     const { board, decision } = context;
     const table = replayOrNull(inputs, board, { flop: context.flopPath, turn: context.turnPath,

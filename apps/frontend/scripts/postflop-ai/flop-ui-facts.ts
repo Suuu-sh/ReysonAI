@@ -8,7 +8,6 @@ export type FlopFactOptions = { boardCards: readonly number[]; node: string; car
 type ResponseCombo = WeightedCombo & { fold: number };
 type Context = { defence: ReturnType<typeof defenceFor>; table: Table | null; villains: WeightedCombo[]; responses: Record<string, ResponseCombo[]>;
   tables?: RankTable[]; calledRanges?: Record<string, ReturnType<typeof makeRange>> };
-import { assertPostflopDeal } from "./range-support.mjs";
 // Only the numeric facts consumed by postflop-explanation.ts. No obsolete evidence groups
 // or independent 120-runout equity simulation: UI equity already comes from defence/betting.
 // Direct and stored paths use this same projection in canonical suit coordinates.
@@ -18,7 +17,6 @@ import { equityVersus, indexOf, makeRange, weightOf } from "./range-equity.ts";
 import { seatRange } from "./browser-inputs.ts";
 import { NODES, policyMix, scaleByPath } from "./policy.ts";
 import { FLOP_BETS, facingNode, flopState, historyFor, nodeRole, otherRole } from "./tree.ts";
-import { observableFlopRequest } from "./observable-view-paths.mjs";
 import { averageExplanationFacts } from "./explain-aggregate.ts";
 
 const caches = new WeakMap<Inputs, WeakMap<FlopPolicy, Map<string, Context>>>();
@@ -43,22 +41,19 @@ function contextFor(inputs: Inputs, policy: FlopPolicy, board: readonly number[]
   if (cache.size >= 120) cache.delete(cache.keys().next().value!);
   const defence = defenceFor(inputs, policy, null);
   const table = replayOrNull(inputs, board, { flop: history });
-  if (inputs.spot.history && !table) throw new Error("New-HU facts have no observable pending decision");
   const role = nodeRole(node), opponent = inputs.spot[otherRole(role)];
   const villains = table ? defence.rangeItems(table, board, opponent)
     : scaleByPath(seatRange(inputs, opponent, board), otherRole(role), flopState(inputs.spot.tree, history).steps, policy, board);
   const responses: Record<string, ResponseCombo[]> = {};
   const response = (action: string, responseNode: string) => {
     const after = replayOrNull(inputs, board, { flop: [...history, action] });
-    if (inputs.spot.history && !after) return;
     responses[action] = villains.map(item => {
       const base = policyMix(policy, responseNode, item.combo, board);
       return { ...item, fold: (after ? defence.mix(after, board, responseNode, item.combo, base) : base).fold / 100 };
     });
   };
-  const observableActions = table?.log.at(-1)?.observation?.classes.map(group => group.action);
-  if (node.endsWith("_first")) for (const bet of observableActions ? observableActions.filter(action => action !== "check") : FLOP_BETS) response(bet, facingNode(role, bet));
-  else if ((observableActions ?? NODES[node]).includes("raise")) {
+  if (node.endsWith("_first")) for (const bet of FLOP_BETS) response(bet, facingNode(role, bet));
+  else if (NODES[node].includes("raise")) {
     // Whoever answers the raise: the node after history + raise (a re-raise chain has several).
     const answer = flopState(inputs.spot.tree, [...history, "raise"]).node;
     if (answer) response("raise", answer);
@@ -69,9 +64,8 @@ function contextFor(inputs: Inputs, policy: FlopPolicy, board: readonly number[]
 }
 
 export function flopUiComboFactsCanonical({ boardCards, node, cards, history, prev = "bet33", inputs, policy }: FlopFactOptions) {
-  if (inputs.spot.history) assertPostflopDeal(inputs, boardCards);
   history ??= historyFor(inputs.spot.tree, node, prev);
-  ({ node, history } = observableFlopRequest(inputs.spot, node, history));
+  if (flopState(inputs.spot.tree, history).node !== node) throw new Error("Flop explanation history does not reach the node");
   const hero = cardIds(cards, 2);
   if (hero.some(card => boardCards.includes(card))) throw new Error("ボードと重なるカードです。");
   const { defence, table, villains, responses } = contextFor(inputs, policy, boardCards, node, history);
@@ -91,9 +85,9 @@ export function flopUiComboFactsCanonical({ boardCards, node, cards, history, pr
       ...pick(facing, ["node", "street", "role", "pot_before_bb", "bet_bb", "call_bb", "rake_bb", "required_equity",
         "equity", "realization", "realized_equity", "percentile", "defence_frequency", "mdf", "blockers"]),
       bettor_range: pick(facing.bettor_range, ["value_pct", "bluff_pct"]),
-      faced_action: pick(facing.faced_action, ["action", "capped", "alpha", "bluff_share_after_pct", "allIn", "amountBb", "aliases", "wasReduced", "removed_bluff"]),
+      faced_action: pick(facing.faced_action, ["action", "capped", "alpha", "bluff_share_after_pct"]),
     } } : {}), ...(betting ? { betting: { equity_vs_defender: betting.equity_vs_defender,
-      actions: betting.actions.map(action => pick(action, ["action", "alpha", "bluffs_per_100_value", "capped", "allIn", "amountBb", "aliases", "wasReduced", "removed_bluff"])) } } : {}) };
+      actions: betting.actions.map(action => pick(action, ["action", "alpha", "bluffs_per_100_value", "capped"])) } } : {}) };
 }
 
 // The final boards the defence evaluates equity over (same measure as defence.mjs finalTables).
@@ -108,11 +102,10 @@ function finalTables(board: readonly number[]): RankTable[] {
 // continues (1 - fold) after each aggressive action, and against the whole range for a check. Computed
 // from the same contexts as the fold shares, so nothing about the stored flop base changes.
 export function flopBetTableCanonical({ boardCards, node, cards, history, prev = "bet33", inputs, policy }: FlopFactOptions) {
-  if (inputs.spot.history) assertPostflopDeal(inputs, boardCards);
   const betting = node.endsWith("_first") || NODES[node]?.includes("raise");
   if (!betting) return {};
   history ??= historyFor(inputs.spot.tree, node, prev);
-  ({ node, history } = observableFlopRequest(inputs.spot, node, history));
+  if (flopState(inputs.spot.tree, history).node !== node) throw new Error("Flop explanation history does not reach the node");
   const hero = cardIds(cards, 2);
   if (hero.some(card => boardCards.includes(card))) throw new Error("ボードと重なるカードです。");
   const context = contextFor(inputs, policy, boardCards, node, history);

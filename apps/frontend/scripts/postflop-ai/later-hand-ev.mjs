@@ -1,4 +1,3 @@
-import { actionModelIdentity, hasCurrentActionModel } from "./observable-actions.mjs";
 // 本番はオンデマンドの laterHandEvForHand を使う。事前計算は検証用。
 // Per-hand action EV/EQR for representative turn and river nodes. Values are sampled by
 // AI-policy self-play and are local estimates, not GTO or solver output.
@@ -14,7 +13,7 @@ import { validateLaterPolicy } from "./later-policy.ts";
 import { streetHistories } from "./later-tree.ts";
 import { FLOP_BETS, flopState } from "./tree.ts";
 import { DEFAULT_SPOT_ID } from "./spots.ts";
-import { defenceVersionFor } from "./defence.ts";
+import { DEFENCE_VERSION } from "./defence.ts";
 import { LATER_HAND_EV_FOR_HAND_DEFAULT_SAMPLES, computeNode, laterHandEvForHand, laterHandEvKey, makeLaterMixReader } from "./later-hand-ev-core.mjs";
 
 // The on-demand one-hand entry point lives in the pure core (shared with the browser worker).
@@ -99,8 +98,11 @@ function artifactPath(inputs) {
 }
 
 function matchesLaterHandEv(data, inputs, candidate, laterCandidate) {
-  return Boolean(laterCandidate) && data?.kind === "ai_estimate_not_gto" && data.version === LATER_HAND_EV_VERSION && hasCurrentActionModel(inputs.spot, data) &&
-    (!inputs.spot.history || data.defence_version === defenceVersionFor(inputs)) &&
+  // Validation-only: v7 saved no defence marker here; preserve that schema,
+  // while refusing explicit incompatible defence or experimental action models.
+  return Boolean(laterCandidate) && data?.kind === "ai_estimate_not_gto" && data.version === LATER_HAND_EV_VERSION &&
+    !Object.hasOwn(data, "action_model_version") &&
+    (!Object.hasOwn(data, "defence_version") || data.defence_version === DEFENCE_VERSION) &&
     data.source_hash === inputs.fingerprint && data.policy_hash === candidate?.metadata?.policy_hash &&
     data.later_policy_hash === sha(laterCandidate.policy) && data.method === "exact_expectation" &&
     data.seed === config.seed;
@@ -154,8 +156,7 @@ export async function generateLaterHandEv({ spotId = DEFAULT_SPOT_ID, samples = 
   }
   const flopPolicy = validatePolicy(candidate.policy, inputs.spot.tree);
   const laterPolicy = validateLaterPolicy(laterCandidate.policy);
-  const result = { kind: "ai_estimate_not_gto", version: LATER_HAND_EV_VERSION, ...actionModelIdentity(inputs.spot), source_hash: inputs.fingerprint,
-    ...(inputs.spot.history ? { defence_version: defenceVersionFor(inputs) } : {}),
+  const result = { kind: "ai_estimate_not_gto", version: LATER_HAND_EV_VERSION, source_hash: inputs.fingerprint,
     policy_hash: candidate.metadata.policy_hash, later_policy_hash: sha(laterPolicy), method: "exact_expectation", seed: config.seed, boards: {} };
   result.boards = await generateBoardBatch(spotId, samples, onBoard);
   const path = artifactPath(inputs);

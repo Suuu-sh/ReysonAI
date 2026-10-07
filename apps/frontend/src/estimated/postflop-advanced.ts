@@ -6,7 +6,6 @@ import { narrative, translateExplanationCopy, type NarrativeLanguage } from "../
 // Pure and numberless. Every claim is chosen by qualitative thresholds over computed facts: the per-hand facts
 // (fold shares, equity when called, defence facts) and the range-level facts (`explain.range_facts`: tier shares of
 // both reach ranges, the bettor's composition per size, SPR, how the last card shifted the ranges).
-import { actionForCopy } from "./postflop-action-copy.ts";
 import { handRole } from "./postflop-explanation.ts";
 import { betSentences, checkSentences, describeHand, displayName, facingHandSentences, featuresForInput, handHeadline, roleFromFeatures, type HC } from "./postflop-hand-copy.ts";
 
@@ -21,7 +20,6 @@ export type AdvancedInput = {
   labels?: Record<string, string>;
   // The raise option is an all-in at this decision (its stack caps it).
   raiseAllIn?: boolean;
-  actionMetadata?: Record<string, { allIn?: boolean; amountBb?: number }>;
   board?: string; cards?: string; combos?: { cards: string; weight: number }[];
 };
 export type AdvancedBlock = { action: string; label: string; frequency: number; text: string };
@@ -273,9 +271,10 @@ function textureNotes(c: Ctx): string[] {
       "ランアウトはブランクで、レンジはほとんど変わらず、前のストリートの方針がそのまま続きます。"],
   };
   const parts: string[] = [];
-  if (base[t]) parts.push(base[t][en ? 0 : 1]);
+  const diff = finite(shift?.hero) && finite(shift?.opp) ? shift.hero - shift.opp : 0;
+  // A "blank" that still moves equity by 4pt+ is not a blank for these ranges; keep only the shift sentence.
+  if (base[t] && !(t === "blank" && Math.abs(diff) >= 0.04)) parts.push(base[t][en ? 0 : 1]);
   if (finite(shift?.hero) && finite(shift?.opp)) {
-    const diff = shift.hero - shift.opp;
     if (diff >= 0.04) parts.push(en ? narrative("This card helps your range more than the opponent's, so more of your range can keep betting.", [], en) : "このカードはあなたのレンジに有利に働き、より多くの手がベットを続けられます。");
     else if (diff <= -0.04) parts.push(en ? narrative("This card helps the opponent's range more than yours, so expect fewer barrels and more checking.", [], en) : "このカードは相手のレンジに有利に働き、バレルは減ってチェックが増えます。");
   }
@@ -286,7 +285,6 @@ const hashOf = (text: string) => { let h = 2166136261; for (const ch of text) h 
 
 export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanation {
   const en = input.locale === "ja" ? false : input.locale;
-  const copyAction = (action: string) => actionForCopy(action, input.explain, input.actionMetadata);
   const facing = !!input.explain?.defence || Object.keys(input.actionMix).some(a => a === "fold" || a === "call");
   const rf = input.explain?.range_facts ?? null;
   const entries = Object.entries(input.actionMix).filter(([, f]) => finite(f) && f! > 0)
@@ -333,9 +331,9 @@ export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanat
     else {
       const f = foldLevel(input.explain?.actions?.[action]?.foldShare);
       const cl = calledLevel(input.explain?.bet_table?.actions?.[action]?.calledEquity);
-      sentences.push(...betSentences(desc, copyAction(action), roleOf(action), hc), responseSentence(f, cl, ctx, desc.tag));
+      sentences.push(...betSentences(desc, action, roleOf(action), hc), responseSentence(f, cl, ctx, desc.tag));
     }
-    blocks.push({ action, label: input.labels?.[action] ?? LABELS[en ? "en" : "ja"][copyAction(action)] ?? action, frequency, text: "" });
+    blocks.push({ action, label: input.labels?.[action] ?? LABELS[en ? "en" : "ja"][action] ?? action, frequency, text: "" });
     blocks[blocks.length - 1]._s = sentences;
   }
   // The single range-level sentence of the explanation: one of the available range statements (advantage, texture,
@@ -344,8 +342,8 @@ export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanat
   const pool: { texture: boolean; text: string }[] = [
     { texture: false, text: advantageSentence(ctx) },
     ...textureNotes(ctx).map(text => ({ texture: true, text })),
-    { texture: false, text: topAction && !facing ? sizeSentence(copyAction(topAction), kinds[topAction], ctx) : "" },
-    { texture: false, text: streetSentence(copyAction(topAction ?? ""), "", ctx) },
+    { texture: false, text: topAction && !facing ? sizeSentence(topAction, kinds[topAction], ctx) : "" },
+    { texture: false, text: streetSentence(topAction ?? "", "", ctx) },
     { texture: false, text: sprNote(ctx) },
     { texture: false, text: bettorSentence(ctx) },
   ].filter(x => x.text);
@@ -354,6 +352,10 @@ export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanat
     const s: string[] = b._s!;
     delete b._s;
     b.text = finish(b === topBlock && pick && !pick.texture ? [...s.slice(0, 5), pick.text] : s);
+    // Sizes of the same action share their reasons, which the de-duplication keeps only once.
+    if (!b.text) b.text = en
+      ? narrative("This size is mixed in less often for the same reasons as the main action.", [], en)
+      : "このサイズは、主なアクションと同じ理由で、低い頻度で混ぜます。";
   }
   const d = input.explain?.defence;
   if (facing && d && (input.actionMix.call ?? 0) === 0 && (input.actionMix.fold ?? 0) >= 0.95 && finite(d.realized_equity) && finite(d.required_equity) && d.realized_equity >= d.required_equity) {
@@ -361,14 +363,12 @@ export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanat
       ? narrative("{0} has {1}, enough to continue, but it sits near the bottom of the continuing range, so the plan folds it and keeps the defence on better hands.", [desc.name, desc.short], en)
       : `${desc.name}は${desc.short}で続行できる強さがありますが、続行レンジの下のほうなので、より良い手で守る方針でフォールドを選びます。`]) });
   } else if (!facing && !names.some(aggressive) && desc.m === "nuts" && Object.keys(input.actionMix).some(aggressive)) {
-    const observable = input.actionMetadata || input.explain?.betting?.actions?.some(item => "allIn" in item);
-    const alternative = observable ? Object.keys(input.actionMix).find(aggressive)! : "bet75";
-    blocks.push({ action: alternative, label: input.labels?.[alternative] ?? LABELS[en ? "en" : "ja"][copyAction(alternative)], frequency: 0, text: finish([en
+    blocks.push({ action: "bet75", label: LABELS[en ? "en" : "ja"].bet75, frequency: 0, text: finish([en
       ? narrative("{0} has {1}, so a bet is not used: slowplaying keeps worse hands in and the checking range uncapped.", [desc.name, desc.made || desc.short], en)
       : `${desc.name}は${desc.made || desc.short}で、ベットは使いません。スロープレイで劣る手を残し、チェックレンジのキャップを防ぎます。`]) });
   }
   const main = names[0] ?? "check";
-  const headline = handHeadline(desc, copyAction(main), roleOf(main), facing, hc);
+  const headline = handHeadline(desc, main, roleOf(main), facing, hc);
   return { headline, blocks: blocks.map(block => ({ ...block, label: translateExplanationCopy(block.label, input.locale) })), ...(pick?.texture ? { texture: pick.text } : {}) };
 }
 

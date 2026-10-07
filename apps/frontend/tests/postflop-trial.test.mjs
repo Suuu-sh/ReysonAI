@@ -89,7 +89,7 @@ test("every saved open response and 3bet response becomes a heads-up flop spot",
   assert.equal(spotById("BTN_open_BB_call").slug, "btn-bb-srp-v1");
   assert.equal(spotById("SB_open_BB_call").slug, "sb-bb-srp-v1");
   assert.equal(spotById("BTN_open_BB_3bet_call").slug, "btn-bb-3bp-v1");
-  assert.match(artifactPaths(spotById()).candidate, /\.local\/postflop-ai\/btn-bb-srp-v1-policy\.json$/);
+  assert.match(artifactPaths(spotById()).candidate, /scripts\/data\/postflop-ai\/policies\/btn-bb-srp-v1-policy\.json$/);
   assert.match(artifactPaths(spotById("CO_open_BTN_call")).handEv, /co-btn-srp-v1-hand-ev\.json$/);
   assert.equal(spotFor("BB", "SB"), null);
   assert.equal(threeBetSpotFor("SB", "BB").id, "SB_open_BB_3bet_call");

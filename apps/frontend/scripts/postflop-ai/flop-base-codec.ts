@@ -12,8 +12,8 @@ type VarintColumn = [1, number, string, number?];
 type XorResidual = [8, number, string];
 type Residual = LiteralColumn | VarintColumn | XorResidual;
 export type EncodedColumn = LiteralColumn | VarintColumn | [...Prediction, Residual];
-export type CodecView = { unavailable?: boolean; node: string; seat: string; actions: readonly string[]; rows: StrategyRow[] };
-export type PackedView<C = unknown[]> = { unavailable?: boolean; node: string; seat: string; actions: readonly string[]; lengths: number[];
+export type CodecView = { node: string; seat: string; actions: readonly string[]; rows: StrategyRow[] };
+export type PackedView<C = unknown[]> = { node: string; seat: string; actions: readonly string[]; lengths: number[];
   rows: PackedFrame<Omit<StrategyRow, "combos">, C>; combos: PackedFrame<StrategyCombo, C> };
 export type BaseHistory<F, C = unknown[]> = { view: PackedView<C>; combo_facts: PackedFrame<F, C>; class_facts: PackedFrame<F | null, C> };
 export type FlopBase<F = unknown, C = unknown[]> = { kind: string; mode: string; spot: string; flop: string;
@@ -76,14 +76,14 @@ export function packView(view: CodecView): PackedView {
   const rows = view.rows.map(({ combos: detail, ...row }) => {
     lengths.push(detail.length); combos.push(...detail); return row;
   });
-  return { node: view.node, seat: view.seat, actions: view.actions, ...(view.unavailable ? { unavailable: true } : {}), lengths,
+  return { node: view.node, seat: view.seat, actions: view.actions, lengths,
     rows: packFrame(rows), combos: packFrame(combos) };
 }
 export function unpackView(view: PackedView): CodecView {
   const rows = unpackFrame(view.rows), combos = unpackFrame(view.combos);
   let at = 0;
   rows.forEach((row, index) => { (row as StrategyRow).combos = combos.slice(at, at += view.lengths[index]); });
-  return { node: view.node, seat: view.seat, actions: view.actions, ...(view.unavailable ? { unavailable: true } : {}), rows: rows as StrategyRow[] };
+  return { node: view.node, seat: view.seat, actions: view.actions, rows: rows as StrategyRow[] };
 }
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

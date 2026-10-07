@@ -1,5 +1,3 @@
-import { actionModelIdentity } from "./observable-actions.mjs";
-import { hasPostflopDeal } from "./range-support.mjs";
 import { createHash } from "node:crypto";
 import { seedFor, seededRandom } from "../lib/equity.ts";
 import { handTier } from "./hu-hand-tier.ts";
@@ -9,7 +7,7 @@ import { laterPolicyMix, referenceLaterMix, referenceLaterPolicy, validateLaterP
 import { LATER_NODES } from "./later-tree.ts";
 import { boards, config, laterSizingHash, makeSampler, samplePair, seatRange } from "./inputs.mjs";
 import { spotById } from "./spots.ts";
-import { defenceVersionFor, defenceFor } from "./defence.ts";
+import { DEFENCE_VERSION, defenceFor } from "./defence.ts";
 
 const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 const round = value => Math.round(value * 100) / 100;
@@ -104,27 +102,20 @@ function stats(values) {
 // laterCandidate may be the raw policy (like candidate) or the loadLaterCandidate artifact.
 // The candidate plays the computed defence at facing nodes (`computedDefence: false` plays its
 // policy mixes as saved, e.g. the reference-versus-reference drift check).
-export function simulate(inputs, candidate, samples = config.samples_per_board_profile_seat, laterCandidate = null, { computedDefence = true, boardList = boards(), cacheBatchSize = 512 } = {}) {
+export function simulate(inputs, candidate, samples = config.samples_per_board_profile_seat, laterCandidate = null, { computedDefence = true, boardList = boards() } = {}) {
   if (!Number.isInteger(samples) || samples < 1) throw new Error("Invalid simulation sample count");
-  if (!Number.isInteger(cacheBatchSize) || cacheBatchSize < 0) throw new Error("Invalid simulation cache batch size");
   const { spot } = inputs;
   const referencePolicy = referencePolicyFor(spot.tree);
   const laterPolicy = laterCandidate ? validateLaterPolicy(laterCandidate.policy ?? laterCandidate) : referenceLater;
   const defence = computedDefence ? defenceFor(inputs, candidate, laterPolicy) : null;
   const results = [];
   for (const board of boardList) {
-    if (spot.history && !hasPostflopDeal(inputs, board.cards)) continue;
-    // Cache lifetime is not part of a strategy or random stream. Completed
-    // boards and bounded batches are recomputed if revisited, rather than
-    // retaining thousands of context graphs beyond the worker heap budget.
-    defence?.releaseBoardCaches();
     const ip = makeSampler(seatRange(inputs, spot.ip, board.cards));
     const oop = makeSampler(seatRange(inputs, spot.oop, board.cards));
     for (const profile of PROFILES) for (const hero of [spot.ip, spot.oop]) {
       const random = seededRandom(seedFor(`${config.seed}|${board.id}|${profile}|${hero}`));
       const candidateEvs = [], baselineEvs = [], differences = [];
       for (let i = 0; i < samples; i++) {
-        if (cacheBatchSize && i % cacheBatchSize === 0) defence?.releaseBoardCaches();
         const hands = samplePair(ip, oop, random, spot);
         const runout = dealRunout(hands, board.cards, random);
         const randoms = Array.from({ length: 24 }, () => random());
@@ -143,12 +134,10 @@ export function simulate(inputs, candidate, samples = config.samples_per_board_p
 export function simulationReport(inputs, candidate, samples, laterCandidate, results, { computedDefence = true } = {}) {
   const laterPolicy = laterCandidate ? laterCandidate.policy ?? laterCandidate : referenceLater;
   const { spot } = inputs;
-  const unreachable = spot.history ? boards().filter(board => !hasPostflopDeal(inputs, board.cards)).map(board => board.id) : [];
-  return { kind: "ai_estimate_not_gto", version: 1, simulation_version: SIMULATION_VERSION, ...actionModelIdentity(spot),
+  return { kind: "ai_estimate_not_gto", version: 1, simulation_version: SIMULATION_VERSION,
     spot: spot.id, source_hash: inputs.fingerprint,
-    ...(unreachable.length ? { unreachable_boards: unreachable } : {}),
     later_sizing_hash: laterSizingHash(),
     ...(laterCandidate ? { later_policy_hash: sha(laterPolicy) } : {}),
-    ...(computedDefence ? { defence_version: defenceVersionFor(inputs) } : {}),
+    ...(computedDefence ? { defence_version: DEFENCE_VERSION } : {}),
     policy_hash: sha(candidate), samples_per_board_profile_seat: samples, seed: config.seed, results };
 }

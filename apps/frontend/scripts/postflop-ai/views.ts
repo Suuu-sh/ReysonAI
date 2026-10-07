@@ -3,7 +3,6 @@ import type { PlayerRole } from "./tree.ts";
 import type { WeightedCombo } from "../lib/equity.ts";
 import type { ActionPaths } from "./engine.ts";
 export type FlopHistoryView = StrategyNode & { node: string };
-import { assertPostflopDeal } from "./range-support.mjs";
 // Range-weighted mix tables of the read-only postflop views. Pure and shared by the Node view
 // (local-view.mjs) and the browser compute layer (src/estimated/postflop-compute.ts) so both build
 // exactly the same rows. Facing decisions use the computed defence (defence.mjs); every other
@@ -16,7 +15,6 @@ import { laterPolicyMix } from "./later-policy.ts";
 import { NODES, nodeRole, policyMix, scaleByPath, treeNodes } from "./policy.ts";
 import { FLOP_BETS, flopState, historyFor, treeHistories } from "./tree.ts";
 import { comboId, defenceFor, replayOrNull } from "./defence.ts";
-import { replayObservableStreet, canonicalNodeForTable } from "./observable-actions.mjs";
 import { canonicalFlop, remapFlopNodes } from "./flop-isomorphism.ts";
 
 const cardText = (card: number): string => "23456789TJQKA"[card >> 2] + "cdhs"[card & 3];
@@ -42,22 +40,18 @@ export function flopNodes(inputs: Inputs, policy: FlopPolicy, boardCards: readon
 
 // The raw canonical-coordinate implementation is also used by the offline base generator.
 export function flopNodesCanonical(inputs: Inputs, policy: FlopPolicy, boardCards: readonly number[], history: string[] | null = null): StrategyNodes {
-  if (inputs.spot.history) assertPostflopDeal(inputs, boardCards);
   const { spot } = inputs;
   const defence = defenceFor(inputs, policy, null);
   return Object.fromEntries(treeNodes(spot.tree).map(node => {
-    let actions: readonly string[] = NODES[node];
+    const actions = NODES[node];
     const seat = spot[nodeRole(node)]; // btn_* / ip_* = IP, bb_* / oop_* = OOP
     // A line the engine resolves differently (e.g. a wager merged into an all-in) keeps the policy mix.
     const path = history && flopState(spot.tree, history).node === node ? history : historyFor(spot.tree, node, FLOP_BETS[0]);
     const table = replayOrNull(inputs, boardCards, { flop: path });
-    if (inputs.spot.history && !table) return [node, { seat, actions: [], rows: [], unavailable: true }];
-    const actualNode = table ? canonicalNodeForTable(table, node) : node;
-    if (inputs.spot.history) actions = table!.log.at(-1)!.observation!.classes.map(group => group.action);
     const reach = table ? defence.rangeOf(table, boardCards, seat) : null;
     const mixOf = (combo: readonly number[]): ActionMix => {
-      const base = policyMix(policy, actualNode, combo, boardCards);
-      return table ? defence.observableMix(table, boardCards, actualNode, combo, defence.baseMix(table, boardCards, actualNode, combo)) : base;
+      const base = policyMix(policy, node, combo, boardCards);
+      return table ? defence.mix(table, boardCards, node, combo, base) : base;
     };
     const rows = inputs.seatRows[seat].map(row => {
       const combos = comboRange([row], "freq", boardCards);
@@ -86,10 +80,7 @@ export function flopHistoryViews(inputs: Inputs, policy: FlopPolicy, boardCards:
   return Object.fromEntries(Object.keys(treeHistories(inputs.spot.tree)).map(key => {
     const history = key ? key.split(",") : [];
     const node = flopState(inputs.spot.tree, history).node!;
-    const view = flopNodesCanonical(inputs, policy, boardCards, history)[node];
-    const canonicalNode = inputs.spot.history && !view.unavailable
-      ? replayObservableStreet({ spot: inputs.spot, street: "flop", actions: history }).state.node! : node;
-    return [key, { node: canonicalNode, ...view }];
+    return [key, { node, ...flopNodesCanonical(inputs, policy, boardCards, history)[node] }];
   }));
 }
 
@@ -98,29 +89,23 @@ export function flopHistoryViews(inputs: Inputs, policy: FlopPolicy, boardCards:
 export function laterMixRows({ actor, role, board, node, line, inputs, flopPolicy, laterPolicy, flopSteps, turnSteps, riverSteps,
   turnBoard, riverBoard, turnPreviousAggressor, riverPreviousAggressor, paths }: {
   actor: string; role: PlayerRole; board: readonly number[]; node: string; line: PreviousLine; inputs: Inputs; flopPolicy: FlopPolicy; laterPolicy: LaterPolicy;
-  turnSteps?: readonly ReachStep[] | null; riverSteps?: readonly ReachStep[] | null; riverBoard?: readonly number[] | null;
+  flopSteps: readonly ReachStep[]; turnSteps?: readonly ReachStep[] | null; riverSteps?: readonly ReachStep[] | null;
+  turnBoard: readonly number[]; riverBoard?: readonly number[] | null; turnPreviousAggressor: PlayerRole | null;
   riverPreviousAggressor?: PlayerRole | null; paths: Partial<ActionPaths>;
-} & ({ flopSteps: readonly ReachStep[]; turnBoard: readonly number[]; turnPreviousAggressor: PlayerRole | null } |
-  // Observable saved-history replay obtains exact reach from the computed table.
-  { flopSteps?: never; turnBoard?: never; turnPreviousAggressor?: never })): StrategyRow[] {
-  if (inputs.spot.history) assertPostflopDeal(inputs, board);
-  let actions: readonly string[] = LATER_NODES[node];
+}): StrategyRow[] {
+  const actions = LATER_NODES[node];
   const rows = inputs.seatRows[actor];
   if (!rows) throw new Error(`Missing saved range for ${actor}`);
   const defence = defenceFor(inputs, flopPolicy, laterPolicy);
   const table = replayOrNull(inputs, board, paths);
-  if (inputs.spot.history && !table) throw new Error('New-HU view has no observable pending decision');
-  if (table) node = canonicalNodeForTable(table, node);
-  if (inputs.spot.history && (table!.log.at(-1)!.seat !== actor || inputs.spot[role] !== actor)) throw new Error("Observable actor does not match history");
-  if (inputs.spot.history) actions = table!.log.at(-1)!.observation!.classes.map(group => group.action);
   // Reach weights of the acting range, bluff cap included (the policy scaling below is the fallback).
   const dense = table ? defence.rangeOf(table, board, actor) : null;
   return rows.map(row => {
     let combos = comboRange([row], "freq", board);
     if (dense) combos = combos.map(item => ({ ...item, weight: dense[comboId(item.combo[0], item.combo[1])] }));
     else {
-      combos = scaleByPath(combos, role, flopSteps!, flopPolicy, board.slice(0, 3));
-      if (turnSteps) combos = scaleLaterPath(combos, role, turnSteps, laterPolicy, turnBoard!, turnPreviousAggressor!);
+      combos = scaleByPath(combos, role, flopSteps, flopPolicy, board.slice(0, 3));
+      if (turnSteps) combos = scaleLaterPath(combos, role, turnSteps, laterPolicy, turnBoard, turnPreviousAggressor);
       if (riverSteps) combos = scaleLaterPath(combos, role, riverSteps, laterPolicy, riverBoard!, riverPreviousAggressor!);
     }
     const totals = Object.fromEntries(actions.map(action => [action, 0]));
@@ -132,7 +117,7 @@ export function laterMixRows({ actor, role, board, node, line, inputs, flopPolic
       const rawTier = handTier(item.combo, board);
       const tier = rawTier === "draw" && node.startsWith("river_") ? "medium" : rawTier;
       let mix = laterPolicyMix(laterPolicy, node, item.combo, board, line);
-      if (table) mix = defence.observableMix(table, board, node, item.combo, defence.baseMix(table, board, node, item.combo));
+      if (table) mix = defence.mix(table, board, node, item.combo, mix);
       detail.push({ cards: item.combo.map(cardText).join(""), tier, weight: item.weight,
         mix: Object.fromEntries(actions.map(action => [action, mix[action] / 100])) });
       weightTotal += item.weight;

@@ -165,8 +165,11 @@ test("hand-EV board workers use exactly the shared browser core despite reordere
   const expected = Object.fromEntries(boardList.map(item => {
     const result = handEvForBoard(item, inputs, policy, 1, later);
     const cache = defenceFor(inputs, policy, later);
-    assert.equal(cache.largeRun, true, "exact boards select packed storage before traversal");
-    assert.equal(cache.stages.size, 0, "completed board reach graphs are released");
+    // Adopted v7 does not impose the v10 eager-packed/automatic-release policy.
+    // Explicit cache release must retain the already computed exact result.
+    assert.ok(cache.contexts.flop.size > 0 || cache.stages.size > 0, "v7 retains computed board caches until release");
+    cache.releaseBoardCaches();
+    assert.equal(cache.stages.size, 0, "explicit release removes completed board reach graphs");
     for (const group of [cache.contexts, cache.bets, cache.bettingFactRanges]) {
       for (const values of Object.values(group)) assert.equal(values.size, 0);
     }

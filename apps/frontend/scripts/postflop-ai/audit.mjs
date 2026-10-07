@@ -1,6 +1,5 @@
-import { hasCurrentActionModel } from "./observable-actions.mjs";
-import { hasPostflopDeal } from "./range-support.mjs";
 import { boards, config, laterSizingHash, seatRange } from "./inputs.mjs";
+import { DEFENCE_VERSION } from "./defence.ts";
 import { NODES, nodeRole, policyMix, referencePolicyFor, treeNodes, validatePolicy } from "./policy.ts";
 import { PROFILES, SIMULATION_VERSION, simulate } from "./simulation.mjs";
 import { sha } from "./generate.mjs";
@@ -8,6 +7,12 @@ import { validateLaterPolicy } from "./later-policy.ts";
 import { checkFlopBalance, checkLaterBalance } from "./balance.mjs";
 
 export function auditExperiment(inputs, candidate, report, laterCandidate = null, { replay: providedReplay } = {}) {
+  // Validation-only v7 boundary: reject the separate v10 experiment before
+  // policy expansion, balance checks or simulation. Numerical audit is unchanged.
+  if (DEFENCE_VERSION !== 7 || report?.defence_version !== DEFENCE_VERSION ||
+      (report != null && Object.hasOwn(report, "action_model_version"))) {
+    throw new Error("Candidate or simulation report has an incompatible execution contract");
+  }
   const { spot } = inputs;
   const policy = validatePolicy(candidate?.policy, spot.tree);
   const laterPolicy = laterCandidate ? validateLaterPolicy(laterCandidate.policy ?? laterCandidate) : null;
@@ -17,17 +22,13 @@ export function auditExperiment(inputs, candidate, report, laterCandidate = null
       report.source_hash !== inputs.fingerprint || report.policy_hash !== sha(policy) ||
       (report.later_policy_hash ?? null) !== (laterPolicy ? sha(laterPolicy) : null) || report.later_sizing_hash !== laterSizingHash() ||
       report.kind !== "ai_estimate_not_gto" || report.version !== 1 ||
-      report.simulation_version !== SIMULATION_VERSION || !hasCurrentActionModel(spot, report) || report.spot !== spot.id ||
+      report.simulation_version !== SIMULATION_VERSION || report.spot !== spot.id ||
       (candidate.metadata.spot ?? spot.id) !== spot.id || (candidate.metadata.tree ?? "oop_checks") !== spot.tree ||
       report.samples_per_board_profile_seat !== config.samples_per_board_profile_seat || report.seed !== config.seed) {
     throw new Error("Candidate or simulation report is stale/incomplete");
   }
-  const reachableBoards = boards().filter(board => !spot.history || hasPostflopDeal(inputs, board.cards));
-  if (spot.history && JSON.stringify(report.unreachable_boards ?? []) !== JSON.stringify(boards().filter(board => !hasPostflopDeal(inputs, board.cards)).map(board => board.id))) {
-    throw new Error("Unreachable board proof differs from saved source ranges");
-  }
   let checked = 0;
-  for (const board of reachableBoards) {
+  for (const board of boards()) {
     const seats = { [spot.ip]: seatRange(inputs, spot.ip, board.cards), [spot.oop]: seatRange(inputs, spot.oop, board.cards) };
     for (const node of treeNodes(spot.tree)) {
       const actions = NODES[node];
@@ -41,13 +42,13 @@ export function auditExperiment(inputs, candidate, report, laterCandidate = null
     }
   }
   const splitByBoard = new Map(boards().map(board => [board.id, board.split]));
-  const expected = new Set(reachableBoards.flatMap(board => PROFILES.flatMap(profile => [spot.ip, spot.oop].map(hero =>
+  const expected = new Set(boards().flatMap(board => PROFILES.flatMap(profile => [spot.ip, spot.oop].map(hero =>
     `${board.id}|${profile}|${hero}`))));
   if (!Array.isArray(report.results) || report.results.length !== expected.size) throw new Error("Simulation results are incomplete");
   const warnings = [];
   const balanceFindings = [
-    ...checkFlopBalance(inputs, policy, { boardList: reachableBoards }).findings,
-    ...(laterPolicy ? checkLaterBalance(inputs, policy, laterPolicy, { boardList: reachableBoards }).findings : []),
+    ...checkFlopBalance(inputs, policy).findings,
+    ...(laterPolicy ? checkLaterBalance(inputs, policy, laterPolicy).findings : []),
   ];
   for (const finding of balanceFindings) {
     if (finding.severity === "error") throw new Error(`Balance audit failed [${finding.check}] ${finding.node}: ${finding.detail}`);

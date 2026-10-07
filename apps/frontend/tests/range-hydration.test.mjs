@@ -391,11 +391,11 @@ test('a different saved guest profile never replaces the authenticated account p
 });
 
 
-test('an imported observable river alias survives delayed sources, retry and Back/Forward', async () => {
+test('an imported adopted-v7 size label survives delayed sources, retry and Back/Forward', async () => {
   const aliasUrl = `${rootPath}?gametype=cash-6max&depth=100&preflop_actions=R2.5-C-F-F-F-R13-F-C&board=Ac7d2h&flop_actions=B33-C&turn=9h&turn_actions=B75-C&river=Jd&river_actions=X-B75&hand=AKs`;
-  const checkUrl = river => {
+  const checkUrl = (river, action = "X-B75") => {
     assert.equal(params().get('board'), 'Ac7d2h'); assert.equal(params().get('turn'), '9h');
-    assert.equal(params().get('river'), river); assert.equal(params().get('river_actions'), 'X-AI');
+    assert.equal(params().get('river'), river); assert.equal(params().get('river_actions'), action);
   };
   await open(aliasUrl, { block: ['squeeze-responses'], fail: ['squeeze-responses'] });
   checkUrl('Jd');
@@ -404,10 +404,10 @@ test('an imported observable river alias survives delayed sources, retry and Bac
   failed.delete('squeeze-responses');
   const retry = [...document.querySelectorAll('button')].find(button => button.textContent === 'Retry saved ranges');
   await act(async () => { retry.click(); await settle(); }); await flush();
-  checkUrl('Jd'); assert.deepEqual(shown().riverActions, ['check', 'allin']);
+  checkUrl('Jd'); assert.deepEqual(shown().riverActions, ['check', 'bet75']);
   const newer = aliasUrl.replace('river=Jd', 'river=4h').replace('X-B75', 'X-B125');
   await act(async () => { window.history.pushState({}, '', newer); window.dispatchEvent(new window.PopStateEvent('popstate')); }); await flush();
-  checkUrl('4h'); assert.equal(shown().riverCard, '4h');
+  checkUrl('4h', 'X-B125'); assert.equal(shown().riverCard, '4h');
   await traverse('back'); checkUrl('Jd'); assert.equal(shown().riverCard, 'Jd');
-  await traverse('forward'); checkUrl('4h'); assert.equal(shown().riverCard, '4h');
+  await traverse('forward'); checkUrl('4h', 'X-B125'); assert.equal(shown().riverCard, '4h');
 });

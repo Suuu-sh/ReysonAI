@@ -1,3 +1,4 @@
+// Standalone observable-v10 helper coverage is historical only. Product engine assertions use adopted v7.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import config from '../scripts/data/postflop-ai-pilot.json' with { type: 'json' };
@@ -87,21 +88,18 @@ test('pool final played mass with the old ordered remainder law, never pre-cap m
   assert.throws(() => playedActionMass({ check: NaN, bet33: 0 }, ['check', 'bet33']), /Invalid played/);
 });
 
-test('all river aliases have identical canonical engine paths/chips and nodes', () => {
-  let first;
+test('dormant v10 helper canonicalizes river aliases but adopted v7 engine retains their labels', () => {
   for (const action of ['bet33', 'bet75', 'bet125', 'allin']) {
     const path = { ...normalPath, river: ['check', action] };
     const normalized = canonicalPostflopPath(spot, path);
     assert.deepEqual(normalized.river, ['check', 'allin']);
     assert.deepEqual(canonicalPostflopPath(spot, normalized), normalized);
     const table = replayDecision({ spot }, board, path), pending = table.log.at(-1);
-    assert.equal(pending.node, 'river_oop_vs_allin'); assert.equal(pending.canRaise, false);
+    assert.equal(pending.node, `river_oop_vs_${action === 'allin' ? 'allin' : action.slice(3)}`);
+    assert.equal(pending.canRaise, false);
     assert.equal(table.pot, 161.68); assert.equal(table.stacks.HJ, 0); assert.equal(table.stacks.BB, 41.32);
-    assert.equal(table.log.at(-2).pot, 120.36);
-    assert.equal(canonicalNodeForTable(table, action === 'allin' ? 'river_oop_vs_allin' : `river_oop_vs_${action.slice(3)}`), pending.node);
-    assert.throws(() => canonicalNodeForTable(table, 'river_ip_vs_allin'), /does not match/);
-    const result = { path: table.path, log: table.log, pot: table.pot, stacks: table.stacks, invested: table.invested };
-    if (!first) first = result; else assert.deepEqual(result, first);
+    assert.deepEqual(table.path.river, ['check', action]);
+    assert.ok(table.log.every(entry => !entry.observation));
   }
 });
 
@@ -117,8 +115,8 @@ test('flop/turn aliases use real existing member nodes and cannot create a later
   const low = { ...spot, potBb: 120.36, stackBb: 41.32 };
   for (const action of ['bet33', 'bet75', 'bet125']) {
     const table = replayDecision({ spot: low }, board.slice(0, 3), { flop: [action] });
-    assert.equal(table.log.at(-1).node, 'ip_vs_33');
-    assert.deepEqual(table.path.flop, ['bet33']);
+    assert.equal(table.log.at(-1).node, `ip_vs_${action.slice(3)}`);
+    assert.deepEqual(table.path.flop, [action]);
     assert.throws(() => canonicalPostflopPath(low, { flop: [action, 'call'], turn: ['check'] }), /completed hand/);
   }
   const turnStart = { pot: 100, stacks: { ip: 100, oop: 100 }, lastAggressor: null };
@@ -142,7 +140,7 @@ test('legacy engine keeps raw labels, entry shapes and historical action-model i
   assert.equal(hasCurrentActionModel(spot, { action_model_version: 10 }), true);
 });
 
-test('raw-label sampler reaches the same physical action and immediately forgets its label', () => {
+test('adopted v7 sampler retains saved labels while conserving identical merged chips', () => {
   const capture = raw => {
     const table = createTable(spot), STOP = Symbol('pending');
     playFlop(table, spot.tree, (_seat, _node, step) => normalPath.flop[step], config);
@@ -157,9 +155,13 @@ test('raw-label sampler reaches the same physical action and immediately forgets
     } catch (error) { if (error !== STOP) throw error; }
     return { node: table.log.at(-1).node, path: table.path, pot: table.pot, stacks: table.stacks };
   };
-  assert.deepEqual(capture('bet33'), capture('allin'));
-  assert.deepEqual(capture('bet75'), capture('allin'));
-  assert.deepEqual(capture('bet125'), capture('allin'));
+  const allin = capture('allin');
+  for (const action of ['bet33', 'bet75', 'bet125']) {
+    const actual = capture(action);
+    assert.equal(actual.pot, allin.pot); assert.deepEqual(actual.stacks, allin.stacks);
+    assert.equal(actual.node, `river_oop_vs_${action.slice(3)}`);
+    assert.deepEqual(actual.path.river, ['check', action]);
+  }
 });
 
 

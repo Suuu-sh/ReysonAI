@@ -1,19 +1,14 @@
-import type { BettingState, FlopTree, PlayerRole } from "../../scripts/postflop-ai/tree.ts";
+import { geometry, replay, formatBb, canRaiseNow, decisionOptions, flopOptionsFor, laterStart, replayLater, laterDecision } from "../../scripts/postflop-ai/hu-v7-street-state.ts";
+export { canRaiseNow, decisionOptions, laterStart, replayLater, laterDecision };
+import type { BettingAction, BettingState, FlopTree, PlayerRole } from "../../scripts/postflop-ai/tree.ts";
 import type { LaterStreet } from "../../scripts/postflop-ai/later-tree.ts";
-import type { RoleValues } from "../../scripts/postflop-ai/types.ts";
-import type { Geometry, GeometryInput, OptionFacts, ReplayFacts, FacedAction, LaterDecisionState } from "../../scripts/postflop-ai/street-state.mjs";
-import type { HistoryAction } from "./continuation-tree.ts";
-export type FlopGeometry = Geometry;
-export type FlopGeometryInput = GeometryInput;
+import type { PreviousLine, RoleValues, Street } from "../../scripts/postflop-ai/types.ts";
+export type FlopGeometry = { ip: string; oop: string; potBb: number; stackBb: number; tree?: FlopTree };
+export type FlopGeometryInput = { ip?: string | null; oop?: string | null; potBb?: number | null; stackBb?: number | null; tree?: FlopTree | null };
 export type Chips = { pot: number; committed: RoleValues; stacks: RoleValues };
-export type DecisionOption = { action: string; label: string; amountBb: number; allIn: boolean; aliases?: string[] };
+export type DecisionOption = { action: string; label: string; amountBb: number; allIn: boolean };
+type PaidOption = DecisionOption & { paid: number };
 export type LaterStartState = { pot: number; stacks: RoleValues; lastAggressor: PlayerRole | null };
-export type PresentedFlopDecision =
-  | { node: string; actor: string; potBb: number; history: string[]; options: DecisionOption[]; facedAction?: FacedAction; labels: Record<string, string>; labelsJa: Record<string, string>; result?: never }
-  | { result: string; potBb: number; history: string[]; node?: never; actor?: never; options?: never; facedAction?: never; labels?: never; labelsJa?: never };
-export type PresentedLaterDecision =
-  | (Omit<Extract<LaterDecisionState, { node: string }>, "options"> & { options: DecisionOption[]; labels: Record<string, string>; labelsJa: Record<string, string>; history: string[] })
-  | (Extract<LaterDecisionState, { node?: never }> & { labels?: never; labelsJa?: never; history: string[] });
 export type TrialDecisionBlock = { key: string; kind: "flop" | "flop-forced"; position: string; stack: string; chosen: string | null;
   options: { action: string; label: string }[]; active: boolean; street?: LaterStreet; flopIndex?: number; laterIndex?: number };
 export type TrialEndBlock = { key: string; kind: "end"; result?: string; pot?: string; options: [] };
@@ -24,15 +19,15 @@ export type CompletedFlopContext = { players: string[]; potBb: number; pilotAvai
 type CompletionOptions = { actionBlocks?: readonly CompletionActionBlock[]; pendingRaise?: string | null; squeezeResponse?: string[]; rangeType: string; opener: string; hero: string; callers?: string[]; foldedHero?: boolean;
   limpAction?: string | null; limpResponseAction?: string | null; limpReraiseAction?: string | null; limpFourBetAction?: string | null };
 
+import type { HistoryAction } from "./continuation-tree.ts";
 import { mw3OriginForSelection } from "./mw3-context.ts";
 import { openSizeFor, threeBetToSize } from "./sizing.ts";
 import pilot from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
-import { multiwaySpotFor, fourBetSpotFor, limpSpotFor, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.ts";
+import { DEFAULT_SPOT_ID, multiwaySpotFor, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.ts";
+import { NODES, flopBetFraction, flopState, isFlopBet, raiseDepth } from "../../scripts/postflop-ai/tree.ts";
+import { LATER_NODES, betFraction, streetState } from "../../scripts/postflop-ai/later-tree.ts";
 import { parseFlopBoard } from "../../scripts/postflop-ai/model.ts";
-import { usesObservableActions } from "../../scripts/postflop-ai/observable-actions.mjs";
-import { postflopGeometry as geometry, replayFlop, replayLater as replayLaterState, decisionOptionFacts,
-  canonicalStreetActions, hasObservablePostflopActions, canRaiseNow, laterStart, laterDecisionState } from "../../scripts/postflop-ai/street-state.mjs";
-export { canonicalStreetActions, hasObservablePostflopActions, canRaiseNow, laterStart };
+import pilotConfig from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
 
 export const representativeFlops = pilot.boards.map(board => parseFlopBoard(board.cards).id);
 export const deck = "23456789TJQKA".split("").flatMap(rank => "shdc".split("").map(suit => `${rank}${suit}`));
@@ -44,7 +39,6 @@ export function recognizedFlop(cards: unknown): string | null {
     return null;
   }
 }
-const round = (value: number): number => Math.round(value * 100) / 100;
 
 // The saved heads-up flop spot a completed preflop path reaches, or null (scripts/postflop-ai/spots.ts):
 // single-raised pots (O opens, exactly one later seat C calls), 3bet pots (O opens, X 3bets, O calls),
@@ -99,39 +93,22 @@ export function completedFlopContext({ actionBlocks, rangeType, opener, hero, ca
   };
 }
 
-// Presentation is derived from the same chip/path facts used by numerical consumers.
-const optionText = {
-  en: { check: "Check", fold: "Fold", call: "Call", bet: "Bet", raise: "Raise", allIn: "All-in" },
-  ja: { check: "チェック", fold: "フォールド", call: "コール", bet: "ベット", raise: "レイズ", allIn: "オールイン" },
-};
-function optionLabel(option: OptionFacts, locale = "en") {
-  const t = optionText[locale as keyof typeof optionText] ?? optionText.en;
-  if (option.action === "check" || option.action === "fold") return t[option.action];
-  if (option.action === "call") return `${t.call} ${formatBb(option.paid)}`;
-  if (option.allIn) return `${t.allIn} ${formatBb(option.amountBb)}`;
-  if (option.action === "raise") return `${t.raise} ${formatBb(option.amountBb)} (${option.raisePercent}%)`;
-  return `${t.bet} ${formatBb(option.paid)} (${option.betPercent ?? option.action.slice(3)}%)`;
-}
-const presentedOption = (option: OptionFacts, locale = "en"): DecisionOption => ({ action: option.action, label: optionLabel(option, locale),
-  amountBb: option.amountBb, allIn: option.allIn, ...(option.aliases === undefined ? {} : { aliases: option.aliases }) });
-export function decisionOptions(chips: Chips, node: string, street = "flop", locale = "en"): DecisionOption[] {
-  return decisionOptionFacts(chips, node, street).map(option => presentedOption(option, locale));
-}
-function withHistory<T extends ReplayFacts>(replayed: T, street: string, spot?: FlopGeometryInput | null) {
-  const g = geometry(spot);
-  const history = street === "flop" && g.tree === "oop_checks" ? [`${g.oop} Check`] : [];
-  for (const step of replayed.trace) {
-    const label = step.action === "check" ? "Check" : step.action === "fold" ? "Fold"
-      : step.action === "call" ? `Call${step.callAllIn ? " All-in" : ""}` : optionLabel(step.option);
-    history.push(`${g[step.role]} ${label}`);
-  }
-  const { trace, ...facts } = replayed;
-  return { ...facts, history };
-}
-function replay(actions: readonly string[], spot?: FlopGeometryInput | null) { return withHistory(replayFlop(actions, spot), "flop", spot); }
-export function replayLater(street: string, actions: readonly string[] = [], start: LaterStartState, spot?: FlopGeometryInput | null) {
-  return withHistory(replayLaterState(street, actions, start, spot), street, spot);
-}
+// Seat names, starting pot, stacks and tree of the flop; the first pilot spot when none is given.
+
+// Replays the flop actions with the same chip rules as the scripts (engine.ts): bets are a
+// fraction of the pot, raises 3× the bet, both capped by the stack; an uncalled amount is returned.
+// "oop_checks": the OOP player checks, then btn_* (IP) / bb_* (OOP) nodes.
+// "oop_leads": the OOP preflop raiser acts first (oop_first → ip_vs_* → oop_vs_raise).
+
+// ---- amount-based action options (shared by the flop and later streets) ----
+// `chips`: { pot, committed: { ip, oop } (street totals so far), stacks: { ip, oop } (remaining before acting) }.
+
+// Raising needs an opponent who is not all-in and chips beyond the call (same rule as engine.ts).
+
+// A wager of `amount` chips: committing >= the merge ratio of the effective stack becomes all-in.
+
+// The options of a decision with their real amounts: [{ action, label, amountBb, allIn }] (raise is dropped
+// when raising is impossible). `street` is "flop", "turn" or "river"; `locale` "en" or "ja".
 
 // A bet or raise that the merge ratio turns into an all-in is the same line as the explicit all-in,
 // so the action path offers it once (the explicit all-in wins).
@@ -139,11 +116,11 @@ const blockOptions = (options: readonly DecisionOption[]) => options
   .filter(option => !(option.allIn && option.action !== "allin" && option.action !== "call" && options.some(other => other.action === "allin")))
   .map(({ action, label }) => ({ action, label }));
 
-export function flopDecision(actions: readonly string[] = [], spot?: FlopGeometryInput | null): PresentedFlopDecision {
-  const { g, state, pot, history, chipsNow, facedAction } = replay(actions, spot);
+export function flopDecision(actions: readonly string[] = [], spot?: FlopGeometryInput | null) {
+  const { g, state, pot, history, chipsNow } = replay(actions, spot);
   if (state.node) {
     const options = decisionOptions(chipsNow!, state.node, "flop");
-    return { node: state.node, actor: g[state.role], potBb: pot, history, options, ...(facedAction ? { facedAction } : {}),
+    return { node: state.node, actor: g[state.role], potBb: pot, history, options,
       labels: Object.fromEntries(decisionOptions(chipsNow!, state.node, "flop", "en").map(o => [o.action, o.label])),
       labelsJa: Object.fromEntries(decisionOptions(chipsNow!, state.node, "flop", "ja").map(o => [o.action, o.label])) };
   }
@@ -157,7 +134,6 @@ export function flopDecision(actions: readonly string[] = [], spot?: FlopGeometr
 
 export function buildFlopActionBlocks(actions: readonly string[] = [], spot?: FlopGeometryInput | null): TrialActionBlock[] {
   const g = geometry(spot);
-  const chosenActions = usesObservableActions(g) ? canonicalStreetActions("flop", actions, undefined, g) : actions;
   const blocks: TrialActionBlock[] = g.tree === "oop_checks"
     ? [{ key: "flop-oop-check", kind: "flop-forced", position: g.oop, stack: `${g.stackBb}`, chosen: "check", options: [{ action: "check", label: "Check" }], active: false }]
     : [];
@@ -169,12 +145,11 @@ export function buildFlopActionBlocks(actions: readonly string[] = [], spot?: Fl
       break;
     }
     blocks.push({ key: `flop-${index}`, kind: "flop", flopIndex: index, position: g[state.role], stack: `${stackNow}`,
-      chosen: chosenActions[index] ?? null, options: blockOptions(decisionOptions(chipsNow!, state.node, "flop")), active: index === actions.length });
+      chosen: actions[index] ?? null, options: blockOptions(decisionOptions(chipsNow!, state.node, "flop")), active: index === actions.length });
   }
   return blocks;
 }
 
-const formatBb = (value: number): string => `${Number(round(value).toFixed(2))}`;
 const foldEnd = (state: BettingState, spot: FlopGeometry): string => {
   const foldedRole = state.steps.at(-1)?.role;
   const winnerRole = state.end?.winner;
@@ -182,13 +157,18 @@ const foldEnd = (state: BettingState, spot: FlopGeometry): string => {
 };
 const showdownEnd = (allIn: boolean): string => allIn ? "オールイン・ショウダウン" : "ショーダウン";
 
+// A later street is available only after a completed, non-folded, non-all-in flop.
+// `lastAggressor` remains a role (IP/OOP), matching the later policy engine.
+
+// Replay one turn or river with the exact effective-stack and all-in merge rules used by
+// scripts/postflop-ai/engine.ts. `start` is the state at the beginning of this street.
+
 function boardBlock(street: LaterStreet, card: string, potBb: number): TrialBoardBlock {
   return { key: `${street}-board`, kind: "board", cards: card ? [card] : [], street, pending: !card, potBb };
 }
 
 function appendLaterDecisionBlocks(blocks: TrialActionBlock[], street: LaterStreet, actions: readonly string[], start: LaterStartState, spot?: FlopGeometryInput | null, hasNextStreet = false) {
   const g = geometry(spot);
-  const chosenActions = usesObservableActions(g) ? canonicalStreetActions(street, actions, start, g) : actions;
   for (let index = 0; index <= actions.length; index++) {
     const replayed = replayLater(street, actions.slice(0, index), start, spot);
     const state = replayed.state;
@@ -203,7 +183,7 @@ function appendLaterDecisionBlocks(blocks: TrialActionBlock[], street: LaterStre
     }
     const role = state.role;
     blocks.push({ key: state.node, kind: "flop", street, laterIndex: index, position: g[role],
-      stack: formatBb(replayed.stacks[role]), chosen: chosenActions[index] ?? null, options: blockOptions(decisionOptions(replayed.chipsNow!, state.node, street)), active: index === actions.length });
+      stack: formatBb(replayed.stacks[role]), chosen: actions[index] ?? null, options: blockOptions(decisionOptions(replayed.chipsNow!, state.node, street)), active: index === actions.length });
   }
   return replayLater(street, actions, start, spot);
 }
@@ -225,12 +205,5 @@ export function buildLaterActionBlocks({ flopActions = [], turnCard = "", turnAc
   return blocks;
 }
 
-// The shared core owns actor/line/legal-option semantics; this wrapper adds presentation.
-export function laterDecision(street: string, actions: readonly string[] = [], start: LaterStartState, spot?: FlopGeometryInput | null): PresentedLaterDecision {
-  const decision = laterDecisionState(street, actions, start, spot);
-  const history = replayLater(street, actions, start, spot).history;
-  if (!decision.node) return { ...decision, history } as Extract<PresentedLaterDecision, { node?: never }>;
-  const { options, ...facts } = decision;
-  const labelsFor = (locale: string) => Object.fromEntries(options.map(option => [option.action, optionLabel(option, locale)]));
-  return { ...facts, options: options.map(option => presentedOption(option)), labels: labelsFor("en"), labelsJa: labelsFor("ja"), history };
-}
+// Presentation contract used by the local range API: the current node, actor, pot, and
+// the previous-street line from the acting player's perspective.

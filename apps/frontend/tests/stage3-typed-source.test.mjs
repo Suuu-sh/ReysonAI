@@ -34,8 +34,12 @@ test("no compatibility pair hides a changed current source or corrupted historic
 
 test("receipt source graphs bind adjacent declarations and the exact compatibility receipt", () => {
   const paths = reviewedSourcePaths();
-  for (const name of ["exact-river-call-ev", "multiway-inputs", "observable-actions", "observable-view-paths", "range-support"]) {
+  for (const name of ["multiway-inputs", "range-support"]) {
     assert.ok(paths.includes(`apps/frontend/scripts/postflop-ai/${name}.d.mts`), name);
+  }
+  // Adopted HU-v7 no longer imports the separate observable-v10 experiment.
+  for (const name of ["exact-river-call-ev", "observable-actions", "observable-view-paths"]) {
+    for (const extension of ["mjs", "d.mts"]) assert.ok(!paths.includes(`apps/frontend/scripts/postflop-ai/${name}.${extension}`), name);
   }
   for (const graph of [paths, reviewedStage3SourcePaths()]) {
     assert.ok(graph.includes("configs/typescript-policy-source.review.json"));
