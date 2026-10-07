@@ -1,0 +1,1959 @@
+{
+  "kind": "ai_estimate_not_gto",
+  "version": 1,
+  "simulation_version": 3,
+  "spot": "HJ_open_BB_3bet_call",
+  "source_hash": "5a12f943efeba877194872024e11d2fbd160817dd3ca321ee6e13e36ed3f7346",
+  "later_sizing_hash": "95fbd4cfede586803a952d8eccc35b899f9e68c1ab1c9016b6621827d65f1ff7",
+  "later_policy_hash": "32b6250a2ac0df4cb1f5f990e607741909f281dabd33a4caede2049e8be8c6d2",
+  "defence_version": 7,
+  "policy_hash": "f9286abb90aa336046433e1393755c480c5581a4c4a374fc08359105d7f5e73b",
+  "samples_per_board_profile_seat": 10000,
+  "seed": "solveaai-postflop-ai-v1",
+  "results": [
+    {
+      "board": "As7d2c",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 12.7907,
+        "ci95": [
+          12.1557,
+          13.4257
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 10.6752,
+        "ci95": [
+          10.0935,
+          11.2569
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.1155,
+        "ci95": [
+          1.6937,
+          2.5374
+        ]
+      }
+    },
+    {
+      "board": "As7d2c",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 14.0705,
+        "ci95": [
+          13.3859,
+          14.7551
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 12.3117,
+        "ci95": [
+          11.7344,
+          12.8889
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.7588,
+        "ci95": [
+          1.2904,
+          2.2273
+        ]
+      }
+    },
+    {
+      "board": "As7d2c",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 12.9444,
+        "ci95": [
+          12.3394,
+          13.5494
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 11.8346,
+        "ci95": [
+          11.312,
+          12.3572
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.1098,
+        "ci95": [
+          0.727,
+          1.4926
+        ]
+      }
+    },
+    {
+      "board": "As7d2c",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 14.5421,
+        "ci95": [
+          13.8904,
+          15.1939
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 13.3639,
+        "ci95": [
+          12.8297,
+          13.8981
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.1782,
+        "ci95": [
+          0.7703,
+          1.5862
+        ]
+      }
+    },
+    {
+      "board": "As7d2c",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 12.402,
+        "ci95": [
+          11.7346,
+          13.0693
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 9.5846,
+        "ci95": [
+          8.957,
+          10.2122
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.8174,
+        "ci95": [
+          2.3594,
+          3.2754
+        ]
+      }
+    },
+    {
+      "board": "As7d2c",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 13.0399,
+        "ci95": [
+          12.3063,
+          13.7735
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 11.3555,
+        "ci95": [
+          10.717,
+          11.994
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.6844,
+        "ci95": [
+          1.1547,
+          2.2141
+        ]
+      }
+    },
+    {
+      "board": "QsJd5c",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 10.7505,
+        "ci95": [
+          9.968,
+          11.533
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 8.9752,
+        "ci95": [
+          8.2719,
+          9.6784
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.7753,
+        "ci95": [
+          1.2731,
+          2.2775
+        ]
+      }
+    },
+    {
+      "board": "QsJd5c",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 15.7663,
+        "ci95": [
+          14.9714,
+          16.5612
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 13.9433,
+        "ci95": [
+          13.2255,
+          14.661
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.8231,
+        "ci95": [
+          1.3254,
+          2.3208
+        ]
+      }
+    },
+    {
+      "board": "QsJd5c",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 11.039,
+        "ci95": [
+          10.2866,
+          11.7914
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 10.7867,
+        "ci95": [
+          10.1354,
+          11.438
+        ]
+      },
+      "delta_bb": {
+        "mean": 0.2523,
+        "ci95": [
+          -0.2093,
+          0.7139
+        ]
+      }
+    },
+    {
+      "board": "QsJd5c",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 16.3534,
+        "ci95": [
+          15.6188,
+          17.088
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 14.88,
+        "ci95": [
+          14.2459,
+          15.5142
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.4734,
+        "ci95": [
+          1.0365,
+          1.9102
+        ]
+      }
+    },
+    {
+      "board": "QsJd5c",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 9.5817,
+        "ci95": [
+          8.77,
+          10.3933
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 7.2302,
+        "ci95": [
+          6.4895,
+          7.9708
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.3515,
+        "ci95": [
+          1.7917,
+          2.9113
+        ]
+      }
+    },
+    {
+      "board": "QsJd5c",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 15.7706,
+        "ci95": [
+          14.9471,
+          16.5941
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 13.0673,
+        "ci95": [
+          12.3077,
+          13.8268
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.7033,
+        "ci95": [
+          2.1558,
+          3.2509
+        ]
+      }
+    },
+    {
+      "board": "Js8s5d",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 12.2966,
+        "ci95": [
+          11.5929,
+          13.0003
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 10.5833,
+        "ci95": [
+          9.9725,
+          11.1941
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.7133,
+        "ci95": [
+          1.2716,
+          2.1551
+        ]
+      }
+    },
+    {
+      "board": "Js8s5d",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 13.2498,
+        "ci95": [
+          12.545,
+          13.9546
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 12.1785,
+        "ci95": [
+          11.5784,
+          12.7786
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.0713,
+        "ci95": [
+          0.6019,
+          1.5406
+        ]
+      }
+    },
+    {
+      "board": "Js8s5d",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 12.5748,
+        "ci95": [
+          11.9006,
+          13.249
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 11.9505,
+        "ci95": [
+          11.3816,
+          12.5195
+        ]
+      },
+      "delta_bb": {
+        "mean": 0.6243,
+        "ci95": [
+          0.2047,
+          1.0438
+        ]
+      }
+    },
+    {
+      "board": "Js8s5d",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 13.8835,
+        "ci95": [
+          13.2203,
+          14.5467
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 13.4161,
+        "ci95": [
+          12.8688,
+          13.9634
+        ]
+      },
+      "delta_bb": {
+        "mean": 0.4674,
+        "ci95": [
+          0.0714,
+          0.8635
+        ]
+      }
+    },
+    {
+      "board": "Js8s5d",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 11.849,
+        "ci95": [
+          11.1122,
+          12.5857
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 9.7737,
+        "ci95": [
+          9.1279,
+          10.4196
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.0752,
+        "ci95": [
+          1.5884,
+          2.562
+        ]
+      }
+    },
+    {
+      "board": "Js8s5d",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 12.6145,
+        "ci95": [
+          11.8632,
+          13.3658
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 11.0951,
+        "ci95": [
+          10.4513,
+          11.7389
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.5194,
+        "ci95": [
+          1.0046,
+          2.0343
+        ]
+      }
+    },
+    {
+      "board": "Th9h8c",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 12.5625,
+        "ci95": [
+          11.6206,
+          13.5044
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 11.4479,
+        "ci95": [
+          10.6022,
+          12.2936
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.1146,
+        "ci95": [
+          0.5207,
+          1.7085
+        ]
+      }
+    },
+    {
+      "board": "Th9h8c",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 12.5776,
+        "ci95": [
+          11.6269,
+          13.5283
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 10.8357,
+        "ci95": [
+          9.9753,
+          11.6961
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.7419,
+        "ci95": [
+          1.1676,
+          2.3162
+        ]
+      }
+    },
+    {
+      "board": "Th9h8c",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 13.9124,
+        "ci95": [
+          13.0131,
+          14.8117
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 13.6542,
+        "ci95": [
+          12.8581,
+          14.4504
+        ]
+      },
+      "delta_bb": {
+        "mean": 0.2582,
+        "ci95": [
+          -0.2693,
+          0.7857
+        ]
+      }
+    },
+    {
+      "board": "Th9h8c",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 12.571,
+        "ci95": [
+          11.6922,
+          13.4498
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 12.3302,
+        "ci95": [
+          11.5702,
+          13.0901
+        ]
+      },
+      "delta_bb": {
+        "mean": 0.2408,
+        "ci95": [
+          -0.2546,
+          0.7362
+        ]
+      }
+    },
+    {
+      "board": "Th9h8c",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 13.7139,
+        "ci95": [
+          12.7341,
+          14.6937
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 11.2288,
+        "ci95": [
+          10.3253,
+          12.1322
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.4851,
+        "ci95": [
+          1.8286,
+          3.1417
+        ]
+      }
+    },
+    {
+      "board": "Th9h8c",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 11.2042,
+        "ci95": [
+          10.212,
+          12.1963
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 8.9999,
+        "ci95": [
+          8.0987,
+          9.9011
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.2043,
+        "ci95": [
+          1.5353,
+          2.8732
+        ]
+      }
+    },
+    {
+      "board": "8s7d6c",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 14.7134,
+        "ci95": [
+          13.9772,
+          15.4495
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 12.7468,
+        "ci95": [
+          12.1266,
+          13.367
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.9666,
+        "ci95": [
+          1.4729,
+          2.4602
+        ]
+      }
+    },
+    {
+      "board": "8s7d6c",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 11.2963,
+        "ci95": [
+          10.5582,
+          12.0344
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 10.5175,
+        "ci95": [
+          9.8927,
+          11.1423
+        ]
+      },
+      "delta_bb": {
+        "mean": 0.7788,
+        "ci95": [
+          0.2934,
+          1.2641
+        ]
+      }
+    },
+    {
+      "board": "8s7d6c",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 15.148,
+        "ci95": [
+          14.4489,
+          15.847
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 13.7347,
+        "ci95": [
+          13.1416,
+          14.3278
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.4132,
+        "ci95": [
+          0.9661,
+          1.8604
+        ]
+      }
+    },
+    {
+      "board": "8s7d6c",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 12.2355,
+        "ci95": [
+          11.57,
+          12.9011
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 11.8584,
+        "ci95": [
+          11.2972,
+          12.4196
+        ]
+      },
+      "delta_bb": {
+        "mean": 0.3771,
+        "ci95": [
+          -0.0211,
+          0.7754
+        ]
+      }
+    },
+    {
+      "board": "8s7d6c",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 14.0115,
+        "ci95": [
+          13.2284,
+          14.7946
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 11.9713,
+        "ci95": [
+          11.3076,
+          12.635
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.0402,
+        "ci95": [
+          1.5157,
+          2.5648
+        ]
+      }
+    },
+    {
+      "board": "8s7d6c",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 10.9995,
+        "ci95": [
+          10.2292,
+          11.7698
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 9.1937,
+        "ci95": [
+          8.5298,
+          9.8576
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.8058,
+        "ci95": [
+          1.2611,
+          2.3505
+        ]
+      }
+    },
+    {
+      "board": "6h5h2d",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 13.1058,
+        "ci95": [
+          12.433,
+          13.7785
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 10.6038,
+        "ci95": [
+          10.0383,
+          11.1694
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.5019,
+        "ci95": [
+          2.0378,
+          2.9661
+        ]
+      }
+    },
+    {
+      "board": "6h5h2d",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 14.8076,
+        "ci95": [
+          14.1225,
+          15.4928
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 12.3542,
+        "ci95": [
+          11.7945,
+          12.914
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.4534,
+        "ci95": [
+          1.9693,
+          2.9375
+        ]
+      }
+    },
+    {
+      "board": "6h5h2d",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 13.363,
+        "ci95": [
+          12.7219,
+          14.0042
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 11.7539,
+        "ci95": [
+          11.2308,
+          12.277
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.6092,
+        "ci95": [
+          1.1842,
+          2.0341
+        ]
+      }
+    },
+    {
+      "board": "6h5h2d",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 15.0105,
+        "ci95": [
+          14.3822,
+          15.6387
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 13.8398,
+        "ci95": [
+          13.3395,
+          14.3401
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.1706,
+        "ci95": [
+          0.768,
+          1.5732
+        ]
+      }
+    },
+    {
+      "board": "6h5h2d",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 11.1919,
+        "ci95": [
+          10.4785,
+          11.9054
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 8.9622,
+        "ci95": [
+          8.3587,
+          9.5658
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.2297,
+        "ci95": [
+          1.7188,
+          2.7407
+        ]
+      }
+    },
+    {
+      "board": "6h5h2d",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 14.6332,
+        "ci95": [
+          13.8851,
+          15.3813
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 11.9607,
+        "ci95": [
+          11.3462,
+          12.5752
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.6725,
+        "ci95": [
+          2.1227,
+          3.2223
+        ]
+      }
+    },
+    {
+      "board": "AhKh4h",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 7.3582,
+        "ci95": [
+          6.4723,
+          8.2441
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 4.5427,
+        "ci95": [
+          3.6861,
+          5.3993
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.8155,
+        "ci95": [
+          2.23,
+          3.401
+        ]
+      }
+    },
+    {
+      "board": "AhKh4h",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 18.6455,
+        "ci95": [
+          17.7393,
+          19.5518
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 17.7812,
+        "ci95": [
+          16.9071,
+          18.6554
+        ]
+      },
+      "delta_bb": {
+        "mean": 0.8643,
+        "ci95": [
+          0.3261,
+          1.4025
+        ]
+      }
+    },
+    {
+      "board": "AhKh4h",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 7.9354,
+        "ci95": [
+          7.0751,
+          8.7956
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 6.954,
+        "ci95": [
+          6.1444,
+          7.7635
+        ]
+      },
+      "delta_bb": {
+        "mean": 0.9814,
+        "ci95": [
+          0.4734,
+          1.4894
+        ]
+      }
+    },
+    {
+      "board": "AhKh4h",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 20.6218,
+        "ci95": [
+          19.7801,
+          21.4634
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 19.8138,
+        "ci95": [
+          19.0135,
+          20.6141
+        ]
+      },
+      "delta_bb": {
+        "mean": 0.808,
+        "ci95": [
+          0.3497,
+          1.2663
+        ]
+      }
+    },
+    {
+      "board": "AhKh4h",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 8.4901,
+        "ci95": [
+          7.5834,
+          9.3967
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 4.3521,
+        "ci95": [
+          3.4585,
+          5.2457
+        ]
+      },
+      "delta_bb": {
+        "mean": 4.1379,
+        "ci95": [
+          3.4823,
+          4.7936
+        ]
+      }
+    },
+    {
+      "board": "AhKh4h",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 19.3471,
+        "ci95": [
+          18.4044,
+          20.2899
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 17.1848,
+        "ci95": [
+          16.2732,
+          18.0964
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.1624,
+        "ci95": [
+          1.5436,
+          2.7812
+        ]
+      }
+    },
+    {
+      "board": "KcKd4h",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 7.9634,
+        "ci95": [
+          7.3477,
+          8.5791
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 7.3351,
+        "ci95": [
+          6.8653,
+          7.8049
+        ]
+      },
+      "delta_bb": {
+        "mean": 0.6283,
+        "ci95": [
+          0.1391,
+          1.1175
+        ]
+      }
+    },
+    {
+      "board": "KcKd4h",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 17.6583,
+        "ci95": [
+          17.0924,
+          18.2242
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 15.4955,
+        "ci95": [
+          15.0119,
+          15.9791
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.1628,
+        "ci95": [
+          1.7582,
+          2.5674
+        ]
+      }
+    },
+    {
+      "board": "KcKd4h",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 9.1356,
+        "ci95": [
+          8.547,
+          9.7241
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 8.8364,
+        "ci95": [
+          8.3659,
+          9.3068
+        ]
+      },
+      "delta_bb": {
+        "mean": 0.2992,
+        "ci95": [
+          -0.1183,
+          0.7167
+        ]
+      }
+    },
+    {
+      "board": "KcKd4h",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 17.9334,
+        "ci95": [
+          17.3967,
+          18.4702
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 16.3657,
+        "ci95": [
+          15.9121,
+          16.8194
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.5677,
+        "ci95": [
+          1.2145,
+          1.9209
+        ]
+      }
+    },
+    {
+      "board": "KcKd4h",
+      "split": "design",
+      "hero": "HJ",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 8.0967,
+        "ci95": [
+          7.4706,
+          8.7227
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 6.8794,
+        "ci95": [
+          6.3946,
+          7.3642
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.2173,
+        "ci95": [
+          0.7192,
+          1.7154
+        ]
+      }
+    },
+    {
+      "board": "KcKd4h",
+      "split": "design",
+      "hero": "BB",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 17.3234,
+        "ci95": [
+          16.7564,
+          17.8903
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 14.7162,
+        "ci95": [
+          14.2288,
+          15.2036
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.6072,
+        "ci95": [
+          2.1863,
+          3.0281
+        ]
+      }
+    },
+    {
+      "board": "Ks8d3c",
+      "split": "holdout",
+      "hero": "HJ",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 8.7266,
+        "ci95": [
+          8.1348,
+          9.3185
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 7.8243,
+        "ci95": [
+          7.3587,
+          8.2899
+        ]
+      },
+      "delta_bb": {
+        "mean": 0.9023,
+        "ci95": [
+          0.4819,
+          1.3228
+        ]
+      }
+    },
+    {
+      "board": "Ks8d3c",
+      "split": "holdout",
+      "hero": "BB",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 17.1593,
+        "ci95": [
+          16.583,
+          17.7356
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 14.9174,
+        "ci95": [
+          14.4346,
+          15.4003
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.2419,
+        "ci95": [
+          1.8482,
+          2.6356
+        ]
+      }
+    },
+    {
+      "board": "Ks8d3c",
+      "split": "holdout",
+      "hero": "HJ",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 10.0524,
+        "ci95": [
+          9.4936,
+          10.6112
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 9.549,
+        "ci95": [
+          9.1004,
+          9.9977
+        ]
+      },
+      "delta_bb": {
+        "mean": 0.5034,
+        "ci95": [
+          0.1245,
+          0.8823
+        ]
+      }
+    },
+    {
+      "board": "Ks8d3c",
+      "split": "holdout",
+      "hero": "BB",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 17.8154,
+        "ci95": [
+          17.2977,
+          18.3332
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 15.731,
+        "ci95": [
+          15.3036,
+          16.1583
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.0845,
+        "ci95": [
+          1.7383,
+          2.4306
+        ]
+      }
+    },
+    {
+      "board": "Ks8d3c",
+      "split": "holdout",
+      "hero": "HJ",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 8.4085,
+        "ci95": [
+          7.7912,
+          9.0257
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 7.0101,
+        "ci95": [
+          6.5126,
+          7.5077
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.3984,
+        "ci95": [
+          0.9519,
+          1.8448
+        ]
+      }
+    },
+    {
+      "board": "Ks8d3c",
+      "split": "holdout",
+      "hero": "BB",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 16.7247,
+        "ci95": [
+          16.1388,
+          17.3107
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 14.3195,
+        "ci95": [
+          13.8196,
+          14.8194
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.4053,
+        "ci95": [
+          1.9799,
+          2.8306
+        ]
+      }
+    },
+    {
+      "board": "9s7s3s",
+      "split": "holdout",
+      "hero": "HJ",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 12.3719,
+        "ci95": [
+          11.5664,
+          13.1774
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 11.1087,
+        "ci95": [
+          10.3506,
+          11.8668
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.2632,
+        "ci95": [
+          0.7697,
+          1.7567
+        ]
+      }
+    },
+    {
+      "board": "9s7s3s",
+      "split": "holdout",
+      "hero": "BB",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 12.3779,
+        "ci95": [
+          11.5493,
+          13.2065
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 11.6138,
+        "ci95": [
+          10.8661,
+          12.3614
+        ]
+      },
+      "delta_bb": {
+        "mean": 0.7641,
+        "ci95": [
+          0.2713,
+          1.257
+        ]
+      }
+    },
+    {
+      "board": "9s7s3s",
+      "split": "holdout",
+      "hero": "HJ",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 12.1267,
+        "ci95": [
+          11.3528,
+          12.9005
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 11.3615,
+        "ci95": [
+          10.6542,
+          12.0688
+        ]
+      },
+      "delta_bb": {
+        "mean": 0.7652,
+        "ci95": [
+          0.3074,
+          1.2229
+        ]
+      }
+    },
+    {
+      "board": "9s7s3s",
+      "split": "holdout",
+      "hero": "BB",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 12.2183,
+        "ci95": [
+          11.432,
+          13.0046
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 12.5421,
+        "ci95": [
+          11.8461,
+          13.2381
+        ]
+      },
+      "delta_bb": {
+        "mean": -0.3238,
+        "ci95": [
+          -0.7448,
+          0.0972
+        ]
+      }
+    },
+    {
+      "board": "9s7s3s",
+      "split": "holdout",
+      "hero": "HJ",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 11.9072,
+        "ci95": [
+          11.0831,
+          12.7312
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 9.6114,
+        "ci95": [
+          8.8366,
+          10.3862
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.2958,
+        "ci95": [
+          1.7609,
+          2.8306
+        ]
+      }
+    },
+    {
+      "board": "9s7s3s",
+      "split": "holdout",
+      "hero": "BB",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 12.9252,
+        "ci95": [
+          12.0664,
+          13.7841
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 11.61,
+        "ci95": [
+          10.8274,
+          12.3926
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.3152,
+        "ci95": [
+          0.7546,
+          1.8758
+        ]
+      }
+    },
+    {
+      "board": "8c8d2h",
+      "split": "holdout",
+      "hero": "HJ",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 10.2344,
+        "ci95": [
+          9.6351,
+          10.8338
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 8.4555,
+        "ci95": [
+          7.9919,
+          8.9191
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.779,
+        "ci95": [
+          1.3292,
+          2.2287
+        ]
+      }
+    },
+    {
+      "board": "8c8d2h",
+      "split": "holdout",
+      "hero": "BB",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 17.6736,
+        "ci95": [
+          17.1118,
+          18.2354
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 15.0044,
+        "ci95": [
+          14.5455,
+          15.4632
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.6692,
+        "ci95": [
+          2.2565,
+          3.082
+        ]
+      }
+    },
+    {
+      "board": "8c8d2h",
+      "split": "holdout",
+      "hero": "HJ",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 11.0385,
+        "ci95": [
+          10.4644,
+          11.6127
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 9.7089,
+        "ci95": [
+          9.2557,
+          10.1621
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.3296,
+        "ci95": [
+          0.923,
+          1.7362
+        ]
+      }
+    },
+    {
+      "board": "8c8d2h",
+      "split": "holdout",
+      "hero": "BB",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 16.7516,
+        "ci95": [
+          16.2351,
+          17.2681
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 15.1874,
+        "ci95": [
+          14.7771,
+          15.5977
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.5642,
+        "ci95": [
+          1.2176,
+          1.9108
+        ]
+      }
+    },
+    {
+      "board": "8c8d2h",
+      "split": "holdout",
+      "hero": "HJ",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 9.3901,
+        "ci95": [
+          8.7686,
+          10.0117
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 7.3434,
+        "ci95": [
+          6.867,
+          7.8197
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.0468,
+        "ci95": [
+          1.5669,
+          2.5267
+        ]
+      }
+    },
+    {
+      "board": "8c8d2h",
+      "split": "holdout",
+      "hero": "BB",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 17.15,
+        "ci95": [
+          16.5461,
+          17.7539
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 14.4001,
+        "ci95": [
+          13.8988,
+          14.9014
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.7499,
+        "ci95": [
+          2.2886,
+          3.2111
+        ]
+      }
+    },
+    {
+      "board": "5s5d4c",
+      "split": "holdout",
+      "hero": "HJ",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 10.35,
+        "ci95": [
+          9.6944,
+          11.0057
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 7.9546,
+        "ci95": [
+          7.4206,
+          8.4885
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.3955,
+        "ci95": [
+          1.9249,
+          2.866
+        ]
+      }
+    },
+    {
+      "board": "5s5d4c",
+      "split": "holdout",
+      "hero": "BB",
+      "opponent": "standard",
+      "candidate_ev_bb": {
+        "mean": 16.5908,
+        "ci95": [
+          15.935,
+          17.2466
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 14.4726,
+        "ci95": [
+          13.9323,
+          15.013
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.1181,
+        "ci95": [
+          1.6601,
+          2.5762
+        ]
+      }
+    },
+    {
+      "board": "5s5d4c",
+      "split": "holdout",
+      "hero": "HJ",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 11.3693,
+        "ci95": [
+          10.7648,
+          11.9738
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 10.0459,
+        "ci95": [
+          9.5573,
+          10.5344
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.3234,
+        "ci95": [
+          0.8961,
+          1.7508
+        ]
+      }
+    },
+    {
+      "board": "5s5d4c",
+      "split": "holdout",
+      "hero": "BB",
+      "opponent": "passive",
+      "candidate_ev_bb": {
+        "mean": 17.125,
+        "ci95": [
+          16.5477,
+          17.7024
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 15.236,
+        "ci95": [
+          14.7734,
+          15.6985
+        ]
+      },
+      "delta_bb": {
+        "mean": 1.8891,
+        "ci95": [
+          1.4993,
+          2.2789
+        ]
+      }
+    },
+    {
+      "board": "5s5d4c",
+      "split": "holdout",
+      "hero": "HJ",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 9.4002,
+        "ci95": [
+          8.7319,
+          10.0685
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 7.1593,
+        "ci95": [
+          6.6153,
+          7.7034
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.2408,
+        "ci95": [
+          1.7399,
+          2.7418
+        ]
+      }
+    },
+    {
+      "board": "5s5d4c",
+      "split": "holdout",
+      "hero": "BB",
+      "opponent": "aggressive",
+      "candidate_ev_bb": {
+        "mean": 16.6641,
+        "ci95": [
+          15.9887,
+          17.3395
+        ]
+      },
+      "baseline_ev_bb": {
+        "mean": 13.7934,
+        "ci95": [
+          13.2409,
+          14.3459
+        ]
+      },
+      "delta_bb": {
+        "mean": 2.8707,
+        "ci95": [
+          2.3498,
+          3.3916
+        ]
+      }
+    }
+  ]
+}
