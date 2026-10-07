@@ -434,10 +434,10 @@ tbody tr:hover { background: var(--surface-hover); }
 
 .onboarding-language select { max-width: 150px; min-height: 34px; font-size: 12px; }
 
-/* Range grid style: "wizard" fills each cell left→right by action frequency (GTO Wizard-like). */
+/* Range grid style: "classic" fills each cell left→right by action frequency. */
 .cell-fill { display: none; }
-[data-matrix="wizard"] .matrix button { background: #1c1c21 !important; }
-[data-matrix="wizard"] .cell-fill { position: absolute; inset: 0; z-index: 0; display: flex; }
-[data-matrix="wizard"] .cell-fill span { height: 100%; flex: 0 0 auto; }
-[data-matrix="wizard"] .cell-mix { display: none; }
-[data-matrix="wizard"] .matrix button:has(.cell-mix) strong { transform: none; }
+[data-matrix="classic"] .matrix button { background: #1c1c21 !important; }
+[data-matrix="classic"] .cell-fill { position: absolute; inset: 0; z-index: 0; display: flex; }
+[data-matrix="classic"] .cell-fill span { height: 100%; flex: 0 0 auto; }
+[data-matrix="classic"] .cell-mix { display: none; }
+[data-matrix="classic"] .matrix button:has(.cell-mix) strong { transform: none; }
