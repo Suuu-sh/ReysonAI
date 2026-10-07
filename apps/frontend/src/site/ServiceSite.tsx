@@ -131,6 +131,14 @@ const tourHands: Record<RangeMode, string[]> = {
 
 function Explorer() {
   const { copy: c, motion, appHref } = useSite();
+  const [decorative, setDecorative] = useState(() => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(max-width: 560px)").matches);
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 560px)");
+    const sync = () => setDecorative(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
   const [mode, setMode] = useState<RangeMode>("opening");
   const [selected, setSelected] = useState("A5o");
   const [touring, setTouring] = useState(true);
@@ -175,7 +183,7 @@ function Explorer() {
   return <div className={`site-explorer is-${mode}`} ref={ref} data-tour-running={isTouring && visible}>
     <div className="site-wrap site-hero-main">
       <HeroCopy />
-      <div className="site-hero-range">
+      <div className="site-hero-range" inert={decorative} aria-hidden={decorative || undefined}>
         <div className="site-hero-chart-frame" style={{ "--selected-row": selectedRow } as CSSProperties}>
           <RangeMatrix mode={mode} selected={selected} onSelect={hand => { setTouring(false); setSelected(hand); }} />
         </div>
@@ -319,7 +327,7 @@ function WhyScene() {
 }
 
 function HowItWorks() {
-  const { copy: c } = useSite();
+  const { copy: c, motion, locale } = useSite();
   const [active, setActive] = useState(0);
   const steps = useRef<(HTMLElement | null)[]>([]);
   useEffect(() => {
@@ -330,6 +338,18 @@ function HowItWorks() {
     for (const node of steps.current) if (node) observer.observe(node);
     return () => observer.disconnect();
   }, []);
+  useEffect(() => {
+    const cards = steps.current.filter((node): node is HTMLElement => !!node);
+    if (!motion || typeof ResizeObserver === "undefined") return;
+    const update = () => {
+      for (const card of cards) card.dataset.oversized = String(card.offsetHeight > window.innerHeight - 80);
+    };
+    const observer = new ResizeObserver(update);
+    for (const card of cards) observer.observe(card);
+    window.addEventListener("resize", update);
+    update();
+    return () => { observer.disconnect(); window.removeEventListener("resize", update); };
+  }, [motion, locale]);
   const scenes = [<TableScene key="table" />, <ReadScene key="read" />, <WhyScene key="why" />];
   const sceneNames = ["table", "read", "why"];
   return <section className="site-section site-how" id="how" aria-labelledby="site-how-title">
@@ -476,6 +496,7 @@ function Audience() {
   const [auto, setAuto] = useState(true);
   const [ref, visible] = useInView<HTMLElement>("-25% 0px", false);
   const [scrolly, setScrolly] = useState(false);
+  const [stickyTop, setStickyTop] = useState(0);
   const running = auto && motion && visible && !scrolly;
   const a5s = frequencies("response", "A5s");
   const [free, plus] = c.pricing.plans;
@@ -487,10 +508,10 @@ function Audience() {
     return () => window.clearTimeout(timer);
   }, [running, active]);
 
-  // Wide screens: the section pins while scrolling, and scroll position picks the persona.
+  // Pin on phones with enough vertical room too; short screens retain ordinary flow.
   useEffect(() => {
     if (!motion) { setScrolly(false); return; }
-    const query = window.matchMedia("(min-width: 961px) and (min-height: 640px)");
+    const query = window.matchMedia("(min-width: 961px) and (min-height: 640px), (max-width: 960px) and (min-height: 740px)");
     const sync = () => setScrolly(query.matches);
     sync();
     query.addEventListener("change", sync);
@@ -520,6 +541,18 @@ function Audience() {
     };
   }, [scrolly, ref]);
 
+  // Long translations must remain reachable even in a pinned phone scene.
+  useEffect(() => {
+    const wrapper = ref.current?.firstElementChild as HTMLElement | undefined;
+    if (!scrolly || !wrapper || typeof ResizeObserver === "undefined") { setStickyTop(0); return; }
+    const update = () => setStickyTop(window.innerWidth <= 960 ? Math.min(0, window.innerHeight - wrapper.offsetHeight) : 0);
+    const observer = new ResizeObserver(update);
+    observer.observe(wrapper);
+    window.addEventListener("resize", update);
+    update();
+    return () => { observer.disconnect(); window.removeEventListener("resize", update); };
+  }, [scrolly, ref]);
+
   function choose(index: number) {
     setAuto(false);
     const node = ref.current;
@@ -541,7 +574,7 @@ function Audience() {
 
   const view = (index: number) => `site-persona-view${active === index ? " is-active" : ""}`;
   return <section className={`site-section site-audience${scrolly ? " is-scrolly" : ""}`} ref={ref} aria-labelledby="site-audience-title">
-    <div className="site-wrap">
+    <div className="site-wrap" style={scrolly ? { top: stickyTop } : undefined}>
       <SectionHead id="site-audience-title" title1={c.audience.title1} title2={c.audience.title2} />
       <div className="site-audience-grid" data-reveal>
         <div className="site-persona-list" role="tablist" aria-orientation="vertical" aria-labelledby="site-audience-title" onKeyDown={onListKey}>

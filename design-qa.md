@@ -529,3 +529,37 @@ Verification:
 - Scoped `.site-audience.is-scrolly` to block layout, preserving the existing sticky scenes and mobile/reduced-motion flow.
 - Local browser after fix, same continuous scroll position: wrapper y=153, heading y=282, audience grid opacity=1. Forward/backward scrolling also kept the sticky content visible. Screenshots captured internally only.
 - Targeted `tests/site-surface.test.mjs`: 22 passed. Production build and Sites worker test results recorded in the PR.
+
+## 2026-10-07 — Phone scroll storytelling follow-up
+- Phone audience now uses the same scroll-selected sticky personas at viewport heights ≥740px; How-it-works cards stack/pin using native document scrolling. Short screens remain ordinary flow. Training/ranked/agent and the long comparison remain naturally scrollable on phones so their controls and copy are not clipped.
+- Motion polish: shorter 18px reveals and a subtle persona settle; no decorative progress bars, touch/wheel interception, or new scroll containers. Reduced-motion continues to disable scrolly state and animation; mobile scene pinning is gated by `.has-motion`.
+- Chrome responsive QA: 390×844, English and Japanese, beginner/budget scenes, complete Free CTA and note reachable; an observed oversized translated/card layout uses ResizeObserver to let the sticky top move upward rather than trap content. PageDown exited audience normally and pinned the next scene at y=80.
+- 375×667: audience/How-it-works/Training all normal flow. 1280×720: audience uses block layout and existing Training horizontal scrolly remains enabled. Internal screenshots only.
+
+## 2026-10-07 — Phone hero heading over live range
+- At widths ≤560px, layer the existing single heading over the live chart using grid placement and a legibility scrim. The overlay has `pointer-events: none`; all saved range cells remain keyboard/tap targets. Paragraph, actions, and note follow below the chart without a duplicate heading. Desktop CSS remains outside this override.
+- Targeted overlay regression test: 1 passed. Production build passed; diff check passed.
+- Parent browser review: 390×844 English overlay readable over the top matrix; 375×667 Japanese retains the existing English heading with Japanese body/CTAs usable below; 1280×720 English desktop preserves separate left copy/right matrix with no overlay. Physical Safari remains unverified.
+
+## 2026-10-07 — Revised phone hero: decorative square backdrop
+- Supersedes the earlier heading-only overlay: all existing heading/body/actions/free note are centered together over a subdued decorative chart. Understand why is larger/pink; Don't just play is smaller/muted. The matrix keeps aspect-ratio 1 independently of the hero content height.
+- Phone chart wrapper uses media-synchronized `inert` plus `aria-hidden`; hidden matrix buttons are not focusable. Desktop media restores the original interactive chart. Selected-hand detail content remains unchanged.
+- Disable chart/cell entrance animations on the mobile backdrop so animation fill modes cannot override its .18 opacity or cause a diagonal reveal. Restore copy align-self:center instead of desktop end-alignment.
+- Parent visual QA: 390×844 English centered composition/square backdrop; 375×667 Japanese text/CTAs/free note fit with square backdrop; 1280×720 desktop preserves separate copy/chart. Desktop clicking and physical Safari were not interactively verified. Media restoration inspected in code.
+- New decorative/square guard test and hostname SSR regression passed; production build and diff check passed.
+
+## 2026-10-07 — Flush square phone hero
+- Remove viewport-height spacing and the 16px outer inset on phones. The hero main is full-width with aspect-ratio 1, no external padding/margin, and compact centered typography/spacing. All copy still overlays the decorative square; CTA target remains 44px and no text clipping is introduced.
+- Parent visual QA: 390px English and 375px Japanese show all copy inside the full-width square, with Selected hand immediately below. Measured 375px Japanese: hero width=375, height=375, bottom=439; following detail top=439 (zero gap).
+- Targeted square/decorative guard test and build passed; diff check passed. Physical Safari remains unverified.
+
+## 2026-10-07 — Final headline and matrix edge alignment
+- Reset the matrix scroll wrapper's desktop focus-ring padding/margins only in the inert mobile background; keep normal 2px internal cell gaps. This removes the below-header/right-edge strip without changing the square or desktop focus-ring space.
+- Final shared English headline/tagline: Don't just play. Understand the reason. First line is larger white; second line muted gray on mobile. Update English headline/footer literals across locale copies and existing English metadata without rewriting translations.
+- Parent QA: 390px English matrix x=0,y=64,width=390,height=390,right=390,bottom=454, matching the hero exactly; 375px Japanese copy/CTAs fit. 1280px desktop longer headline fits its left column without overflow.
+- Targeted edge/copy tests and production build passed; diff check passed. Physical Safari still unverified.
+
+## 2026-10-07 — Compact phone Selected hand / Why panel
+- Only at ≤560px: reduce decorative card width, hand heading, frequency-row spacing, panel padding and Why spacing; remove the invisible spacer row. Keep all frequencies/explanations, Explore CTA minimum 44px, and playback controls. Desktop and square hero untouched.
+- Parent visual QA: 390px English Selected hand/Why/CTA/playback fit below the 390px square within the 844px viewport. 375px Japanese remains readable without overflow; CTA is reachable through normal scrolling. No exact percentage height reduction claimed.
+- Focused compact-panel regression test, production build and diff check passed. Physical Safari remains unverified.

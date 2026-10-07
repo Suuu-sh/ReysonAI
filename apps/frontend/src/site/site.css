@@ -602,16 +602,42 @@
   .site-hero-actions .site-button { min-height: 48px; padding-inline: 18px; font-size: 14px; }
   .site-hero-secondary { font-size: 13px; gap: 6px; }
   .site-hero-note { font-size: 11px; }
-  .site-hand { gap: 20px; }
-  .site-hero-deal { padding-inline: 4px; }
-  .site-hero-deal .site-hand-cards { gap: 9px; }
-  .site-hero-deal .site-card { --card-w: clamp(52px, 15vw, 74px); }
-  .site-hero-summary .site-hand-title { flex-wrap: wrap; gap: 6px 12px; margin-bottom: 12px; }
-  .site-hero-summary .site-hand-title strong { font-size: 38px; }
-  .site-hero-summary .site-hand-action { font-size: 13px; gap: 6px; }
-  .site-hero-reason .site-hand-why { font-size: 14px; }
-  .site-hero-playback { flex-wrap: wrap; gap: 10px 14px; }
-  .site-hero-disclaimer { flex: 1 0 100%; max-width: none; font-size: 10px; }
+  /* Phones use the chart as a decorative backdrop, never an obscured control. */
+  .site-wrap.site-hero-main { position: relative; isolation: isolate; display: grid; place-items: center; width: 100%; margin: 0; min-height: 0; aspect-ratio: 1; padding: 0; gap: 0; }
+  .site-hero-copy { display: block; align-self: center; width: 100%; max-width: 440px; padding: 20px 24px; text-align: center; }
+  .site-hero-range { position: absolute; top: 50%; left: 0; z-index: -1; width: 100%; max-width: none; transform: translateY(-50%); opacity: .18; pointer-events: none; }
+  .site-hero-chart-frame, .site-hero-range .site-matrix-scroll { height: auto; }
+  .site-hero-range .site-matrix-scroll { overflow: hidden; width: 100%; max-width: none; margin: 0; padding: 0; }
+  .site-hero-range .site-matrix { height: auto; aspect-ratio: 1; min-width: 0; }
+  .has-motion .site-hero-range { animation: none; }
+  .has-motion .site-hero-range .site-cell { animation: none; }
+  .site-hero-range .site-legend { display: none; }
+  .site-hero h1 { margin: 0; padding: 0; text-shadow: 0 2px 16px #09090b; }
+  .site-hero-opening { color: var(--ink); font-size: clamp(30px, 9.2vw, 48px); }
+  .site-hero h1 .site-line + .site-line { margin-top: 6px; font-size: clamp(19px, 5.5vw, 28px); line-height: 1.2; text-wrap: balance; }
+  .site-hero h1 .site-hero-mark { color: #a8a8b3; white-space: normal; }
+  .site-hero-lead, .site-ja .site-hero-lead { margin-top: 12px; color: var(--ink); font-size: 14px; line-height: 1.45; }
+  .site-hero-actions { justify-content: center; gap: 8px 16px; margin-top: 14px; }
+  .site-hero-actions .site-button { min-height: 44px; padding-inline: 14px; font-size: 13px; }
+  .site-hero-secondary { font-size: 12px; }
+  .site-hero-note { margin-top: 10px; color: #a8a8b3; font-size: 10px; line-height: 1.4; }
+  .site-hero-detail .site-hand { gap: 12px 16px; padding-block: 14px; }
+  .site-hero-deal { padding: 0; }
+  .site-hero-deal .site-hand-cards { gap: 6px; }
+  .site-hero-deal .site-card { --card-w: clamp(36px, 10vw, 48px); }
+  .site-hero-summary .site-hand-title { flex-wrap: wrap; gap: 4px 8px; margin-block: 4px 8px; }
+  .site-hero-summary .site-hand-title strong { font-size: 28px; }
+  .site-hero-summary .site-hand-actions { gap: 4px; }
+  .site-hero-summary .site-hand-action { font-size: 12px; line-height: 1.3; gap: 6px; padding-bottom: 4px; }
+  .site-hero-summary .site-hand-action.is-spacer { display: none; }
+  .site-hero-reason { padding-top: 12px; }
+  .site-hero-reason .site-hand-why { font-size: 13px; line-height: 1.5; }
+  .site-hero-reason .site-hand-why > span { display: inline; margin: 0 8px 0 0; font-size: 12px; }
+  .site-hero-reason .site-hand-link { min-height: 44px; margin-top: 4px; }
+  .site-hero-playback { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 2px 12px; min-height: 0; padding-block: 8px; }
+  .site-hero-playback .site-tour-toggle { grid-column: 1; grid-row: 1 / 3; }
+  .site-hero-playback .site-tour, .site-hero-playback .site-hero-disclaimer { grid-column: 2; }
+  .site-hero-disclaimer { max-width: none; font-size: 10px; }
   .site-tour-caption { font-size: 10px; }
 }
 
@@ -885,3 +911,53 @@
 .site-train.is-scrolly .site-ranked, .site-train.is-scrolly .site-agent { border-top: 0; }
 /* All three slides share one sticky viewport; IO reveal checks can miss off-canvas slides. */
 .site-train.is-scrolly [data-reveal] { opacity: 1; transform: none; }
+
+/* Touch storytelling uses document scrolling, never a captured wheel/touch gesture.
+   Short phones keep the complete ordinary layout instead of clipping their copy. */
+@media (max-width: 960px) and (min-height: 740px) {
+  .site-audience.is-scrolly { height: 300svh; }
+  .site-audience.is-scrolly > .site-wrap { min-height: 100svh; padding-block: 80px 24px; justify-content: center; }
+  .site-audience.is-scrolly .site-audience-grid { gap: 16px; margin-top: 20px; }
+  .site-audience.is-scrolly h2 { font-size: 26px; }
+  .site-audience.is-scrolly .site-persona { padding: 8px 12px; }
+  .site-audience.is-scrolly .site-persona-list { gap: 4px; }
+  .site-audience.is-scrolly .site-persona { gap: 6px; }
+  .site-audience.is-scrolly .site-persona:not(.is-active) { gap: 0; }
+  .site-audience.is-scrolly .site-persona:not(.is-active) .site-persona-more { display: none; }
+  .site-audience.is-scrolly .site-persona:not(.is-active) .site-persona-quote { display: none; }
+  .site-audience.is-scrolly .site-persona-quote { font-size: 18px; margin-top: 4px; }
+  .site-audience.is-scrolly .site-persona-body { font-size: 13px; line-height: 1.45; }
+  .site-audience.is-scrolly .site-persona-more > span { gap: 6px; }
+  .site-audience.is-scrolly .site-persona-gets { padding: 2px 6px; font-size: 11px; }
+  .site-audience.is-scrolly .site-persona-view { padding: 16px; gap: 12px; }
+  .site-audience.is-scrolly .site-persona-view.is-simple { grid-template-columns: minmax(0, 1fr) minmax(0, .8fr); gap: 16px; }
+  .site-audience.is-scrolly .site-persona-view .site-mini-matrix { width: 100%; }
+  .site-audience.is-scrolly .site-persona-callout { gap: 8px; }
+  .site-audience.is-scrolly .site-persona-callout strong { font-size: 28px; }
+  .site-audience.is-scrolly .site-persona-view .site-card { --card-w: 38px; }
+  .site-audience.is-scrolly .site-persona-detail-head strong { font-size: 26px; }
+  .site-audience.is-scrolly .site-persona-why { font-size: 12px; line-height: 1.45; }
+  .site-audience.is-scrolly .site-persona-view.is-free { gap: 8px; }
+  .site-audience.is-scrolly .site-persona-view.is-free ul { gap: 4px; }
+  .site-audience.is-scrolly .site-persona-view.is-free .site-persona-pill { font-size: 12px; padding: 3px 8px; }
+  .site-audience.is-scrolly .site-persona-plus { margin-top: 0; padding-top: 8px; gap: 2px; }
+  .site-audience.is-scrolly .site-persona-plus span { font-size: 20px; }
+  .site-audience.is-scrolly .site-persona-plus small { font-size: 11px; }
+  .site-audience.is-scrolly .site-persona-view.is-free li { font-size: 13px; }
+  .site-audience.is-scrolly .site-persona-price strong { font-size: 40px; }
+  .site-audience.is-scrolly .site-audience-note { font-size: 11px; margin-top: 12px; }
+  .has-motion .site-how-steps { gap: 0; }
+  .has-motion .site-how-steps li { position: sticky; top: 80px; min-height: calc(100svh - 96px); padding: 24px 0; background: var(--bg); }
+  .has-motion .site-how-steps li[data-oversized="true"] { position: static; }
+  .has-motion .site-how-steps li + li { margin-top: 48svh; }
+  .has-motion .site-how-inline { min-height: 300px; margin-top: 20px; }
+}
+/* A restrained settle, not a long opacity-only wait, keeps reveals legible on touch. */
+.has-motion [data-reveal] { transform: translateY(18px); transition-duration: .65s, .8s; }
+.has-motion [data-reveal][data-shown], .has-motion .site-train.is-scrolly [data-reveal] { transform: none; }
+.has-motion .site-audience.is-scrolly [data-reveal] { opacity: 1; transform: none; }
+.has-motion .site-persona-view.is-active { animation: site-persona-settle .55s var(--ease) both; }
+@keyframes site-persona-settle { from { opacity: .4; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .site *, .site *::before, .site *::after { animation: none !important; transition: none !important; }
+}
