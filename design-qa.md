@@ -603,3 +603,8 @@ Verification:
 ## 2026-10-07 — Remove phone hero detail and playback
 - Remove the entire phone Selected hand/cards/frequencies/Why/explore/playback footer, matching desktop. Preserve decorative background tour behavior and square hero; saved/not-GTO caveat now uses the existing hero note like desktop. Drop unused rail explanation values/icon imports; other site sections unaffected.
 - Parent 390px visual: rail removed, square hero/caveat and following Audience retained. Existing Audience sticky-centering space is not a removed-rail leftover. Focused phone hero tests passed after scoping the no-desktop-legend assertion to the hero (other sections retain their legends). Production build/diff check passed. No merge/deploy.
+
+## 2026-10-07 — Fix CI sparse range typing
+- CI frontend typecheck on ee96017 failed TS2322: imported postflop JSON infers absent action keys as optional undefined, while HeroRange required all keys to be numeric. Model action mixes as Partial<Record<string,number>>, treating missing frequencies as zero only at numerical conversion/legend checks. No saved data, layout or tour changes.
+- Local exact typecheck initially could not find ignored continuation-responses.json; restored an existing local generated artifact for type-only checking, not committed. CI uses its authoritative reviewed-artifact restoration. Local typecheck and latest-SHA CI conclusions recorded below.
+- Local npm run typecheck passed after restoring the ignored type input; diff check passed. No repeated build or unrelated test suite. No merge/deploy.

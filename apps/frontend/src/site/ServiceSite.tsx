@@ -105,7 +105,7 @@ function ActionRows({ mode, values }: { mode: RangeMode; values: Record<Action, 
 }
 
 const heroActions = ["all_in", "raise", "call", "limp", "fold"] as const;
-type HeroRange = { id: string; stage: string; hands: Record<string, Record<string, number>>; unreachable: string[]; actions: readonly string[]; board?: string; seat?: string; history?: string[] };
+type HeroRange = { id: string; stage: string; hands: Record<string, Partial<Record<string, number>>>; unreachable: string[]; actions: readonly string[]; board?: string; seat?: string; history?: string[] };
 const heroRanges: HeroRange[] = [...previewRanges.tour.map(range => ({ ...range, actions: heroActions })), ...postflopRanges.ranges];
 const stripAggression = ["all_in", "allin", "raise", "bet125", "bet75", "bet33", "limp", "call", "check", "fold"];
 
@@ -131,7 +131,7 @@ export function RangeMatrix({ range, selected, onSelect }: { range: HeroRange; s
     <fieldset className="site-matrix"><legend className="site-visually-hidden">{copy.preview.matrixLabel}</legend>
       {cells.map(({ hand, wave }) => {
         const saved = range.hands[hand];
-        const values = Object.fromEntries(Object.entries(saved).map(([action, frequency]) => [action, frequency * (postflop ? 100 : 1)]));
+        const values = Object.fromEntries(Object.entries(saved).map(([action, frequency]) => [action, (frequency ?? 0) * (postflop ? 100 : 1)]));
         const unreachable = range.unreachable.includes(hand);
         const action = range.actions.reduce((best, candidate) => values[candidate] > values[best] ? candidate : best, postflop ? range.actions[0] : "fold");
         const mixed = range.actions.filter(option => values[option] > 0).sort((a, b) => stripAggression.indexOf(a) - stripAggression.indexOf(b));
@@ -149,7 +149,7 @@ export function RangeMatrix({ range, selected, onSelect }: { range: HeroRange; s
 export function HeroActionLegend({ range }: { range: HeroRange }) {
   const { copy } = useSite();
   const labels = heroActionLabels(copy, range);
-  const used = range.actions.filter(action => Object.entries(range.hands).some(([hand, mix]) => !range.unreachable.includes(hand) && mix[action] > 0))
+  const used = range.actions.filter(action => Object.entries(range.hands).some(([hand, mix]) => !range.unreachable.includes(hand) && (mix[action] ?? 0) > 0))
     .sort((a, b) => stripAggression.indexOf(a) - stripAggression.indexOf(b));
   return <div className="site-range-legend">{used.map(action => <span key={action}><i aria-hidden="true" style={{ background: range.stage !== "postflop" && action === "fold" ? "var(--fold)" : actionColor(action) }} />{labels[action] ?? action}</span>)}</div>;
 }
