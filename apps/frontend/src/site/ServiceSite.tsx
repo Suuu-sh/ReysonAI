@@ -303,7 +303,7 @@ function HeroCopy({ children, showEstimate = true }: { children?: ReactNode; sho
 
 function Hero() {
   const { copy: c } = useSite();
-  return <section className="site-hero" aria-labelledby="site-hero-title"><div className="site-hero-stage"><Explorer /></div><div className="site-cover-ending"><p className="site-cover-title">{c.hero.coverTitle}</p><p className="site-cover-subtitle">{c.hero.coverSubtitle}</p><span className="site-cover-scroll">{c.hero.coverScroll}</span></div></section>;
+  return <section className="site-hero" aria-labelledby="site-hero-title"><div className="site-hero-stage"><Explorer /></div><div className="site-question-track"><div className="site-cover-ending"><p className="site-cover-title">{c.hero.coverTitle}</p><p className="site-cover-subtitle">{c.hero.coverSubtitle}</p><span className="site-cover-scroll">{c.hero.coverScroll}</span></div></div></section>;
 }
 
 /** Eases from `from` to `to` once `run` turns true; jumps straight to `to` without motion. */

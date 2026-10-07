@@ -683,3 +683,7 @@ Verification:
 ## 2026-10-07 — Phone range tour shares all62 saved ranges
 - User approved matching desktop: replace phone BTN_open/BB_vs_BTN alternating mode with the same heroRanges and non-repeating random selector (50 preflop+12 postflop),1000ms. Remove old hand/mode tour and its already-hidden obsolete action legend. No saved values or strategy generation.
 - Square/fullbleed/dim/centered copy CSS unchanged; inert background/manual interaction/reduced-motion/offscreen pause/interval cleanup retained. Targeted tour/responsive tests2, build/diffcheck passed. No new browser verification claimed; no merge/deploy.
+
+## 2026-10-07 — Brief pause only for the phone cover question
+- Restore only question ending pause≤560px: dedicated bounded track with64–100px extra scroll, actual opaque question content remains sticky at header during that brief distance. Square hero itself and all other mobile chapters remain normal flow;62 saved ranges/1000ms unchanged. Reduced-motion bypasses pause via .has-motion boundary. No long runway or global fixed logic.
+- Targeted question-boundary test1/build/diffcheck passed. No new browser verification claimed (user requested immediate completion); no merge/deploy.

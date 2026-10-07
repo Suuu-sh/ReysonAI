@@ -89,6 +89,14 @@ test("phone learner retains the full saved factual reason used on desktop", () =
   for (const locale of ["en", "ja", "es", "zh-CN"]) assert.ok(render(locale).includes(escapeText(copies[locale].how.whyNote)));
 });
 
+test("only the phone question has a short bounded pause, with natural reduced-motion flow", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const question = css.slice(css.indexOf("/* Only the cover question"));
+  assert.match(question, /clamp\(64px, 12svh, 100px\)/);
+  assert.match(question, /\.has-motion \.site-question-track \.site-cover-ending \{ position: sticky; top: var\(--header-height\)/);
+  assert.doesNotMatch(question, /site-hero-stage|site-audience|site-mobile-hold/);
+});
+
 test("hero and shared English taglines use Understand the reason", () => {
   for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
     const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");
