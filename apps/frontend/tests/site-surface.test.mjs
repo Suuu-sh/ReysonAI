@@ -194,7 +194,7 @@ test("responsive hero mounts one matrix without the removed phone detail or play
 
 test("the range tour randomly selects saved spots, pauses offscreen, yields to interaction, and keeps playback intentional", () => {
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
-  const explorer = source.split("function DesktopExplorer() {")[1].split("const tourHands")[0];
+  const explorer = source.split("function DesktopExplorer() {")[1].split("function MobileExplorer()")[0];
   assert.match(explorer, /const isTouring = touring && motion/);
   assert.match(explorer, /if \(!isTouring \|\| !visible\) return/);
   assert.match(explorer, /window\.clearInterval\(timer\)/);
@@ -203,6 +203,9 @@ test("the range tour randomly selects saved spots, pauses offscreen, yields to i
   const mobile = source.split("function MobileExplorer() {")[1].split("function Header()")[0];
   assert.match(mobile, /\}, 1000\)/);
   assert.match(mobile, /if \(!isTouring \|\| !visible\) return/);
+  assert.match(mobile, /setRangeIndex\(current => pickNextRangeIndex\(current, heroRanges.length\)\)/);
+  assert.match(mobile, /<RangeMatrix range=\{range\}/);
+  assert.doesNotMatch(mobile, /nextMode|tourHands|BTN_open.*BB_vs_BTN/);
   for (const event of ["pointerdown", "keydown"]) {
     assert.ok(explorer.includes(`addEventListener("${event}", stop)`));
     assert.ok(explorer.includes(`removeEventListener("${event}", stop)`));

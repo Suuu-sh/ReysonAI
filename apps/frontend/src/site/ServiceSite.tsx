@@ -209,18 +209,13 @@ function DesktopExplorer() {
   </div>;
 }
 
-const tourHands: Record<RangeMode, string[]> = {
-  opening: ["A5o", "K7s", "Q4s", "T9s", "J9o", "22", "K2s", "86s"],
-  response: ["A5s", "K7s", "98o", "74s", "QJo", "A2o", "55"],
-};
-
 function MobileExplorer() {
-  const { copy: c, motion } = useSite();
+  const { motion } = useSite();
   const decorative = true;
-  const [mode, setMode] = useState<RangeMode>("opening");
+  const [rangeIndex, setRangeIndex] = useState(initialRangeIndex);
+  const range = heroRanges[rangeIndex];
   const [selected, setSelected] = useState("A5o");
   const [touring, setTouring] = useState(true);
-  const tourStep = useRef(0);
   const [ref, visible] = useInView<HTMLDivElement>("0px", false);
   const isTouring = touring && motion;
 
@@ -240,25 +235,21 @@ function MobileExplorer() {
   useEffect(() => {
     if (!isTouring || !visible) return;
     const timer = window.setInterval(() => {
-      const step = ++tourStep.current;
-      const nextMode: RangeMode = step % 2 === 0 ? "opening" : "response";
-      const hands = tourHands[nextMode];
-      setMode(nextMode);
-      setSelected(hands[Math.floor(step / 2) % hands.length]);
+      setRangeIndex(current => pickNextRangeIndex(current, heroRanges.length));
     }, 1000);
     return () => window.clearInterval(timer);
   }, [isTouring, visible]);
 
   const selectedRow = Math.floor(cells.findIndex(cell => cell.hand === selected) / ranks.length);
 
-  return <div className={`site-explorer is-${mode}`} ref={ref} data-tour-running={isTouring && visible}>
+  return <div className="site-explorer" ref={ref} data-tour-running={isTouring && visible}>
     <div className="site-wrap site-hero-main">
       <HeroCopy />
       <div className="site-hero-range" inert={decorative} aria-hidden={decorative || undefined}>
         <div className="site-hero-chart-frame" style={{ "--selected-row": selectedRow } as CSSProperties}>
-          <RangeMatrix range={heroRanges.find(range => range.id === (mode === "opening" ? "BTN_open" : "BB_vs_BTN"))!} selected={selected} onSelect={hand => { setTouring(false); setSelected(hand); }} />
+          <RangeMatrix range={range} selected={selected} onSelect={hand => { setTouring(false); setSelected(hand); }} />
         </div>
-        <div className="site-legend">{actions.filter(option => mode === "response" || option !== "call").map(option => <span key={option}><i className={`is-${option}`} />{actionLabel(c, mode, option)}</span>)}</div>
+
       </div>
     </div>
   </div>;

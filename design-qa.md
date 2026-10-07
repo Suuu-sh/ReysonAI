@@ -679,3 +679,7 @@ Verification:
 ## 2026-10-07 — One-second saved range tour interval
 - User corrected requested interval to1second. Desktop random saved-range tour and mobile opening/response background tour now1000ms (previous4000/2800). Preserve offscreen/reduced-motion/manual-interaction boundaries and all other animation timings.
 - Targeted tour interval/lifecycle test1 passed; diffcheck passed. Timer literal-only: no repeated build/browser verification. No merge/deploy.
+
+## 2026-10-07 — Phone range tour shares all62 saved ranges
+- User approved matching desktop: replace phone BTN_open/BB_vs_BTN alternating mode with the same heroRanges and non-repeating random selector (50 preflop+12 postflop),1000ms. Remove old hand/mode tour and its already-hidden obsolete action legend. No saved values or strategy generation.
+- Square/fullbleed/dim/centered copy CSS unchanged; inert background/manual interaction/reduced-motion/offscreen pause/interval cleanup retained. Targeted tour/responsive tests2, build/diffcheck passed. No new browser verification claimed; no merge/deploy.
