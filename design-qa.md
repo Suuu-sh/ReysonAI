@@ -706,3 +706,7 @@ Verification:
 ## 2026-10-07 — Fade the entire question block completely
 - Latest user supersedes background-only scrim: question block background/title/subtitle/scroll hint share opacity1→0 as it covers the square. Matrix pin lasts through question range; next content remains independently opaque/z1. Reduced-motion remains static/natural.
 - Question contains no interactive/focusable elements; pointer-events:none prevents its invisible box intercepting matrix region. No extra height or other-section opacity. Targeted fade/pin/opaque-next math+CSS test1/diffcheck passed; no repeated build/browser claim. No merge/deploy.
+
+## 2026-10-07 — Question disappears immediately when scrolling starts
+- Latest request removes gradual fade: question/background/all text opacity1 only at original cover position; any positive scroll movement sets0 immediately, no transition. Scrolling back to original cover restores visibility. Pure touchstart without scroll is not treated as movement.
+- Existing matrix pin, opaque following content and reduced-motion natural/static flow retained. Targeted first-fractional-pixel/return-state/CSS-no-transition test1 and diffcheck passed; no repeated build/browser claim. No merge/deploy.

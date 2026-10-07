@@ -3,8 +3,7 @@ export function shouldPinCover(stageTop: number, questionBottom: number, headerB
   return stageTop <= headerBottom && questionBottom > headerBottom;
 }
 
-/** Fade the complete question block out as it covers the square. */
+/** Visible at the initial cover; disappear immediately once scrolling advances. */
 export function questionOpacity(questionTop: number, headerBottom: number, squareHeight: number): number {
-  const progress = Math.min(1, Math.max(0, (headerBottom + squareHeight - questionTop) / Math.max(1, squareHeight)));
-  return 1 - progress;
+  return questionTop >= headerBottom + squareHeight ? 1 : 0;
 }

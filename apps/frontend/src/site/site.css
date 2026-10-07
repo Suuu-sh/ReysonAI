@@ -1009,6 +1009,6 @@
 /* Only the square pins; complete question fades, later content stays opaque. */
 @media (max-width: 560px) {
   .has-motion .site-hero[data-cover-pinned] .site-hero-stage > .site-explorer { position: fixed; top: var(--header-height); left: 0; width: 100%; z-index: 0; }
-  .has-motion .site-cover-ending { position: relative; z-index: 1; background: var(--bg); opacity: var(--question-opacity, 1); pointer-events: none; }
+  .has-motion .site-cover-ending { position: relative; z-index: 1; background: var(--bg); opacity: var(--question-opacity, 1); transition: none; pointer-events: none; }
   .has-motion .site-after-cover { display: flow-root; position: relative; z-index: 1; background: var(--bg); }
 }
