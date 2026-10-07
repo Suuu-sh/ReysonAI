@@ -114,7 +114,8 @@ export function describeHand(f: HandFeatures | null, name: string, en: Narrative
 
   const aceHigh = f.aceHigh;
   const hiRank = Math.max(...holeRanks), loRank = Math.min(...holeRanks);
-  const highPhrase = mk.category === "highCard" && !pocket ? e(narrative("{0}-high with {1}", [R(hiRank), art(R(loRank))], en), `${R(hiRank)}ハイ（${R(loRank)}）`) : "";
+  const boardOnlyPair = mk.kind === "boardPair" || mk.kind === "boardTwoPair";
+  const highPhrase = (mk.category === "highCard" || boardOnlyPair) && !pocket && !mk.playsBoard ? e(narrative("{0}-high with {1}", [R(hiRank), art(R(loRank))], en), `${R(hiRank)}ハイ（${R(loRank)}）`) : "";
   const hasParts = [made && mk.category !== "highCard" ? made : "", draw, over].filter(Boolean);
   const isAir = m === "none" && dr === "none";
   if (isAir) {
@@ -122,7 +123,9 @@ export function describeHand(f: HandFeatures | null, name: string, en: Narrative
     hasParts.push(highPhrase || (mk.playsBoard ? made : e(narrative("only the board's cards", [], en), "ボードのカードだけ")));
     if (backdoor) hasParts.push(backdoor);
   } else if (!hasParts.length && backdoor) hasParts.push(backdoor);
-  const has = mk.playsBoard && isAir ? made : isAir ? e(narrative("only {0}", [join(hasParts, en)], en), `${join(hasParts, en)}だけ`) : join(hasParts, en);
+  // "only the board's cards" already says "only"; wrapping it again read "only only".
+  const boardCardsOnly = isAir && !highPhrase && !mk.playsBoard;
+  const has = mk.playsBoard && isAir ? made : isAir && !boardCardsOnly ? e(narrative("only {0}", [join(hasParts, en)], en), `${join(hasParts, en)}だけ`) : join(hasParts, en);
 
   // ---- worse hands that keep paying a value hand
   const w = (a: string, b: string, c: string, d2: string) => e(river ? a : b, river ? c : d2);
