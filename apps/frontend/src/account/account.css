@@ -167,3 +167,8 @@
 .learning-gate-back { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border: 0; border-radius: 6px; background: transparent; color: var(--text-muted); font-size: 12.5px; font-weight: 600; cursor: pointer; }
 .learning-gate-back:hover { background: var(--surface-hover); color: var(--text); }
 @media (max-width: 480px) { .learning-gate-card { padding: 26px 18px 18px; } .learning-gate-card h1 { font-size: 19px; } }
+.account-matrix-preview { display: block; width: 34px; height: 22px; margin-bottom: 3px; overflow: hidden; border-radius: 3px; background: #26262c; }
+.account-matrix-preview i { position: relative; display: block; height: 100%; }
+.account-matrix-preview.classic i { background: #d9477f; }
+.account-matrix-preview.classic i::after { content: ""; position: absolute; right: 3px; bottom: 3px; left: 3px; height: 4px; border-radius: 1px; background: linear-gradient(90deg, #d9477f 0 55%, #3a9fb4 55% 80%, #1a1a1f 80%); box-shadow: 0 0 0 1px rgb(0 0 0 / 35%); }
+.account-matrix-preview.wizard i { background: linear-gradient(90deg, #d9477f 0 55%, #3a9fb4 55% 80%, #26262c 80%); }
