@@ -99,6 +99,7 @@
 /* Hero: the viewport-height range and copy share one uninterrupted stage. */
 .site-hero { padding: 0; }
 .site-cover-ending { display: none; }
+.site-hero-stage { display: contents; }
 .site-explorer { border-radius: var(--panel-radius); }
 .site-hero-main { --hero-height: calc(100svh - var(--header-height)); --hero-range-size: min(var(--hero-height), calc(100vw - min(40vw, 480px))); display: grid; width: 100%; min-height: var(--hero-height); grid-template-columns: minmax(0, 1fr) var(--hero-range-size); align-items: center; gap: 0; padding: 0; }
 .site-hero-copy { min-width: 0; align-self: center; transform: translateY(28px); padding: clamp(24px, 4vw, 64px); container-type: inline-size; }
@@ -598,13 +599,13 @@
 }
 @media screen and (max-width: 560px) {
   .site-hero { --page-gutter: 16px; display: flex; flex-direction: column; min-height: calc(100svh - var(--header-height)); }
-  .site-hero > .site-explorer { flex: none; width: 100%; }
+  .site-hero-stage { display: block; flex: none; width: 100%; aspect-ratio: 1; }
   .site-cover-ending { display: flex; flex: 1; min-height: 156px; flex-direction: column; align-items: center; justify-content: center; gap: 9px; padding: 22px 20px max(18px, env(safe-area-inset-bottom)); text-align: center; }
   .site-cover-title { color: var(--ink); font-size: clamp(19px, 5.2vw, 24px); font-weight: 600; letter-spacing: -.025em; line-height: 1.45; text-wrap: balance; }
   .site-cover-subtitle { color: var(--muted); font-size: 12px; }
   .site-cover-scroll { margin-top: 15px; color: var(--subtle); font-size: 11px; }
-  /* Native cover takeover stays bounded to the natural first-screen cover. */
-  .has-motion .site-hero > .site-explorer { position: sticky; top: var(--header-height); z-index: 0; }
+  /* Keep only the original square-sized slot; no extra scrolling runway. */
+  .has-motion .site-hero[data-cover-pinned] .site-hero-stage > .site-explorer { position: fixed; top: var(--header-height); left: 0; width: 100%; z-index: 0; }
   .has-motion .site-cover-ending { position: relative; z-index: 1; background: var(--bg); }
 
   .site-hero-main { padding-top: 28px; gap: 12px; }

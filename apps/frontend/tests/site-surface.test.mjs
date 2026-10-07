@@ -70,7 +70,7 @@ test("phone cover fills remaining viewport without stretching or clipping the sq
   const mobile = css.slice(css.indexOf("@media screen and (max-width: 560px)"));
   assert.match(css, /\.site-cover-ending \{ display: none; \}/);
   assert.match(mobile, /min-height: calc\(100svh - var\(--header-height\)\)/);
-  assert.match(mobile, /\.site-hero > \.site-explorer \{ flex: none; width: 100%; \}/);
+  assert.match(mobile, /\.site-hero-stage \{ display: block; flex: none; width: 100%; aspect-ratio: 1; \}/);
   assert.match(mobile, /\.site-cover-ending \{ display: flex; flex: 1; min-height: 156px;/);
   assert.match(mobile, /env\(safe-area-inset-bottom\)/);
   for (const locale of ["en", "ja", "es", "zh-CN"]) {
@@ -79,13 +79,21 @@ test("phone cover fills remaining viewport without stretching or clipping the sq
   }
 });
 
-test("phone cover takeover uses bounded sticky without an artificial blank runway", () => {
+test("phone cover pins through full occlusion without extra runway and releases afterwards", async () => {
+  const { shouldPinCover } = await server.ssrLoadModule("/src/site/cover-pin.ts");
+  for (const footerTop of [454, 300, 65]) assert.equal(shouldPinCover(0, footerTop, 64), true);
+  assert.equal(shouldPinCover(64, 454, 64), true);
+  assert.equal(shouldPinCover(65, 455, 64), false);
+  assert.equal(shouldPinCover(-390, 64, 64), false);
+  assert.equal(shouldPinCover(-391, 63, 64), false);
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
   const mobile = css.slice(css.indexOf("@media screen and (max-width: 560px)"));
-  assert.match(mobile, /\.has-motion \.site-hero > \.site-explorer \{ position: sticky; top: var\(--header-height\); z-index: 0;/);
-  assert.match(mobile, /\.has-motion \.site-cover-ending \{ position: relative; z-index: 1;[^}]*background: var\(--bg\);/);
+  assert.match(mobile, /\.has-motion \.site-hero\[data-cover-pinned\] \.site-hero-stage > \.site-explorer \{ position: fixed; top: var\(--header-height\);/);
   assert.doesNotMatch(mobile, /min-height: calc\(max\(156px[^}]*\+ 100vw|padding-bottom: calc\(100vw/);
-  assert.doesNotMatch(mobile, /\.site-hero[^}]*position: fixed/);
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.match(source, /if \(!motion\) \{ setPinned\(false\); return; \}/);
+  assert.match(source, /addEventListener\("scroll", schedule, \{ passive: true \}\)/);
+  assert.match(source, /cancelAnimationFrame\(frame\)/);
 });
 
 test("hero and shared English taglines use Understand the reason", () => {

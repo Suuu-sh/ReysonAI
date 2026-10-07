@@ -1,3 +1,4 @@
+import { shouldPinCover } from "./cover-pin.ts";
 import { PlayingCard, type CardSuit as Suit } from "../components/PlayingCard.tsx";
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { BrandIcon } from "../components/BrandIcon.tsx";
@@ -311,8 +312,32 @@ function HeroCopy({ children, showEstimate = true }: { children?: ReactNode; sho
 }
 
 function Hero() {
-  const { copy: c } = useSite();
-  return <section className="site-hero" aria-labelledby="site-hero-title"><Explorer /><div className="site-cover-ending"><p className="site-cover-title">{c.hero.coverTitle}</p><p className="site-cover-subtitle">{c.hero.coverSubtitle}</p><span className="site-cover-scroll">{c.hero.coverScroll}</span></div></section>;
+  const { copy: c, motion, locale } = useSite();
+  const stage = useRef<HTMLDivElement>(null);
+  const ending = useRef<HTMLDivElement>(null);
+  const [pinned, setPinned] = useState(false);
+  useEffect(() => {
+    if (!motion) { setPinned(false); return; }
+    const phone = window.matchMedia("(max-width: 560px)");
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const header = document.querySelector(".site-header");
+      setPinned(Boolean(phone.matches && stage.current && ending.current && header && shouldPinCover(stage.current.getBoundingClientRect().top, ending.current.getBoundingClientRect().top, header.getBoundingClientRect().bottom)));
+    };
+    const schedule = () => { if (!frame) frame = window.requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    phone.addEventListener("change", schedule);
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      phone.removeEventListener("change", schedule);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [motion, locale]);
+  return <section className="site-hero" aria-labelledby="site-hero-title" data-cover-pinned={pinned || undefined}><div className="site-hero-stage" ref={stage}><Explorer /></div><div className="site-cover-ending" ref={ending}><p className="site-cover-title">{c.hero.coverTitle}</p><p className="site-cover-subtitle">{c.hero.coverSubtitle}</p><span className="site-cover-scroll">{c.hero.coverScroll}</span></div></section>;
 }
 
 /** Eases from `from` to `to` once `run` turns true; jumps straight to `to` without motion. */
