@@ -1,0 +1,645 @@
+{
+  "status": "PASS_REQUIRED_STAGE3_UNSUPPORTED_NO_HU_REUSE_COMPONENT_BROWSER",
+  "sourceHead": "6eb6182ccc4d4a2da5a4ec49bab4f42b6371ae67",
+  "sourceTree": "30d701f90128606b6903044d4ea5236b2e72f9ef",
+  "browser": "formal CUA Chrome extension4 dedicatedtab",
+  "origin": "127.0.0.1:18450",
+  "originalFixtureAuthPanelSha256": "d94859592a2d741ec0e6760f23a118bad189e8f59ecdc538fad8812186763de4",
+  "auth_scope": "original isolated account hook; actual RangeWorkspace entry used; ProductApp onboarding uses accountSnapshot separately and is outside component fixture; no actual OAuth E2E claim",
+  "root": "s3_cold_four_bet_extra_UTGo2p5_HJt8_COr26_to_BTN",
+  "actions": [
+    "call",
+    "fold",
+    "fold"
+  ],
+  "live": [
+    "CO",
+    "BTN"
+  ],
+  "potBB": 64,
+  "board": "As7d2c",
+  "observed": "unsupported exacthistory heading; zero AA matrix buttons; no HU tables",
+  "checks": [
+    "Continue to flop",
+    "Select As7d2c and Use flop",
+    "unsupported after board selection",
+    "board dialog Close",
+    "rewind HJ to preflop",
+    "Fold/reenter same terminal",
+    "same unsupported after repeat"
+  ],
+  "http_requests": 36,
+  "postflop_or_HU_policy_requests": 0,
+  "verified_application_source_inputs": 121,
+  "files": [
+    {
+      "path": "apps/frontend/src/estimated/opponent-profiles.ts",
+      "bytes": 10956,
+      "sha256": "39f6b040887a94ddd048c920e4596e6e0d90cd516fdcbe550c7d335c7786b44e"
+    },
+    {
+      "path": "apps/frontend/src/estimated/datasets.ts",
+      "bytes": 5397,
+      "sha256": "dd3224feae502272ded066a636760bf05b4f62d5d865ff5a802bf6ac68b3a216"
+    },
+    {
+      "path": "apps/frontend/src/styles.css",
+      "bytes": 27513,
+      "sha256": "048a730d1db8def7cd63cc5469087774474d8ab196dafbca7dfc55b797469268"
+    },
+    {
+      "path": "apps/frontend/src/site/site.css",
+      "bytes": 77212,
+      "sha256": "15c38580ace6343d210b2b9e61f6ee119c0212e29ad5cce7892a7ac30adedbc7"
+    },
+    {
+      "path": "apps/frontend/src/trainer/trainer.css",
+      "bytes": 69996,
+      "sha256": "f2bb67440b18783ee0dc2245e90a9253294435591ddaba1d1a6bfb603723f112"
+    },
+    {
+      "path": "apps/frontend/src/trainer/analysis.css",
+      "bytes": 24948,
+      "sha256": "b8155c6dea92f323542cf307fab048ccdbfc1f769782957bdc4f0d9e1bce0c89"
+    },
+    {
+      "path": "apps/frontend/src/account/config.ts",
+      "bytes": 594,
+      "sha256": "5c14158230f038ffea237dbfbe7ad10b8030057fa1a488cf16e5448f8e004a79"
+    },
+    {
+      "path": "apps/frontend/src/account/session.ts",
+      "bytes": 7034,
+      "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+    },
+    {
+      "path": "apps/frontend/src/locales/product-dictionary.json",
+      "bytes": 43279,
+      "sha256": "caf1cb5a84d2f20782cb4f02a011838369c30112e75bb819e0d7823121ccaeaf"
+    },
+    {
+      "path": "apps/frontend/src/locales/product-direct.json",
+      "bytes": 44812,
+      "sha256": "062e6a2f513803db6432cc261923ef38147027091bfab3b906367f26e49d4413"
+    },
+    {
+      "path": "apps/frontend/src/locales/copy.ts",
+      "bytes": 1811,
+      "sha256": "288a0071b14fe803456f5a6966f5577d799a91fb4e8d81fdee6d5e582e667ecc"
+    },
+    {
+      "path": "apps/frontend/src/locale-metadata.ts",
+      "bytes": 433,
+      "sha256": "d74b8d82103da925f500703752c673e34f65c209d77f41ba17841389a92197c4"
+    },
+    {
+      "path": "apps/frontend/src/locale.ts",
+      "bytes": 1420,
+      "sha256": "acfcdda8a24d27327b0878db3c76bfa1e8e14f5f81c8736e1a310b821ea46758"
+    },
+    {
+      "path": "apps/frontend/src/estimated/stage3-copy.ts",
+      "bytes": 1918,
+      "sha256": "bf773eecc1dd3dda05d01101d183f6257b6f1f7b8bd6834f1cf50723f7afef19"
+    },
+    {
+      "path": "apps/frontend/src/components/action-format.ts",
+      "bytes": 1296,
+      "sha256": "58059a12c53e115f17f0d47f9c7bc2eb4c731d1a03d3c5e126abb5d658f52bfc"
+    },
+    {
+      "path": "apps/frontend/src/data.ts",
+      "bytes": 3718,
+      "sha256": "386fd5eb5850e9893ed315edee00e0627e1b501347ba32cb861049040eaf2dd9"
+    },
+    {
+      "path": "configs/cash-6max-100bb.json",
+      "bytes": 918,
+      "sha256": "0910a97e1c477c1055a95db3334f8764e37647ed2497e3eb6b666f1cfa9628f2"
+    },
+    {
+      "path": "configs/multiway-preflop-stage2.json",
+      "bytes": 95,
+      "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
+    },
+    {
+      "path": "apps/frontend/src/estimated/sizing.ts",
+      "bytes": 3516,
+      "sha256": "e0e87afecd0fc718e2ebf80dd6a0071dca3ddc7577c4df9e57a8e0aeba6cb261"
+    },
+    {
+      "path": "apps/frontend/src/estimated/rake.ts",
+      "bytes": 1052,
+      "sha256": "399d85505fdf34216d5664e373e7c133b5c676dfcf136faed0ffd3b7274ce191"
+    },
+    {
+      "path": "apps/frontend/src/estimated/cold-three-bet-responses.ts",
+      "bytes": 5020,
+      "sha256": "7e06f7e7be8d5bbe5888d6435768a4f14b89ca1e696ad54732427189eee9e44c"
+    },
+    {
+      "path": "apps/frontend/src/estimated/multiway-responses.ts",
+      "bytes": 4427,
+      "sha256": "285b37ce92dd2bf05a9648735a717c2f85cf801d5f099b67b30eb1d93d8674d9"
+    },
+    {
+      "path": "apps/frontend/src/estimated/opening-ranges.ts",
+      "bytes": 2853,
+      "sha256": "830a7e3e41552c44e5692fd880335b0617911f0772f1651e8c8fa95963811ea1"
+    },
+    {
+      "path": "apps/frontend/src/estimated/ranges.ts",
+      "bytes": 3720,
+      "sha256": "56d04ffbbcb6da004d611706129625d77cbc17da73311cadbdba53891394c4b8"
+    },
+    {
+      "path": "apps/frontend/src/estimated/multiway2-responses.ts",
+      "bytes": 6269,
+      "sha256": "3e671c36e777a4c775630f9a157a73ee9cad08d40c03881a275287f81a95c148"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-tree.ts",
+      "bytes": 15974,
+      "sha256": "591c95a505b4da5b31432b5bed57a16c22ef921a2fd420aacb87e39c421acdd5"
+    },
+    {
+      "path": "configs/multiway-preflop-stage3.json",
+      "bytes": 141,
+      "sha256": "67de080dd1319f92148a03d9b8f8f62550180f7c9e1c37edc848fa390760817c"
+    },
+    {
+      "path": "apps/frontend/src/estimated/stage3-catalog.ts",
+      "bytes": 12723,
+      "sha256": "d96f6608405ef81f0f87e4eb1a39dacd8ec21dc270d8d334889ee49b9c34f5e5"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-flow.ts",
+      "bytes": 6149,
+      "sha256": "db108ecba3b902163e36893e8f39a873958bc59f5c0f3a4a36d2b21a942b2ab0"
+    },
+    {
+      "path": "apps/frontend/src/estimated/stage3-flow.ts",
+      "bytes": 10164,
+      "sha256": "3d94b846ed8c6a3a7e6452c5273979af6576bba864a09b4f8d3c7a626bce4655"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-copy.ts",
+      "bytes": 4044,
+      "sha256": "6c536cddef2e061cf07dca91786075f8f672de24aaadbe842fe7d09b20764960"
+    },
+    {
+      "path": "apps/frontend/src/estimated/squeeze-responses.ts",
+      "bytes": 7365,
+      "sha256": "3435989bc81c19e0f054a01527171abc650176c770966a87b5593f6caac5b705"
+    },
+    {
+      "path": "apps/frontend/src/estimated/cold-four-bet-responses.ts",
+      "bytes": 7282,
+      "sha256": "98d3f991bddda2228588f6a5839fa69efa4f6449e43a3f22b928cccbb95ba1f0"
+    },
+    {
+      "path": "apps/frontend/src/estimated/eqr.ts",
+      "bytes": 5661,
+      "sha256": "852e22d48419554a5feb75830633c4d6123ce6635ad4bd2b6c1a9526ca6dd3d2"
+    },
+    {
+      "path": "apps/frontend/src/estimated/call-ev.ts",
+      "bytes": 22090,
+      "sha256": "8bb3a42521bd0e75f068ca6aa5cbc9c263649f7279c7f4b7e1a57c8dfbafdc45"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-model.ts",
+      "bytes": 9965,
+      "sha256": "5ae744ba5ed9cfd1d2575f17080041e33f857da498682400c348f6284710523b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-ranges.ts",
+      "bytes": 14454,
+      "sha256": "243f02d89171cec41420668807d137ceb69a6ab9328b05dcd661a774f9a11e38"
+    },
+    {
+      "path": "apps/frontend/src/estimated/stage3-ranges.ts",
+      "bytes": 13953,
+      "sha256": "7cb618161d89dadabf51d0ce542017d57180713bcbe85a28498a8ba47d3cfd21"
+    },
+    {
+      "path": "apps/frontend/src/assets/brand/reysonai-symbol.png",
+      "bytes": 375576,
+      "sha256": "ec7c5ecba8a2bb1cdefccfc1854898a6e6f629152dd61b8f9ca8800a98217348"
+    },
+    {
+      "path": "apps/frontend/src/components/BrandIcon.tsx",
+      "bytes": 438,
+      "sha256": "d4355a813e48ae0ca7d59b2c4593dec12f1747b7220e597ed7d5b89bdffdc297"
+    },
+    {
+      "path": "apps/frontend/src/estimated/display-mode.ts",
+      "bytes": 1369,
+      "sha256": "ab54e66d49ab9aa7b44d9ef0288c26ce4a3d39653e4cafb1c916b2803cbb2963"
+    },
+    {
+      "path": "apps/frontend/src/profile.ts",
+      "bytes": 3457,
+      "sha256": "14514fcec6cf0a892744284fbd9f550bccba421f62093640b2fcff6c34b5f996"
+    },
+    {
+      "path": "apps/frontend/src/account/account.css",
+      "bytes": 16025,
+      "sha256": "5840e60938679f6846814de1d22a430bfbeee17f78ff01c0f7b120dce728a8bc"
+    },
+    {
+      "path": "apps/frontend/src/locales/reasons-secondary.json",
+      "bytes": 51990,
+      "sha256": "3af7ec7922716868fea0bdd124636b5a819092d853bd4dba384fedb81dccd626"
+    },
+    {
+      "path": "apps/frontend/src/locales/reasons-primary.json",
+      "bytes": 54916,
+      "sha256": "76e92b92b0fb22259093d505e97fa39a62b4fdb514836d08c1373f0b4eb0ce43"
+    },
+    {
+      "path": "apps/frontend/src/locales/reason-copy.ts",
+      "bytes": 5172,
+      "sha256": "ac4a51ad1848103eca94f02a4d99615a9a0bca96a4c9ec40c667a36bdb8dd183"
+    },
+    {
+      "path": "apps/frontend/src/i18n.ts",
+      "bytes": 35960,
+      "sha256": "9a3ee1965bf1deec42b563d7187be40e0a3a57b6fcee0daa65fe82079b07a55d"
+    },
+    {
+      "path": "apps/frontend/src/account/AccountMenu.tsx",
+      "bytes": 3716,
+      "sha256": "de274581a93ab481f8ece44b4fa3e3ef70fff54ba2ad8a5bf454e249cd4d9f21"
+    },
+    {
+      "path": "apps/frontend/src/account/preferences.ts",
+      "bytes": 2363,
+      "sha256": "0db62edb9ae755cb81fe488681cc0d90c859674ccdc1b39462d601a5d5987e1f"
+    },
+    {
+      "path": "apps/frontend/src/components/layout.tsx",
+      "bytes": 5731,
+      "sha256": "64ee53d3820e9e6c6ee4ee84bb9a66363cb9dad2cd72f577eb43c6df30cd4f1c"
+    },
+    {
+      "path": "apps/frontend/src/components/primitives.tsx",
+      "bytes": 3088,
+      "sha256": "915689f48d94764009392384898015c4e65704b1194b714bd3afc74c826a8687"
+    },
+    {
+      "path": "apps/frontend/src/components/StrategyMatrix.tsx",
+      "bytes": 4305,
+      "sha256": "df45e773957193f6c8f2528ec7a3184264068959c4b1ce45d73ee6f8db4d5962"
+    },
+    {
+      "path": "apps/frontend/src/estimated/three-bet-responses.ts",
+      "bytes": 3633,
+      "sha256": "d67464ed961ee1916964b55a3ddc4a23cd383b61ade3203526724fc51ce4446d"
+    },
+    {
+      "path": "apps/frontend/src/estimated/four-bet-responses.ts",
+      "bytes": 5442,
+      "sha256": "209ad4ff8c7cf6c80c317f8604e1acb5789a80ce81a29285e09cd22a958492de"
+    },
+    {
+      "path": "apps/frontend/src/estimated/limp-deep-responses.ts",
+      "bytes": 7060,
+      "sha256": "b6c75bb82615c957b7c8697e970b371c8bb77bae822e89f66379e61fa081d29a"
+    },
+    {
+      "path": "apps/frontend/src/estimated/limp-responses.ts",
+      "bytes": 8142,
+      "sha256": "dce0cae3e3720e0717ed5e57ac05e64390634c4e5692755fe37eefae9e758ad0"
+    },
+    {
+      "path": "apps/frontend/src/estimated/extended-ranges.ts",
+      "bytes": 7373,
+      "sha256": "2334378101361dc40eb10cb50631c3fea077db6f0150cd2025d73a65f0ca887b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/action-path.ts",
+      "bytes": 9602,
+      "sha256": "5be26b0c8f76f75d0718bf8c0e8628b3fa6edf56156f5c2ab2bc763227d16e45"
+    },
+    {
+      "path": "apps/frontend/src/estimated/stage3-reason-format.ts",
+      "bytes": 10454,
+      "sha256": "573d0f05cc119a08709445f882bc835e1861b0e5c83ca5c3ade8f9058a9c610e"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-reason-format.ts",
+      "bytes": 11381,
+      "sha256": "2408f0dbb4b84823340e9fbfcc1c591fa626943b0c3de72df8b46f448d236af2"
+    },
+    {
+      "path": "apps/frontend/src/estimated/detailed-reasons.ts",
+      "bytes": 1945,
+      "sha256": "2510c61e7388d58da5ab475f633424855010898fe31fbb63638105052d98158f"
+    },
+    {
+      "path": "apps/frontend/src/estimated/english-reasons.ts",
+      "bytes": 14526,
+      "sha256": "d34914e02db033aadd8f59ea4d425c14e10d8adc70748ab477d0c5c97b272063"
+    },
+    {
+      "path": "apps/frontend/src/estimated/five-bet-dataset.ts",
+      "bytes": 1415,
+      "sha256": "6f686086d9c4365885eb60e42c4e2ee661aed2cbdb4d132ed54a4601c49f7c87"
+    },
+    {
+      "path": "apps/frontend/src/estimated/five-bet-responses.ts",
+      "bytes": 2016,
+      "sha256": "adcfcd7ed1a3b085388fde6a063d8c4a205b04b7f8078c7a9096d76391abdae4"
+    },
+    {
+      "path": "apps/frontend/src/estimated/RangeContextCard.tsx",
+      "bytes": 3167,
+      "sha256": "268dd700e8aea1d02109790669a17cca9631cdd07a74d8de0d7510a55b10b6bb"
+    },
+    {
+      "path": "apps/frontend/src/components/Dialog.tsx",
+      "bytes": 2324,
+      "sha256": "56ad41600174f7e9bf539fc55cbfb9b8cab744d699b5d9ae85ef435881ab8833"
+    },
+    {
+      "path": "apps/frontend/src/estimated/game-formats.ts",
+      "bytes": 2074,
+      "sha256": "59cce9b2823a3d09518b784ff2330e5dfd1a346d62e13fe3842dfc1acf7853bf"
+    },
+    {
+      "path": "apps/frontend/src/estimated/table-profile.ts",
+      "bytes": 9258,
+      "sha256": "5550fe661c4d0b84a333860dcaa2e86c202262ab1915110aa50b1b7f4f5af0f6"
+    },
+    {
+      "path": "apps/frontend/src/estimated/GameFormatDialog.tsx",
+      "bytes": 5355,
+      "sha256": "800bfd074318c89a9b5e8401b5a03540dd80d71e4048d6739d08a552a58fd939"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-reasons.ts",
+      "bytes": 12239,
+      "sha256": "c41742314ce09a947a97082744070100ce35f25286800e3800e0df7a24ec28d0"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-action-copy.ts",
+      "bytes": 767,
+      "sha256": "4f99cee975b42413bb87372695be9b22421b55cb6402204486eb0bf6f858958f"
+    },
+    {
+      "path": "apps/frontend/scripts/lib/equity.ts",
+      "bytes": 8670,
+      "sha256": "f395860a9243f0dc450e51c6ddcc4fe700339a846198b5914ae65bf6a24906c3"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/model.ts",
+      "bytes": 7589,
+      "sha256": "fcbf13b6f8b1c3f72b8a81dcc626de89abc4c385d840163feb4bd78ca631732f"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/hand-features.ts",
+      "bytes": 16588,
+      "sha256": "dc77532c3363958867f114be5362f52e4a491d6743ad481d4f3c3da859baf49a"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/hand-role.ts",
+      "bytes": 2965,
+      "sha256": "ca28c5982fe5915d71d33afa43d83404c5d9c4ca8c14177b96264d90790cc9ee"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-explanation.ts",
+      "bytes": 31876,
+      "sha256": "e0dc543e959e3b0ebd9cb2522b12aeee0b7e5a2d1388aa4936efdb2bf2974714"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-hand-copy.ts",
+      "bytes": 54702,
+      "sha256": "08cf7a9dd2fb36ac87967b6e92b40d9cd631b5f8de8ea06abcbd6a8c782703b8"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-advanced.ts",
+      "bytes": 33703,
+      "sha256": "7c9d290c5f119d12699cf9713a43d4298e434f74034a264fb9e4435fc1ae5300"
+    },
+    {
+      "path": "apps/frontend/src/estimated/poker-glossary.ts",
+      "bytes": 11093,
+      "sha256": "5bde1066493aa9737ece5c7ecf38dd58112066accff8537804eeeec2f6325312"
+    },
+    {
+      "path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
+      "bytes": 1554,
+      "sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/spots-core.ts",
+      "bytes": 11378,
+      "sha256": "762416428a128fd5b35b7ac8129e788c7291336ef763ce9938376ca4f0f29f7c"
+    },
+    {
+      "path": "apps/frontend/scripts/data/hu-after-multiway-spots.json",
+      "bytes": 1146128,
+      "sha256": "096b926d3d7f84c88475e99f3ebdfa80f046539ee7b41983ac9b8c1eec229851"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/multiway-spots.ts",
+      "bytes": 2252,
+      "sha256": "69714c7970e427afae365430be043d9f54b64dc8fe991b1c00d69a7f117b9ffb"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/spots.ts",
+      "bytes": 1933,
+      "sha256": "d9a783c3594976b7777d4402a34cfac364bad4cb74f20d2c2f5c59948fb7a994"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/tree.ts",
+      "bytes": 8501,
+      "sha256": "c6d9cc1dba8fc5a13ee7539b9e109fc3996ffd7bcfeb1afdfa455b702dd65274"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/later-tree.ts",
+      "bytes": 6392,
+      "sha256": "3a8d5a876823891e72b926a47fa35bef32a0516279a55de87d9b309954a389d7"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/observable-actions.mjs",
+      "bytes": 11068,
+      "sha256": "14f27db41dc36f7a4f381cc34dc48840199b32bd99678e25480e0ba7a680b1ff"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/street-state.mjs",
+      "bytes": 12121,
+      "sha256": "68a7cebc720d2490310746546da453e7c3ae1e8d4728eb9177322db1e1408d98"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-trial.ts",
+      "bytes": 17035,
+      "sha256": "de303b76134cb9e2de176841f26e8b5a1bf58c895f6a7092e0bf0053f0bc6b6c"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/range-support.mjs",
+      "bytes": 968,
+      "sha256": "36cda7b43f03d4779db036bdb16a519b94fb08e60a752fe6d6b4051ff894f319"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/multiway-inputs.mjs",
+      "bytes": 4246,
+      "sha256": "5cd8c946a63a16d8fbe8ed971991f421a5709a4edace6d9885ff086f3c43c87d"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+      "bytes": 13283,
+      "sha256": "0cb286a9e1ed5f3dd52041466657396513941ae82d4cfd2f3999ee95c4f2a4ab"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-isomorphism.ts",
+      "bytes": 4926,
+      "sha256": "b2fb69a9afb86d2ae056797a023c2dbdf925e2e5e8af45c8e41dc6f79635f340"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/equity-kernel.ts",
+      "bytes": 11245,
+      "sha256": "9d50216df14677540e85c267d5dd426e2b8a415871ba2f9ef2e905a6fe508e3c"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/range-equity.ts",
+      "bytes": 18505,
+      "sha256": "edefbe502204e626f385ac3e9612a4d708da4b25768030f623fe81c6afdee909"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/cached-values.ts",
+      "bytes": 3101,
+      "sha256": "329995771ce7b439ebdc1cf82fe0fa12e01302a94afd500e9c9bfa28cad0db88"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/exact-river-call-ev.mjs",
+      "bytes": 4699,
+      "sha256": "b624216c5019d6a5ddbb5e9e53d1a9f618d8c534e772b76258634d310490e3bb"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/policy.ts",
+      "bytes": 10509,
+      "sha256": "b1e2090037567d79db0db0f5a6c81d8e4daeed7ed0de9b0c3b528cfa40970331"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/later-policy.ts",
+      "bytes": 8245,
+      "sha256": "f0f91c3a393e1e7a562da44fb2d344e4a81133128bcec02e709064990c5b0acc"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/engine.ts",
+      "bytes": 12285,
+      "sha256": "aecdb9f31758243898bc49078bdf221e42412a7bebdc4d8b8186f8a2b14511bb"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/defence.ts",
+      "bytes": 64176,
+      "sha256": "52ac2e2f6a0b43c3e19857db4ff5f4553142a773031d8f4576d523347fd67f08"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/observable-view-paths.mjs",
+      "bytes": 992,
+      "sha256": "fec71b99a6dd18429a492f9420d9d8a1f8f04093a1662651faef33e57ca25819"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/explain-aggregate.ts",
+      "bytes": 2603,
+      "sha256": "4ee439458138d676fcfb62e9ce457a71ed88fa69b13e75c891058aa2d1382c50"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+      "bytes": 12642,
+      "sha256": "9fbf43504125904e62c3f2de51ee227429beea2cf526b74099851242c0480966"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/explain-later.ts",
+      "bytes": 19302,
+      "sha256": "4b96167faa75c805c21e5beca0b9241d153c006218b9fbb9a8882f0447d36810"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/range-facts.ts",
+      "bytes": 6800,
+      "sha256": "52f503d22dacb077baf1b2ff27d4a2eff0fa9a73ecbf2adefb546a04d2136fa3"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/views.ts",
+      "bytes": 10453,
+      "sha256": "168b1983001307bae40f4fae3ca7d20b1689e1edda12fc5fe36a2cdb1ed395e8"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-base-codec.ts",
+      "bytes": 19250,
+      "sha256": "614bd0b82ebc7a3b72d603f433b1868578a3e1046e2183256fbc57a83b6cc65e"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-base-core.ts",
+      "bytes": 8854,
+      "sha256": "3e539275440a7e7d90d4f94f91a95a07f0b45ebe3cf54c2f9f4d16ce334f6a61"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-compute.ts",
+      "bytes": 12943,
+      "sha256": "6ba93d8279dccc50b72167f690500976ad41c0d86c090a0db9b6dcb6cb7b480b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-api.ts",
+      "bytes": 796,
+      "sha256": "e81c1eae3a91e2a516e557796568d524ba6536929efb5e8ce48fb42fb82f72fc"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-browser.ts",
+      "bytes": 6173,
+      "sha256": "24ccb3045b05fa10a11bbfee6dea15f8bfa12559bd6dd7c2d4eb9a7171c5895b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/PostflopTrial.tsx",
+      "bytes": 47399,
+      "sha256": "f6ceb6e4a285127a151ae566221be1176116fc9ef501e3c901684f9cd469644b"
+    },
+    {
+      "path": "apps/frontend/src/account/AuthPanel.tsx",
+      "bytes": 6165,
+      "sha256": "a6e9d16e986bc2120455b4962ad386b910dbf4ac59854a6a00d3ed6470bf239f"
+    },
+    {
+      "path": "apps/frontend/src/account/LearningAccess.tsx",
+      "bytes": 5850,
+      "sha256": "a738d6342a2e4814832a80b796abecb3d3f75536f7fa2def18867ce359ca3a64"
+    },
+    {
+      "path": "apps/frontend/src/estimated/street-card-dialog-state.ts",
+      "bytes": 405,
+      "sha256": "642bf67ae3be34978eb81a2a1fb512abaea36e485acd8894099c7b25150c55c8"
+    },
+    {
+      "path": "apps/frontend/src/estimated/range-url.ts",
+      "bytes": 37493,
+      "sha256": "dbcadb6630c875ed33345847704f4d58dc9564ffe80c3fe7b8e5e80219b1bda2"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-hand-ev.css",
+      "bytes": 1354,
+      "sha256": "dea6c4022c048e94d307a4ad7f8704eb24d142eec3859b571d06065bc3b25d1f"
+    },
+    {
+      "path": "apps/frontend/src/estimated/PreflopCallEvBars.tsx",
+      "bytes": 2572,
+      "sha256": "191b2872d1d1d3146ad7d6e048e79dd2acb51d0e206f2dc41fe0baa56b06e11f"
+    },
+    {
+      "path": "apps/frontend/src/estimated/ranges.css",
+      "bytes": 42208,
+      "sha256": "5b184312d3d1b8d10ead77576c5055e932ce64e392eda3019be025f6c72606b3"
+    },
+    {
+      "path": "apps/frontend/src/estimated/RangeWorkspace.tsx",
+      "bytes": 89809,
+      "sha256": "99785490187d45ca0437bd2f6c327fe7b5fecb9923d70dff5301d93b6836922a"
+    }
+  ],
+  "product_auth_changes": false,
+  "required_feature_remaining": [],
+  "outside_scope": "Unchanged Google OAuth itself; no credential/grant/permission changes,merge,production or newHU implementation",
+  "supersedes": "earlier authgate-only BLOCKED applies ordinary live login, not this completed feature acceptance"
+}

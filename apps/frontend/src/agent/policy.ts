@@ -1,4 +1,4 @@
-import type { PostflopDatasets } from "../../scripts/postflop-ai/types.ts";
+import type { PostflopDatasets, Inputs, FlopPolicy, LaterPolicy, Candidate } from "../../scripts/postflop-ai/types.ts";
 // How an Reyson Agent picks its action. The balanced agent plays the saved frequencies exactly:
 // preflop the dataset row of its hand class (after the table rules in preflop.ts), postflop the
 // mix the AI-estimate candidate plays (policy + computed defence, as in simulation.mjs).
@@ -12,12 +12,12 @@ import { validateLaterPolicy } from "../../scripts/postflop-ai/later-policy.ts";
 import { defenceFor } from "../../scripts/postflop-ai/defence.ts";
 import type { Choice, PreflopAction } from "./preflop.ts";
 
-export type PostflopKit = { spotId: string; inputs: any; flopPolicy: any; laterPolicy: any; defence: any };
+export type PostflopKit = { spotId: string; inputs: Inputs; flopPolicy: FlopPolicy; laterPolicy: LaterPolicy; defence: ReturnType<typeof defenceFor> };
 
 // Validates the saved flop and later candidates against the spot's inputs (same checks as
 // postflop-compute.ts) and prepares the computed defence. Returns null when anything is
 // missing or stale, so the hand is checked down instead of using another spot's policy.
-export function makePostflopKit(spotId: string, datasets: PostflopDatasets, flopCandidate: any, laterCandidate: any): PostflopKit | null {
+export function makePostflopKit(spotId: string, datasets: PostflopDatasets, flopCandidate: Candidate | null | undefined, laterCandidate: Candidate<LaterPolicy> | null | undefined): PostflopKit | null {
   try {
     if (!flopCandidate || !laterCandidate) return null;
     const inputs = buildInputs(spotId, datasets);
@@ -42,7 +42,7 @@ export type ProfilePolicyRegistry = {
 export const emptyRegistry: ProfilePolicyRegistry = { lookup: () => null };
 
 export type PreflopQuery = { pos: string; hand: string; cards: number[]; offered: { source: string | null; choices: Choice[]; tableRule: string | null }; random: number };
-export type PostflopQuery = { kit: PostflopKit; table: any; street: string; seat: string; node: string; board: number[]; hole: number[]; line: string | null; actions: string[]; random: number };
+export type PostflopQuery = { kit: PostflopKit; table: import("../../scripts/postflop-ai/engine.ts").Table; street: string; seat: string; node: string; board: number[]; hole: number[]; line: string | null; actions: string[]; random: number };
 
 export type Decider = {
   preflop(query: PreflopQuery): { action: PreflopAction; mix: Record<string, number>; source: DecisionSource };

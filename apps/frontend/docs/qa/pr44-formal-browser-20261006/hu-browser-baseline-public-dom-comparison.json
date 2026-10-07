@@ -1,0 +1,487 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-05T20:53:51.928157+00:00",
+  "mode": "Read-only independent comparison of root-captured actual browser public DOM/accessibility files; no browser or app actions performed by reviewer",
+  "source_heads": {
+    "base": "7df430ef0e92a6b9fd237d89739045aec012e5b1",
+    "integration": "f89cec1e393e63c46cb2914f542a776879e1abb0"
+  },
+  "fixture_scope": {
+    "game": "cash-6max 100bb",
+    "preflop": "BTN open 2.5 / BB call",
+    "board": "As7d2c",
+    "sources": "isolated saved HU fixture and original local account hook; not live login or production API/binary proof"
+  },
+  "cases": [
+    {
+      "case": "initial",
+      "status": "PASS_SCOPED_PUBLIC_DOM_BASELINE_PARITY",
+      "url": "/analyze/ranges?gametype=cash-6max&depth=100&preflop_actions=F-F-F-R2.5-F-C&board=As7d2c&flop_actions=&hand=AKo",
+      "panel_counts": {
+        "base": 1,
+        "integration": 1
+      },
+      "mw3_regions": {
+        "base": 0,
+        "integration": 0
+      },
+      "panels": [
+        {
+          "index": 0,
+          "heading": "BTN · facing BB's check · range",
+          "button_count_base": 169,
+          "button_count_integration": 169,
+          "unique_classes": 169,
+          "enabled_base": 119,
+          "enabled_integration": 119,
+          "disabled_base": 50,
+          "disabled_integration": 50,
+          "pressed_base": [
+            "AKo"
+          ],
+          "pressed_integration": [
+            "AKo"
+          ],
+          "percentage_descendant_count": 444,
+          "legend_semantic_text": "CheckBet 1.82 (33%)Bet 4.13 (75%)Bet 6.88 (125%)",
+          "panel_canonical_sha256_base": "bacc34d4c277755e5fe1a2f01853daa3fabdba1c15a5c7bbc1c6a604d90a3199",
+          "panel_canonical_sha256_integration": "bacc34d4c277755e5fe1a2f01853daa3fabdba1c15a5c7bbc1c6a604d90a3199",
+          "compared_button_fields": [
+            "label",
+            "text",
+            "disabled",
+            "pressed",
+            "style",
+            "descendants[].class",
+            "descendants[].style"
+          ],
+          "entire_panel_structure_compared": true
+        }
+      ],
+      "actual_compared_scope_differences": [],
+      "detail_semantics": {
+        "aggregate_rounded_labels": "Check 40%、Bet 1.82 (33%) 41%、Bet 4.13 (75%) 16%、Bet 6.88 (125%) 2%",
+        "selected_detail_heading": "AKo Average",
+        "reachable_combo_count": 9,
+        "board_overlap_cells": 3,
+        "combo_buttons": [
+          {
+            "combo": "A♥ K♠",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♥ K♦",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♥ K♣",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♦ K♠",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♦ K♥",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♦ K♣",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♣ K♠",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♣ K♥",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♣ K♦",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          }
+        ],
+        "rendered_detail_rows": [
+          "Check 20%",
+          "Bet 1.82 (33%) 50%",
+          "Bet 4.13 (75%) 27%"
+        ],
+        "textual_postflop_subtree_equal": true,
+        "textual_postflop_sha256_base": "d5ba1bf4fb83df28f06241724369f35e90ccfe5ba11584ee1f6008d4a594d89f",
+        "textual_postflop_sha256_integration": "d5ba1bf4fb83df28f06241724369f35e90ccfe5ba11584ee1f6008d4a594d89f"
+      },
+      "outside_compared_scope_full_text_diff": [
+        "--- hu-base-initial.txt\n",
+        "+++ hu-integration-initial.txt\n",
+        "@@ -1,2 +1 @@\n",
+        "-- generic \"Base HU fixture provenance\"",
+        " - complementary \"ReysonAI sidebar\":",
+        "@@ -78,3 +77,3 @@\n",
+        "     - generic \"Click this block to return to this action\":",
+        "-      - button \"BTN — return to this action and show its range\" [active] [pressed]: BTN",
+        "+      - button \"BTN — return to this action and show its range\": BTN",
+        "       - generic: \"97.5\""
+      ]
+    },
+    {
+      "case": "AcKd",
+      "status": "PASS_SCOPED_PUBLIC_DOM_BASELINE_PARITY",
+      "url": "/analyze/ranges?gametype=cash-6max&depth=100&preflop_actions=F-F-F-R2.5-F-C&board=As7d2c&flop_actions=&hand=AKo",
+      "panel_counts": {
+        "base": 1,
+        "integration": 1
+      },
+      "mw3_regions": {
+        "base": 0,
+        "integration": 0
+      },
+      "panels": [
+        {
+          "index": 0,
+          "heading": "BTN · facing BB's check · range",
+          "button_count_base": 169,
+          "button_count_integration": 169,
+          "unique_classes": 169,
+          "enabled_base": 119,
+          "enabled_integration": 119,
+          "disabled_base": 50,
+          "disabled_integration": 50,
+          "pressed_base": [
+            "AKo"
+          ],
+          "pressed_integration": [
+            "AKo"
+          ],
+          "percentage_descendant_count": 444,
+          "legend_semantic_text": "CheckBet 1.82 (33%)Bet 4.13 (75%)Bet 6.88 (125%)",
+          "panel_canonical_sha256_base": "bacc34d4c277755e5fe1a2f01853daa3fabdba1c15a5c7bbc1c6a604d90a3199",
+          "panel_canonical_sha256_integration": "bacc34d4c277755e5fe1a2f01853daa3fabdba1c15a5c7bbc1c6a604d90a3199",
+          "compared_button_fields": [
+            "label",
+            "text",
+            "disabled",
+            "pressed",
+            "style",
+            "descendants[].class",
+            "descendants[].style"
+          ],
+          "entire_panel_structure_compared": true
+        }
+      ],
+      "actual_compared_scope_differences": [],
+      "detail_semantics": {
+        "aggregate_rounded_labels": "Check 40%、Bet 1.82 (33%) 41%、Bet 4.13 (75%) 16%、Bet 6.88 (125%) 2%",
+        "selected_detail_heading": "A♣ K♦",
+        "reachable_combo_count": 9,
+        "board_overlap_cells": 3,
+        "combo_buttons": [
+          {
+            "combo": "A♥ K♠",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♥ K♦",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♥ K♣",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♦ K♠",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♦ K♥",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♦ K♣",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♣ K♠",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♣ K♥",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♣ K♦",
+            "dominant_description": "Top pair or better, Bet 1.82 (33%) 50%",
+            "state_suffix": "[active] [pressed]'"
+          }
+        ],
+        "rendered_detail_rows": [
+          "Check 20%",
+          "Bet 1.82 (33%) 50%",
+          "Bet 4.13 (75%) 27%"
+        ],
+        "textual_postflop_subtree_equal": true,
+        "textual_postflop_sha256_base": "c8c89cd97d0e289d142706d0bee10bc4483e4e8cc69bfcdecc7b43d84bac6a4a",
+        "textual_postflop_sha256_integration": "c8c89cd97d0e289d142706d0bee10bc4483e4e8cc69bfcdecc7b43d84bac6a4a"
+      },
+      "outside_compared_scope_full_text_diff": [
+        "--- hu-base-AcKd.txt\n",
+        "+++ hu-integration-AcKd.txt\n",
+        "@@ -1,2 +1 @@\n",
+        "-- generic \"Base HU fixture provenance\"",
+        " - complementary \"ReysonAI sidebar\":",
+        "@@ -78,3 +77,3 @@\n",
+        "     - generic \"Click this block to return to this action\":",
+        "-      - button \"BTN — return to this action and show its range\" [pressed]: BTN",
+        "+      - button \"BTN — return to this action and show its range\": BTN",
+        "       - generic: \"97.5\""
+      ]
+    },
+    {
+      "case": "bb-defence",
+      "status": "PASS_SCOPED_PUBLIC_DOM_BASELINE_PARITY",
+      "url": "/analyze/ranges?gametype=cash-6max&depth=100&preflop_actions=F-F-F-R2.5-F-C&board=As7d2c&flop_actions=B33&hand=AKo",
+      "panel_counts": {
+        "base": 1,
+        "integration": 1
+      },
+      "mw3_regions": {
+        "base": 0,
+        "integration": 0
+      },
+      "panels": [
+        {
+          "index": 0,
+          "heading": "BB · facing a 33% bet · range",
+          "button_count_base": 169,
+          "button_count_integration": 169,
+          "unique_classes": 169,
+          "enabled_base": 118,
+          "enabled_integration": 118,
+          "disabled_base": 51,
+          "disabled_integration": 51,
+          "pressed_base": [
+            "AKo"
+          ],
+          "pressed_integration": [
+            "AKo"
+          ],
+          "percentage_descendant_count": 300,
+          "legend_semantic_text": "FoldCall 1.82Raise 5.46 (40%)",
+          "panel_canonical_sha256_base": "af6424b26bad4604808f52874d0e71c292052fe251a5f15ab433e1677ca0f572",
+          "panel_canonical_sha256_integration": "af6424b26bad4604808f52874d0e71c292052fe251a5f15ab433e1677ca0f572",
+          "compared_button_fields": [
+            "label",
+            "text",
+            "disabled",
+            "pressed",
+            "style",
+            "descendants[].class",
+            "descendants[].style"
+          ],
+          "entire_panel_structure_compared": true
+        }
+      ],
+      "actual_compared_scope_differences": [],
+      "detail_semantics": {
+        "aggregate_rounded_labels": "Fold 35%、Call 1.82 55%、Raise 5.46 (40%) 10%",
+        "selected_detail_heading": "AKo Average",
+        "reachable_combo_count": 9,
+        "board_overlap_cells": 3,
+        "combo_buttons": [
+          {
+            "combo": "A♥ K♠",
+            "dominant_description": "Top pair or better, Call 1.82 88%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♥ K♦",
+            "dominant_description": "Top pair or better, Call 1.82 88%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♥ K♣",
+            "dominant_description": "Top pair or better, Call 1.82 88%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♦ K♠",
+            "dominant_description": "Top pair or better, Call 1.82 88%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♦ K♥",
+            "dominant_description": "Top pair or better, Call 1.82 88%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♦ K♣",
+            "dominant_description": "Top pair or better, Call 1.82 88%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♣ K♠",
+            "dominant_description": "Top pair or better, Call 1.82 88%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♣ K♥",
+            "dominant_description": "Top pair or better, Call 1.82 88%",
+            "state_suffix": "'"
+          },
+          {
+            "combo": "A♣ K♦",
+            "dominant_description": "Top pair or better, Call 1.82 88%",
+            "state_suffix": "'"
+          }
+        ],
+        "rendered_detail_rows": [
+          "Call 1.82 88%",
+          "Raise 5.46 (40%) 12%"
+        ],
+        "textual_postflop_subtree_equal": true,
+        "textual_postflop_sha256_base": "53d5b4bda154c9651a6ceb93312483b0dd9c1942e7e91a7b03671ef726300079",
+        "textual_postflop_sha256_integration": "53d5b4bda154c9651a6ceb93312483b0dd9c1942e7e91a7b03671ef726300079"
+      },
+      "outside_compared_scope_full_text_diff": [
+        "--- hu-base-bb-defence.txt\n",
+        "+++ hu-integration-bb-defence.txt\n",
+        "@@ -1,2 +1 @@\n",
+        "-- generic \"Base HU fixture provenance\"",
+        " - complementary \"ReysonAI sidebar\":"
+      ]
+    }
+  ],
+  "aggregate": {
+    "cases": 3,
+    "scoped_passes": 3,
+    "buttons_compared": 507,
+    "percentage_descendants_compared": 1188,
+    "compared_scope_differences": 0,
+    "mw3_region_count_all_snapshots": 0
+  },
+  "native_combo_ax_crosscheck": {
+    "integration_exact_combo_heading": "A♣ K♦",
+    "integration_combo_descriptions": 9,
+    "selected_combo": {
+      "combo": "A♣ K♦",
+      "description": "Top pair or better, Bet 1.82 (33%) 50%, Help: Top pair or better · Check 20% / Bet 1.82 (33%) 50% / Bet 4.13 (75%) 27% / Bet 6.88 (125%) 3%, Value: 1"
+    },
+    "paired_baseline_and_integration_txt_detail_subtree": "exact textual match including selected AcKd button, three rendered detail rows, nine legal combinations and three board overlaps",
+    "paired_visible_mix": {
+      "Check": 20,
+      "Bet 1.82 (33%)": 50,
+      "Bet 4.13 (75%)": 27
+    },
+    "additional_integration_only_AX_mix": {
+      "Bet 6.88 (125%)": 3
+    },
+    "qualification": "Baseline native AX tooltip was not captured; the 3% fourth-action tooltip is an integration-side extra observation, while baseline and integration captured matrix percentage styles and visible three detail rows match exactly."
+  },
+  "actual_outside_scope_differences": [
+    {
+      "cases": [
+        "initial",
+        "AcKd",
+        "bb-defence"
+      ],
+      "difference": "Base-only generic Base HU fixture provenance harness row"
+    },
+    {
+      "cases": [
+        "initial",
+        "AcKd"
+      ],
+      "difference": "Action-history BTN return/show-range button has base pressed attribute and integration no pressed attribute; initial base also active. Not a 169-hand matrix difference; retained as actual captured state difference, no all-HU identity claim."
+    }
+  ],
+  "acceptance_case17": {
+    "status": "BLOCKED",
+    "observed_panel_count_base": 1,
+    "observed_panel_count_integration": 1,
+    "written_requirement": "Unfocused HU comparison has two active participant tables; selecting exact-hand detail may focus one, closing restores two. No authorized exclusive-one override found.",
+    "new_two_table_implementation": false,
+    "qualification": "Preserving the historical single current-node table does not satisfy original #17. The AcKd detail-focused snapshot alone would not test the unfocused two-table requirement.",
+    "intent_evidence": "hu-acceptance-intent.json",
+    "source_boundary_evidence": "hu-source-boundary.json"
+  },
+  "limits": [
+    "Scoped saved-fixture browser DOM preservation only; no entire-HU or all-board/all-history numeric parity claim",
+    "Known common copy/cache-v7 changes and different CSS ancestry/source composition remain outside matrix parity",
+    "No computed layout, stylesheet ancestry or production binary/network equivalence is proved by inline DOM style equality",
+    "No MW3 intrusion claim is limited to zero dedicated MW3 DOM regions in the snapshots; integration qaStatus includes concurrent all-16 helper network traffic, so no zero-network claim",
+    "Rounded aggregate percentages are compared as rendered labels, not silently normalized to exact numerical totals",
+    "Original case17 remains BLOCKED and is not counted as browser acceptance PASS"
+  ],
+  "source_files": {
+    "hu-base-initial.json": {
+      "bytes": 97573,
+      "sha256": "3cf904c69d2c0e4927152d470d03d63e3ba4495193f22e1a6f42e97f5ecab4a8"
+    },
+    "hu-integration-initial.json": {
+      "bytes": 97608,
+      "sha256": "b6fa5d8dd2a7cb6124ad46fc9556a9431a303daedbd1b6ed0e129d1e7e4d439f"
+    },
+    "hu-base-initial.txt": {
+      "bytes": 17530,
+      "sha256": "8425db24bfe89f43830d6325e92ddc398b0507d2fe7a806aad5f04a14ebdde1a"
+    },
+    "hu-integration-initial.txt": {
+      "bytes": 17472,
+      "sha256": "ad72303e0bb06484eb5a8cfdc7c97dc4f907245a02739798e5bbf57db3a1e0b4"
+    },
+    "hu-base-AcKd.json": {
+      "bytes": 97573,
+      "sha256": "3cf904c69d2c0e4927152d470d03d63e3ba4495193f22e1a6f42e97f5ecab4a8"
+    },
+    "hu-integration-AcKd.json": {
+      "bytes": 97607,
+      "sha256": "c32ef307338942c5b4a6c9d93a909dfd2f2082b80318d213ac6de0233a8bb651"
+    },
+    "hu-base-AcKd.txt": {
+      "bytes": 17534,
+      "sha256": "d4cab0dcb145caeb7f6435f7e4a4b9c6abcc96d02fecaa7ec913ae71d6b74a08"
+    },
+    "hu-integration-AcKd.txt": {
+      "bytes": 17485,
+      "sha256": "e390dc94993e43620bdee45c96bfea3c5b145af768a426b7489ef93d5bc18c3e"
+    },
+    "hu-base-bb-defence.json": {
+      "bytes": 79501,
+      "sha256": "f3b8fda3991044164deef9e3646ecf12639249ffec64f360a922c751fdcdd840"
+    },
+    "hu-integration-bb-defence.json": {
+      "bytes": 79532,
+      "sha256": "09fd2753ad57bce81566d6f4f66a581fb30443b39ced116af73fd192f59f9ab0"
+    },
+    "hu-base-bb-defence.txt": {
+      "bytes": 17656,
+      "sha256": "268faa6c4e72d1c1abb2ddb6dce405501cef49f834162b7df15fe973074799b9"
+    },
+    "hu-integration-bb-defence.txt": {
+      "bytes": 17617,
+      "sha256": "440ac9d4eff200002dbffc0ddcffa15a98b2d1222e9ab4193fc02e5df9aac93a"
+    },
+    "hu-integration-AcKd.ax.txt": {
+      "bytes": 27349,
+      "sha256": "61d7fa06fe3020a4931beeb6035d0991be772d7fca5bc4f19422fff35d890f91"
+    }
+  },
+  "no_app_tests_receipt_edits": true
+}

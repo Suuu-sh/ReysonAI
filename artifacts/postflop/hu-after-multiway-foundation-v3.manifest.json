@@ -1,0 +1,2687 @@
+{
+  "schema_version": 1,
+  "kind": "postflop-artifact-snapshot",
+  "approval": "unapproved",
+  "coverage": {
+    "scope": "candidate-preservation",
+    "expected_new_spot_ids": [
+      "BTN_open_SB_3bet_BB_4bet_BTN_call_SB_fold",
+      "BTN_open_SB_3bet_BB_4bet_BTN_fold_SB_call",
+      "BTN_open_SB_3bet_BB_call_BTN_4bet_SB_call_BB_fold",
+      "BTN_open_SB_3bet_BB_call_BTN_4bet_SB_fold_BB_call",
+      "BTN_open_SB_3bet_BB_call_BTN_fold",
+      "CO_open_BTN_3bet_BB_4bet_CO_call_BTN_fold",
+      "CO_open_BTN_3bet_BB_4bet_CO_fold_BTN_call",
+      "CO_open_BTN_3bet_BB_call_CO_4bet_BTN_call_BB_fold",
+      "CO_open_BTN_3bet_BB_call_CO_4bet_BTN_fold_BB_call",
+      "CO_open_BTN_3bet_BB_call_CO_fold",
+      "CO_open_BTN_3bet_SB_4bet_CO_call_BTN_fold",
+      "CO_open_BTN_3bet_SB_4bet_CO_fold_BTN_call",
+      "CO_open_BTN_3bet_SB_call_CO_4bet_BTN_call_SB_fold",
+      "CO_open_BTN_3bet_SB_call_CO_4bet_BTN_fold_SB_call",
+      "CO_open_BTN_3bet_SB_call_CO_fold",
+      "CO_open_BTN_call_BB_squeeze_CO_4bet_BTN_call_BB_fold",
+      "CO_open_BTN_call_BB_squeeze_CO_4bet_BTN_fold_BB_call",
+      "CO_open_BTN_call_BB_squeeze_CO_call_BTN_4bet_BB_call_CO_fold",
+      "CO_open_BTN_call_BB_squeeze_CO_call_BTN_4bet_BB_fold_CO_call",
+      "CO_open_BTN_call_BB_squeeze_CO_call_BTN_fold",
+      "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_4bet_BB_call",
+      "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+      "CO_open_BTN_call_SB_call_BB_squeeze_CO_4bet_BTN_call_SB_fold_BB_fold",
+      "CO_open_BTN_call_SB_call_BB_squeeze_CO_4bet_BTN_fold_SB_call_BB_fold",
+      "CO_open_BTN_call_SB_call_BB_squeeze_CO_4bet_BTN_fold_SB_fold_BB_call",
+      "CO_open_BTN_call_SB_call_BB_squeeze_CO_call_BTN_4bet_SB_fold_BB_fold_CO_call",
+      "CO_open_BTN_call_SB_call_BB_squeeze_CO_call_BTN_fold_SB_4bet_BB_fold_CO_call",
+      "CO_open_BTN_call_SB_call_BB_squeeze_CO_call_BTN_fold_SB_fold",
+      "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_4bet_SB_call_BB_fold",
+      "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_4bet_SB_fold_BB_call",
+      "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_call_SB_4bet_BB_call_BTN_fold",
+      "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_call_SB_4bet_BB_fold_BTN_call",
+      "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_call_SB_fold",
+      "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_fold_SB_4bet_BB_call",
+      "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_fold_SB_call",
+      "CO_open_BTN_call_SB_squeeze_CO_4bet_BTN_call_SB_fold",
+      "CO_open_BTN_call_SB_squeeze_CO_4bet_BTN_fold_SB_call",
+      "CO_open_BTN_call_SB_squeeze_CO_call_BTN_4bet_SB_call_CO_fold",
+      "CO_open_BTN_call_SB_squeeze_CO_call_BTN_4bet_SB_fold_CO_call",
+      "CO_open_BTN_call_SB_squeeze_CO_call_BTN_fold",
+      "CO_open_BTN_call_SB_squeeze_CO_fold_BTN_4bet_SB_call",
+      "CO_open_BTN_call_SB_squeeze_CO_fold_BTN_call",
+      "CO_open_SB_3bet_BB_4bet_CO_call_SB_fold",
+      "CO_open_SB_3bet_BB_4bet_CO_fold_SB_call",
+      "CO_open_SB_3bet_BB_call_CO_4bet_SB_call_BB_fold",
+      "CO_open_SB_3bet_BB_call_CO_4bet_SB_fold_BB_call",
+      "CO_open_SB_3bet_BB_call_CO_fold",
+      "HJ_open_BTN_3bet_BB_4bet_HJ_call_BTN_fold",
+      "HJ_open_BTN_3bet_BB_4bet_HJ_fold_BTN_call",
+      "HJ_open_BTN_3bet_BB_call_HJ_4bet_BTN_call_BB_fold",
+      "HJ_open_BTN_3bet_BB_call_HJ_4bet_BTN_fold_BB_call",
+      "HJ_open_BTN_3bet_BB_call_HJ_fold",
+      "HJ_open_BTN_3bet_SB_4bet_HJ_call_BTN_fold",
+      "HJ_open_BTN_3bet_SB_4bet_HJ_fold_BTN_call",
+      "HJ_open_BTN_3bet_SB_call_HJ_4bet_BTN_call_SB_fold",
+      "HJ_open_BTN_3bet_SB_call_HJ_4bet_BTN_fold_SB_call",
+      "HJ_open_BTN_3bet_SB_call_HJ_fold",
+      "HJ_open_BTN_call_BB_squeeze_HJ_4bet_BTN_call_BB_fold",
+      "HJ_open_BTN_call_BB_squeeze_HJ_4bet_BTN_fold_BB_call",
+      "HJ_open_BTN_call_BB_squeeze_HJ_call_BTN_4bet_BB_call_HJ_fold",
+      "HJ_open_BTN_call_BB_squeeze_HJ_call_BTN_4bet_BB_fold_HJ_call",
+      "HJ_open_BTN_call_BB_squeeze_HJ_call_BTN_fold",
+      "HJ_open_BTN_call_BB_squeeze_HJ_fold_BTN_4bet_BB_call",
+      "HJ_open_BTN_call_BB_squeeze_HJ_fold_BTN_call",
+      "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_4bet_BTN_call_SB_fold_BB_fold",
+      "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_4bet_BTN_fold_SB_call_BB_fold",
+      "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_4bet_BTN_fold_SB_fold_BB_call",
+      "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_call_BTN_4bet_SB_fold_BB_fold_HJ_call",
+      "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_call_BTN_fold_SB_4bet_BB_fold_HJ_call",
+      "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_call_BTN_fold_SB_fold",
+      "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_4bet_SB_call_BB_fold",
+      "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_4bet_SB_fold_BB_call",
+      "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_call_SB_4bet_BB_call_BTN_fold",
+      "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_call_SB_4bet_BB_fold_BTN_call",
+      "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_call_SB_fold",
+      "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_fold_SB_4bet_BB_call",
+      "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_fold_SB_call",
+      "HJ_open_BTN_call_SB_squeeze_HJ_4bet_BTN_call_SB_fold",
+      "HJ_open_BTN_call_SB_squeeze_HJ_4bet_BTN_fold_SB_call",
+      "HJ_open_BTN_call_SB_squeeze_HJ_call_BTN_4bet_SB_call_HJ_fold",
+      "HJ_open_BTN_call_SB_squeeze_HJ_call_BTN_4bet_SB_fold_HJ_call",
+      "HJ_open_BTN_call_SB_squeeze_HJ_call_BTN_fold",
+      "HJ_open_BTN_call_SB_squeeze_HJ_fold_BTN_4bet_SB_call",
+      "HJ_open_BTN_call_SB_squeeze_HJ_fold_BTN_call",
+      "HJ_open_CO_3bet_BB_4bet_HJ_call_CO_fold",
+      "HJ_open_CO_3bet_BB_4bet_HJ_fold_CO_call",
+      "HJ_open_CO_3bet_BB_call_HJ_4bet_CO_call_BB_fold",
+      "HJ_open_CO_3bet_BB_call_HJ_4bet_CO_fold_BB_call",
+      "HJ_open_CO_3bet_BB_call_HJ_fold",
+      "HJ_open_CO_3bet_BTN_4bet_HJ_call_CO_fold",
+      "HJ_open_CO_3bet_BTN_4bet_HJ_fold_CO_call",
+      "HJ_open_CO_3bet_BTN_call_HJ_4bet_CO_call_BTN_fold",
+      "HJ_open_CO_3bet_BTN_call_HJ_4bet_CO_fold_BTN_call",
+      "HJ_open_CO_3bet_BTN_call_HJ_fold",
+      "HJ_open_CO_3bet_SB_4bet_HJ_call_CO_fold",
+      "HJ_open_CO_3bet_SB_4bet_HJ_fold_CO_call",
+      "HJ_open_CO_3bet_SB_call_HJ_4bet_CO_call_SB_fold",
+      "HJ_open_CO_3bet_SB_call_HJ_4bet_CO_fold_SB_call",
+      "HJ_open_CO_3bet_SB_call_HJ_fold",
+      "HJ_open_CO_call_BB_squeeze_HJ_4bet_CO_call_BB_fold",
+      "HJ_open_CO_call_BB_squeeze_HJ_4bet_CO_fold_BB_call",
+      "HJ_open_CO_call_BB_squeeze_HJ_call_CO_4bet_BB_call_HJ_fold",
+      "HJ_open_CO_call_BB_squeeze_HJ_call_CO_4bet_BB_fold_HJ_call",
+      "HJ_open_CO_call_BB_squeeze_HJ_call_CO_fold",
+      "HJ_open_CO_call_BB_squeeze_HJ_fold_CO_4bet_BB_call",
+      "HJ_open_CO_call_BB_squeeze_HJ_fold_CO_call",
+      "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_4bet_CO_call_BTN_fold_BB_fold",
+      "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_4bet_CO_fold_BTN_call_BB_fold",
+      "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_4bet_CO_fold_BTN_fold_BB_call",
+      "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_call_CO_4bet_BTN_fold_BB_fold_HJ_call",
+      "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_call_CO_fold_BTN_4bet_BB_fold_HJ_call",
+      "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_call_CO_fold_BTN_fold",
+      "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_4bet_BTN_call_BB_fold",
+      "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_4bet_BTN_fold_BB_call",
+      "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_call_BTN_4bet_BB_call_CO_fold",
+      "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_call_BTN_4bet_BB_fold_CO_call",
+      "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_call_BTN_fold",
+      "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_fold_BTN_4bet_BB_call",
+      "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_fold_BTN_call",
+      "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_4bet_CO_call_BTN_fold_SB_fold",
+      "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_4bet_CO_fold_BTN_call_SB_fold",
+      "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_4bet_CO_fold_BTN_fold_SB_call",
+      "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_call_CO_4bet_BTN_fold_SB_fold_HJ_call",
+      "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_call_CO_fold_BTN_4bet_SB_fold_HJ_call",
+      "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_call_CO_fold_BTN_fold",
+      "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_4bet_BTN_call_SB_fold",
+      "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_4bet_BTN_fold_SB_call",
+      "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_call_BTN_4bet_SB_call_CO_fold",
+      "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_call_BTN_4bet_SB_fold_CO_call",
+      "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_call_BTN_fold",
+      "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_fold_BTN_4bet_SB_call",
+      "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_fold_BTN_call",
+      "HJ_open_CO_call_BTN_squeeze_HJ_4bet_CO_call_BTN_fold",
+      "HJ_open_CO_call_BTN_squeeze_HJ_4bet_CO_fold_BTN_call",
+      "HJ_open_CO_call_BTN_squeeze_HJ_call_CO_4bet_BTN_call_HJ_fold",
+      "HJ_open_CO_call_BTN_squeeze_HJ_call_CO_4bet_BTN_fold_HJ_call",
+      "HJ_open_CO_call_BTN_squeeze_HJ_call_CO_fold",
+      "HJ_open_CO_call_BTN_squeeze_HJ_fold_CO_4bet_BTN_call",
+      "HJ_open_CO_call_BTN_squeeze_HJ_fold_CO_call",
+      "HJ_open_CO_call_SB_call_BB_squeeze_HJ_4bet_CO_call_SB_fold_BB_fold",
+      "HJ_open_CO_call_SB_call_BB_squeeze_HJ_4bet_CO_fold_SB_call_BB_fold",
+      "HJ_open_CO_call_SB_call_BB_squeeze_HJ_4bet_CO_fold_SB_fold_BB_call",
+      "HJ_open_CO_call_SB_call_BB_squeeze_HJ_call_CO_4bet_SB_fold_BB_fold_HJ_call",
+      "HJ_open_CO_call_SB_call_BB_squeeze_HJ_call_CO_fold_SB_4bet_BB_fold_HJ_call",
+      "HJ_open_CO_call_SB_call_BB_squeeze_HJ_call_CO_fold_SB_fold",
+      "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_4bet_SB_call_BB_fold",
+      "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_4bet_SB_fold_BB_call",
+      "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_call_SB_4bet_BB_call_CO_fold",
+      "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_call_SB_4bet_BB_fold_CO_call",
+      "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_call_SB_fold",
+      "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_fold_SB_4bet_BB_call",
+      "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_fold_SB_call",
+      "HJ_open_CO_call_SB_squeeze_HJ_4bet_CO_call_SB_fold",
+      "HJ_open_CO_call_SB_squeeze_HJ_4bet_CO_fold_SB_call",
+      "HJ_open_CO_call_SB_squeeze_HJ_call_CO_4bet_SB_call_HJ_fold",
+      "HJ_open_CO_call_SB_squeeze_HJ_call_CO_4bet_SB_fold_HJ_call",
+      "HJ_open_CO_call_SB_squeeze_HJ_call_CO_fold",
+      "HJ_open_CO_call_SB_squeeze_HJ_fold_CO_4bet_SB_call",
+      "HJ_open_CO_call_SB_squeeze_HJ_fold_CO_call",
+      "HJ_open_SB_3bet_BB_4bet_HJ_call_SB_fold",
+      "HJ_open_SB_3bet_BB_4bet_HJ_fold_SB_call",
+      "HJ_open_SB_3bet_BB_call_HJ_4bet_SB_call_BB_fold",
+      "HJ_open_SB_3bet_BB_call_HJ_4bet_SB_fold_BB_call",
+      "HJ_open_SB_3bet_BB_call_HJ_fold",
+      "UTG_open_BTN_3bet_BB_4bet_UTG_call_BTN_fold",
+      "UTG_open_BTN_3bet_BB_4bet_UTG_fold_BTN_call",
+      "UTG_open_BTN_3bet_BB_call_UTG_4bet_BTN_call_BB_fold",
+      "UTG_open_BTN_3bet_BB_call_UTG_4bet_BTN_fold_BB_call",
+      "UTG_open_BTN_3bet_BB_call_UTG_fold",
+      "UTG_open_BTN_3bet_SB_4bet_UTG_call_BTN_fold",
+      "UTG_open_BTN_3bet_SB_4bet_UTG_fold_BTN_call",
+      "UTG_open_BTN_3bet_SB_call_UTG_4bet_BTN_call_SB_fold",
+      "UTG_open_BTN_3bet_SB_call_UTG_4bet_BTN_fold_SB_call",
+      "UTG_open_BTN_3bet_SB_call_UTG_fold",
+      "UTG_open_BTN_call_BB_squeeze_UTG_4bet_BTN_call_BB_fold",
+      "UTG_open_BTN_call_BB_squeeze_UTG_4bet_BTN_fold_BB_call",
+      "UTG_open_BTN_call_BB_squeeze_UTG_call_BTN_4bet_BB_call_UTG_fold",
+      "UTG_open_BTN_call_BB_squeeze_UTG_call_BTN_4bet_BB_fold_UTG_call",
+      "UTG_open_BTN_call_BB_squeeze_UTG_call_BTN_fold",
+      "UTG_open_BTN_call_BB_squeeze_UTG_fold_BTN_4bet_BB_call",
+      "UTG_open_BTN_call_BB_squeeze_UTG_fold_BTN_call",
+      "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_4bet_BTN_call_SB_fold_BB_fold",
+      "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_4bet_BTN_fold_SB_call_BB_fold",
+      "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_4bet_BTN_fold_SB_fold_BB_call",
+      "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_call_BTN_4bet_SB_fold_BB_fold_UTG_call",
+      "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_call_BTN_fold_SB_4bet_BB_fold_UTG_call",
+      "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_call_BTN_fold_SB_fold",
+      "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_4bet_SB_call_BB_fold",
+      "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_4bet_SB_fold_BB_call",
+      "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_call_SB_4bet_BB_call_BTN_fold",
+      "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_call_SB_4bet_BB_fold_BTN_call",
+      "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_call_SB_fold",
+      "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_fold_SB_4bet_BB_call",
+      "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_fold_SB_call",
+      "UTG_open_BTN_call_SB_squeeze_UTG_4bet_BTN_call_SB_fold",
+      "UTG_open_BTN_call_SB_squeeze_UTG_4bet_BTN_fold_SB_call",
+      "UTG_open_BTN_call_SB_squeeze_UTG_call_BTN_4bet_SB_call_UTG_fold",
+      "UTG_open_BTN_call_SB_squeeze_UTG_call_BTN_4bet_SB_fold_UTG_call",
+      "UTG_open_BTN_call_SB_squeeze_UTG_call_BTN_fold",
+      "UTG_open_BTN_call_SB_squeeze_UTG_fold_BTN_4bet_SB_call",
+      "UTG_open_BTN_call_SB_squeeze_UTG_fold_BTN_call",
+      "UTG_open_CO_3bet_BB_4bet_UTG_call_CO_fold",
+      "UTG_open_CO_3bet_BB_4bet_UTG_fold_CO_call",
+      "UTG_open_CO_3bet_BB_call_UTG_4bet_CO_call_BB_fold",
+      "UTG_open_CO_3bet_BB_call_UTG_4bet_CO_fold_BB_call",
+      "UTG_open_CO_3bet_BB_call_UTG_fold",
+      "UTG_open_CO_3bet_BTN_4bet_UTG_call_CO_fold",
+      "UTG_open_CO_3bet_BTN_4bet_UTG_fold_CO_call",
+      "UTG_open_CO_3bet_BTN_call_UTG_4bet_CO_call_BTN_fold",
+      "UTG_open_CO_3bet_BTN_call_UTG_4bet_CO_fold_BTN_call",
+      "UTG_open_CO_3bet_BTN_call_UTG_fold",
+      "UTG_open_CO_3bet_SB_4bet_UTG_call_CO_fold",
+      "UTG_open_CO_3bet_SB_4bet_UTG_fold_CO_call",
+      "UTG_open_CO_3bet_SB_call_UTG_4bet_CO_call_SB_fold",
+      "UTG_open_CO_3bet_SB_call_UTG_4bet_CO_fold_SB_call",
+      "UTG_open_CO_3bet_SB_call_UTG_fold",
+      "UTG_open_CO_call_BB_squeeze_UTG_4bet_CO_call_BB_fold",
+      "UTG_open_CO_call_BB_squeeze_UTG_4bet_CO_fold_BB_call",
+      "UTG_open_CO_call_BB_squeeze_UTG_call_CO_4bet_BB_call_UTG_fold",
+      "UTG_open_CO_call_BB_squeeze_UTG_call_CO_4bet_BB_fold_UTG_call",
+      "UTG_open_CO_call_BB_squeeze_UTG_call_CO_fold",
+      "UTG_open_CO_call_BB_squeeze_UTG_fold_CO_4bet_BB_call",
+      "UTG_open_CO_call_BB_squeeze_UTG_fold_CO_call",
+      "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_4bet_CO_call_BTN_fold_BB_fold",
+      "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_4bet_CO_fold_BTN_call_BB_fold",
+      "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_4bet_CO_fold_BTN_fold_BB_call",
+      "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_call_CO_4bet_BTN_fold_BB_fold_UTG_call",
+      "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_call_CO_fold_BTN_4bet_BB_fold_UTG_call",
+      "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_call_CO_fold_BTN_fold",
+      "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_4bet_BTN_call_BB_fold",
+      "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_4bet_BTN_fold_BB_call",
+      "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_call_BTN_4bet_BB_call_CO_fold",
+      "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_call_BTN_4bet_BB_fold_CO_call",
+      "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_call_BTN_fold",
+      "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_fold_BTN_4bet_BB_call",
+      "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_fold_BTN_call",
+      "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_4bet_CO_call_BTN_fold_SB_fold",
+      "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_4bet_CO_fold_BTN_call_SB_fold",
+      "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_4bet_CO_fold_BTN_fold_SB_call",
+      "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_call_CO_4bet_BTN_fold_SB_fold_UTG_call",
+      "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_call_CO_fold_BTN_4bet_SB_fold_UTG_call",
+      "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_call_CO_fold_BTN_fold",
+      "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_4bet_BTN_call_SB_fold",
+      "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_4bet_BTN_fold_SB_call",
+      "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_call_BTN_4bet_SB_call_CO_fold",
+      "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_call_BTN_4bet_SB_fold_CO_call",
+      "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_call_BTN_fold",
+      "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_fold_BTN_4bet_SB_call",
+      "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_fold_BTN_call",
+      "UTG_open_CO_call_BTN_squeeze_UTG_4bet_CO_call_BTN_fold",
+      "UTG_open_CO_call_BTN_squeeze_UTG_4bet_CO_fold_BTN_call",
+      "UTG_open_CO_call_BTN_squeeze_UTG_call_CO_4bet_BTN_call_UTG_fold",
+      "UTG_open_CO_call_BTN_squeeze_UTG_call_CO_4bet_BTN_fold_UTG_call",
+      "UTG_open_CO_call_BTN_squeeze_UTG_call_CO_fold",
+      "UTG_open_CO_call_BTN_squeeze_UTG_fold_CO_4bet_BTN_call",
+      "UTG_open_CO_call_BTN_squeeze_UTG_fold_CO_call",
+      "UTG_open_CO_call_SB_call_BB_squeeze_UTG_4bet_CO_call_SB_fold_BB_fold",
+      "UTG_open_CO_call_SB_call_BB_squeeze_UTG_4bet_CO_fold_SB_call_BB_fold",
+      "UTG_open_CO_call_SB_call_BB_squeeze_UTG_4bet_CO_fold_SB_fold_BB_call",
+      "UTG_open_CO_call_SB_call_BB_squeeze_UTG_call_CO_4bet_SB_fold_BB_fold_UTG_call",
+      "UTG_open_CO_call_SB_call_BB_squeeze_UTG_call_CO_fold_SB_4bet_BB_fold_UTG_call",
+      "UTG_open_CO_call_SB_call_BB_squeeze_UTG_call_CO_fold_SB_fold",
+      "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_4bet_SB_call_BB_fold",
+      "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_4bet_SB_fold_BB_call",
+      "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_call_SB_4bet_BB_call_CO_fold",
+      "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_call_SB_4bet_BB_fold_CO_call",
+      "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_call_SB_fold",
+      "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_fold_SB_4bet_BB_call",
+      "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_fold_SB_call",
+      "UTG_open_CO_call_SB_squeeze_UTG_4bet_CO_call_SB_fold",
+      "UTG_open_CO_call_SB_squeeze_UTG_4bet_CO_fold_SB_call",
+      "UTG_open_CO_call_SB_squeeze_UTG_call_CO_4bet_SB_call_UTG_fold",
+      "UTG_open_CO_call_SB_squeeze_UTG_call_CO_4bet_SB_fold_UTG_call",
+      "UTG_open_CO_call_SB_squeeze_UTG_call_CO_fold",
+      "UTG_open_CO_call_SB_squeeze_UTG_fold_CO_4bet_SB_call",
+      "UTG_open_CO_call_SB_squeeze_UTG_fold_CO_call",
+      "UTG_open_HJ_3bet_BB_4bet_UTG_call_HJ_fold",
+      "UTG_open_HJ_3bet_BB_4bet_UTG_fold_HJ_call",
+      "UTG_open_HJ_3bet_BB_call_UTG_4bet_HJ_call_BB_fold",
+      "UTG_open_HJ_3bet_BB_call_UTG_4bet_HJ_fold_BB_call",
+      "UTG_open_HJ_3bet_BB_call_UTG_fold",
+      "UTG_open_HJ_3bet_BTN_4bet_UTG_call_HJ_fold",
+      "UTG_open_HJ_3bet_BTN_4bet_UTG_fold_HJ_call",
+      "UTG_open_HJ_3bet_BTN_call_UTG_4bet_HJ_call_BTN_fold",
+      "UTG_open_HJ_3bet_BTN_call_UTG_4bet_HJ_fold_BTN_call",
+      "UTG_open_HJ_3bet_BTN_call_UTG_fold",
+      "UTG_open_HJ_3bet_CO_4bet_UTG_call_HJ_fold",
+      "UTG_open_HJ_3bet_CO_4bet_UTG_fold_HJ_call",
+      "UTG_open_HJ_3bet_CO_call_UTG_4bet_HJ_call_CO_fold",
+      "UTG_open_HJ_3bet_CO_call_UTG_4bet_HJ_fold_CO_call",
+      "UTG_open_HJ_3bet_CO_call_UTG_fold",
+      "UTG_open_HJ_3bet_SB_4bet_UTG_call_HJ_fold",
+      "UTG_open_HJ_3bet_SB_4bet_UTG_fold_HJ_call",
+      "UTG_open_HJ_3bet_SB_call_UTG_4bet_HJ_call_SB_fold",
+      "UTG_open_HJ_3bet_SB_call_UTG_4bet_HJ_fold_SB_call",
+      "UTG_open_HJ_3bet_SB_call_UTG_fold",
+      "UTG_open_HJ_call_BB_squeeze_UTG_4bet_HJ_call_BB_fold",
+      "UTG_open_HJ_call_BB_squeeze_UTG_4bet_HJ_fold_BB_call",
+      "UTG_open_HJ_call_BB_squeeze_UTG_call_HJ_4bet_BB_call_UTG_fold",
+      "UTG_open_HJ_call_BB_squeeze_UTG_call_HJ_4bet_BB_fold_UTG_call",
+      "UTG_open_HJ_call_BB_squeeze_UTG_call_HJ_fold",
+      "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_4bet_BB_call",
+      "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call",
+      "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_4bet_HJ_call_BTN_fold_BB_fold",
+      "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_4bet_HJ_fold_BTN_call_BB_fold",
+      "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_4bet_HJ_fold_BTN_fold_BB_call",
+      "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_call_HJ_4bet_BTN_fold_BB_fold_UTG_call",
+      "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_call_HJ_fold_BTN_4bet_BB_fold_UTG_call",
+      "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_call_HJ_fold_BTN_fold",
+      "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_4bet_BTN_call_BB_fold",
+      "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_4bet_BTN_fold_BB_call",
+      "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_call_BTN_4bet_BB_call_HJ_fold",
+      "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_call_BTN_4bet_BB_fold_HJ_call",
+      "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_call_BTN_fold",
+      "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_fold_BTN_4bet_BB_call",
+      "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_fold_BTN_call",
+      "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_4bet_HJ_call_BTN_fold_SB_fold",
+      "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_4bet_HJ_fold_BTN_call_SB_fold",
+      "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_4bet_HJ_fold_BTN_fold_SB_call",
+      "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_call_HJ_4bet_BTN_fold_SB_fold_UTG_call",
+      "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_call_HJ_fold_BTN_4bet_SB_fold_UTG_call",
+      "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_call_HJ_fold_BTN_fold",
+      "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_4bet_BTN_call_SB_fold",
+      "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_4bet_BTN_fold_SB_call",
+      "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_call_BTN_4bet_SB_call_HJ_fold",
+      "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_call_BTN_4bet_SB_fold_HJ_call",
+      "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_call_BTN_fold",
+      "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_fold_BTN_4bet_SB_call",
+      "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_fold_BTN_call",
+      "UTG_open_HJ_call_BTN_squeeze_UTG_4bet_HJ_call_BTN_fold",
+      "UTG_open_HJ_call_BTN_squeeze_UTG_4bet_HJ_fold_BTN_call",
+      "UTG_open_HJ_call_BTN_squeeze_UTG_call_HJ_4bet_BTN_call_UTG_fold",
+      "UTG_open_HJ_call_BTN_squeeze_UTG_call_HJ_4bet_BTN_fold_UTG_call",
+      "UTG_open_HJ_call_BTN_squeeze_UTG_call_HJ_fold",
+      "UTG_open_HJ_call_BTN_squeeze_UTG_fold_HJ_4bet_BTN_call",
+      "UTG_open_HJ_call_BTN_squeeze_UTG_fold_HJ_call",
+      "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_4bet_HJ_call_CO_fold_BB_fold",
+      "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_4bet_HJ_fold_CO_call_BB_fold",
+      "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_4bet_HJ_fold_CO_fold_BB_call",
+      "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_call_HJ_4bet_CO_fold_BB_fold_UTG_call",
+      "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_call_HJ_fold_CO_4bet_BB_fold_UTG_call",
+      "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_call_HJ_fold_CO_fold",
+      "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_4bet_CO_call_BB_fold",
+      "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_4bet_CO_fold_BB_call",
+      "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_call_CO_4bet_BB_call_HJ_fold",
+      "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_call_CO_4bet_BB_fold_HJ_call",
+      "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_call_CO_fold",
+      "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_fold_CO_4bet_BB_call",
+      "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_fold_CO_call",
+      "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_4bet_HJ_call_CO_fold_BTN_fold",
+      "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_4bet_HJ_fold_CO_call_BTN_fold",
+      "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_4bet_HJ_fold_CO_fold_BTN_call",
+      "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_call_HJ_4bet_CO_fold_BTN_fold_UTG_call",
+      "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_call_HJ_fold_CO_4bet_BTN_fold_UTG_call",
+      "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_call_HJ_fold_CO_fold",
+      "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_4bet_CO_call_BTN_fold",
+      "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_4bet_CO_fold_BTN_call",
+      "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_call_CO_4bet_BTN_call_HJ_fold",
+      "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_call_CO_4bet_BTN_fold_HJ_call",
+      "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_call_CO_fold",
+      "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_fold_CO_4bet_BTN_call",
+      "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_fold_CO_call",
+      "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_4bet_HJ_call_CO_fold_SB_fold",
+      "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_4bet_HJ_fold_CO_call_SB_fold",
+      "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_4bet_HJ_fold_CO_fold_SB_call",
+      "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_call_HJ_4bet_CO_fold_SB_fold_UTG_call",
+      "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_call_HJ_fold_CO_4bet_SB_fold_UTG_call",
+      "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_call_HJ_fold_CO_fold",
+      "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_4bet_CO_call_SB_fold",
+      "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_4bet_CO_fold_SB_call",
+      "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_call_CO_4bet_SB_call_HJ_fold",
+      "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_call_CO_4bet_SB_fold_HJ_call",
+      "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_call_CO_fold",
+      "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_fold_CO_4bet_SB_call",
+      "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_fold_CO_call",
+      "UTG_open_HJ_call_CO_squeeze_UTG_4bet_HJ_call_CO_fold",
+      "UTG_open_HJ_call_CO_squeeze_UTG_4bet_HJ_fold_CO_call",
+      "UTG_open_HJ_call_CO_squeeze_UTG_call_HJ_4bet_CO_call_UTG_fold",
+      "UTG_open_HJ_call_CO_squeeze_UTG_call_HJ_4bet_CO_fold_UTG_call",
+      "UTG_open_HJ_call_CO_squeeze_UTG_call_HJ_fold",
+      "UTG_open_HJ_call_CO_squeeze_UTG_fold_HJ_4bet_CO_call",
+      "UTG_open_HJ_call_CO_squeeze_UTG_fold_HJ_call",
+      "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_4bet_HJ_call_SB_fold_BB_fold",
+      "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_4bet_HJ_fold_SB_call_BB_fold",
+      "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_4bet_HJ_fold_SB_fold_BB_call",
+      "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_call_HJ_4bet_SB_fold_BB_fold_UTG_call",
+      "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_call_HJ_fold_SB_4bet_BB_fold_UTG_call",
+      "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_call_HJ_fold_SB_fold",
+      "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_4bet_SB_call_BB_fold",
+      "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_4bet_SB_fold_BB_call",
+      "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_call_SB_4bet_BB_call_HJ_fold",
+      "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_call_SB_4bet_BB_fold_HJ_call",
+      "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_call_SB_fold",
+      "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_fold_SB_4bet_BB_call",
+      "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_fold_SB_call",
+      "UTG_open_HJ_call_SB_squeeze_UTG_4bet_HJ_call_SB_fold",
+      "UTG_open_HJ_call_SB_squeeze_UTG_4bet_HJ_fold_SB_call",
+      "UTG_open_HJ_call_SB_squeeze_UTG_call_HJ_4bet_SB_call_UTG_fold",
+      "UTG_open_HJ_call_SB_squeeze_UTG_call_HJ_4bet_SB_fold_UTG_call",
+      "UTG_open_HJ_call_SB_squeeze_UTG_call_HJ_fold",
+      "UTG_open_HJ_call_SB_squeeze_UTG_fold_HJ_4bet_SB_call",
+      "UTG_open_HJ_call_SB_squeeze_UTG_fold_HJ_call",
+      "UTG_open_SB_3bet_BB_4bet_UTG_call_SB_fold",
+      "UTG_open_SB_3bet_BB_4bet_UTG_fold_SB_call",
+      "UTG_open_SB_3bet_BB_call_UTG_4bet_SB_call_BB_fold",
+      "UTG_open_SB_3bet_BB_call_UTG_4bet_SB_fold_BB_call",
+      "UTG_open_SB_3bet_BB_call_UTG_fold"
+    ],
+    "catalog_sha256": "ef91cd427a9ee4c903734bfd8256a50306c6dfd137170266bc5984e562a9bf13",
+    "included_new_spot_ids": [
+      "BTN_open_SB_3bet_BB_4bet_BTN_fold_SB_call",
+      "BTN_open_SB_3bet_BB_call_BTN_fold",
+      "CO_open_BTN_call_BB_squeeze_CO_call_BTN_fold",
+      "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_fold_BTN_call",
+      "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call"
+    ],
+    "unavailable_new_spots": [
+      {
+        "spot": "BTN_open_SB_3bet_BB_4bet_BTN_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "BTN_open_SB_3bet_BB_call_BTN_4bet_SB_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "BTN_open_SB_3bet_BB_call_BTN_4bet_SB_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_BB_4bet_CO_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_BB_4bet_CO_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_BB_call_CO_4bet_BTN_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_BB_call_CO_4bet_BTN_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_BB_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_SB_4bet_CO_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_SB_4bet_CO_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_SB_call_CO_4bet_BTN_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_SB_call_CO_4bet_BTN_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_SB_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_BB_squeeze_CO_4bet_BTN_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_BB_squeeze_CO_4bet_BTN_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_BB_squeeze_CO_call_BTN_4bet_BB_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_BB_squeeze_CO_call_BTN_4bet_BB_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_4bet_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_4bet_BTN_call_SB_fold_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_4bet_BTN_fold_SB_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_4bet_BTN_fold_SB_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_call_BTN_4bet_SB_fold_BB_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_call_BTN_fold_SB_4bet_BB_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_call_BTN_fold_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_4bet_SB_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_4bet_SB_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_call_SB_4bet_BB_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_call_SB_4bet_BB_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_fold_SB_4bet_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_squeeze_CO_4bet_BTN_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_squeeze_CO_4bet_BTN_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_squeeze_CO_call_BTN_4bet_SB_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_squeeze_CO_call_BTN_4bet_SB_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_squeeze_CO_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_squeeze_CO_fold_BTN_4bet_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_squeeze_CO_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_SB_3bet_BB_4bet_CO_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_SB_3bet_BB_4bet_CO_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_SB_3bet_BB_call_CO_4bet_SB_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_SB_3bet_BB_call_CO_4bet_SB_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "CO_open_SB_3bet_BB_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_BB_4bet_HJ_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_BB_4bet_HJ_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_BB_call_HJ_4bet_BTN_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_BB_call_HJ_4bet_BTN_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_BB_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_SB_4bet_HJ_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_SB_4bet_HJ_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_SB_call_HJ_4bet_BTN_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_SB_call_HJ_4bet_BTN_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_SB_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_squeeze_HJ_4bet_BTN_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_squeeze_HJ_4bet_BTN_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_squeeze_HJ_call_BTN_4bet_BB_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_squeeze_HJ_call_BTN_4bet_BB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_squeeze_HJ_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_squeeze_HJ_fold_BTN_4bet_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_squeeze_HJ_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_4bet_BTN_call_SB_fold_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_4bet_BTN_fold_SB_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_4bet_BTN_fold_SB_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_call_BTN_4bet_SB_fold_BB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_call_BTN_fold_SB_4bet_BB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_call_BTN_fold_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_4bet_SB_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_4bet_SB_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_call_SB_4bet_BB_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_call_SB_4bet_BB_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_fold_SB_4bet_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_squeeze_HJ_4bet_BTN_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_squeeze_HJ_4bet_BTN_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_squeeze_HJ_call_BTN_4bet_SB_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_squeeze_HJ_call_BTN_4bet_SB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_squeeze_HJ_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_squeeze_HJ_fold_BTN_4bet_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_squeeze_HJ_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BB_4bet_HJ_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BB_4bet_HJ_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BB_call_HJ_4bet_CO_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BB_call_HJ_4bet_CO_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BB_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BTN_4bet_HJ_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BTN_4bet_HJ_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BTN_call_HJ_4bet_CO_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BTN_call_HJ_4bet_CO_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BTN_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_SB_4bet_HJ_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_SB_4bet_HJ_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_SB_call_HJ_4bet_CO_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_SB_call_HJ_4bet_CO_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_SB_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_squeeze_HJ_4bet_CO_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_squeeze_HJ_4bet_CO_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_squeeze_HJ_call_CO_4bet_BB_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_squeeze_HJ_call_CO_4bet_BB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_squeeze_HJ_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_squeeze_HJ_fold_CO_4bet_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_squeeze_HJ_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_4bet_CO_call_BTN_fold_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_4bet_CO_fold_BTN_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_4bet_CO_fold_BTN_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_call_CO_4bet_BTN_fold_BB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_call_CO_fold_BTN_4bet_BB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_call_CO_fold_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_4bet_BTN_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_4bet_BTN_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_call_BTN_4bet_BB_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_call_BTN_4bet_BB_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_fold_BTN_4bet_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_4bet_CO_call_BTN_fold_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_4bet_CO_fold_BTN_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_4bet_CO_fold_BTN_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_call_CO_4bet_BTN_fold_SB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_call_CO_fold_BTN_4bet_SB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_call_CO_fold_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_4bet_BTN_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_4bet_BTN_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_call_BTN_4bet_SB_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_call_BTN_4bet_SB_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_fold_BTN_4bet_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_squeeze_HJ_4bet_CO_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_squeeze_HJ_4bet_CO_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_squeeze_HJ_call_CO_4bet_BTN_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_squeeze_HJ_call_CO_4bet_BTN_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_squeeze_HJ_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_squeeze_HJ_fold_CO_4bet_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_squeeze_HJ_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_4bet_CO_call_SB_fold_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_4bet_CO_fold_SB_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_4bet_CO_fold_SB_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_call_CO_4bet_SB_fold_BB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_call_CO_fold_SB_4bet_BB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_call_CO_fold_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_4bet_SB_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_4bet_SB_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_call_SB_4bet_BB_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_call_SB_4bet_BB_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_fold_SB_4bet_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_squeeze_HJ_4bet_CO_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_squeeze_HJ_4bet_CO_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_squeeze_HJ_call_CO_4bet_SB_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_squeeze_HJ_call_CO_4bet_SB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_squeeze_HJ_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_squeeze_HJ_fold_CO_4bet_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_squeeze_HJ_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_SB_3bet_BB_4bet_HJ_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_SB_3bet_BB_4bet_HJ_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_SB_3bet_BB_call_HJ_4bet_SB_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_SB_3bet_BB_call_HJ_4bet_SB_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "HJ_open_SB_3bet_BB_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_BB_4bet_UTG_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_BB_4bet_UTG_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_BB_call_UTG_4bet_BTN_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_BB_call_UTG_4bet_BTN_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_BB_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_SB_4bet_UTG_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_SB_4bet_UTG_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_SB_call_UTG_4bet_BTN_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_SB_call_UTG_4bet_BTN_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_SB_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_squeeze_UTG_4bet_BTN_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_squeeze_UTG_4bet_BTN_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_squeeze_UTG_call_BTN_4bet_BB_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_squeeze_UTG_call_BTN_4bet_BB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_squeeze_UTG_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_squeeze_UTG_fold_BTN_4bet_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_squeeze_UTG_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_4bet_BTN_call_SB_fold_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_4bet_BTN_fold_SB_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_4bet_BTN_fold_SB_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_call_BTN_4bet_SB_fold_BB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_call_BTN_fold_SB_4bet_BB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_call_BTN_fold_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_4bet_SB_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_4bet_SB_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_call_SB_4bet_BB_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_call_SB_4bet_BB_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_fold_SB_4bet_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_squeeze_UTG_4bet_BTN_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_squeeze_UTG_4bet_BTN_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_squeeze_UTG_call_BTN_4bet_SB_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_squeeze_UTG_call_BTN_4bet_SB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_squeeze_UTG_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_squeeze_UTG_fold_BTN_4bet_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_squeeze_UTG_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BB_4bet_UTG_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BB_4bet_UTG_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BB_call_UTG_4bet_CO_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BB_call_UTG_4bet_CO_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BB_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BTN_4bet_UTG_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BTN_4bet_UTG_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BTN_call_UTG_4bet_CO_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BTN_call_UTG_4bet_CO_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BTN_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_SB_4bet_UTG_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_SB_4bet_UTG_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_SB_call_UTG_4bet_CO_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_SB_call_UTG_4bet_CO_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_SB_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_squeeze_UTG_4bet_CO_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_squeeze_UTG_4bet_CO_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_squeeze_UTG_call_CO_4bet_BB_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_squeeze_UTG_call_CO_4bet_BB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_squeeze_UTG_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_squeeze_UTG_fold_CO_4bet_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_squeeze_UTG_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_4bet_CO_call_BTN_fold_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_4bet_CO_fold_BTN_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_4bet_CO_fold_BTN_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_call_CO_4bet_BTN_fold_BB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_call_CO_fold_BTN_4bet_BB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_call_CO_fold_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_4bet_BTN_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_4bet_BTN_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_call_BTN_4bet_BB_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_call_BTN_4bet_BB_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_fold_BTN_4bet_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_4bet_CO_call_BTN_fold_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_4bet_CO_fold_BTN_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_4bet_CO_fold_BTN_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_call_CO_4bet_BTN_fold_SB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_call_CO_fold_BTN_4bet_SB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_call_CO_fold_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_4bet_BTN_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_4bet_BTN_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_call_BTN_4bet_SB_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_call_BTN_4bet_SB_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_fold_BTN_4bet_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_squeeze_UTG_4bet_CO_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_squeeze_UTG_4bet_CO_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_squeeze_UTG_call_CO_4bet_BTN_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_squeeze_UTG_call_CO_4bet_BTN_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_squeeze_UTG_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_squeeze_UTG_fold_CO_4bet_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_squeeze_UTG_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_4bet_CO_call_SB_fold_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_4bet_CO_fold_SB_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_4bet_CO_fold_SB_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_call_CO_4bet_SB_fold_BB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_call_CO_fold_SB_4bet_BB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_call_CO_fold_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_4bet_SB_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_4bet_SB_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_call_SB_4bet_BB_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_call_SB_4bet_BB_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_fold_SB_4bet_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_squeeze_UTG_4bet_CO_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_squeeze_UTG_4bet_CO_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_squeeze_UTG_call_CO_4bet_SB_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_squeeze_UTG_call_CO_4bet_SB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_squeeze_UTG_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_squeeze_UTG_fold_CO_4bet_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_squeeze_UTG_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BB_4bet_UTG_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BB_4bet_UTG_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BB_call_UTG_4bet_HJ_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BB_call_UTG_4bet_HJ_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BB_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BTN_4bet_UTG_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BTN_4bet_UTG_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BTN_call_UTG_4bet_HJ_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BTN_call_UTG_4bet_HJ_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BTN_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_CO_4bet_UTG_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_CO_4bet_UTG_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_CO_call_UTG_4bet_HJ_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_CO_call_UTG_4bet_HJ_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_CO_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_SB_4bet_UTG_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_SB_4bet_UTG_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_SB_call_UTG_4bet_HJ_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_SB_call_UTG_4bet_HJ_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_SB_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_squeeze_UTG_4bet_HJ_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_squeeze_UTG_4bet_HJ_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_squeeze_UTG_call_HJ_4bet_BB_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_squeeze_UTG_call_HJ_4bet_BB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_squeeze_UTG_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_4bet_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_4bet_HJ_call_BTN_fold_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_4bet_HJ_fold_BTN_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_4bet_HJ_fold_BTN_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_call_HJ_4bet_BTN_fold_BB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_call_HJ_fold_BTN_4bet_BB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_call_HJ_fold_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_4bet_BTN_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_4bet_BTN_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_call_BTN_4bet_BB_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_call_BTN_4bet_BB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_fold_BTN_4bet_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_4bet_HJ_call_BTN_fold_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_4bet_HJ_fold_BTN_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_4bet_HJ_fold_BTN_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_call_HJ_4bet_BTN_fold_SB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_call_HJ_fold_BTN_4bet_SB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_call_HJ_fold_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_4bet_BTN_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_4bet_BTN_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_call_BTN_4bet_SB_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_call_BTN_4bet_SB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_fold_BTN_4bet_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_squeeze_UTG_4bet_HJ_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_squeeze_UTG_4bet_HJ_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_squeeze_UTG_call_HJ_4bet_BTN_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_squeeze_UTG_call_HJ_4bet_BTN_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_squeeze_UTG_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_squeeze_UTG_fold_HJ_4bet_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_squeeze_UTG_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_4bet_HJ_call_CO_fold_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_4bet_HJ_fold_CO_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_4bet_HJ_fold_CO_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_call_HJ_4bet_CO_fold_BB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_call_HJ_fold_CO_4bet_BB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_call_HJ_fold_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_4bet_CO_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_4bet_CO_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_call_CO_4bet_BB_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_call_CO_4bet_BB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_fold_CO_4bet_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_4bet_HJ_call_CO_fold_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_4bet_HJ_fold_CO_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_4bet_HJ_fold_CO_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_call_HJ_4bet_CO_fold_BTN_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_call_HJ_fold_CO_4bet_BTN_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_call_HJ_fold_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_4bet_CO_call_BTN_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_4bet_CO_fold_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_call_CO_4bet_BTN_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_call_CO_4bet_BTN_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_fold_CO_4bet_BTN_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_4bet_HJ_call_CO_fold_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_4bet_HJ_fold_CO_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_4bet_HJ_fold_CO_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_call_HJ_4bet_CO_fold_SB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_call_HJ_fold_CO_4bet_SB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_call_HJ_fold_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_4bet_CO_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_4bet_CO_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_call_CO_4bet_SB_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_call_CO_4bet_SB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_fold_CO_4bet_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_squeeze_UTG_4bet_HJ_call_CO_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_squeeze_UTG_4bet_HJ_fold_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_squeeze_UTG_call_HJ_4bet_CO_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_squeeze_UTG_call_HJ_4bet_CO_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_squeeze_UTG_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_squeeze_UTG_fold_HJ_4bet_CO_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_squeeze_UTG_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_4bet_HJ_call_SB_fold_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_4bet_HJ_fold_SB_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_4bet_HJ_fold_SB_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_call_HJ_4bet_SB_fold_BB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_call_HJ_fold_SB_4bet_BB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_call_HJ_fold_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_4bet_SB_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_4bet_SB_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_call_SB_4bet_BB_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_call_SB_4bet_BB_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_fold_SB_4bet_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_squeeze_UTG_4bet_HJ_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_squeeze_UTG_4bet_HJ_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_squeeze_UTG_call_HJ_4bet_SB_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_squeeze_UTG_call_HJ_4bet_SB_fold_UTG_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_squeeze_UTG_call_HJ_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_squeeze_UTG_fold_HJ_4bet_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_squeeze_UTG_fold_HJ_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_SB_3bet_BB_4bet_UTG_call_SB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_SB_3bet_BB_4bet_UTG_fold_SB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_SB_3bet_BB_call_UTG_4bet_SB_call_BB_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_SB_3bet_BB_call_UTG_4bet_SB_fold_BB_call",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      },
+      {
+        "spot": "UTG_open_SB_3bet_BB_call_UTG_fold",
+        "reason": "Not included in this candidate snapshot; unavailable here and not accepted."
+      }
+    ]
+  },
+  "sources": [
+    {
+      "path": ".gitattributes",
+      "bytes": 298,
+      "sha256": "cbb00bded2287e0998e08209f73c605d541ed993864e00f9af79721df6671295"
+    },
+    {
+      "path": "apps/frontend/docs/postflop-policy-knowledge.md",
+      "bytes": 14444,
+      "sha256": "188bc48063e3b942ccad5d5fdab1c07a36175d809c6dce7cc52aa283f4d78151"
+    },
+    {
+      "path": "apps/frontend/docs/specs/hu-postflop-after-multiway-preflop.independent-review.md",
+      "bytes": 82224,
+      "sha256": "61bb854d2ff4780dde548322435f177be386fa8259b973cd7b7f5b02ca795b4c"
+    },
+    {
+      "path": "apps/frontend/docs/specs/hu-postflop-after-multiway-preflop.md",
+      "bytes": 7585,
+      "sha256": "3aefc633d96d336c5e989abe401215405a5b0034655a313e2a9cf185838e5f34"
+    },
+    {
+      "path": "apps/frontend/docs/specs/hu-postflop-after-multiway-preflop.policy-review.md",
+      "bytes": 29655,
+      "sha256": "ba1545b32037325be6181f44954a58d59ab8b8dfc140012fe86cc9406a786966"
+    },
+    {
+      "path": "apps/frontend/docs/specs/hu-postflop-after-multiway-preflop.storage.md",
+      "bytes": 16907,
+      "sha256": "5b8820065a47a06ddad7747f9d094a378589e23aed1064c4e1f4b7a194e5a30a"
+    },
+    {
+      "path": "apps/frontend/package-lock.json",
+      "bytes": 95311,
+      "sha256": "e7de639e752d167f6f7fa772a36b588ebca8e85d87f78369e72c36cb0237806d"
+    },
+    {
+      "path": "apps/frontend/package.json",
+      "bytes": 2394,
+      "sha256": "e51066c16cbc18b21e5479fe577d84ca998a7a880e0e5f56fc3fd946c3c89d3e"
+    },
+    {
+      "path": "apps/frontend/scripts/data/hu-after-multiway-spots.json",
+      "bytes": 1146128,
+      "sha256": "096b926d3d7f84c88475e99f3ebdfa80f046539ee7b41983ac9b8c1eec229851"
+    },
+    {
+      "path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
+      "bytes": 1554,
+      "sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491"
+    },
+    {
+      "path": "apps/frontend/scripts/lib/equity.mjs",
+      "bytes": 8026,
+      "sha256": "8e33cd02bb80913a68f51e6e63728cc94bda5a002c28c2998123d4ffd134ba67"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/all-board-checkpoints.mjs",
+      "bytes": 8114,
+      "sha256": "b26ad2839b300900221919cbbcb81e98981a900a88be21aef52fe28f4258d1fa"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/all-board-companion.mjs",
+      "bytes": 9702,
+      "sha256": "3986bd11c13fc971e50c231d354afb5976d947a18957e09a3a8a4ace23cb13c1"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/audit-all-boards.mjs",
+      "bytes": 9220,
+      "sha256": "e432a9ee613a454885f99b6084ff4b5988111e365276374139e6bf71ae236dbc"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/audit-identity.mjs",
+      "bytes": 3843,
+      "sha256": "6c8e3477b156e2523e7a7c1f77ce02bec80909f5ef781b5b43afce79a9bc6f1e"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/audit.mjs",
+      "bytes": 5006,
+      "sha256": "c0396e798690f0f7305acd79fea5b846c51e6e5f44eaefa2950020f4ecb6e927"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/balance.mjs",
+      "bytes": 27502,
+      "sha256": "3edf79ade11fd3cfb8e12d2d01ca8f9dbaaf30a7c56ad5450c76482d9d3062f6"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/board-batch.mjs",
+      "bytes": 5572,
+      "sha256": "272c40d058e20e3386e7d62e28e197712978869c5ad065bb3136e864da1b6f17"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/board-worker.mjs",
+      "bytes": 1812,
+      "sha256": "69304105c2bfc10c20f0c1d498b243067b08f0d2024f1fd06ab93ebb264f9ba9"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/browser-inputs.mjs",
+      "bytes": 12322,
+      "sha256": "9675c4ddb40552d10264c5e759e1d92d9f262a9b87c3404a6187e35befd06a8a"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/build-multiway-spots.mjs",
+      "bytes": 5730,
+      "sha256": "109eb19ca3e9188b3a111e23d4b4c7eed2bc571e762df65ecf91981597fb8b86"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/cached-values.mjs",
+      "bytes": 2594,
+      "sha256": "f0054e03c0079cc327204a1f58b3738d5fd33dc8fcd3a4ef86a5297a4d337d7c"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/cli.mjs",
+      "bytes": 10227,
+      "sha256": "b89bf7ebcc399d6d629167a1e8c5ddc5f51e93b18f3752d657e1febb739d3894"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/defence.mjs",
+      "bytes": 50978,
+      "sha256": "cbb1bddfcae6a559019e22a1f60f275b1a116f0e5ba738c6243a3e0fe2216055"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/engine.mjs",
+      "bytes": 9827,
+      "sha256": "486b455017f6bc8dfd16f081527f766b1af7bf9bf187f5865be1968fece62524"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/equity-kernel.mjs",
+      "bytes": 9601,
+      "sha256": "32e57968cf265bb33382023a33419422913a94582276bf58fe05fe94b415bf64"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/exact-ev.mjs",
+      "bytes": 18884,
+      "sha256": "d3e17dc724743c7b4f0fbb1d75c450b96e037a38257279c1e6010e68c2b9a63e"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/explain-aggregate.mjs",
+      "bytes": 1922,
+      "sha256": "53ad8c269fee74bc945d395900245e0ffbf3fbc8d515565e82a250efb3cb6c40"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-base-codec.mjs",
+      "bytes": 15434,
+      "sha256": "ac71894af66ae7186a752e2574e048451d1fbdefb3d3b880e74de554898a197e"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-base-core.mjs",
+      "bytes": 7109,
+      "sha256": "814ea435044a80b9d4e43cc5d13c016a16021dd64c918218eb6782da08716ec9"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-base-files.mjs",
+      "bytes": 2946,
+      "sha256": "4bad43e955fd5cd5dad404e25bedb0ab45bf6eb81efa20af9e2a5cfe3882daf0"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-hand-ev-core.mjs",
+      "bytes": 16658,
+      "sha256": "98b38876988cd4b61b2d3217515766dc5e7349b0d06f099d70e74155b56a4a1e"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-isomorphism.mjs",
+      "bytes": 3762,
+      "sha256": "81c15f8ed865d56b78078136e389e6ea04851dbac506d2df2102f87acc737076"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-ui-facts.mjs",
+      "bytes": 10385,
+      "sha256": "5391b52ba6d19bb184b50542bfcade7009eace087a3d48ca7a7c6676c35614a3"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
+      "bytes": 23503,
+      "sha256": "647c14dd3c81926902aeea727b6f5e382b9e9fa7d66c51ac22cb93ad01ae32c3"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/hand-ev.mjs",
+      "bytes": 6725,
+      "sha256": "a2be73d9c8206afea7dab2b5f2abbf3d5b60feb4fc581dff29c5b241c0aae9f4"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
+      "bytes": 13323,
+      "sha256": "bcef936f80e2f2ce4e41c4842f122a748a792910919f75648c66daf00f92fe2f"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/later-hand-ev-core.mjs",
+      "bytes": 22099,
+      "sha256": "854cb385b1471a92b995db8e6f2e331502b7341c8373fc9ab64b240104979555"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/later-hand-ev.mjs",
+      "bytes": 9133,
+      "sha256": "d1f942ba8795b8b4a07a166d729af73663432e09dd06410916c075d104c02540"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/later-policy.mjs",
+      "bytes": 7489,
+      "sha256": "336bd71fd06e0d608918d081b9d917d39818e5cbbe163e41a3b105c48a0aab4e"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/later-tree.mjs",
+      "bytes": 5417,
+      "sha256": "79d0cf197d9a8c0da10270511f063c239809a9d3a8b7ecbfc3f8c8f4dd01e29a"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/model.mjs",
+      "bytes": 6991,
+      "sha256": "5aa53bd183862ed41e712d18aedc7680da652a496cfc59f11ee7685ea2cde8fa"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/multiway-inputs.mjs",
+      "bytes": 4246,
+      "sha256": "5cd8c946a63a16d8fbe8ed971991f421a5709a4edace6d9885ff086f3c43c87d"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/package-all-board-companion.mjs",
+      "bytes": 2534,
+      "sha256": "d8126d78ff68f2bb9b7f74ca1641dab9676b69f8b6113fce50c3849c72cf8868"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/package-reviewed-postflop.mjs",
+      "bytes": 2876,
+      "sha256": "18ad47aedd715e4b1fa059977035341a639b7f3eaadc9ec0e73c51cc26f78c77"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/policy.mjs",
+      "bytes": 9434,
+      "sha256": "1c863d390d01763b9f913412b2f8847b50209e14134175f294ca3628a45cda9c"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/preserve-legacy-postflop.py",
+      "bytes": 6708,
+      "sha256": "9ba178e821e6cb41cb4195d4a77a6aff7d7a2eb138cf1d390d894f732af9bd64"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/publish-d1.mjs",
+      "bytes": 6843,
+      "sha256": "0c6cb8d907b4819581b62bd869751ff2cf0f1483b2fc00c181a6028852ae8926"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/range-equity.mjs",
+      "bytes": 17176,
+      "sha256": "e9838a5c229915db8df6d3cb3c55297b40e5921fdd9916886e9f9a657e9da8ac"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/range-support.mjs",
+      "bytes": 969,
+      "sha256": "dc3797c8bc9ba021213e9ff88b49b5fa1f383c84509cb039275a13526ca4f303"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/restore-reviewed-postflop.mjs",
+      "bytes": 1372,
+      "sha256": "6d5edce95a1e175685a89322f4bbb60acfe7ced5e7277128cbaeca8afb4f0871"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/reviewed-postflop-archive.mjs",
+      "bytes": 13097,
+      "sha256": "a18c1f26d4347e4d390b9acb9c76297222d1f6a2f6a9cefbfcdbf5f21f0b39e0"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/reviewed-postflop.mjs",
+      "bytes": 21425,
+      "sha256": "fc64b4defc1489f7d91d26d9078ac5616c23e243fce966db48a4521c6bd73ea4"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/simulation-parallel.mjs",
+      "bytes": 715,
+      "sha256": "a252549b15a29bb73e2406d626ff4a127d88f1fad44130adf85787917143300a"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/simulation.mjs",
+      "bytes": 9169,
+      "sha256": "fa8ce240d5701e2f2251338d6369dd97a1a5d2d8cb36232e400efb6b23b980b7"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/spots.mjs",
+      "bytes": 10746,
+      "sha256": "803adfa6396041c128e92349a636ad15f565c60ae64d330337d4fb55d0e46d5e"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/tree.mjs",
+      "bytes": 6876,
+      "sha256": "eab4862638997017df4c25df571c85ee2a6c0aa9b26fb4ad03d4b69e99f56a76"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/verify-reviewed-postflop.mjs",
+      "bytes": 1386,
+      "sha256": "0e829b122472f19a4d4ca0fed21ebb225098075fcb08bf4c24d23191eb568a01"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/views.mjs",
+      "bytes": 7719,
+      "sha256": "6dd4d6481c10b656e46335d6eacacd979545ffaa41bf7a277d23fc494aa7d186"
+    },
+    {
+      "path": "apps/frontend/src/data.ts",
+      "bytes": 3470,
+      "sha256": "c46aac5d4bed632f419ee88b27278a799ad94ef77170db1ef8db3a30c61d2093"
+    },
+    {
+      "path": "apps/frontend/src/estimated/call-ev.ts",
+      "bytes": 19031,
+      "sha256": "b6e1c9005a3367a1ccd74aba59d9309a38e226ea7bbf351cbc8b089fa550cfaf"
+    },
+    {
+      "path": "apps/frontend/src/estimated/cold-three-bet-responses.ts",
+      "bytes": 4681,
+      "sha256": "61ceea9d04130a5e3347d0c22fc4bae61b9b6ea2e8f50d1850fb6b267f1def3f"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-model.ts",
+      "bytes": 8113,
+      "sha256": "b76ff33ce560d30738d96dc39ca1d67764f002c70a4a5f8fc7036fdec1fc017a"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-tree.ts",
+      "bytes": 15972,
+      "sha256": "17b971e242ca332ce46eb53e163466aaa3c3993389321b97ce2df5a8587b5fbf"
+    },
+    {
+      "path": "apps/frontend/src/estimated/datasets.ts",
+      "bytes": 3726,
+      "sha256": "09f8ba4296ee553e661703a6e26529b66aefeec1932c69826e010d3ecf88b6ec"
+    },
+    {
+      "path": "apps/frontend/src/estimated/eqr.ts",
+      "bytes": 5585,
+      "sha256": "f208926762b105a0488d0ab464a0c2f74ffdf48bdc9f6b46cba9d3e0231cdecf"
+    },
+    {
+      "path": "apps/frontend/src/estimated/multiway-responses.ts",
+      "bytes": 4169,
+      "sha256": "feefd04720693021cb9dae096ffdbe69346161978131a0ffc40c44c1bc6c969a"
+    },
+    {
+      "path": "apps/frontend/src/estimated/multiway2-responses.ts",
+      "bytes": 5618,
+      "sha256": "7fad633ab97307feaea1481325bb47333bd0228d4e2894edd356402b682a5c0c"
+    },
+    {
+      "path": "apps/frontend/src/estimated/opening-ranges.ts",
+      "bytes": 2667,
+      "sha256": "26148ffba8749838a02f929b4725a6218ac48e867da989aba09315e44455a441"
+    },
+    {
+      "path": "apps/frontend/src/estimated/opponent-profiles.ts",
+      "bytes": 9482,
+      "sha256": "75321c5363c1709969aa54da0de795582c814cc9b5b4533006499fd625f14e66"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-trial.ts",
+      "bytes": 22026,
+      "sha256": "af0151ea2939155b767418f42348158cce3bf675bfce43cbb1217774fad1b6dc"
+    },
+    {
+      "path": "apps/frontend/src/estimated/rake.ts",
+      "bytes": 921,
+      "sha256": "79c64bede540468f921855aeace59ace7855776606f47dfed24ff7096f5240c3"
+    },
+    {
+      "path": "apps/frontend/src/estimated/ranges.ts",
+      "bytes": 3427,
+      "sha256": "d0acb3202c2e1d6517ed27bf56db14625a9a40fba7ca267bec2c1d2e0f68d5ae"
+    },
+    {
+      "path": "apps/frontend/src/estimated/sizing.ts",
+      "bytes": 3392,
+      "sha256": "c7a84d4ac0b17a19aa3576e245033f3e9f92a347538de42e50efdeb39a15f6b0"
+    },
+    {
+      "path": "configs/cash-6max-100bb.json",
+      "bytes": 918,
+      "sha256": "0910a97e1c477c1055a95db3334f8764e37647ed2497e3eb6b666f1cfa9628f2"
+    },
+    {
+      "path": "configs/multiway-preflop-stage2.json",
+      "bytes": 95,
+      "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "apps/frontend/src/estimated/cold-four-bet-responses.json",
+      "bytes": 1008148,
+      "sha256": "013783c4feaa42cdab083b73a534de3b9c555bc2ad14afd4984b7564f3191dc9"
+    },
+    {
+      "path": "apps/frontend/src/estimated/cold-three-bet-responses.json",
+      "bytes": 514752,
+      "sha256": "be3599cfc64cdf78cfd7f096f6ca7ae51f1f47ad659b173226dd1d926d1c4531"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-responses.json",
+      "bytes": 27736908,
+      "sha256": "3f8a96af8f30a69a8733061f8f81e6216629338197e94ed3a2a85884eb87408e"
+    },
+    {
+      "path": "apps/frontend/src/estimated/four-bet-responses.json",
+      "bytes": 379467,
+      "sha256": "70c6302ea11c6f725702030f8980883ef1ec66fb630c3d90f6c1395c4e76add5"
+    },
+    {
+      "path": "apps/frontend/src/estimated/limp-deep-responses.json",
+      "bytes": 50652,
+      "sha256": "e815907ad05b1a24f733acf9fe06cb06c2f89c41039a7226cefb420d7956e53e"
+    },
+    {
+      "path": "apps/frontend/src/estimated/limp-responses.json",
+      "bytes": 74768,
+      "sha256": "370d4b30a08394c2f6919cbbd5dec6f5531af41cfeddde3ece22f90922b34f77"
+    },
+    {
+      "path": "apps/frontend/src/estimated/multiway-responses.json",
+      "bytes": 506995,
+      "sha256": "db5e05912bff4d58f845dfd3caec3e2d5292b5a914579ee96c47112836e3c912"
+    },
+    {
+      "path": "apps/frontend/src/estimated/multiway2-responses.json",
+      "bytes": 383303,
+      "sha256": "3d25573df0c2a7696d95a11f14eb6890f8918b46d6d3681f9c05c76b6c5d28de"
+    },
+    {
+      "path": "apps/frontend/src/estimated/opening-ranges.json",
+      "bytes": 113403,
+      "sha256": "236225dbae1c8aa2e2e7af8a449555f27ef80fed878114408c0e7338b89d0f0b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/preflop-ranges.json",
+      "bytes": 391641,
+      "sha256": "fdc83f2ed78e0690e148b39fa23b8edc0bf204fe1a3f1ca4c4e6ea9377da2b55"
+    },
+    {
+      "path": "apps/frontend/src/estimated/squeeze-responses.json",
+      "bytes": 1543744,
+      "sha256": "8f8d604bc80052382205363190db48bec4c9a7df8b6322af512009f47df6c9a2"
+    },
+    {
+      "path": "apps/frontend/src/estimated/three-bet-responses.json",
+      "bytes": 387728,
+      "sha256": "e46bbb59dc55df01240a73602b0cb214a652e5c2346f84a791178b938df40973"
+    }
+  ],
+  "sources_sha256": "5e706bd0164b58abdce4feb8aa6909be723f24499e02d3f65a737fea93cc9209",
+  "inputs_sha256": "fd382c3777fa991ba6ed96e55fb4759bdffe496dd869ead11d3cfe3299c37f3d",
+  "spots": [
+    {
+      "id": "BTN_open_SB_3bet_BB_4bet_BTN_fold_SB_call",
+      "slug": "btn-open-sb-3bet-bb-4bet-btn-fold-sb-call-hu-v1",
+      "classification": "new-candidate",
+      "identity": {
+        "saved_source_fingerprint": "3f31ad8f0801750d5c576b5f5809c0526797bb5904fede5b8f59459b6d7618c6",
+        "flop_policy_hash": "82e9187899fe5cc4747e3b71e4434ed127f32cc4d92065ed6539f5791b7ecbb1",
+        "later_policy_hash": "8b947cf4e9c3d3331883346393dc68a310037bc89d51a0ea36000abd2ae7f210",
+        "report_status": "missing",
+        "policy_status": "fresh-pair",
+        "current_source_fingerprint": "3f31ad8f0801750d5c576b5f5809c0526797bb5904fede5b8f59459b6d7618c6"
+      },
+      "evidence": []
+    },
+    {
+      "id": "BTN_open_SB_3bet_BB_call_BTN_fold",
+      "slug": "btn-open-sb-3bet-bb-call-btn-fold-hu-v1",
+      "classification": "new-candidate",
+      "identity": {
+        "saved_source_fingerprint": "56a5911b08804bacd3bb4f1560beb697248b8dfd36d92270c20209c796e64adc",
+        "flop_policy_hash": "88d5eb1338d9af2a8509ea03587a46519df199ab0868841fa0c2f9ce8fb0e9e7",
+        "later_policy_hash": "b0017d5e8c0455590d1ab4ed835adce0c1bf73d4eb9f3a75eb03de6792f74f75",
+        "report_status": "missing",
+        "policy_status": "fresh-pair",
+        "current_source_fingerprint": "56a5911b08804bacd3bb4f1560beb697248b8dfd36d92270c20209c796e64adc"
+      },
+      "evidence": []
+    },
+    {
+      "id": "CO_open_BTN_call_BB_squeeze_CO_call_BTN_fold",
+      "slug": "co-open-btn-call-bb-squeeze-co-call-btn-fold-hu-v1",
+      "classification": "new-candidate",
+      "identity": {
+        "saved_source_fingerprint": "5d10469bb026a6ac8d6013030f6c850f3ed298521f1cc8d91fcec9457f484ebf",
+        "flop_policy_hash": "1c48ec56a17827f7df7c7bff56b9ac5ef7e48e94af7884ebd0af72a6ebc0232b",
+        "later_policy_hash": "cb28d0cb8eedf5b135f46ff78225bb36a419afac5560a4dda30fe9261402460b",
+        "report_status": "missing",
+        "policy_status": "fresh-pair",
+        "current_source_fingerprint": "5d10469bb026a6ac8d6013030f6c850f3ed298521f1cc8d91fcec9457f484ebf"
+      },
+      "evidence": []
+    },
+    {
+      "id": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_fold_BTN_call",
+      "slug": "hj-open-co-call-btn-call-bb-squeeze-hj-fold-co-fold-btn-call-hu-v1",
+      "classification": "new-candidate",
+      "identity": {
+        "saved_source_fingerprint": "1328e3df0d57d2c1268daa60c6c478966622caef36f818e932e62552bfe6339c",
+        "flop_policy_hash": "69a084e4fe5f5907647f6a694c1fc78d82f0b2dd77ad30e2a6a65e9e99f71724",
+        "later_policy_hash": "dadab781583d917708f45625960902ac04e490f4f4a128bb67595b0d7d73b70c",
+        "report_status": "missing",
+        "policy_status": "fresh-pair",
+        "current_source_fingerprint": "1328e3df0d57d2c1268daa60c6c478966622caef36f818e932e62552bfe6339c"
+      },
+      "evidence": []
+    },
+    {
+      "id": "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call",
+      "slug": "utg-open-hj-call-bb-squeeze-utg-fold-hj-call-hu-v1",
+      "classification": "new-candidate",
+      "identity": {
+        "saved_source_fingerprint": "a446af2ae12f4d68aa5810cd88912ebd95642462a8cf8e5e472df6c66d22e975",
+        "flop_policy_hash": "9070ca5074b6600eaeb1f1a20a03ce4bb2b40ecea457f8cd578fcec43e8a513a",
+        "later_policy_hash": "c37c4091096867f53e9ec531220f5ff99c7f2a5364d7bc56283afaeca17333d6",
+        "report_status": "fresh",
+        "policy_status": "fresh-pair",
+        "current_source_fingerprint": "a446af2ae12f4d68aa5810cd88912ebd95642462a8cf8e5e472df6c66d22e975"
+      },
+      "evidence": [
+        "apps/frontend/.local/postflop-ai/all-boards-audit/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call--fc4bd404df9637bad4b7fc3f334c33e4dc32333f87c4c1ab6d92e66e387e0aed.checkpoints.json",
+        "apps/frontend/.local/postflop-ai/all-boards-audit/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call--fc4bd404df9637bad4b7fc3f334c33e4dc32333f87c4c1ab6d92e66e387e0aed.json",
+        "apps/frontend/.local/postflop-ai/audit-evidence/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call--fc4bd404df9637bad4b7fc3f334c33e4dc32333f87c4c1ab6d92e66e387e0aed-all-boards.json",
+        "apps/frontend/.local/postflop-ai/audit-evidence/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call-replay-1791112414692.json"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "apps/frontend/.local/postflop-ai/all-boards-audit/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call--fc4bd404df9637bad4b7fc3f334c33e4dc32333f87c4c1ab6d92e66e387e0aed.checkpoints.json",
+      "spot": "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call",
+      "kind": "auditEvidence",
+      "bytes": 1772969,
+      "sha256": "0e8fe19f741523833302c21f52b36c73b171fc2a63648d03a246624c0507192f",
+      "entry": "objects/0e8fe19f741523833302c21f52b36c73b171fc2a63648d03a246624c0507192f"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/all-boards-audit/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call--fc4bd404df9637bad4b7fc3f334c33e4dc32333f87c4c1ab6d92e66e387e0aed.json",
+      "spot": "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call",
+      "kind": "auditEvidence",
+      "bytes": 7958,
+      "sha256": "ff73c9d4da70d84297deff8e9c15a550aeb9351f7788988426e1bd84091f9a25",
+      "entry": "objects/ff73c9d4da70d84297deff8e9c15a550aeb9351f7788988426e1bd84091f9a25"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/audit-evidence/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call--fc4bd404df9637bad4b7fc3f334c33e4dc32333f87c4c1ab6d92e66e387e0aed-all-boards.json",
+      "spot": "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call",
+      "kind": "auditEvidence",
+      "bytes": 13224,
+      "sha256": "5965cf14bbf54ea3a42ded61bf940430e8b0356ab1abc01f87694aacca81714c",
+      "entry": "objects/5965cf14bbf54ea3a42ded61bf940430e8b0356ab1abc01f87694aacca81714c"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/audit-evidence/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call-replay-1791112414692.json",
+      "spot": "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call",
+      "kind": "auditEvidence",
+      "bytes": 26930,
+      "sha256": "8f4f946b917b90397b543b2f749a63c0c46b4e9844a47f12b9c8817f21e14e17",
+      "entry": "objects/8f4f946b917b90397b543b2f749a63c0c46b4e9844a47f12b9c8817f21e14e17"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/btn-open-sb-3bet-bb-4bet-btn-fold-sb-call-hu-v1-later-policy.json",
+      "spot": "BTN_open_SB_3bet_BB_4bet_BTN_fold_SB_call",
+      "kind": "laterCandidate",
+      "bytes": 53039,
+      "sha256": "2c2b0d4d65cab72a0d6faef74776dac7fea7e01497bbf3dd69b45d0f693cb42b",
+      "entry": "objects/2c2b0d4d65cab72a0d6faef74776dac7fea7e01497bbf3dd69b45d0f693cb42b"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/btn-open-sb-3bet-bb-4bet-btn-fold-sb-call-hu-v1-policy.json",
+      "spot": "BTN_open_SB_3bet_BB_4bet_BTN_fold_SB_call",
+      "kind": "candidate",
+      "bytes": 21304,
+      "sha256": "e98db5c4de50ab2b02bcf65c07fda5bd3badb2808f786a9850fd6c607a65f88f",
+      "entry": "objects/e98db5c4de50ab2b02bcf65c07fda5bd3badb2808f786a9850fd6c607a65f88f"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/btn-open-sb-3bet-bb-call-btn-fold-hu-v1-later-policy.json",
+      "spot": "BTN_open_SB_3bet_BB_call_BTN_fold",
+      "kind": "laterCandidate",
+      "bytes": 52878,
+      "sha256": "df7ddfeae0716da56cba17ffea73b93d2c11660974bfdecf96759028d0ba0a2f",
+      "entry": "objects/df7ddfeae0716da56cba17ffea73b93d2c11660974bfdecf96759028d0ba0a2f"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/btn-open-sb-3bet-bb-call-btn-fold-hu-v1-policy.json",
+      "spot": "BTN_open_SB_3bet_BB_call_BTN_fold",
+      "kind": "candidate",
+      "bytes": 40558,
+      "sha256": "dc69f19f4591699ed7336e277a268f163a46319295165976e4b5e8ced94bd208",
+      "entry": "objects/dc69f19f4591699ed7336e277a268f163a46319295165976e4b5e8ced94bd208"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/co-open-btn-call-bb-squeeze-co-call-btn-fold-hu-v1-later-policy.json",
+      "spot": "CO_open_BTN_call_BB_squeeze_CO_call_BTN_fold",
+      "kind": "laterCandidate",
+      "bytes": 52889,
+      "sha256": "7e1664cd8a09c16eb6371c4a4007e5b9623466ca3d06d2d5f358ce78054e2ecd",
+      "entry": "objects/7e1664cd8a09c16eb6371c4a4007e5b9623466ca3d06d2d5f358ce78054e2ecd"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/co-open-btn-call-bb-squeeze-co-call-btn-fold-hu-v1-policy.json",
+      "spot": "CO_open_BTN_call_BB_squeeze_CO_call_BTN_fold",
+      "kind": "candidate",
+      "bytes": 40561,
+      "sha256": "52399aec08874b2331c0aac840246f04f835eea922fa8586c2036b8aefacfdf8",
+      "entry": "objects/52399aec08874b2331c0aac840246f04f835eea922fa8586c2036b8aefacfdf8"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/hj-open-co-call-btn-call-bb-squeeze-hj-fold-co-fold-btn-call-hu-v1-later-policy.json",
+      "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_fold_BTN_call",
+      "kind": "laterCandidate",
+      "bytes": 52934,
+      "sha256": "e2919bb475bbac687c8a874bd3c182567d13c24cf55d7c980c47dc9c202545d8",
+      "entry": "objects/e2919bb475bbac687c8a874bd3c182567d13c24cf55d7c980c47dc9c202545d8"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/hj-open-co-call-btn-call-bb-squeeze-hj-fold-co-fold-btn-call-hu-v1-policy.json",
+      "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_fold_BTN_call",
+      "kind": "candidate",
+      "bytes": 40613,
+      "sha256": "e3d9f01a60d90b2bf3ce740a4467b2fcfd17992490b03e3f138496a1cbc42e15",
+      "entry": "objects/e3d9f01a60d90b2bf3ce740a4467b2fcfd17992490b03e3f138496a1cbc42e15"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/utg-open-hj-call-bb-squeeze-utg-fold-hj-call-hu-v1-later-policy.json",
+      "spot": "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call",
+      "kind": "laterCandidate",
+      "bytes": 53290,
+      "sha256": "317462f34ae7f451dcc9458b28a762b8aa1a51db0774028f9772983ce832b105",
+      "entry": "objects/317462f34ae7f451dcc9458b28a762b8aa1a51db0774028f9772983ce832b105"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/utg-open-hj-call-bb-squeeze-utg-fold-hj-call-hu-v1-policy.json",
+      "spot": "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call",
+      "kind": "candidate",
+      "bytes": 32166,
+      "sha256": "c985e881ae3baab9f0cc54a164f7bb5b9b65802307bceaa4d91b90fb650113ed",
+      "entry": "objects/c985e881ae3baab9f0cc54a164f7bb5b9b65802307bceaa4d91b90fb650113ed"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/utg-open-hj-call-bb-squeeze-utg-fold-hj-call-hu-v1-report.json",
+      "spot": "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call",
+      "kind": "report",
+      "bytes": 35068,
+      "sha256": "f46f16717c144053c8480905783883572c19d38083992ec9acc8729d3ef16139",
+      "entry": "objects/f46f16717c144053c8480905783883572c19d38083992ec9acc8729d3ef16139"
+    }
+  ],
+  "archive": {
+    "path": "artifacts/postflop/hu-after-multiway-foundation-v3.tar.gz",
+    "format": "ustar+gzip-content-addressed-v1",
+    "bytes": 127590,
+    "sha256": "e74de8b1cfb9349d20f0e328c6d7c3f36220c0ec533eae1b01e1f6635cca45fe"
+  },
+  "content_sha256": "2c0dad671281fe71e9fcc6fa022119a0f52002a61e89d1207b49e296eeca4b49"
+}

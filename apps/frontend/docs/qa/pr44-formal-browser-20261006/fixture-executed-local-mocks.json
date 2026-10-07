@@ -1,0 +1,18 @@
+{
+  "AuthPanel": {
+    "executedContents": "export const useAccount = () => ({ ready: true, available: true, user: { verified: true }, error: \"\" }); export const AuthPanel = () => null;",
+    "sha256": "d94859592a2d741ec0e6760f23a118bad189e8f59ecdc538fad8812186763de4",
+    "executions": 1,
+    "scope": "Original isolated local verified-account hook only; not real login or production permission verification"
+  },
+  "session": {
+    "executedContents": "// A six-seat ring game session: the button moves one seat per hand, every hand starts at 100BB\n// (the depth of every saved dataset) and results accumulate as points (1BB = 100 points).\nimport { POSITIONS, type Position } from \"./preflop.ts\";\nimport { GUEST_AGENT, agentTableById } from \"./characters.ts\";\n\nexport const POINTS_PER_BB = 100;\nexport const toPoints = (bb: number) => Math.round(bb * POINTS_PER_BB);\n\nexport type SessionSeat = { kind: \"human\" | \"agent\"; agentId: string | null; points: number };\nexport type Session = { tableId: string; seed: string; seats: SessionSeat[]; button: number; handNo: number };\n\n// Each table has five characters. In spectator mode (`humanSeat: null`) the sixth seat is taken by\n// the guest agent Evi, so the game stays six-handed like every saved dataset.\nexport function createSession({ tableId, seed, humanSeat = 0 }: { tableId: string; seed: string; humanSeat?: number | null }): Session {\n  const table = agentTableById(tableId);\n  if (!table) throw new Error(`Unknown agent table: ${tableId}`);\n  const agents = [...table.agents];\n  const seats: SessionSeat[] = Array.from({ length: 6 }, (_, index) => {\n    if (index === humanSeat) return { kind: \"human\", agentId: null, points: 0 };\n    const character = agents.shift() ?? GUEST_AGENT;\n    return { kind: \"agent\", agentId: character.id, points: 0 };\n  });\n  return { tableId, seed: \"mw3-browser-balanced-22\", seats, button: 0, handNo: 0 };\n}\n\n// Position of each seat for the current hand (button seat = BTN, then SB, BB, UTG, HJ, CO).\nexport function seatPositions(session: Session): Record<number, Position> {\n  const order: Position[] = [\"BTN\", \"SB\", \"BB\", \"UTG\", \"HJ\", \"CO\"];\n  return Object.fromEntries(order.map((pos, offset) => [(session.button + offset) % 6, pos]));\n}\n\nexport const seatOf = (session: Session, pos: Position) => Number(Object.entries(seatPositions(session)).find(([, p]) => p === pos)![0]);\nexport const handSeed = (session: Session) => `${session.seed}|hand|${session.handNo}`;\n\n// Applies a finished hand's returns (BB by position) and moves the button.\nexport function finishHand(session: Session, returns: Record<string, number>): Session {\n  const positions = seatPositions(session);\n  const seats = session.seats.map((seat, index) => ({ ...seat, points: seat.points + toPoints(returns[positions[index]] ?? 0) }));\n  return { ...session, seats, button: (session.button + 1) % 6, handNo: session.handNo + 1 };\n}\n\nexport { POSITIONS };\n",
+    "rawSourceSha256": "82d4987b629157323f0c4acc3ce6f22b4ce55ff72a697adced97d59b3843468a",
+    "sha256": "4e3e509c2c5132f48924acc0577eb8b4b31e09e0a5f26fb67accb870c038d71e",
+    "seed": "mw3-browser-balanced-22",
+    "executions": 1,
+    "change": "Only createSession return seed is replaced; all other current-source bytes remain",
+    "originalPacketExecutedSha256": "4e3e509c2c5132f48924acc0577eb8b4b31e09e0a5f26fb67accb870c038d71e",
+    "scope": "Original deterministic seed only; current balanced source runner, no forced action or replacement policy"
+  }
+}

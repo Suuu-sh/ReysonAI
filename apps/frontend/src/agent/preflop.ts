@@ -1,10 +1,11 @@
 import type { OpeningSpot, ResponseSpot, ThreeBetSpot, FourBetSpot, FiveBetSpot, MultiwaySpot, SqueezeSpot, ColdThreeBetSpot, ColdFourBetSpot, Multiway2Spot, LimpSpot, LimpDeepSpot } from "../estimated/preflop-types.ts";
 type SourceSpot = OpeningSpot | ResponseSpot | ThreeBetSpot | FourBetSpot | FiveBetSpot | MultiwaySpot | SqueezeSpot | ColdThreeBetSpot | ColdFourBetSpot | Multiway2Spot | LimpSpot | LimpDeepSpot;
+import { mw3OriginForEvents } from "../estimated/mw3-context.ts";
+import { continuationDecisionForEvents } from "../estimated/continuation-history.ts";
 // Six-handed preflop for the Reyson Agent table. Every decision is looked up in a saved preflop
 // dataset (opening, responses, 3bet/4bet/5bet, squeeze, cold 3bet, limp lines); nothing else
-// is invented. Two table rules keep every flop heads-up (the only postflop data we have):
-//   - a call that would put a third player into the pot is not offered (agents move that
-//     frequency to fold, flagged `tableRule: "no_multiway"`);
+// is invented. A third-player call requires an approved dedicated SRP delivery.
+// Calls into unsupported 3bet/squeeze or 4+ pots remain blocked (`no_multiway`);
 //   - a situation without saved data offers only fold / check (agents fold, flagged `"no_data"`).
 // Everyone starts each hand with 100BB, the depth every dataset assumes.
 import { dataset } from "../estimated/datasets.ts";
@@ -65,8 +66,9 @@ type Situation = { source: string | null; rows: any; map: Record<string, Preflop
 export type DatasetLookup = (name: string) => unknown;
 
 // The saved dataset row that answers `pos` in the current state, and how its keys map to actions.
-export function situation(s: PreflopState, pos: Position, lookup: DatasetLookup = dataset): Situation {
-  const find = (file: string, id: string) => (lookup(file) as { spots: SourceSpot[] } | undefined)?.spots.find(item => item.id === id) ?? null;
+export function situation(s: PreflopState, pos: Position, lookup?: DatasetLookup): Situation {
+  const read = lookup ?? dataset;
+  const find = (file: string, id: string) => (read(file) as { spots: SourceSpot[] } | undefined)?.spots.find(item => item.id === id) ?? null;
   const raises = s.raises, bet = currentBet(s);
   const raise = (key: string, to: number): PreflopAction => ({ type: "raise", to: Math.min(STACK_BB, round(to)), key });
   const call: PreflopAction = { type: "call", key: "call" }, fold: PreflopAction = { type: "fold", key: "fold" };
@@ -113,7 +115,25 @@ export function situation(s: PreflopState, pos: Position, lookup: DatasetLookup 
       const spot = find("multiway-responses", id);
       return of("multiway-responses", id, { fold, call, squeeze: raise("squeeze", size(spot, "squeeze_size_bb", 13)) });
     }
+    if (s.callers.length === 2) {
+      // Remaining seats face the saved Stage 3 two-caller decision. Merely
+      // changing the call limit would make these players fold from missing data.
+      const id = `${pos}_vs_${opener}_${s.callers[0]}call_${s.callers[1]}call`;
+      const spot = find("multiway2-responses", id);
+      return of("multiway2-responses", id, { fold, call, squeeze: raise("squeeze", size(spot, "squeeze_size_bb", bet * 3)) });
+    }
     return { source: null, rows: null, map: {} };
+  }
+
+  // The bounded multiway catalog owns these histories, including cold-4bet
+  // and squeeze continuations. No original-opener HU response is reused here.
+  const continuation = lookup === undefined ? continuationDecisionForEvents(s.events) : null;
+  if (continuation && continuation.hero === pos) {
+    const map: Record<string, PreflopAction> = { fold, call };
+    for (const key of continuation.legal_actions) if (key === "four_bet" || key === "all_in") {
+      map[key] = raise(key, continuation.action_sizes_bb[key]!);
+    }
+    return of(continuation.dataset, continuation.id, map);
   }
 
   if (second.kind === "squeeze") {
@@ -165,12 +185,18 @@ function contendersAfterCall(s: PreflopState, pos: Position) {
 export type Choice = { action: PreflopAction; freq: number };
 
 // The offered actions for `pos` with their saved frequency for `hand`, after the table rules.
-export function preflopOptions(s: PreflopState, pos: Position, hand: string, lookup: DatasetLookup = dataset) {
+export function preflopOptions(s: PreflopState, pos: Position, hand: string,
+  scope?: DatasetLookup | { allowThreePlayer?: (spotId: string) => boolean; datasets?: DatasetLookup }) {
+  const lookup = typeof scope === "function" ? scope : scope?.datasets;
+  const allowThreePlayer = typeof scope === "function" ? undefined : scope?.allowThreePlayer;
   const sit = situation(s, pos, lookup);
   const row = sit.rows?.hands?.find((item: any) => item.hand === hand) ?? null;
   const bet = currentBet(s);
   const facing = bet > contribution(s, pos);
-  const callBlocked = facing && contendersAfterCall(s, pos) > 2;
+  const contenders = contendersAfterCall(s, pos);
+  const origin = contenders === 3 && s.raises.length === 1 && s.callers.length === 1
+    ? mw3OriginForEvents([...s.events, { pos, type: "call", key: "call", to: bet }]) : null;
+  const callBlocked = facing && contenders > 2 && !(origin && allowThreePlayer?.(origin.id));
   if (!row) {
     // No saved data: fold (or check when nothing is owed).
     const action: PreflopAction = facing ? { type: "fold", key: "fold" } : { type: "check", key: "check" };

@@ -12,7 +12,8 @@ import { diffDatasets, isUnchanged, parseFindings, summarizeFindings } from "./l
 import { opponentProfileFiles } from "./lib/opponent-profile-build.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "limp-deep-responses", "cold-three-bet-responses", "multiway2-responses", "cold-four-bet-responses", "continuation-responses", ...opponentProfileFiles];
+const stage3Only = process.argv.includes("--stage3-only");
+const files = stage3Only ? ["stage3-responses"] : ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "limp-deep-responses", "cold-three-bet-responses", "multiway2-responses", "cold-four-bet-responses", "continuation-responses", ...opponentProfileFiles];
 const arg = process.argv.indexOf("--max-iterations");
 const maxIterations = arg > 0 ? Number(process.argv[arg + 1]) : 3;
 if (!Number.isInteger(maxIterations) || maxIterations < 1) throw new Error("--max-iterations must be a positive integer");
@@ -32,7 +33,7 @@ let current = initial, status = "changed", findings = [], iterations = 0, log = 
 
 for (let i = 1; i <= maxIterations; i++) {
   iterations = i;
-  const run = spawnSync("node", [join(root, "scripts/build-estimates.mjs")], { cwd: root, encoding: "utf8", maxBuffer: 1 << 28 });
+  const run = spawnSync("node", [join(root, "scripts/build-estimates.mjs"), ...(stage3Only ? ["--stage3-only"] : [])], { cwd: root, encoding: "utf8", maxBuffer: 1 << 28 });
   const output = `${run.stdout ?? ""}${run.stderr ?? ""}`;
   log += `\n===== iteration ${i} (exit ${run.status}) =====\n${output}`;
   findings = parseFindings(output);

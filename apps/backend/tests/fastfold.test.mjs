@@ -151,8 +151,14 @@ test('authenticated aggressive flop, capped wagers, instant facing fold and one 
 });
 test('crypto deal has distinct cards, pure spot extraction preserves geometry, applied profile uses authored frequencies',()=>{
  for(let i=0;i<100;i++){const h=newHand(i+1);assert.equal(new Set([...Object.values(h.hole).flat(),...h.board]).size,17)}
- const multiway=JSON.parse(readFileSync(new URL('../../frontend/scripts/data/hu-after-multiway-spots.json',import.meta.url)));
- assert.deepEqual(createPostflopSpots({...bundle,'hu-after-multiway-spots':multiway}).POSTFLOP_SPOTS,POSTFLOP_SPOTS);
+ // The server factory remains legacy-only; ordinary practice also retains
+ // the separately reviewed HU histories and must not expand server coverage.
+ const scoped=createPostflopSpots(bundle).POSTFLOP_SPOTS;
+ const legacy=POSTFLOP_SPOTS.filter(spot=>!spot.history);
+ assert.equal(scoped.length,49);assert.equal(legacy.length,49);
+ assert.equal(POSTFLOP_SPOTS.length,89);
+ assert.equal(POSTFLOP_SPOTS.filter(spot=>spot.history).length,40);
+ assert.deepEqual(scoped,legacy);
  assert.equal(createPostflopSpots({opening:bundle['opening-ranges'],responses:bundle['preflop-ranges']}).spotById('BTN_open_BB_call').id,'BTN_open_BB_call');
  const name='profiles/nit/villain/opening-ranges',profile=JSON.parse(readFileSync(new URL(`../../frontend/src/estimated/${name}.json`,import.meta.url)));
  const agent=agentFor('nit',{...bundle,[name]:profile}),offered=preflopOptions(startPreflop(),'UTG','T8s',n=>bundle[n]);

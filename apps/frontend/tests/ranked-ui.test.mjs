@@ -5,7 +5,7 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { TIERS, TIER_EN, emptyRankState } from '../src/trainer/rank-store.ts';
 
-const bundle = await build({ stdin: { contents: 'export { RankLadder } from "./src/trainer/RankBadge.tsx"; export { Leaderboard } from "./src/trainer/Leaderboard.tsx";', resolveDir: process.cwd(), loader: 'tsx' }, plugins: [{ name: 'canonical-rank-store', setup(build) { build.onResolve({ filter: /rank-store\.ts$/ }, () => ({ path: new URL('../src/trainer/rank-store.ts', import.meta.url).href, external: true })); } }], bundle: true, write: false, platform: 'node', format: 'esm', external: ['react'], jsx: 'automatic' });
+const bundle = await build({ stdin: { contents: 'export { RankLadder } from "./src/trainer/RankBadge.tsx"; export { Leaderboard } from "./src/trainer/Leaderboard.tsx";', resolveDir: process.cwd(), loader: 'tsx' }, plugins: [{ name: 'canonical-rank-store', setup(build) { build.onResolve({ filter: /rank-store\.ts$/ }, () => ({ path: new URL('../src/trainer/rank-store.ts', import.meta.url).href, external: true })); } }], bundle: true, write: false, loader: { '.css': 'empty' }, platform: 'node', format: 'esm', external: ['react'], jsx: 'automatic' });
 const { RankLadder, Leaderboard } = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text.replace(/from "(react(?:\/jsx-runtime)?)"/g, (_, name) => `from "${import.meta.resolve(name)}"`)).toString('base64')}`);
 test('every rank has an inline emblem and ladder uses canonical thresholds', () => {
   const html = renderToStaticMarkup(React.createElement(RankLadder, { rating: 1000 }));

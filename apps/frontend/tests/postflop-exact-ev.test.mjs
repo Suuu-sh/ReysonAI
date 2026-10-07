@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { loadInputs } from "../scripts/postflop-ai/inputs.mjs";
-import { referencePolicy } from "../scripts/postflop-ai/policy.ts";
+import { referencePolicy, referencePolicyFor } from "../scripts/postflop-ai/policy.ts";
 import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
 import { defenceFor, replayDecision } from "../scripts/postflop-ai/defence.ts";
 import { exactActionEv } from "../scripts/postflop-ai/exact-ev.mjs";
@@ -80,4 +80,33 @@ test("flop exact EV is a fixed expectation over the seeded runout set: repeatabl
   const sampled = flopHandEvForHandMonteCarlo({ ...request, samples: 40, seed: 1,
     runoutSet: flopEvRunouts(parseFlopBoard("As7d2c").cards) });
   assert.deepEqual(Object.keys(sampled.row.ev_bb), Object.keys(first.row.ev_bb));
+});
+
+// Compare both cache representations over every reachable hero/opponent combo,
+// with a fixed runout and both flop trees. This only adds coverage; the complete
+// 24-runout board and sample-independence tests above remain unchanged.
+test("cold and preselected compact caches give bit-identical exact flop EV in both trees", () => {
+  for (const spotId of ["BTN_open_BB_call", "SB_open_BB_call"]) {
+    const source = loadInputs(spotId), policy = referencePolicyFor(source.spot.tree), later = referenceLaterPolicy();
+    const board = parseCards("As7d2c", 3), rootPath = { flop: ["bet75"], turn: [], river: [] };
+    const evaluateWith = compact => {
+      const input = { ...source }, cache = defenceFor(input, policy, later);
+      cache.largeRun = compact;
+      try {
+        const table = replayDecision(input, board, rootPath), { seat, node } = table.log.at(-1);
+        const opponent = seat === input.spot.ip ? input.spot.oop : input.spot.ip;
+        const groups = new Map();
+        for (const item of cache.rangeItems(table, board, seat)) {
+          const key = handClass(item.combo);
+          if (!groups.has(key)) groups.set(key, []);
+          groups.get(key).push(item);
+        }
+        return exactActionEv({ spot: input.spot, defence: cache, rootPath,
+          finals: [[...board, ...parseCards("3s5s", 2)]], expectedNode: node,
+          heroGroups: [...groups].map(([key, items]) => ({ key, items })),
+          oppItems: cache.rangeItems(table, board, opponent) });
+      } finally { cache.releaseBoardCaches(); }
+    };
+    assert.deepEqual(evaluateWith(true), evaluateWith(false), spotId);
+  }
 });

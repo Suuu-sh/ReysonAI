@@ -31,6 +31,7 @@ export function saveAgentHand(record: AgentHandRecord) {
 
 // The human's flags for one finished hand.
 export function handRecord(result: HandResult, tableId: string, pos: string, at = Date.now()): AgentHandRecord {
+  if (result.status !== "done" || !result.returns || !Number.isFinite(result.returns[pos] ?? 0)) throw new Error("Cannot record an unfinished Agent hand");
   const preflop = result.log.filter(entry => entry.street === "preflop");
   const mine = preflop.filter(entry => entry.pos === pos);
   const firstIndex = preflop.findIndex(entry => entry.pos === pos);

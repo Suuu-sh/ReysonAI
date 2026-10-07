@@ -57,7 +57,9 @@ export function loadHandEv(inputs, candidate, laterCandidate = loadLaterCandidat
   return matchesHandEv(data, inputs, candidate, laterCandidate) ? data : null;
 }
 
+// Validation-only: historical v10 cache markers cannot enter the adopted v7 reader.
 const matchesHandEv = (data, inputs, candidate, laterCandidate) => data?.kind === "ai_estimate_not_gto" &&
+  !Object.hasOwn(data, "action_model_version") &&
   data.version === HAND_EV_VERSION && data.defence_version === DEFENCE_VERSION && data.source_hash === inputs.fingerprint && data.policy_hash === candidate.metadata.policy_hash &&
   data.later_policy_hash === sha(laterCandidate?.policy ?? referenceLater) && data.later_sizing_hash === laterSizingHash();
 

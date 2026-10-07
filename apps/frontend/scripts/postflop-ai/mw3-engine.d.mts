@@ -1,0 +1,13 @@
+import type { Street } from './types.ts';
+import type { Mw3Geometry, Mw3Table, Mw3Decision, Mw3Settlement } from './mw3-types.ts';
+export const MW3_SIZING: Readonly<{ bets: Readonly<{ bet33: 0.33; bet75: 0.75; bet125: 1.25 }>; raiseMultiplier: 3; maxRaisesPerStreet: 2; allInMergeRatio: 0.67 }>;
+export const MW3_STREETS: readonly ['flop', 'turn', 'river'];
+export function mw3PriceBand(price: number): 'cheap' | 'standard' | 'expensive';
+export function mw3SprBand(spr: number): 'shallow' | 'medium' | 'deep';
+export function createMw3Table(spot: Mw3Geometry): Mw3Table;
+export function assertMw3Conservation(table: Mw3Table): true;
+export function startMw3Street(table: Mw3Table, street: string): Mw3Decision;
+export function mw3Decision(table: Mw3Table): Mw3Decision;
+export function applyMw3Action(table: Mw3Table, action: string): Mw3Decision;
+export function replayMw3(spot: Mw3Geometry, paths?: Partial<Record<Street, string[]>>): Mw3Table;
+export function settleMw3(table: Mw3Table, hands?: Record<string, number[]>, board?: number[]): Mw3Settlement;

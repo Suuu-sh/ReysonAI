@@ -53,16 +53,27 @@ test("postflop routes validate the spot and serve no computed views", async () =
 
 const spot = spotById("BTN_open_BB_call");
 const local = existsSync(new URL(`../../frontend/.local/postflop-ai/${spot.slug}-policy.json`, import.meta.url));
-test("worker artifacts equal the local middleware", { skip: !local && "no local postflop artifacts" }, async () => {
-  const artifacts = spotArtifacts(spot);
-  assert.ok(!artifacts.skip, artifacts.skip);
+test("worker preserves local artifacts while historical preview status stays local", { skip: !local && "no local postflop artifacts" }, async () => {
+  const preview = postflopResponse("/local-postflop-spot", new URLSearchParams({ spot: spot.id }));
+  assert.equal(preview.status, 200);
+  const { report_status, ...artifacts } = preview.body;
+  const publication = spotArtifacts(spot);
+  if (report_status === "preserved-historical") {
+    assert.match(publication.skip, /report missing, stale or incomplete/,
+      "Historical read-only data must not acquire publication approval");
+  } else {
+    assert.equal(report_status, "current");
+    assert.ok(!publication.skip, publication.skip);
+  }
   const env = { SOLUTIONS: null, DB: mockDb(tablesFor([artifacts])) };
   const get = async path => worker.fetch(new Request(`https://edge.test${path}`), env);
   assert.equal((await (await get("/v1/postflop/spots")).json()).spots[spot.id].flop, artifacts.candidate.metadata.policy_hash);
 
   const response = await get(`/v1/postflop/spot?spot=${spot.id}`);
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), postflopResponse("/local-postflop-spot", new URLSearchParams({ spot: spot.id })).body);
+  // The edge serves existing D1 artifacts unchanged. The local preview's
+  // freshness annotation is not a rewrite of the stored report or API schema.
+  assert.deepEqual(await response.json(), artifacts);
 });
 
 

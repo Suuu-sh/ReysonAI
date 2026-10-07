@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "kind": "mw3-independent-source-compatibility-review",
+  "status": "approved",
+  "scope": "source-only-no-strategy-or-runtime-renewal",
+  "reviewer": "Independent gpt-6-astra/xhigh source-compatibility and exact identity-wiring review; no final delivery acceptance, runtime, API, UI, or deployment approval",
+  "reviewer_model": "gpt-6-astra",
+  "reviewer_task": "/root/resume_three_player_delivery/review_mw3_identity_migration",
+  "inventory_sha256": "dab5917d7315cfd0a99472c01be0fe752102efb74e4329deeab484a6097f7fa2",
+  "adapter_sha256": "ab6e71da4a0bdfbdcce902b57b42326b891a1be799a89ff33668ff8047305a20",
+  "pairs": [
+    {
+      "historical_key": "mw3-engine.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/mw3-engine.mjs",
+      "classification": "exact-executable-parity",
+      "current_bytes": 12450,
+      "current_sha256": "b9f3f28b544c474d97c65040b835b1bfb51a7d705beb2efd81d93373bc30f1ca",
+      "historical_bytes": 12451,
+      "historical_sha256": "f629106850245ce45749ecba64544eaa7a75b1e32392033bd8fca424f0040898"
+    },
+    {
+      "historical_key": "mw3-hand-features.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/mw3-hand-features.mjs",
+      "classification": "exact-executable-parity",
+      "current_bytes": 12437,
+      "current_sha256": "c578cf11a1fd782adc89c0c98b390aa2c4b31deb2d19ddefa9e238fe4bef42e7",
+      "historical_bytes": 12438,
+      "historical_sha256": "dbbc34b07b8811cd77b5976c2e621f3f26bdae476b0a70337d32b996bd33247c"
+    },
+    {
+      "historical_key": "mw3-actions.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/mw3-actions.mjs",
+      "classification": "exact-executable-parity",
+      "current_bytes": 1946,
+      "current_sha256": "49ef4365c5ecf74c04720ddc4a2b4e566d35e25ecbb464c617680704d9d80bda",
+      "historical_bytes": 1946,
+      "historical_sha256": "49ef4365c5ecf74c04720ddc4a2b4e566d35e25ecbb464c617680704d9d80bda"
+    },
+    {
+      "historical_key": "mw3-tree.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/mw3-tree.mjs",
+      "classification": "exact-executable-parity",
+      "current_bytes": 6079,
+      "current_sha256": "96192b18788eae5ed76c66b3bce66adbf50e82a699e6ddd133d64d1e0efea608",
+      "historical_bytes": 6079,
+      "historical_sha256": "96192b18788eae5ed76c66b3bce66adbf50e82a699e6ddd133d64d1e0efea608"
+    },
+    {
+      "historical_key": "mw3-policy.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/mw3-policy.mjs",
+      "classification": "exact-executable-parity",
+      "current_bytes": 7558,
+      "current_sha256": "60c7ae0ba468fbe6105abdc81322197772819ed739b064917e4669c2ed195c4c",
+      "historical_bytes": 7559,
+      "historical_sha256": "dceaae30432dbd98efa1494ae2a7f2a5b5c734ffdc6878130f1d7780fc10309a"
+    },
+    {
+      "historical_key": "mw3-spots.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/mw3-spots.mjs",
+      "classification": "exact-executable-parity",
+      "current_bytes": 8749,
+      "current_sha256": "3387e79adb16019e66f07444babd489c6a87957c5c8b61974c362536e9be1b22",
+      "historical_bytes": 8750,
+      "historical_sha256": "7673bbbc1ab1fdc22e4896dde3c081c5cadb14cd51cc2756e9d9f3b0d8b076f1"
+    },
+    {
+      "historical_key": "mw3-inputs.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/mw3-inputs.mjs",
+      "classification": "exact-executable-parity",
+      "current_bytes": 1469,
+      "current_sha256": "06b3b0309a6bede655f1c81a28575c3cc5534a6a5509054cebc9d3bffd5225c2",
+      "historical_bytes": 1469,
+      "historical_sha256": "06b3b0309a6bede655f1c81a28575c3cc5534a6a5509054cebc9d3bffd5225c2"
+    },
+    {
+      "historical_key": "mw3-input-core.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/mw3-input-core.mjs",
+      "classification": "exact-executable-parity",
+      "current_bytes": 1600,
+      "current_sha256": "48288f6ebf8ae21c16e78bd70bb6a5ff837d8416a0af5594a2cf211bf2b1d8c7",
+      "historical_bytes": 1600,
+      "historical_sha256": "48288f6ebf8ae21c16e78bd70bb6a5ff837d8416a0af5594a2cf211bf2b1d8c7"
+    },
+    {
+      "historical_key": "mw3-runtime.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/mw3-runtime.mjs",
+      "classification": "exact-executable-parity",
+      "current_bytes": 5913,
+      "current_sha256": "97a26b17545afa349bc4e7e69a07bce32dbba3076565dcb8a922fee68206050d",
+      "historical_bytes": 5913,
+      "historical_sha256": "97a26b17545afa349bc4e7e69a07bce32dbba3076565dcb8a922fee68206050d"
+    },
+    {
+      "historical_key": "mw3-joint-defence.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/mw3-joint-defence.mjs",
+      "classification": "exact-executable-parity",
+      "current_bytes": 6218,
+      "current_sha256": "6f76aa4f863016496fe1fe5bd82f413dc12d30f3de372be2623a6d7fcfb65601",
+      "historical_bytes": 6219,
+      "historical_sha256": "e697545c2c6f1f6b7792d6130439f1688ee236d98bd4efacf0f700827c4c3b78"
+    },
+    {
+      "historical_key": "model.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/model.ts",
+      "classification": "exact-executable-parity",
+      "current_bytes": 7589,
+      "current_sha256": "fcbf13b6f8b1c3f72b8a81dcc626de89abc4c385d840163feb4bd78ca631732f",
+      "historical_bytes": 6991,
+      "historical_sha256": "5aa53bd183862ed41e712d18aedc7680da652a496cfc59f11ee7685ea2cde8fa"
+    },
+    {
+      "historical_key": "../lib/equity.mjs",
+      "current_path": "apps/frontend/scripts/lib/equity.ts",
+      "classification": "exact-executable-parity",
+      "current_bytes": 8670,
+      "current_sha256": "f395860a9243f0dc450e51c6ddcc4fe700339a846198b5914ae65bf6a24906c3",
+      "historical_bytes": 8026,
+      "historical_sha256": "8e33cd02bb80913a68f51e6e63728cc94bda5a002c28c2998123d4ffd134ba67"
+    },
+    {
+      "historical_key": "../lib/continuation-evaluator.mjs",
+      "current_path": "apps/frontend/scripts/lib/continuation-evaluator.ts",
+      "classification": "exact-executable-parity",
+      "current_bytes": 3248,
+      "current_sha256": "197b78df3e92fbda4244b3d993e74a37d3ee1fd6735514686bd2d8f9cb6411a4",
+      "historical_bytes": 3213,
+      "historical_sha256": "eae99d679c353f8eb2d0b28fc3368275b3569d323a4f7ad6323894a9c52ae8a7"
+    },
+    {
+      "historical_key": "gate-mw3-pilot.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/gate-mw3-pilot.mjs",
+      "classification": "identity-wiring-amendment",
+      "current_bytes": 6888,
+      "current_sha256": "f625a4bc1bb2ca8abb5025e1e8c3de846b1e9d3001d01f4ac7148bd0a79e16ca",
+      "historical_bytes": 7047,
+      "historical_sha256": "e252b941f9b230c9d5004ff984f749e31091971aafe98174b664a3ccf4eeb00a"
+    },
+    {
+      "historical_key": "mw3-audit.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/mw3-audit.mjs",
+      "classification": "exact-executable-parity",
+      "current_bytes": 7237,
+      "current_sha256": "4b4fa4d5ec5b1ca53e65a36ac628c04cb0e31cd6b2940612e96cc0b5eaf8ebdd",
+      "historical_bytes": 7240,
+      "historical_sha256": "0cb043749ee515cfb3a4b2eded8ac7a1b90d633fd680feae24dc97e469d61bf1"
+    },
+    {
+      "historical_key": "mw3-simulation.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/mw3-simulation.mjs",
+      "classification": "exact-executable-parity",
+      "current_bytes": 4079,
+      "current_sha256": "825369ee0bf73dda705bbd9e7c9546280bcddf17ef78f816fddada19edbe2791",
+      "historical_bytes": 4081,
+      "historical_sha256": "26b64d5d20a1e735250fc14caffc2bc266de20844e990fd0370a1b5709933769"
+    },
+    {
+      "historical_key": "mw3-simulation-report.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/mw3-simulation-report.mjs",
+      "classification": "exact-executable-parity",
+      "current_bytes": 5783,
+      "current_sha256": "9a5d97bc969487dfba85c99a8ac00e96134f114921630dc86c224291c969c186",
+      "historical_bytes": 5783,
+      "historical_sha256": "9a5d97bc969487dfba85c99a8ac00e96134f114921630dc86c224291c969c186"
+    },
+    {
+      "historical_key": "flop-isomorphism.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/flop-isomorphism.ts",
+      "classification": "exact-executable-parity",
+      "current_bytes": 4926,
+      "current_sha256": "b2fb69a9afb86d2ae056797a023c2dbdf925e2e5e8af45c8e41dc6f79635f340",
+      "historical_bytes": 3762,
+      "historical_sha256": "81c15f8ed865d56b78078136e389e6ea04851dbac506d2df2102f87acc737076"
+    },
+    {
+      "historical_key": "../data/postflop-ai-pilot.json",
+      "current_path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
+      "classification": "exact-executable-parity",
+      "current_bytes": 1554,
+      "current_sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491",
+      "historical_bytes": 1554,
+      "historical_sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491"
+    },
+    {
+      "historical_key": "gate-mw3-authored.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/gate-mw3-authored.mjs",
+      "classification": "identity-wiring-amendment",
+      "current_bytes": 6750,
+      "current_sha256": "9e34d6291dbba5f06ce4a3652a02e3c08a5368e7bb80f6838b644db432120779",
+      "historical_bytes": 6958,
+      "historical_sha256": "c8d8d9fd98bea70de01d679cd7017a39f68720e153f51cf5bb4d4349c979b9a0"
+    },
+    {
+      "historical_key": "mw3-author-cli.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/mw3-author-cli.mjs",
+      "classification": "exact-executable-parity",
+      "current_bytes": 1441,
+      "current_sha256": "6cbc9f5ae243704906bed842b5783ae7085ae56851a5c568c15c6e4aac28427c",
+      "historical_bytes": 1441,
+      "historical_sha256": "6cbc9f5ae243704906bed842b5783ae7085ae56851a5c568c15c6e4aac28427c"
+    },
+    {
+      "historical_key": "mw3-authored-source.mjs",
+      "current_path": "apps/frontend/scripts/postflop-ai/mw3-authored-source.mjs",
+      "classification": "exact-executable-parity",
+      "current_bytes": 2224,
+      "current_sha256": "bb6843a5578103998d8c3f4b9d929d54e6ecf4e2b052084340e1b82f09452601",
+      "historical_bytes": 2224,
+      "historical_sha256": "bb6843a5578103998d8c3f4b9d929d54e6ecf4e2b052084340e1b82f09452601"
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "exact-pair-parity",
+      "path": "apps/frontend/docs/mw3-source-identity/exact-pair-parity.json",
+      "bytes": 193532,
+      "sha256": "a4b7f350b33b6a5aa2b15c144da01fb1b11188b99fb696e023d6f7f9b9f57d7e"
+    },
+    {
+      "kind": "gate-identity-wiring-amendment",
+      "path": "apps/frontend/docs/mw3-source-identity/gate-identity-wiring-amendment.json",
+      "bytes": 59393,
+      "sha256": "b1613fff73e384966022060b77838008827db328f4e01eef811c5c3ac185b411"
+    },
+    {
+      "kind": "transitive-mw3-input-review",
+      "path": "apps/frontend/docs/mw3-source-identity/transitive-mw3-input-review.json",
+      "bytes": 45177,
+      "sha256": "012a778e3637aaf2d0713ffa6d0647b29e445b074dc8448be27be53db80e404a"
+    }
+  ]
+}

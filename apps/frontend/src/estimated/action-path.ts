@@ -65,7 +65,7 @@ export function limpActionTransition({ rangeType, opener, hero, limpAction = nul
 
 // Clicking a seat in the action path returns the selector to that decision,
 // removing choices made at that seat and later in the hand.
-export function rewindActionBlockTransition({ rangeType, opener, hero, callers = [], squeezeResponse = [], block }: Pick<RangeUrlSelection, "rangeType" | "opener" | "hero"> & Partial<Pick<RangeUrlSelection, "callers" | "squeezeResponse">> & { block?: ActionBlock | null }): (Partial<RangeUrlSelection> & Pick<RangeUrlSelection, "rangeType" | "opener" | "hero" | "callers" | "foldedHero" | "pendingRaise" | "continuationAction" | "shoveResponse">) | null {
+export function rewindActionBlockTransition({ rangeType, opener, hero, callers = [], squeezeResponse = [], block }: Pick<RangeUrlSelection, "rangeType" | "opener" | "hero"> & Partial<RangeUrlSelection> & { block?: ActionBlock | null }): (Partial<RangeUrlSelection> & Pick<RangeUrlSelection, "rangeType" | "opener" | "hero" | "callers" | "foldedHero" | "pendingRaise" | "continuationAction" | "shoveResponse">) | null {
   if (!block) return null;
 
   if (block.stage === "limp-opening") {
@@ -87,6 +87,11 @@ export function rewindActionBlockTransition({ rangeType, opener, hero, callers =
   // the caller's block keeps the opener's choice.
   if (block.kind === "squeeze-response") {
     return { rangeType: "response", opener, hero, callers, foldedHero: false, pendingRaise: "squeeze", continuationAction: null, shoveResponse: null, squeezeResponse: block.role === "caller" ? squeezeResponse.slice(0, 1) : [] };
+  }
+
+  if (block.kind === "cold") {
+    return { rangeType: "three_bet", opener, hero, callers: [], foldedHero: false, pendingRaise: null,
+      continuationAction: null, shoveResponse: null, coldAction: null, squeezeResponse: [], continuationActions: [] };
   }
 
   if (block.kind === "seat") {

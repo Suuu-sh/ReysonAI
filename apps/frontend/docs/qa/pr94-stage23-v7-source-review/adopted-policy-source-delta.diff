@@ -1,0 +1,110 @@
+diff --git a/.github/workflows/deploy-worker.yml b/.github/workflows/deploy-worker.yml
+index 2e28f4f..f3cb7ea 100644
+--- a/.github/workflows/deploy-worker.yml
++++ b/.github/workflows/deploy-worker.yml
+@@ -107,6 +107,11 @@ jobs:
+           npm run build
+           npm run test:sites
+ 
++      # Every reachable HU spot must have a fresh flop+turn/river policy and report in git
++      # (scripts/data/postflop-ai/policies); spot-scoped SQL preserves unmentioned histories.
++      - name: Check postflop policy delivery
++        run: node scripts/publish-d1.mjs --only postflop --require-all --out .local/postflop.sql
++
+       - name: Retain exact validated delivery SQL
+         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+         with:
+@@ -302,6 +307,15 @@ jobs:
+         working-directory: apps/backend
+         run: node --experimental-strip-types scripts/verify-fastfold-readiness.mjs --configured
+ 
++      # Tracked postflop policies depend on the exact reviewed preflop snapshot.
++      # Publish only after its import and strict source-identity gate succeed.
++      - name: Publish postflop policies into D1
++        env:
++          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
++          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
++          WRANGLER_SEND_METRICS: 'false'
++        run: node scripts/publish-d1.mjs --only postflop --require-all --out .local/postflop.sql --execute remote
++
+       - name: Retain preflop recovery reference and import outcome
+         if: always()
+         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+diff --git a/apps/frontend/scripts/postflop-ai/inputs.mjs b/apps/frontend/scripts/postflop-ai/inputs.mjs
+index d16506b..9098d2a 100644
+--- a/apps/frontend/scripts/postflop-ai/inputs.mjs
++++ b/apps/frontend/scripts/postflop-ai/inputs.mjs
+@@ -43,11 +43,14 @@ const flopConfig = () => Object.fromEntries(Object.entries(config).filter(([key]
+ // Results, unlike flop candidates, must be invalidated when later sizing changes.
+ export const laterSizingHash = () => sha(Object.fromEntries(LATER_KEYS.map(key => [key, config[key]])));
+ 
+-// Local-only artifacts of one spot under .local/postflop-ai/.
++// Published artifacts of one spot (policies and simulation report) live in git under
++// scripts/data/postflop-ai/policies/ and reach D1 through CI on main; offline research
++// artifacts (hand EV) stay local under .local/postflop-ai/.
++export const POLICY_DIR = "scripts/data/postflop-ai/policies";
+ export function artifactPaths(spot) {
+-  const base = join(root, ".local/postflop-ai", spot.slug);
++  const base = join(root, POLICY_DIR, spot.slug), local = join(root, ".local/postflop-ai", spot.slug);
+   return { candidate: `${base}-policy.json`, laterCandidate: `${base}-later-policy.json`, report: `${base}-report.json`,
+-    handEv: `${base}-hand-ev.json`, laterHandEv: `${base}-later-hand-ev.json` };
++    handEv: `${local}-hand-ev.json`, laterHandEv: `${local}-later-hand-ev.json` };
+ }
+ 
+ // One parsed artifact of a spot (a key of artifactPaths), or null when it does not exist.
+diff --git a/apps/frontend/scripts/postflop-ai/publish-d1.mjs b/apps/frontend/scripts/postflop-ai/publish-d1.mjs
+index 8ecf171..8951e39 100644
+--- a/apps/frontend/scripts/postflop-ai/publish-d1.mjs
++++ b/apps/frontend/scripts/postflop-ai/publish-d1.mjs
+@@ -89,11 +89,17 @@ export function buildSql(published, publishedAt = new Date().toISOString(), publ
+ }
+ 
+ // Every publishable spot, logging what is skipped and why.
+-export function publishableSpots(log = console.log) {
++// requireAll (CI): every reachable spot must have fresh flop and turn/river policies.
++// SQL remains spot-scoped so unmentioned published histories are preserved.
++export function publishableSpots(log = console.log, { requireAll = false } = {}) {
+   const published = [];
+   for (const spot of POSTFLOP_SPOTS) {
+     const result = spotArtifacts(spot);
+-    if (result.skip) { log(`skip ${spot.id}: ${result.skip}`); continue; }
++    if (result.skip) {
++      if (requireAll && result.skip !== "unreachable") throw new Error(`${spot.id} is not publishable: ${result.skip}`);
++      log(`skip ${spot.id}: ${result.skip}`); continue;
++    }
++    if (requireAll && !result.laterCandidate) throw new Error(`${spot.id} has no turn/river policy`);
+     published.push(result);
+     log(`publish ${spot.id}${result.laterCandidate ? " +later" : ""}`);
+   }
+diff --git a/apps/frontend/scripts/publish-d1.mjs b/apps/frontend/scripts/publish-d1.mjs
+index 1e0b3db..d885df4 100644
+--- a/apps/frontend/scripts/publish-d1.mjs
++++ b/apps/frontend/scripts/publish-d1.mjs
+@@ -2,7 +2,8 @@
+ // apps/backend/migrations): every preflop dataset under src/estimated (the JSON files stay
+ // the source of truth) and the canonical local postflop artifacts. Generates SQL; runs
+ // wrangler only with --execute local|remote.
+-//   node scripts/publish-d1.mjs [--only preflop|postflop|flop-base] [--out file] [--execute local|remote]
++//   node scripts/publish-d1.mjs [--only preflop|postflop|flop-base] [--require-all] [--out file] [--execute local|remote]
++// CI publishes postflop on main with --only postflop --require-all --execute remote.
+ import { assertContinuationPublication } from "./lib/continuation-publication.mjs";
+ import { execFileSync } from "node:child_process";
+ import { closeSync, openSync, mkdirSync, writeFileSync } from "node:fs";
+@@ -40,7 +41,7 @@ async function main(argv) {
+       console.log(`${count} preflop datasets`);
+     }
+     if (!only || only === "postflop") {
+-      const spots = publishableSpots();
++      const spots = publishableSpots(console.log, { requireAll: argv.includes("--require-all") });
+       writeFileSync(descriptor, buildPostflopSql(spots));
+       console.log(`${spots.length} postflop spots`);
+     }
+@@ -53,7 +54,7 @@ async function main(argv) {
+   }
+   console.log(`→ ${out}`);
+   if (execute) {
+-    execFileSync("npx", ["wrangler", "d1", "execute", "reysonai", `--${execute}`, "--yes", "--file", out],
++    execFileSync("npx", ["--yes", "wrangler@4.147.0", "d1", "execute", "reysonai", `--${execute}`, "--yes", "--file", out],
+       { cwd: join(root, "../backend"), stdio: "inherit" });
+   }
+ }

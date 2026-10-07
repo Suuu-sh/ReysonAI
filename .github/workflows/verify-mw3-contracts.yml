@@ -1,0 +1,104 @@
+name: Verify three-player postflop contracts
+on:
+  pull_request:
+    branches: [development, main, codex/multiway-postflop-stage1, codex/fix/pr44_frozen_loading/01a11189]
+    paths:
+      - 'apps/frontend/scripts/postflop-ai/**'
+      - 'apps/frontend/scripts/lib/**'
+      - 'apps/frontend/scripts/data/**'
+      - 'apps/frontend/src/**'
+      - 'apps/frontend/package.json'
+      - 'apps/frontend/package-lock.json'
+      - 'apps/frontend/tsconfig.json'
+      - 'apps/backend/src/**'
+      - 'apps/backend/scripts/**'
+      - 'apps/shared/**'
+      - '.gitattributes'
+      - '.gitignore'
+      - 'apps/frontend/scripts/postflop-ai/gate-mw3-pilot.mjs'
+      - 'apps/frontend/scripts/postflop-ai/materialize-mw3-pilot.mjs'
+      - 'apps/frontend/scripts/postflop-ai/materialize-mw3-authored.mjs'
+      - 'apps/frontend/scripts/postflop-ai/gate-mw3-authored.mjs'
+      - 'apps/frontend/scripts/data/mw3-authored/**'
+      - 'apps/shared/mw3-approved.ts'
+      - 'artifacts/postflop/mw3-*'
+      - 'configs/mw3-*.review.json'
+      - 'apps/frontend/docs/mw3-saved-restore.md'
+      - 'apps/frontend/scripts/postflop-ai/model.mjs'
+      - 'apps/frontend/scripts/data/mw3-*.mjs'
+      - 'apps/frontend/scripts/lib/continuation-evaluator.mjs'
+      - 'apps/frontend/scripts/lib/equity.mjs'
+      - 'apps/frontend/src/estimated/**'
+      - 'apps/frontend/src/agent/**'
+      - 'apps/frontend/tests/mw3-consumer-*.test.mjs'
+      - 'apps/frontend/tests/mw3-source-scope.test.mjs'
+      - 'apps/frontend/tests/mw3-local-d1.test.mjs'
+      - 'apps/frontend/tests/mw3-owned-process.test.mjs'
+      - 'apps/frontend/tests/mw3-api-lifecycle.test.mjs'
+      - 'apps/frontend/tests/mw3-wrangler-startup.test.mjs'
+      - 'apps/frontend/tests/fixtures/mw3-wrangler-4.147.0-launcher.cjs.txt'
+      - 'apps/frontend/tests/mw3-parent-boundary.test.mjs'
+      - 'apps/frontend/scripts/ci/mw3-*.mjs'
+      - 'apps/frontend/scripts/ci/postflop-command-supervisor.py'
+      - 'apps/frontend/scripts/verify-mw3-local-d1.mjs'
+      - 'apps/frontend/tests/helpers/mw3-consumer-fixture.mjs'
+      - 'apps/frontend/tests/helpers/mw3-saved-memory-fixture.mjs'
+      - 'apps/frontend/tests/postflop-mw3-*.test.mjs'
+      - 'apps/backend/src/mw3-*.ts'
+      - 'apps/backend/src/index.ts'
+      - 'apps/backend/scripts/sql/mw3-schema.sql'
+      - 'apps/backend/tests/mw3-*.test.mjs'
+      - 'configs/cash-6max-100bb.json'
+      - '.github/workflows/verify-mw3-contracts.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NODE_OPTIONS: --max-old-space-size=256
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0 # Saved provenance may name an earlier source tree.
+          persist-credentials: false
+          lfs: true
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.20.0'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Install pinned frontend test dependencies
+        working-directory: apps/frontend
+        run: npm ci
+      - name: Restore exact reviewed preflop fixtures for Agent bootstrap
+        working-directory: apps/frontend
+        run: node scripts/restore-reviewed-preflop.mjs
+      - name: Check offline command syntax without executing generation
+        run: |
+          node --check apps/frontend/scripts/postflop-ai/gate-mw3-pilot.mjs
+          node --check apps/frontend/scripts/postflop-ai/materialize-mw3-pilot.mjs
+          node --check apps/frontend/scripts/postflop-ai/materialize-mw3-authored.mjs
+          node --check apps/frontend/scripts/postflop-ai/gate-mw3-authored.mjs
+          node --check apps/frontend/scripts/postflop-ai/mw3-snapshot-cli.mjs
+          node --check apps/frontend/scripts/postflop-ai/mw3-draft-pins.mjs
+          node --check apps/frontend/scripts/ci/mw3-registry-mode.mjs
+          node --check apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.mjs
+          node --check apps/frontend/scripts/verify-mw3-local-d1.mjs
+          node --check apps/frontend/scripts/ci/mw3-local-command.mjs
+          node --check apps/frontend/scripts/ci/mw3-api-oracle.mjs
+          node --check apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs
+          python3 -c "import ast,pathlib; ast.parse(pathlib.Path('apps/frontend/scripts/ci/postflop-command-supervisor.py').read_text())"
+      - name: Verify inventory and restore only committed independently accepted MW3 bytes
+        run: node apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.mjs restore
+      - name: Test sequential saved-ledger memory boundary with synthetic bytes only
+        run: node --expose-gc apps/frontend/tests/helpers/mw3-saved-memory-fixture.mjs
+      - name: Test isolated three-player engine, classifier, codecs and adapters
+        run: node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.mjs apps/frontend/tests/mw3-consumer-*.test.mjs apps/frontend/tests/mw3-local-d1.test.mjs apps/frontend/tests/mw3-owned-process.test.mjs apps/frontend/tests/mw3-api-lifecycle.test.mjs apps/frontend/tests/mw3-wrangler-startup.test.mjs apps/frontend/tests/mw3-parent-boundary.test.mjs apps/frontend/tests/mw3-source-scope.test.mjs
+      - name: Test unpublished, fail-closed three-player delivery boundary
+        run: node --experimental-strip-types --test apps/backend/tests/mw3-*.test.mjs
+      # This workflow never compiles/authors saved candidates, runs the pilot gate,
+      # uploads artifacts, edits receipts, imports D1 or deploys the product.
+      # An empty saved inventory is explicit no-data; partial/invalid inputs fail.

@@ -1,4 +1,5 @@
 import { boards, config, laterSizingHash, seatRange } from "./inputs.mjs";
+import { DEFENCE_VERSION } from "./defence.ts";
 import { NODES, nodeRole, policyMix, referencePolicyFor, treeNodes, validatePolicy } from "./policy.ts";
 import { PROFILES, SIMULATION_VERSION, simulate } from "./simulation.mjs";
 import { sha } from "./generate.mjs";
@@ -6,6 +7,12 @@ import { validateLaterPolicy } from "./later-policy.ts";
 import { checkFlopBalance, checkLaterBalance } from "./balance.mjs";
 
 export function auditExperiment(inputs, candidate, report, laterCandidate = null, { replay: providedReplay } = {}) {
+  // Validation-only v7 boundary: reject the separate v10 experiment before
+  // policy expansion, balance checks or simulation. Numerical audit is unchanged.
+  if (DEFENCE_VERSION !== 7 || report?.defence_version !== DEFENCE_VERSION ||
+      (report != null && Object.hasOwn(report, "action_model_version"))) {
+    throw new Error("Candidate or simulation report has an incompatible execution contract");
+  }
   const { spot } = inputs;
   const policy = validatePolicy(candidate?.policy, spot.tree);
   const laterPolicy = laterCandidate ? validateLaterPolicy(laterCandidate.policy ?? laterCandidate) : null;

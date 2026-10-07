@@ -1,0 +1,75 @@
+{
+  "sourceHead": "92b0da4c7ff4ae420b53d89cf164000c78b9990f",
+  "sourceTree": "5146a5295fc6f9e10b622ab2446d4c06cb6d4e26",
+  "sourceCheckout": "/Users/yota/Documents/Codex/2026-10-06/task-4/pr44-qa",
+  "builtAt": "2026-10-06T14:46:45.202Z",
+  "nodeVersion": "v24.19.0",
+  "esbuildVersion": "0.25.12",
+  "files": [
+    {
+      "name": "qa.js",
+      "bytes": 4379051,
+      "sha256": "9051a0feb861a3e1ded228af7171a265eb32c000518223df6fb12a7df407b34e"
+    },
+    {
+      "name": "qa.css",
+      "bytes": 323725,
+      "sha256": "0f15a16decf49aff0e573e330a220386c359187c4e0b5ab495035925727e4dbe"
+    }
+  ],
+  "fixtureVerification": {
+    "status": "PASS",
+    "files": 3473,
+    "bytes": 104875897,
+    "datasets": 1888,
+    "mw3Headers": 32,
+    "mw3Parts": 1552,
+    "hu": 1
+  },
+  "seed": "mw3-browser-balanced-22",
+  "accountHooks": 1,
+  "seedHooks": 1,
+  "actualCompiledRegistry": true,
+  "registrySourceSha256": "7e1ac4ba059b4a34d8fdc7f6c6891be9929eafec470dc577c0d8702cf632fe81",
+  "positiveRegistryOverride": false,
+  "positiveReaderOverride": false,
+  "positiveRoutes": [
+    "/v1/mw3/manifest",
+    "/v1/mw3/part"
+  ],
+  "environmentDefines": {
+    "import.meta.env.VITE_API_BASE": ""
+  },
+  "productionSourceEdited": false,
+  "liveAuthVerified": false,
+  "productionBinaryParity": false,
+  "browserAcceptance": "NOT RUN",
+  "warnings": [
+    {
+      "text": "Duplicate key \"A 6-max table where every Agent plays the Reyson solver estimate.\" in object literal",
+      "location": {
+        "column": 2,
+        "file": "../pr44-qa/apps/frontend/src/locales/product-direct.json",
+        "length": 67,
+        "line": 1206,
+        "lineText": "  \"A 6-max table where every Agent plays the Reyson solver estimate.\": [",
+        "namespace": "",
+        "suggestion": ""
+      },
+      "notes": [
+        {
+          "location": {
+            "column": 2,
+            "file": "../pr44-qa/apps/frontend/src/locales/product-direct.json",
+            "length": 67,
+            "line": 906,
+            "lineText": "  \"A 6-max table where every Agent plays the Reyson solver estimate.\": [",
+            "namespace": "",
+            "suggestion": ""
+          },
+          "text": "The original key \"A 6-max table where every Agent plays the Reyson solver estimate.\" is here:"
+        }
+      ]
+    }
+  ]
+}

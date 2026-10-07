@@ -9,10 +9,29 @@ import { productLocale } from "../locale.ts";
 // strategy or EV; it only describes the stored frequencies and audited facts.
 const ACTIONS = {
   open: "open", limp: "limp", check: "check", raise: "raise", three_bet: "3-bet",
-  four_bet: "4-bet", all_in: "go all-in", call: "call", fold: "fold",
+  squeeze: "squeeze", four_bet: "4-bet", all_in: "go all-in", call: "call", fold: "fold",
 };
 
 export const englishFactLabels: Readonly<Record<string, string>> = {
+  equity_pct: "Equity versus all live players’ current ranges",
+  reach_pct: "Hero reach for this history",
+  cost_to_call_bb: "Additional amount to call",
+  total_pot_after_call_bb: "Actual pot after Hero calls",
+  dead_money_bb: "Chips from folded players",
+  weighted_fold_pct: "Fold frequency weighted by own reach combos",
+  weighted_call_pct: "Call frequency weighted by own reach combos",
+  weighted_squeeze_pct: "Squeeze frequency weighted by own reach combos",
+  squeeze_pct: "Saved squeeze frequency",
+  weighted_four_bet_pct: "4-bet frequency weighted by own reach combos",
+  weighted_all_in_pct: "All-in frequency weighted by own reach combos",
+  equity_margin_pct: "Equity margin above the call threshold",
+  all_in_target_call_pct: "All-in target call frequency",
+  fold_pct: "Saved fold frequency",
+  call_pct: "Saved call frequency",
+  four_bet_pct: "Saved 4-bet frequency",
+  all_in_pct: "Saved all-in frequency",
+  raise_to_size_bb: "Raise-to size (total)",
+
   equity_vs_defend_pct: "Equity versus defending range",
   equity_vs_open_pct: "Equity versus opening range",
   equity_vs_continue_pct: "Equity versus continuing range",
@@ -175,12 +194,13 @@ function handDescription(hand: string, en: ProductLocale = "en") {
 
 export function englishPreflopReason(hand: FrequencyRow, detailed: DetailedReason | null | undefined, data: DetailedReasonDataset | null | undefined, en: ProductLocale = "en") {
   if (!detailed) return narrative("No hand-specific explanation is recorded for this spot.", [], en as NarrativeLanguage);
+  if (detailed.facts?.reach_pct === 0) return narrative("The saved source actions or card compatibility make this hand unreachable in this history. A saved 100% fold is a placeholder, not a recommendation.", [], en as NarrativeLanguage);
   if (/前段|到達不能|頻度が0%/.test(detailed.reason)) {
     return narrative("The preceding action has zero recorded frequency for this hand, so this branch is unreachable. A saved 100% fold here is a data placeholder, not a recommendation.", [], en as NarrativeLanguage);
   }
   const facts = detailed.facts ?? {};
   const parts = [narrative("{0} in this saved spot.", [handDescription(hand.hand, en)], en as NarrativeLanguage)];
-  const equityEntry = Object.entries(facts).find(([key, value]) => key.startsWith("equity_vs_") && key.endsWith("_pct") && Number.isFinite(value));
+  const equityEntry = Object.entries(facts).find(([key, value]) => (key === "equity_pct" || key.startsWith("equity_vs_") && key.endsWith("_pct")) && Number.isFinite(value));
   if (equityEntry) {
     const [key, value] = equityEntry;
     parts.push(narrative("{0} is {1}%.", [englishFactLabels[key] ?? narrative("Raw equity", [], en as NarrativeLanguage), value!.toFixed(1)], en as NarrativeLanguage));

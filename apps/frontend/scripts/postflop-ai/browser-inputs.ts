@@ -1,10 +1,12 @@
-import { multiwayInputData } from "./multiway-inputs.mjs";
 import type { FrequencyRow, Inputs, PostflopDatasets, SourceAction, SourceDataset, SourceHand, SourceSpot } from "./types.ts";
 import type { WeightedCombo } from "../lib/equity.ts";
+import type { MultiwaySpot, Spot } from "./spots.ts";
+import { multiwayInputData } from "./multiway-inputs.mjs";
 import { combosOf } from "../lib/equity.ts";
 import { gameConfig } from "../../src/estimated/sizing.ts";
 import { parseCards } from "./model.ts";
 import { DEFAULT_SPOT_ID, createPostflopSpots } from "./spots-core.ts";
+import { multiwaySpotById } from "./multiway-spots.ts";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
 const SHA256_K = [
@@ -84,14 +86,15 @@ function productRows(factors: readonly (readonly [SourceHand[], SourceAction])[]
 
 export function buildInputs(spotId: string = DEFAULT_SPOT_ID, datasets: PostflopDatasets = {}): Inputs {
   const config = pilotConfig;
-  const spot = createPostflopSpots(datasets).spotById(spotId);
+  const spot: Spot = multiwaySpotById(spotId) ?? createPostflopSpots(datasets).spotById(spotId);
   if (!spot.reachable) throw new Error(`${spot.id} is unreachable: the saved ${spot.responseId} range never calls`);
 
-  if ("history" in spot) {
-    const { sources, seatRows } = multiwayInputData(spot, (name: string) => getDataset(datasets, name));
+  if (spot.history) {
+    const { sources, seatRows } = multiwayInputData(spot as MultiwaySpot, (name: string) => getDataset(datasets, name));
     const fingerprint = sha({ spot, sources, gameConfig, config: flopConfig() });
-    return { spot, sources, config, fingerprint, seatRows };
+    return { spot, sources, config: pilotConfig, fingerprint, seatRows };
   }
+
   const openingData = getDataset(datasets, "opening", "openingRanges", "opening-ranges");
   const responseData = getDataset(datasets, "responses", "preflopRanges", "preflop-ranges");
   const threeBetData = getDataset(datasets, "threeBets", "threeBetResponses", "three-bet-responses");
