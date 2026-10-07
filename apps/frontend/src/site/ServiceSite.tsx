@@ -616,8 +616,8 @@ function Audience() {
             {running && active === index && <span className="site-persona-timer" aria-hidden="true" />}</>}
           </button>)}
         </div>
-        <div className="site-mock site-persona-stage" role="tabpanel" id="site-persona-panel" aria-labelledby={`site-persona-${personaIds[active]}`}>
-          {phone && <div className="site-persona-selected-copy"><p className="site-persona-quote">{c.audience.items[active].quote}</p><p className="site-persona-body">{c.audience.items[active].body}</p><span className="site-persona-gets">{c.audience.items[active].gets}</span></div>}
+        <div className={`site-mock site-persona-stage${phone && active === 2 ? " is-budget" : ""}`} role="tabpanel" id="site-persona-panel" aria-labelledby={`site-persona-${personaIds[active]}`}>
+          {phone && <div className="site-persona-selected-copy"><p className="site-persona-quote">{c.audience.items[active].quote}</p><p className="site-persona-body">{active === 2 ? c.audience.budgetShort : c.audience.items[active].body}</p>{active !== 2 && <span className="site-persona-gets">{c.audience.items[active].gets}</span>}</div>}
           <span className="site-sample">{c.audience.views[active]}</span>
           <div className="site-persona-views">
             <div className={`${view(0)} is-simple`} aria-hidden={active !== 0}>
@@ -635,7 +635,7 @@ function Audience() {
               <p className="site-persona-why"><span>{c.preview.why}</span>{c.how.whyNote}</p>
             </div>
             <div className={`${view(2)} is-free`} aria-hidden={active !== 2}>
-              <p className="site-persona-price"><strong>{free.price}</strong><small>{free.cadence}</small></p>
+              <p className="site-persona-price"><strong>{free.price}</strong><small>{phone ? c.audience.freeNote : free.cadence}</small></p>
               <span className="site-persona-pill">{c.audience.freeNote}</span>
               <ul>{c.audience.freeList.map((feature, index) => <li key={feature} style={{ "--i": index } as CSSProperties}><Check size={16} weight="bold" aria-hidden="true" />{feature}</li>)}</ul>
               <a className="site-button is-small" href={appHref} tabIndex={active === 2 ? 0 : -1}>{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
