@@ -687,3 +687,9 @@ Verification:
 ## 2026-10-07 — Brief pause only for the phone cover question
 - Restore only question ending pause≤560px: dedicated bounded track with64–100px extra scroll, actual opaque question content remains sticky at header during that brief distance. Square hero itself and all other mobile chapters remain normal flow;62 saved ranges/1000ms unchanged. Reduced-motion bypasses pause via .has-motion boundary. No long runway or global fixed logic.
 - Targeted question-boundary test1/build/diffcheck passed. No new browser verification claimed (user requested immediate completion); no merge/deploy.
+
+## 2026-10-07 — Keep range visible during the cover question pause
+- Previous question-only sticky interpretation left the matrix scrolling away. Latest request prioritizes matrix visibility: briefly hold the complete cover for96px, while question group moves only12px within its own lower region (never overlays/covers the square). Then cover exits continuously; all following sections remain natural. Remove prior question-only sticky track.
+- Enable only motion/≤560px when the complete cover fits available viewport; unusually short covers and reduced-motion retain natural flow without clipping. No long black runway; original square/dim/copy and62ranges/1000ms untouched.
+- Targeted cover-boundary test1/build/diffcheck passed. New browser evidence below if available; no merge/deploy.
+- No new browser result available at commit time; no actual scroll verification claimed for this latest revision.

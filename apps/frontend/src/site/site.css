@@ -99,7 +99,7 @@
 /* Hero: the viewport-height range and copy share one uninterrupted stage. */
 .site-hero { padding: 0; }
 .site-cover-ending { display: none; }
-.site-question-track { display: contents; }
+.site-cover-track, .site-cover-question { display: contents; }
 .site-hero-stage { display: contents; }
 .site-after-cover { display: contents; }
 .site-explorer { border-radius: var(--panel-radius); }
@@ -1006,10 +1006,11 @@
   .has-motion .site-persona-stage.is-learner .site-persona-view, .has-motion .site-persona-stage.is-learner .site-persona-view * { animation: none; }
 }
 
-/* Only the cover question gets a brief visible-content pause on phones. */
+/* A brief cover pause keeps the entire square visible; the question never overlaps it. */
 @media (max-width: 560px) {
-  .site-question-track { display: block; flex: 1; --question-height: max(156px, calc(100svh - var(--header-height) - 100vw)); }
-  .site-question-track .site-cover-ending { min-height: var(--question-height); }
-  .has-motion .site-question-track { flex: none; height: calc(var(--question-height) + clamp(64px, 12svh, 100px)); }
-  .has-motion .site-question-track .site-cover-ending { position: sticky; top: var(--header-height); height: var(--question-height); background: var(--bg); }
+  .site-cover-question { display: flex; flex-direction: column; align-items: center; gap: 9px; transform: translateY(var(--question-shift, 0px)); }
+  .site-cover-track.is-paused { display: block; position: relative; height: calc(var(--cover-height) + 96px); }
+  .site-cover-track.is-paused .site-hero { height: var(--cover-height); }
+  .site-cover-track.is-paused[data-cover-phase="pinned"] .site-hero { position: fixed; top: 64px; left: 0; width: 100%; z-index: 1; }
+  .site-cover-track.is-paused[data-cover-phase="after"] .site-hero { position: absolute; bottom: 0; width: 100%; }
 }

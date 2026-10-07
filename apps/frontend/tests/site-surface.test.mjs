@@ -55,7 +55,7 @@ test("phone cover fills remaining viewport without stretching or clipping the sq
   }
 });
 
-test("phones use natural focused chapters with no pin or artificial hold", () => {
+test("non-cover phone chapters remain natural with no global pin or artificial hold", () => {
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
   assert.doesNotMatch(source, /MobileHold|shouldPinCover|mobileHoldGeometry|data-cover-pinned|data-hold-phase/);
   assert.match(source, /running = auto && motion && visible && !scrolly && !phone/);
@@ -89,12 +89,14 @@ test("phone learner retains the full saved factual reason used on desktop", () =
   for (const locale of ["en", "ja", "es", "zh-CN"]) assert.ok(render(locale).includes(escapeText(copies[locale].how.whyNote)));
 });
 
-test("only the phone question has a short bounded pause, with natural reduced-motion flow", () => {
+test("brief phone cover pause keeps the square visible and the question in its own region", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.match(source, /enabled = motion && phone.matches && height <= window.innerHeight - 64 \+ 1/);
+  assert.match(source, /Math.min\(distance, 96\) \/ 8/);
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  const question = css.slice(css.indexOf("/* Only the cover question"));
-  assert.match(question, /clamp\(64px, 12svh, 100px\)/);
-  assert.match(question, /\.has-motion \.site-question-track \.site-cover-ending \{ position: sticky; top: var\(--header-height\)/);
-  assert.doesNotMatch(question, /site-hero-stage|site-audience|site-mobile-hold/);
+  assert.match(css, /height: calc\(var\(--cover-height\) \+ 96px\)/);
+  assert.match(css, /data-cover-phase="pinned"[^}]*position: fixed; top: 64px/);
+  assert.doesNotMatch(css, /site-question-track|data-cover-pinned|site-mobile-hold/);
 });
 
 test("hero and shared English taglines use Understand the reason", () => {
