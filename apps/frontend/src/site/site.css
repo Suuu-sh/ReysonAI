@@ -1012,3 +1012,34 @@
   .has-motion .site-cover-ending { position: relative; z-index: 1; background: var(--bg); mask-image: linear-gradient(to bottom, transparent calc(var(--question-mask-edge, 0px) - 28px), #000 var(--question-mask-edge, 0px)); -webkit-mask-image: linear-gradient(to bottom, transparent calc(var(--question-mask-edge, 0px) - 28px), #000 var(--question-mask-edge, 0px)); pointer-events: none; }
   .has-motion .site-after-cover { display: flow-root; position: relative; z-index: 1; background: var(--bg); }
 }
+
+/* Compact only the three long phone information chapters; keep every fact. */
+@media (max-width: 560px) {
+  .site-ranked, .site-agent, .site-section.site-compare { padding-block: 28px; }
+  .site-ranked h2, .site-agent h2, .site-compare h2 { font-size: 26px; line-height: 1.25; }
+  .site-ranked .site-feature, .site-agent .site-feature { gap: 18px; }
+  .site-ranked .site-feature-copy > p, .site-agent .site-feature-copy > p { margin-top: 12px; font-size: 14px; line-height: 1.5; }
+  .site-ranked .site-points, .site-agent .site-points { margin-top: 12px; gap: 6px; }
+  .site-ranked .site-points li, .site-agent .site-points li { font-size: 13px; line-height: 1.45; gap: 6px; }
+  .site-ranked .site-feature-copy .site-feature-note { margin-top: 10px; font-size: 12px; line-height: 1.45; }
+  .site-ranked .site-mock, .site-agent .site-mock { padding: 12px; }
+  .site-rank-card { padding: 12px; gap: 12px; }
+  .site-rank-emblem { width: 64px; height: 64px; }
+  .site-ranked .site-rank-emblem .rank-badge { width: 48px; height: 48px; }
+  .site-rank-info dd { font-size: 22px; }
+  .site-ranked .site-tiers { gap: 6px; }
+  .site-ranked .site-tiers li { padding: 6px; }
+  .site-agent .site-mock { gap: 8px; }
+  .site-compare .site-section-head { gap: 10px; }
+  .site-compare .site-section-head p { font-size: 14px; line-height: 1.45; }
+  .site-compare-table { margin-top: 12px; }
+  .site-compare tr { grid-template-columns: minmax(54px, .65fr) repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .site-compare thead td { display: block; }
+  .site-compare thead { position: static; padding-block: 4px; }
+  .site-compare thead th { padding: 6px; font-size: 12px; }
+  .site-compare thead th small { font-size: 10px; }
+  .site-compare tbody tr { padding: 6px 0; }
+  .site-compare tbody th { grid-column: auto; padding: 6px 0; font-size: 12px; line-height: 1.45; }
+  .site-compare tbody td { padding: 6px; font-size: 12px; line-height: 1.45; }
+  .site-compare-note { margin-top: 10px; font-size: 11px; line-height: 1.45; }
+}

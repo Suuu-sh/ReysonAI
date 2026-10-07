@@ -714,3 +714,8 @@ Verification:
 ## 2026-10-07 — Overlap-driven top-down question mask
 - Latest correction removes immediate whole-block opacity. Measure pinned square bottom−question top, clamp≥0; CSS/WebKit linear mask is transparent above edge−28px, transitions to solid at edge. Only overlapping top region disappears; unoverlapped lower region stays fully visible. Mask applies background/title/subtitle/hint together. Initial edge0 is fully visible; reverse scroll restores it.
 - Matrix pin until question range exits, square/62ranges/1000ms, opaque following content and reduced-motion static/natural behavior retained. Targeted overlap bounds/mask/opaque-next test1/build/diffcheck passed. No new browser claim; no merge/deploy.
+
+## 2026-10-07 — Compact phone Compare, Agent and Ranked chapters
+-≤560px only three long chapters: padding28px/heading26px/body14px, feature gap18px/points13px, mock padding12px. Agent keeps everyβ/heads-up/game fact. Ranked card/emblem64px and denser tier cells preserve all rating/sample/Legend/reward-planned/gate caveats.
+- Comparison keeps every row, using three compact columns (criterion+both products),12px cells/1.45 line-height/6px padding instead of repeating full-width labels. Intro14px and note retained. No fixed height/ellipsis/clipping;320px short screens can overflow naturally. Full learner reason and hero mask/62ranges untouched, desktop unchanged.
+- Targeted three-chapter scope/readability guard1/diffcheck passed. CSS-only: no repeated build. No new height/browser evidence at commit time; do not claim every section fits exactly one viewport. No merge/deploy.

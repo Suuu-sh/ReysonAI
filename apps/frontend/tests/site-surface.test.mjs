@@ -105,6 +105,15 @@ test("phone question is erased top-down only as it overlaps the pinned range", a
   assert.doesNotMatch(cover, /height:|padding-bottom:|question-shift/);
 });
 
+test("only the long phone comparison Agent and ranked chapters use compact readable spacing", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const compact = css.slice(css.indexOf("/* Compact only the three long"));
+  assert.match(compact, /@media \(max-width: 560px\)/);
+  for (const name of ["site-ranked", "site-agent", "site-compare"]) assert.ok(compact.includes(name));
+  assert.match(compact, /tbody td \{ padding: 6px; font-size: 12px; line-height: 1.45/);
+  assert.doesNotMatch(compact, /overflow: hidden|max-height:|site-persona/);
+});
+
 test("hero and shared English taglines use Understand the reason", () => {
   for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
     const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");
