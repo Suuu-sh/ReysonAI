@@ -1,0 +1,157 @@
+# Strict MW3 saved-delivery LOCAL D1 verification
+
+The builtin-only entry `scripts/verify-mw3-local-d1.mjs` captures reviewed inputs before loading `ci/mw3-local-d1-oracle.mjs`, which verifies a single spot's exact saved flop/later delivery in an isolated, disposable local database. It never generates a strategy, creates an independent acceptance receipt, edits the shared approved-policy registry, executes remotely, installs dependencies, uploads artifacts, or deploys anything.
+
+## Required inputs and runtime
+
+All five flags are mandatory:
+
+```sh
+node scripts/verify-mw3-local-d1.mjs \
+  --manifest ../../artifacts/postflop/mw3-<spot-slug>.manifest.json \
+  --archive ../../artifacts/postflop/mw3-<spot-slug>.tar.gz \
+  --receipt ../../configs/mw3-<spot-slug>.review.json \
+  --sql ../../artifacts/postflop/mw3-<spot-slug>.sql \
+  --wrangler "$WRANGLER_4147"
+```
+
+Run from `apps/frontend`. The saved manifest, materialized archive, separate acceptance receipt and SQL must be inside the checkout. A Git LFS pointer is not an archive payload. The receipt must already have passed separate independent review and match the exact saved manifest bytes, archived artifact identities, evidence and delivery pins. Missing, stale, unapproved or byte-mismatched input stops the gate before any D1 import. A preservation snapshot alone does not confer approval.
+
+Provide the existing `bin/wrangler.js` entry for Wrangler **4.147.0**. There is no `npx`, download or installation fallback. The verifier checks its installed package metadata and exact declared/installed Miniflare **5.20261001.0-alpha** and workerd **1.20261001.1** and esbuild **0.28.1** dependencies resolved through Wrangler's actual `createRequire` resolution, then checks the executed Wrangler version. It requires Linux and Node >=22.20. Direct Miniflare 4.20260515 cannot substitute for this pinned Wrangler proof.
+
+The manifest/archive/receipt/SQL are each read once, under byte limits, into captured raw bytes. Existing snapshot and independent-receipt gates validate those same bytes. The reviewed SQL is regenerated only as packaging from those validated saved artifacts and must be byte-identical, including comments, Unicode and line endings. Every reviewed source file is hash-checked and captured into the isolated directory. The actual transport route, captured shared build registry and MW3 schema use captured bytes. Historical setup migrations are separately bound to the exact reviewed Git tree and recorded as fixture provenance. Pinned esbuild compiles only captured runtime sources with explicit tsconfig, records the emitted bundle hash and actual source-input ledger, and Wrangler loads that bundle with `no_bundle`. Captured source, compiled bundle, local wrapper/config and runtime resolution pins are rechecked before command/worker startup and final PASS; later live-checkout edits cannot become runtime inputs. No strategy generation or real materialization belongs in Actions. CI may consume already saved, reviewed, materialized inputs and invoke this helper.
+
+## Exact evaluated parent boundary
+
+The supported strict CLI is now a builtin-only bootstrap. Before importing any application verifier, SQL classifier, receipt helper or adapter, it captures each original manifest/archive/receipt/SQL once under limits. It requires their manifest/archive/source/input bindings to a separate independent receipt, checks every declared source/input against the named Git tree, and copies those exact bytes plus the tree-bound historical migrations into a fresh repo-relative replay root. The application entry is a hardcoded `ci/mw3-local-d1-oracle.mjs`; no manifest-selected entry, alternate-entry flag or receipt bypass exists. The captured oracle still runs the complete saved-snapshot, independent-receipt and exact SQL gates, including all accepted limitations.
+
+Node's synchronous `module.registerHooks` resolver rejects local imports outside that captured ledger, including resolved live-checkout paths. Its loader returns privately copied, hash-checked source Buffers rather than rereading an import path. Parent oracle, SQL classifier/owner adapter and every transitive locally loaded ESM therefore first evaluate exactly those source bytes. A previously cached live version cannot be used under a fresh replay URL. JSON imports use exact captured JSON source. The seven actual parent `.ts` dependencies, including the captured shared build registry, use Node’s builtin `stripTypeScriptTypes` in strip-only mode on the verified raw source Buffer. The ledger keeps the raw reviewed bytes/hash, the exact executed JavaScript bytes/hash and saved transformed output, plus API/mode/Node version/source URL provenance. Transformed output can vary by Node release; no external compiler or live filesystem fallback is used. Unsupported non-erasable TypeScript fails rather than silently enabling broader compilation. Formats outside `.mjs`, `.js`, `.json`, `.ts` and undeclared paths fail closed. The source ledger identifies each actual loader-returned module and is retained as `parent.execution.json`; it does not merely hash disk files after evaluation.
+
+Relative imports and `import.meta.url` remain rooted in the replay tree. Saved inputs and runtime source checks subsequently read captured copies; later live-checkout updates cannot replace them. A read-only `.git` metadata pointer lets existing provenance code read the origin's named immutable tree objects without changing repository configuration. The bootstrap keeps its capture ledger and all original-input identities; failure retains the replay root and any completed capture evidence. No existing archive or dirty original file is rewritten.
+
+The trusted entry boundary is this small builtin-only bootstrap plus the installed Node runtime. The bootstrap itself is included in the reviewed source inventory, but its already evaluated bytes are **not** claimed as attested by its later module loader. This is isolation/binding against the observed live module-load/capture race, not a security guarantee against arbitrary same-user changes to the entry/runtime, runtime hooks, Git object store or replay filesystem. Custom `--import`, `--require` and loader preloads are rejected by the strict entry. Node >=22.20 supplies the needed API; the design covers its synchronous hooks in Node22 and Node24. See the primary [Node22.20 module-hook documentation](https://nodejs.org/download/release/v22.20.0/docs/api/module.html#moduleregisterhooksoptions) and [Node24 module-hook documentation](https://nodejs.org/download/release/v24.0.0/docs/api/module.html#moduleregisterhooksoptions). The prior source-race/typed-TS/JSON/Git-root and complete-parent fixtures passed at the independently reviewed `00bc6491` checkpoint. The activation extension adds the captured shared registry as the seventh TS module; its new 44-module graph fixture is unrun pending a serial lease. This import/link fixture never invokes the strict oracle, strategy generation or Wrangler/D1. Type stripping follows the primary [Node22.20 builtin API](https://nodejs.org/download/release/v22.20.0/docs/api/module.html#modulestriptypescripttypescode-options) and [Node24 builtin API](https://nodejs.org/download/release/v24.0.0/docs/api/module.html#modulestriptypescripttypescode-options).
+
+## Gates established only by a complete successful run
+
+1. Exact saved snapshot, receipt and complete SQL identity; exact installed/executed runtime pins.
+2. One complete saved SQL file per `wrangler d1 execute ... --local --file ... --json` invocation. No split imports or reduced-coverage mode exists.
+3. Two exact repeated imports, with equality of every header, ordered part body, per-part SHA-256, full payload SHA-256, byte count and part count.
+4. Equality of schema and row-value hashes for all 18 current unrelated application tables, each seeded with a preservation row. A separately labelled unrelated synthetic MW3 delivery must also survive unchanged. Added application tables fail closed until their preservation coverage is explicitly updated.
+5. Both immutable-part and immutable-header conflicts must cause the exact intended completed NOT NULL SQL error. Before each probe, earlier flop rows are removed and a late later-stage row is made deliberately conflicting. Importing the *same exact full reviewed file* would repair early rows before hitting the conflict. Whole-database equality against the pre-failure ledger demonstrates that those repairs rolled back, along with every unrelated row and schema object. The original child exit status, timeout/interruption flags and command identity must match the exact saved resource record, and exact supervisor/group/child birth identities, conflict-free anchored discovery, descendant reaping and parent cleanup must all be complete. A child killed after printing NOT NULL still fails. Timeout, signal, empty output, zero launcher status without completed JSON, an unexpected SQL error or an incomplete rollback is a failure.
+6. Actual `routeMw3Transport` restoration of every manifest/part and reconstruction of the exact saved flop/turn/river policy, with ETag/304, malformed-query, missing-part and POST rejection checks.
+7. The actual shared empty build registry still rejects the imported hashes on ordinary `/v1/mw3/*` routes. For restoration only, an ephemeral localhost worker exposes an explicitly named `/__mw3_local_oracle/v1/mw3/*` namespace with the reviewed delivery pins. These local pins do not edit the registry or grant production publication approval.
+8. Worker shutdown, a fresh pinned Wrangler worker process over the same persisted local state, identical full-database hashes and repeated exact API restoration.
+
+The fixed dummy binding and config allow no remote database, other resources, credentials or assets. The sole ownership algorithm is the **unchanged** reviewed Linux helper at `scripts/ci/postflop-command-supervisor.py` (19,014 bytes; SHA-256 `61d0fe490ff4e1e82667a8ec188c1206efd1c26067ff8d6061b4bc8a1a67164d`). The MW3 adapter hashes and copies those exact bytes to each command's evidence directory before execution. It uses the same bytes for independent parent cleanup. No new asynchronous owner or broad process-name/group signal is implemented.
+
+The parent launches a new supervisor session/group. The supervisor enables subreaping only for itself and records `(PID, /proc start_ticks)` for itself, its actual command child, and discovered descendants. A currently birth-matching parent is required for transitive ancestry; the live birth-verified supervisor also anchors newly adopted detached descendants. Children may fork, call `setsid`, double-fork and close their diagnostic streams without losing their recorded birth ownership. Every target is birth-rechecked before individual signal or reap. The supervisor is never an owned-child termination/reap target. Conflicting/reused births are preserved as uncertainty and never signalled under the old identity. Normal cleanup requires anchored final discovery, no live **or zombie** owned births, and a matching parent-side confirmation. Abrupt supervisor loss without that final proof remains incomplete even when a saved ownership list is empty. No result claims a global system-process inventory or an unlimited guarantee against every scheduling pattern.
+
+### Separate bounded API lifecycle
+
+`ci/mw3-api-oracle.mjs` and its actual decode dependencies are compiled **from captured reviewed bytes** into a Node control bundle, with an esbuild source-input ledger. The owner, adapter, controller, captured parent oracle and builtin-only verifier entry are explicit saved-snapshot source roots; these additions do not alter the 13 numerical semantic sources, eight verification-hash inputs or any authored recipe. Old snapshots lacking these source roots require a newly frozen and independently reviewed manifest/receipt/SQL pair; the inventory check is never bypassed.
+
+Each of the two API phases runs that control bundle as the synchronous owner's actual child. Its input ledger binds the control bundle, exact expected saved delivery/policy bytes, worker bundle, dummy config, owner bytes, command ID and pinned Wrangler path. The controller starts Wrangler on localhost, performs every existing HTTP/policy/empty-registry check, rechecks its ledger, writes a strict success record containing its own and Wrangler's birth identities, then exits normally. It sends no process signals. The still-live anchored owner discovers, terminates and reaps Wrangler and its descendants, and the parent independently verifies the final ownership evidence before inspecting D1 or starting the restart phase.
+
+API-only acceptance requires actual controller exit **zero**, full completion-record/input/row equality, a late live `/proc` observation of the worker birth, one matching owner-reaped status, explicit owner TERM/KILL membership for that exact worker PID, bounded untruncated streams, conflict-free ownership, no secondary cause, and complete anchored plus parent cleanup. A normal-exit API classification is rejected. A compatible controlled worker status is required: graceful zero after recorded TERM, negative SIGTERM after recorded TERM, or negative SIGKILL after recorded KILL. The only additional positive status is the exact attested Wrangler 143 case specified below. Generic positive worker failure, incompatible spontaneous signal, absent/ambiguous status or missing owner targeting rejects even an already written success record. These are the reviewed owner’s recorded live-target/birth/status predicates; they do not cryptographically attribute an identical concurrent signal from an arbitrary same-user actor. Only this separate `api-oracle` purpose can accept the expected `descendant-leak` / `owned-descendant-interrupted` teardown classification after deliberate controller completion. A timeout, signal, resource/output limit, missing/malformed/stale completion, early worker loss or ownership uncertainty still fails. Ordinary command/expected-SQL-failure acceptance requires `normal-exit` and the `command` purpose; API teardown never proves SQL rollback. The former `startWorker` / negative-PGID `stopWorker` path is removed.
+
+Every subprocess receives a credential-free allowlisted environment with isolated HOME/cache, disabled dotenv loading and disabled telemetry. The worker binds to 127.0.0.1. There is no remote D1 path. The ephemeral HTTP endpoint is not independently proven to be the recorded worker’s listening socket; constant-health/port association is a known remaining limitation. Runtime version/path pins do not attest every installed executable byte. Per-stream caps do not bound Wrangler’s separate on-disk log or every filesystem artifact.
+
+## Evidence and failure handling
+
+Each invocation retains its own `.local/verify-mw3-d1-*` directory, including captured exact SQL, labelled synthetic setup/probe SQL, captured reviewed source/schema ledgers, compiled bundle/source-input identity, command arguments, complete success/failure stdout/stderr logs, exact supervisor/actual-child birth leases, resource/classification/cleanup-history and final/parent cleanup records, wrapper/fallback/error records, bounded worker logs, separate API phase completion/input records, persisted database and `result.json`. Failure logs and state are never automatically removed. A failed result lists only gates actually reached; it cannot be promoted to a pass. The strict import has a 10-minute child deadline, a separate outer deadline, 32 MiB per-stream cap and 3 GiB resource limit. API phases have a 180-second child deadline including a 90-second health window. Exceeding any limit fails without reducing scope. Evidence directories and database state are always retained, especially when ownership discovery is incomplete.
+
+RSS telemetry includes Linux RUSAGE_CHILDREN maximum and a sampled simultaneous aggregate of discovered birth-owned live descendants. Both must stay within the bound. Sampling can miss short peaks and does not provide a hard whole-machine/whole-process-tree memory guarantee. The verifier reports its own Node maximum separately. The local proof does not establish remote D1 atomicity or production readiness.
+
+## Focused checks
+
+```sh
+node --test --test-concurrency=1 tests/mw3-local-d1.test.mjs
+node --test --test-concurrency=1 tests/mw3-owned-process.test.mjs
+node --test --test-concurrency=1 tests/mw3-api-lifecycle.test.mjs
+node --test --test-concurrency=1 tests/mw3-parent-boundary.test.mjs
+```
+
+These tests use visibly labelled synthetic fixtures, SQLite reference transactions, harmless local process fixtures and fake localhost HTTP servers. Their API controller bundling is captured/hash-ledgered; no actual Wrangler command or D1 import runs in Actions. They cover normal exits including 124/137, signals, inner/outer deadlines, output overflow, fast detached double forks, owner loss, stale/conflicting births, measurement corruption and fresh-ID retry/restart. Added cases cover genuinely final later-delivery POST-response worker failure/signal with an asserted complete served-response inventory, worker failure in the last synchronous completion gap with a success file already present, graceful TERM-to-zero teardown, cached live A versus captured B evaluation, exact JSON/undeclared imports and replay `import.meta`/Git-tree semantics. Observed API race fixture directories are retained even when the expected rejection passes. Separate test-only subreaper containment recovers abrupt-loss fixture births while preserving the production result as uncertain. These fixtures check the verifier's contracts. They do not constitute strict Wrangler evidence, a real saved-snapshot gate, independent strategy acceptance, LFS acceptance, or publication approval. The real CLI has no fixture-receipt or verification-bypass option.
+
+The original empty-registry adapter at `00bc6491` passed 43/43 focused Node24 tests and independently received bounded source-integration GO; subsequent Node22.20 CI passed 180/180 contracts. The activation extension described below is **UNRUN** and requires a new independent source review and explicit serial compute lease. Those historical passes do not prove activation. The independently reviewed reusable HU owner passed its own 12 stubs at commit `81c40e5a0a9ecf7f0db95783919b2e9aacc01ebc`; that evidence covers its tested ownership/cleanup predicates, not this API adapter, actual D1 or a global process inventory. The real strict gate additionally remains blocked on the final accepted saved archive/receipt/SQL. Do not claim any of the eight gates passed until the final inputs complete the actual pinned runtime run.
+
+Official command reference: [Cloudflare D1 Wrangler execute](https://developers.cloudflare.com/d1/wrangler-commands/#d1-execute). Exact dev flags were checked against the installed 4.147.0 CLI source; future runtime versions require a separate pin update and new proof.
+
+
+## Prepared bounded activation extension (2026-10-05; UNRUN)
+
+Optional `--registry-mode empty|activated` selects a verification contract. The default `empty` contract preserves two owned API phases, the original `{local_only:true,registry_entries:0}` health response, ordinary public-route 404 rejection, and the labelled localhost receipt-injected proof namespace. It requires the actual captured build registry to be empty. A previous empty-mode receipt or PASS cannot prove activation.
+
+`activated` does not provide pins or grant approval. Before any D1 import, the oracle statically parses the exact captured `apps/shared/mw3-approved.ts`, compares it to that same module's actual exact-buffer-hook evaluation, requires an immutable complete flop/later registry, and binds the subject spot's complete six-field pair to its matching independent receipt and saved candidate delivery bytes. Empty, missing, duplicate, incomplete or mismatched authority fails. There is no alternate registry, approval, skip-receipt or source override CLI.
+
+The activated worker imports only the captured actual shared authority and actual `routeMw3Transport`. It does not expose the receipt-injected proof namespace. Health binds the captured registry source SHA-256, full evaluated-pin SHA-256, registry count, full subject pair and its SHA-256. The worker recomputes the full build-pin identity and subject pair before serving; its bundle input ledger separately binds the reviewed raw TS source bytes. A matching count alone is insufficient.
+
+Activated API phases 0 and 1 restore both exact saved policies through ordinary `/v1/mw3/manifest` and `/v1/mw3/part`, including normal/conditional ETags, complete raw bodies/hashes, source-bound header equality, missing parts, all malformed query/method/body checks, unapproved unknown hashes, and the real database-only preservation delivery. Phase 1 starts a fresh worker and retains the original full persistence/restart proof. The source, captured registry/mode implementation, builtin-only bootstrap and API controller all enter the exact manifest source closure. The parent graph now statically contains 44 modules and seven TS modules; actual loader-ledger evidence must be re-established.
+
+Only activated mode permits phases 2 and 3. The parent executes separately labelled local fixture SQL to append a space to the later header or its final part. The corresponding owned worker must reject those exact corrupt bytes with 503/no-store/no ETag for normal and conditional GET, while restoring the other delivery and every unaffected part. These reads must leave the corrupt full-database ledger unchanged. The parent then restores the exact original header/part using labelled fixture SQL, verifies every saved row and all 18 unrelated application tables, and requires full schema/row equality with the pre-probe committed database, including the unrelated MW3 sentinel. A failed probe, owner cleanup, repair or equality check remains FAIL with retained state; it is never converted into successful teardown evidence. Empty mode rejects phase IDs 2/3; activated mode rejects IDs beyond 3.
+
+Every phase retains the original R1 final worker birth/liveness, unique reaped status and exact owner TERM/KILL membership predicates, normal controller completion and bounded streams. The unchanged 19,014-byte Python owner and R2 builtin-only exact-Buffer/strip-only bootstrap remain mandatory. The four-phase mode is bounded, not an arbitrary probe loop. All seven accepted strategy limitations remain unchanged. This local extension proves neither release approval nor remote D1 behavior, and does not upgrade the documented endpoint/socket-to-PID or same-user-tampering limitations.
+
+### Serial draft-pair preparation (not yet executed)
+
+After this source implementation is committed and integrated into the checkout containing the raw saved files, and only after receiving the explicit Node lease, run from `apps/frontend`:
+
+```sh
+node --expose-gc scripts/postflop-ai/mw3-draft-pins.mjs \
+  --inventory apps/frontend/.local/postflop-ai/mw3/sixteen-finished-gates-20261005T0020.json \
+  --inventory-sha256 683ad141af9014736237ef0720d9cd97d0d1a8ab652587e62847cb1ce6d4b697
+```
+
+The fixed inventory is 31,559 bytes. This command serially hash-checks all 112 raw files, verifies each saved candidate/report gate and current committed source closure, encodes only the existing strategies, and emits exactly 32 `unapproved_transport_encoding_only` draft pins into a fixed ignored `activation-draft` path. One spot is retained at a time; its optional witness cache is cleared and explicit GC runs between spots. It does not execute recipes, generate strategies, alter raw files or registry, create a receipt, save final archives/SQL, upload or publish. Current implementation/gate/recipe identities and all saved frequencies stay intact. Draft manifest hashes precede final registry source freeze and must never be reused as final receipt subjects.
+
+Next: independently inspect the actual 32 draft pins and proposed source registry change; after separately accepted source-level activation, freeze new final source-bound manifests/archives and independent receipts, derive exact SQL, then run the complete activated strict oracle for each subject pair. No registry fill is included in this preparation.
+
+### Required serial verification order
+
+1. Syntax-only checks for the new draft encoder, mode helper, builtin entry and both oracle files. No real authoring/encoding yet.
+2. Original and new local/owned/API/parent contracts, serial (`--test-concurrency=1`), preserving all R1 last-response/precompletion-gap rejection fixtures and zero skips. The four-phase fake-HTTP fixture is synthetic, and is separate from actual D1 proof.
+3. Dedicated draft-inventory, consumer and backend transport/index contracts, then frontend typecheck/build and complete suite under an approved resource plan. Node22.20 CI must cover the final integrated exact commit.
+4. Obtain the encoding lease; execute the fixed draft command once, inspect retained output and all raw identities, and independently review proposed registry/source activation before any final freeze.
+5. New genuine manifest/archive/independent receipt/whole SQL gate, LFS delivery verification and the complete four-phase strict local oracle, serial per spot. Every original repeated full import, both late immutable-conflict rollbacks, all unrelated ledgers and owned persistence/restart gates remain required.
+
+All new syntax, test, encoding and strict runtime steps above are presently **UNRUN**. Static Python/Git comparisons alone are not runtime acceptance.
+
+
+## Audited local Wrangler launcher teardown
+
+The local Worker module root is the private `worker-runtime/` directory. It
+contains only the ledger-bound `worker.bundle.mjs`; captured source, expected
+HTTP payloads, lifecycle evidence, logs, persisted D1 state, and temporary files
+remain outside that directory. The exact local config uses `no_bundle: true` and
+`find_additional_modules: false`. It does not use the unsupported `dev.watch`
+option. `CLOUDFLARE_CF_FETCH_ENABLED=false` disables unused Miniflare metadata
+fetching in the scrubbed local environment.
+
+Wrangler 4.147.0's canonical `bin/wrangler.js` is 3,088 bytes with SHA-256
+`780661a508810f3b65786895b1ca9aacbc4f55d329ae6b8c1e49ec8433569f77`. It forwards
+its CLI child exit, including Miniflare's signal-derived 143 on owner SIGTERM.
+API completion accepts this code only in addition to all existing controller,
+HTTP, ownership, bounded output/resource, and complete cleanup predicates. The
+installed package name/version and exact launcher bytes must match before and
+after the parent invocation and in the captured controller before launch and
+at completion; the immutable API input ledger binds that attestation. Completion
+also binds the actual live `/proc` Node executable, entire fixed local-only
+argv, cwd, and worker PID/birth, with liveness checks before and after reading
+those process fields. Additional Node preloads, remote flags, or other arguments
+are rejected. There must be exactly one reaped 143 for that birth, owner TERM in
+the same cleanup record, and no owner KILL of that worker in any cleanup record.
+Generic worker 143 remains rejected; SQL completion cannot use this exception.
+The existing controlled 0, -15, and -9 paths remain separate. The reviewed
+19,014-byte Python owner and its hash are unchanged.
+
+`tests/mw3-wrangler-startup.test.mjs` is skipped unless
+`MW3_REAL_STARTUP_WRANGLER` identifies an already installed pinned launcher. It
+uses synthetic transport data and two ephemeral registry pins, not saved-policy
+approval. It exercises all four activated API phases against real local D1,
+checks every one of the 18 unrelated-table preservation sentinels, verifies exact
+corruption repair, rejects module-discovery/reload feedback, requires the actual
+143 path, and exercises tampered attestation/process/owner evidence negatives.
+Set `MW3_REAL_STARTUP_EVIDENCE` to retain the complete run under a chosen local
+directory. The ordinary CI job includes the skipped test so syntax and imports
+still receive coverage; it does not launch Wrangler. New executions and review
+are required before any new source checkpoint is treated as validated.

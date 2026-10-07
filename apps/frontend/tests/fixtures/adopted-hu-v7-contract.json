@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "baseline": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+  "completion_baseline": "6566786a5ab7dcf03fac41db93901b96bbc84837",
+  "method": "Exact erased executable AST bodies. Imports/types excluded; four explicitly listed added stale-contract validation guards are separately asserted then removed for baseline body comparison. Immutable saved inputs and supplied deterministic actions; no strategy simulation.",
+  "files": {
+    "apps/frontend/scripts/postflop-ai/engine.ts": "05bedf52121f6ee5aae116d8dfd5218c63d3b65ad4244d88df8fe4d84d8fc06e",
+    "apps/frontend/scripts/postflop-ai/defence.ts": "5d4ff296e443e704e90b2639448d83408189962537f49c27fd833b3ec540dd60",
+    "apps/frontend/scripts/postflop-ai/views.ts": "5c866564158c9ec0fcb3545b021a1d584f5b83a97a038d077a4916dbb9cad24d",
+    "apps/frontend/scripts/postflop-ai/flop-base-core.ts": "bb1670b2d14a2031cdf52765993be0c6b8df3e9eb4e50402ace86c9cc65022cc",
+    "apps/frontend/scripts/postflop-ai/flop-base-codec.ts": "f21fb4786bd2d75d4befb61552ee668febb3e55003983a14c5500f499b37c332",
+    "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts": "be35f43e232e0e76b0a7313a74f4db54f6c6603bb50afec959ba887feb4632ed",
+    "apps/frontend/scripts/postflop-ai/flop-hand-ev-core.mjs": "c27c8438c79182fd2569d7c90c5d023ea7312a4a07762f356c3be8edb90b71ad",
+    "apps/frontend/scripts/postflop-ai/later-hand-ev-core.mjs": "be335cf96b81967eeff41a2406ef19a9037d9c15e43f50966fb9c62d9c69200e",
+    "apps/frontend/scripts/postflop-ai/exact-ev.mjs": "0909770fd3de6d57e88791f9d77b9d55a955db0dd4d7573a5ba575f610695357",
+    "apps/frontend/scripts/postflop-ai/explain.mjs": "11d17b738222b1037b5f52bbbb596f6aeceb73138aacc1e0b0f232df0913456f",
+    "apps/frontend/scripts/postflop-ai/explain-later.ts": "6ea2f63c0e454ebbc32092cfa275a646e1952efe09215e51ec5be7c37c8d727e",
+    "apps/frontend/scripts/postflop-ai/range-facts.ts": "49412642d1cba462593d095d0a1b3201218b93404063d21625dd0ee6a875efb1",
+    "apps/frontend/scripts/postflop-ai/simulation.mjs": "576ae05ceea9d10e6d160b069fdfd797fae21a20cc6cbb9d8c9146121913c451",
+    "apps/frontend/scripts/postflop-ai/balance.mjs": "2ee370847cddd83aef3b67fd685d710be9cb7306e361e89bd9be2a3de3554ba0",
+    "apps/frontend/scripts/postflop-ai/audit.mjs": "ef1d6658aa5884a01316cd17b7ac58cccfbfbc137b508e3f8965897eca97e985",
+    "apps/frontend/scripts/postflop-ai/generate.mjs": "9a507d0c736a4c8d00a4abe091948e16588ba1a4ca1eabbca24f550fe6d9a98a",
+    "apps/frontend/scripts/postflop-ai/hand-ev.mjs": "b7d2e573d5534d27ba2242969523774a5d86e172f20183f5c820b68ffcda9922",
+    "apps/frontend/scripts/postflop-ai/later-hand-ev.mjs": "ed25b3382232b8944ec65afb3c0d205fb7b059589c517e6d6b1ca62634e8fa81",
+    "apps/frontend/scripts/postflop-ai/policy.ts": "98d44446ed0e0bda11830a6e909537dfb88dc770e230c124452d89a432721fdc",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts": "3d03249ea981b9da18f51dfbcd12c2f90e5988dfd9181a23d234121cdd2dcff4"
+  },
+  "helperDigests": {
+    "round": "9e0e76d025e717977f97000df69c402dbe9a01c8680ffd8fd15f8ec82ad09e55",
+    "geometry": "6cda53c124d245ebd4ad44885249c529dd78a6be8a05b902ffd4059b6bd8addd",
+    "replay": "2aa6025fbe69304ace1aa576a2f3b27a6a3569d37261908d2ecf6826372b54ab",
+    "rival": "00d3ac5a0164d43fd32a28685ae744fa505cdc028718e8137215ab63721c4967",
+    "capOf": "b12b157cb5284f08fd2ed5641a8730918088b8c67c6d2f2631358b843b45da3b",
+    "canRaiseNow": "19fbb4a49d8e17e2e215da328e571e6b0cbec6e564186fac52dffcdcf519f046",
+    "wagerOf": "38ab0f3e0ecba9184e9d61d4923316d45f2368294f5b63f13c3a3f943fd321c0",
+    "optionText": "724bbcd47adef8921ea38c5f308be028f5bca5fdd008e8f16a5bec5807da4b72",
+    "buildOptions": "10ca18ac501d9149591f48ebaa66acd09a951428bddb195ba9e2081c4ab0f46c",
+    "flopOptionsFor": "6ca99fb682812dae6a42542538e2240c5f57d0b32017526f683a1786ca5d374b",
+    "decisionOptions": "fe254ea3fb4e11a533d7b5a4ee4d1602d5116b170f5cbb04f62277fe431aef46",
+    "buildOptionsFor": "f148793dedbf14cce11bd951d6dc06343a5e38f0a1d7b2e1220b8078ddbfd492",
+    "nodeRoleOf": "1c84866397cf409900b8e8eab669d997689c85ce94a8d68752601e2a8677bc83",
+    "formatBb": "fbc99f5bf41fe12b066bf75c9cb3a77b53e4276d43fe946173f10aa9aa07ac87",
+    "isFlopContinueState": "ca5cdf144736f432a1ee07be915fed6995bab8bdc382ed8ba7b53ad62603bb59",
+    "laterStart": "13c7ba575c88416f9388ce5c89cf0acbed6e7fa0a3d46c279824bb118929d4dc",
+    "replayLater": "90f75c66de6a5ba4481ece79fc9bbb2622e15dc9bad2fe91c09ea76465c0e93a",
+    "lineFor": "3e300df1b81c428a75ce08b29c156a454e1df1616497f1b77c55d0c8192ffd0f",
+    "laterDecision": "594d12947435f5a195284b63586f247f75542a4345133ebfca9eb3ef20222957"
+  },
+  "classifier": {
+    "four": "b8ae6a490fabcd12c661e4b1d5966b7f4f89d5dbcb64bf17db9b3a198bd8ccc0",
+    "drawOwners": "79cc8eb70ef97e8c3c5568be4b55866d407cd4873a90ca5c90f5d9638ed0f362",
+    "hasDraw": "3c9f566c65111e5ef9ce3d5222a05ab92d2baf74a498c6bda0f5bfccedd667b3",
+    "handTier": "37a6314e03c176695c51b488c4c92e72b6d9a2bfffd99ef492f29be212e2708c"
+  },
+  "completion": {
+    "flopSpotFor": "9e91f45d73ea85d5f7e110b7ce67f045cc32f9adfb2a7f0ab4764ece5f20f7bf",
+    "completedFlopContext": "84bbeb55f66decc4bdb5f72e6d40f6f1182d084f098234d4cd33546387060023"
+  },
+  "engine": {
+    "cases": 425,
+    "sha256": "3d4e524bde0e395e2d112b96172c2149f6aad0622c0f84488ad2b27bd3a70686"
+  },
+  "ui": {
+    "spots": 85,
+    "sha256": "a48cbd9fa774561a71eedce70fc64ce138b689955615ec950357ed9f804105d1"
+  },
+  "validationOnlyAdapters": {
+    "apps/frontend/scripts/postflop-ai/audit.mjs": [
+      "  if (DEFENCE_VERSION !== 7 || report?.defence_version !== DEFENCE_VERSION ||\n      (report != null && Object.hasOwn(report, \"action_model_version\"))) {\n    throw new Error(\"Candidate or simulation report has an incompatible execution contract\");\n  }\n"
+    ],
+    "apps/frontend/scripts/postflop-ai/hand-ev.mjs": [
+      "  !Object.hasOwn(data, \"action_model_version\") &&\n"
+    ],
+    "apps/frontend/scripts/postflop-ai/later-hand-ev.mjs": [
+      "    !Object.hasOwn(data, \"action_model_version\") &&\n",
+      "    (!Object.hasOwn(data, \"defence_version\") || data.defence_version === DEFENCE_VERSION) &&\n"
+    ],
+    "apps/frontend/scripts/postflop-ai/flop-base-core.ts": [
+      "  if (Object.hasOwn(data.metadata, \"action_model_version\")) return false;\n"
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "name": "plain-dynamic",
+    "statement": "const probe=import('./Mw3RangeView.tsx');",
+    "rejected": true,
+    "error": "Mw3 protected source imports excluded presentation dependency: apps/frontend/src/estimated/mw3-browser.ts -> apps/frontend/src/estimated/Mw3RangeView.tsx",
+    "unchanged_closure": null
+  },
+  {
+    "name": "comment-dynamic",
+    "statement": "const probe=import(/* UI bridge */ './Mw3RangeView.tsx');",
+    "rejected": false,
+    "error": null,
+    "unchanged_closure": true
+  },
+  {
+    "name": "template-dynamic",
+    "statement": "const probe=import(`./Mw3RangeView.tsx`);",
+    "rejected": false,
+    "error": null,
+    "unchanged_closure": true
+  },
+  {
+    "name": "comment-static",
+    "statement": "import/* UI bridge */{ Ui }from'./Mw3RangeView.tsx';",
+    "rejected": false,
+    "error": null,
+    "unchanged_closure": true
+  },
+  {
+    "name": "plain-static",
+    "statement": "import { Ui } from './Mw3RangeView.tsx';",
+    "rejected": true,
+    "error": "Mw3 protected source imports excluded presentation dependency: apps/frontend/src/estimated/mw3-browser.ts -> apps/frontend/src/estimated/Mw3RangeView.tsx",
+    "unchanged_closure": null
+  }
+]

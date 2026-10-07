@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "kind": "pr44-linux-d1-cloud-handoff-checkpoint",
+  "recorded_at_utc": "2026-10-06 05:59:55 UTC",
+  "pr": {
+    "number": 44,
+    "url": "https://github.com/Suuu-sh/ReysonAI/pull/44",
+    "branch": "codex/multiway-postflop-stage1",
+    "base": "development",
+    "draft": true,
+    "merged": false
+  },
+  "execution_subject": {
+    "commit": "c6c49fa69ad6d55485718bd6ecbe387002260a8a",
+    "tree": "fd0088da9b7697565d668a4a43b47c52c6e1100c",
+    "frozen_development_base": "5bd354392cbc288b2b9565f827ffcafe8ea5641b",
+    "accepted_snapshot_source_commit": "a10ec338e1bbae0333eb98daf166c2f1c8b27365",
+    "accepted_snapshot_source_tree": "505e847fe38911016a4662d18c26ced2bdd89edd",
+    "report_only_checkpoint": "This record is later than the execution subject; c6 CI and packet verification do not certify a later tip"
+  },
+  "ci": {
+    "head_association": "c6c49fa69ad6d55485718bd6ecbe387002260a8a",
+    "actual_pr_merge_checkout": "0501f851630921b6f5754e8e2315fb855d357d68",
+    "workflows": [
+      {
+        "run_id": 37418781150,
+        "name": "Verify three-player postflop contracts",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/Suuu-sh/ReysonAI/actions/runs/37418781150"
+      },
+      {
+        "run_id": 37418781212,
+        "name": "Verify public postflop runtime config",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/Suuu-sh/ReysonAI/actions/runs/37418781212"
+      },
+      {
+        "run_id": 37418781178,
+        "name": "Verify account authentication",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/Suuu-sh/ReysonAI/actions/runs/37418781178"
+      },
+      {
+        "run_id": 37418781154,
+        "name": "Verify FastFold ranked core",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/Suuu-sh/ReysonAI/actions/runs/37418781154"
+      },
+      {
+        "run_id": 37418781145,
+        "name": "Verify reviewed data and deploy ReysonAI",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/Suuu-sh/ReysonAI/actions/runs/37418781145"
+      }
+    ],
+    "mw3": {
+      "job_id": 112123249381,
+      "url": "https://github.com/Suuu-sh/ReysonAI/actions/runs/37418781150/job/112123249381",
+      "node": "22.20.0",
+      "platform": "Linux",
+      "saved_restore": {
+        "accepted_pairs": 16,
+        "registered_pairs": 16,
+        "files": 112,
+        "bytes": 235515283
+      },
+      "contract_tests": {
+        "tests": 225,
+        "pass": 224,
+        "fail": 0,
+        "skip": 1
+      },
+      "backend_tests": {
+        "pass": 6,
+        "fail": 0
+      },
+      "skipped_case": "real pinned Wrangler startup test; MW3_REAL_STARTUP_WRANGLER not set",
+      "genuine_whole_sql_d1_cli_invoked": false,
+      "strict_d1_equivalence": false,
+      "reason": "CI restores actual saved bytes and tests synthetic SQLite/API/owner contracts; workflow explicitly never imports D1"
+    },
+    "fastfold": {
+      "job_id": 112123249514,
+      "url": "https://github.com/Suuu-sh/ReysonAI/actions/runs/37418781154/job/112123249514",
+      "ui": {
+        "pass": 47,
+        "fail": 0,
+        "skip": 0
+      },
+      "backend": {
+        "pass": 40,
+        "fail": 0,
+        "skip": 0
+      },
+      "native_workerd_and_persistent_alarm": "PASS",
+      "assertions_timeouts_product_strategy": "unchanged"
+    }
+  },
+  "library_packet": {
+    "library_file_id": "libfile_91f4e8abfb448191af24156c26343d6a",
+    "file_id": "file_0000000071cc8206b613b840441c1e89",
+    "file_name": "reysonai-pr44-c6c49fa-linux-d1-cloud-handoff.tar.gz",
+    "library_path": "/reysonai-pr44-c6c49fa-linux-d1-cloud-handoff.tar.gz",
+    "version": 0,
+    "bytes": 33213727,
+    "sha256": "ef5ac5fb1e3fc90a5254be76f3e319c78abcf31be43a5a176ac46e99e73e86bb",
+    "root": "pr44-linux-d1-handoff-c6c49fa",
+    "files": 78,
+    "contents": "complete-history c6 Git bundle, 16 saved manifest/archive/independent-receipt/whole-SQL quadruples, original Stage2 LFS payload, both exact CI logs, integrity index/checksums, materialization and strict-16 runners, producer checks",
+    "fixture_files": 65,
+    "unique_provenance_paths": 246,
+    "sql_files": 16,
+    "sql_bytes": 25172621,
+    "runtime_binaries_or_node_modules": false,
+    "credentials_or_database": false,
+    "local_library_identity_persisted": true
+  },
+  "producer_checks": {
+    "status": "SOURCE_AND_FIXTURE_CHECKS_PASS_REAL_D1_NOT_RUN",
+    "offline_new_checkout": {
+      "head": "c6c49fa69ad6d55485718bd6ecbe387002260a8a",
+      "tree": "fd0088da9b7697565d668a4a43b47c52c6e1100c",
+      "fixture_files": 65,
+      "unique_provenance_paths": 246,
+      "worktree_clean": true,
+      "staged_changes": false,
+      "canonical_lfs_pointers": "each original pointer and exact saved raw payload checked"
+    },
+    "python_syntax": "AST PASS",
+    "archive_integrity": "all 78 regular archive payloads checked against producer byte count/hash",
+    "mac_guard": {
+      "exit_code": 1,
+      "reason": "Linux /proc required",
+      "before_runtime_or_database": true
+    },
+    "database_started": false,
+    "network_used_for_smoke": false,
+    "independent_packet_script_review": "no material blocker; original CLI gates and process ownership retained"
+  },
+  "linux_handoff": {
+    "status": "PREPARED_NOT_EXECUTED",
+    "compute": "existing authorized exclusive Linux verification slot only; no new compute or runtime installation performed",
+    "prerequisites": {
+      "linux_proc": true,
+      "git_lfs": true,
+      "python3": true,
+      "node_versions": [
+        "22.20.0",
+        "24.19.0"
+      ],
+      "wrangler": "4.147.0",
+      "miniflare": "5.20261001.0-alpha",
+      "workerd": "1.20261001.1",
+      "esbuild": "0.28.1",
+      "wrangler_launcher_bytes": 3088,
+      "wrangler_launcher_sha256": "780661a508810f3b65786895b1ca9aacbc4f55d329ae6b8c1e49ec8433569f77"
+    },
+    "commands": [
+      "sha256sum --check checksums.sha256",
+      "python3 materialize-source.py /absolute/new/consumer-local/checkout",
+      "python3 run-strict-16.py /absolute/materialized/checkout /absolute/existing/wrangler/bin/wrangler.js"
+    ],
+    "original_cli": "apps/frontend/scripts/verify-mw3-local-d1.mjs",
+    "registry_mode": "activated",
+    "authority_pins": 32,
+    "required_per_subject": {
+      "whole_sql_imports": 2,
+      "unrelated_tables": 27,
+      "api_phases": 4,
+      "receipt_snapshot_sql_and_runtime_binding": true,
+      "immutable_header_and_part_full_batch_rollback": true,
+      "actual_public_routes_restart_and_corruption_repair": true
+    },
+    "execution": "16 serial original CLI invocations; no split SQL, no alternative gate, no wrapper timeout/signals",
+    "retention": "Stop on first failure; preserve complete apps/frontend/.local including parent execution ledgers, capture roots, completion/ownership/cleanup evidence, SQL, persisted LOCAL dummy DBs and runner streams",
+    "acceptance": "Only actual unchanged strict CLI results can close the real Linux D1 gate"
+  },
+  "browser": {
+    "formal_tool_recheck": {
+      "cua_iab_chrome": [],
+      "tool_search": [],
+      "executor_skills": []
+    },
+    "status": "BLOCKED_TOOL_UNAVAILABLE",
+    "unofficial_routes_used": false,
+    "new_tabs_or_servers": false,
+    "stats_390px": {
+      "status": "NOT RUN",
+      "prepared_fixture_head": "c6c49fa69ad6d55485718bd6ecbe387002260a8a",
+      "application_inputs": 158,
+      "actual_analysis_css": true,
+      "original_account_and_seed_hooks": true,
+      "build_and_seed_checks": "PASS; separate from real visual acceptance"
+    },
+    "original_exact_701_catalog": {
+      "pass": 15,
+      "fail": 1,
+      "blocked": 1,
+      "qualification": "historical original report; not a new all-17 final-base rerun"
+    },
+    "case17": {
+      "status": "BLOCKED",
+      "reason": "same-base HU and integration each show one table, original unfocused requirement asks for two",
+      "scope": "existing acceptance gap retained; no new HU display feature"
+    }
+  },
+  "scope": {
+    "own_changes_only": true,
+    "numeric_generation": false,
+    "receipt_or_approval_changes": false,
+    "registry_changes": false,
+    "source_changes": false,
+    "production_database_or_auth": false,
+    "production_deployment": false,
+    "merge_or_main": false,
+    "existing_5173_5191_8787": "not operated in this turn"
+  },
+  "remaining": [
+    "Actual genuine strict LOCAL D1 run of all 16 subjects on existing approved Linux runtime",
+    "Real-browser final shared Stats map at 390px when formal tool is exposed",
+    "Original case17 acceptance gap remains; not implemented"
+  ]
+}

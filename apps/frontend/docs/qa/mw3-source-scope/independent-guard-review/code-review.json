@@ -1,0 +1,67 @@
+{
+  "status": "PASS",
+  "reviewer_model": "gpt-6-astra",
+  "reviewer_task": "/root/verify_mw3_guard_revision",
+  "implementation_author_task": "/root/fix_mw3_review_guard",
+  "source_commit": "eeb9a9d8228009abf0dbfeb30343ef2b1025b31a",
+  "source_tree": "f39c0b8db644fbf55f4e84283cd3286d125f3f76",
+  "reviewed_at": "2026-10-07T04:26:46.984279+00:00",
+  "findings": "No remaining blocking code finding in the reviewed protected-edge guard. Independent review first rejected the regex checkpoint after reproducing three valid-syntax bypasses, then rejected the first AST checkpoint because the license path violated the unchanged archive schema and absolute/file imports were silently omitted. The final AST checkpoint resolves those findings, preserves the original protected numerical/runtime paths, removes the same 96 historical paths and adds exactly four bound parser/verification sources. Literal/type/re-export edges into excluded TSX/CSS reject before filtering; directly imported ordinary excluded TS becomes protected. Unsupported computed/local absolute/URL/query/fragment/extensionless imports fail closed. The sole computed bootstrap exception binds exact file path, whole-source SHA, exact expression and target. Existing source IO rejects repository escapes, generated paths, node_modules paths and symlinks. Captured verification executes the parser from exact recorded buffers with no live-package fallback.",
+  "blocking_findings": [],
+  "closed_findings": [
+    {
+      "checkpoint": "c7fe6855a9ffbe7f3e6bb84a6502a9ade18daa10",
+      "issue": "Regex skipped comment-separated and template-literal imports",
+      "resolution": "Pinned TypeScript/JavaScript AST extraction; original independent probes now reject"
+    },
+    {
+      "checkpoint_local": "f90ba116aa48ec0bebe3b0d97823d3426a68b1df",
+      "issue": "LICENSE file outside archive SOURCE_PATH allowlist",
+      "resolution": "Exact upstream MIT license text in a hash-bound supported JSON wrapper; archive schema unchanged; official collection regression added"
+    },
+    {
+      "checkpoint_local": "f90ba116aa48ec0bebe3b0d97823d3426a68b1df",
+      "issue": "Rooted and file-URL local specifiers silently omitted",
+      "resolution": "All rooted/absolute/backslash and non-node URL specifiers reject"
+    }
+  ],
+  "independent_provenance_checks": {
+    "collector_sha256": "fbe62e4d9d6505f9071c2c551c14be0db176745ab61cec84d092af260f179b30",
+    "extractor_sha256": "449631ad0c6568583665a8556054ebb11ac0657144425d77e098965184b1333b",
+    "parser_upstream_bytes": 512666,
+    "parser_upstream_sha256": "201724d1415df7749087d9d6e88af50f2bcafe2eb68dfbe9347f49d3361ff426",
+    "parser_vendored_bytes": 512795,
+    "parser_vendored_sha256": "274540fe50bd896d4b9e360845030f5b52580d4614ee11b37098d54a7041963f",
+    "upstream_implementation_matches_installed_lock_pinned_package": true,
+    "mit_license_text_matches_installed_upstream_exactly": true,
+    "license_text_bytes": 1086,
+    "source_path_allowlist_unchanged": true,
+    "strict_parent_loader_unchanged": true,
+    "hu_collector_and_receipt_unchanged": true
+  },
+  "scope": {
+    "subjects": 16,
+    "removed_per_subject": 96,
+    "removed_extension_counts": {
+      "tsx": 23,
+      "css": 6,
+      "ts": 59,
+      "d.mts": 3,
+      "mjs": 3,
+      "json": 1,
+      "png": 1
+    },
+    "new_verification_dependencies": 4,
+    "pilot_sources": 136,
+    "other_sources": 137
+  },
+  "qualifications": [
+    "Source-context renewal only; no numerical generation, new simulation or renewed quantitative-quality judgment.",
+    "The 67 removed non-UI files are no longer receipt-bound; dedicated application behavior remains outside this numerical approval.",
+    "Conservative type/declaration and required JSON dependencies remain protected; not every presentation-related TS/JSON edit is decoupled.",
+    "The static dependency contract covers supported ESM/TypeScript syntax, not arbitrary eval, user-defined loaders or arbitrary CommonJS require calls. Bare-package implementation is pinned by package-lock rather than individually added to this source ledger.",
+    "Historical actual-D1, quantitative and browser/live-auth evidence remains historical. No new such execution, merge, main modification or deployment is claimed.",
+    "Final installed committed-inventory verification and exact remote CI are required after receipt installation.",
+    "Reviewer-authored receipts are provenance records, not cryptographic signatures."
+  ]
+}

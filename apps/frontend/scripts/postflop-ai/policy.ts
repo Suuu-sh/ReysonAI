@@ -1,7 +1,8 @@
 import type { ActionMix, FlopPolicy, HandTier, OpponentProfile, ReachStep } from "./types.ts";
 import type { PlayerRole } from "./tree.ts";
 import type { WeightedCombo } from "../lib/equity.ts";
-import { flopTextureKeys, handTier, TEXTURES, TIERS } from "./model.ts";
+import { flopTextureKeys, TEXTURES, TIERS } from "./model.ts";
+import { handTier } from "./hu-hand-tier.ts";
 
 import { LATER_NODES } from "./later-tree.ts";
 import { DEFAULT_TREE, FLOP_BETS, NODES, TREES, nodeRole, raiseDepth, treeNodes } from "./tree.ts";

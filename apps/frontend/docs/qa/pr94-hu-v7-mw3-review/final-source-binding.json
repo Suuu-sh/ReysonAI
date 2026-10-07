@@ -1,0 +1,130 @@
+{
+  "status": "PASS",
+  "source_commit": "2029ad54d9906895d001f3caf4a19917c53606fa",
+  "source_tree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+  "tested_and_payload_collected_commit": "c44283fd0dd0232e40ff1198730ae6bc9e269d73",
+  "tested_and_payload_collected_tree": "d3782e2736eeeb3b6b0bf35afdf1681e0bdb54b9",
+  "immutable_payload_evidence_sha256": "848ce5eeb09f983b770ae95396825bf245e60d046c521dad2f8a01e87eb3d7a6",
+  "method": "Actual sourcePathsFor collector invoked for all16 final contexts; all current source/input bytes re-recorded, exact graph equality established, and every unique record verified against the final complete Git tree via verifyMw3SourceTree. Unchanged numerical payloads/evidence are reused from the immediately preceding complete official collectMw3Snapshot run.",
+  "changed_paths": [
+    "apps/frontend/tests/postflop-performance.test.mjs",
+    "apps/frontend/tests/range-hydration.test.mjs",
+    "apps/frontend/tests/stage3-typed-source.test.mjs"
+  ],
+  "changed_protected_or_input_paths": [],
+  "unique_records": 152,
+  "subjects": [
+    {
+      "spot": "CO_open_BTN_call_BB_call",
+      "manifest": "final-drafts/mw3-co-btn-bb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "139c90557a5e91ee84ee9f790900857ffa6c3a47ea628cc6adedfdd69df43f0a",
+      "sources_sha256": "50a1ad74dd12fec764d241de1b74597a11cfc0f7d1a8ed46b171ece7ebf3dad8",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7"
+    },
+    {
+      "spot": "CO_open_BTN_call_SB_call",
+      "manifest": "final-drafts/mw3-co-btn-sb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "dfc46d43704aac1378d04bc86a0ef0a6af8a33deba494c1d1212526509fbcc5d",
+      "sources_sha256": "8f0931bc3ef7a10f97cce11984f6273be6b459ad5d48da65755d469422312592",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7"
+    },
+    {
+      "spot": "HJ_open_BTN_call_BB_call",
+      "manifest": "final-drafts/mw3-hj-btn-bb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "eae8a35ceffcdba30086a8af9f358df4a8187347ade56804671985ed28ec8bca",
+      "sources_sha256": "626a95fd1e8d008249662eacecdb4df6e3850d3d88047858dbe873d9a1d783e3",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7"
+    },
+    {
+      "spot": "HJ_open_BTN_call_SB_call",
+      "manifest": "final-drafts/mw3-hj-btn-sb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "ec995c14f7eeb13c5cb475014e8f71071cf364085a959cb277544ef8ac8d7cfb",
+      "sources_sha256": "720a9c011d682e9ea13110956546d547391eb1a8c67b05586ce22ca00bb42a7b",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7"
+    },
+    {
+      "spot": "HJ_open_CO_call_BB_call",
+      "manifest": "final-drafts/mw3-hj-co-bb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "d18f8dc380e3ff0a2a07d5241f08e24feabfba5b714d7173281ea6e7c24aa85b",
+      "sources_sha256": "7a1ad0d9bb74f2968cbb8caf5fb3845e90409436165a8645c05aa2a1859e75ba",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7"
+    },
+    {
+      "spot": "HJ_open_CO_call_BTN_call",
+      "manifest": "final-drafts/mw3-hj-co-btn-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "7b0f9d3bad4750e1f673ea6b575776c02db568035b3d5cf4ffe243fdeef7e432",
+      "sources_sha256": "d9bacd87519707b4d21be7e9c738d8191298fb0677eec8de29a96e4af3ec36d3",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7"
+    },
+    {
+      "spot": "HJ_open_CO_call_SB_call",
+      "manifest": "final-drafts/mw3-hj-co-sb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "5398166987ceb9ede69b33e8f507ec1a5937db265d99de9d629de627a103585b",
+      "sources_sha256": "66268eafd1d1744d0d52d4aec7958e31e3c279b7dfd52e509233139cefc958fb",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7"
+    },
+    {
+      "spot": "UTG_open_BTN_call_BB_call",
+      "manifest": "final-drafts/mw3-utg-btn-bb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "d6d27ea736de3ecfee9a5b6f6e61a48256414698821f74cdbe990ceca266f875",
+      "sources_sha256": "eba835891d2e0a33985e34fbe03b8eae7da41829aeb7696734885c2bd4c5a736",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7"
+    },
+    {
+      "spot": "UTG_open_BTN_call_SB_call",
+      "manifest": "final-drafts/mw3-utg-btn-sb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "bd5552c71c2fd09dc8de27a43e5fc2084a77235193443bd27289605be9a810d2",
+      "sources_sha256": "1ac552c8443e41de7606d390d1bece5de2c99decab569a7fc26a9ceb6afc5442",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7"
+    },
+    {
+      "spot": "UTG_open_CO_call_BB_call",
+      "manifest": "final-drafts/mw3-utg-co-bb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "170ce4d3a8dd3bdd8e6deaa08d642d6e6a332c4e56b65c385f98d49c41209385",
+      "sources_sha256": "75349554ff71d8f39327a9cbe89ea76ccbbf3a9c173df8ab4b3475e588d4f143",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7"
+    },
+    {
+      "spot": "UTG_open_CO_call_BTN_call",
+      "manifest": "final-drafts/mw3-utg-co-btn-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "3d81dbb046e6fb2faed383e7d7306319de6cc6c47aac3ab5c641421be9a1446b",
+      "sources_sha256": "2f13477ff6d0bcc6c32c214d9cc0632022be33c0167a329a8dfb1515ad0e1678",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7"
+    },
+    {
+      "spot": "UTG_open_CO_call_SB_call",
+      "manifest": "final-drafts/mw3-utg-co-sb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "a0e4d0ff2ae761a5a908377092d258d140db5e67245876547883cfb01ab61e8d",
+      "sources_sha256": "e96171b8e6bb8518a082474f3c5b290186741deb77da9bf4a872db9cfd0f9f95",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7"
+    },
+    {
+      "spot": "UTG_open_HJ_call_BB_call",
+      "manifest": "final-drafts/mw3-utg-hj-bb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "2d8179cced593a98bdc07a1f6f2d888abf14133d7dc32485934890c290d2e83a",
+      "sources_sha256": "a100042746d06aea2103c81f8cfb3f1daf2a99342e82f0677b85b3a7d2e89127",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7"
+    },
+    {
+      "spot": "UTG_open_HJ_call_BTN_call",
+      "manifest": "final-drafts/mw3-utg-hj-btn-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "3e169c044bbef25a4f5761505a695b2312c87f9a6859457c12bc72c768dea621",
+      "sources_sha256": "4f900f84086b1ccd1d121f793ff86dca3c0125613b613a8e0e5b5cb64bba736b",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7"
+    },
+    {
+      "spot": "UTG_open_HJ_call_CO_call",
+      "manifest": "final-drafts/mw3-utg-hj-co-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "c4e164cabc5661e92e02bc2582298aa8dbf47ef794a16ecef5cbece85c677a96",
+      "sources_sha256": "1d912d0e93bc16cb876e1f3e224a6a1ae7960dbc939de6d052c865191250b192",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7"
+    },
+    {
+      "spot": "UTG_open_HJ_call_SB_call",
+      "manifest": "final-drafts/mw3-utg-hj-sb-mw3-srp-v1.manifest.json",
+      "manifest_sha256": "01b84ecca82ba01290e84743466e77f83d7187f464f20900c8083589e9943d55",
+      "sources_sha256": "8237f388c424e41acd06d2aef6d35e2020ceefbdcb40eb1788bf6231f951094e",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7"
+    }
+  ]
+}

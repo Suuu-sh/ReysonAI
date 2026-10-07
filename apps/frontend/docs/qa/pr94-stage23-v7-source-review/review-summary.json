@@ -1,0 +1,575 @@
+{
+  "schema_version": 1,
+  "decision": "APPROVE_EXACT_STAGE2_STAGE3_SOURCE_CONTEXT",
+  "reviewer": {
+    "identity": "Independent gpt-6-astra/xhigh",
+    "provider": "OpenAI",
+    "model": "gpt-6-astra",
+    "independence": "Separate reviewer from implementation author and saved-data authors. This is source/runtime compatibility review, not new numerical strategy-quality approval."
+  },
+  "repository": "Suuu-sh/ReysonAI",
+  "pull_request": "https://github.com/Suuu-sh/ReysonAI/pull/94",
+  "source": {
+    "decision": "APPROVE_FINAL_SOURCE_CONTEXT",
+    "commit": "dff40dfe8bb9c3c4831bba86eb8d77e5ff2e042a",
+    "tree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+    "parent": "6566786a5ab7dcf03fac41db93901b96bbc84837",
+    "equivalentLocalCommit": "2029ad54d9906895d001f3caf4a19917c53606fa",
+    "verified_at_utc": "2026-10-07T16:31:48.861Z",
+    "verifiedThrough": [
+      "Independent GitHub PR94 head read",
+      "Independent GitHub Git commit API tree/parent read",
+      "Independent public Git fetch and exact tree comparison"
+    ],
+    "url": "https://github.com/Suuu-sh/ReysonAI/pull/94"
+  },
+  "scope": "Exact adopted HU-v7 execution restoration, preserved Stage2/Stage3 data and source boundaries, tracked85-policy publication integration, and coupled source-receipt renewal. The sixteen MW3 receipts are reviewed separately.",
+  "prior_approval": {
+    "source": "ffe7c657da5e8492673e3e06e7c3355966f596ed",
+    "report": "apps/frontend/docs/qa/pr94-stage23-source-review/review-summary.json",
+    "meaning": "Preserved historical source-context evidence, with the current renewal superseding its old history-v10 execution selection for the adopted40 HU spots. Every prior receipt review field remains unchanged."
+  },
+  "stage2_receipt": {
+    "path": "configs/multiway-preflop-stage2.review.json",
+    "bytes": 527647,
+    "sha256": "9303299b12c65d9498626200a8de877bca06169923d275bf309a95c624210e54",
+    "content_sha256": "13f507bdf13c412175dfb966028f7c0bd01303b751a5f7e4d43f4c5d98a55c5b",
+    "sources": 188,
+    "artifacts": 1888
+  },
+  "stage3_receipt": {
+    "path": "configs/multiway-preflop-stage3.review.json",
+    "bytes": 536389,
+    "sha256": "72a5503c530611a3517e5ae5998d9ca4918afc075eb12ebcdcebf6ca19b0ce93",
+    "content_sha256": "3c70ba453a0f8472b9cacbd2f47a14c03a752cb9e251828306e267ac9071e21e",
+    "sources": 98,
+    "artifacts": 1805
+  },
+  "preservation": {
+    "beforeSource": "ffe7c657da5e8492673e3e06e7c3355966f596ed",
+    "currentLocalSource": "c44283fd0dd0232e40ff1198730ae6bc9e269d73",
+    "stage2": {
+      "artifactCount": 1888,
+      "artifactsExact": true,
+      "archiveExact": true,
+      "sources": 188,
+      "delta": {
+        "removed": [
+          {
+            "path": "apps/frontend/scripts/postflop-ai/exact-river-call-ev.d.mts",
+            "bytes": 883,
+            "sha256": "4d964d8219b3da119f7105ca3faae8d6a7995a541c594b8788452e8d13d89a57"
+          },
+          {
+            "path": "apps/frontend/scripts/postflop-ai/exact-river-call-ev.mjs",
+            "bytes": 4699,
+            "sha256": "b624216c5019d6a5ddbb5e9e53d1a9f618d8c534e772b76258634d310490e3bb"
+          },
+          {
+            "path": "apps/frontend/scripts/postflop-ai/observable-actions.d.mts",
+            "bytes": 2537,
+            "sha256": "7245e5f98b25559ba840710e508952b9099f56eaca816a93906b14b861f0152c"
+          },
+          {
+            "path": "apps/frontend/scripts/postflop-ai/observable-actions.mjs",
+            "bytes": 11068,
+            "sha256": "14f27db41dc36f7a4f381cc34dc48840199b32bd99678e25480e0ba7a680b1ff"
+          },
+          {
+            "path": "apps/frontend/scripts/postflop-ai/observable-view-paths.d.mts",
+            "bytes": 274,
+            "sha256": "9c465284e545c29caf4a269852abee6722b291a25bea5fd59b02534a3e78d4ec"
+          },
+          {
+            "path": "apps/frontend/scripts/postflop-ai/observable-view-paths.mjs",
+            "bytes": 992,
+            "sha256": "fec71b99a6dd18429a492f9420d9d8a1f8f04093a1662651faef33e57ca25819"
+          }
+        ],
+        "added": [],
+        "changed": [
+          {
+            "before": {
+              "path": ".github/workflows/deploy-worker.yml",
+              "bytes": 14381,
+              "sha256": "cc8492175bb1766a63059af540f9e063c878278c49f434989990f22331eb3c0c"
+            },
+            "after": {
+              "path": ".github/workflows/deploy-worker.yml",
+              "bytes": 15224,
+              "sha256": "548b6d8f18ddec60be52c413c6e134c6b95434783048303a61113e8eeaa60072"
+            }
+          },
+          {
+            "before": {
+              "path": "apps/frontend/scripts/postflop-ai/defence.ts",
+              "bytes": 64143,
+              "sha256": "93ebe59ca6128122c536340af768e40f024dd1046ed0f99738ee37ebdb4b4450"
+            },
+            "after": {
+              "path": "apps/frontend/scripts/postflop-ai/defence.ts",
+              "bytes": 55632,
+              "sha256": "47aba428f9c798079411014d638b7d80c25efaf15d4770fb1f144b19c0462a1d"
+            }
+          },
+          {
+            "before": {
+              "path": "apps/frontend/scripts/postflop-ai/engine.ts",
+              "bytes": 12285,
+              "sha256": "aecdb9f31758243898bc49078bdf221e42412a7bebdc4d8b8186f8a2b14511bb"
+            },
+            "after": {
+              "path": "apps/frontend/scripts/postflop-ai/engine.ts",
+              "bytes": 11304,
+              "sha256": "82af24b14a2f4c5b61283958e49fbc8b2414597d213f823c4d6656668b408e7c"
+            }
+          },
+          {
+            "before": {
+              "path": "apps/frontend/scripts/postflop-ai/flop-base-codec.ts",
+              "bytes": 19250,
+              "sha256": "614bd0b82ebc7a3b72d603f433b1868578a3e1046e2183256fbc57a83b6cc65e"
+            },
+            "after": {
+              "path": "apps/frontend/scripts/postflop-ai/flop-base-codec.ts",
+              "bytes": 19100,
+              "sha256": "1bc26415412f46c39dde3e8e2c999ad70369b29a76cf321ef30a385772dfd716"
+            }
+          },
+          {
+            "before": {
+              "path": "apps/frontend/scripts/postflop-ai/flop-base-core.ts",
+              "bytes": 8854,
+              "sha256": "3e539275440a7e7d90d4f94f91a95a07f0b45ebe3cf54c2f9f4d16ce334f6a61"
+            },
+            "after": {
+              "path": "apps/frontend/scripts/postflop-ai/flop-base-core.ts",
+              "bytes": 8542,
+              "sha256": "28cdc1bddd42499f95fc58b754fc488a44fc06bb699ddf073cb8aaea48c93acd"
+            }
+          },
+          {
+            "before": {
+              "path": "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+              "bytes": 12642,
+              "sha256": "9fbf43504125904e62c3f2de51ee227429beea2cf526b74099851242c0480966"
+            },
+            "after": {
+              "path": "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+              "bytes": 12010,
+              "sha256": "124f5faca5c63e3c0d382b0a2ecef8db547b1c2e7dc47d7b859d2b1552a3a9d6"
+            }
+          },
+          {
+            "before": {
+              "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
+              "bytes": 27686,
+              "sha256": "63700730aad71eab44b9278c75e3ec9e8d8332f9928877e8b93c489417f82dfd"
+            },
+            "after": {
+              "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
+              "bytes": 23996,
+              "sha256": "46ec36d6c23aaa2d0ae86b8926f2f1fab5cb2b18688c617ba5a8152d1cf2c74e"
+            }
+          },
+          {
+            "before": {
+              "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
+              "bytes": 13318,
+              "sha256": "7ff4be8303f6bcae11855c555ad3096126316f6a4992e70997beff4c972c0dcd"
+            },
+            "after": {
+              "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
+              "bytes": 13598,
+              "sha256": "1191d34c5849e88d6e2502948d12796a8135fd33d71f8b366151aa2953e85564"
+            }
+          },
+          {
+            "before": {
+              "path": "apps/frontend/scripts/postflop-ai/publish-d1.mjs",
+              "bytes": 6957,
+              "sha256": "c61d581c0098ac1a122e5cd8180facdcec1379f3ce6d09bd917cf66a2d8614ad"
+            },
+            "after": {
+              "path": "apps/frontend/scripts/postflop-ai/publish-d1.mjs",
+              "bytes": 9655,
+              "sha256": "5c9a216f9489728dee1c97d70a81e576293763c020ad0be0fb376e74a8a46fd6"
+            }
+          },
+          {
+            "before": {
+              "path": "apps/frontend/scripts/postflop-ai/simulation.mjs",
+              "bytes": 9272,
+              "sha256": "4cb189c0548f62850c52a399d77227c2de7f391afca040f70cc4dee110673d41"
+            },
+            "after": {
+              "path": "apps/frontend/scripts/postflop-ai/simulation.mjs",
+              "bytes": 8346,
+              "sha256": "429548aafc1d5c1e184f4027435da78510b583671bb5d13359f71472c300d2e7"
+            }
+          },
+          {
+            "before": {
+              "path": "apps/frontend/scripts/postflop-ai/views.ts",
+              "bytes": 10489,
+              "sha256": "24781637b4dc5dd12e953d32ff79414bb09061093b8e26f63b34916d8fd3a3ee"
+            },
+            "after": {
+              "path": "apps/frontend/scripts/postflop-ai/views.ts",
+              "bytes": 8965,
+              "sha256": "0b7324bf521165d7b657d6f8d5de867f3aa409b9b7d662f8d9dc772643f58248"
+            }
+          },
+          {
+            "before": {
+              "path": "apps/frontend/scripts/publish-d1.mjs",
+              "bytes": 3646,
+              "sha256": "851275216d068502948c82f6610f72d4c8b7729f8a7488d6fb4db630aca0d30b"
+            },
+            "after": {
+              "path": "apps/frontend/scripts/publish-d1.mjs",
+              "bytes": 3824,
+              "sha256": "56444b4ad44e3314d869552849643c3276cfaecf23c0b98eee38bf8c0b9bb10c"
+            }
+          },
+          {
+            "before": {
+              "path": "apps/frontend/src/agent/hand.ts",
+              "bytes": 20439,
+              "sha256": "8eaf4c0812a5bdeac5013f510ac4b5c5a8cc206bc3181c62019816b32b9d0bdd"
+            },
+            "after": {
+              "path": "apps/frontend/src/agent/hand.ts",
+              "bytes": 19906,
+              "sha256": "8583855475b56c324bf199c37be41a3c51bff087ecf667d64b0237e37bd02b4e"
+            }
+          },
+          {
+            "before": {
+              "path": "apps/frontend/src/agent/policy.ts",
+              "bytes": 5030,
+              "sha256": "de33d4ecbd582df42bc367e310a7a2b3acda0536477111c4cedbebc0e96aa923"
+            },
+            "after": {
+              "path": "apps/frontend/src/agent/policy.ts",
+              "bytes": 4659,
+              "sha256": "021a25138aee68ad71c5cf1f260598c7e2a9683c4432e03d792947a26d141ae1"
+            }
+          },
+          {
+            "before": {
+              "path": "apps/frontend/src/locales/reasons-secondary.json",
+              "bytes": 51990,
+              "sha256": "3af7ec7922716868fea0bdd124636b5a819092d853bd4dba384fedb81dccd626"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/reasons-secondary.json",
+              "bytes": 53169,
+              "sha256": "9372741925f4b3aed1b9b09e19127aae6259ec62c5d2d1903e0c89d3bed14419"
+            }
+          }
+        ]
+      }
+    },
+    "stage3": {
+      "artifactCount": 1805,
+      "artifactsExact": true,
+      "archiveExact": true,
+      "sources": 98,
+      "delta": {
+        "removed": [],
+        "added": [],
+        "changed": [
+          {
+            "before": {
+              "path": ".github/workflows/deploy-worker.yml",
+              "bytes": 14381,
+              "sha256": "cc8492175bb1766a63059af540f9e063c878278c49f434989990f22331eb3c0c"
+            },
+            "after": {
+              "path": ".github/workflows/deploy-worker.yml",
+              "bytes": 15224,
+              "sha256": "548b6d8f18ddec60be52c413c6e134c6b95434783048303a61113e8eeaa60072"
+            }
+          },
+          {
+            "before": {
+              "path": "apps/frontend/src/locales/reasons-secondary.json",
+              "bytes": 51990,
+              "sha256": "3af7ec7922716868fea0bdd124636b5a819092d853bd4dba384fedb81dccd626"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/reasons-secondary.json",
+              "bytes": 53169,
+              "sha256": "9372741925f4b3aed1b9b09e19127aae6259ec62c5d2d1903e0c89d3bed14419"
+            }
+          },
+          {
+            "before": {
+              "path": "configs/multiway-preflop-stage2.review.json",
+              "bytes": 525321,
+              "sha256": "570cecbbbabfb892f96c3baa6cc449f534dd37acc46af2cedc6dd1ffd69f85ea"
+            },
+            "after": {
+              "path": "configs/multiway-preflop-stage2.review.json",
+              "bytes": 496785,
+              "sha256": "c21fdd91aeb4869ad6f166630bbe4cc858e99ac8c011ff586b87496eb971857f"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "complete_saved_data_verification": {
+    "localCommit": "2029ad54d9906895d001f3caf4a19917c53606fa",
+    "tree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+    "stage2": {
+      "status": "complete",
+      "spots": 1611,
+      "catalog": 3115
+    },
+    "stage2Fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+    "stage3": {
+      "status": "complete",
+      "fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+      "counts": {
+        "catalog": 16132,
+        "saved": 1801,
+        "unreachable": 5621,
+        "rare": 8710,
+        "hands": 304369
+      }
+    },
+    "noStrategyGeneration": true
+  },
+  "independent_runtime_body_proof": {
+    "modules": 20,
+    "baseline": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+    "types_erased": true,
+    "imports": "Independently enumerated; only the verified private-card handTier relocation, explicit extracted replay helper adapters and validation-only DEFENCE_VERSION imports differ.",
+    "validation_exceptions": "Exactly four narrowly inspected and negatively tested categories: audit contract, flop hand-EV cache, later hand-EV cache, flop-base marker. Complete literal guards must occur once; every other executable AST statement matches the baseline. No generic numerical/expression normalization.",
+    "helpers": {
+      "status": "verified-local-tree-awaiting-remote-identity",
+      "helperDeclarations": [
+        "round",
+        "geometry",
+        "replay",
+        "rival",
+        "capOf",
+        "canRaiseNow",
+        "wagerOf",
+        "optionText",
+        "buildOptions",
+        "flopOptionsFor",
+        "decisionOptions",
+        "buildOptionsFor",
+        "nodeRoleOf",
+        "formatBb",
+        "isFlopContinueState",
+        "laterStart",
+        "replayLater",
+        "lineFor",
+        "laterDecision"
+      ],
+      "classifierDeclarations": [
+        "four",
+        "drawOwners",
+        "hasDraw",
+        "handTier"
+      ],
+      "completionDeclarations": [
+        "flopSpotFor",
+        "completedFlopContext"
+      ],
+      "remainingV7UiDeclarations": [
+        "flopDecision",
+        "buildFlopActionBlocks",
+        "blockOptions",
+        "foldEnd",
+        "showdownEnd",
+        "boardBlock",
+        "appendLaterDecisionBlocks",
+        "buildLaterActionBlocks"
+      ],
+      "allIndependentGitBodyAndFixtureChecksPass": true
+    }
+  },
+  "independent_runtime_replay": {
+    "localCommit": "c44283fd0dd0232e40ff1198730ae6bc9e269d73",
+    "tree": "d3782e2736eeeb3b6b0bf35afdf1681e0bdb54b9",
+    "baseline": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+    "method": "Independently fetched exact Git baseline engine and UI modules; only type erasure and relative-import URL relocation for isolated execution. Same verified saved spot descriptors/config; no numerical generation.",
+    "engine": {
+      "cases": 425,
+      "sha256": "3d4e524bde0e395e2d112b96172c2149f6aad0622c0f84488ad2b27bd3a70686",
+      "completeOutputsEqual": true
+    },
+    "ui": {
+      "spots": 85,
+      "sha256": "a48cbd9fa774561a71eedce70fc64ce138b689955615ec950357ed9f804105d1",
+      "completeOutputsEqual": true
+    }
+  },
+  "consumer_boundaries": {
+    "localCommit": "c44283fd0dd0232e40ff1198730ae6bc9e269d73",
+    "tree": "d3782e2736eeeb3b6b0bf35afdf1681e0bdb54b9",
+    "stage3Terminals": 18620,
+    "stage3FlopTerminals": 2488,
+    "byPlayers": {
+      "2": 846,
+      "3": 1004,
+      "4": 524,
+      "5": 107,
+      "6": 7
+    },
+    "allUnsupportedFlopHistoriesRejectHUAndMW3": true,
+    "ordinarySelectedHU": 40,
+    "injectedSelectedHURejected": 40,
+    "missingInjectedSelectedHURejected": 40,
+    "deferredHURejectedInAllScopes": 367,
+    "selectedDescriptorsExactlyHistorical": true
+  },
+  "source_closure": {
+    "stage2": 188,
+    "stage3": 98,
+    "actual_consumer_ledger": 161,
+    "missing_local_imports": 0,
+    "collectors_unchanged": true,
+    "removed_stage2_sources": "Only the six .mjs/.d.mts paths for dormant observable-actions, observable-view-paths and exact-river-call-ev. No exclusions, root deletions or source gate bypass.",
+    "proof": "source-graph.json"
+  },
+  "adopted_policy_data": {
+    "files": 255,
+    "spots": 85,
+    "history_spots": 40,
+    "legacy_spots": 45,
+    "report_rows": 6120,
+    "metric_groups": 18360,
+    "unchanged_from": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+    "sorted_filename_nul_raw_nul_sha256": "3ad11c7cdc1771722ce7d5d7c3cc32d3030795c58fef71dce3846411b07630ad",
+    "generation_attribution": "40 history pairs gpt-6.1-sol/high;44 legacy pairs claude-sonnet-5-5/max;1 legacy pair claude-opus-5-5/high. Astra is this independent reviewer, not the data generator.",
+    "actual_strict_publication": "85/85 pass with complete source/policy/later/report/result identities. Missing, stale, cross-contract, mislabeled and invalid tuples reject."
+  },
+  "official_restoration": {
+    "stage2": {
+      "status": "restored-reviewed-lfs-bytes",
+      "files": 1614,
+      "bytes": 43276102,
+      "archive": {
+        "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+        "bytes": 1747857,
+        "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+        "format": "ustar+gzip"
+      }
+    },
+    "stage3": {
+      "status": "restored-reviewed-stage3-lfs-bytes",
+      "files": 1805,
+      "bytes": 60027700,
+      "archive": {
+        "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+        "bytes": 2436451,
+        "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+        "format": "ustar+gzip-stage3-content-v1"
+      }
+    },
+    "fresh_clone": "A separate exact-head clean Git checkout initially lacked both ignored datasets. After installing only the exact reviewer-issued receipts and original archives, both unchanged official restorers passed with1614 and1805 files. No raw extraction or gate override was used in this clean restoration."
+  },
+  "official_preflop_delivery": {
+    "status": "reviewed-bytes-verified",
+    "datasets": 3693,
+    "counts": {
+      "catalog": 3115,
+      "saved": 1611,
+      "unreachable": 1504,
+      "hands": 272259
+    },
+    "sql": {
+      "sha256": "ce17d72e71bcec59e16da9f4dc6a9b67030563c8bc5c07e53f46e85b9c411917",
+      "bytes": 129253470
+    },
+    "elapsed_ms": 39401,
+    "max_rss_kib": 1142588,
+    "generated_strategies": false
+  },
+  "tests": [
+    {
+      "file": "final-v7-contract-tests.log",
+      "tests": 36,
+      "passed": 36,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "file": "final-typed-hydration-tests.log",
+      "tests": 22,
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "file": "issued-receipt-tests.log",
+      "tests": 20,
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "file": "final-stage23-tests.log",
+      "tests": 50,
+      "passed": 49,
+      "failed": 1,
+      "skipped": 0,
+      "history": "Initial local c442 run exposed the stale required declaration assertion. The corrected test-only2029 tree reran typed-source/hydration22/22; no production code or source inventory changed. This initial result is retained rather than rewritten as a pass."
+    },
+    {
+      "file": "final-typecheck.log",
+      "status": "both TypeScript projects passed"
+    },
+    {
+      "file": "final-postflop-publication.log",
+      "status": "strict85-spot SQL serialization passed, no database execution"
+    }
+  ],
+  "test_scope_note": "Runs overlap; no combined unique-test count or full-suite-green claim. Tests run against local commits have exact source-tree equality to the final remote commit, with the documented test-only correction separately rerun.",
+  "newer_development": "PR117/121 presentation and explanation changes from0070873 are retained; numerical policy/report bytes, shared config, registry pins and source collectors are not changed. The candidate retains Stage3-specific locale additions in addition to upstream copy.",
+  "installation": {
+    "source_commit": "dff40dfe8bb9c3c4831bba86eb8d77e5ff2e042a",
+    "source_tree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+    "files": [
+      {
+        "path": "configs/multiway-preflop-stage2.review.json",
+        "expected_current": {
+          "path": "configs/multiway-preflop-stage2.review.json",
+          "bytes": 496785,
+          "sha256": "c21fdd91aeb4869ad6f166630bbe4cc858e99ac8c011ff586b87496eb971857f"
+        },
+        "reviewed_replacement": {
+          "path": "configs/multiway-preflop-stage2.review.json",
+          "bytes": 527647,
+          "sha256": "9303299b12c65d9498626200a8de877bca06169923d275bf309a95c624210e54"
+        }
+      },
+      {
+        "path": "configs/multiway-preflop-stage3.review.json",
+        "expected_current": {
+          "path": "configs/multiway-preflop-stage3.review.json",
+          "bytes": 530588,
+          "sha256": "2f14e3a241dc0e08fa405b58d000aa507eed6279f0fdb15d54f57d4073823d65"
+        },
+        "reviewed_replacement": {
+          "path": "configs/multiway-preflop-stage3.review.json",
+          "bytes": 536389,
+          "sha256": "72a5503c530611a3517e5ae5998d9ca4918afc075eb12ebcdcebf6ca19b0ce93"
+        }
+      }
+    ]
+  },
+  "limitations": [
+    "No new strategy-quality, GTO, equilibrium or numerical-simulation approval. Existing source-fingerprinted reports are preserved, not regenerated.",
+    "No live browser, authenticated flow, D1 rollback/import, production release or final CI pass was executed by this reviewer. Parent/author own those separately required acceptance steps.",
+    "No Git commit/push/ref update, merge, main change, credential or permission operation by this reviewer.",
+    "Historical v10-only active-runtime assertions are explicitly superseded by v7 tests; pure historical helper/source fixtures remain. They are not counted as active-v7 strategy-quality evidence.",
+    "Final installation must match exact expected-current receipts and every protected source/input record. Any unexpected bound change stops installation for renewed review."
+  ]
+}

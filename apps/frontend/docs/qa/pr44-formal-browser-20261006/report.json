@@ -1,0 +1,40 @@
+{
+  "pr": 44,
+  "testedHead": "bff95882389d75b58a490fe5cd881fbcc0467a7f",
+  "testedTree": "8f14c419078d9cf169379d00f426b85be4560516",
+  "branch": "codex/multiway-postflop-stage1",
+  "recordedAt": "2026-10-06T14:15:02.612642+00:00",
+  "tool": "mcp__cua_repl.js / Chrome extension browser 1",
+  "iabAvailable": false,
+  "dedicatedLoopbackPort": 18344,
+  "ordinaryApp": true,
+  "authMock": false,
+  "browserAcceptance": "BLOCKED_REAL_AUTH_SERVICE_UNREACHABLE",
+  "requiredGate": "390x844 Agent Session Stats",
+  "observed": "Google button disabled; Cannot reach the sign-in service. Check your connection and reload.",
+  "actionsVerified": [
+    "New-origin ordinary onboarding",
+    "Real screen visibly inspected",
+    "Back to Range/preflop and repeat entry returned same auth gate"
+  ],
+  "notVerified": [
+    "Agent Session Stats",
+    "Stats modal close/reopen",
+    "Actual Agent hand progression"
+  ],
+  "retainedCase17": "Existing HU one-table versus required two-table gap remains outside scope",
+  "savedData": "Every locally materialized LFS payload matched the exact committed oid and size; Stage2 restored with official verified-byte command; Stage3 also restored for PR50. No generation.",
+  "boundaries": "No auth bypass, production access, permission changes, merge, main updates or changes to protected servers/other tabs. Original fixture AuthPanel hook was deliberately not used.",
+  "evidence": [
+    {
+      "file": "pr44-390-auth-gate.jpg",
+      "sha256": "a3b40a6e7f48215f833bcea672626099d753aaca7984f5866272864cf63a402c",
+      "bytes": 28947
+    },
+    {
+      "file": "pr44-390-auth-gate.dom.txt",
+      "sha256": "24dbdcb2f5b2893a0bdf6a719738f07f121fcdfeb12d14b8916eef69db9b522d",
+      "bytes": 1079
+    }
+  ]
+}

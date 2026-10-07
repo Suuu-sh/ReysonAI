@@ -1,4 +1,5 @@
 import type { DetailedReasonDataset } from "./english-reasons.ts";
+import { expandStage3Reasons } from "./stage3-reason-format.ts";
 import { useEffect, useState } from "react";
 
 import type { CompactContinuationReasons } from "./continuation-reason-format.ts";
@@ -14,7 +15,7 @@ export function hasDetailedReasons(spotId: string | null | undefined) {
 
 export function loadDetailedReasons(spotId: string | null | undefined): Promise<DetailedReasonDataset | null> {
   if (!hasDetailedReasons(spotId)) return Promise.resolve(null);
-  if (!cache.has(spotId!)) cache.set(spotId!, loadDataset<DetailedReasonDataset | CompactContinuationReasons>(`reasons/${spotId}`).then(expandContinuationReasons).catch(error => { cache.delete(spotId!); throw error; }));
+  if (!cache.has(spotId!)) cache.set(spotId!, loadDataset<DetailedReasonDataset | CompactContinuationReasons>(`reasons/${spotId}`).then(expandContinuationReasons).then(expandStage3Reasons).catch(error => { cache.delete(spotId!); throw error; }));
   return cache.get(spotId!)!;
 }
 

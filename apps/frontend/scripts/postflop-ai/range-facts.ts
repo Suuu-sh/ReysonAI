@@ -11,7 +11,8 @@ export type RangeFacts = { street: string; role: PlayerRole; pfr: PlayerRole | n
 // size, SPR and how the last card shifted the ranges). Hero independent, cheap (one pass over each range) and
 // never stored: the stored flop base keeps its format. Used only by the advanced-style per-action explanations.
 import { comboRange } from "./browser-inputs.ts";
-import { handTier, TIERS } from "./model.ts";
+import { TIERS } from "./model.ts";
+import { handTier } from "./hu-hand-tier.ts";
 import { comboId, defenceFor, replayOrNull } from "./defence.ts";
 import { LATER_NODES, laterNodeRole } from "./later-tree.ts";
 import { laterPolicyMix } from "./later-policy.ts";

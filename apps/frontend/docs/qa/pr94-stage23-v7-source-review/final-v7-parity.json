@@ -1,0 +1,4254 @@
+{
+  "status": "verified-local-tree-awaiting-remote-identity",
+  "baseline": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+  "results": [
+    {
+      "path": "apps/frontend/scripts/postflop-ai/engine.ts",
+      "oldSha": "82af24b14a2f4c5b61283958e49fbc8b2414597d213f823c4d6656668b408e7c",
+      "currentSha": "82af24b14a2f4c5b61283958e49fbc8b2414597d213f823c4d6656668b408e7c",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": true,
+      "oldImports": [
+        {
+          "local": "betFraction",
+          "imported": "betFraction",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "evaluate",
+          "imported": "evaluate",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "facingNode",
+          "imported": "facingNode",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopBetFraction",
+          "imported": "flopBetFraction",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "gameConfig",
+          "imported": "gameConfig",
+          "source": "../../src/estimated/sizing.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "raiseNode",
+          "imported": "raiseNode",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "STREETS",
+          "imported": "STREETS",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "streetState",
+          "imported": "streetState",
+          "source": "./later-tree.ts"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "betFraction",
+          "imported": "betFraction",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "evaluate",
+          "imported": "evaluate",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "facingNode",
+          "imported": "facingNode",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopBetFraction",
+          "imported": "flopBetFraction",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "gameConfig",
+          "imported": "gameConfig",
+          "source": "../../src/estimated/sizing.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "raiseNode",
+          "imported": "raiseNode",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "STREETS",
+          "imported": "STREETS",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "streetState",
+          "imported": "streetState",
+          "source": "./later-tree.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/defence.ts",
+      "oldSha": "96c51fecb6c37f88d0c5348ed538168cb72cbe47d2b46c461c5a6b37234eb450",
+      "currentSha": "47aba428f9c798079411014d638b7d80c25efaf15d4770fb1f144b19c0462a1d",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": false,
+      "oldImports": [
+        {
+          "local": "betFraction",
+          "imported": "betFraction",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "comboRange",
+          "imported": "comboRange",
+          "source": "./browser-inputs.ts"
+        },
+        {
+          "local": "createTable",
+          "imported": "createTable",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "effectiveMix",
+          "imported": "effectiveMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "equitiesVersus",
+          "imported": "equitiesVersus",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "equityVersus",
+          "imported": "equityVersus",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "evaluate",
+          "imported": "evaluate",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "flopBetFraction",
+          "imported": "flopBetFraction",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopTextureKeys",
+          "imported": "flopTextureKeys",
+          "source": "./model.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./model.ts"
+        },
+        {
+          "local": "indexOf",
+          "imported": "indexOf",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "makeRange",
+          "imported": "makeRange",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "packEquities",
+          "imported": "packEquities",
+          "source": "./cached-values.ts"
+        },
+        {
+          "local": "packWeights",
+          "imported": "packWeights",
+          "source": "./cached-values.ts"
+        },
+        {
+          "local": "pilotConfig",
+          "imported": "ImportDefaultSpecifier",
+          "source": "../data/postflop-ai-pilot.json"
+        },
+        {
+          "local": "playFlop",
+          "imported": "playFlop",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "playLaterStreetsWithPolicy",
+          "imported": "playLaterStreetsWithPolicy",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "raiseDepth",
+          "imported": "raiseDepth",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "rake",
+          "imported": "rake",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "referenceLaterTierMix",
+          "imported": "referenceLaterTierMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "referenceMix",
+          "imported": "referenceMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "releaseRangeTables",
+          "imported": "releaseRangeTables",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "runoutTexture",
+          "imported": "runoutTexture",
+          "source": "./model.ts"
+        },
+        {
+          "local": "seededRandom",
+          "imported": "seededRandom",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "seedFor",
+          "imported": "seedFor",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "TIERS",
+          "imported": "TIERS",
+          "source": "./model.ts"
+        },
+        {
+          "local": "unpackWeights",
+          "imported": "unpackWeights",
+          "source": "./cached-values.ts"
+        },
+        {
+          "local": "weightOf",
+          "imported": "weightOf",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "withRaise",
+          "imported": "withRaise",
+          "source": "./policy.ts"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "betFraction",
+          "imported": "betFraction",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "comboRange",
+          "imported": "comboRange",
+          "source": "./browser-inputs.ts"
+        },
+        {
+          "local": "createTable",
+          "imported": "createTable",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "effectiveMix",
+          "imported": "effectiveMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "equitiesVersus",
+          "imported": "equitiesVersus",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "equityVersus",
+          "imported": "equityVersus",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "evaluate",
+          "imported": "evaluate",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "flopBetFraction",
+          "imported": "flopBetFraction",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopTextureKeys",
+          "imported": "flopTextureKeys",
+          "source": "./model.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./hu-hand-tier.ts"
+        },
+        {
+          "local": "indexOf",
+          "imported": "indexOf",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "makeRange",
+          "imported": "makeRange",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "packEquities",
+          "imported": "packEquities",
+          "source": "./cached-values.ts"
+        },
+        {
+          "local": "packWeights",
+          "imported": "packWeights",
+          "source": "./cached-values.ts"
+        },
+        {
+          "local": "pilotConfig",
+          "imported": "ImportDefaultSpecifier",
+          "source": "../data/postflop-ai-pilot.json"
+        },
+        {
+          "local": "playFlop",
+          "imported": "playFlop",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "playLaterStreetsWithPolicy",
+          "imported": "playLaterStreetsWithPolicy",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "raiseDepth",
+          "imported": "raiseDepth",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "rake",
+          "imported": "rake",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "referenceLaterTierMix",
+          "imported": "referenceLaterTierMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "referenceMix",
+          "imported": "referenceMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "releaseRangeTables",
+          "imported": "releaseRangeTables",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "runoutTexture",
+          "imported": "runoutTexture",
+          "source": "./model.ts"
+        },
+        {
+          "local": "seededRandom",
+          "imported": "seededRandom",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "seedFor",
+          "imported": "seedFor",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "TIERS",
+          "imported": "TIERS",
+          "source": "./model.ts"
+        },
+        {
+          "local": "unpackWeights",
+          "imported": "unpackWeights",
+          "source": "./cached-values.ts"
+        },
+        {
+          "local": "weightOf",
+          "imported": "weightOf",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "withRaise",
+          "imported": "withRaise",
+          "source": "./policy.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/views.ts",
+      "oldSha": "7bcb9c69272f887cddcda36ea9a51e9bca6d9cdc48f2d757c7563a5ba8b3f5c4",
+      "currentSha": "0b7324bf521165d7b657d6f8d5de867f3aa409b9b7d662f8d9dc772643f58248",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": false,
+      "oldImports": [
+        {
+          "local": "canonicalFlop",
+          "imported": "canonicalFlop",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "comboId",
+          "imported": "comboId",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "comboRange",
+          "imported": "comboRange",
+          "source": "./browser-inputs.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "FLOP_BETS",
+          "imported": "FLOP_BETS",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopState",
+          "imported": "flopState",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./model.ts"
+        },
+        {
+          "local": "historyFor",
+          "imported": "historyFor",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterPolicyMix",
+          "imported": "laterPolicyMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "nodeRole",
+          "imported": "nodeRole",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "policyMix",
+          "imported": "policyMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "remapFlopNodes",
+          "imported": "remapFlopNodes",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "replayOrNull",
+          "imported": "replayOrNull",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "scaleByPath",
+          "imported": "scaleByPath",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "TIERS",
+          "imported": "TIERS",
+          "source": "./model.ts"
+        },
+        {
+          "local": "treeHistories",
+          "imported": "treeHistories",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "treeNodes",
+          "imported": "treeNodes",
+          "source": "./policy.ts"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "canonicalFlop",
+          "imported": "canonicalFlop",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "comboId",
+          "imported": "comboId",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "comboRange",
+          "imported": "comboRange",
+          "source": "./browser-inputs.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "FLOP_BETS",
+          "imported": "FLOP_BETS",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopState",
+          "imported": "flopState",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./hu-hand-tier.ts"
+        },
+        {
+          "local": "historyFor",
+          "imported": "historyFor",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterPolicyMix",
+          "imported": "laterPolicyMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "nodeRole",
+          "imported": "nodeRole",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "policyMix",
+          "imported": "policyMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "remapFlopNodes",
+          "imported": "remapFlopNodes",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "replayOrNull",
+          "imported": "replayOrNull",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "scaleByPath",
+          "imported": "scaleByPath",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "TIERS",
+          "imported": "TIERS",
+          "source": "./model.ts"
+        },
+        {
+          "local": "treeHistories",
+          "imported": "treeHistories",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "treeNodes",
+          "imported": "treeNodes",
+          "source": "./policy.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-base-core.ts",
+      "oldSha": "03ed9ff554bcab5c0aff21a3ec516d66fc5be5acff0bd28217fbc2f4cafb1f5f",
+      "currentSha": "28cdc1bddd42499f95fc58b754fc488a44fc06bb699ddf073cb8aaea48c93acd",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": true,
+      "oldImports": [
+        {
+          "local": "averageFlopUiFacts",
+          "imported": "averageFlopUiFacts",
+          "source": "./flop-ui-facts.ts"
+        },
+        {
+          "local": "canonicalFlop",
+          "imported": "canonicalFlop",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "comboKey",
+          "imported": "comboKey",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "compactFlopBase",
+          "imported": "compactFlopBase",
+          "source": "./flop-base-codec.ts"
+        },
+        {
+          "local": "DEFENCE_VERSION",
+          "imported": "DEFENCE_VERSION",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "EVALUATOR_VERSION",
+          "imported": "EVALUATOR_VERSION",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "FLOP_BETS",
+          "imported": "FLOP_BETS",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "FLOP_RUNOUTS",
+          "imported": "FLOP_RUNOUTS",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "flopBlockerPredictors",
+          "imported": "flopBlockerPredictors",
+          "source": "./flop-ui-facts.ts"
+        },
+        {
+          "local": "flopHistoryViews",
+          "imported": "flopHistoryViews",
+          "source": "./views.ts"
+        },
+        {
+          "local": "flopUiComboFactsCanonical",
+          "imported": "flopUiComboFactsCanonical",
+          "source": "./flop-ui-facts.ts"
+        },
+        {
+          "local": "historyFor",
+          "imported": "historyFor",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "hydrateFrame",
+          "imported": "hydrateFrame",
+          "source": "./flop-base-codec.ts"
+        },
+        {
+          "local": "ISOMORPHISM_VERSION",
+          "imported": "ISOMORPHISM_VERSION",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "packFrame",
+          "imported": "packFrame",
+          "source": "./flop-base-codec.ts"
+        },
+        {
+          "local": "packView",
+          "imported": "packView",
+          "source": "./flop-base-codec.ts"
+        },
+        {
+          "local": "referenceLaterPolicy",
+          "imported": "referenceLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "remapFlopNode",
+          "imported": "remapFlopNode",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "sha",
+          "imported": "sha",
+          "source": "./browser-inputs.ts"
+        },
+        {
+          "local": "treeNodes",
+          "imported": "treeNodes",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "unpackFrameRow",
+          "imported": "unpackFrameRow",
+          "source": "./flop-base-codec.ts"
+        },
+        {
+          "local": "unpackView",
+          "imported": "unpackView",
+          "source": "./flop-base-codec.ts"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "averageFlopUiFacts",
+          "imported": "averageFlopUiFacts",
+          "source": "./flop-ui-facts.ts"
+        },
+        {
+          "local": "canonicalFlop",
+          "imported": "canonicalFlop",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "comboKey",
+          "imported": "comboKey",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "compactFlopBase",
+          "imported": "compactFlopBase",
+          "source": "./flop-base-codec.ts"
+        },
+        {
+          "local": "DEFENCE_VERSION",
+          "imported": "DEFENCE_VERSION",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "EVALUATOR_VERSION",
+          "imported": "EVALUATOR_VERSION",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "FLOP_BETS",
+          "imported": "FLOP_BETS",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "FLOP_RUNOUTS",
+          "imported": "FLOP_RUNOUTS",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "flopBlockerPredictors",
+          "imported": "flopBlockerPredictors",
+          "source": "./flop-ui-facts.ts"
+        },
+        {
+          "local": "flopHistoryViews",
+          "imported": "flopHistoryViews",
+          "source": "./views.ts"
+        },
+        {
+          "local": "flopUiComboFactsCanonical",
+          "imported": "flopUiComboFactsCanonical",
+          "source": "./flop-ui-facts.ts"
+        },
+        {
+          "local": "historyFor",
+          "imported": "historyFor",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "hydrateFrame",
+          "imported": "hydrateFrame",
+          "source": "./flop-base-codec.ts"
+        },
+        {
+          "local": "ISOMORPHISM_VERSION",
+          "imported": "ISOMORPHISM_VERSION",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "packFrame",
+          "imported": "packFrame",
+          "source": "./flop-base-codec.ts"
+        },
+        {
+          "local": "packView",
+          "imported": "packView",
+          "source": "./flop-base-codec.ts"
+        },
+        {
+          "local": "referenceLaterPolicy",
+          "imported": "referenceLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "remapFlopNode",
+          "imported": "remapFlopNode",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "sha",
+          "imported": "sha",
+          "source": "./browser-inputs.ts"
+        },
+        {
+          "local": "treeNodes",
+          "imported": "treeNodes",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "unpackFrameRow",
+          "imported": "unpackFrameRow",
+          "source": "./flop-base-codec.ts"
+        },
+        {
+          "local": "unpackView",
+          "imported": "unpackView",
+          "source": "./flop-base-codec.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-base-codec.ts",
+      "oldSha": "1bc26415412f46c39dde3e8e2c999ad70369b29a76cf321ef30a385772dfd716",
+      "currentSha": "1bc26415412f46c39dde3e8e2c999ad70369b29a76cf321ef30a385772dfd716",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": true,
+      "oldImports": [],
+      "newImports": []
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+      "oldSha": "124f5faca5c63e3c0d382b0a2ecef8db547b1c2e7dc47d7b859d2b1552a3a9d6",
+      "currentSha": "124f5faca5c63e3c0d382b0a2ecef8db547b1c2e7dc47d7b859d2b1552a3a9d6",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": true,
+      "oldImports": [
+        {
+          "local": "averageExplanationFacts",
+          "imported": "averageExplanationFacts",
+          "source": "./explain-aggregate.ts"
+        },
+        {
+          "local": "canonicalFlop",
+          "imported": "canonicalFlop",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "cardIds",
+          "imported": "cardIds",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "comboId",
+          "imported": "comboId",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "comboKey",
+          "imported": "comboKey",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "equityVersus",
+          "imported": "equityVersus",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "facingNode",
+          "imported": "facingNode",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "FLOP_BETS",
+          "imported": "FLOP_BETS",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopRunouts",
+          "imported": "flopRunouts",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "flopState",
+          "imported": "flopState",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "historyFor",
+          "imported": "historyFor",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "indexOf",
+          "imported": "indexOf",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "makeRange",
+          "imported": "makeRange",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "nodeRole",
+          "imported": "nodeRole",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "otherRole",
+          "imported": "otherRole",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "policyMix",
+          "imported": "policyMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "rankTable",
+          "imported": "rankTable",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "replayOrNull",
+          "imported": "replayOrNull",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "scaleByPath",
+          "imported": "scaleByPath",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "seatRange",
+          "imported": "seatRange",
+          "source": "./browser-inputs.ts"
+        },
+        {
+          "local": "weightOf",
+          "imported": "weightOf",
+          "source": "./range-equity.ts"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "averageExplanationFacts",
+          "imported": "averageExplanationFacts",
+          "source": "./explain-aggregate.ts"
+        },
+        {
+          "local": "canonicalFlop",
+          "imported": "canonicalFlop",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "cardIds",
+          "imported": "cardIds",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "comboId",
+          "imported": "comboId",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "comboKey",
+          "imported": "comboKey",
+          "source": "./flop-isomorphism.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "equityVersus",
+          "imported": "equityVersus",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "facingNode",
+          "imported": "facingNode",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "FLOP_BETS",
+          "imported": "FLOP_BETS",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopRunouts",
+          "imported": "flopRunouts",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "flopState",
+          "imported": "flopState",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "historyFor",
+          "imported": "historyFor",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "indexOf",
+          "imported": "indexOf",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "makeRange",
+          "imported": "makeRange",
+          "source": "./range-equity.ts"
+        },
+        {
+          "local": "nodeRole",
+          "imported": "nodeRole",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "otherRole",
+          "imported": "otherRole",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "policyMix",
+          "imported": "policyMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "rankTable",
+          "imported": "rankTable",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "replayOrNull",
+          "imported": "replayOrNull",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "scaleByPath",
+          "imported": "scaleByPath",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "seatRange",
+          "imported": "seatRange",
+          "source": "./browser-inputs.ts"
+        },
+        {
+          "local": "weightOf",
+          "imported": "weightOf",
+          "source": "./range-equity.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-hand-ev-core.mjs",
+      "oldSha": "2b54988f9c3cf640598612140f6cf8f824862eaf45bc9fe4bb2c5e17f60e5c21",
+      "currentSha": "2b54988f9c3cf640598612140f6cf8f824862eaf45bc9fe4bb2c5e17f60e5c21",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": true,
+      "oldImports": [
+        {
+          "local": "choose",
+          "imported": "choose",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "config",
+          "imported": "ImportDefaultSpecifier",
+          "source": "../data/postflop-ai-pilot.json"
+        },
+        {
+          "local": "createTable",
+          "imported": "createTable",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "evaluate",
+          "imported": "evaluate",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "exactActionEv",
+          "imported": "exactActionEv",
+          "source": "./exact-ev.mjs"
+        },
+        {
+          "local": "flopRunouts",
+          "imported": "flopRunouts",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "flopState",
+          "imported": "flopState",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterPolicyMix",
+          "imported": "laterPolicyMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "parseFlopBoard",
+          "imported": "parseFlopBoard",
+          "source": "./model.ts"
+        },
+        {
+          "local": "playFlop",
+          "imported": "playFlop",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "playLaterStreetsWithPolicy",
+          "imported": "playLaterStreetsWithPolicy",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "policyMix",
+          "imported": "policyMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "rake",
+          "imported": "rake",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "referenceLaterPolicy",
+          "imported": "referenceLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "replayOrNull",
+          "imported": "replayOrNull",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "scaleByPath",
+          "imported": "scaleByPath",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "seatRange",
+          "imported": "seatRange",
+          "source": "./browser-inputs.ts"
+        },
+        {
+          "local": "seededRandom",
+          "imported": "seededRandom",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "seedFor",
+          "imported": "seedFor",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "settle",
+          "imported": "settle",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "spotById",
+          "imported": "spotById",
+          "source": "./spots.ts"
+        },
+        {
+          "local": "treeHistories",
+          "imported": "treeHistories",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "validateLaterPolicy",
+          "imported": "validateLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "validatePolicy",
+          "imported": "validatePolicy",
+          "source": "./policy.ts"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "choose",
+          "imported": "choose",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "config",
+          "imported": "ImportDefaultSpecifier",
+          "source": "../data/postflop-ai-pilot.json"
+        },
+        {
+          "local": "createTable",
+          "imported": "createTable",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "evaluate",
+          "imported": "evaluate",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "exactActionEv",
+          "imported": "exactActionEv",
+          "source": "./exact-ev.mjs"
+        },
+        {
+          "local": "flopRunouts",
+          "imported": "flopRunouts",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "flopState",
+          "imported": "flopState",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterPolicyMix",
+          "imported": "laterPolicyMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "parseFlopBoard",
+          "imported": "parseFlopBoard",
+          "source": "./model.ts"
+        },
+        {
+          "local": "playFlop",
+          "imported": "playFlop",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "playLaterStreetsWithPolicy",
+          "imported": "playLaterStreetsWithPolicy",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "policyMix",
+          "imported": "policyMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "rake",
+          "imported": "rake",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "referenceLaterPolicy",
+          "imported": "referenceLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "replayOrNull",
+          "imported": "replayOrNull",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "scaleByPath",
+          "imported": "scaleByPath",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "seatRange",
+          "imported": "seatRange",
+          "source": "./browser-inputs.ts"
+        },
+        {
+          "local": "seededRandom",
+          "imported": "seededRandom",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "seedFor",
+          "imported": "seedFor",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "settle",
+          "imported": "settle",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "spotById",
+          "imported": "spotById",
+          "source": "./spots.ts"
+        },
+        {
+          "local": "treeHistories",
+          "imported": "treeHistories",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "validateLaterPolicy",
+          "imported": "validateLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "validatePolicy",
+          "imported": "validatePolicy",
+          "source": "./policy.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/later-hand-ev-core.mjs",
+      "oldSha": "0d7efe4d146bf126dd42c5a7ee70eb96124505ffb00ea04c8561f5a69f979c40",
+      "currentSha": "44e4ae15784fcd9d44231bcc538b32079a88d1c05510e9193dca0ea3ce7ddba2",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": false,
+      "oldImports": [
+        {
+          "local": "choose",
+          "imported": "choose",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "config",
+          "imported": "ImportDefaultSpecifier",
+          "source": "../data/postflop-ai-pilot.json"
+        },
+        {
+          "local": "createTable",
+          "imported": "createTable",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "evaluate",
+          "imported": "evaluate",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "exactActionEv",
+          "imported": "exactActionEv",
+          "source": "./exact-ev.mjs"
+        },
+        {
+          "local": "flopState",
+          "imported": "flopState",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterDecision",
+          "imported": "laterDecision",
+          "source": "../../src/estimated/postflop-trial.ts"
+        },
+        {
+          "local": "laterPolicyMix",
+          "imported": "laterPolicyMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "laterStart",
+          "imported": "laterStart",
+          "source": "../../src/estimated/postflop-trial.ts"
+        },
+        {
+          "local": "parseCards",
+          "imported": "parseCards",
+          "source": "./model.ts"
+        },
+        {
+          "local": "playFlop",
+          "imported": "playFlop",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "playLaterStreetsWithPolicy",
+          "imported": "playLaterStreetsWithPolicy",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "rake",
+          "imported": "rake",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "replayDecision",
+          "imported": "replayDecision",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "replayLater",
+          "imported": "replayLater",
+          "source": "../../src/estimated/postflop-trial.ts"
+        },
+        {
+          "local": "seededRandom",
+          "imported": "seededRandom",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "seedFor",
+          "imported": "seedFor",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "settle",
+          "imported": "settle",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "validateLaterPolicy",
+          "imported": "validateLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "validatePolicy",
+          "imported": "validatePolicy",
+          "source": "./policy.ts"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "choose",
+          "imported": "choose",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "config",
+          "imported": "ImportDefaultSpecifier",
+          "source": "../data/postflop-ai-pilot.json"
+        },
+        {
+          "local": "createTable",
+          "imported": "createTable",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "evaluate",
+          "imported": "evaluate",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "exactActionEv",
+          "imported": "exactActionEv",
+          "source": "./exact-ev.mjs"
+        },
+        {
+          "local": "flopState",
+          "imported": "flopState",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterDecision",
+          "imported": "laterDecisionState",
+          "source": "./street-state.mjs"
+        },
+        {
+          "local": "laterPolicyMix",
+          "imported": "laterPolicyMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "laterStart",
+          "imported": "laterStart",
+          "source": "./street-state.mjs"
+        },
+        {
+          "local": "parseCards",
+          "imported": "parseCards",
+          "source": "./model.ts"
+        },
+        {
+          "local": "playFlop",
+          "imported": "playFlop",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "playLaterStreetsWithPolicy",
+          "imported": "playLaterStreetsWithPolicy",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "rake",
+          "imported": "rake",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "replayDecision",
+          "imported": "replayDecision",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "replayLater",
+          "imported": "replayLater",
+          "source": "./street-state.mjs"
+        },
+        {
+          "local": "seededRandom",
+          "imported": "seededRandom",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "seedFor",
+          "imported": "seedFor",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "settle",
+          "imported": "settle",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "validateLaterPolicy",
+          "imported": "validateLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "validatePolicy",
+          "imported": "validatePolicy",
+          "source": "./policy.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/exact-ev.mjs",
+      "oldSha": "4fc51c770ef09c4bc63a33cfd07911139c812e82849495f915f1a2e14dec5f9a",
+      "currentSha": "4fc51c770ef09c4bc63a33cfd07911139c812e82849495f915f1a2e14dec5f9a",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": true,
+      "oldImports": [
+        {
+          "local": "comboId",
+          "imported": "comboId",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "config",
+          "imported": "ImportDefaultSpecifier",
+          "source": "../data/postflop-ai-pilot.json"
+        },
+        {
+          "local": "createTable",
+          "imported": "createTable",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "isBettingNode",
+          "imported": "isBettingNode",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "isFacingNode",
+          "imported": "isFacingNode",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "playFlop",
+          "imported": "playFlop",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "playLaterStreetsWithPolicy",
+          "imported": "playLaterStreetsWithPolicy",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "rake",
+          "imported": "rake",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "rankTable",
+          "imported": "rankTable",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "tierArray",
+          "imported": "tierArray",
+          "source": "./defence.ts"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "comboId",
+          "imported": "comboId",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "config",
+          "imported": "ImportDefaultSpecifier",
+          "source": "../data/postflop-ai-pilot.json"
+        },
+        {
+          "local": "createTable",
+          "imported": "createTable",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "isBettingNode",
+          "imported": "isBettingNode",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "isFacingNode",
+          "imported": "isFacingNode",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "playFlop",
+          "imported": "playFlop",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "playLaterStreetsWithPolicy",
+          "imported": "playLaterStreetsWithPolicy",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "rake",
+          "imported": "rake",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "rankTable",
+          "imported": "rankTable",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "tierArray",
+          "imported": "tierArray",
+          "source": "./defence.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/explain.mjs",
+      "oldSha": "da6ef6e4006b65a5260188df793b090e804f8d1db08a175b18e5d3fce2d24594",
+      "currentSha": "c5e93120e2052f5b5f41f9beb10fef10002fc5b75e90b73b874d355a5919d5e2",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": false,
+      "oldImports": [
+        {
+          "local": "averageExplanationFacts",
+          "imported": "averageExplanationFacts",
+          "source": "./explain-aggregate.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "evaluate",
+          "imported": "evaluate",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "facingNode",
+          "imported": "facingNode",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "FLOP_BETS",
+          "imported": "FLOP_BETS",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopBetFraction",
+          "imported": "flopBetFraction",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopState",
+          "imported": "flopState",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./model.ts"
+        },
+        {
+          "local": "historyFor",
+          "imported": "historyFor",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "nodeRole",
+          "imported": "nodeRole",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "otherRole",
+          "imported": "otherRole",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "parseCards",
+          "imported": "parseCards",
+          "source": "./model.ts"
+        },
+        {
+          "local": "policyMix",
+          "imported": "policyMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "raiseDepth",
+          "imported": "raiseDepth",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "replayOrNull",
+          "imported": "replayOrNull",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "scaleByPath",
+          "imported": "scaleByPath",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "seatRange",
+          "imported": "seatRange",
+          "source": "./browser-inputs.ts"
+        },
+        {
+          "local": "seededRandom",
+          "imported": "seededRandom",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "seedFor",
+          "imported": "seedFor",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "treeNodes",
+          "imported": "treeNodes",
+          "source": "./policy.ts"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "averageExplanationFacts",
+          "imported": "averageExplanationFacts",
+          "source": "./explain-aggregate.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "evaluate",
+          "imported": "evaluate",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "facingNode",
+          "imported": "facingNode",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "FLOP_BETS",
+          "imported": "FLOP_BETS",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopBetFraction",
+          "imported": "flopBetFraction",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopState",
+          "imported": "flopState",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./hu-hand-tier.ts"
+        },
+        {
+          "local": "historyFor",
+          "imported": "historyFor",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "nodeRole",
+          "imported": "nodeRole",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "otherRole",
+          "imported": "otherRole",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "parseCards",
+          "imported": "parseCards",
+          "source": "./model.ts"
+        },
+        {
+          "local": "policyMix",
+          "imported": "policyMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "raiseDepth",
+          "imported": "raiseDepth",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "replayOrNull",
+          "imported": "replayOrNull",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "scaleByPath",
+          "imported": "scaleByPath",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "seatRange",
+          "imported": "seatRange",
+          "source": "./browser-inputs.ts"
+        },
+        {
+          "local": "seededRandom",
+          "imported": "seededRandom",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "seedFor",
+          "imported": "seedFor",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "treeNodes",
+          "imported": "treeNodes",
+          "source": "./policy.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/explain-later.ts",
+      "oldSha": "f3d81aadf3439ca9ffe6e67b71547c072792a444470456c7bf3bf0411f708e75",
+      "currentSha": "c53807334761446ffa0244dde9e59057a418524f349b19e832352bfe27dd58e3",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": false,
+      "oldImports": [
+        {
+          "local": "averageExplanationFacts",
+          "imported": "averageExplanationFacts",
+          "source": "./explain-aggregate.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "evaluate",
+          "imported": "evaluate",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "flopState",
+          "imported": "flopState",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./model.ts"
+        },
+        {
+          "local": "isFacingNode",
+          "imported": "isFacingNode",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterDecision",
+          "imported": "laterDecision",
+          "source": "../../src/estimated/postflop-trial.ts"
+        },
+        {
+          "local": "laterNodeRole",
+          "imported": "laterNodeRole",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterPolicyMix",
+          "imported": "laterPolicyMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "laterStart",
+          "imported": "laterStart",
+          "source": "../../src/estimated/postflop-trial.ts"
+        },
+        {
+          "local": "parseCards",
+          "imported": "parseCards",
+          "source": "./model.ts"
+        },
+        {
+          "local": "parseFlopBoard",
+          "imported": "parseFlopBoard",
+          "source": "./model.ts"
+        },
+        {
+          "local": "replayLater",
+          "imported": "replayLater",
+          "source": "../../src/estimated/postflop-trial.ts"
+        },
+        {
+          "local": "replayOrNull",
+          "imported": "replayOrNull",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "runoutTexture",
+          "imported": "runoutTexture",
+          "source": "./model.ts"
+        },
+        {
+          "local": "scaleByPath",
+          "imported": "scaleByPath",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "seatRange",
+          "imported": "seatRange",
+          "source": "./browser-inputs.ts"
+        },
+        {
+          "local": "validateLaterPolicy",
+          "imported": "validateLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "validatePolicy",
+          "imported": "validatePolicy",
+          "source": "./policy.ts"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "averageExplanationFacts",
+          "imported": "averageExplanationFacts",
+          "source": "./explain-aggregate.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "evaluate",
+          "imported": "evaluate",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "flopState",
+          "imported": "flopState",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./hu-hand-tier.ts"
+        },
+        {
+          "local": "isFacingNode",
+          "imported": "isFacingNode",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterDecision",
+          "imported": "laterDecisionState",
+          "source": "./street-state.mjs"
+        },
+        {
+          "local": "laterNodeRole",
+          "imported": "laterNodeRole",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterPolicyMix",
+          "imported": "laterPolicyMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "laterStart",
+          "imported": "laterStart",
+          "source": "./street-state.mjs"
+        },
+        {
+          "local": "parseCards",
+          "imported": "parseCards",
+          "source": "./model.ts"
+        },
+        {
+          "local": "parseFlopBoard",
+          "imported": "parseFlopBoard",
+          "source": "./model.ts"
+        },
+        {
+          "local": "replayLater",
+          "imported": "replayLater",
+          "source": "./street-state.mjs"
+        },
+        {
+          "local": "replayOrNull",
+          "imported": "replayOrNull",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "runoutTexture",
+          "imported": "runoutTexture",
+          "source": "./model.ts"
+        },
+        {
+          "local": "scaleByPath",
+          "imported": "scaleByPath",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "seatRange",
+          "imported": "seatRange",
+          "source": "./browser-inputs.ts"
+        },
+        {
+          "local": "validateLaterPolicy",
+          "imported": "validateLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "validatePolicy",
+          "imported": "validatePolicy",
+          "source": "./policy.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/range-facts.ts",
+      "oldSha": "d79134f909a3c786f5e3c80bafbdee6257efc6b019b6245635ca16ab86b11587",
+      "currentSha": "feceb156713cf39c4196d8c293fa5cc941c993cdefef1a68b9dc41c04101afa8",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": false,
+      "oldImports": [
+        {
+          "local": "comboId",
+          "imported": "comboId",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "comboRange",
+          "imported": "comboRange",
+          "source": "./browser-inputs.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./model.ts"
+        },
+        {
+          "local": "historyFor",
+          "imported": "historyFor",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterNodeRole",
+          "imported": "laterNodeRole",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterPolicyMix",
+          "imported": "laterPolicyMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "nodeRole",
+          "imported": "nodeRole",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "policyMix",
+          "imported": "policyMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "replayOrNull",
+          "imported": "replayOrNull",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "TIERS",
+          "imported": "TIERS",
+          "source": "./model.ts"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "comboId",
+          "imported": "comboId",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "comboRange",
+          "imported": "comboRange",
+          "source": "./browser-inputs.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./hu-hand-tier.ts"
+        },
+        {
+          "local": "historyFor",
+          "imported": "historyFor",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterNodeRole",
+          "imported": "laterNodeRole",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterPolicyMix",
+          "imported": "laterPolicyMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "nodeRole",
+          "imported": "nodeRole",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "policyMix",
+          "imported": "policyMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "replayOrNull",
+          "imported": "replayOrNull",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "TIERS",
+          "imported": "TIERS",
+          "source": "./model.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/simulation.mjs",
+      "oldSha": "45a9a058766d0c073644eb58d3f2429e7bc2322dce8a045847674e118ef2be00",
+      "currentSha": "429548aafc1d5c1e184f4027435da78510b583671bb5d13359f71472c300d2e7",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": false,
+      "oldImports": [
+        {
+          "local": "boards",
+          "imported": "boards",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "choose",
+          "imported": "choose",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "config",
+          "imported": "config",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "createHash",
+          "imported": "createHash",
+          "source": "node:crypto"
+        },
+        {
+          "local": "createTable",
+          "imported": "createTable",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "DEFENCE_VERSION",
+          "imported": "DEFENCE_VERSION",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./model.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterPolicyMix",
+          "imported": "laterPolicyMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "laterSizingHash",
+          "imported": "laterSizingHash",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "makeSampler",
+          "imported": "makeSampler",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "opponentMix",
+          "imported": "opponentMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "playFlop",
+          "imported": "playFlop",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "playLaterStreetsWithPolicy",
+          "imported": "playLaterStreetsWithPolicy",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "policyMix",
+          "imported": "policyMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "rake",
+          "imported": "rake",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "referenceLaterMix",
+          "imported": "referenceLaterMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "referenceLaterPolicy",
+          "imported": "referenceLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "referencePolicyFor",
+          "imported": "referencePolicyFor",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "samplePair",
+          "imported": "samplePair",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "seatRange",
+          "imported": "seatRange",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "seededRandom",
+          "imported": "seededRandom",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "seedFor",
+          "imported": "seedFor",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "settle",
+          "imported": "settle",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "spotById",
+          "imported": "spotById",
+          "source": "./spots.ts"
+        },
+        {
+          "local": "validateLaterPolicy",
+          "imported": "validateLaterPolicy",
+          "source": "./later-policy.ts"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "boards",
+          "imported": "boards",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "choose",
+          "imported": "choose",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "config",
+          "imported": "config",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "createHash",
+          "imported": "createHash",
+          "source": "node:crypto"
+        },
+        {
+          "local": "createTable",
+          "imported": "createTable",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "DEFENCE_VERSION",
+          "imported": "DEFENCE_VERSION",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./hu-hand-tier.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterPolicyMix",
+          "imported": "laterPolicyMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "laterSizingHash",
+          "imported": "laterSizingHash",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "makeSampler",
+          "imported": "makeSampler",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "opponentMix",
+          "imported": "opponentMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "playFlop",
+          "imported": "playFlop",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "playLaterStreetsWithPolicy",
+          "imported": "playLaterStreetsWithPolicy",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "policyMix",
+          "imported": "policyMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "rake",
+          "imported": "rake",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "referenceLaterMix",
+          "imported": "referenceLaterMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "referenceLaterPolicy",
+          "imported": "referenceLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "referencePolicyFor",
+          "imported": "referencePolicyFor",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "samplePair",
+          "imported": "samplePair",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "seatRange",
+          "imported": "seatRange",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "seededRandom",
+          "imported": "seededRandom",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "seedFor",
+          "imported": "seedFor",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "settle",
+          "imported": "settle",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "spotById",
+          "imported": "spotById",
+          "source": "./spots.ts"
+        },
+        {
+          "local": "validateLaterPolicy",
+          "imported": "validateLaterPolicy",
+          "source": "./later-policy.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/balance.mjs",
+      "oldSha": "8aa751f9e1e9287ae3ada0d7d72ea48de1339ff13a56f1e265132a739a72d425",
+      "currentSha": "647f9535c1d005077661b07c107b6bd1418be71225329589a27414598ace5738",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": false,
+      "oldImports": [
+        {
+          "local": "betFraction",
+          "imported": "betFraction",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "boards",
+          "imported": "boards",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "comboRange",
+          "imported": "comboRange",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "config",
+          "imported": "config",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "createTable",
+          "imported": "createTable",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "FLOP_BETS",
+          "imported": "FLOP_BETS",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopBetFraction",
+          "imported": "flopBetFraction",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopState",
+          "imported": "flopState",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopTextureKeys",
+          "imported": "flopTextureKeys",
+          "source": "./model.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./model.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterNodeRole",
+          "imported": "laterNodeRole",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "nodeRole",
+          "imported": "nodeRole",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "playFlop",
+          "imported": "playFlop",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "policyMix",
+          "imported": "policyMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "raiseDepth",
+          "imported": "raiseDepth",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "referenceLaterTierMix",
+          "imported": "referenceLaterTierMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "replayOrNull",
+          "imported": "replayOrNull",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "runoutTexture",
+          "imported": "runoutTexture",
+          "source": "./model.ts"
+        },
+        {
+          "local": "seatRange",
+          "imported": "seatRange",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "seededRandom",
+          "imported": "seededRandom",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "seedFor",
+          "imported": "seedFor",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "streetHistories",
+          "imported": "streetHistories",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "streetState",
+          "imported": "streetState",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "treeHistories",
+          "imported": "treeHistories",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "treeNodes",
+          "imported": "treeNodes",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "validateLaterPolicy",
+          "imported": "validateLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "validatePolicy",
+          "imported": "validatePolicy",
+          "source": "./policy.ts"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "betFraction",
+          "imported": "betFraction",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "boards",
+          "imported": "boards",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "comboRange",
+          "imported": "comboRange",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "config",
+          "imported": "config",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "createTable",
+          "imported": "createTable",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "defenceFor",
+          "imported": "defenceFor",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "FLOP_BETS",
+          "imported": "FLOP_BETS",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopBetFraction",
+          "imported": "flopBetFraction",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopState",
+          "imported": "flopState",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopTextureKeys",
+          "imported": "flopTextureKeys",
+          "source": "./model.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./hu-hand-tier.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "laterNodeRole",
+          "imported": "laterNodeRole",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "nodeRole",
+          "imported": "nodeRole",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "playFlop",
+          "imported": "playFlop",
+          "source": "./engine.ts"
+        },
+        {
+          "local": "policyMix",
+          "imported": "policyMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "raiseDepth",
+          "imported": "raiseDepth",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "referenceLaterTierMix",
+          "imported": "referenceLaterTierMix",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "replayOrNull",
+          "imported": "replayOrNull",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "runoutTexture",
+          "imported": "runoutTexture",
+          "source": "./model.ts"
+        },
+        {
+          "local": "seatRange",
+          "imported": "seatRange",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "seededRandom",
+          "imported": "seededRandom",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "seedFor",
+          "imported": "seedFor",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "streetHistories",
+          "imported": "streetHistories",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "streetState",
+          "imported": "streetState",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "treeHistories",
+          "imported": "treeHistories",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "treeNodes",
+          "imported": "treeNodes",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "validateLaterPolicy",
+          "imported": "validateLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "validatePolicy",
+          "imported": "validatePolicy",
+          "source": "./policy.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/audit.mjs",
+      "oldSha": "43b4cd2cecf8e7eb13892c11908a4cbc081379b8b103d87fa95251a98946d3dc",
+      "currentSha": "e7de02d439c3118c72c4eac93b75479d052c37ff3cdffd75737c1bb05314c65e",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": false,
+      "oldImports": [
+        {
+          "local": "boards",
+          "imported": "boards",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "checkFlopBalance",
+          "imported": "checkFlopBalance",
+          "source": "./balance.mjs"
+        },
+        {
+          "local": "checkLaterBalance",
+          "imported": "checkLaterBalance",
+          "source": "./balance.mjs"
+        },
+        {
+          "local": "config",
+          "imported": "config",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "laterSizingHash",
+          "imported": "laterSizingHash",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "nodeRole",
+          "imported": "nodeRole",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "policyMix",
+          "imported": "policyMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "PROFILES",
+          "imported": "PROFILES",
+          "source": "./simulation.mjs"
+        },
+        {
+          "local": "referencePolicyFor",
+          "imported": "referencePolicyFor",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "seatRange",
+          "imported": "seatRange",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "sha",
+          "imported": "sha",
+          "source": "./generate.mjs"
+        },
+        {
+          "local": "simulate",
+          "imported": "simulate",
+          "source": "./simulation.mjs"
+        },
+        {
+          "local": "SIMULATION_VERSION",
+          "imported": "SIMULATION_VERSION",
+          "source": "./simulation.mjs"
+        },
+        {
+          "local": "treeNodes",
+          "imported": "treeNodes",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "validateLaterPolicy",
+          "imported": "validateLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "validatePolicy",
+          "imported": "validatePolicy",
+          "source": "./policy.ts"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "boards",
+          "imported": "boards",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "checkFlopBalance",
+          "imported": "checkFlopBalance",
+          "source": "./balance.mjs"
+        },
+        {
+          "local": "checkLaterBalance",
+          "imported": "checkLaterBalance",
+          "source": "./balance.mjs"
+        },
+        {
+          "local": "config",
+          "imported": "config",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "DEFENCE_VERSION",
+          "imported": "DEFENCE_VERSION",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "laterSizingHash",
+          "imported": "laterSizingHash",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "nodeRole",
+          "imported": "nodeRole",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "policyMix",
+          "imported": "policyMix",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "PROFILES",
+          "imported": "PROFILES",
+          "source": "./simulation.mjs"
+        },
+        {
+          "local": "referencePolicyFor",
+          "imported": "referencePolicyFor",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "seatRange",
+          "imported": "seatRange",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "sha",
+          "imported": "sha",
+          "source": "./generate.mjs"
+        },
+        {
+          "local": "simulate",
+          "imported": "simulate",
+          "source": "./simulation.mjs"
+        },
+        {
+          "local": "SIMULATION_VERSION",
+          "imported": "SIMULATION_VERSION",
+          "source": "./simulation.mjs"
+        },
+        {
+          "local": "treeNodes",
+          "imported": "treeNodes",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "validateLaterPolicy",
+          "imported": "validateLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "validatePolicy",
+          "imported": "validatePolicy",
+          "source": "./policy.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
+      "oldSha": "b5fcb8166ba9af9978eadfc9cc2737b38d524eb5ab367e647227293db38422ef",
+      "currentSha": "46ec36d6c23aaa2d0ae86b8926f2f1fab5cb2b18688c617ba5a8152d1cf2c74e",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": false,
+      "oldImports": [
+        {
+          "local": "artifactPaths",
+          "imported": "artifactPaths",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "boardHeight",
+          "imported": "boardHeight",
+          "source": "./model.ts"
+        },
+        {
+          "local": "boards",
+          "imported": "boards",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "boardTexture",
+          "imported": "boardTexture",
+          "source": "./model.ts"
+        },
+        {
+          "local": "config",
+          "imported": "config",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "createHash",
+          "imported": "createHash",
+          "source": "node:crypto"
+        },
+        {
+          "local": "dirname",
+          "imported": "dirname",
+          "source": "node:path"
+        },
+        {
+          "local": "existsSync",
+          "imported": "existsSync",
+          "source": "node:fs"
+        },
+        {
+          "local": "facingNode",
+          "imported": "facingNode",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "FLOP_BETS",
+          "imported": "FLOP_BETS",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopBetLabel",
+          "imported": "flopBetLabel",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./model.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "LINES",
+          "imported": "LINES",
+          "source": "./model.ts"
+        },
+        {
+          "local": "mkdirSync",
+          "imported": "mkdirSync",
+          "source": "node:fs"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "openingActions",
+          "imported": "openingActions",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "parseCards",
+          "imported": "parseCards",
+          "source": "./model.ts"
+        },
+        {
+          "local": "raiseDepth",
+          "imported": "raiseDepth",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "readArtifact",
+          "imported": "readArtifact",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "readFileSync",
+          "imported": "readFileSync",
+          "source": "node:fs"
+        },
+        {
+          "local": "requireArtifact",
+          "imported": "requireArtifact",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "root",
+          "imported": "root",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "RUNOUT_TEXTURES",
+          "imported": "RUNOUT_TEXTURES",
+          "source": "./model.ts"
+        },
+        {
+          "local": "seatRange",
+          "imported": "seatRange",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "spawn",
+          "imported": "spawn",
+          "source": "node:child_process"
+        },
+        {
+          "local": "streetNodes",
+          "imported": "streetNodes",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "STREETS",
+          "imported": "STREETS",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "TIERS",
+          "imported": "TIERS",
+          "source": "./model.ts"
+        },
+        {
+          "local": "treeNodes",
+          "imported": "treeNodes",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "validateLaterPolicy",
+          "imported": "validateLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "validatePolicy",
+          "imported": "validatePolicy",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "writeFileSync",
+          "imported": "writeFileSync",
+          "source": "node:fs"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "artifactPaths",
+          "imported": "artifactPaths",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "boardHeight",
+          "imported": "boardHeight",
+          "source": "./model.ts"
+        },
+        {
+          "local": "boards",
+          "imported": "boards",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "boardTexture",
+          "imported": "boardTexture",
+          "source": "./model.ts"
+        },
+        {
+          "local": "config",
+          "imported": "config",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "createHash",
+          "imported": "createHash",
+          "source": "node:crypto"
+        },
+        {
+          "local": "dirname",
+          "imported": "dirname",
+          "source": "node:path"
+        },
+        {
+          "local": "existsSync",
+          "imported": "existsSync",
+          "source": "node:fs"
+        },
+        {
+          "local": "facingNode",
+          "imported": "facingNode",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "FLOP_BETS",
+          "imported": "FLOP_BETS",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopBetLabel",
+          "imported": "flopBetLabel",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./hu-hand-tier.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "LINES",
+          "imported": "LINES",
+          "source": "./model.ts"
+        },
+        {
+          "local": "mkdirSync",
+          "imported": "mkdirSync",
+          "source": "node:fs"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "openingActions",
+          "imported": "openingActions",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "parseCards",
+          "imported": "parseCards",
+          "source": "./model.ts"
+        },
+        {
+          "local": "raiseDepth",
+          "imported": "raiseDepth",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "readArtifact",
+          "imported": "readArtifact",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "readFileSync",
+          "imported": "readFileSync",
+          "source": "node:fs"
+        },
+        {
+          "local": "requireArtifact",
+          "imported": "requireArtifact",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "root",
+          "imported": "root",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "RUNOUT_TEXTURES",
+          "imported": "RUNOUT_TEXTURES",
+          "source": "./model.ts"
+        },
+        {
+          "local": "seatRange",
+          "imported": "seatRange",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "spawn",
+          "imported": "spawn",
+          "source": "node:child_process"
+        },
+        {
+          "local": "streetNodes",
+          "imported": "streetNodes",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "STREETS",
+          "imported": "STREETS",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "TIERS",
+          "imported": "TIERS",
+          "source": "./model.ts"
+        },
+        {
+          "local": "treeNodes",
+          "imported": "treeNodes",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "validateLaterPolicy",
+          "imported": "validateLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "validatePolicy",
+          "imported": "validatePolicy",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "writeFileSync",
+          "imported": "writeFileSync",
+          "source": "node:fs"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/hand-ev.mjs",
+      "oldSha": "109d68d8a70726fbb0133702cf0133f0de4f31e0ae5104acc21733d6a69b4f9b",
+      "currentSha": "debfc97bd9f13d949e741288c4a6ecfb72642b77120828a40408f6d351b02c34",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": true,
+      "oldImports": [
+        {
+          "local": "artifactPaths",
+          "imported": "artifactPaths",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "boards",
+          "imported": "boards",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "computeBoardBatch",
+          "imported": "computeBoardBatch",
+          "source": "./board-batch.mjs"
+        },
+        {
+          "local": "config",
+          "imported": "config",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "DEFAULT_SPOT_ID",
+          "imported": "DEFAULT_SPOT_ID",
+          "source": "./spots.ts"
+        },
+        {
+          "local": "DEFENCE_VERSION",
+          "imported": "DEFENCE_VERSION",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "existsSync",
+          "imported": "existsSync",
+          "source": "node:fs"
+        },
+        {
+          "local": "FLOP_EV_RUNOUTS",
+          "imported": "FLOP_EV_RUNOUTS",
+          "source": "./flop-hand-ev-core.mjs"
+        },
+        {
+          "local": "FLOP_HAND_EV_DEFAULT_SAMPLES",
+          "imported": "FLOP_HAND_EV_DEFAULT_SAMPLES",
+          "source": "./flop-hand-ev-core.mjs"
+        },
+        {
+          "local": "handEvForBoardCore",
+          "imported": "handEvForBoard",
+          "source": "./flop-hand-ev-core.mjs"
+        },
+        {
+          "local": "HISTORIES",
+          "imported": "HISTORIES",
+          "source": "./flop-hand-ev-core.mjs"
+        },
+        {
+          "local": "historiesFor",
+          "imported": "historiesFor",
+          "source": "./flop-hand-ev-core.mjs"
+        },
+        {
+          "local": "laterSizingHash",
+          "imported": "laterSizingHash",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "loadCandidate",
+          "imported": "loadCandidate",
+          "source": "./generate.mjs"
+        },
+        {
+          "local": "loadInputs",
+          "imported": "loadInputs",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "loadLaterCandidate",
+          "imported": "loadLaterCandidate",
+          "source": "./generate.mjs"
+        },
+        {
+          "local": "parseFlopBoard",
+          "imported": "parseFlopBoard",
+          "source": "./model.ts"
+        },
+        {
+          "local": "playFromNode",
+          "imported": "playFromNode",
+          "source": "./flop-hand-ev-core.mjs"
+        },
+        {
+          "local": "readArtifact",
+          "imported": "readArtifact",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "readFileSync",
+          "imported": "readFileSync",
+          "source": "node:fs"
+        },
+        {
+          "local": "referenceLaterPolicy",
+          "imported": "referenceLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "sha",
+          "imported": "sha",
+          "source": "./generate.mjs"
+        },
+        {
+          "local": "writeFileSync",
+          "imported": "writeFileSync",
+          "source": "node:fs"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "artifactPaths",
+          "imported": "artifactPaths",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "boards",
+          "imported": "boards",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "computeBoardBatch",
+          "imported": "computeBoardBatch",
+          "source": "./board-batch.mjs"
+        },
+        {
+          "local": "config",
+          "imported": "config",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "DEFAULT_SPOT_ID",
+          "imported": "DEFAULT_SPOT_ID",
+          "source": "./spots.ts"
+        },
+        {
+          "local": "DEFENCE_VERSION",
+          "imported": "DEFENCE_VERSION",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "existsSync",
+          "imported": "existsSync",
+          "source": "node:fs"
+        },
+        {
+          "local": "FLOP_EV_RUNOUTS",
+          "imported": "FLOP_EV_RUNOUTS",
+          "source": "./flop-hand-ev-core.mjs"
+        },
+        {
+          "local": "FLOP_HAND_EV_DEFAULT_SAMPLES",
+          "imported": "FLOP_HAND_EV_DEFAULT_SAMPLES",
+          "source": "./flop-hand-ev-core.mjs"
+        },
+        {
+          "local": "handEvForBoardCore",
+          "imported": "handEvForBoard",
+          "source": "./flop-hand-ev-core.mjs"
+        },
+        {
+          "local": "HISTORIES",
+          "imported": "HISTORIES",
+          "source": "./flop-hand-ev-core.mjs"
+        },
+        {
+          "local": "historiesFor",
+          "imported": "historiesFor",
+          "source": "./flop-hand-ev-core.mjs"
+        },
+        {
+          "local": "laterSizingHash",
+          "imported": "laterSizingHash",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "loadCandidate",
+          "imported": "loadCandidate",
+          "source": "./generate.mjs"
+        },
+        {
+          "local": "loadInputs",
+          "imported": "loadInputs",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "loadLaterCandidate",
+          "imported": "loadLaterCandidate",
+          "source": "./generate.mjs"
+        },
+        {
+          "local": "parseFlopBoard",
+          "imported": "parseFlopBoard",
+          "source": "./model.ts"
+        },
+        {
+          "local": "playFromNode",
+          "imported": "playFromNode",
+          "source": "./flop-hand-ev-core.mjs"
+        },
+        {
+          "local": "readArtifact",
+          "imported": "readArtifact",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "readFileSync",
+          "imported": "readFileSync",
+          "source": "node:fs"
+        },
+        {
+          "local": "referenceLaterPolicy",
+          "imported": "referenceLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "sha",
+          "imported": "sha",
+          "source": "./generate.mjs"
+        },
+        {
+          "local": "writeFileSync",
+          "imported": "writeFileSync",
+          "source": "node:fs"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/later-hand-ev.mjs",
+      "oldSha": "4f34a28fd6f272ab0ff90cdbf26fdf14a1e5e9b2467678c318605bc16ea9f786",
+      "currentSha": "7add0017858b1fd93d9986e3806ab9e6ccec5a6210d7b58e581e6e1631916712",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": false,
+      "oldImports": [
+        {
+          "local": "artifactPaths",
+          "imported": "artifactPaths",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "availableParallelism",
+          "imported": "availableParallelism",
+          "source": "node:os"
+        },
+        {
+          "local": "boards",
+          "imported": "boards",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "computeNode",
+          "imported": "computeNode",
+          "source": "./later-hand-ev-core.mjs"
+        },
+        {
+          "local": "config",
+          "imported": "config",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "DEFAULT_SPOT_ID",
+          "imported": "DEFAULT_SPOT_ID",
+          "source": "./spots.ts"
+        },
+        {
+          "local": "dirname",
+          "imported": "dirname",
+          "source": "node:path"
+        },
+        {
+          "local": "FLOP_BETS",
+          "imported": "FLOP_BETS",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopState",
+          "imported": "flopState",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "LATER_HAND_EV_FOR_HAND_DEFAULT_SAMPLES",
+          "imported": "LATER_HAND_EV_FOR_HAND_DEFAULT_SAMPLES",
+          "source": "./later-hand-ev-core.mjs"
+        },
+        {
+          "local": "laterHandEvForHand",
+          "imported": "laterHandEvForHand",
+          "source": "./later-hand-ev-core.mjs"
+        },
+        {
+          "local": "laterHandEvKey",
+          "imported": "laterHandEvKey",
+          "source": "./later-hand-ev-core.mjs"
+        },
+        {
+          "local": "loadCandidate",
+          "imported": "loadCandidate",
+          "source": "./generate.mjs"
+        },
+        {
+          "local": "loadInputs",
+          "imported": "loadInputs",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "loadLaterCandidate",
+          "imported": "loadLaterCandidate",
+          "source": "./generate.mjs"
+        },
+        {
+          "local": "makeLaterMixReader",
+          "imported": "makeLaterMixReader",
+          "source": "./later-hand-ev-core.mjs"
+        },
+        {
+          "local": "mkdirSync",
+          "imported": "mkdirSync",
+          "source": "node:fs"
+        },
+        {
+          "local": "readArtifact",
+          "imported": "readArtifact",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "seededRandom",
+          "imported": "seededRandom",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "seedFor",
+          "imported": "seedFor",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "sha",
+          "imported": "sha",
+          "source": "./generate.mjs"
+        },
+        {
+          "local": "streetHistories",
+          "imported": "streetHistories",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "validateLaterPolicy",
+          "imported": "validateLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "validatePolicy",
+          "imported": "validatePolicy",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "Worker",
+          "imported": "Worker",
+          "source": "node:worker_threads"
+        },
+        {
+          "local": "writeFileSync",
+          "imported": "writeFileSync",
+          "source": "node:fs"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "artifactPaths",
+          "imported": "artifactPaths",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "availableParallelism",
+          "imported": "availableParallelism",
+          "source": "node:os"
+        },
+        {
+          "local": "boards",
+          "imported": "boards",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "computeNode",
+          "imported": "computeNode",
+          "source": "./later-hand-ev-core.mjs"
+        },
+        {
+          "local": "config",
+          "imported": "config",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "DEFAULT_SPOT_ID",
+          "imported": "DEFAULT_SPOT_ID",
+          "source": "./spots.ts"
+        },
+        {
+          "local": "DEFENCE_VERSION",
+          "imported": "DEFENCE_VERSION",
+          "source": "./defence.ts"
+        },
+        {
+          "local": "dirname",
+          "imported": "dirname",
+          "source": "node:path"
+        },
+        {
+          "local": "FLOP_BETS",
+          "imported": "FLOP_BETS",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopState",
+          "imported": "flopState",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "LATER_HAND_EV_FOR_HAND_DEFAULT_SAMPLES",
+          "imported": "LATER_HAND_EV_FOR_HAND_DEFAULT_SAMPLES",
+          "source": "./later-hand-ev-core.mjs"
+        },
+        {
+          "local": "laterHandEvForHand",
+          "imported": "laterHandEvForHand",
+          "source": "./later-hand-ev-core.mjs"
+        },
+        {
+          "local": "laterHandEvKey",
+          "imported": "laterHandEvKey",
+          "source": "./later-hand-ev-core.mjs"
+        },
+        {
+          "local": "loadCandidate",
+          "imported": "loadCandidate",
+          "source": "./generate.mjs"
+        },
+        {
+          "local": "loadInputs",
+          "imported": "loadInputs",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "loadLaterCandidate",
+          "imported": "loadLaterCandidate",
+          "source": "./generate.mjs"
+        },
+        {
+          "local": "makeLaterMixReader",
+          "imported": "makeLaterMixReader",
+          "source": "./later-hand-ev-core.mjs"
+        },
+        {
+          "local": "mkdirSync",
+          "imported": "mkdirSync",
+          "source": "node:fs"
+        },
+        {
+          "local": "readArtifact",
+          "imported": "readArtifact",
+          "source": "./inputs.mjs"
+        },
+        {
+          "local": "seededRandom",
+          "imported": "seededRandom",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "seedFor",
+          "imported": "seedFor",
+          "source": "../lib/equity.ts"
+        },
+        {
+          "local": "sha",
+          "imported": "sha",
+          "source": "./generate.mjs"
+        },
+        {
+          "local": "streetHistories",
+          "imported": "streetHistories",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "validateLaterPolicy",
+          "imported": "validateLaterPolicy",
+          "source": "./later-policy.ts"
+        },
+        {
+          "local": "validatePolicy",
+          "imported": "validatePolicy",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "Worker",
+          "imported": "Worker",
+          "source": "node:worker_threads"
+        },
+        {
+          "local": "writeFileSync",
+          "imported": "writeFileSync",
+          "source": "node:fs"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/policy.ts",
+      "oldSha": "b1e2090037567d79db0db0f5a6c81d8e4daeed7ed0de9b0c3b528cfa40970331",
+      "currentSha": "7697491739c8dc9a73bc65110f6a6059272c0690886e41d0378b124e6e4c0d36",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": false,
+      "oldImports": [
+        {
+          "local": "DEFAULT_TREE",
+          "imported": "DEFAULT_TREE",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "FLOP_BETS",
+          "imported": "FLOP_BETS",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopTextureKeys",
+          "imported": "flopTextureKeys",
+          "source": "./model.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./model.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "nodeRole",
+          "imported": "nodeRole",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "raiseDepth",
+          "imported": "raiseDepth",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "TEXTURES",
+          "imported": "TEXTURES",
+          "source": "./model.ts"
+        },
+        {
+          "local": "TIERS",
+          "imported": "TIERS",
+          "source": "./model.ts"
+        },
+        {
+          "local": "treeNodes",
+          "imported": "treeNodes",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "TREES",
+          "imported": "TREES",
+          "source": "./tree.ts"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "DEFAULT_TREE",
+          "imported": "DEFAULT_TREE",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "FLOP_BETS",
+          "imported": "FLOP_BETS",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "flopTextureKeys",
+          "imported": "flopTextureKeys",
+          "source": "./model.ts"
+        },
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./hu-hand-tier.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "nodeRole",
+          "imported": "nodeRole",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "NODES",
+          "imported": "NODES",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "raiseDepth",
+          "imported": "raiseDepth",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "TEXTURES",
+          "imported": "TEXTURES",
+          "source": "./model.ts"
+        },
+        {
+          "local": "TIERS",
+          "imported": "TIERS",
+          "source": "./model.ts"
+        },
+        {
+          "local": "treeNodes",
+          "imported": "treeNodes",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "TREES",
+          "imported": "TREES",
+          "source": "./tree.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/later-policy.ts",
+      "oldSha": "f0f91c3a393e1e7a562da44fb2d344e4a81133128bcec02e709064990c5b0acc",
+      "currentSha": "654bfd24a665f27c5c0d4a8e0aa97e9c7107ac064b97f6e5421235d02232fb33",
+      "completeBodyEqual": true,
+      "fixtureMatchesIndependentOldBody": true,
+      "importsEqual": false,
+      "oldImports": [
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./model.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "LINES",
+          "imported": "LINES",
+          "source": "./model.ts"
+        },
+        {
+          "local": "raiseDepth",
+          "imported": "raiseDepth",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "raiseReferenceRow",
+          "imported": "raiseReferenceRow",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "RUNOUT_TEXTURES",
+          "imported": "RUNOUT_TEXTURES",
+          "source": "./model.ts"
+        },
+        {
+          "local": "runoutTexture",
+          "imported": "runoutTexture",
+          "source": "./model.ts"
+        },
+        {
+          "local": "streetNodes",
+          "imported": "streetNodes",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "STREETS",
+          "imported": "STREETS",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "TIERS",
+          "imported": "TIERS",
+          "source": "./model.ts"
+        },
+        {
+          "local": "withRaise",
+          "imported": "withRaise",
+          "source": "./policy.ts"
+        }
+      ],
+      "newImports": [
+        {
+          "local": "handTier",
+          "imported": "handTier",
+          "source": "./hu-hand-tier.ts"
+        },
+        {
+          "local": "LATER_NODES",
+          "imported": "LATER_NODES",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "LINES",
+          "imported": "LINES",
+          "source": "./model.ts"
+        },
+        {
+          "local": "raiseDepth",
+          "imported": "raiseDepth",
+          "source": "./tree.ts"
+        },
+        {
+          "local": "raiseReferenceRow",
+          "imported": "raiseReferenceRow",
+          "source": "./policy.ts"
+        },
+        {
+          "local": "RUNOUT_TEXTURES",
+          "imported": "RUNOUT_TEXTURES",
+          "source": "./model.ts"
+        },
+        {
+          "local": "runoutTexture",
+          "imported": "runoutTexture",
+          "source": "./model.ts"
+        },
+        {
+          "local": "streetNodes",
+          "imported": "streetNodes",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "STREETS",
+          "imported": "STREETS",
+          "source": "./later-tree.ts"
+        },
+        {
+          "local": "TIERS",
+          "imported": "TIERS",
+          "source": "./model.ts"
+        },
+        {
+          "local": "withRaise",
+          "imported": "withRaise",
+          "source": "./policy.ts"
+        }
+      ]
+    }
+  ]
+}
