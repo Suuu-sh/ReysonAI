@@ -1,6 +1,5 @@
 import { useId, type CSSProperties } from "react";
 import { Info } from "@phosphor-icons/react";
-import { localized } from "../locale.ts";
 import { ffCopy as t } from "../trainer/fastfold-api.ts";
 import { STYLES, type PlayStyle, type StyleId } from "./player-read.ts";
 import { StyleAvatar } from "./StyleAvatar.tsx";
@@ -12,6 +11,21 @@ type Props = {
   baseline: string; horizontal: string; vertical: string; yTop: string; yBottom: string;
   waiting: string; explanation: string; baselineRadius?: number;
 };
+
+function zoneName(id: StyleId) {
+  const names: Record<StyleId, [string, string, string, string]> = {
+    collecting: ["Collecting", "集計中", "收集中", "Recopilando"],
+    nit: ["Nit", "NIT", "极紧型", "Nit"],
+    tight_passive: ["Tight-passive", "タイト・パッシブ", "紧弱型", "Conservador pasivo"],
+    tag: ["TAG", "TAG", "TAG", "TAG"],
+    balanced: ["Balanced", "バランス型", "平衡型", "Equilibrado"],
+    passive: ["Passive-leaning", "パッシブ寄り", "偏被动", "Tendencia pasiva"],
+    aggressive: ["Aggressive-leaning", "アグレッシブ寄り", "偏激进", "Tendencia agresiva"],
+    station: ["Calling station", "コーリングステーション", "跟注站", "Pagador habitual"],
+    lag: ["LAG", "LAG", "LAG", "LAG"],
+  };
+  return t(...names[id]);
+}
 
 // Shared presentation only. Each caller supplies its original classifier, scale,
 // sample thresholds and source-specific meaning; no model or storage changes here.
@@ -32,11 +46,13 @@ export function StyleMap(props: Props) {
       <div className="play-style-map-grid">
         {props.zones.map((zone, index) => {
           const style = STYLES[zone.id], on = props.current === zone.id;
-          const description = props.source === "agent" ? localized(style.summary.en, style.summary.ja)
-            : `${localized(style.name.en, style.name.ja)} · ${t("Region based on participation and 3bet differences from the same-question estimate.", "同じ問題の推定値に対する参加率と3bet率の差で分けた領域です。", "按参与率及3bet率相对同题估计的差异划分的区域。", "Región según diferencias de participación y 3bet respecto a la estimación de las mismas preguntas.")}`;
+          const name = zoneName(zone.id);
+          const description = `${name} · ${props.source === "agent"
+            ? t("Region based on VPIP and PFR/VPIP differences from the Agent baseline.", "Agent基準に対するVPIPとPFR/VPIPの差で分けた領域です。", "按VPIP及PFR/VPIP相对Agent基准的差异划分的区域。", "Región según diferencias de VPIP y PFR/VPIP respecto a la referencia de Agent.")
+            : t("Region based on participation and 3bet differences from the same-question estimate.", "同じ問題の推定値に対する参加率と3bet率の差で分けた領域です。", "按参与率及3bet率相对同题估计的差异划分的区域。", "Región según diferencias de participación y 3bet respecto a la estimación de las mismas preguntas.")}`;
           return <span key={index} className={`style-zone${on ? " is-current" : ""}`} title={description}
             style={{ left: `${zone.x[0]}%`, width: `${zone.x[1] - zone.x[0]}%`, top: `${zone.y[0]}%`, height: `${zone.y[1] - zone.y[0]}%`, "--style": style.color } as CSSProperties}>
-            {zone.label !== false && <>{!on && <StyleAvatar id={zone.id} color={style.color} size={22} dim />}<small>{localized(style.name.en, style.name.ja)}</small></>}
+            {zone.label !== false && <>{!on && <StyleAvatar id={zone.id} color={style.color} size={22} dim />}<small>{name}</small></>}
           </span>;
         })}
         {props.baselineRadius != null && <span className="play-style-map-baseline" aria-hidden="true" style={{ "--r": `${props.baselineRadius}%` } as CSSProperties} />}

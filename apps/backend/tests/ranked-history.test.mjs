@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { humanRankFixture } from './fixtures/human-rank.mjs';
 import worker from '../src/index.ts';
+import { build } from '../../frontend/node_modules/esbuild/lib/main.js';
 
 const api = 'http://localhost:8787/v1/fastfold/human/';
 const id = i => `10000000-0000-4000-8000-${String(i).padStart(12,'0')}`;
@@ -51,4 +52,34 @@ test('empty history; invalid season/cursor/owner; unauthenticated and expired id
     let response=await worker.fetch(new Request(api+'history'),f.env);assert.equal(response.status,401);assert.ok(!('items' in await response.json()));
     f.sqlite.prepare('UPDATE account_sessions SET expires_at=0').run();response=await worker.fetch(new Request(api+'history',{headers:{cookie:'reysonai-dev-session='+f.tokens[0]}}),f.env);assert.equal(response.status,401);
   }finally{f.close();}
+});
+
+// Exercise the production DO wrapper, replacing only the Cloudflare host base
+// constructor. Real handle/routing/authentication/SQL/alarm scheduler stay bundled
+// from source; host storage instrumentation observes all alarm touches without
+// an optional emulator or live credentials.
+test('production DO history GET does not touch alarm storage, deadline scheduling, DB or game state; other routes still schedule',async()=>{
+ const bundle=await build({entryPoints:[new URL('../src/fastfold-do.ts',import.meta.url).pathname],bundle:true,write:false,platform:'node',format:'esm',logLevel:'silent',plugins:[{name:'instrumented-cloudflare-host',setup(b){b.onResolve({filter:/^cloudflare:workers$/},()=>({path:'host-base',namespace:'test-host'}));b.onLoad({filter:/.*/,namespace:'test-host'},()=>({contents:'export class DurableObject { constructor(ctx, env) { this.ctx=ctx; this.env=env; } }',loader:'js'}));}}]});
+ const {FastFoldRuntime}=await import('data:text/javascript;base64,'+Buffer.from(bundle.outputFiles[0].text).toString('base64'));
+ const f=await fixture();try{
+  f.insert(1);
+  // A pending/expired real game deadline makes the old wrapper arm an alarm.
+  // Empty/out-of-pool fixtures otherwise miss that side effect.
+  f.sqlite.prepare("UPDATE human_rank_players SET phase='queued',lease_until=? WHERE user_id='U0'").run(Date.now()-1);
+  const alarmCalls=[];let alarm=null;
+  const storage={async transaction(fn){alarmCalls.push('transaction');return fn()},async getAlarm(){alarmCalls.push('getAlarm');return alarm},async setAlarm(value){alarmCalls.push('setAlarm');alarm=value},async deleteAlarm(){alarmCalls.push('deleteAlarm');alarm=null}};
+  const sql=[];const prepare=f.env.DB.prepare.bind(f.env.DB);f.env.DB.prepare=query=>{sql.push(query);return prepare(query)};
+  const runtime=new FastFoldRuntime({storage},f.env);let alarmInvocations=0;const originalAlarm=runtime.alarm.bind(runtime);runtime.alarm=async()=>{alarmInvocations++;return originalAlarm()};
+  f.env.FASTFOLD_RUNTIME={getByName(name){assert.equal(name,'human-pool');return runtime}};
+  const snapshot=()=>JSON.stringify(['human_rank_players','human_rank_tables','human_rank_results','human_rank_receipts'].map(table=>f.sqlite.prepare('SELECT * FROM '+table+' ORDER BY rowid').all()));
+  const before=snapshot(),changes=f.sqlite.prepare('SELECT total_changes() n').get().n;
+  for(const season of ['human-fastfold-v1','fastfold-v1','quiz-v1'])await f.call(0,'history?season='+season);
+  await f.call(0,'history?cursor=bad',undefined,400);await f.call(0,'history?season=unknown',undefined,400);
+  const unauth=await worker.fetch(new Request(api+'history'),f.env);assert.equal(unauth.status,401);
+  assert.deepEqual(alarmCalls,[]);assert.equal(alarmInvocations,0);assert.equal(alarm,null);
+  assert.equal(f.sqlite.prepare('SELECT total_changes() n').get().n,changes);assert.equal(snapshot(),before);
+  assert.ok(!sql.some(q=>q.includes('MIN(')||/^(?:INSERT|UPDATE|DELETE)/i.test(q)),JSON.stringify(sql));
+  // Every non-history route retains its previous scheduler behavior.
+  await f.call(0,'status');assert.deepEqual(alarmCalls,['transaction','getAlarm','setAlarm']);assert.ok(Number.isFinite(alarm));assert.equal(alarmInvocations,0);
+ }finally{f.close()}
 });

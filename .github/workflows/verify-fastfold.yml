@@ -50,5 +50,6 @@ jobs:
       - name: Verify authoritative FastFold replay and backend module
         working-directory: apps/backend
         run: |
+          node --experimental-strip-types --test tests/ranked-history.test.mjs
           npx --yes --package=wrangler@4.147.0 --call 'node scripts/verify-fastfold-local-runtime.mjs --wrangler "$(command -v wrangler)"'
           npm run check
