@@ -693,3 +693,8 @@ Verification:
 - Enable only motion/≤560px when the complete cover fits available viewport; unusually short covers and reduced-motion retain natural flow without clipping. No long black runway; original square/dim/copy and62ranges/1000ms untouched.
 - Targeted cover-boundary test1/build/diffcheck passed. New browser evidence below if available; no merge/deploy.
 - No new browser result available at commit time; no actual scroll verification claimed for this latest revision.
+
+## 2026-10-07 — Final clarified matrix-covering direction
+- User clarified: square matrix stays fixed below header while opaque question block scrolls up over it. Restore only that measured pin; remove complete-cover96px hold and question12px translation. Original square slot retains original height, no new spacer/runway. Release when question.top≤header.bottom (fully covered), not earlier.
+- Question and downstream Audience→FinalCTA have solid background/z1 above fixed matrixz0, including short phones where question alone is shorter than matrix. Other mobile sections remain natural.62ranges/1000ms/dim/centered copy unchanged; reduced-motion opt-out retained.
+- Targeted geometry/scope tests2/build/diffcheck passed: footerTop65 keeps pin,64/63 releases, no new height/padding. Current browser check not claimed at commit time; this restores the previously browser-verified measured-pin structure. No merge/deploy.

@@ -99,7 +99,7 @@
 /* Hero: the viewport-height range and copy share one uninterrupted stage. */
 .site-hero { padding: 0; }
 .site-cover-ending { display: none; }
-.site-cover-track, .site-cover-question { display: contents; }
+
 .site-hero-stage { display: contents; }
 .site-after-cover { display: contents; }
 .site-explorer { border-radius: var(--panel-radius); }
@@ -1006,11 +1006,9 @@
   .has-motion .site-persona-stage.is-learner .site-persona-view, .has-motion .site-persona-stage.is-learner .site-persona-view * { animation: none; }
 }
 
-/* A brief cover pause keeps the entire square visible; the question never overlaps it. */
+/* Only the square pins; opaque question and later content cover it naturally. */
 @media (max-width: 560px) {
-  .site-cover-question { display: flex; flex-direction: column; align-items: center; gap: 9px; transform: translateY(var(--question-shift, 0px)); }
-  .site-cover-track.is-paused { display: block; position: relative; height: calc(var(--cover-height) + 96px); }
-  .site-cover-track.is-paused .site-hero { height: var(--cover-height); }
-  .site-cover-track.is-paused[data-cover-phase="pinned"] .site-hero { position: fixed; top: 64px; left: 0; width: 100%; z-index: 1; }
-  .site-cover-track.is-paused[data-cover-phase="after"] .site-hero { position: absolute; bottom: 0; width: 100%; }
+  .has-motion .site-hero[data-cover-pinned] .site-hero-stage > .site-explorer { position: fixed; top: var(--header-height); left: 0; width: 100%; z-index: 0; }
+  .has-motion .site-cover-ending { position: relative; z-index: 1; background: var(--bg); }
+  .has-motion .site-after-cover { display: flow-root; position: relative; z-index: 1; background: var(--bg); }
 }

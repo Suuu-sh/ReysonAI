@@ -57,14 +57,14 @@ test("phone cover fills remaining viewport without stretching or clipping the sq
 
 test("non-cover phone chapters remain natural with no global pin or artificial hold", () => {
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
-  assert.doesNotMatch(source, /MobileHold|shouldPinCover|mobileHoldGeometry|data-cover-pinned|data-hold-phase/);
+  assert.doesNotMatch(source, /MobileHold|mobileHoldGeometry|data-hold-phase/);
   assert.match(source, /running = auto && motion && visible && !scrolly && !phone/);
   assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 640px\)"\)/);
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
   const chapters = css.slice(css.indexOf("/* Mobile chapters:"));
   assert.match(chapters, /position: static; min-height: 0;/);
   assert.match(chapters, /\.site-persona:not\(\.is-active\)[^}]*display: none/);
-  assert.doesNotMatch(css, /data-cover-pinned|site-mobile-hold|--audience-track-height|--step-top/);
+  assert.doesNotMatch(css, /site-mobile-hold|--audience-track-height|--step-top/);
 });
 
 test("phone persona selectors precede one adjacent description and matching preview", () => {
@@ -89,14 +89,16 @@ test("phone learner retains the full saved factual reason used on desktop", () =
   for (const locale of ["en", "ja", "es", "zh-CN"]) assert.ok(render(locale).includes(escapeText(copies[locale].how.whyNote)));
 });
 
-test("brief phone cover pause keeps the square visible and the question in its own region", () => {
-  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
-  assert.match(source, /enabled = motion && phone.matches && height <= window.innerHeight - 64 \+ 1/);
-  assert.match(source, /Math.min\(distance, 96\) \/ 8/);
+test("phone square stays pinned until opaque question fully covers it, with no spacer", async () => {
+  const { shouldPinCover } = await server.ssrLoadModule("/src/site/cover-pin.ts");
+  for (const footerTop of [454, 300, 65]) assert.equal(shouldPinCover(0, footerTop, 64), true);
+  assert.equal(shouldPinCover(-390, 64, 64), false);
+  assert.equal(shouldPinCover(-391, 63, 64), false);
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  assert.match(css, /height: calc\(var\(--cover-height\) \+ 96px\)/);
-  assert.match(css, /data-cover-phase="pinned"[^}]*position: fixed; top: 64px/);
-  assert.doesNotMatch(css, /site-question-track|data-cover-pinned|site-mobile-hold/);
+  const cover = css.slice(css.indexOf("/* Only the square pins"));
+  assert.match(cover, /site-cover-ending[^}]*z-index: 1; background: var\(--bg\)/);
+  assert.match(cover, /site-after-cover[^}]*z-index: 1; background: var\(--bg\)/);
+  assert.doesNotMatch(cover, /height:|padding-bottom:|question-shift/);
 });
 
 test("hero and shared English taglines use Understand the reason", () => {
