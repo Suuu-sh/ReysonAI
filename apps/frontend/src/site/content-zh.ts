@@ -11,7 +11,7 @@ export const zh: SiteCopy = {
     { label: "对比", href: "#compare" },
     { label: "价格", href: "#pricing" },
   ],
-  hero: { title1: "Don't just play.", title2: "Understand why.", lead: "ReysonAI告诉你每手牌该怎么打，并用易懂的语言解释原因。理解了原因，坐到牌桌前也能记起该如何决策。", primary: "打开应用", secondary: "了解使用方法", note: "免费预览 · 无需账户 · 6人桌现金局，100BB" },
+  hero: { title1: "Don't just play.", title2: "Understand the reason.", lead: "ReysonAI告诉你每手牌该怎么打，并用易懂的语言解释原因。理解了原因，坐到牌桌前也能记起该如何决策。", primary: "打开应用", secondary: "了解使用方法", note: "免费预览 · 无需账户 · 6人桌现金局，100BB" },
   preview: { simpleMode: "简洁", matrixLabel: "13×13起手牌图表", scrollLabel: "图表，小屏幕上可横向滚动", selectedHand: "当前手牌", suited: "同花", offsuit: "非同花", pair: "口袋对子", frequencyLabel: "行动频率", why: "原因", k7s: "K7s是同花牌，翻牌后也有可玩性。在这份BTN开池估算中，它始终加注。", other: (spot: string, hand: string, action: string, value: number) => `在已保存的${spot}范围中，${hand}以${value}%的频率${action}。打开应用可查看这手牌的完整解释。`, explore: "在应用中查看此范围", saved: "已保存的AI估算", notGto: "并非GTO解", spotOpening: "BTN开池", spotResponse: "BB应对", actionPast: { raise: "加注", threeBet: "3bet", call: "跟注", fold: "弃牌" }, pauseTour: "暂停手牌自动演示", resumeTour: "继续手牌自动演示", touring: "正在自动演示手牌。点击任意格子即可自行操作。", manual: "点击任意手牌查看详情。" },
   how: {
     title1: "从局面到原因，", title2: "只需三步。",
@@ -87,5 +87,5 @@ export const zh: SiteCopy = {
     ],
   },
   final: { title1: "下一次练习，", title2: "从一手牌开始。", description: "打开应用，选择局面，点击一手牌。", action: "打开ReysonAI", note: "免费预览 · 无需账户" },
-  footer: { tagline: "Don't just play. Understand why.", product: "产品", open: "打开应用", how: "使用方法", drill: "训练", analysis: "分析", compare: "对比", pricing: "价格", faq: "常见问题", legal: "法律条款", privacy: "隐私政策", terms: "使用条款", disclaimer: "ReysonAI提供扑克策略和学习信息。AI方案属于估算，不保证数学最优，也不保证等同于GTO解。请理性游戏。" },
+  footer: { tagline: "Don't just play. Understand the reason.", product: "产品", open: "打开应用", how: "使用方法", drill: "训练", analysis: "分析", compare: "对比", pricing: "价格", faq: "常见问题", legal: "法律条款", privacy: "隐私政策", terms: "使用条款", disclaimer: "ReysonAI提供扑克策略和学习信息。AI方案属于估算，不保证数学最优，也不保证等同于GTO解。请理性游戏。" },
 };

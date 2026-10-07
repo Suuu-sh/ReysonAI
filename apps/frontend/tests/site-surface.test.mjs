@@ -45,12 +45,23 @@ test("phone hero uses an inert decorative chart behind centered copy and CTAs", 
   assert.match(source, /query\.removeEventListener\("change", sync\)/);
   assert.match(mobile, /\.site-hero-copy \{[^}]*text-align: center;/);
   assert.match(mobile, /\.site-hero-range \{ position: absolute;[^}]*pointer-events: none;/);
-  assert.match(mobile, /\.site-hero h1 \.site-hero-mark \{ color: var\(--pink-bright\);/);
+  assert.match(mobile, /\.site-hero h1 \.site-hero-mark \{ color: #a8a8b3;/);
+  assert.match(mobile, /\.site-hero-opening \{ color: var\(--ink\);/);
+  assert.match(mobile, /\.site-hero-range \.site-matrix-scroll \{[^}]*margin: 0; padding: 0;/);
   assert.match(mobile, /\.site-hero-actions \{ justify-content: center;/);
   assert.match(mobile, /\.site-hero-range \.site-matrix \{ height: auto; aspect-ratio: 1;/);
   assert.match(mobile, /\.has-motion \.site-hero-range \{ animation: none; \}/);
   assert.match(mobile, /\.site-wrap\.site-hero-main \{[^}]*width: 100%; margin: 0; min-height: 0; aspect-ratio: 1; padding: 0;/);
   assert.doesNotMatch(mobile.split("/* Compare")[0], /min-height: calc\(100svh - 64px\)/);
+});
+
+test("hero and shared English taglines use Understand the reason", () => {
+  for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
+    const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");
+    assert.match(content, /title2: "Understand the reason\."/);
+    assert.match(content, /tagline: "Don't just play\. Understand the reason\."/);
+    assert.doesNotMatch(content, /Understand why\./);
+  }
 });
 
 let server, ServiceSite, copies;

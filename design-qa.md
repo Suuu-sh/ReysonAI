@@ -552,3 +552,9 @@ Verification:
 - Remove viewport-height spacing and the 16px outer inset on phones. The hero main is full-width with aspect-ratio 1, no external padding/margin, and compact centered typography/spacing. All copy still overlays the decorative square; CTA target remains 44px and no text clipping is introduced.
 - Parent visual QA: 390px English and 375px Japanese show all copy inside the full-width square, with Selected hand immediately below. Measured 375px Japanese: hero width=375, height=375, bottom=439; following detail top=439 (zero gap).
 - Targeted square/decorative guard test and build passed; diff check passed. Physical Safari remains unverified.
+
+## 2026-10-07 — Final headline and matrix edge alignment
+- Reset the matrix scroll wrapper's desktop focus-ring padding/margins only in the inert mobile background; keep normal 2px internal cell gaps. This removes the below-header/right-edge strip without changing the square or desktop focus-ring space.
+- Final shared English headline/tagline: Don't just play. Understand the reason. First line is larger white; second line muted gray on mobile. Update English headline/footer literals across locale copies and existing English metadata without rewriting translations.
+- Parent QA: 390px English matrix x=0,y=64,width=390,height=390,right=390,bottom=454, matching the hero exactly; 375px Japanese copy/CTAs fit. 1280px desktop longer headline fits its left column without overflow.
+- Targeted edge/copy tests and production build passed; diff check passed. Physical Safari still unverified.
