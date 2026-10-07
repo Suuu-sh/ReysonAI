@@ -64,6 +64,15 @@ test("hero and shared English taglines use Understand the reason", () => {
   }
 });
 
+test("phone selected-hand panel stays compact without shrinking its action target", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 560px)"));
+  assert.match(mobile, /\.site-hero-detail \.site-hand \{ gap: 12px 16px; padding-block: 14px; \}/);
+  assert.match(mobile, /\.site-hero-deal \.site-card \{ --card-w: clamp\(36px, 10vw, 48px\); \}/);
+  assert.match(mobile, /\.site-hero-reason \.site-hand-link \{ min-height: 44px;/);
+  assert.match(mobile, /\.site-hero-summary \.site-hand-action\.is-spacer \{ display: none; \}/);
+});
+
 let server, ServiceSite, copies;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });

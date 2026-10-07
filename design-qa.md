@@ -558,3 +558,8 @@ Verification:
 - Final shared English headline/tagline: Don't just play. Understand the reason. First line is larger white; second line muted gray on mobile. Update English headline/footer literals across locale copies and existing English metadata without rewriting translations.
 - Parent QA: 390px English matrix x=0,y=64,width=390,height=390,right=390,bottom=454, matching the hero exactly; 375px Japanese copy/CTAs fit. 1280px desktop longer headline fits its left column without overflow.
 - Targeted edge/copy tests and production build passed; diff check passed. Physical Safari still unverified.
+
+## 2026-10-07 — Compact phone Selected hand / Why panel
+- Only at ≤560px: reduce decorative card width, hand heading, frequency-row spacing, panel padding and Why spacing; remove the invisible spacer row. Keep all frequencies/explanations, Explore CTA minimum 44px, and playback controls. Desktop and square hero untouched.
+- Parent visual QA: 390px English Selected hand/Why/CTA/playback fit below the 390px square within the 844px viewport. 375px Japanese remains readable without overflow; CTA is reachable through normal scrolling. No exact percentage height reduction claimed.
+- Focused compact-panel regression test, production build and diff check passed. Physical Safari remains unverified.
