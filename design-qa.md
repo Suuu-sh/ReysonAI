@@ -758,3 +758,7 @@ Verification:
 ## 2026-10-07 — Erase question before range overlap
 - Advance the existing top-down question mask by56px while retaining its28px fade edge. At actual range bottom the overlapping portion is already fully erased; below it the gradient ends28px ahead. Reversible, reduced-motion/pinning/later opaque sections unchanged. Initial top56px of the adjoining question background is masked too; text remains below that area.
 - Focused geometry/mask test1 and diffcheck passed. Limited the existing CSS guard to its own cover block (later legitimate min-heights previously caused a false failure). Literal arithmetic change: no repeated build. Preview5218 updated; no new browser claim or deploy.
+
+## 2026-10-07 — Center comparison text and match heading typography
+- Keep logo but remove its width from label centering via absolute left placement and symmetric heading padding. Both labels inherit the same typeface/size with700 weight/1.4 line-height; wrapping remains enabled. Continuous black Reyson column/light surroundings unchanged.
+- Focused typography/centering guard1 and diffcheck passed. CSS-only no repeated build; preview5218 updated. No new rendered bounds claim, merge or deploy.

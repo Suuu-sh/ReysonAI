@@ -1124,3 +1124,12 @@
   .site-persona-stage.is-learner .site-hand-actions { grid-template-columns: minmax(0, 1fr); }
   .site-persona-stage.is-learner .site-hand-action { justify-content: space-between; }
 }
+
+/* Center the comparison labels themselves, with one shared heading typeface. */
+.site-compare thead th, .site-compare thead th.is-us { font-family: inherit; font-weight: 700; line-height: 1.4; letter-spacing: 0; }
+.site-compare-heading { position: relative; width: 100%; min-width: 0; padding-inline: 24px; font: inherit; }
+.site-compare-heading > img { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
+.site-compare-heading > span { min-width: 0; overflow-wrap: anywhere; text-align: center; }
+@media (max-width: 720px) {
+  .site-compare-heading { padding-inline: 18px; }
+}
