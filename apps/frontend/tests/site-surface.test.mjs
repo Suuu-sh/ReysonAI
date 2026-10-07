@@ -12,6 +12,19 @@ test("scrolly audience starts at the section edge instead of centering in its sc
   assert.match(css, /\.site-audience\.is-scrolly > \.site-wrap\s*\{[^}]*position: sticky; top: 0/);
 });
 
+test("phone storytelling uses native sticky flow with short-screen and reduced-motion fallbacks", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const audience = source.slice(source.indexOf("function Audience()"), source.indexOf("const TRAIN_PAGES"));
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(audience, /\(max-width: 960px\) and \(min-height: 740px\)/);
+  assert.match(audience, /if \(!motion\) \{ setScrolly\(false\)/);
+  assert.match(audience, /new ResizeObserver\(update\)/);
+  assert.match(audience, /window\.innerHeight - wrapper\.offsetHeight/);
+  assert.match(css, /@media \(max-width: 960px\) and \(min-height: 740px\)/);
+  assert.match(css, /\.has-motion \.site-how-steps li \{ position: sticky; top: 80px/);
+  assert.doesNotMatch(audience, /addEventListener\("(?:wheel|touchmove)"/);
+});
+
 let server, ServiceSite, copies;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
@@ -139,7 +152,7 @@ test("mobile scenes grow with their explanation and cards instead of clipping a 
   assert.match(css, /\.site-rank-card\s*\{[^}]*flex-wrap: wrap/);
   assert.match(css, /\.site-mock\s*\{[^}]*min-width: 0/);
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
-  assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 640px\)"\)/,
+  assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 640px\), \(max-width: 960px\) and \(min-height: 740px\)"\)/,
     "persona pinning is desktop-only and enables a compact stage on short screens");
   assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 600px\)"\)/,
     "Training/Ranked pinning remains wide-screen-only");
