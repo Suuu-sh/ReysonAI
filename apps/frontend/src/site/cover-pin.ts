@@ -3,7 +3,7 @@ export function shouldPinCover(stageTop: number, questionBottom: number, headerB
   return stageTop <= headerBottom && questionBottom > headerBottom;
 }
 
-/** The top of the question disappears only where it overlaps the pinned square. */
+/** Erase 56px ahead of the square; the 28px gradient ends before visible overlap. */
 export function questionMaskEdge(questionTop: number, squareBottom: number, questionHeight: number): number {
-  return Math.min(questionHeight + 28, Math.max(0, squareBottom - questionTop));
+  return Math.min(questionHeight + 28, Math.max(0, squareBottom + 56 - questionTop));
 }
