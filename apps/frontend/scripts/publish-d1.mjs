@@ -75,7 +75,7 @@ function main(argv) {
   }
   console.log(`→ ${out}`);
   if (execute) {
-    execFileSync("npx", ["wrangler", "d1", "execute", "reysonai", `--${execute}`, "--yes", "--file", out],
+    execFileSync("npx", ["--yes", "wrangler@4.147.0", "d1", "execute", "reysonai", `--${execute}`, "--yes", "--file", out],
       { cwd: join(root, "../backend"), stdio: "inherit" });
   }
 }
