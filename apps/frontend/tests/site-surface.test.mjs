@@ -12,30 +12,6 @@ test("scrolly audience starts at the section edge instead of centering in its sc
   assert.match(css, /\.site-audience\.is-scrolly > \.site-wrap\s*\{[^}]*position: sticky; top: 0/);
 });
 
-test("phone storytelling uses native sticky flow at all heights and respects reduced motion", () => {
-  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
-  const audience = source.slice(source.indexOf("function Audience()"), source.indexOf("const TRAIN_PAGES"));
-  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  assert.match(audience, /\(max-width: 960px\)/);
-  assert.match(audience, /if \(!motion\) \{ setScrolly\(false\)/);
-  assert.match(audience, /new ResizeObserver\(update\)/);
-  assert.match(audience, /window\.innerHeight - wrapper\.offsetHeight/);
-  assert.match(css, /@media \(max-width: 960px\)/);
-  assert.match(css, /\.has-motion \.site-how-steps li \{ position: sticky; top: var\(--step-top, 80px\)/);
-  assert.doesNotMatch(audience, /addEventListener\("(?:wheel|touchmove)"/);
-});
-
-test("oversized translated phone How cards scroll their full content before holding", () => {
-  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
-  const how = source.slice(source.indexOf("function HowItWorks()"), source.indexOf("const drillPool"));
-  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  assert.match(how, /if \(!motion \|\| typeof ResizeObserver === "undefined"\) return/);
-  assert.match(how, /card\.offsetHeight > window\.innerHeight - 80/);
-  assert.match(how, /new ResizeObserver\(update\)/);
-  assert.match(how, /observer\.disconnect\(\)/);
-  assert.match(css, /\.has-motion \.site-how-steps::after \{ content: ""; display: block; height: 48svh; \}/);
-});
-
 test("phone hero uses an inert decorative chart behind centered copy and CTAs", () => {
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
@@ -79,51 +55,16 @@ test("phone cover fills remaining viewport without stretching or clipping the sq
   }
 });
 
-test("phone cover pins through full occlusion without extra runway and releases afterwards", async () => {
-  const { shouldPinCover } = await server.ssrLoadModule("/src/site/cover-pin.ts");
-  for (const footerTop of [454, 300, 65]) assert.equal(shouldPinCover(0, footerTop, 64), true);
-  assert.equal(shouldPinCover(64, 454, 64), true);
-  assert.equal(shouldPinCover(65, 455, 64), false);
-  assert.equal(shouldPinCover(-390, 64, 64), false);
-  assert.equal(shouldPinCover(-391, 63, 64), false);
-  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  const mobile = css.slice(css.indexOf("@media screen and (max-width: 560px)"));
-  assert.match(mobile, /\.has-motion \.site-hero\[data-cover-pinned\] \.site-hero-stage > \.site-explorer \{ position: fixed; top: var\(--header-height\);/);
-  assert.doesNotMatch(mobile, /min-height: calc\(max\(156px[^}]*\+ 100vw|padding-bottom: calc\(100vw/);
+test("phones use natural focused chapters with no pin or artificial hold", () => {
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
-  assert.match(source, /if \(!motion\) \{ setPinned\(false\); return; \}/);
-  assert.match(source, /addEventListener\("scroll", schedule, \{ passive: true \}\)/);
-  assert.match(source, /cancelAnimationFrame\(frame\)/);
-});
-
-test("downstream phone content is opaque above the fixed cover with no spacer", () => {
+  assert.doesNotMatch(source, /MobileHold|shouldPinCover|mobileHoldGeometry|data-cover-pinned|data-hold-phase/);
+  assert.match(source, /running = auto && motion && visible && !scrolly && !phone/);
+  assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 640px\)"\)/);
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  assert.match(css, /\.site-after-cover \{ display: contents; \}/);
-  assert.match(css, /\.has-motion \.site-after-cover \{ display: flow-root; position: relative; z-index: 1; background: var\(--bg\); \}/);
-  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
-  assert.match(source, /<Hero \/><div className="site-after-cover"><Audience \/>/);
-  assert.match(source, /<FinalCta \/><\/MobileHold><\/div><\/main>/);
-});
-
-test("every phone major scene has a measured accessible content hold, including the final resource", () => {
-  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
-  for (const scene of ["Drill", "Ranked", "AgentFeature", "Analysis", "Compare", "Pricing", "Faq", "FinalCta"]) assert.ok(source.includes(`<MobileHold><${scene} /></MobileHold>`));
-  assert.match(source, /setEnabled\(motion && query.matches\)/);
-  assert.match(source, /Math.min\(64, window.innerHeight - content.current.offsetHeight - 16\)/);
-  assert.match(source, /personaIds.length \+ \(window.innerWidth <= 960 \? .65 : 0\)/);
-  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  assert.match(css, /\.site-mobile-hold.is-held \{ display: flow-root; position: relative; height: calc\(var\(--hold-height\) \+ 45svh\);/);
-  assert.match(css, /position: fixed; top: var\(--hold-top\)/);
-  assert.doesNotMatch(source, /\(max-width: 960px\) and \(min-height: 740px\)/);
-});
-
-test("short-phone hold reads the entire scene, holds visible content, and exits without a jump", async () => {
-  const { mobileHoldGeometry } = await server.ssrLoadModule("/src/site/cover-pin.ts");
-  assert.deepEqual(mobileHoldGeometry(0, 1047, 792, 568), { top: -240, phase: "before" });
-  assert.deepEqual(mobileHoldGeometry(-458, 589, 792, 568), { top: -240, phase: "pinned" });
-  assert.deepEqual(mobileHoldGeometry(-495, 552, 792, 568), { top: -240, phase: "pinned" });
-  assert.deepEqual(mobileHoldGeometry(-496, 551, 792, 568), { top: -240, phase: "after" });
-  assert.equal(mobileHoldGeometry(64, 1000, 400, 844).phase, "pinned");
+  const chapters = css.slice(css.indexOf("/* Mobile chapters:"));
+  assert.match(chapters, /position: static; min-height: 0;/);
+  assert.match(chapters, /\.site-persona:not\(\.is-active\)[^}]*display: none/);
+  assert.doesNotMatch(css, /data-cover-pinned|site-mobile-hold|--audience-track-height|--step-top/);
 });
 
 test("hero and shared English taglines use Understand the reason", () => {
@@ -413,7 +354,7 @@ test("mobile scenes grow with their explanation and cards instead of clipping a 
   assert.match(css, /\.site-rank-card\s*\{[^}]*flex-wrap: wrap/);
   assert.match(css, /\.site-mock\s*\{[^}]*min-width: 0/);
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
-  assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 640px\), \(max-width: 960px\)"\)/,
+  assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 640px\)"\)/,
     "persona pinning is desktop-only and enables a compact stage on short screens");
   assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 600px\)"\)/,
     "Training/Ranked pinning remains wide-screen-only");

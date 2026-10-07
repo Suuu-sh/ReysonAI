@@ -1,4 +1,3 @@
-import { shouldPinCover, mobileHoldGeometry } from "./cover-pin.ts";
 import { PlayingCard, type CardSuit as Suit } from "../components/PlayingCard.tsx";
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { BrandIcon } from "../components/BrandIcon.tsx";
@@ -311,72 +310,9 @@ function HeroCopy({ children, showEstimate = true }: { children?: ReactNode; sho
   </div>;
 }
 
-/** Native phone hold: tall content scrolls fully before its visible bottom is held. */
-function MobileHold({ children }: { children: ReactNode }) {
-  const { motion, locale } = useSite();
-  const track = useRef<HTMLDivElement>(null);
-  const content = useRef<HTMLDivElement>(null);
-  const [enabled, setEnabled] = useState(false);
-  const [top, setTop] = useState(64);
-  const [height, setHeight] = useState(0);
-  const [phase, setPhase] = useState("before");
-  const [bounds, setBounds] = useState({ left: 0, width: 0 });
-  useEffect(() => {
-    const query = window.matchMedia("(max-width: 960px)");
-    const update = () => {
-      setEnabled(motion && query.matches);
-      if (content.current) { setHeight(content.current.offsetHeight); setTop(Math.min(64, window.innerHeight - content.current.offsetHeight - 16)); }
-    };
-    let frame = 0;
-    const measureScroll = () => {
-      frame = 0;
-      if (!motion || !query.matches || !track.current || !content.current) { setPhase("before"); return; }
-      const rect = track.current.getBoundingClientRect();
-      const h = content.current.offsetHeight;
-      const geometry = mobileHoldGeometry(rect.top, rect.bottom, h, window.innerHeight);
-      setBounds({ left: rect.left, width: rect.width });
-      setPhase(geometry.phase);
-    };
-    const schedule = () => { if (!frame) frame = window.requestAnimationFrame(measureScroll); };
-    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(() => { update(); schedule(); });
-    if (content.current) observer?.observe(content.current);
-    query.addEventListener("change", update);
-    window.addEventListener("resize", update);
-    update(); measureScroll();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
-    return () => { observer?.disconnect(); query.removeEventListener("change", update); window.removeEventListener("resize", update); window.removeEventListener("resize", schedule); window.removeEventListener("scroll", schedule); if (frame) window.cancelAnimationFrame(frame); };
-  }, [motion, locale]);
-  return <div ref={track} data-hold-phase={phase} className={`site-mobile-hold${enabled ? " is-held" : ""}`} style={{ "--hold-top": `${top}px`, "--hold-height": `${height}px`, "--hold-left": `${bounds.left}px`, "--hold-width": `${bounds.width}px` } as CSSProperties}><div className="site-mobile-hold-content" ref={content}>{children}</div></div>;
-}
-
 function Hero() {
-  const { copy: c, motion, locale } = useSite();
-  const stage = useRef<HTMLDivElement>(null);
-  const ending = useRef<HTMLDivElement>(null);
-  const [pinned, setPinned] = useState(false);
-  useEffect(() => {
-    if (!motion) { setPinned(false); return; }
-    const phone = window.matchMedia("(max-width: 560px)");
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const header = document.querySelector(".site-header");
-      setPinned(Boolean(phone.matches && stage.current && ending.current && header && shouldPinCover(stage.current.getBoundingClientRect().top, ending.current.getBoundingClientRect().top, header.getBoundingClientRect().bottom)));
-    };
-    const schedule = () => { if (!frame) frame = window.requestAnimationFrame(update); };
-    update();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
-    phone.addEventListener("change", schedule);
-    return () => {
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      phone.removeEventListener("change", schedule);
-      if (frame) window.cancelAnimationFrame(frame);
-    };
-  }, [motion, locale]);
-  return <section className="site-hero" aria-labelledby="site-hero-title" data-cover-pinned={pinned || undefined}><div className="site-hero-stage" ref={stage}><Explorer /></div><div className="site-cover-ending" ref={ending}><p className="site-cover-title">{c.hero.coverTitle}</p><p className="site-cover-subtitle">{c.hero.coverSubtitle}</p><span className="site-cover-scroll">{c.hero.coverScroll}</span></div></section>;
+  const { copy: c } = useSite();
+  return <section className="site-hero" aria-labelledby="site-hero-title"><div className="site-hero-stage"><Explorer /></div><div className="site-cover-ending"><p className="site-cover-title">{c.hero.coverTitle}</p><p className="site-cover-subtitle">{c.hero.coverSubtitle}</p><span className="site-cover-scroll">{c.hero.coverScroll}</span></div></section>;
 }
 
 /** Eases from `from` to `to` once `run` turns true; jumps straight to `to` without motion. */
@@ -440,7 +376,7 @@ function WhyScene() {
 }
 
 function HowItWorks() {
-  const { copy: c, motion, locale } = useSite();
+  const { copy: c } = useSite();
   const [active, setActive] = useState(0);
   const steps = useRef<(HTMLElement | null)[]>([]);
   useEffect(() => {
@@ -451,21 +387,6 @@ function HowItWorks() {
     for (const node of steps.current) if (node) observer.observe(node);
     return () => observer.disconnect();
   }, []);
-  useEffect(() => {
-    const cards = steps.current.filter((node): node is HTMLElement => !!node);
-    if (!motion || typeof ResizeObserver === "undefined") return;
-    const update = () => {
-      for (const card of cards) {
-        card.dataset.oversized = String(card.offsetHeight > window.innerHeight - 80);
-        card.style.setProperty("--step-top", `${Math.min(80, window.innerHeight - card.offsetHeight - 16)}px`);
-      }
-    };
-    const observer = new ResizeObserver(update);
-    for (const card of cards) observer.observe(card);
-    window.addEventListener("resize", update);
-    update();
-    return () => { observer.disconnect(); window.removeEventListener("resize", update); };
-  }, [motion, locale]);
   const scenes = [<TableScene key="table" />, <ReadScene key="read" />, <WhyScene key="why" />];
   const sceneNames = ["table", "read", "why"];
   return <section className="site-section site-how" id="how" aria-labelledby="site-how-title">
@@ -612,8 +533,14 @@ function Audience() {
   const [auto, setAuto] = useState(true);
   const [ref, visible] = useInView<HTMLElement>("-25% 0px", false);
   const [scrolly, setScrolly] = useState(false);
-  const [stickyTop, setStickyTop] = useState(0);
-  const running = auto && motion && visible && !scrolly;
+  const [phone, setPhone] = useState(() => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(max-width: 960px)").matches);
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 960px)");
+    const sync = () => setPhone(query.matches);
+    query.addEventListener("change", sync); sync();
+    return () => query.removeEventListener("change", sync);
+  }, []);
+  const running = auto && motion && visible && !scrolly && !phone;
   const a5s = frequencies("response", "A5s");
   const [free, plus] = c.pricing.plans;
 
@@ -624,10 +551,10 @@ function Audience() {
     return () => window.clearTimeout(timer);
   }, [running, active]);
 
-  // Pin on phones with enough vertical room too; short screens retain ordinary flow.
+  // Only desktop retains pinned persona storytelling.
   useEffect(() => {
     if (!motion) { setScrolly(false); return; }
-    const query = window.matchMedia("(min-width: 961px) and (min-height: 640px), (max-width: 960px)");
+    const query = window.matchMedia("(min-width: 961px) and (min-height: 640px)");
     const sync = () => setScrolly(query.matches);
     sync();
     query.addEventListener("change", sync);
@@ -644,7 +571,7 @@ function Audience() {
       const span = rect.height - window.innerHeight;
       if (span <= 0) return;
       const progress = Math.min(Math.max(-rect.top / span, 0), 0.999);
-      setActive(Math.min(personaIds.length - 1, Math.floor(progress * (personaIds.length + (window.innerWidth <= 960 ? .65 : 0)))));
+      setActive(Math.floor(progress * personaIds.length));
     };
     const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
     update();
@@ -655,21 +582,6 @@ function Audience() {
       window.removeEventListener("resize", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [scrolly, ref]);
-
-  // Long translations must remain reachable even in a pinned phone scene.
-  useEffect(() => {
-    const wrapper = ref.current?.firstElementChild as HTMLElement | undefined;
-    if (!scrolly || !wrapper || typeof ResizeObserver === "undefined") { setStickyTop(0); return; }
-    const update = () => {
-      setStickyTop(window.innerWidth <= 960 ? Math.min(0, window.innerHeight - wrapper.offsetHeight) : 0);
-      if (window.innerWidth <= 960) ref.current?.style.setProperty("--audience-track-height", `${Math.max(window.innerHeight, wrapper.offsetHeight) * (personaIds.length + .65)}px`);
-    };
-    const observer = new ResizeObserver(update);
-    observer.observe(wrapper);
-    window.addEventListener("resize", update);
-    update();
-    return () => { observer.disconnect(); window.removeEventListener("resize", update); };
   }, [scrolly, ref]);
 
   function choose(index: number) {
@@ -693,7 +605,7 @@ function Audience() {
 
   const view = (index: number) => `site-persona-view${active === index ? " is-active" : ""}`;
   return <section className={`site-section site-audience${scrolly ? " is-scrolly" : ""}`} ref={ref} aria-labelledby="site-audience-title">
-    <div className="site-wrap" style={scrolly ? { top: stickyTop } : undefined}>
+    <div className="site-wrap">
       <SectionHead id="site-audience-title" title1={c.audience.title1} title2={c.audience.title2} />
       <div className="site-audience-grid" data-reveal>
         <div className="site-persona-list" role="tablist" aria-orientation="vertical" aria-labelledby="site-audience-title" onKeyDown={onListKey}>
@@ -785,7 +697,7 @@ function TrainingTrack() {
   // Anchor the scroll track, not its sticky child: #drill must rewind the slide to Training.
   return <div className={`site-train${scrolly ? " is-scrolly" : ""}`} id="drill" ref={ref}>
     <div className="site-train-stage">
-      <div className="site-train-rail" style={scrolly ? { transform: `translateX(${-shift * 100 / TRAIN_PAGES}%)` } : undefined}>{scrolly ? <><Drill /><Ranked /><AgentFeature /></> : <><MobileHold><Drill /></MobileHold><MobileHold><Ranked /></MobileHold><MobileHold><AgentFeature /></MobileHold></>}</div>
+      <div className="site-train-rail" style={scrolly ? { transform: `translateX(${-shift * 100 / TRAIN_PAGES}%)` } : undefined}><Drill /><Ranked /><AgentFeature /></div>
     </div>
   </div>;
 }
@@ -1059,7 +971,7 @@ export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; on
       <a className="site-skip" href="#site-main">{copy.common.skip}</a>
       <Header />
       <Reveal>
-        <main id="site-main"><Hero /><div className="site-after-cover"><Audience /><HowItWorks /><TrainingTrack /><MobileHold><Analysis /></MobileHold><MobileHold><Compare /></MobileHold><MobileHold><Pricing /></MobileHold><MobileHold><Faq /></MobileHold><MobileHold><FinalCta /></MobileHold></div></main>
+        <main id="site-main"><Hero /><div className="site-after-cover"><Audience /><HowItWorks /><TrainingTrack /><Analysis /><Compare /><Pricing /><Faq /><FinalCta /></div></main>
         <Footer />
       </Reveal>
     </div>

@@ -605,11 +605,6 @@
   .site-cover-title { color: var(--ink); font-size: clamp(19px, 5.2vw, 24px); font-weight: 600; letter-spacing: -.025em; line-height: 1.45; text-wrap: balance; }
   .site-cover-subtitle { color: var(--muted); font-size: 12px; }
   .site-cover-scroll { margin-top: 15px; color: var(--subtle); font-size: 11px; }
-  /* Keep only the original square-sized slot; no extra scrolling runway. */
-  .has-motion .site-hero[data-cover-pinned] .site-hero-stage > .site-explorer { position: fixed; top: var(--header-height); left: 0; width: 100%; z-index: 0; }
-  .has-motion .site-cover-ending { position: relative; z-index: 1; background: var(--bg); }
-  .has-motion .site-after-cover { display: flow-root; position: relative; z-index: 1; background: var(--bg); }
-
   .site-hero-main { padding-top: 28px; gap: 12px; }
   .site-hero h1 { font-size: clamp(56px, 14vw, 76px); }
   .site-line + .site-line { font-size: .6em; }
@@ -932,45 +927,7 @@
 
 /* Touch storytelling uses document scrolling, never a captured wheel/touch gesture.
    Short phones keep the complete ordinary layout instead of clipping their copy. */
-@media (max-width: 960px) {
-  .site-audience.is-scrolly { height: var(--audience-track-height, 365svh); }
-  .site-audience.is-scrolly > .site-wrap { min-height: 100svh; padding-block: 80px 24px; justify-content: center; }
-  .site-audience.is-scrolly .site-audience-grid { gap: 16px; margin-top: 20px; }
-  .site-audience.is-scrolly h2 { font-size: 26px; }
-  .site-audience.is-scrolly .site-persona { padding: 8px 12px; }
-  .site-audience.is-scrolly .site-persona-list { gap: 4px; }
-  .site-audience.is-scrolly .site-persona { gap: 6px; }
-  .site-audience.is-scrolly .site-persona:not(.is-active) { gap: 0; }
-  .site-audience.is-scrolly .site-persona:not(.is-active) .site-persona-more { display: none; }
-  .site-audience.is-scrolly .site-persona:not(.is-active) .site-persona-quote { display: none; }
-  .site-audience.is-scrolly .site-persona-quote { font-size: 18px; margin-top: 4px; }
-  .site-audience.is-scrolly .site-persona-body { font-size: 13px; line-height: 1.45; }
-  .site-audience.is-scrolly .site-persona-more > span { gap: 6px; }
-  .site-audience.is-scrolly .site-persona-gets { padding: 2px 6px; font-size: 11px; }
-  .site-audience.is-scrolly .site-persona-view { padding: 16px; gap: 12px; }
-  .site-audience.is-scrolly .site-persona-view.is-simple { grid-template-columns: minmax(0, 1fr) minmax(0, .8fr); gap: 16px; }
-  .site-audience.is-scrolly .site-persona-view .site-mini-matrix { width: 100%; }
-  .site-audience.is-scrolly .site-persona-callout { gap: 8px; }
-  .site-audience.is-scrolly .site-persona-callout strong { font-size: 28px; }
-  .site-audience.is-scrolly .site-persona-view .site-card { --card-w: 38px; }
-  .site-audience.is-scrolly .site-persona-detail-head strong { font-size: 26px; }
-  .site-audience.is-scrolly .site-persona-why { font-size: 12px; line-height: 1.45; }
-  .site-audience.is-scrolly .site-persona-view.is-free { gap: 8px; }
-  .site-audience.is-scrolly .site-persona-view.is-free ul { gap: 4px; }
-  .site-audience.is-scrolly .site-persona-view.is-free .site-persona-pill { font-size: 12px; padding: 3px 8px; }
-  .site-audience.is-scrolly .site-persona-plus { margin-top: 0; padding-top: 8px; gap: 2px; }
-  .site-audience.is-scrolly .site-persona-plus span { font-size: 20px; }
-  .site-audience.is-scrolly .site-persona-plus small { font-size: 11px; }
-  .site-audience.is-scrolly .site-persona-view.is-free li { font-size: 13px; }
-  .site-audience.is-scrolly .site-persona-price strong { font-size: 40px; }
-  .site-audience.is-scrolly .site-audience-note { font-size: 11px; margin-top: 12px; }
-  .has-motion .site-how-steps { gap: 0; }
-  .has-motion .site-how-steps li { position: sticky; top: var(--step-top, 80px); min-height: calc(100svh - 96px); padding: 24px 0; background: var(--bg); }
-  .has-motion .site-how-steps::after { content: ""; display: block; height: 48svh; }
-  .has-motion .site-how-steps li + li { margin-top: 48svh; }
-  .has-motion .site-how-inline { min-height: 300px; margin-top: 20px; }
-}
-/* A restrained settle, not a long opacity-only wait, keeps reveals legible on touch. */
+
 .has-motion [data-reveal] { transform: translateY(18px); transition-duration: .65s, .8s; }
 .has-motion [data-reveal][data-shown], .has-motion .site-train.is-scrolly [data-reveal] { transform: none; }
 .has-motion .site-audience.is-scrolly [data-reveal] { opacity: 1; transform: none; }
@@ -985,12 +942,22 @@
 .site-range-legend span { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
 .site-range-legend i { width: 9px; height: 9px; border-radius: var(--control-radius); }
 
-/* Wrappers are layout-neutral on desktop/reduced-motion; holds keep actual
-   content visible, not an empty spacer, and never intercept normal scrolling. */
-.site-mobile-hold, .site-mobile-hold-content { display: contents; }
+/* Mobile chapters: normal document flow, one focused scene at a time. */
 @media (max-width: 960px) {
-  .site-mobile-hold.is-held { display: flow-root; position: relative; height: calc(var(--hold-height) + 45svh); background: var(--bg); }
-  .site-mobile-hold.is-held > .site-mobile-hold-content { display: flow-root; background: var(--bg); }
-  .site-mobile-hold.is-held[data-hold-phase="pinned"] > .site-mobile-hold-content { position: fixed; top: var(--hold-top); left: var(--hold-left); width: var(--hold-width); z-index: 1; }
-  .site-mobile-hold.is-held[data-hold-phase="after"] > .site-mobile-hold-content { position: absolute; bottom: 0; width: 100%; }
+  .site-section { padding-block: 44px; }
+  .site-how-steps { gap: 48px; }
+  .site-how-steps li, .site-how-steps li:first-child { position: static; min-height: 0; padding-block: 20px; opacity: 1; }
+  .site-how-inline { min-height: 0; margin-top: 20px; }
+  .site-persona-list { gap: 8px; }
+  .site-persona { min-height: 44px; padding: 12px; }
+  .site-persona:not(.is-active) .site-persona-quote, .site-persona:not(.is-active) .site-persona-more { display: none; }
+  .site-persona-quote { font-size: 20px; }
+  .site-persona-body { font-size: 14px; line-height: 1.6; }
+  .site-persona-view { padding: 18px; }
+  .site-persona-view.is-free.is-active { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; height: auto; min-height: 0; }
+  .site-persona-view.is-free ul { gap: 8px; }
+  .site-persona-view.is-free .site-persona-price strong { font-size: 48px; }
+  .has-motion .site-persona-view.is-free.is-active, .has-motion .site-persona-view.is-free.is-active * { animation: none; opacity: 1; transform: none; }
+  .site-audience-grid { gap: 20px; }
+  .site-pricing-grid { gap: 24px; }
 }
