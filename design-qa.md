@@ -563,3 +563,8 @@ Verification:
 - Only at ≤560px: reduce decorative card width, hand heading, frequency-row spacing, panel padding and Why spacing; remove the invisible spacer row. Keep all frequencies/explanations, Explore CTA minimum 44px, and playback controls. Desktop and square hero untouched.
 - Parent visual QA: 390px English Selected hand/Why/CTA/playback fit below the 390px square within the 844px viewport. 375px Japanese remains readable without overflow; CTA is reachable through normal scrolling. No exact percentage height reduction claimed.
 - Focused compact-panel regression test, production build and diff check passed. Physical Safari remains unverified.
+
+## 2026-10-07 — Flat SVG suits on service-site cards
+- Site variant only: use existing Phosphor filled Spade/Heart/Diamond/Club SVGs in the existing suit slot. SVG is aria-hidden/non-focusable; original suit text remains visually hidden. Trainer, Agent and text variants preserve their exact previous markup. Rank, gradients, colors and responsive sizes unchanged.
+- Parent browser QA: 390px mobile heart rendered flat; SVG viewBox=256 and aria-hidden confirmed. 1280px desktop layout preserved. Four different filled suit shapes and site-only behavior covered by six focused shared-card tests.
+- Focused tests, production build and diff check passed. Actual iPhone rendering is not verified; no claim of device testing.

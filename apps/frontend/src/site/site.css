@@ -191,6 +191,7 @@
 .site-card { --card-w: 50px; display: inline-grid; flex: 0 0 auto; grid-template-rows: 1fr auto; justify-items: center; align-items: center; width: var(--card-w); height: calc(var(--card-w) * 1.4); padding: calc(var(--card-w) * .075) 0 calc(var(--card-w) * .1); border-radius: calc(var(--card-w) * .15); color: #fff; box-shadow: 0 6px 16px rgb(0 0 0 / 50%), inset 0 1px 0 rgb(255 255 255 / 22%), inset 0 -3px 0 rgb(0 0 0 / 18%); font-family: Inter, sans-serif; }
 .site-card b { font-size: calc(var(--card-w) * .575); font-weight: 800; line-height: 1; }
 .site .site-card i { font-size: calc(var(--card-w) * .325); line-height: 1; opacity: .9; }
+.site .site-card i svg { display: block; width: 1em; height: 1em; }
 .site-card.suit-s { background: linear-gradient(160deg, #4a4a55, #2e2e36); }
 .site-card.suit-h { background: linear-gradient(160deg, #e0485f, #b52842); }
 .site-card.suit-d { background: linear-gradient(160deg, #3f86d6, #2560a8); }
