@@ -909,7 +909,7 @@ function Compare() {
         <SectionHead id="site-compare-title" title1={c.compare.title1} title2={c.compare.title2}><p>{c.compare.description}</p></SectionHead>
         <div className="site-compare-table" data-reveal>
           <table>
-            <thead><tr><td /><th scope="col" className="is-us"><span className="site-compare-heading"><BrandIcon size={18} /><span>{c.compare.us}</span></span></th><th scope="col"><span className="site-compare-heading">{c.compare.them}</span></th></tr></thead>
+            <thead><tr><td /><th scope="col" className="is-us"><span className="site-compare-heading"><span className="site-compare-label"><BrandIcon size={18} />{c.compare.us}</span></span></th><th scope="col"><span className="site-compare-heading">{c.compare.them}</span></th></tr></thead>
             <tbody>{c.compare.rows.map((row, index) => <tr key={comparisonRowIds[index]} className={scrolly && index < visibleRows ? "is-revealed" : undefined} style={{ "--i": index } as CSSProperties}>
               <th scope="row">{row.label}</th>
               <td className="is-us">{row.us}</td>

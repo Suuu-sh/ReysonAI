@@ -1125,8 +1125,12 @@
   .site-persona-stage.is-learner .site-hand-action { justify-content: space-between; }
 }
 
-/* Center the compact logo/label group with matching heading typography. */
+/* Center the label itself; attach its logo directly to its left edge. */
 .site-compare thead th, .site-compare thead th.is-us { font-family: inherit; font-weight: 700; line-height: 1.4; letter-spacing: 0; }
-.site-compare-heading { width: 100%; min-width: 0; padding-inline: 0; gap: 6px; font: inherit; }
-.site-compare-heading > img { position: static; flex: 0 0 auto; transform: none; }
-.site-compare-heading > span { min-width: 0; overflow-wrap: anywhere; text-align: center; }
+.site-compare-heading { width: 100%; min-width: 0; padding-inline: 0; font: inherit; }
+.site-compare-label { position: relative; display: inline-block; min-width: 0; max-width: calc(100% - 40px); overflow-wrap: anywhere; text-align: center; }
+.site-compare-label > img { position: absolute; right: calc(100% + 6px); top: 50%; transform: translateY(-50%); }
+@media (max-width: 560px) {
+  .site-compare-label { max-width: calc(100% - 28px); }
+  .site-compare-label > img { width: 10px; height: 10px; right: calc(100% + 4px); }
+}

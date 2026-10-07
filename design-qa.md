@@ -766,3 +766,7 @@ Verification:
 ## 2026-10-07 — Keep comparison logo adjacent
 - User corrected isolated label centering: logo and ReysonAI now remain one centered flex group with6px gap, no absolute icon/symmetric spacer. Shared heading typography and shrinkable wrapping retained.
 - Focused group/typography guard1/diffcheck passed; CSS-only no repeated build.5218 updated, no merge/deploy.
+
+## 2026-10-07 — Attach icon to text-centered comparison label
+- Label is a centered relative inline block; its nested logo sits directly beside its left edge (6px,4px on phones), not at the column edge or group center. Narrow phone logo10px and symmetric label-width allowance protect wrapping. Shared typography retained.
+- Focused centering guard1/build/diffcheck passed.5218 updated; no rendered narrow-column measurement claimed, no merge/deploy.
