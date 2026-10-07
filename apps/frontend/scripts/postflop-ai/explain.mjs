@@ -7,6 +7,7 @@ import { NODES, policyMix, scaleByPath, treeNodes } from "./policy.ts";
 import { FLOP_BETS, facingNode, flopBetFraction, flopState, historyFor, nodeRole, otherRole, raiseDepth } from "./tree.ts";
 import { defenceFor, replayOrNull } from "./defence.ts";
 import { averageExplanationFacts } from "./explain-aggregate.ts";
+import { profileReferenceFacts } from "./profile-reference.ts";
 
 const RANKS = "23456789TJQKA";
 const RUNOUTS = 120;
@@ -156,7 +157,8 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
       bettingFacts = defence.bettingFacts(table, flop, node, hero);
     }
   }
-  return { kind: "ai_estimate_not_gto", cards, node, equity: defenceFacts?.equity ?? equity, combos: villains.length, actions,
+  const profileReference = profileReferenceFacts(inputs, policy, null, table, flop, node, hero, policyMix(policy, node, hero, flop));
+  return { kind: "ai_estimate_not_gto", cards, node, ...(profileReference ? { profile_reference: profileReference } : {}), equity: defenceFacts?.equity ?? equity, combos: villains.length, actions,
     ...(defenceFacts ? { defence: defenceFacts } : {}), ...(bettingFacts ? { betting: bettingFacts } : {}) };
 }
 

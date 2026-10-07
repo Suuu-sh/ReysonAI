@@ -1,3 +1,5 @@
+import { adjustedInputOptions, finalizeInputs, inputStructureHash } from "./input-options.ts";
+import { profileArtifactKey } from "./candidate-source.ts";
 import { multiwayInputData } from "./multiway-inputs.mjs";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
@@ -35,31 +37,45 @@ export const laterSizingHash = () => sha(Object.fromEntries(LATER_KEYS.map(key =
 // scripts/data/postflop-ai/policies/ and reach D1 through CI on main; offline research
 // artifacts (hand EV) stay local under .local/postflop-ai/.
 export const POLICY_DIR = "scripts/data/postflop-ai/policies";
-export function artifactPaths(spot) {
+export function artifactPaths(spot, { profile = "standard", role } = {}) {
+  if (profile !== "standard") return Object.fromEntries(["candidate", "laterCandidate"].map(kind =>
+    [kind, join(root, ".local/postflop-ai", `${profileArtifactKey(spot, kind, profile, role)}.json`)]));
   const base = join(root, POLICY_DIR, spot.slug), local = join(root, ".local/postflop-ai", spot.slug);
   return { candidate: `${base}-policy.json`, laterCandidate: `${base}-later-policy.json`, report: `${base}-report.json`,
     handEv: `${local}-hand-ev.json`, laterHandEv: `${local}-later-hand-ev.json` };
 }
 
 // One parsed artifact of a spot (a key of artifactPaths), or null when it does not exist.
-export function readArtifact(spot, kind) {
-  if (source) return source.artifact(spot, kind) ?? null;
-  const path = artifactPaths(spot)[kind];
+export function readArtifact(spot, kind, options = {}) {
+  if (options.profile && options.profile !== "standard") {
+    if (!["candidate", "laterCandidate"].includes(kind)) throw new Error("Profile mode has no published simulation/EV artifacts");
+    const key = profileArtifactKey(spot, kind, options.profile, options.role);
+    // A D1-backed adapter must resolve this exact artifact key. An old adapter
+    // without profileArtifact yields missing, never the standard policy.
+    if (source) return source.profileArtifact?.(key) ?? null;
+  } else if (source) return source.artifact(spot, kind) ?? null;
+  const path = artifactPaths(spot, options)[kind];
   return existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : null;
 }
 
 // Like readArtifact, but a missing file is an ENOENT error (the local view maps it to 404).
-export function requireArtifact(spot, kind) {
-  const data = readArtifact(spot, kind);
+export function requireArtifact(spot, kind, options = {}) {
+  const data = readArtifact(spot, kind, options);
   if (data) return data;
-  const error = new Error(`${spot.slug}: ${kind} is missing`);
-  error.code = "ENOENT";
+  const profile = options.profile && options.profile !== "standard";
+  const error = new Error(profile ? `${profileArtifactKey(spot, kind, options.profile, options.role)}: profile policy is not generated` : `${spot.slug}: ${kind} is missing`);
+  error.code = profile ? "PROFILE_POLICY_MISSING" : "ENOENT";
   throw error;
 }
 
-export function loadInputs(spotId = DEFAULT_SPOT_ID) {
+export function loadInputs(spotId = DEFAULT_SPOT_ID, options = {}) {
+  const base = loadBaseInputs(spotId, adjustedInputOptions(options));
+  return finalizeInputs(base, options, read, sha, inputStructureHash(base, gameConfig, flopConfig(), sha));
+}
+
+function loadBaseInputs(spotId, allowUnreachable = false) {
   const spot = spotById(spotId);
-  if (!spot.reachable) throw new Error(`${spot.id} is unreachable: the saved ${spot.responseId} range never calls`);
+  if (!spot.reachable && !allowUnreachable) throw new Error(`${spot.id} is unreachable: the saved ${spot.responseId} range never calls`);
   if ("history" in spot) {
     const { sources, seatRows } = multiwayInputData(spot, read);
     const fingerprint = sha({ spot, sources, gameConfig, config: flopConfig() });
@@ -78,7 +94,7 @@ export function loadInputs(spotId = DEFAULT_SPOT_ID) {
     const seatRows = { [spot.opener]: freqRows(opening.hands, "open"), [spot.caller]: freqRows(response.hands, "call") };
     return { spot, opening, response, config, fingerprint, seatRows };
   }
-  if (spot.kind === "4bp") return loadFourBetInputs(spot, opening, baseOk);
+  if (spot.kind === "4bp") return loadFourBetInputs(spot, opening, baseOk, allowUnreachable);
   if (spot.kind === "limp") return loadLimpInputs(spot, opening, baseOk);
   const response = read("three-bet-responses").spots.find(item => item.id === spot.responseId);
   const threeBet = read("preflop-ranges").spots.find(item => item.id === spot.threeBetId);
@@ -108,7 +124,7 @@ function productRows(factors) {
 }
 
 // O opens, X 3bets, O 4bets, X calls: O = open × 4bet versus the 3bet, X = 3bet × call versus the 4bet.
-function loadFourBetInputs(spot, opening, baseOk) {
+function loadFourBetInputs(spot, opening, baseOk, allowUnreachable = false) {
   const response = read("four-bet-responses").spots.find(item => item.id === spot.responseId);
   const threeBetResponse = read("three-bet-responses").spots.find(item => item.id === spot.fourBetId);
   const threeBet = read("preflop-ranges").spots.find(item => item.id === spot.threeBetId);
@@ -123,7 +139,7 @@ function loadFourBetInputs(spot, opening, baseOk) {
     [spot.opener]: productRows([[opening.hands, "open"], [threeBetResponse.hands, "four_bet"]]),
     [spot.threeBettor]: productRows([[threeBet.hands, "three_bet"], [response.hands, "call"]]),
   };
-  if (Object.values(seatRows).some(rows => !rows.some(row => row.freq > 0))) throw new Error(`${spot.id} is unreachable: a saved range never reaches the flop`);
+  if (!allowUnreachable && Object.values(seatRows).some(rows => !rows.some(row => row.freq > 0))) throw new Error(`${spot.id} is unreachable: a saved range never reaches the flop`);
   const fingerprint = sha({ spot, opening, response, threeBetResponse, threeBet, gameConfig, config: flopConfig() });
   return { spot, opening, response, threeBetResponse, threeBet, config, fingerprint, seatRows };
 }

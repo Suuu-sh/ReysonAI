@@ -10,6 +10,7 @@ import { boardHeight, boardTexture, handTier, LINES, parseCards, RUNOUT_TEXTURES
 import { NODES, treeNodes, validatePolicy } from "./policy.ts";
 import { FLOP_BETS, facingNode, flopBetLabel, raiseDepth } from "./tree.ts";
 import { validateLaterPolicy } from "./later-policy.ts";
+import { isOpponentMode, matchesCandidateSource, resolveFlopCandidate, resolveLaterCandidate } from "./candidate-source.ts";
 
 // Local Codex model for new candidates: --model, else POSTFLOP_AI_MODEL, else this default.
 // Existing candidates are reused as saved (the first BTN/BB pilot was made with gpt-6-sol).
@@ -21,9 +22,12 @@ export const DEFAULT_EFFORT = "max";
 export const resolveEffort = cliEffort => cliEffort || process.env.POSTFLOP_AI_EFFORT || DEFAULT_EFFORT;
 export const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
-export function loadCandidate(inputs) {
-  const candidate = requireArtifact(inputs.spot, "candidate");
-  if (candidate?.metadata?.source_hash !== inputs.fingerprint || candidate.metadata.config_version !== config.version ||
+export function loadCandidate(inputs, role) {
+  if (isOpponentMode(inputs) && !role) return resolveFlopCandidate(inputs, {
+    villain: loadCandidate(inputs, "villain"), exploit: loadCandidate(inputs, "exploit"),
+  });
+  const candidate = requireArtifact(inputs.spot, "candidate", isOpponentMode(inputs) ? { profile: inputs.opponentProfile, role } : {});
+  if (!matchesCandidateSource(inputs, candidate) || candidate.metadata.config_version !== config.version ||
       (candidate.metadata.spot ?? inputs.spot.id) !== inputs.spot.id ||
       (candidate.metadata.tree ?? "oop_checks") !== inputs.spot.tree) {
     throw new Error("AI policy source is stale; archive it and explicitly generate a new candidate");
@@ -35,11 +39,20 @@ export function loadCandidate(inputs) {
 
 // Optional local later-street artifact. Missing means use the fixed reference, while
 // malformed/stale files are errors, never a silent fallback or a generation request.
-export function loadLaterCandidate(inputs, flopCandidate) {
-  const candidate = readArtifact(inputs.spot, "laterCandidate");
+export function loadLaterCandidate(inputs, flopCandidate, role) {
+  if (isOpponentMode(inputs) && !role) {
+    const flop = resolveFlopCandidate(inputs, flopCandidate);
+    return resolveLaterCandidate(inputs, {
+      villain: loadLaterCandidate(inputs, flop.profileCandidates.villain, "villain"),
+      exploit: loadLaterCandidate(inputs, flop.profileCandidates.exploit, "exploit"),
+    }, flop);
+  }
+  const candidate = isOpponentMode(inputs)
+    ? requireArtifact(inputs.spot, "laterCandidate", { profile: inputs.opponentProfile, role })
+    : readArtifact(inputs.spot, "laterCandidate");
   if (!candidate) return null;
-  if (candidate?.metadata?.source_hash !== inputs.fingerprint ||
-      flopCandidate?.metadata?.source_hash !== inputs.fingerprint ||
+  if (!matchesCandidateSource(inputs, candidate) ||
+      !matchesCandidateSource(inputs, flopCandidate) ||
       flopCandidate.metadata.policy_hash !== sha(flopCandidate.policy) ||
       candidate.metadata.flop_policy_hash !== flopCandidate.metadata.policy_hash) throw new Error("Later AI policy source or flop policy is stale");
   validateLaterPolicy(candidate.policy);
@@ -190,6 +203,7 @@ export function runClaude(prompt, { model, timeoutMs = 1800000, onThread = () =>
 const generatorFor = model => model.startsWith("claude-") ? runClaude : runCodex;
 
 export async function generate(inputs, { model = resolveModel(), effort = resolveEffort(), generator = generatorFor(model) } = {}) {
+  if (inputs.adjusted) throw new Error("Policy authoring with adjusted inputs is not enabled in Stage C");
   const path = artifactPaths(inputs.spot).candidate;
   if (existsSync(path)) return { candidate: loadCandidate(inputs), reused: true };
   const prompt = promptFor(inputs);
@@ -199,7 +213,7 @@ export async function generate(inputs, { model = resolveModel(), effort = resolv
   if (started.model && started.model !== model) throw new Error(`Codex used ${started.model} instead of ${model}`);
   const usedEffort = started.reasoningEffort ?? effort;
   const candidate = { metadata: { kind: "ai_estimate_not_gto", scope: "12 representative flops; flop only; not published",
-    spot: inputs.spot.id, tree: inputs.spot.tree, source_hash: inputs.fingerprint, policy_hash: sha(policy), config_version: config.version,
+    spot: inputs.spot.id, tree: inputs.spot.tree, source_hash: inputs.fingerprint, structure_hash: inputs.structure_hash, policy_hash: sha(policy), config_version: config.version,
     model, reasoning_effort: usedEffort, prompt_hash: sha(prompt) }, policy };
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, `${JSON.stringify(candidate, null, 2)}\n`, { flag: "wx" });
@@ -234,6 +248,7 @@ export function promptForLater(inputs) {
 }
 
 export async function generateLater(inputs, flopCandidate, { model = resolveModel(), effort = resolveEffort(), generator = generatorFor(model) } = {}) {
+  if (inputs.adjusted) throw new Error("Policy authoring with adjusted inputs is not enabled in Stage C");
   const path = artifactPaths(inputs.spot).laterCandidate;
   if (existsSync(path)) return { candidate: loadLaterCandidate(inputs, flopCandidate), reused: true };
   const prompt = promptForLater(inputs);
@@ -241,7 +256,7 @@ export async function generateLater(inputs, flopCandidate, { model = resolveMode
   const policy = validateLaterPolicy(await generator(prompt, { model, effort, onThread: result => { started = result ?? {}; } }));
   if (started.model && started.model !== model) throw new Error(`Codex used ${started.model} instead of ${model}`);
   const candidate = { metadata: { kind: "ai_estimate_not_gto", scope: "turn and river; not published",
-    spot: inputs.spot.id, source_hash: inputs.fingerprint, flop_policy_hash: flopCandidate.metadata.policy_hash, policy_hash: sha(policy),
+    spot: inputs.spot.id, source_hash: inputs.fingerprint, structure_hash: inputs.structure_hash, flop_policy_hash: flopCandidate.metadata.policy_hash, policy_hash: sha(policy),
     config_version: config.version, model, reasoning_effort: started.reasoningEffort ?? effort, prompt_hash: sha(prompt) }, policy };
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, `${JSON.stringify(candidate, null, 2)}\n`, { flag: "wx" });

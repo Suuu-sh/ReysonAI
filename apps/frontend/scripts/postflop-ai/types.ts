@@ -1,4 +1,5 @@
 import type pilotConfig from "../data/postflop-ai-pilot.json";
+import type { TableProfile } from "../../src/estimated/table-profile.ts";
 import type { BettingStep, FlopTree, PlayerRole } from "./tree.ts";
 import type { LaterStreet } from "./later-tree.ts";
 import type { Spot } from "./spots.ts";
@@ -36,10 +37,16 @@ export type MultiwaySpot = { id: string; kind: "sqp" | "ccp" | "c4bp"; opener: P
 export type MultiwayCatalog = { version: number; structural: number; reachable: number; stageA: number; stageB: number;
   spots: MultiwaySpot[]; deferred: { id: string; terminalId: string; reach: MultiwaySpot["reach"]; reason: string }[];
   omitted: { id: string; terminalId: string; reason: string }[] };
+// Profile datasets use the same flat path keys as their persisted files, without .json:
+// profiles/<profile>/villain/<dataset>. No standard-range fallback is allowed.
 export type PostflopDatasets = Record<string, SourceDataset | MultiwayCatalog | undefined>;
+export type InputOpponentProfile = "standard" | "nit" | "station" | "lag" | "maniac";
+export type InputOptions = { tableProfile?: Partial<TableProfile>; opponentProfile?: InputOpponentProfile; opponentSeat?: PlayerRole };
+export type InputAdjustment = { tableProfile: TableProfile; opponentProfile: InputOpponentProfile };
 export type RangeFactor = readonly [file: string, spotId: string, action: SourceAction];
 export type Inputs = { spot: Spot; opening?: SourceSpot; response?: SourceSpot; sources?: { dataset: string; spot: SourceSpot }[]; threeBet?: SourceSpot; threeBetResponse?: SourceSpot;
-  config: PilotConfig; fingerprint: string; seatRows: Record<string, FrequencyRow[]> };
+  config: PilotConfig; fingerprint: string; structure_hash: string; baselineFingerprint?: string; adjusted?: InputAdjustment;
+  tableProfile?: TableProfile; opponentProfile?: InputOpponentProfile; opponentSeat?: PlayerRole; seatRows: Record<string, FrequencyRow[]> };
 export type ReachStep = BettingStep & { canRaise?: boolean };
 export type StrategyCombo = { cards: string; tier: HandTier; weight: number; reachWeight?: number; mix: ActionMix };
 export type StrategyRow = { hand: string; comboCount: number; reachable: boolean; mix: ActionMix; tiers: Record<HandTier, number>; combos: StrategyCombo[]; reachWeight: number; tier?: string };

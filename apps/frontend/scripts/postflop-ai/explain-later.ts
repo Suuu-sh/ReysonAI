@@ -30,6 +30,7 @@ import { flopState } from "./tree.ts";
 import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.ts";
 import { defenceFor, isFacingNode, replayOrNull } from "./defence.ts";
 import { averageExplanationFacts } from "./explain-aggregate.ts";
+import { profileReferenceFacts } from "./profile-reference.ts";
 
 const RANKS = "23456789TJQKA";
 const MAX_TURN_COMBOS = 300;
@@ -269,7 +270,10 @@ export function explainLaterCombo({ flop, flopActions = "", turn, turnActions = 
     ...boardContext.decision, street, previousAggressor: boardContext.previousAggressor,
   }, inputs.spot, boardContext.decision.potBb, street === "turn" ? boardContext.turnReplay.stacks : boardContext.riverReplay!.stacks,
   heroDefence, defenceOf);
+  const profileReference = profileReferenceFacts(inputs, flopRules, laterRules, heroTable, board, boardContext.decision.node, hero,
+    laterPolicyMix(laterRules, boardContext.decision.node, hero, board, boardContext.decision.line));
   return { kind: "ai_estimate_not_gto", node: boardContext.decision.node, street,
+    ...(profileReference ? { profile_reference: profileReference } : {}),
     line: boardContext.decision.line, texture: runoutTexture(board), equity: heroDefence?.facts?.equity ?? result.equity,
     combos: result.combos, actions: result.actions, ...(result.truncated ? { truncated: true } : {}),
     ...(heroDefence?.facts ? { defence: heroDefence.facts } : {}), ...(bettingFacts ? { betting: bettingFacts } : {}),

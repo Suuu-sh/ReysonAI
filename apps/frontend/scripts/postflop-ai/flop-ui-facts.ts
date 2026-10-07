@@ -18,6 +18,7 @@ import { seatRange } from "./browser-inputs.ts";
 import { NODES, policyMix, scaleByPath } from "./policy.ts";
 import { FLOP_BETS, facingNode, flopState, historyFor, nodeRole, otherRole } from "./tree.ts";
 import { averageExplanationFacts } from "./explain-aggregate.ts";
+import { profileReferenceFacts } from "./profile-reference.ts";
 
 const caches = new WeakMap<Inputs, WeakMap<FlopPolicy, Map<string, Context>>>();
 const rounded = <T>(value: T): T => typeof value === "number" && Number.isFinite(value) ? Math.round(value * 1e4) / 1e4 as T : value;
@@ -78,7 +79,9 @@ export function flopUiComboFactsCanonical({ boardCards, node, cards, history, pr
   }
   const facing = table ? defence.facts(table, boardCards, node, hero, policyMix(policy, node, hero, boardCards)) : null;
   const betting = table ? defence.bettingFacts(table, boardCards, node, hero) : null;
+  const profileReference = profileReferenceFacts(inputs, policy, null, table, boardCards, node, hero, policyMix(policy, node, hero, boardCards));
   return { kind: "ai_estimate_not_gto", cards: comboKey(cards), node,
+    ...(profileReference ? { profile_reference: profileReference } : {}),
     equity: facing?.equity ?? betting?.equity_vs_defender ?? 0,
     actions,
     ...(facing ? { defence: {

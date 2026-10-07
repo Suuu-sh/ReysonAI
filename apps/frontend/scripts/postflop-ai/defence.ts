@@ -213,7 +213,7 @@ export function flopRunouts(flop: readonly number[]): FlopRunouts {
 }
 
 // The final boards a decision on `board` is evaluated over (each as a rank table).
-function finalTables(board: readonly number[]): RankTable[] {
+export function finalTables(board: readonly number[]): RankTable[] {
   if (board.length === 5) return [rankTable(board)];
   if (board.length === 4) {
     const tables = [];
@@ -274,20 +274,23 @@ export function replayOrNull(inputs: Inputs, board: readonly number[], path: Par
 // The defence model of one (inputs, flop policy, later policy).
 // ---------------------------------------------------------------------------------------------
 type Instances = WeakMap<Inputs, WeakMap<FlopPolicy, WeakMap<object, Defence>>>;
-const instances: Instances = new WeakMap(), uncappedInstances: Instances = new WeakMap();
+const instances: Instances = new WeakMap(), uncappedInstances: Instances = new WeakMap(), profileInstances: Instances = new WeakMap();
 const NO_LATER = {};
 
 // One shared instance per (inputs, flopPolicy, laterPolicy) so every consumer reuses its caches.
 // `bluffCap: false` (tests, comparisons) leaves every betting decision as the policy mix.
-export function defenceFor(inputs: Inputs, flopPolicy: FlopPolicy, laterPolicy: LaterPolicy | null = null, { bluffCap = true }: { bluffCap?: boolean } = {}): Defence {
-  const roots = bluffCap ? instances : uncappedInstances;
+export function defenceFor(inputs: Inputs, flopPolicy: FlopPolicy, laterPolicy: LaterPolicy | null = null,
+  { bluffCap = true, profileMode = Boolean(inputs.opponentProfile && inputs.opponentProfile !== "standard") }: { bluffCap?: boolean; profileMode?: boolean } = {}): Defence {
+  // Profile strategy is saved AI policy for both seats. The explicit false override is only
+  // for supplemental counterfactual facts; its instance/caches never mutate profile strategy.
+  const roots = profileMode ? profileInstances : bluffCap ? instances : uncappedInstances;
   let byFlop = roots.get(inputs);
   if (!byFlop) roots.set(inputs, byFlop = new WeakMap());
   let byLater = byFlop.get(flopPolicy);
   if (!byLater) byFlop.set(flopPolicy, byLater = new WeakMap());
   const key = laterPolicy ?? NO_LATER;
   let instance = byLater.get(key);
-  if (!instance) byLater.set(key, instance = new Defence(inputs, flopPolicy, laterPolicy, bluffCap));
+  if (!instance) byLater.set(key, instance = new Defence(inputs, flopPolicy, laterPolicy, bluffCap, profileMode));
   return instance;
 }
 
@@ -300,6 +303,7 @@ const COMPACT_CACHE_AFTER = 4096;
 
 class Defence {
   declare bluffCap: boolean;
+  declare profileMode: boolean;
   declare inputs: Inputs;
   declare flopPolicy: FlopPolicy;
   declare laterPolicy: LaterPolicy | null;
@@ -313,8 +317,9 @@ class Defence {
   declare bets: Record<Street, Map<string, BettingCap | null>>;
   declare bettingFactRanges: Record<Street, Map<string, BettingFactRange>>;
 
-  constructor(inputs: Inputs, flopPolicy: FlopPolicy, laterPolicy: LaterPolicy | null, bluffCap = true) {
-    this.bluffCap = bluffCap;
+  constructor(inputs: Inputs, flopPolicy: FlopPolicy, laterPolicy: LaterPolicy | null, bluffCap = true, profileMode = false) {
+    this.profileMode = profileMode;
+    this.bluffCap = bluffCap && !profileMode;
     this.inputs = inputs; this.flopPolicy = flopPolicy; this.laterPolicy = laterPolicy;
     this.config = inputs.config ?? pilotConfig;
     this.realization = this.config.defence_realization ?? pilotConfig.defence_realization;
@@ -697,6 +702,7 @@ class Defence {
   }
 
   applyEquity(context: DefenceContext, base: ActionMix, equity: number, combo: readonly number[], raw = false): ActionMix {
+    if (this.profileMode) return effectiveMix(withRaise(context.node, base), context.target.canRaise);
     const realized = equity * this.realizationFor(context, combo), margin = realized - context.required;
     const mix = splitMix(base, logistic(margin / LOGISTIC_SCALE));
     const floor = raw ? null : this.floorOf(context);
@@ -719,6 +725,7 @@ class Defence {
   // the minimum defence the bettor's bluffs need to break even. Against a capped range the total
   // continue frequency (calls + raises) is therefore limited to MDF, keeping the strongest hands.
   ceilingOf(context: DefenceContext): DefenceLimit | null {
+    if (this.profileMode) return null;
     if (context.ceiling !== undefined) return context.ceiling;
     context.ceiling = null;
     if (!context.capped) return null;
@@ -765,6 +772,7 @@ class Defence {
   // computed defence is more than DEFENCE_FLOOR_MARGIN under MDF, the strongest folding hands (by
   // realized equity) call until defence reaches MDF minus that margin.
   floorOf(context: DefenceContext): DefenceLimit | null {
+    if (this.profileMode) return null;
     if (context.floor !== undefined) return context.floor;
     context.floor = null;
     // A capped range sits at the caller's break-even, so its bluff-catchers are indifferent and the
@@ -810,6 +818,7 @@ class Defence {
   // The defended mix of `combo` at the pending decision of `table`; `base` is the AI policy mix,
   // returned unchanged when the node is not a facing decision or no context can be built.
   mix(table: Table, board: readonly number[], node: string, combo: readonly number[], base: ActionMix): ActionMix {
+    if (this.profileMode) return effectiveMix(withRaise(node, base), table.log.at(-1)?.canRaise);
     if (!isFacingNode(node)) {
       const cap = isBettingNode(node) ? this.betting(table, board, node) : null;
       return cap ? cap.applyCombo(base, combo) : base;
