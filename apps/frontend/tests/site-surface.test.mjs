@@ -79,12 +79,12 @@ test("phone cover fills remaining viewport without stretching or clipping the sq
   }
 });
 
-test("phone cover takeover uses bounded native sticky and an opaque scroll runway", () => {
+test("phone cover takeover uses bounded sticky without an artificial blank runway", () => {
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
   const mobile = css.slice(css.indexOf("@media screen and (max-width: 560px)"));
   assert.match(mobile, /\.has-motion \.site-hero > \.site-explorer \{ position: sticky; top: var\(--header-height\); z-index: 0;/);
   assert.match(mobile, /\.has-motion \.site-cover-ending \{ position: relative; z-index: 1;[^}]*background: var\(--bg\);/);
-  assert.match(mobile, /min-height: calc\(max\(156px, 100svh - var\(--header-height\) - 100vw\) \+ 100vw\)/);
+  assert.doesNotMatch(mobile, /min-height: calc\(max\(156px[^}]*\+ 100vw|padding-bottom: calc\(100vw/);
   assert.doesNotMatch(mobile, /\.site-hero[^}]*position: fixed/);
 });
 
