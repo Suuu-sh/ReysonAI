@@ -1125,11 +1125,8 @@
   .site-persona-stage.is-learner .site-hand-action { justify-content: space-between; }
 }
 
-/* Center the comparison labels themselves, with one shared heading typeface. */
+/* Center the compact logo/label group with matching heading typography. */
 .site-compare thead th, .site-compare thead th.is-us { font-family: inherit; font-weight: 700; line-height: 1.4; letter-spacing: 0; }
-.site-compare-heading { position: relative; width: 100%; min-width: 0; padding-inline: 24px; font: inherit; }
-.site-compare-heading > img { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
+.site-compare-heading { width: 100%; min-width: 0; padding-inline: 0; gap: 6px; font: inherit; }
+.site-compare-heading > img { position: static; flex: 0 0 auto; transform: none; }
 .site-compare-heading > span { min-width: 0; overflow-wrap: anywhere; text-align: center; }
-@media (max-width: 720px) {
-  .site-compare-heading { padding-inline: 18px; }
-}

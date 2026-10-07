@@ -762,3 +762,7 @@ Verification:
 ## 2026-10-07 — Center comparison text and match heading typography
 - Keep logo but remove its width from label centering via absolute left placement and symmetric heading padding. Both labels inherit the same typeface/size with700 weight/1.4 line-height; wrapping remains enabled. Continuous black Reyson column/light surroundings unchanged.
 - Focused typography/centering guard1 and diffcheck passed. CSS-only no repeated build; preview5218 updated. No new rendered bounds claim, merge or deploy.
+
+## 2026-10-07 — Keep comparison logo adjacent
+- User corrected isolated label centering: logo and ReysonAI now remain one centered flex group with6px gap, no absolute icon/symmetric spacer. Shared heading typography and shrinkable wrapping retained.
+- Focused group/typography guard1/diffcheck passed; CSS-only no repeated build.5218 updated, no merge/deploy.
