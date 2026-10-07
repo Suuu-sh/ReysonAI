@@ -114,6 +114,15 @@ test("only the long phone comparison Agent and ranked chapters use compact reada
   assert.doesNotMatch(compact, /overflow: hidden|max-height:|site-persona/);
 });
 
+test("intermediate two-column hero removes only its viewport spacer and never clips copy", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const intermediate = css.slice(css.indexOf("/* Intermediate two-column"));
+  assert.match(intermediate, /@media \(min-width: 961px\) and \(max-width: 1200px\)/);
+  assert.match(intermediate, /\.site-hero-main \{ min-height: 0; \}/);
+  assert.match(intermediate, /transform: none; padding: 24px/);
+  assert.doesNotMatch(intermediate, /overflow:|max-height:|aspect-ratio:|hero-range-size/);
+});
+
 test("hero and shared English taglines use Understand the reason", () => {
   for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
     const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");

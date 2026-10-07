@@ -1043,3 +1043,15 @@
   .site-compare tbody td { padding: 6px; font-size: 12px; line-height: 1.45; }
   .site-compare-note { margin-top: 10px; font-size: 11px; line-height: 1.45; }
 }
+
+/* Intermediate two-column screens must not reserve viewport height below a
+   width-limited square. Keep all copy in normal flow if it needs more room. */
+@media (min-width: 961px) and (max-width: 1200px) {
+  .site-hero-main { min-height: 0; }
+  .site-hero-copy { transform: none; padding: 24px; }
+  .site-hero-lead, .site-ja .site-hero-lead { margin-top: 18px; font-size: 14px; line-height: 1.5; }
+  .site-hero-actions { margin-top: 18px; gap: 10px 16px; }
+  .site-hero-actions .site-button { min-height: 44px; padding-inline: 16px; font-size: 14px; }
+  .site-hero-secondary { min-height: 44px; font-size: 13px; }
+  .site-hero-note { margin-top: 12px; font-size: 11px; }
+}

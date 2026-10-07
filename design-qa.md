@@ -719,3 +719,7 @@ Verification:
 -≤560px only three long chapters: padding28px/heading26px/body14px, feature gap18px/points13px, mock padding12px. Agent keeps everyβ/heads-up/game fact. Ranked card/emblem64px and denser tier cells preserve all rating/sample/Legend/reward-planned/gate caveats.
 - Comparison keeps every row, using three compact columns (criterion+both products),12px cells/1.45 line-height/6px padding instead of repeating full-width labels. Intro14px and note retained. No fixed height/ellipsis/clipping;320px short screens can overflow naturally. Full learner reason and hero mask/62ranges untouched, desktop unchanged.
 - Targeted three-chapter scope/readability guard1/diffcheck passed. CSS-only: no repeated build. No new height/browser evidence at commit time; do not claim every section fits exactly one viewport. No merge/deploy.
+
+## 2026-10-07 — Remove intermediate two-column hero viewport gap
+- Cause: above960px square range can be width-limited (at1024×768≈614px), but hero reserves viewport−header≈704px, leaving≈90px underneath. At961–1200px (before the left column's480px cap), remove viewport min-height; compact left-copy padding/margins/CTA sizing and remove its28px translation so all content stays in flow without clipping. Square sizing unchanged;≤960 and>1200 layouts untouched.
+- Targeted breakpoint/no-clipping guard1/diffcheck passed. CSS-only no repeated build. Browser bottom/copy measurements not yet available; long localized copy may naturally grow rather than be clipped. No merge/deploy.
