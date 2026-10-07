@@ -573,3 +573,9 @@ Verification:
 - At ≤560px hide only `.site-analysis .site-dash` with display:none. Keep the analysis heading, explanation, points and truthful practice-data note unchanged. Existing single-column phone grid has no remaining sample slot/gap; desktop sample remains in the DOM and restores normally.
 - Parent DOM QA: 390px sample display:none,height=0; 1280px display:block,height≈458px. No visual analysis-screen claim: viewport resizing shifted the screenshot to another section.
 - Focused hide-scope test, production build and diff check passed. No merge/deploy.
+
+## 2026-10-07 — Ranked preview matches current Human FastFold
+- Current source truth: TrainerPage routes ranked play to HumanRankArena. human-api status gate requires human-fastfold-v1/six_verified_humans/6 players/shadow comparison/no applied penalty; humanRankState adapts server records only. HumanRankArena displays current rating, rated hands, net bb and bb/100, plus queue participation and RankLadder. TrainerHome uses unrated Agent practice while waiting.
+- Replace site-only quiz scoring/quota/Peak/pips with a visibly non-live sample: rating/tier, 120 hands, +18bb and +15bb/100, example 2/6 human queue, shared tier thresholds and Legend top-10-Masters rule. Sample values are coherent illustrations, not fetched server data; availability still requires verified sign-in/server readiness and no AI penalty is applied. Update all four locale ranked copies; actual app/backend untouched.
+- Parent 390px English screenshot and scrolling: sample metrics/Legend/queue/shadow caveats fit with no horizontal overflow. Desktop existing layout retained; no new desktop visual check claimed.
+- Locale/surface tests: 38 passed. Update three stale hero-title expectations from the previously authorized reason-copy revision. Build/diff check passed; no merge/deploy.

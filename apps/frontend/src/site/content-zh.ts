@@ -37,10 +37,11 @@ export const zh: SiteCopy = {
     note: "想研究自定义博弈树的精确求解结果？基于求解器的应用更适合这一用途。",
   },
   ranked: {
-    status: "即将推出", title1: "排位对战，", title2: "靠实力赢得评分。",
-    description: "每个人在相同条件下挑战20题。决策明确的手牌几乎不影响评分，混合策略手牌的影响最大。从青铜一路升至大师。",
-    points: ["涵盖所有局面的20题，标准难度", "每天最多3场排位赛", "Elo式评分：难度越高的手牌权重越大", "每周及总排行榜"],
-    sample: "示例", rank: "段位", rating: "评分", peak: "最高评分", toNext: (points: number, tier: string) => `距离${tier}还差${points}分`, today: "今日剩余2 / 3场", lastMatch: "上一场", matchLine: (correct: number, total: number) => `${total}题答对${correct}题 · 正确率${Math.round(correct / total * 100)}%`,
+    status: "需认证登录及服务器就绪", title1: "真人排位，", title2: "实战手牌，不是答题。",
+    description: "与六名认证玩家进行真人FastFold β对战。实战后查看服务器记录的评分和结果。等待时可练习不计分的Agent对局。",
+    points: ["六人全部确认后才发牌", "逐手连续对战", "查看评分、计分手数、净收益和bb/100", "仅真人对局结果 · 不应用AI修正"],
+    sample: "示例 · 非实时数据", rank: "段位", mode: "真人FastFold β", rating: "当前评分", hands: "计分手数", netResult: "净收益", toNext: (points: number, tier: string) => `距离${tier}还差${points}分`,
+    queue: "等待人数示例", queueNote: "人数包含自己，六人全部确认后开始。", note: "数字仅为示例。需认证登录及服务器就绪。等待时的Agent练习不计分；AI比较仅作影子分析，不应用扣分。", legend: "传奇", legendRule: (count: number) => `大师前${count}名`,
     tiers: ["青铜", "白银", "黄金", "铂金", "钻石", "大师"],
   },
   agent: {

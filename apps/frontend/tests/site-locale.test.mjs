@@ -22,7 +22,7 @@ test("Japanese service-site copy covers every English field", async () => {
   const ja = await loadCopy("content-ja.ts", "ja");
   assert.deepEqual(shapeOf(ja), shapeOf(en));
   assert.equal(en.hero.title1, "Don't just play.");
-  assert.equal(en.hero.title2, "Understand why.");
+  assert.equal(en.hero.title2, "Understand the reason.");
   assert.equal(ja.hero.title1, en.hero.title1);
   assert.equal(ja.hero.title2, en.hero.title2);
   assert.match(ja.preview.notGto, /GTO/);
@@ -98,7 +98,11 @@ for (const [locale, file, exportName] of [["zh-CN", "content-zh.ts", "zh"], ["es
     assert.ok(copy.drill.score(3, 20).includes("3"));
     assert.ok(copy.drill.score(3, 20).includes("20"));
     assert.ok(copy.drill.tableLabel("KTo").includes("KTo"));
-    assert.ok(copy.ranked.matchLine(16, 20).includes("80%"));
+    assert.ok(copy.ranked.hands);
+    assert.ok(copy.ranked.netResult);
+    assert.ok(copy.ranked.queueNote);
+    assert.ok(copy.ranked.note);
+    assert.ok(copy.ranked.legendRule(10).includes("10"));
     assert.ok(copy.ranked.toNext(64, copy.ranked.tiers[3]).includes("64"));
     if (locale === "zh-CN") {
       assert.equal(copy.pricing.plans[1].price, "¥580");

@@ -9,6 +9,7 @@ import { en, type SiteCopy, type SiteLocale } from "./content";
 import { SITE_COPY } from "./locales";
 import { LOCALES } from "../locale-metadata.ts";
 import { appEntryHref } from "../route.ts";
+import { TIERS, LEGEND_TOP_N } from "../../../shared/ranked-rules.ts";
 
 const SiteContext = createContext<{ locale: SiteLocale; copy: SiteCopy; onLocaleChange: (locale: SiteLocale) => void; motion: boolean; appHref: string }>({ locale: "en", copy: en, onLocaleChange: () => {}, motion: false, appHref: "/analyze/ranges" });
 const useSite = () => useContext(SiteContext);
@@ -620,9 +621,9 @@ function Audience() {
   </section>;
 }
 
-const tierMins = [0, 950, 1100, 1250, 1400, 1550];
+const tierMins = TIERS.map(tier => tier.min);
 // Tier keys (Japanese names) for the shared emblem colours, in tierMins order.
-const TIER_KEYS = ["ブロンズ", "シルバー", "ゴールド", "プラチナ", "ダイヤモンド", "マスター"];
+const TIER_KEYS = TIERS.map(tier => tier.name);
 
 // Wide screens: Training pins for one screen while scrolling slides it over to Ranked, then the Agent table.
 const TRAIN_PAGES = 3;
@@ -688,6 +689,7 @@ function Ranked() {
       </div>
       <div className="site-mock site-rank" ref={ref} data-reveal aria-hidden="true" style={{ "--tier": tierColor(TIER_KEYS[tier]) } as CSSProperties}>
         <span className="site-sample">{c.ranked.sample}</span>
+        <h3 className="site-rank-mode">{c.ranked.mode}</h3>
         <div className="site-rank-card">
           <div className="site-rank-emblem">
             <svg className="site-rank-ring" viewBox="0 0 128 128">
@@ -701,7 +703,7 @@ function Ranked() {
             <span key={tier} className="site-rank-tier">{c.ranked.tiers[tier]}</span>
             <dl>
               <div><dt>{c.ranked.rating}</dt><dd>{rating.toLocaleString()}</dd></div>
-              <div><dt>{c.ranked.peak}</dt><dd>1,204</dd></div>
+              <div><dt>{c.ranked.hands}</dt><dd>120</dd></div>
             </dl>
             <span className="site-rank-bar"><span style={{ width: `${progress * 100}%` }} /></span>
             <small>{next ? c.ranked.toNext(next - rating, c.ranked.tiers[tier + 1]) : ""}</small>
@@ -709,12 +711,12 @@ function Ranked() {
         </div>
         <ol className="site-tiers">{c.ranked.tiers.map((name, index) => <li key={name} className={index < tier ? "is-passed" : index === tier ? "is-current" : ""}
           style={{ "--tier": tierColor(TIER_KEYS[index]) } as CSSProperties}>
-          <TierEmblem level={index} name={TIER_KEYS[index]} size={30} /><span>{name}</span><small>{tierMins[index].toLocaleString()}+</small></li>)}</ol>
-        <div className="site-rank-row">
-          <div className="site-rank-match"><span>{c.ranked.lastMatch}</span><b>+18</b><small>{c.ranked.matchLine(16, 20)}</small>
-            <ol className="site-rank-pips">{["up", "up", "down", "up", "up"].map((result, i) => <li key={i} className={`is-${result}`} />)}</ol></div>
-          <div className="site-rank-today"><span className="site-rank-dots"><i className="is-used" /><i /><i /></span>{c.ranked.today}</div>
-        </div>
+          <TierEmblem level={index} name={TIER_KEYS[index]} size={30} /><span>{name}</span><small>{tierMins[index].toLocaleString()}+</small></li>)}
+          <li style={{ "--tier": tierColor("レジェンド") } as CSSProperties}><TierEmblem level={TIERS.length} name="レジェンド" size={30} /><span>{c.ranked.legend}</span><small>{c.ranked.legendRule(LEGEND_TOP_N)}</small></li>
+        </ol>
+        <dl className="site-rank-results"><div><dt>{c.ranked.netResult}</dt><dd>+18 bb</dd></div><div><dt>bb/100</dt><dd>+15</dd></div></dl>
+        <div className="site-rank-queue"><span>{c.ranked.queue}</span><strong>2 / 6</strong><small>{c.ranked.queueNote}</small></div>
+        <p className="site-rank-note">{c.ranked.note}</p>
       </div>
     </div>
   </section>;

@@ -469,7 +469,15 @@
 .site-rank-bar { display: block; height: 4px; margin-top: 4px; overflow: hidden; border-radius: 2px; background: rgb(255 255 255 / 7%); }
 .site-rank-bar span { display: block; height: 100%; border-radius: 2px; background: var(--tier); transition: width .25s linear; }
 .site-rank-info > small { color: var(--muted); font-size: 12px; }
-.site-tiers { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-top: 12px; }
+.site-tiers { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 12px; }
+.site-rank-mode { margin-bottom: 12px; font-size: 16px; }
+.site-rank-results { display: flex; gap: 24px; margin-top: 12px; padding-block: 10px; border-block: 1px solid var(--line); }
+.site-rank-results dt { color: var(--muted); font-size: 11px; }
+.site-rank-results dd { font-size: 20px; font-weight: 750; }
+.site-rank-queue { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; margin-top: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--panel-radius); font-size: 12px; }
+.site-rank-queue strong { font-size: 18px; }
+.site-rank-queue small { grid-column: 1 / -1; color: var(--muted); font-size: 11px; }
+.site-rank-note { margin-top: 12px; color: var(--muted); font-size: 11px; line-height: 1.5; }
 .site-tiers li { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; align-items: center; column-gap: 6px; padding: 6px 8px; border-radius: 8px; color: var(--subtle); font-size: 11px; opacity: .55; }
 .site-tiers li .rank-badge { grid-row: span 2; }
 .site-tiers li span { overflow: hidden; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }

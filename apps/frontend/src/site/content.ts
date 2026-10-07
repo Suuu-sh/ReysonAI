@@ -39,10 +39,11 @@ export const en = {
     note: "Studying exact solver output for custom game trees? A solver-based app is the better tool for that.",
   },
   ranked: {
-    status: "Coming soon", title1: "Ranked matches.", title2: "A rating you earn.",
-    description: "Twenty questions under the same conditions for everyone. Clear-cut hands barely move your rating; mixed hands move it most. Climb from Bronze to Master.",
-    points: ["20 questions across every spot, standard difficulty", "Three ranked matches a day", "Elo-style rating: harder hands count for more", "Weekly and all-time leaderboard"],
-    sample: "Sample", rank: "Rank", rating: "Rating", peak: "Peak", toNext: (points: number, tier: string) => `${points} to ${tier}`, today: "2 / 3 matches left today", lastMatch: "Last match", matchLine: (correct: number, total: number) => `${correct} / ${total} correct · ${Math.round(correct / total * 100)}% accuracy`,
+    status: "Sign-in · server availability required", title1: "Human ranked.", title2: "Real hands, not quizzes.",
+    description: "Join Human FastFold β with six verified players. Play actual hands, then follow your server-recorded rating and results. Practice against unrated Agents while waiting.",
+    points: ["Six people accept before cards are dealt", "Continuous hand-by-hand gameplay", "Rating, rated hands, net result and bb/100", "Human results only · no applied AI correction"],
+    sample: "Sample · not live", rank: "Rank", mode: "Human FastFold β", rating: "Current rating", hands: "Rated hands", netResult: "Net result", toNext: (points: number, tier: string) => `${points} to ${tier}`,
+    queue: "Example waiting queue", queueNote: "Includes you. All six players must accept.", note: "Illustrative numbers only. Requires verified sign-in and server readiness. Agent practice is unrated; AI comparison is shadow-only, with no applied penalty.", legend: "Legend", legendRule: (count: number) => `Top ${count} Masters`,
     tiers: ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master"],
   },
   agent: {

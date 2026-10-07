@@ -37,10 +37,11 @@ export const ja: SiteCopy = {
     note: "任意のゲームツリーで厳密なソルバー解を調べたいなら、ソルバー系アプリの方が適しています。",
   },
   ranked: {
-    status: "近日公開", title1: "ランク戦で、", title2: "実力をレートに。",
-    description: "全員が同じ条件で20問に挑みます。迷いようのないハンドではレートはほとんど動かず、混合のハンドほど大きく動きます。ブロンズからマスターまで駆け上がりましょう。",
-    points: ["全局面から20問、標準の難易度", "ランク戦は1日3試合まで", "イロレーティング方式：難しいハンドほど重く評価", "週間・通算のランキング"],
-    sample: "表示例", rank: "ランク", rating: "レート", peak: "最高", toNext: (points: number, tier: string) => `${tier}まであと${points}`, today: "本日の残り 2 / 3 試合", lastMatch: "前回の試合", matchLine: (correct: number, total: number) => `${total}問中 ${correct}問正解 · 正答率 ${Math.round(correct / total * 100)}%`,
+    status: "ログイン・サーバー準備が必要", title1: "対人ランク戦で、", title2: "実際のハンドをプレイ。",
+    description: "認証済みの人間6人で対戦する対人FastFold β。実際のハンドをプレイし、サーバーに記録されたレートと収支を確認できます。待つ間はランク非加算のAgent戦で練習します。",
+    points: ["6人全員の参加確定後に配札", "ハンドごとに続けて対戦", "レート・対象ハンド数・収支・bb/100を表示", "人間同士の結果のみ・AI補正は未適用"],
+    sample: "表示例・ライブ値ではありません", rank: "ランク", mode: "対人FastFold β", rating: "現在のレート", hands: "ランク対象ハンド", netResult: "収支", toNext: (points: number, tier: string) => `${tier}まであと${points}`,
+    queue: "待機人数の表示例", queueNote: "自分を含む人数。6人全員の参加確定が必要です。", note: "数値は表示例です。認証済みログインとサーバー準備が必要です。待機中のAgent戦はランク非加算。AI比較はshadowのみで減点は適用しません。", legend: "レジェンド", legendRule: (count: number) => `マスター上位${count}人`,
     tiers: ["ブロンズ", "シルバー", "ゴールド", "プラチナ", "ダイヤモンド", "マスター"],
   },
   agent: {

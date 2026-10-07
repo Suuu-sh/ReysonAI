@@ -84,6 +84,21 @@ test("phones hide only the illustrative analysis dashboard, retaining explanator
   assert.match(analysis, /site-mock site-dash/);
 });
 
+test("ranked preview mirrors human hand metrics, not legacy quiz scoring", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const ranked = source.slice(source.indexOf("function Ranked()"), source.indexOf("function AgentFeature()"));
+  assert.doesNotMatch(ranked, /matchLine|lastMatch|\.today|\.peak|site-rank-pips/);
+  for (const field of ["sample", "mode", "hands", "netResult", "queueNote", "note", "legendRule"]) assert.ok(ranked.includes(`c.ranked.${field}`));
+  assert.match(source, /const tierMins = TIERS\.map/);
+  for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
+    const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");
+    const copy = content.slice(content.indexOf("  ranked: {"), content.indexOf("  agent: {"));
+    assert.doesNotMatch(copy, /matchLine|lastMatch|today:|peak:|80%|Elo|イロ/);
+    assert.match(copy, /FastFold β/);
+    assert.match(copy, /sample:/);
+  }
+});
+
 let server, ServiceSite, copies;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
@@ -252,7 +267,7 @@ for (const locale of ["en", "ja"]) {
     assert.ok(heading);
     assert.match(heading, /id="site-hero-title"/);
     assert.match(heading, /lang="en"/);
-    for (const title of ["Don't just play.", "Understand why."]) assert.ok(heading.includes(escapeText(title)));
+    for (const title of ["Don't just play.", "Understand the reason."]) assert.ok(heading.includes(escapeText(title)));
     assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
     const main = html.indexOf('class="site-wrap site-hero-main"');
     const range = html.indexOf('class="site-hero-range"');

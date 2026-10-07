@@ -37,10 +37,11 @@ export const es: SiteCopy = {
     note: "¿Quieres estudiar soluciones exactas de árboles de juego personalizados? Para eso, una app basada en un solver es más adecuada.",
   },
   ranked: {
-    status: "Próximamente", title1: "Partidas clasificatorias.", title2: "Gánate tu puntuación.",
-    description: "Veinte preguntas con las mismas condiciones para todos. Las manos claras apenas cambian tu puntuación; las mixtas tienen el mayor impacto. Sube de Bronce a Maestro.",
-    points: ["20 preguntas de todas las situaciones, dificultad estándar", "Tres partidas clasificatorias al día", "Puntuación tipo Elo: las manos difíciles pesan más", "Clasificación semanal e histórica"],
-    sample: "Ejemplo", rank: "Rango", rating: "Puntuación", peak: "Máxima", toNext: (points: number, tier: string) => `${points} puntos para ${tier}`, today: "Quedan 2 / 3 partidas hoy", lastMatch: "Última partida", matchLine: (correct: number, total: number) => `${correct} / ${total} correctas · ${Math.round(correct / total * 100)}% de acierto`,
+    status: "Requiere sesión y servidor disponible", title1: "Clasificación humana.", title2: "Manos reales, no cuestionarios.",
+    description: "Juega Human FastFold β con seis personas verificadas. Sigue tu puntuación y resultados registrados por el servidor. Mientras esperas, practica contra Agents sin puntuación.",
+    points: ["Las seis personas aceptan antes de repartir", "Juego continuo, mano a mano", "Puntuación, manos puntuadas, resultado y bb/100", "Solo resultados humanos · sin corrección IA aplicada"],
+    sample: "Ejemplo · no son datos en vivo", rank: "Rango", mode: "FastFold humano β", rating: "Puntuación actual", hands: "Manos puntuadas", netResult: "Resultado", toNext: (points: number, tier: string) => `${points} puntos para ${tier}`,
+    queue: "Ejemplo de cola de espera", queueNote: "Te incluye. Las seis personas deben aceptar.", note: "Cifras ilustrativas. Requiere sesión verificada y servidor disponible. La práctica Agent no puntúa; la comparación IA es solo análisis paralelo, sin penalización aplicada.", legend: "Leyenda", legendRule: (count: number) => `Top ${count} Maestros`,
     tiers: ["Bronce", "Plata", "Oro", "Platino", "Diamante", "Maestro"],
   },
   agent: {
