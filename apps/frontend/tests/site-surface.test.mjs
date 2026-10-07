@@ -65,6 +65,20 @@ test("only the phone hero description is hidden, without removing locale copy or
   }
 });
 
+test("phone cover fills remaining viewport without stretching or clipping the square range", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 560px)"));
+  assert.match(css, /\.site-cover-ending \{ display: none; \}/);
+  assert.match(mobile, /min-height: calc\(100svh - var\(--header-height\)\)/);
+  assert.match(mobile, /\.site-hero > \.site-explorer \{ flex: none; width: 100%; \}/);
+  assert.match(mobile, /\.site-cover-ending \{ display: flex; flex: 1; min-height: 156px;/);
+  assert.match(mobile, /env\(safe-area-inset-bottom\)/);
+  for (const locale of ["en", "ja", "es", "zh-CN"]) {
+    const html = render(locale);
+    for (const key of ["coverTitle", "coverSubtitle", "coverScroll"]) assert.ok(html.includes(escapeText(copies[locale].hero[key])));
+  }
+});
+
 test("hero and shared English taglines use Understand the reason", () => {
   for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
     const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");
