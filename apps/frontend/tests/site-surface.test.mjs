@@ -12,30 +12,6 @@ test("scrolly audience starts at the section edge instead of centering in its sc
   assert.match(css, /\.site-audience\.is-scrolly > \.site-wrap\s*\{[^}]*position: sticky; top: 0/);
 });
 
-test("phone storytelling uses native sticky flow with short-screen and reduced-motion fallbacks", () => {
-  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
-  const audience = source.slice(source.indexOf("function Audience()"), source.indexOf("const TRAIN_PAGES"));
-  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  assert.match(audience, /\(max-width: 960px\) and \(min-height: 740px\)/);
-  assert.match(audience, /if \(!motion\) \{ setScrolly\(false\)/);
-  assert.match(audience, /new ResizeObserver\(update\)/);
-  assert.match(audience, /window\.innerHeight - wrapper\.offsetHeight/);
-  assert.match(css, /@media \(max-width: 960px\) and \(min-height: 740px\)/);
-  assert.match(css, /\.has-motion \.site-how-steps li \{ position: sticky; top: 80px/);
-  assert.doesNotMatch(audience, /addEventListener\("(?:wheel|touchmove)"/);
-});
-
-test("oversized translated phone How cards fall back to ordinary scrolling", () => {
-  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
-  const how = source.slice(source.indexOf("function HowItWorks()"), source.indexOf("const drillPool"));
-  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  assert.match(how, /if \(!motion \|\| typeof ResizeObserver === "undefined"\) return/);
-  assert.match(how, /card\.offsetHeight > window\.innerHeight - 80/);
-  assert.match(how, /new ResizeObserver\(update\)/);
-  assert.match(how, /observer\.disconnect\(\)/);
-  assert.match(css, /\.has-motion \.site-how-steps li\[data-oversized="true"\] \{ position: static; \}/);
-});
-
 test("phone hero uses an inert decorative chart behind centered copy and CTAs", () => {
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
@@ -63,6 +39,97 @@ test("only the phone hero description is hidden, without removing locale copy or
   for (const locale of ["en", "ja", "es", "zh-CN"]) {
     assert.ok(render(locale).includes(escapeText(copies[locale].hero.lead)));
   }
+});
+
+test("phone cover fills remaining viewport without stretching or clipping the square range", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 560px)"));
+  assert.match(css, /\.site-cover-ending \{ display: none; \}/);
+  assert.match(mobile, /min-height: calc\(100svh - var\(--header-height\)\)/);
+  assert.match(mobile, /\.site-hero-stage \{ display: block; flex: none; width: 100%; aspect-ratio: 1; \}/);
+  assert.match(mobile, /\.site-cover-ending \{ display: flex; flex: 1; min-height: 156px;/);
+  assert.match(mobile, /env\(safe-area-inset-bottom\)/);
+  for (const locale of ["en", "ja", "es", "zh-CN"]) {
+    const html = render(locale);
+    for (const key of ["coverTitle", "coverSubtitle", "coverScroll"]) assert.ok(html.includes(escapeText(copies[locale].hero[key])));
+  }
+});
+
+test("non-cover phone chapters remain natural with no global pin or artificial hold", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /MobileHold|mobileHoldGeometry|data-hold-phase/);
+  assert.match(source, /running = auto && motion && visible && !scrolly && !phone/);
+  assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 640px\)"\)/);
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const chapters = css.slice(css.indexOf("/* Mobile chapters:"));
+  assert.match(chapters, /position: static; min-height: 0;/);
+  assert.match(chapters, /\.site-persona:not\(\.is-active\)[^}]*display: none/);
+  assert.doesNotMatch(css, /site-mobile-hold|--audience-track-height|--step-top/);
+});
+
+test("phone persona selectors precede one adjacent description and matching preview", () => {
+  const previousWindow = globalThis.window;
+  try {
+    globalThis.window = { matchMedia: () => ({ matches: true }), localStorage: { getItem: () => null } };
+    const html = render("ja");
+    const tabs = html.split('role="tablist"')[1].split('role="tabpanel"')[0];
+    assert.match(tabs, /aria-orientation="horizontal"/);
+    assert.equal((tabs.match(/role="tab"/g) ?? []).length, 3);
+    assert.doesNotMatch(tabs, /site-persona-body|site-persona-quote/);
+    const panel = html.split('role="tabpanel"')[1];
+    assert.ok(panel.indexOf('class="site-persona-selected-copy"') < panel.indexOf('class="site-persona-views"'));
+    assert.ok(panel.includes(escapeText(copies.ja.audience.items[0].body)));
+  } finally { globalThis.window = previousWindow; }
+});
+
+test("phone learner retains the full saved factual reason used on desktop", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.match(source, /<p className="site-persona-why"><span>\{c.preview.why\}<\/span>\{c.how.whyNote\}<\/p>/);
+  assert.doesNotMatch(source, /learnerWhyShort/);
+  for (const locale of ["en", "ja", "es", "zh-CN"]) assert.ok(render(locale).includes(escapeText(copies[locale].how.whyNote)));
+});
+
+test("phone question is erased top-down only as it overlaps the pinned range", async () => {
+  const { shouldPinCover, questionMaskEdge } = await server.ssrLoadModule("/src/site/cover-pin.ts");
+  for (const footerTop of [454, 300, 65]) assert.equal(shouldPinCover(0, footerTop, 64), true);
+  assert.equal(shouldPinCover(-390, 64, 64), false);
+  assert.equal(shouldPinCover(-391, 63, 64), false);
+  assert.equal(questionMaskEdge(454, 454, 390), 0);
+  assert.equal(questionMaskEdge(464, 454, 390), 0);
+  assert.equal(questionMaskEdge(354, 454, 390), 100);
+  assert.equal(questionMaskEdge(0, 454, 390), 418);
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const cover = css.slice(css.indexOf("/* Only the square pins"));
+  assert.match(cover, /site-cover-ending[^}]*mask-image: linear-gradient\(to bottom, transparent calc\(var\(--question-mask-edge, 0px\) - 28px\), #000 var\(--question-mask-edge, 0px\)\)/);
+  assert.match(cover, /site-after-cover[^}]*z-index: 1; background: var\(--bg\)/);
+  assert.doesNotMatch(cover, /height:|padding-bottom:|question-shift/);
+});
+
+test("only the long phone comparison Agent and ranked chapters use compact readable spacing", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const compact = css.slice(css.indexOf("/* Compact only the three long"));
+  assert.match(compact, /@media \(max-width: 560px\)/);
+  for (const name of ["site-ranked", "site-agent", "site-compare"]) assert.ok(compact.includes(name));
+  assert.match(compact, /tbody td \{ padding: 6px; font-size: 12px; line-height: 1.45/);
+  assert.doesNotMatch(compact, /overflow: hidden|max-height:|site-persona/);
+});
+
+test("intermediate two-column hero removes only its viewport spacer and never clips copy", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const intermediate = css.slice(css.indexOf("/* Intermediate two-column"));
+  assert.match(intermediate, /@media \(min-width: 961px\) and \(max-width: 1200px\)/);
+  assert.match(intermediate, /\.site-hero-main \{ min-height: 0; \}/);
+  assert.match(intermediate, /transform: none; padding: 24px/);
+  assert.doesNotMatch(intermediate, /overflow:|max-height:|aspect-ratio:|hero-range-size/);
+});
+
+test("only ReysonAI comparison cells stay continuously black while the section stays light", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /\.site-compare \{ background: var\(--paper\); color: var\(--paper-ink\); \}/);
+  const continuity = css.slice(css.indexOf("/* Keep only ReysonAI"));
+  assert.match(continuity, /thead th.is-us, \.site-compare tbody td.is-us \{ background: var\(--paper-ink\); border-top-color: var\(--paper-ink\); border-radius: 0;/);
+  assert.match(continuity, /inset: -12px 0; z-index: -1; background: var\(--paper-ink\)/);
+  assert.doesNotMatch(continuity, /grid-template|font-size|site-hero/);
 });
 
 test("hero and shared English taglines use Understand the reason", () => {
@@ -170,12 +237,18 @@ test("responsive hero mounts one matrix without the removed phone detail or play
 
 test("the range tour randomly selects saved spots, pauses offscreen, yields to interaction, and keeps playback intentional", () => {
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
-  const explorer = source.split("function DesktopExplorer() {")[1].split("const tourHands")[0];
+  const explorer = source.split("function DesktopExplorer() {")[1].split("function MobileExplorer()")[0];
   assert.match(explorer, /const isTouring = touring && motion/);
   assert.match(explorer, /if \(!isTouring \|\| !visible\) return/);
   assert.match(explorer, /window\.clearInterval\(timer\)/);
-  assert.match(explorer, /setRangeIndex\(current => pickNextRangeIndex\(current, heroRanges.length\)\)/);
-  assert.match(explorer, /\}, 4000\)/);
+  assert.match(explorer, /setRangeIndex\(current => pickNextRangeIndex\(current, heroRanges.length, previewRanges.tour.length\)\)/);
+  assert.match(explorer, /\}, 1000\)/);
+  const mobile = source.split("function MobileExplorer() {")[1].split("function Header()")[0];
+  assert.match(mobile, /\}, 1000\)/);
+  assert.match(mobile, /if \(!isTouring \|\| !visible\) return/);
+  assert.match(mobile, /setRangeIndex\(current => pickNextRangeIndex\(current, heroRanges.length, previewRanges.tour.length\)\)/);
+  assert.match(mobile, /<RangeMatrix range=\{range\}/);
+  assert.doesNotMatch(mobile, /nextMode|tourHands|BTN_open.*BB_vs_BTN/);
   for (const event of ["pointerdown", "keydown"]) {
     assert.ok(explorer.includes(`addEventListener("${event}", stop)`));
     assert.ok(explorer.includes(`removeEventListener("${event}", stop)`));
@@ -186,11 +259,26 @@ test("the range tour randomly selects saved spots, pauses offscreen, yields to i
   assert.doesNotMatch(explorer, /site-tour-progress|key=\{`\$\{mode\}-\$\{selected\}-\$\{isTouring\}`\}/);
 });
 
+test("range categories get equal draw space and exclude the current saved table", async () => {
+  const { pickNextRangeIndex } = await server.ssrLoadModule("/src/site/range-tour.ts");
+  const pick = (current, category, within) => { const draws = [category, within]; return pickNextRangeIndex(current, 62, 50, () => draws.shift()); };
+  assert.equal(pick(0, 0, 0), 1);
+  assert.equal(pick(0, .499999, .999999), 49);
+  assert.equal(pick(0, .5, 0), 50);
+  assert.equal(pick(0, .999999, .999999), 61);
+  assert.equal(pick(50, .5, 0), 51);
+  for (let current = 0; current < 62; current++) for (const category of [0, .499999, .5, .999999]) for (const within of [0, .5, .999999]) {
+    const next = pick(current, category, within);
+    assert.notEqual(next, current);
+    assert.equal(next < 50, category < .5);
+  }
+});
+
 test("random tour picks never repeat immediately, and its fifty ranges preserve saved frequencies/reach", async () => {
   const { pickNextRangeIndex } = await server.ssrLoadModule("/src/site/range-tour.ts");
   assert.equal(pickNextRangeIndex(0, 1), 0);
   for (let current = 0; current < 50; current++) for (const random of [0, .2, .5, .999999]) {
-    const next = pickNextRangeIndex(current, 50, () => random);
+    const next = pickNextRangeIndex(current, 50, 50, () => random);
     assert.ok(next >= 0 && next < 50 && next !== current);
   }
   const sources = [
@@ -319,7 +407,7 @@ test("sections use a wider shared canvas without empty full-screen minimums", ()
   assert.match(css, /\.site-wrap\s*\{[^}]*width: min\(100% - var\(--page-gutter\) \* 2, var\(--content-width\)\)/);
   assert.match(css, /\.site-section\s*\{[^}]*padding: var\(--section-space\)/);
   assert.doesNotMatch(css, /\.site-section, \.site-final\s*\{[^}]*min-height:/);
-  assert.doesNotMatch(css, /\.site-hero\s*\{[^}]*min-height:/);
+  assert.doesNotMatch(css.split("@media screen and (max-width: 560px)")[0], /\.site-hero\s*\{[^}]*min-height:/);
   assert.match(css, /\.site-poker-table\s*\{[^}]*width: min\(100%, 760px\)/);
   assert.match(css, /@media \(min-width: 961px\) and \(max-height: 740px\)/);
   const tablet = css.split("@media (max-width: 960px)")[1].split("@media (max-width: 720px)")[0];
@@ -352,7 +440,7 @@ test("mobile scenes grow with their explanation and cards instead of clipping a 
   assert.match(css, /\.site-rank-card\s*\{[^}]*flex-wrap: wrap/);
   assert.match(css, /\.site-mock\s*\{[^}]*min-width: 0/);
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
-  assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 640px\), \(max-width: 960px\) and \(min-height: 740px\)"\)/,
+  assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 640px\)"\)/,
     "persona pinning is desktop-only and enables a compact stage on short screens");
   assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 600px\)"\)/,
     "Training/Ranked pinning remains wide-screen-only");

@@ -34,8 +34,8 @@ test("Plus presents an approximate dollar price and daily value in English", asy
   assert.equal(en.pricing.plans[0].price, "$0");
   assert.equal(en.pricing.plans[1].price, "$3.70");
   assert.match(en.pricing.title2, /\$0\.12 a day/);
-  assert.equal(en.pricing.description, "");
-  assert.match(en.pricing.note, /isn't available yet/);
+  assert.match(en.pricing.description, /Planned Free \/ Plus/);
+  assert.match(en.pricing.note, /billing are not live/);
   assert.equal(en.pricing.plans[1].href, null);
 });
 
@@ -43,8 +43,8 @@ test("Japanese Plus pricing shows the 30-day daily equivalent while billing rema
   const ja = await loadCopy("content-ja.ts", "ja");
   assert.equal(ja.pricing.plans[1].price, "¥580");
   assert.match(ja.pricing.title2, /1日約19円/);
-  assert.equal(ja.pricing.description, "");
-  assert.match(ja.pricing.note, /課金はまだ利用できません/);
+  assert.match(ja.pricing.description, /予定している機能分け/);
+  assert.match(ja.pricing.note, /課金はまだ提供していません/);
   assert.equal(ja.pricing.plans[1].href, null);
 });
 
@@ -177,4 +177,31 @@ test("the marketing entry chooses metadata from the selected locale and preserve
   assert.match(source, /rememberLocale\(next\)/);
   assert.match(source, /setLocale\(next\)/);
   assert.doesNotMatch(source, /history\.(?:pushState|replaceState)|location\.(?:assign|replace|href\s*=)/);
+});
+
+
+test("all locales keep the agreed planned Free and Plus split without live paid access", async () => {
+  for (const [file, name, pre, post] of [["content.ts", "en", "Preflop", "Postflop"], ["content-ja.ts", "ja", "プリフロップ", "ポストフロップ"], ["content-es.ts", "es", "preflop", "postflop"], ["content-zh.ts", "zh", "翻前", "翻后"]]) {
+    const copy = await loadCopy(file, name);
+    const [free, plus] = copy.pricing.plans;
+    assert.equal(free.features.length, 3);
+    assert.equal(plus.features.length, 3);
+    assert.ok(free.features.join(" ").includes(pre));
+    assert.ok(plus.features.join(" ").includes(post));
+    assert.ok(plus.features[0].includes("Free"));
+    assert.deepEqual(copy.audience.freeList, free.features);
+    assert.equal(plus.href, null);
+    assert.ok(copy.faq.items[4].answer.includes("Plus"));
+    assert.ok(copy.faq.items[5].answer.includes("Free"));
+  }
+});
+
+
+test("comparison stays generic without named examples in any locale", async () => {
+  for (const [file, name] of [["content.ts", "en"], ["content-ja.ts", "ja"], ["content-es.ts", "es"], ["content-zh.ts", "zh"]]) {
+    const copy = await loadCopy(file, name);
+    assert.equal(copy.compare.themNote, undefined);
+    assert.doesNotMatch(JSON.stringify(copy.compare), /GTO Wizard/);
+    assert.equal(copy.compare.rows.length, 7);
+  }
 });
