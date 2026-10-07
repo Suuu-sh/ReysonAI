@@ -539,4 +539,4 @@ Verification:
 ## 2026-10-07 — Phone hero heading over live range
 - At widths ≤560px, layer the existing single heading over the live chart using grid placement and a legibility scrim. The overlay has `pointer-events: none`; all saved range cells remain keyboard/tap targets. Paragraph, actions, and note follow below the chart without a duplicate heading. Desktop CSS remains outside this override.
 - Targeted overlay regression test: 1 passed. Production build passed; diff check passed.
-- Current computer-use inventory exposes no browser, so 375/390 English/Japanese visual checks and physical Safari are not verified in this follow-up.
+- Parent browser review: 390×844 English overlay readable over the top matrix; 375×667 Japanese retains the existing English heading with Japanese body/CTAs usable below; 1280×720 English desktop preserves separate left copy/right matrix with no overlay. Physical Safari remains unverified.
