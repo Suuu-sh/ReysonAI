@@ -156,9 +156,9 @@ export function HeroActionLegend({ range }: { range: HeroRange }) {
 }
 
 function Explorer() {
-  const [mobile, setMobile] = useState(() => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(max-width: 560px)").matches);
+  const [mobile, setMobile] = useState(() => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(max-width: 960px)").matches);
   useEffect(() => {
-    const query = window.matchMedia("(max-width: 560px)");
+    const query = window.matchMedia("(max-width: 960px)");
     const sync = () => setMobile(query.matches);
     sync();
     query.addEventListener("change", sync);
@@ -313,7 +313,7 @@ function Hero() {
   const [maskEdge, setMaskEdge] = useState(0);
   useEffect(() => {
     if (!motion) { setPinned(false); setMaskEdge(0); return; }
-    const phone = window.matchMedia("(max-width: 560px)");
+    const phone = window.matchMedia("(max-width: 960px)");
     let frame = 0;
     const update = () => {
       frame = 0;
