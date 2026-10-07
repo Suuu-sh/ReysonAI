@@ -608,3 +608,8 @@ Verification:
 - CI frontend typecheck on ee96017 failed TS2322: imported postflop JSON infers absent action keys as optional undefined, while HeroRange required all keys to be numeric. Model action mixes as Partial<Record<string,number>>, treating missing frequencies as zero only at numerical conversion/legend checks. No saved data, layout or tour changes.
 - Local exact typecheck initially could not find ignored continuation-responses.json; restored an existing local generated artifact for type-only checking, not committed. CI uses its authoritative reviewed-artifact restoration. Local typecheck and latest-SHA CI conclusions recorded below.
 - Local npm run typecheck passed after restoring the ignored type input; diff check passed. No repeated build or unrelated test suite. No merge/deploy.
+
+## 2026-10-07 — Current brand browser favicon
+- PR106 already merged; new dedicated branch based on current origin/main and development. HTML had no favicon/touch links. BrandIcon uses approved pink abstract Ace PNG, not the older symbol; no existing brand vector asset exists, so derive PNG32/192/apple180 and PNG-backed ICO from that exact PNG rather than redraw or fabricate an SVG.
+- Add browser/favicon and touch links only. No manifest, native app icon, logo redesign or service-site layout changes.
+- Targeted icon/link/dimension test passed. Local preview HTML exposes icon links; favicon.ico returns HTTP200 image/x-icon. Production build passes and copies public icons into client output; diff check passed. Chrome tab cache refresh / actual iPhone touch installation not verified. No merge/deploy.
