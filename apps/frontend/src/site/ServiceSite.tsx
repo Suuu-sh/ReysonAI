@@ -1,4 +1,4 @@
-import { shouldPinCover } from "./cover-pin.ts";
+import { shouldPinCover, mobileHoldGeometry } from "./cover-pin.ts";
 import { PlayingCard, type CardSuit as Suit } from "../components/PlayingCard.tsx";
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { BrandIcon } from "../components/BrandIcon.tsx";
@@ -311,6 +311,45 @@ function HeroCopy({ children, showEstimate = true }: { children?: ReactNode; sho
   </div>;
 }
 
+/** Native phone hold: tall content scrolls fully before its visible bottom is held. */
+function MobileHold({ children }: { children: ReactNode }) {
+  const { motion, locale } = useSite();
+  const track = useRef<HTMLDivElement>(null);
+  const content = useRef<HTMLDivElement>(null);
+  const [enabled, setEnabled] = useState(false);
+  const [top, setTop] = useState(64);
+  const [height, setHeight] = useState(0);
+  const [phase, setPhase] = useState("before");
+  const [bounds, setBounds] = useState({ left: 0, width: 0 });
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 960px)");
+    const update = () => {
+      setEnabled(motion && query.matches);
+      if (content.current) { setHeight(content.current.offsetHeight); setTop(Math.min(64, window.innerHeight - content.current.offsetHeight - 16)); }
+    };
+    let frame = 0;
+    const measureScroll = () => {
+      frame = 0;
+      if (!motion || !query.matches || !track.current || !content.current) { setPhase("before"); return; }
+      const rect = track.current.getBoundingClientRect();
+      const h = content.current.offsetHeight;
+      const geometry = mobileHoldGeometry(rect.top, rect.bottom, h, window.innerHeight);
+      setBounds({ left: rect.left, width: rect.width });
+      setPhase(geometry.phase);
+    };
+    const schedule = () => { if (!frame) frame = window.requestAnimationFrame(measureScroll); };
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(() => { update(); schedule(); });
+    if (content.current) observer?.observe(content.current);
+    query.addEventListener("change", update);
+    window.addEventListener("resize", update);
+    update(); measureScroll();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => { observer?.disconnect(); query.removeEventListener("change", update); window.removeEventListener("resize", update); window.removeEventListener("resize", schedule); window.removeEventListener("scroll", schedule); if (frame) window.cancelAnimationFrame(frame); };
+  }, [motion, locale]);
+  return <div ref={track} data-hold-phase={phase} className={`site-mobile-hold${enabled ? " is-held" : ""}`} style={{ "--hold-top": `${top}px`, "--hold-height": `${height}px`, "--hold-left": `${bounds.left}px`, "--hold-width": `${bounds.width}px` } as CSSProperties}><div className="site-mobile-hold-content" ref={content}>{children}</div></div>;
+}
+
 function Hero() {
   const { copy: c, motion, locale } = useSite();
   const stage = useRef<HTMLDivElement>(null);
@@ -416,7 +455,10 @@ function HowItWorks() {
     const cards = steps.current.filter((node): node is HTMLElement => !!node);
     if (!motion || typeof ResizeObserver === "undefined") return;
     const update = () => {
-      for (const card of cards) card.dataset.oversized = String(card.offsetHeight > window.innerHeight - 80);
+      for (const card of cards) {
+        card.dataset.oversized = String(card.offsetHeight > window.innerHeight - 80);
+        card.style.setProperty("--step-top", `${Math.min(80, window.innerHeight - card.offsetHeight - 16)}px`);
+      }
     };
     const observer = new ResizeObserver(update);
     for (const card of cards) observer.observe(card);
@@ -585,7 +627,7 @@ function Audience() {
   // Pin on phones with enough vertical room too; short screens retain ordinary flow.
   useEffect(() => {
     if (!motion) { setScrolly(false); return; }
-    const query = window.matchMedia("(min-width: 961px) and (min-height: 640px), (max-width: 960px) and (min-height: 740px)");
+    const query = window.matchMedia("(min-width: 961px) and (min-height: 640px), (max-width: 960px)");
     const sync = () => setScrolly(query.matches);
     sync();
     query.addEventListener("change", sync);
@@ -602,7 +644,7 @@ function Audience() {
       const span = rect.height - window.innerHeight;
       if (span <= 0) return;
       const progress = Math.min(Math.max(-rect.top / span, 0), 0.999);
-      setActive(Math.floor(progress * personaIds.length));
+      setActive(Math.min(personaIds.length - 1, Math.floor(progress * (personaIds.length + (window.innerWidth <= 960 ? .65 : 0)))));
     };
     const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
     update();
@@ -619,7 +661,10 @@ function Audience() {
   useEffect(() => {
     const wrapper = ref.current?.firstElementChild as HTMLElement | undefined;
     if (!scrolly || !wrapper || typeof ResizeObserver === "undefined") { setStickyTop(0); return; }
-    const update = () => setStickyTop(window.innerWidth <= 960 ? Math.min(0, window.innerHeight - wrapper.offsetHeight) : 0);
+    const update = () => {
+      setStickyTop(window.innerWidth <= 960 ? Math.min(0, window.innerHeight - wrapper.offsetHeight) : 0);
+      if (window.innerWidth <= 960) ref.current?.style.setProperty("--audience-track-height", `${Math.max(window.innerHeight, wrapper.offsetHeight) * (personaIds.length + .65)}px`);
+    };
     const observer = new ResizeObserver(update);
     observer.observe(wrapper);
     window.addEventListener("resize", update);
@@ -740,7 +785,7 @@ function TrainingTrack() {
   // Anchor the scroll track, not its sticky child: #drill must rewind the slide to Training.
   return <div className={`site-train${scrolly ? " is-scrolly" : ""}`} id="drill" ref={ref}>
     <div className="site-train-stage">
-      <div className="site-train-rail" style={scrolly ? { transform: `translateX(${-shift * 100 / TRAIN_PAGES}%)` } : undefined}><Drill /><Ranked /><AgentFeature /></div>
+      <div className="site-train-rail" style={scrolly ? { transform: `translateX(${-shift * 100 / TRAIN_PAGES}%)` } : undefined}>{scrolly ? <><Drill /><Ranked /><AgentFeature /></> : <><MobileHold><Drill /></MobileHold><MobileHold><Ranked /></MobileHold><MobileHold><AgentFeature /></MobileHold></>}</div>
     </div>
   </div>;
 }
@@ -1014,7 +1059,7 @@ export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; on
       <a className="site-skip" href="#site-main">{copy.common.skip}</a>
       <Header />
       <Reveal>
-        <main id="site-main"><Hero /><div className="site-after-cover"><Audience /><HowItWorks /><TrainingTrack /><Analysis /><Compare /><Pricing /><Faq /><FinalCta /></div></main>
+        <main id="site-main"><Hero /><div className="site-after-cover"><Audience /><HowItWorks /><TrainingTrack /><MobileHold><Analysis /></MobileHold><MobileHold><Compare /></MobileHold><MobileHold><Pricing /></MobileHold><MobileHold><Faq /></MobileHold><MobileHold><FinalCta /></MobileHold></div></main>
         <Footer />
       </Reveal>
     </div>

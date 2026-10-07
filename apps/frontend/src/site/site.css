@@ -932,8 +932,8 @@
 
 /* Touch storytelling uses document scrolling, never a captured wheel/touch gesture.
    Short phones keep the complete ordinary layout instead of clipping their copy. */
-@media (max-width: 960px) and (min-height: 740px) {
-  .site-audience.is-scrolly { height: 300svh; }
+@media (max-width: 960px) {
+  .site-audience.is-scrolly { height: var(--audience-track-height, 365svh); }
   .site-audience.is-scrolly > .site-wrap { min-height: 100svh; padding-block: 80px 24px; justify-content: center; }
   .site-audience.is-scrolly .site-audience-grid { gap: 16px; margin-top: 20px; }
   .site-audience.is-scrolly h2 { font-size: 26px; }
@@ -965,8 +965,8 @@
   .site-audience.is-scrolly .site-persona-price strong { font-size: 40px; }
   .site-audience.is-scrolly .site-audience-note { font-size: 11px; margin-top: 12px; }
   .has-motion .site-how-steps { gap: 0; }
-  .has-motion .site-how-steps li { position: sticky; top: 80px; min-height: calc(100svh - 96px); padding: 24px 0; background: var(--bg); }
-  .has-motion .site-how-steps li[data-oversized="true"] { position: static; }
+  .has-motion .site-how-steps li { position: sticky; top: var(--step-top, 80px); min-height: calc(100svh - 96px); padding: 24px 0; background: var(--bg); }
+  .has-motion .site-how-steps::after { content: ""; display: block; height: 48svh; }
   .has-motion .site-how-steps li + li { margin-top: 48svh; }
   .has-motion .site-how-inline { min-height: 300px; margin-top: 20px; }
 }
@@ -984,3 +984,13 @@
 .site-range-legend { position: absolute; right: 8px; bottom: 8px; z-index: 4; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; max-width: calc(100% - 16px); padding: 8px 10px; border: 1px solid var(--line-strong); border-radius: var(--panel-radius); background: var(--bg); font-size: 11px; line-height: 1.3; pointer-events: none; }
 .site-range-legend span { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
 .site-range-legend i { width: 9px; height: 9px; border-radius: var(--control-radius); }
+
+/* Wrappers are layout-neutral on desktop/reduced-motion; holds keep actual
+   content visible, not an empty spacer, and never intercept normal scrolling. */
+.site-mobile-hold, .site-mobile-hold-content { display: contents; }
+@media (max-width: 960px) {
+  .site-mobile-hold.is-held { display: flow-root; position: relative; height: calc(var(--hold-height) + 45svh); background: var(--bg); }
+  .site-mobile-hold.is-held > .site-mobile-hold-content { display: flow-root; background: var(--bg); }
+  .site-mobile-hold.is-held[data-hold-phase="pinned"] > .site-mobile-hold-content { position: fixed; top: var(--hold-top); left: var(--hold-left); width: var(--hold-width); z-index: 1; }
+  .site-mobile-hold.is-held[data-hold-phase="after"] > .site-mobile-hold-content { position: absolute; bottom: 0; width: 100%; }
+}
