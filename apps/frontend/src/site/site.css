@@ -84,7 +84,7 @@
 .site-header { position: sticky; top: 0; z-index: 50; height: var(--header-height); border-bottom: 1px solid var(--line); background: var(--bg); transition: transform .45s var(--ease), background .3s ease, border-color .3s ease; }
 .site-header.is-scrolled, .site-header.is-open { border-bottom-color: var(--line); background: var(--bg); }
 .site-header-inner { display: flex; align-items: center; gap: 40px; width: min(100% - var(--page-gutter) * 2, var(--content-width)); height: 100%; margin-inline: auto; }
-.site-brand { display: inline-flex; align-items: center; gap: 2px; flex: 0 0 auto; font-family: "Space Grotesk", Inter, sans-serif; font-size: 19px; font-weight: 700; letter-spacing: -.035em; }
+.site-brand { display: inline-flex; align-items: center; gap: var(--brand-lockup-gap); flex: 0 0 auto; font-family: "Space Grotesk", Inter, sans-serif; font-size: 19px; font-weight: 700; letter-spacing: -.035em; }
 .site-brand svg, .site-brand b { color: var(--pink); }
 .site-nav { display: flex; gap: 28px; margin-right: auto; }
 .site-nav a { position: relative; color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s ease; }
@@ -1129,8 +1129,8 @@
 .site-compare thead th, .site-compare thead th.is-us { font-family: inherit; font-weight: 700; line-height: 1.4; letter-spacing: 0; }
 .site-compare-heading { width: 100%; min-width: 0; padding-inline: 0; font: inherit; }
 .site-compare-label { position: relative; display: inline-block; min-width: 0; max-width: calc(100% - 40px); overflow-wrap: anywhere; text-align: center; }
-.site-compare-label > img { position: absolute; right: calc(100% + 6px); top: 50%; transform: translateY(-50%); }
+.site-compare-label > img { position: absolute; right: calc(100% + var(--brand-lockup-gap)); top: 50%; transform: translateY(-50%); }
 @media (max-width: 560px) {
   .site-compare-label { max-width: calc(100% - 28px); }
-  .site-compare-label > img { width: 10px; height: 10px; right: calc(100% + 4px); }
+  .site-compare-label > img { width: 10px; height: 10px; right: calc(100% + var(--brand-lockup-gap)); }
 }

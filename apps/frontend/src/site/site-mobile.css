@@ -20,7 +20,6 @@
   .site-hand { grid-template-columns: auto minmax(0, 1fr); align-items: center; }
 
   /* Shared swipe row: cards bleed to the screen edge and snap. */
-  .site-persona-list,
   .site-how-steps,
   .site-plans {
     display: grid; grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: 84%;
@@ -28,10 +27,13 @@
     overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--page-gutter);
     scrollbar-width: none;
   }
-  .site-persona-list::-webkit-scrollbar, .site-how-steps::-webkit-scrollbar, .site-plans::-webkit-scrollbar { display: none; }
-  .site-persona-list > *, .site-how-steps > *, .site-plans > * { scroll-snap-align: start; }
+  .site-how-steps::-webkit-scrollbar, .site-plans::-webkit-scrollbar { display: none; }
+  .site-how-steps > *, .site-plans > * { scroll-snap-align: start; }
 
-  /* Audience: persona cards swipe sideways, the sample view sits right below. */
+  /* Audience: all level choices stay visible above the sample view. */
+  .site-persona-list { min-width: 0; width: 100%; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .site .site-persona-list .site-persona { min-width: 0; min-height: 44px; padding: 8px 6px; }
+  .site-persona-list .site-persona-level { min-width: 0; white-space: normal; overflow-wrap: anywhere; text-wrap: balance; text-align: center; }
   .site-audience-grid { gap: 14px; }
   .site .site-persona { align-content: start; padding: 18px; border-color: var(--line); background: var(--surface); }
   .site .site-persona.is-active { border-color: var(--line-strong); background: var(--raised); }

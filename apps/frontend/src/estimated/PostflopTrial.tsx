@@ -160,7 +160,7 @@ function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missin
   const missing = missingReason ?? (english ? "Overlaps the board" : "ボードと重複");
   const missingDescription = missingTitle ?? (english ? "Unavailable because the cards overlap the board" : "ボードのカードと重なるため存在しません");
   const tierName = (tier: string) => english
-    ? ({ monster: "Two pair or better", strong: "Top pair or better", draw: "Draw", medium: "Weak pair", air: "Unpaired high cards" } as Record<string, string>)[tier]
+    ? ({ monster: "Two pair or better with your own cards", strong: "Top pair or better", draw: "Draw", medium: "Weak pair", air: "Unpaired high cards" } as Record<string, string>)[tier]
     : tierLabels[tier];
   const pair = hand[0] === hand[1];
   const byCell = new Map(combos.map(combo => {
@@ -195,7 +195,7 @@ function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missin
     <div className="postflop-suit-side">
       <button type="button" className={`postflop-suit-all${selected === "all" ? " selected" : ""}`} aria-pressed={selected === "all"} onClick={() => onSelect("all")}>{english ? "All combos (average)" : "すべて（平均）"}</button>
       <ul className="postflop-tier-legend">
-        <li><i className="postflop-tier-dot tier-monster" />{english ? "Two pair or better" : "強い役"}</li>
+        <li><i className="postflop-tier-dot tier-monster" />{english ? "Two pair or better with your own cards" : "強い役"}</li>
         <li><i className="postflop-tier-dot tier-strong" />{english ? "Top pair or better" : "トップペア以上"}</li>
         <li><i className="postflop-tier-dot tier-draw" />{english ? "Draw" : "ドロー"}</li>
         <li><i className="postflop-suit-cell blocked" />{missing}</li>
