@@ -235,7 +235,7 @@ test("action block selection points to saved ranges and keeps unsupported contin
 
   const multiway = buildActionBlocks({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["SB"], foldedHero: false });
   assert.equal(multiway.find(block => block.position === "SB").rangeRef.kind, "response");
-  assert.equal(multiway.find(block => block.position === "BB").rangeRef.kind, "pending");
+  assert.equal(multiway.find(block => block.position === "BB").rangeRef.kind, "multiway");
   assert.match(multiway.find(block => block.position === "BB").options.at(-1).label, /^Raise \d/); // squeeze size is fixed, so it is always shown
 
   const savedMultiway = buildActionBlocks({ rangeType: "response", opener: "UTG", hero: "BB", callers: ["HJ"], foldedHero: false });
@@ -246,22 +246,23 @@ test("action block selection points to saved ranges and keeps unsupported contin
 
   const squeezed = { rangeType: "response", opener: "UTG", hero: "SB", callers: ["HJ"], foldedHero: false, pendingRaise: "squeeze" };
   const squeezePath = buildActionBlocks(squeezed);
-  assert.deepEqual(squeezePath.find(block => block.position === "SB").rangeRef, { kind: "multiway", position: "SB", caller: "HJ" });
+  assert.deepEqual(squeezePath.find(block => block.position === "SB").rangeRef, { kind: "saved-source", position: "SB", dataset: "multiway-responses", id: "SB_vs_UTG_HJcall" });
   assert.equal(squeezePath.find(block => block.position === "BB").kind, "forced");
   const openerBlock = squeezePath.at(-1);
   assert.deepEqual([openerBlock.kind, openerBlock.role, openerBlock.position, openerBlock.active], ["squeeze-response", "opener", "UTG", true]);
   assert.deepEqual(openerBlock.options.map(option => option.label), ["Fold", "Call 13", "Raise 26"]);
-  assert.deepEqual(openerBlock.rangeRef, { kind: "squeeze", position: "UTG", caller: "HJ", squeezer: "SB", priorAction: null });
+  assert.equal(openerBlock.rangeRef.kind, "bounded");
+  assert.equal(openerBlock.continuationNode.hero, "UTG");
   const afterFold = buildActionBlocks({ ...squeezed, squeezeResponse: ["fold"] }).at(-1);
-  assert.deepEqual([afterFold.position, afterFold.role, afterFold.rangeRef.priorAction], ["HJ", "caller", "fold"]);
+  assert.deepEqual([afterFold.position, afterFold.role, afterFold.continuationNode.history.at(-1).action], ["HJ", "caller", "fold"]);
   const threeWay = buildActionBlocks({ ...squeezed, squeezeResponse: ["call", "call"] }).at(-1);
   assert.deepEqual([threeWay.result, threeWay.pot], ["3人でフロップへ", "ポット 40bb"]);
   assert.equal(buildActionBlocks({ ...squeezed, squeezeResponse: ["fold", "fold"] }).at(-1).result, "SBの勝ち");
-  assert.equal(buildActionBlocks({ ...squeezed, squeezeResponse: ["raise"] }).at(-1).result, "データなし");
+  assert.equal(buildActionBlocks({ ...squeezed, squeezeResponse: ["raise"] }).at(-1).kind, "bounded-continuation");
   const backToCaller = rewindActionBlockTransition({ ...squeezed, squeezeResponse: ["call", "fold"], block: { kind: "squeeze-response", role: "caller", position: "HJ" } });
   assert.deepEqual([backToCaller.pendingRaise, backToCaller.squeezeResponse], ["squeeze", ["call"]]);
   const unsupportedSqueeze = buildActionBlocks({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["SB"], foldedHero: false, pendingRaise: "squeeze" });
-  assert.ok(unsupportedSqueeze.some(block => block.kind === "pending")); // SB as caller is not in the saved pairs
+  assert.ok(unsupportedSqueeze.some(block => block.continuationNode)); // Stage 2 records this exact root
 
   const threeBet = buildActionBlocks({ rangeType: "three_bet", opener: "UTG", hero: "HJ", spot: { three_bet_size_bb: 8, four_bet_size_bb: 22 } });
   assert.deepEqual(threeBet.find(block => block.key === "continuation-UTG").rangeRef, { kind: "three_bet", position: "UTG", opponent: "HJ" });
@@ -270,9 +271,9 @@ test("action block selection points to saved ranges and keeps unsupported contin
   assert.equal(coldSeat.kind, "cold"); // seats behind the 3-bettor keep fold / cold call / cold 4bet
   assert.deepEqual(coldSeat.options.map(option => option.label), ["Fold", "Call 8", "Raise 26"]); // cold 4bet: fourBetToSize(CO, HJ)
   const coldCall = buildActionBlocks({ rangeType: "three_bet", opener: "UTG", hero: "HJ", spot: { three_bet_size_bb: 8, four_bet_size_bb: 22 }, coldAction: { position: "BTN", action: "call" } });
-  assert.deepEqual(coldCall.map(block => block.key), ["UTG", "HJ", "CO", "BTN", "end"]);
+  assert.deepEqual(coldCall.slice(0, 6).map(block => block.key), ["UTG", "HJ", "CO", "BTN", "SB", "BB"]);
   assert.equal(coldCall.find(block => block.position === "CO").chosen, "fold");
-  assert.equal(coldCall.at(-1).result, "データなし");
+  assert.equal(coldCall.at(-1).kind, "bounded-continuation");
 
   const fourBet = buildActionBlocks({ rangeType: "four_bet", opener: "UTG", hero: "HJ", spot: { three_bet_size_bb: 8, four_bet_size_bb: 22 } });
   assert.deepEqual(fourBet.find(block => block.key === "continuation-HJ").rangeRef, { kind: "four_bet", position: "HJ", opponent: "UTG" });
@@ -376,9 +377,9 @@ test("the first caller keeps its regular response range while later multiway res
     assert.doesNotMatch(allIn, /5betオールイン後の応答レンジは未収録/);
 
     const squeeze = renderPath({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["SB"], pendingRaise: "squeeze" });
-    assert.match(squeeze, /BTN · スクイーズへの応答/);
-    assert.match(squeeze, /SB · スクイーズへの応答/);
-    assert.match(squeeze, /BB · 推定レンジ準備中/);
+    assert.match(squeeze, /BTN · 保存済み応答/);
+    assert.match(squeeze, /レンジ未収録/);
+    assert.doesNotMatch(squeeze, /Codexでレンジを生成/);
     assert.doesNotMatch(squeeze, /スクイーズ後の応答レンジは未収録/);
 
     const sbCalled = renderPath({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["SB"] });
@@ -386,14 +387,14 @@ test("the first caller keeps its regular response range while later multiway res
     assert.match(sbCalled, /SB · オープンへの応答/);
     assert.match(sbCalled, /aria-label="SBのレンジ"/);
     assert.doesNotMatch(sbCalled, /SB · 推定レンジ準備中/);
-    assert.match(sbCalled, /BB · 推定レンジ準備中/);
+    assert.match(sbCalled, /BB · オープン＋コールへの応答/);
     assert.match(sbCalled, /aria-label="BBのレンジ"/);
     assert.equal((sbCalled.match(/<button aria-pressed=/g) || []).length, 338); // opener + first caller stay visible beside the pending response
 
     const actionComplete = renderPath({ rangeType: "response", opener: "UTG", hero: "BB", callers: ["SB", "BB"], foldedHero: true });
     assert.match(actionComplete, /SB · オープンへの応答/);
     assert.doesNotMatch(actionComplete, /SB · 推定レンジ準備中/);
-    assert.match(actionComplete, /BB · 推定レンジ準備中/);
+    assert.match(actionComplete, /BB · オープン＋コールへの応答/);
   } finally {
     if (originalWindow === undefined) delete globalThis.window;
     else globalThis.window = originalWindow;
@@ -416,7 +417,7 @@ test("local generation controls are embedded in the missing range slot", () => {
     assert.doesNotMatch(allIn, /class="local-estimate-control"/);
     assert.doesNotMatch(allIn, /5betオールイン後の応答レンジは未収録/);
 
-    const multiway = renderPath({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["SB"] });
+    const multiway = renderPath({ rangeType: "response", opener: "UTG", hero: "BB", callers: ["HJ", "CO", "BTN"] });
     const heroPanel = multiway.match(/<section class="panel multiway-range-panel missing-range-panel" aria-label="BBのレンジ">[\s\S]*?<\/section>/)?.[0];
     assert.ok(heroPanel, "multiway Hero has a pending range slot");
     assert.match(heroPanel, /Codexでレンジを生成|保存状態を確認中…/);

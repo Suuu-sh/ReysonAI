@@ -8,6 +8,7 @@ import { SITE_COPY } from "./site/locales.ts";
 import type { SiteLocale } from "./site/content.ts";
 import "./styles.css";
 import "./site/site.css";
+import "./site/site-mobile.css";
 import "./components/loading.css";
 import { productLocale, rememberLocale } from "./locale.ts";
 import { isProductAppRoute, legalDocumentOf } from "./route.ts";

@@ -1,3 +1,4 @@
+import { multiwayInputData } from "./multiway-inputs.mjs";
 import type { FrequencyRow, Inputs, PostflopDatasets, SourceAction, SourceDataset, SourceHand, SourceSpot } from "./types.ts";
 import type { WeightedCombo } from "../lib/equity.ts";
 import { combosOf } from "../lib/equity.ts";
@@ -66,7 +67,7 @@ const LATER_KEYS = ["later_streets", "later_raise_multiplier", "later_all_in_mer
 const NON_FLOP_KEYS = [...LATER_KEYS, "defence_realization", "river_allin_max_pot_ratio", "max_raises_per_street"];
 const flopConfig = () => Object.fromEntries(Object.entries(pilotConfig).filter(([key]) => !NON_FLOP_KEYS.includes(key)));
 const getDataset = (datasets: PostflopDatasets, key: string, ...aliases: string[]): SourceDataset | null => {
-  for (const name of [key, ...aliases]) if (datasets?.[name]) return datasets[name];
+  for (const name of [key, ...aliases]) if (datasets?.[name]) return datasets[name] as SourceDataset;
   return null;
 };
 const findSpot = (dataset: SourceDataset | null, id: string | undefined): SourceSpot | undefined => dataset?.spots?.find(item => item.id === id);
@@ -82,9 +83,15 @@ function productRows(factors: readonly (readonly [SourceHand[], SourceAction])[]
 }
 
 export function buildInputs(spotId: string = DEFAULT_SPOT_ID, datasets: PostflopDatasets = {}): Inputs {
+  const config = pilotConfig;
   const spot = createPostflopSpots(datasets).spotById(spotId);
   if (!spot.reachable) throw new Error(`${spot.id} is unreachable: the saved ${spot.responseId} range never calls`);
 
+  if ("history" in spot) {
+    const { sources, seatRows } = multiwayInputData(spot, (name: string) => getDataset(datasets, name));
+    const fingerprint = sha({ spot, sources, gameConfig, config: flopConfig() });
+    return { spot, sources, config, fingerprint, seatRows };
+  }
   const openingData = getDataset(datasets, "opening", "openingRanges", "opening-ranges");
   const responseData = getDataset(datasets, "responses", "preflopRanges", "preflop-ranges");
   const threeBetData = getDataset(datasets, "threeBets", "threeBetResponses", "three-bet-responses");
@@ -93,7 +100,6 @@ export function buildInputs(spotId: string = DEFAULT_SPOT_ID, datasets: Postflop
   const opening = findSpot(openingData, spot.openingId);
   const baseOk = opening && opening.hero === spot.opener && (spot.kind === "limp" || opening.open_size_bb === spot.openBb) && opening.effective_stack_bb === 100 &&
     gameConfig.stack_bb === 100 && gameConfig.ante_bb === 0 && gameConfig.rake.rate === 0.05 && gameConfig.rake.cap_bb === 3;
-  const config = pilotConfig;
 
   if (spot.kind === "srp") {
     const response = findSpot(responseData, spot.responseId);

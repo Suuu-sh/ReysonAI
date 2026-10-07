@@ -1,15 +1,17 @@
+import type { HistoryAction, ContinuationTerminal, ContinuationDecision } from "./continuation-tree.ts";
+import { appendContinuationBlocks, chooseContinuationAction, continuationRootForSelection } from "./continuation-flow.ts";
 import type { FormatKey, GameFormat } from "./game-formats.ts";
 import type { TableProfile } from "./table-profile.ts";
 import type { ResponseDataset, ThreeBetDataset, FourBetDataset } from "./preflop-types.ts";
-export type RangeRef = { kind: string; position: string; caller?: string; squeezer?: string; priorAction?: string | null; threeBettor?: string; opponent?: string; reason?: string };
+export type RangeRef = { kind: string; position: string; caller?: string; squeezer?: string; priorAction?: string | null; threeBettor?: string; opponent?: string; reason?: string; dataset?: string; id?: string };
 export type ActionOption = { action: string; label: string; disabled?: boolean };
-export type ActionBlock = { key: string; position: string; stack: string; kind: string; options: ActionOption[]; active: boolean; chosen: string | null | undefined; rangeRef?: RangeRef; stage?: string; role?: string; result?: string; pot?: string; historical?: boolean };
+export type ActionBlock = { key: string; position: string; stack: string; kind: string; options: ActionOption[]; active: boolean; chosen: string | null | undefined; rangeRef?: RangeRef; stage?: string; role?: string; result?: string; pot?: string; historical?: boolean; postflopEvents?: HistoryAction[]; continuationTerminal?: ContinuationTerminal; continuationNode?: ContinuationDecision; continuationFamily?: string; priorContinuationActions?: string[]; continuationAvailable?: boolean };
 export type RangeBuildState = Partial<RangeUrlSelection> & Pick<RangeUrlSelection, "rangeType" | "opener" | "hero"> & { spot?: { three_bet_size_bb?: number; four_bet_size_bb?: number } | null; raiseToBb?: number | null; raiseSizeFor?: (position: string) => number | null };
 export type RangeEncodingState = RangeBuildState & Partial<Omit<RangeUrlState, "tableProfile">> & { tableProfile?: Partial<TableProfile>; hand?: string };
 import { hands } from "../data.ts";
 import { positions, fourBetToSize, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb, threeBetToSize } from "./sizing.ts";
 import { limpActionTransition, nextActorsAfterRaise, responseActionTransition } from "./action-path.ts";
-import { multiwayMatchups } from "./multiway-responses.ts";
+import { multiwaySpots } from "./multiway-responses.ts";
 import { dataset as publishedDataset } from "./datasets.ts";
 import { defaultFormat, formatOptions } from "./game-formats.ts";
 import { completedFlopContext, flopDecision, laterDecision, laterStart, replayLater } from "./postflop-trial.ts";
@@ -17,11 +19,10 @@ import { completedFlopContext, flopDecision, laterDecision, laterStart, replayLa
 // The recorded-matchup lookup is identical to extended-ranges.ts, isolated here
 // so the shared action strip and URL codec do not depend on React hooks.
 export function multiwayContext(opener: string, callers: string[], position: string) {
-  if (!["SB", "BB"].includes(position)) return null;
   const earlier = callers.filter(caller => positions.indexOf(caller) < positions.indexOf(position));
   if (earlier.length !== 1) return null;
   const [caller] = earlier;
-  return multiwayMatchups.some(([o, c]) => o === opener && c === caller) ? { opener, caller } : null;
+  return multiwaySpots.some(spot => spot.opener === opener && spot.caller === caller && spot.hero === position) ? { opener, caller } : null;
 }
 
 const startingContribution: Record<string, number> = { SB: 0.5, BB: 1 };
@@ -97,8 +98,10 @@ function buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseActi
 }
 
 // Builds the seat blocks in acting order; each later block's options depend on the choices before it.
-export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null, squeezeResponse = [], raiseSizeFor = () => null }: RangeBuildState): ActionBlock[] {
+export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null, squeezeResponse = [], continuationActions = [], raiseSizeFor = () => null }: RangeBuildState): ActionBlock[] {
   if (rangeType === "limp") return buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
+  const boundedState = { rangeType, opener, hero, callers, pendingRaise, coldAction, squeezeResponse, continuationActions };
+  const boundedRoot = continuationRootForSelection(boundedState);
   const opening = rangeType === "open";
   const openerIndex = positions.indexOf(opener);
   const heroIndex = opening ? openerIndex : positions.indexOf(hero);
@@ -133,7 +136,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
     // (saved cold-three-bet ranges). What follows a cold call / cold 4bet has no data yet.
     if (rangeType === "three_bet" && index > heroIndex) {
       const coldIndex = coldAction ? positions.indexOf(coldAction.position) : -1;
-      if (coldAction && index > coldIndex) continue;
+      if (coldAction && index > coldIndex && !boundedRoot) continue;
       const chosen = coldAction?.position === position ? coldAction.action : coldAction || continuationAction ? "fold" : null;
       blocks.push({ key: position, position, stack, active: false, chosen, kind: "cold", rangeRef: { kind: "cold", position, threeBettor: hero }, options: [
         { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(threeBetSizeBb)}` }, { action: "raise", label: `Raise ${formatBb(fourBetToSize(position, hero))}` },
@@ -159,6 +162,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
         : { kind: "response", position };
     blocks.push({ key: position, position, stack, active: index === heroIndex && chosen === null, chosen, options, kind: "seat", rangeRef });
   }
+  if (boundedRoot) return appendContinuationBlocks(blocks, boundedRoot, boundedState);
   if (coldAction) {
     blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result: "データなし", pot: `${coldAction.position}の${coldAction.action === "call" ? "コールドコール" : "コールド4bet"}以降の推定レンジはまだありません。` });
     return blocks;
@@ -256,7 +260,7 @@ export type RangeUrlSelection = {
   foldedHero: boolean; pendingRaise: string | null; continuationAction: string | null;
   shoveResponse: string | null; coldAction: { position: string; action: string } | null;
   limpAction: string | null; limpResponseAction: string | null; limpReraiseAction: string | null;
-  limpFourBetAction: string | null; squeezeResponse: string[]; selected: string;
+  limpFourBetAction: string | null; squeezeResponse: string[]; continuationActions: string[]; selected: string;
 };
 export type RangeUrlState = RangeUrlSelection & {
   format: typeof defaultFormat; tableProfile: TableProfile;
@@ -269,12 +273,12 @@ export const defaultRangeSelection: RangeUrlSelection = {
   rangeType: "open", opener: "UTG", hero: "HJ", callers: [], foldedHero: false,
   pendingRaise: null, continuationAction: null, shoveResponse: null, coldAction: null,
   limpAction: null, limpResponseAction: null, limpReraiseAction: null,
-  limpFourBetAction: null, squeezeResponse: [], selected: "AKo",
+  limpFourBetAction: null, squeezeResponse: [], continuationActions: [], selected: "AKo",
 };
 const emptyPostflop = () => ({ showFlop: false, flopCards: ["", "", ""], flopActions: [], turnCard: "", turnActions: [], riverCard: "", riverActions: [] });
 const validHand = (hand: string | null | undefined) => hands.includes(hand!) ? hand! : "AKo";
 const profileLevel = (value: string | null | undefined) => ["low", "normal", "high"].includes(value!) ? value as TableProfile["call"] : "normal";
-const copySelection = (): RangeUrlSelection => ({ ...defaultRangeSelection, callers: [], squeezeResponse: [] });
+const copySelection = (): RangeUrlSelection => ({ ...defaultRangeSelection, callers: [], squeezeResponse: [], continuationActions: [] });
 
 function availableDataset<T>(name: string): T | null {
   try { return publishedDataset<T>(name); } catch { return null; }
@@ -335,6 +339,8 @@ function replayPreflop(value: string | null) {
     if (!option || (option.disabled && block.chosen !== action)) break;
     if (block.chosen) {
       if (block.chosen !== action) break;
+    } else if (block.continuationNode) {
+      state = { ...state, ...chooseContinuationAction(state, block, action) };
     } else if (block.kind === "cold") {
       if (action !== "fold") state = { ...state, coldAction: { position: block.position, action }, continuationAction: null };
     } else if (block.kind === "forced") {

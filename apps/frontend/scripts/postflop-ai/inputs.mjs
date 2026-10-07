@@ -1,3 +1,4 @@
+import { multiwayInputData } from "./multiway-inputs.mjs";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -56,6 +57,11 @@ export function requireArtifact(spot, kind) {
 export function loadInputs(spotId = DEFAULT_SPOT_ID) {
   const spot = spotById(spotId);
   if (!spot.reachable) throw new Error(`${spot.id} is unreachable: the saved ${spot.responseId} range never calls`);
+  if ("history" in spot) {
+    const { sources, seatRows } = multiwayInputData(spot, read);
+    const fingerprint = sha({ spot, sources, gameConfig, config: flopConfig() });
+    return { spot, sources, config, fingerprint, seatRows };
+  }
   const opening = read("opening-ranges").spots.find(item => item.id === spot.openingId);
   const baseOk = opening && opening.hero === spot.opener && (spot.kind === "limp" || opening.open_size_bb === spot.openBb) && opening.effective_stack_bb === 100 &&
     gameConfig.stack_bb === 100 && gameConfig.ante_bb === 0 && gameConfig.rake.rate === 0.05 && gameConfig.rake.cap_bb === 3;

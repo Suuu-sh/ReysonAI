@@ -53,8 +53,9 @@ import { flopBetFraction, raiseDepth } from "./tree.ts";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake } from "./engine.ts";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
-// Best-five showdown ranking: older derived defence/base artifacts are stale.
-export const DEFENCE_VERSION = 6;
+// Hand tiers count a pair only when a private card makes it (QQ on KK4 is medium): older
+// derived defence/base artifacts are stale.
+export const DEFENCE_VERSION = 7;
 // Sampled turn+river runouts per flop decision (seeded by the flop, shared by every node of it).
 export const FLOP_RUNOUTS = 300;
 // call share = logistic(margin / LOGISTIC_SCALE): +-4pt of margin is about 88 / 12.
@@ -181,10 +182,8 @@ export function tierArray(board: readonly number[]): Uint8Array {
       if (blocked[b]) continue;
       const id = a * 52 + b;
       if (table) {
-        // handTier on a river board (no draws) read off the rank: made hand category >> 20.
-        const category = table.score[id] >>> 20, rankA = a >> 2, rankB = b >> 2;
-        out[id] = category >= 2 ? 0 : category === 1
-          ? (rankA === rankB && rankA > top || rankA === top || rankB === top ? 1 : 3) : 4;
+        // River (no draws): reuse the rank table's score so handTier skips evaluation.
+        out[id] = TIER_INDEX[handTier([a, b], board, table.score[id])];
       } else out[id] = TIER_INDEX[handTier([a, b], board)];
     }
   }

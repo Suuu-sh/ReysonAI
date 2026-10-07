@@ -12,7 +12,11 @@ import "./account.css";
 const learningSections = ["トレーナー", "セッション", "プレー分析", "弱点"];
 const intentKey = "reysonai:learning-intent:v1";
 export const isLearningSection = (section: string | null) => learningSections.includes(section!);
-export const learningAllowed = (account: AccountState) => account.ready && account.available && account.user?.verified === true && !["session", "verification"].includes(account.error);
+// `npm run dev:guest` (VITE_DEV_GUEST=1, local dev server only) lets guests into postflop and
+// learning pages so they can be checked without Google. Builds and tests keep the gate.
+const devGuest = (import.meta as ImportMeta & { env?: { DEV?: boolean; VITE_DEV_GUEST?: string } }).env?.DEV === true &&
+  (import.meta as ImportMeta & { env?: { VITE_DEV_GUEST?: string } }).env?.VITE_DEV_GUEST === "1";
+export const learningAllowed = (account: AccountState) => devGuest && account.ready || account.ready && account.available && account.user?.verified === true && !["session", "verification"].includes(account.error);
 export function readLearningIntent() {
   try {
     const section = window.sessionStorage.getItem(intentKey);
