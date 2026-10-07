@@ -68,7 +68,7 @@ Wrangler 4.147.0 uses D1's import API for `--remote --file`, waits for completio
 
 The workflow never automatically invokes Time Travel: that would rewind the entire shared database, including unrelated user/account writes. For a completed but undesired data release, restore only a previously reviewed preflop snapshot from Git/run artifacts after approval. Keep the prior compatible client when using old data. The captured pre-import bookmark and import outcome are retained as a run artifact even when the deployment job fails. The bookmark is an emergency reference, not authorization for a whole-database restore.
 
-The compatible reason loader is deployed before compact data. It also accepts legacy reason payloads. Existing browser/HTTP caches and open pages can retain prior data; this Stage 2 addition leaves legacy bytes unchanged and does not claim globally instantaneous replacement. Stage 2 action-path UI integration remains separate.
+The workflow checks FastFold API/auth/CORS readiness and self-consistent dataset payloads and exact non-reason decision fields before deploying the compatible reason loader; exact source-identity verification follows the reviewed snapshot import. The loader accepts both the prior and compact reason payloads. Existing browser/HTTP caches and open pages can retain prior data; this Stage 2 addition leaves legacy bytes unchanged and does not claim globally instantaneous replacement. Stage 2 action-path UI integration remains separate.
 
 For local delivery verification without authoring:
 

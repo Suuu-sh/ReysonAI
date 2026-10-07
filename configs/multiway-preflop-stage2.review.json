@@ -9751,13 +9751,33 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 13722,
-      "sha256": "6d66df4ac40f16ba0b57f7c9642c2c5169cc912db3cdd335838b235fc25cf505"
+      "bytes": 14184,
+      "sha256": "385b5662c60d6f30b4e72a7af942343825c9895c0afa09d94a914a5b5346e9c7"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
       "bytes": 667,
       "sha256": "75c321e1c269974f8b46337df0391bbfef0928c77697d0f370bb4e0dcc42aff6"
+    },
+    {
+      "path": "apps/backend/scripts/lib/fastfold-readiness-sources.mjs",
+      "bytes": 1116,
+      "sha256": "af0f5aa46558dc888d545cae6817085cfd5c92c0ad9d3251154d1a357f4cd542"
+    },
+    {
+      "path": "apps/backend/scripts/verify-fastfold-readiness.mjs",
+      "bytes": 5186,
+      "sha256": "b6cc2c5363cc685e4176c82d38282c37b853203e9e5cee902b3c10c9cdd3e7c7"
+    },
+    {
+      "path": "apps/backend/src/fastfold.ts",
+      "bytes": 32010,
+      "sha256": "e9b7d2df478d4c1fea3186475ac59c11c0b75684814f998f49d8deb2daac38dc"
+    },
+    {
+      "path": "apps/backend/tests/fastfold-release.test.mjs",
+      "bytes": 6918,
+      "sha256": "8c418267eef2988a2cf58b8190fea8e10f6cd131b445a293b13aae9abf24f9bf"
     },
     {
       "path": "apps/backend/wrangler.jsonc",
@@ -9861,8 +9881,8 @@
     },
     {
       "path": "apps/frontend/scripts/lib/reviewed-preflop.mjs",
-      "bytes": 8860,
-      "sha256": "5202e91a3040e47efde8e581a4f9b59102a8afa29ac8f55f75682abdc9b63dff"
+      "bytes": 9061,
+      "sha256": "49b01a20e8fa0398d55a8032535d9b2bb1a2b4cb8392527af7829ff0869d1ff6"
     },
     {
       "path": "apps/frontend/scripts/lib/typescript-policy-source.mjs",
@@ -10260,7 +10280,7 @@
       "sha256": "d828004fd7c382e565e66094e43c8b2917ed5ff3444b0c12c2e691499211ace7"
     }
   ],
-  "content_sha256": "1e2c55e4a0c408de2885ade51fbc41818898411f831b49fc0aa98bd50163d3ce",
+  "content_sha256": "bd5accc1cfed297f6079d7f5b0488cde553e9bcf712c608b0ac90acf15744ecd",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -10352,6 +10372,50 @@
         "archive_sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
         "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53"
       }
+    },
+    {
+      "date": "2026-10-07",
+      "reviewer": "Independent read-only source review (gate_review agent)",
+      "reviewed_base_commit": "2e6965ac805b99b758f38c529b4955dab32b6ed2",
+      "scope": "Only production FastFold readiness sequencing and the direct source identities for the predeploy compatibility gate. Exact source identity remains required after the reviewed D1 import. No preflop artifact, policy, frequency, equity, or reason data changed.",
+      "before_content_sha256": "1e2c55e4a0c408de2885ade51fbc41818898411f831b49fc0aa98bd50163d3ce",
+      "after_content_sha256": "bd5accc1cfed297f6079d7f5b0488cde553e9bcf712c608b0ac90acf15744ecd",
+      "source_records_before": 103,
+      "source_records_after": 107,
+      "changes": {
+        "modified": [
+          ".github/workflows/deploy-worker.yml",
+          "apps/frontend/scripts/lib/reviewed-preflop.mjs"
+        ],
+        "added": [
+          "apps/backend/scripts/lib/fastfold-readiness-sources.mjs",
+          "apps/backend/scripts/verify-fastfold-readiness.mjs",
+          "apps/backend/src/fastfold.ts",
+          "apps/backend/tests/fastfold-release.test.mjs"
+        ],
+        "removed": []
+      },
+      "compatibility_exception": {
+        "name": "five-bet-responses",
+        "bytes": 672183,
+        "sha256": "14ca0bf72f17011e3cbbdea98ff106d9825f6141ee04072f052c4702894f4f76",
+        "historical_source_commit": "6ce2db2666043b98353c3f85b7c99cf2afa2ff3d",
+        "reason": "Only hand-row reason strings differ from the current reviewed checkout; every other decision/source field hashes identically."
+      },
+      "verification": {
+        "published_catalog_and_body": "Read-only API query returned status 200 and exact pinned hash/byte count.",
+        "decision_fields": "Historical source compared with current five-bet source after removing only spots[].hands[].reason; normalized SHA-256 identical.",
+        "focused_tests": "apps/backend/tests/fastfold-release.test.mjs: 3 passed; apps/frontend/tests/brand-icon.test.mjs: 2 passed.",
+        "frontend_card_test": "Not run successfully: React dependency unavailable in the managed worktree."
+      },
+      "verified_unchanged": {
+        "artifact_records": 1888,
+        "archive_bytes": 1747857,
+        "archive_sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+        "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53"
+      },
+      "preserved_gates": "Predeploy still requires API/schema status, CORS, POST preflight, anonymous rejection, all 38 self-consistent catalog/body records and exact non-reason decision identity. The sole prior payload exception is pinned by name/hash/bytes and body hash. The compatible client deploys before the existing atomic reviewed snapshot import. The full exact-source gate remains after import; no mismatch bypass, source exclusion, or rollback was added.",
+      "limitations": "A failed post-import gate marks the deployment run failed but does not automatically roll back the Worker or D1. The import command itself is restricted to the main deployment workflow and imports only the exact validated reviewed snapshot."
     }
   ]
 }
