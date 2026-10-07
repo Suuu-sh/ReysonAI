@@ -123,6 +123,14 @@ test("intermediate two-column hero removes only its viewport spacer and never cl
   assert.doesNotMatch(intermediate, /overflow:|max-height:|aspect-ratio:|hero-range-size/);
 });
 
+test("comparison uses dark backgrounds and readable text at all sizes", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /\.site-compare \{ background: var\(--bg\); color: var\(--ink\); \}/);
+  assert.match(css, /\.site-compare tbody td[^}]*color: var\(--ink\)/);
+  assert.match(css, /\.site-compare thead[^}]*background: var\(--bg\)/);
+  assert.doesNotMatch(css, /\.site-compare[^}]*var\(--paper(?:-ink)?\)/);
+});
+
 test("hero and shared English taglines use Understand the reason", () => {
   for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
     const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");

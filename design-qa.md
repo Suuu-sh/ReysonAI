@@ -723,3 +723,7 @@ Verification:
 ## 2026-10-07 — Remove intermediate two-column hero viewport gap
 - Cause: above960px square range can be width-limited (at1024×768≈614px), but hero reserves viewport−header≈704px, leaving≈90px underneath. At961–1200px (before the left column's480px cap), remove viewport min-height; compact left-copy padding/margins/CTA sizing and remove its28px translation so all content stays in flow without clipping. Square sizing unchanged;≤960 and>1200 layouts untouched.
 - Targeted breakpoint/no-clipping guard1/diffcheck passed. CSS-only no repeated build. Browser bottom/copy measurements not yet available; long localized copy may naturally grow rather than be clipped. No merge/deploy.
+
+## 2026-10-07 — Dark comparison at every size
+- Remove light/paper comparison background throughout desktop/mobile. Use site black background, raised dark Reyson column, white/gray readable text and dark-theme borders; mobile comparison header also black. Preserve every comparison row/content/layout and pink accent.
+- Targeted all-size dark/no-paper guard1/diffcheck passed. CSS-only no repeated build/browser claim. No merge/deploy.
