@@ -595,3 +595,7 @@ Verification:
 
 - Parent merged visual QA: 390px phone preserved; 1280px desktop saved-range/legend layout visible. Longer retained reason tagline initially clipped; desktop mark now scales to copy-container width, with phone inheriting its existing size. Parent targeted 1280px desktop recheck confirms the full heading fits.
 - PR107 advanced externally to 4db2d488932f840b9899744e64d10504f595ef3f (allin label only). Inspected the two-file delta, merged its latest head; PR107 branch remains untouched. Targeted action-legend test passed.
+
+## 2026-10-07 — Hide only the phone hero description
+- At ≤560px hide `.site-hero-lead` in every locale. Keep headline, CTAs and preview note; desktop description and all translated source copy remain unchanged. Preserve square/fullbleed hero, compact rail and PR107 integration.
+- Parent computed-style QA: 390px description display:none; 1280px display:block. Targeted hide-scope/all-four-locale DOM test and diff check passed. CSS-only change: production build not repeated. No merge/deploy.

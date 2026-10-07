@@ -55,6 +55,16 @@ test("phone hero uses an inert decorative chart behind centered copy and CTAs", 
   assert.doesNotMatch(mobile.split("/* Compare")[0], /min-height: calc\(100svh - 64px\)/);
 });
 
+test("only the phone hero description is hidden, without removing locale copy or desktop presentation", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 560px)"));
+  assert.match(mobile, /\.site-hero-lead \{ display: none; \}/);
+  assert.doesNotMatch(css.split("@media screen and (max-width: 560px)")[0], /\.site-hero-lead[^}]*display: none/);
+  for (const locale of ["en", "ja", "es", "zh-CN"]) {
+    assert.ok(render(locale).includes(escapeText(copies[locale].hero.lead)));
+  }
+});
+
 test("hero and shared English taglines use Understand the reason", () => {
   for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
     const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");
@@ -106,7 +116,9 @@ before(async () => {
   ({ ServiceSite } = await server.ssrLoadModule("/src/site/ServiceSite.tsx"));
   const { en } = await server.ssrLoadModule("/src/site/content.ts");
   const { ja } = await server.ssrLoadModule("/src/site/content-ja.ts");
-  copies = { en, ja };
+  const { es } = await server.ssrLoadModule("/src/site/content-es.ts");
+  const { zh } = await server.ssrLoadModule("/src/site/content-zh.ts");
+  copies = { en, ja, es, "zh-CN": zh };
 });
 after(async () => { await server?.close(); });
 const render = locale => renderToStaticMarkup(createElement(ServiceSite, { locale, onLocaleChange() {} }));
