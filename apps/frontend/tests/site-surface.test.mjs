@@ -73,6 +73,17 @@ test("phone selected-hand panel stays compact without shrinking its action targe
   assert.match(mobile, /\.site-hero-summary \.site-hand-action\.is-spacer \{ display: none; \}/);
 });
 
+test("phones hide only the illustrative analysis dashboard, retaining explanatory content", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.match(css, /@media \(max-width: 560px\) \{\s*\/\*[^]*?\*\/\s*\.site-analysis \.site-dash \{ display: none; \}/);
+  const analysis = source.slice(source.indexOf("function Analysis()"), source.indexOf("function Compare()"));
+  assert.match(analysis, /c\.analysis\.description/);
+  assert.match(analysis, /c\.analysis\.points\.map/);
+  assert.match(analysis, /c\.analysis\.note/);
+  assert.match(analysis, /site-mock site-dash/);
+});
+
 let server, ServiceSite, copies;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });

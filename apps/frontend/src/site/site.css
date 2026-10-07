@@ -878,6 +878,8 @@
   .site-final p { font-size: 16px; }
 }
 @media (max-width: 560px) {
+  /* The illustrative dashboard is too dense for phones; keep its explanatory copy. */
+  .site-analysis .site-dash { display: none; }
   .site-dash-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .site-dash-kpis > div:last-child { grid-column: 1 / -1; }
   .site-trainer { padding: 12px; }

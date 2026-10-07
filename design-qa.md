@@ -568,3 +568,8 @@ Verification:
 - Site variant only: use existing Phosphor filled Spade/Heart/Diamond/Club SVGs in the existing suit slot. SVG is aria-hidden/non-focusable; original suit text remains visually hidden. Trainer, Agent and text variants preserve their exact previous markup. Rank, gradients, colors and responsive sizes unchanged.
 - Parent browser QA: 390px mobile heart rendered flat; SVG viewBox=256 and aria-hidden confirmed. 1280px desktop layout preserved. Four different filled suit shapes and site-only behavior covered by six focused shared-card tests.
 - Focused tests, production build and diff check passed. Actual iPhone rendering is not verified; no claim of device testing.
+
+## 2026-10-07 — Hide phone analysis sample
+- At ≤560px hide only `.site-analysis .site-dash` with display:none. Keep the analysis heading, explanation, points and truthful practice-data note unchanged. Existing single-column phone grid has no remaining sample slot/gap; desktop sample remains in the DOM and restores normally.
+- Parent DOM QA: 390px sample display:none,height=0; 1280px display:block,height≈458px. No visual analysis-screen claim: viewport resizing shifted the screenshot to another section.
+- Focused hide-scope test, production build and diff check passed. No merge/deploy.
