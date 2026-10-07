@@ -670,3 +670,8 @@ Verification:
 ## 2026-10-07 — Restore full factual learner reason on phones
 - User requests the full reason, not a shortened summary. Mobile now uses the exact same existing c.how.whyNote as desktop in all four locales (52.3%/43.3%/54.9% and12BB explanation retained); remove unused abbreviated Why fields. Compact body/cards/frequencies unchanged. Panel naturally grows; no height cap/ellipsis/clipping.
 - Targeted shared-full-reason/all-locale test1/build/diffcheck passed. No new strategic data or freshly verified strategy claim; restore the existing saved explanation verbatim. No new browser check claimed, no merge/deploy.
+
+## 2026-10-07 — Planned Free / Plus scope copy
+- Site-only four-locale agreed division: Free preflop ranges/reasons, preflop practice, basic reports; Plus all Free plus postflop ranges/reasons/practice and detailed analysis reports. Pricing descriptions/features, budget body/shortcopy/gets/list and Plus blurb, postflop/cost FAQ aligned. Remove blanket “everything in current preview” and vague Plus-feature claims.
+- Prices/cadence remain¥580/$3.70; retain30-day daily equivalents and approximate-USD boundary. Explicitly label planned division, Plus billing/access not live, current experimental postflop preview not a paid entitlement. No actual billing/app gates/backend/native changes. Full learner reason and compact layout unchanged.
+- Locale tests10 passed (including explicit all-locale feature division/free-list consistency and no Plus purchase href), production build/diffcheck passed. No new browser verification claimed; no merge/deploy.

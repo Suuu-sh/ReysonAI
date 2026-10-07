@@ -641,7 +641,7 @@ function Audience() {
               <a className="site-button is-small" href={appHref} tabIndex={active === 2 ? 0 : -1}>{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
               <div className="site-persona-plus">
                 <p><strong>{plus.name}</strong><span>{plus.price}</span><small>{plus.cadence}</small></p>
-                <small>{plus.status}</small>
+                <small>{plus.status} · {plus.description}</small>
               </div>
             </div>
           </div>
