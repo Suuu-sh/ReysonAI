@@ -2,7 +2,8 @@
 // apps/backend/migrations): every preflop dataset under src/estimated (the JSON files stay
 // the source of truth) and the canonical local postflop artifacts. Generates SQL; runs
 // wrangler only with --execute local|remote.
-//   node scripts/publish-d1.mjs [--only preflop|postflop|flop-base] [--out file] [--execute local|remote]
+//   node scripts/publish-d1.mjs [--only preflop|postflop|flop-base] [--require-all] [--out file] [--execute local|remote]
+// CI publishes postflop on main with --only postflop --require-all --execute remote.
 import { assertContinuationPublication } from "./lib/continuation-publication.mjs";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -60,7 +61,7 @@ function main(argv) {
     console.log(`${Object.keys(datasets).length} preflop datasets`);
   }
   if (!only || only === "postflop") {
-    const spots = publishableSpots();
+    const spots = publishableSpots(console.log, { requireAll: argv.includes("--require-all") });
     sql += buildPostflopSql(spots);
     console.log(`${spots.length} postflop spots`);
   }
@@ -74,7 +75,7 @@ function main(argv) {
   }
   console.log(`→ ${out}`);
   if (execute) {
-    execFileSync("npx", ["wrangler", "d1", "execute", "reysonai", `--${execute}`, "--yes", "--file", out],
+    execFileSync("npx", ["--yes", "wrangler@4.147.0", "d1", "execute", "reysonai", `--${execute}`, "--yes", "--file", out],
       { cwd: join(root, "../backend"), stdio: "inherit" });
   }
 }
