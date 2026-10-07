@@ -424,6 +424,8 @@
 .shared-style-map .analysis-info summary::-webkit-details-marker { display:none; }
 .shared-style-map .play-style-map-point.label-left b { left:0; transform:none; }
 .shared-style-map .play-style-map-point.label-right b { left:auto; right:0; transform:none; }
+@keyframes shared-style-edge-pop { 0% { opacity:0; transform:scale(.6); } 100% { opacity:1; transform:scale(1); } }
+.shared-style-map .play-style-map-point.label-left b,.shared-style-map .play-style-map-point.label-right b { animation-name:shared-style-edge-pop; }
 .shared-style-map .analysis-info-body { position:absolute; top:100%; right:0; z-index:10; width:min(320px,75vw); background:var(--surface-raised); border:1px solid var(--line-strong); padding:12px; font-size:12px; line-height:1.6; }
 .analysis-main > .shared-style-map { padding:16px; border:1px solid var(--line); border-radius:12px; background:var(--surface); }
 @media(max-width:650px) { .shared-style-map .analysis-info summary { min-width:44px; min-height:44px; } .shared-style-map .play-style-map-grid { aspect-ratio:1.35; } .shared-style-map .play-style-map-wait { max-width:90%; white-space:normal; text-align:center; } }
