@@ -922,6 +922,7 @@
   .site-audience.is-scrolly .site-audience-note { font-size: 11px; margin-top: 12px; }
   .has-motion .site-how-steps { gap: 0; }
   .has-motion .site-how-steps li { position: sticky; top: 80px; min-height: calc(100svh - 96px); padding: 24px 0; background: var(--bg); }
+  .has-motion .site-how-steps li[data-oversized="true"] { position: static; }
   .has-motion .site-how-steps li + li { margin-top: 48svh; }
   .has-motion .site-how-inline { min-height: 300px; margin-top: 20px; }
 }

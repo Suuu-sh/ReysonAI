@@ -25,6 +25,17 @@ test("phone storytelling uses native sticky flow with short-screen and reduced-m
   assert.doesNotMatch(audience, /addEventListener\("(?:wheel|touchmove)"/);
 });
 
+test("oversized translated phone How cards fall back to ordinary scrolling", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const how = source.slice(source.indexOf("function HowItWorks()"), source.indexOf("const drillPool"));
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(how, /if \(!motion \|\| typeof ResizeObserver === "undefined"\) return/);
+  assert.match(how, /card\.offsetHeight > window\.innerHeight - 80/);
+  assert.match(how, /new ResizeObserver\(update\)/);
+  assert.match(how, /observer\.disconnect\(\)/);
+  assert.match(css, /\.has-motion \.site-how-steps li\[data-oversized="true"\] \{ position: static; \}/);
+});
+
 let server, ServiceSite, copies;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });

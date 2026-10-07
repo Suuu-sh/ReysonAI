@@ -319,7 +319,7 @@ function WhyScene() {
 }
 
 function HowItWorks() {
-  const { copy: c } = useSite();
+  const { copy: c, motion, locale } = useSite();
   const [active, setActive] = useState(0);
   const steps = useRef<(HTMLElement | null)[]>([]);
   useEffect(() => {
@@ -330,6 +330,18 @@ function HowItWorks() {
     for (const node of steps.current) if (node) observer.observe(node);
     return () => observer.disconnect();
   }, []);
+  useEffect(() => {
+    const cards = steps.current.filter((node): node is HTMLElement => !!node);
+    if (!motion || typeof ResizeObserver === "undefined") return;
+    const update = () => {
+      for (const card of cards) card.dataset.oversized = String(card.offsetHeight > window.innerHeight - 80);
+    };
+    const observer = new ResizeObserver(update);
+    for (const card of cards) observer.observe(card);
+    window.addEventListener("resize", update);
+    update();
+    return () => { observer.disconnect(); window.removeEventListener("resize", update); };
+  }, [motion, locale]);
   const scenes = [<TableScene key="table" />, <ReadScene key="read" />, <WhyScene key="why" />];
   const sceneNames = ["table", "read", "why"];
   return <section className="site-section site-how" id="how" aria-labelledby="site-how-title">
