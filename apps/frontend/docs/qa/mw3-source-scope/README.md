@@ -4,9 +4,22 @@ This draft is based on PR44 commit `0838518ed50fae99b27584f30ee6ed6f6196acc0` an
 
 ## Boundary
 
-`sourcePathsFor` no longer starts from `RangeWorkspace.tsx`, `Mw3RangeView.tsx`, `AgentTable.tsx`, `src/agent/hand.ts` or the general backend `index.ts`. Frontend `src/**/*.tsx` and `src/**/*.css` are excluded before both recording and traversal. Dedicated transport, browser verification, Agent MW3 execution, shared authority, schema, numerical/gate code and strict local-verification tooling remain protected. The existing backend `mw3-index.test.mjs` continues checking application route wiring.
+`sourcePathsFor` no longer starts from `RangeWorkspace.tsx`, `Mw3RangeView.tsx`, `AgentTable.tsx`, `src/agent/hand.ts` or the general backend `index.ts`. Frontend `src/**/*.tsx` and `src/**/*.css` roots are excluded before both recording and traversal. A relative import from any retained source into that excluded scope is instead rejected immediately, with both importer and target in the error; it must never disappear silently from the dependency closure. The same guard covers static and side-effect imports, dynamic imports, re-exports and type-only imports under the existing conservative import traversal. Dedicated transport, browser verification, Agent MW3 execution, shared authority, schema, numerical/gate code and strict local-verification tooling remain protected. The existing backend `mw3-index.test.mjs` continues checking application route wiring.
 
-Type and declaration dependencies still follow the existing conservative closure. In particular, `mw3-hand.ts` imports `hand.ts` types, so `hand.ts` remains a transitive protected source even though it is no longer an explicit root. No runtime imports or gates were edited to make the inventory smaller. Neither the retained `mw3-browser.ts` nor `mw3-hand.ts` closure currently reaches a `.tsx` or `.css` dependency after the explicit UI roots are removed.
+Type and declaration dependencies still follow the existing conservative closure. In particular, `mw3-hand.ts` imports `hand.ts` types, so `hand.ts` remains a transitive protected source even though it is no longer an explicit root. No runtime imports or gates were edited to make the inventory smaller. All 16 current retained closures pass the traversal-time guard: none reaches a `.tsx` or `.css` dependency after the explicit UI roots are removed. Isolated mutations of `mw3-browser.ts`, `mw3-hand.ts` and the transitively retained `hand.ts` prove that adding such an edge fails for all 16 identities, even when the excluded UI target is absent. This is an edge check before filtering, not an assertion that the filtered inventory contains no UI files.
+
+## Exact excluded closure, including non-UI files
+
+This is a root-and-reachability reduction, **not only an extension filter**. Compared with the PR44 base above, each of the 16 source inventories loses the same **96 paths** and gains none: **23 `.tsx`, 6 `.css` and 67 other files**. The 67 other files are **59 `.ts`, 3 `.d.mts`, 3 `.mjs`, 1 `.json` and 1 `.png`**, not 67 TypeScript files. The pilot inventory changes from 228 to 132 paths; each other inventory changes from 229 to 133. [The complete verified excluded inventory](excluded-inventory.json) lists every path and each subject's before/after count.
+
+Those 67 files were reachable only through removed UI roots or the general backend entry point. Their names/extensions do not imply they are presentation-only, and they are no longer bound by MW3 numerical acceptance. They include:
+
+- MW3 range selection, cache, copy and explanation helpers: `mw3-range-state.ts`, `mw3-kit-cache.ts`, `mw3-copy.ts`, `mw3-explanation.ts`.
+- Agent session/statistics and UI-only range/continuation helpers, plus HU browser, explanation and observable-view helpers reached through the removed workspace roots.
+- General backend dispatch/product modules: `index.ts`, `account.ts`, `native-account.ts`, `ranked.ts`, `fastfold-dispatch.ts`, `postflop-runtime-config.ts`, `preflop-datasets.ts`, plus shared `ranked-rules.ts`.
+- The UI-reachable `agent-baseline.json` and brand image. Retained JSON dependencies described below are unaffected.
+
+This boundary deliberately leaves those application behaviors to their dedicated tests/reviews. MW3 source receipts no longer detect their isolated changes; they still bind the retained numerical generation/verification/delivery/runtime closure. The dedicated backend `mw3-transport.ts`, shared approval registry, browser validation and `mw3-hand.ts` execution remain protected. If a retained module later imports an excluded `.tsx`/`.css` file, collection and verification fail until that dependency is refactored or the boundary is explicitly reviewed.
 
 ## Two specification corrections requiring review
 
@@ -20,6 +33,8 @@ The source-scope tests explicitly enforce both corrections and the retained prot
 `reviewed-postflop.mjs` has `postflop-trial.ts` as its consumer root and retains its current traversal. Editing that receipt-bound collector would change the HU-after-multiway review identity. Per the requested exception, neither that collector nor `configs/hu-postflop-after-multiway.review.json` is changed here. HU scope work requires a separate PR.
 
 ## Review and evidence
+
+The protected-edge guard changes the receipt-bound collector, so all 16 source manifests and independent receipts require another source-context renewal. Earlier source-only receipts and test totals apply to the earlier collector, not this revision. The implementation author must not approve this renewal. The 112 numerical files, 16 archives, 32 pins and HU scope remain unchanged; no numerical regeneration is required or authorized.
 
 Implementation and source-context acceptance are separate tasks. New manifests may be collected with the official collector only after committing the source. A different reviewer must independently verify the final source, original numerical bytes and 32 pins, then issue the fresh receipts. Historical versions remain in Git; no full historical manifest/receipt copies are added. A compact prior-hash ledger is sufficient.
 

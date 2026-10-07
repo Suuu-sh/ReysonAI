@@ -31,12 +31,16 @@ export function currentMw3ArchiveIdentity(spotId) {
     sourceFiles: recipe.sourceFiles ?? recipe.author.sourceFiles, verificationFiles };
 }
 export function sourcePathsFor(identity) {
-  const found = new Set(), visit = path => {
+  const found = new Set(), visit = (path, importer) => {
     path = path.replaceAll('\\', '/');
     if (!safeRelativePath(path) || path.includes('/.local/') || path.includes('/node_modules/')) throw new Error('Mw3 source dependency escaped repository source');
-    // Display components/styles are not numerical approval dependencies. Apply
-    // this before recording AND recursion, including transitive UI imports.
-    if (/^apps\/frontend\/src\/.+\.(?:tsx|css)$/.test(path)) return;
+    // UI roots stay outside numerical approval. A retained source may not reach
+    // into that excluded scope: reject the edge before silently losing a bound
+    // dependency. This includes type imports, re-exports and dynamic imports.
+    if (/^apps\/frontend\/src\/.+\.(?:tsx|css)$/.test(path)) {
+      if (importer) throw new Error(`Mw3 protected source imports excluded presentation dependency: ${importer} -> ${path}`);
+      return;
+    }
     // Keep reachable JSON: recipes/configuration/compatibility evidence must
     // remain bound. Type/declaration closures are still conservative, including
     // shared locale imports; a blanket JSON filter would unbind dependencies.
@@ -52,10 +56,10 @@ export function sourcePathsFor(identity) {
     const imports = /(?:\bimport\s+(?:[^;]*?\s+from\s+)?|\bexport\s+[^;]*?\s+from\s+)["']([^"']+)["']|\bimport\s*\(\s*["']([^"']+)["']\s*\)/g;
     for (const match of text.matchAll(imports)) {
       const name = match[1] ?? match[2];
-      if (name.startsWith('.')) visit(relative(MW3_REPOSITORY, resolve(MW3_REPOSITORY, dirname(path), name)));
+      if (name.startsWith('.')) visit(relative(MW3_REPOSITORY, resolve(MW3_REPOSITORY, dirname(path), name)), path);
     }
   };
-  [...MW3_CURRENT_IDENTITY_PATHS, ...MW3_COMPATIBILITY_SOURCE_PATHS].forEach(visit);
+  [...MW3_CURRENT_IDENTITY_PATHS, ...MW3_COMPATIBILITY_SOURCE_PATHS].forEach(path => visit(path));
   const roots = [
     'mw3-reviewed-archive.mjs', 'mw3-reviewed-snapshot.mjs', 'mw3-reviewed-delivery.mjs', 'mw3-reviewed-restore.mjs', 'mw3-snapshot-cli.mjs', 'mw3-draft-pins.mjs', 'mw3-acceptance-evidence.mjs', 'mw3-browser-inputs.mjs', 'mw3-transport.mjs', 'mw3-delivery.mjs'];
   roots.forEach(name => visit(relative(MW3_REPOSITORY, resolve(MW3_REPOSITORY, FRONTEND, 'scripts/postflop-ai', name))));
@@ -67,7 +71,7 @@ export function sourcePathsFor(identity) {
     `${FRONTEND}src/estimated/mw3-browser.ts`, `${FRONTEND}src/agent/mw3-hand.ts`,
     `${FRONTEND}scripts/ci/postflop-command-supervisor.py`, `${FRONTEND}scripts/ci/mw3-local-command.mjs`,
     `${FRONTEND}scripts/ci/mw3-api-oracle.mjs`, `${FRONTEND}scripts/ci/mw3-registry-mode.mjs`, `${FRONTEND}scripts/ci/mw3-local-d1-oracle.mjs`, `${FRONTEND}scripts/verify-mw3-local-d1.mjs`,
-    `${FRONTEND}package.json`, `${FRONTEND}package-lock.json`, 'configs/cash-6max-100bb.json', '.gitattributes'].forEach(visit);
+    `${FRONTEND}package.json`, `${FRONTEND}package-lock.json`, 'configs/cash-6max-100bb.json', '.gitattributes'].forEach(path => visit(path));
   return [...found].sort();
 }
 function verifyBodies(identity, spot, files) {

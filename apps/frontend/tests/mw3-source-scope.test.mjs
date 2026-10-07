@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { readFileSync, mkdtempSync, mkdirSync, copyFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
@@ -29,7 +29,7 @@ test('all sixteen numerical source closures exclude display components, styles a
   }
 });
 
-test('presentation dependencies are skipped before recording or following their imports', () => {
+test('presentation roots are skipped before recording or following their imports', () => {
   const identity = identities.find(identity => identity.inputs.spot.id === 'CO_open_BTN_call_BB_call');
   const baseline = sourcePathsFor(identity);
   // Adding real UI roots must not pull their CSS/components into the closure.
@@ -37,6 +37,50 @@ test('presentation dependencies are skipped before recording or following their 
   // Excluded files need not be read: skip is applied before filesystem traversal.
   assert.deepEqual(sourcePathsFor({ ...identity, sourceFiles: [...identity.sourceFiles, 'src/not-a-real-component.tsx', 'src/not-a-real-style.css'] }), baseline);
   assert.throws(() => sourcePathsFor({ ...identity, sourceFiles: [...identity.sourceFiles, '../escaped.tsx'] }), /escaped|Unsafe|unsafe/);
+});
+
+test('protected imports into excluded UI fail at the dependency edge, before filtering or reading UI', () => {
+  const root = fileURLToPath(new URL('../../../', import.meta.url));
+  const directory = mkdtempSync(join(tmpdir(), 'mw3-source-scope-edge-'));
+  try {
+    // A separate source-only tree avoids mutating the checkout or other tests.
+    const paths = [...new Set(identities.flatMap(identity => sourcePathsFor(identity)))];
+    for (const path of paths) {
+      mkdirSync(dirname(join(directory, path)), { recursive: true });
+      copyFileSync(join(root, path), join(directory, path));
+    }
+    const sourceFiles = identities.map(({ sourceFiles }) => ({ sourceFiles }));
+    const cases = [
+      ['src/estimated/mw3-browser.ts', "import { Ui } from './Mw3RangeView.tsx';", 'src/estimated/Mw3RangeView.tsx'],
+      ['src/estimated/mw3-browser.ts', "import './mw3-range.css';", 'src/estimated/mw3-range.css'],
+      ['src/agent/mw3-hand.ts', "export { Ui } from './AgentTable.tsx';", 'src/agent/AgentTable.tsx'],
+      ['src/agent/mw3-hand.ts', "const ui = import('./AgentTable.tsx');", 'src/agent/AgentTable.tsx'],
+      // hand.ts is retained transitively via a type import, not an explicit root.
+      ['src/agent/hand.ts', "import type { Ui } from './AgentTable.tsx';", 'src/agent/AgentTable.tsx'],
+      ['src/agent/hand.ts', "export type { Ui } from './AgentTable.tsx';", 'src/agent/AgentTable.tsx'],
+    ];
+    const script = String.raw`
+      import assert from 'node:assert/strict';
+      import { readFileSync, writeFileSync } from 'node:fs';
+      import { join } from 'node:path';
+      import { pathToFileURL } from 'node:url';
+      const [root, serializedIdentities, serializedCases] = process.argv.slice(1);
+      const { sourcePathsFor } = await import(pathToFileURL(join(root, 'apps/frontend/scripts/postflop-ai/mw3-reviewed-snapshot.mjs')));
+      const identities = JSON.parse(serializedIdentities), cases = JSON.parse(serializedCases);
+      const baseline = identities.map(identity => sourcePathsFor(identity));
+      for (const [source, statement, target] of cases) {
+        const path = join(root, 'apps/frontend', source), before = readFileSync(path);
+        try {
+          writeFileSync(path, Buffer.concat([before, Buffer.from('\n' + statement + '\n')]));
+          for (const identity of identities) assert.throws(() => sourcePathsFor(identity), {
+            message: 'Mw3 protected source imports excluded presentation dependency: apps/frontend/' + source + ' -> apps/frontend/' + target,
+          });
+        } finally { writeFileSync(path, before); }
+        assert.deepEqual(identities.map(identity => sourcePathsFor(identity)), baseline);
+      }
+    `;
+    execFileSync(process.execPath, ['--input-type=module', '-e', script, directory, JSON.stringify(sourceFiles), JSON.stringify(cases)], { stdio: 'pipe' });
+  } finally { rmSync(directory, { recursive: true, force: true }); }
 });
 
 test('delivery, authority, shared executable dependencies and strict verification remain protected', () => {
