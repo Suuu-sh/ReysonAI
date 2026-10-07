@@ -3,7 +3,7 @@ import { accountStorage, accountSnapshot, exportAccountData } from "./session.ts
 import { displayModeKey } from "../profile.ts";
 
 const KEY = "reysonai:appearance:v1";
-export const DEFAULT_APPEARANCE = Object.freeze({ cards: "four", motion: "standard" });
+export const DEFAULT_APPEARANCE = Object.freeze({ cards: "four", motion: "standard", matrix: "classic" });
 
 const storage = () => { try { return typeof window === "undefined" ? null : accountStorage(); } catch { return null; } };
 
@@ -13,6 +13,7 @@ export function loadAppearance() {
     return {
       cards: saved.cards === "two" ? "two" : "four",
       motion: saved.motion === "reduce" ? "reduce" : "standard",
+      matrix: saved.matrix === "wizard" ? "wizard" : "classic",
     };
   } catch { return { ...DEFAULT_APPEARANCE }; }
 }
@@ -21,6 +22,7 @@ export function applyAppearance(appearance = loadAppearance()) {
   if (typeof document === "undefined") return;
   document.documentElement.dataset.cards = appearance.cards;
   document.documentElement.dataset.motion = appearance.motion;
+  document.documentElement.dataset.matrix = appearance.matrix;
 }
 
 export function saveAppearance(appearance: ReturnType<typeof loadAppearance>) {

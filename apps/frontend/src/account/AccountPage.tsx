@@ -122,6 +122,13 @@ function AppearanceTab() {
       <Choice label={t("レンジの表示", "Range display")} value={displayMode} onChange={value => { setDisplayMode(value); saveDisplayMode(value); }}
         options={[{ value: "simple", label: t("シンプル", "Simple"), hint: t("主な行動だけ", "Main action") }, { value: "standard", label: t("スタンダード", "Standard"), hint: t("頻度も表示", "With frequencies") }]} />
     </SettingRow>
+    <SettingRow title={t("レンジ表のスタイル", "Range grid style")} description={t("セルの塗り方を切り替えます", "How each hand cell is filled")}>
+      <Choice label={t("レンジ表のスタイル", "Range grid style")} value={appearance.matrix} onChange={matrix => update({ matrix })}
+        options={[
+          { value: "classic", label: t("クラシック", "Classic"), hint: t("主な行動の色＋頻度バー", "Main action + mix bar"), preview: <span className="account-matrix-preview classic" aria-hidden="true"><i /></span> },
+          { value: "wizard", label: t("GTO Wizard風", "GTO Wizard style"), hint: t("頻度の比率で塗り分け", "Filled by frequency"), preview: <span className="account-matrix-preview wizard" aria-hidden="true"><i /></span> },
+        ]} />
+    </SettingRow>
     <SettingRow title={t("カードの色", "Card colors")} description={t("トレーナーのカード", "Trainer cards")}>
       <Choice label={t("カードの色", "Card colors")} value={appearance.cards} onChange={cards => update({ cards })}
         options={[
