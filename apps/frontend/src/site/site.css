@@ -599,7 +599,7 @@
   .site-hero-deal .site-card { --card-w: clamp(72px, 13vw, 112px); }
   .site-hero-disclaimer { max-width: 44%; }
 }
-@media screen and (max-width: 560px) {
+@media screen and (max-width: 720px) {
   .site-hero { --page-gutter: 16px; display: flex; flex-direction: column; min-height: calc(100svh - var(--header-height)); }
   .site-hero-stage { display: block; flex: none; width: 100%; aspect-ratio: 1; }
   .site-cover-ending { display: flex; flex: 1; min-height: 156px; flex-direction: column; align-items: center; justify-content: center; gap: 9px; padding: 22px 20px max(18px, env(safe-area-inset-bottom)); text-align: center; }
@@ -1007,7 +1007,7 @@
 }
 
 /* Only the square pins; complete question fades, later content stays opaque. */
-@media (max-width: 560px) {
+@media (max-width: 720px) {
   .has-motion .site-hero[data-cover-pinned] .site-hero-stage > .site-explorer { position: fixed; top: var(--header-height); left: 0; width: 100%; z-index: 0; }
   .has-motion .site-cover-ending { position: relative; z-index: 1; background: var(--bg); mask-image: linear-gradient(to bottom, transparent calc(var(--question-mask-edge, 0px) - 28px), #000 var(--question-mask-edge, 0px)); -webkit-mask-image: linear-gradient(to bottom, transparent calc(var(--question-mask-edge, 0px) - 28px), #000 var(--question-mask-edge, 0px)); pointer-events: none; }
   .has-motion .site-after-cover { display: flow-root; position: relative; z-index: 1; background: var(--bg); }
@@ -1077,4 +1077,18 @@
   .site-compare thead th { padding: 8px 6px; font-size: 12px; }
   .site-compare-heading { min-height: 34px; }
   .site-compare-heading > img { width: 16px; height: 16px; }
+}
+
+/* Moderate tablet widths keep a compact right-hand square instead of a full-width backdrop. */
+@media (min-width: 721px) and (max-width: 960px) {
+  .site-hero-main { --hero-range-size: 50vw; width: 100%; min-height: 0; grid-template-columns: minmax(0, 1fr) var(--hero-range-size); gap: 0; padding: 0; }
+  .site-hero-copy { padding: 20px; transform: none; }
+  .site-hero h1 { font-size: clamp(32px, 5vw, 48px); line-height: 1; }
+  .site-hero-opening { font-size: clamp(28px, 12.5cqw, 48px); }
+  .site-hero-mark { font-size: clamp(19px, 8.3cqw, 32px); }
+  .site-hero-lead, .site-ja .site-hero-lead { margin-top: 12px; font-size: 13px; line-height: 1.45; }
+  .site-hero-actions { margin-top: 12px; gap: 8px; }
+  .site-hero-actions .site-button { min-height: 44px; padding-inline: 12px; font-size: 13px; }
+  .site-hero-secondary { min-height: 44px; font-size: 12px; }
+  .site-hero-note { margin-top: 10px; font-size: 10px; }
 }

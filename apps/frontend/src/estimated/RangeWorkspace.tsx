@@ -1,5 +1,5 @@
 import { chooseContinuationAction, continuationRootForSelection } from "./continuation-flow.ts";
-import { continuationSavedRange, useContinuationRanges, withContinuationAvailability } from "./continuation-ranges.ts";
+import { continuationSavedRange, continuationUnreachableCopy, useContinuationRanges, withContinuationAvailability } from "./continuation-ranges.ts";
 import type { CSSProperties, MouseEvent, ReactNode } from "react";
 import type { Profile } from "../profile.ts";
 import type { MatrixModel } from "../data.ts";
@@ -189,7 +189,7 @@ function endResultLabel(result: string) {
   return result;
 }
 
-function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isFourBet, isFiveBet, extra = null, spot, position, onReturnToComparison, displayMode }: { hand: DisplayHand; model: MatrixModel; isOpening?: boolean; isLimpResponse?: boolean; isThreeBet?: boolean; isFourBet?: boolean; isFiveBet?: boolean; extra?: ReturnType<typeof extendedBreakdown>; spot: DisplaySpot; position: string; onReturnToComparison?: () => void; displayMode: string }) {
+function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isFourBet, isFiveBet, isContinuation, extra = null, spot, position, onReturnToComparison, displayMode }: { hand: DisplayHand; model: MatrixModel; isOpening?: boolean; isLimpResponse?: boolean; isThreeBet?: boolean; isFourBet?: boolean; isFiveBet?: boolean; isContinuation?: boolean; extra?: ReturnType<typeof extendedBreakdown>; spot: DisplaySpot; position: string; onReturnToComparison?: () => void; displayMode: string }) {
   const reasonState = useDetailedReasons(spot?.id);
   const equityFact = reasonState.data?.fact_labels!.find(fact => fact.key.startsWith("equity_vs_") && fact.key.endsWith("_pct"));
   const savedFacts = reasonState.data?.hands[hand.hand]?.facts;
@@ -206,7 +206,7 @@ function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isF
   return <div className={`detail-column${onReturnToComparison ? " comparison-focus-details" : ""}`}>
     <Panel>
       <HandHeader position={position} hand={hand.hand} comboCount={aggregate.comboCount} onClose={onReturnToComparison} />
-      {aggregate.unreachable ? <StatusState title="対象外（到達不能）">{extra?.unreachableText ?? (isLimpResponse ? "SBのリンプ頻度が0%のため、この応答経路の推奨頻度はありません。保存上のfold=100は形式上の値です。" : `${isFiveBet ? "既存4bet" : "既存3bet"}頻度が0%のため、この経路の推奨頻度はありません。保存上のfold=100は形式上の値です。`)}</StatusState> : <>
+      {aggregate.unreachable ? <StatusState title="対象外（到達不能）">{isContinuation ? continuationUnreachableCopy().description : extra?.unreachableText ?? (isLimpResponse ? "SBのリンプ頻度が0%のため、この応答経路の推奨頻度はありません。保存上のfold=100は形式上の値です。" : `${isFiveBet ? "既存4bet" : "既存3bet"}頻度が0%のため、この経路の推奨頻度はありません。保存上のfold=100は形式上の値です。`)}</StatusState> : <>
       {tableReason && <p className="adjustment-reason">{tableReason}</p>}
       {displayMode !== "standard" && !tableReason && !isLimpResponse && <AiReason hand={hand} reasonState={reasonState} inlineFacts={inlineFacts} />}
       {displayMode !== "standard" && isLimpResponse && <div className="ai-reason"><span>AIの考え方</span><p>この局面のハンド別説明はありません。</p></div>}
@@ -721,7 +721,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     : ref.kind === "cold" ? `${ref.position} · ${ref.threeBettor}の3betへのコールド応答`
     : ref.priorAction ? `${ref.position} · スクイーズへの応答（${opener}${ref.priorAction === "fold" ? "フォールド" : "コール"}後）` : `${ref.position} · スクイーズへの応答`;
   const rangeEntries: RangeEntry[] = [];
-  const addSaved = (position: string, kind: string, savedSpot: DisplaySpot | null | undefined, savedModel: MatrixModel | null, title: string) => rangeEntries.push({ position, kind, spot: savedSpot, model: savedModel, title, hand: savedSpot?.hands.find(row => row.hand === selected) });
+  const addSaved = (position: string, kind: string, savedSpot: DisplaySpot | null | undefined, savedModel: MatrixModel | null, title: string, unreachableReason?: string | null) => rangeEntries.push({ position, kind, spot: savedSpot, model: savedModel, title, unreachableReason, hand: savedSpot?.hands.find(row => row.hand === selected) });
   if (isOpening) {
     addSaved(opener, "opening", openerSpot, openerModel, openingTitle(opener));
   } else if (isLimp) {
@@ -757,7 +757,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       const ref = block.rangeRef!;
       if (!["bounded", "saved-source"].includes(ref.kind)) continue;
       const saved = continuationSources && continuationSavedRange(ref, continuationSources);
-      if (saved) addSaved(ref.position, ref.kind, saved.spot, saved.model, `${ref.position} · 保存済み応答`);
+      if (saved) addSaved(ref.position, ref.kind, saved.spot, saved.model, `${ref.position} · 保存済み応答`, saved.unreachableReason);
       else rangeEntries.push({ position: ref.position, kind: "pending", title: `${ref.position} · 保存済み応答`, statusTitle: "レンジ未収録" });
     }
   } else if (isComparison && pendingRaise === "squeeze" && savedMultiway) {
@@ -830,7 +830,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
 
     if (ref.kind === "bounded" || ref.kind === "saved-source") {
       const saved = continuationSources && continuationSavedRange(ref, continuationSources);
-      return saved ? withContext({ position: ref.position, kind: ref.kind, spot: saved.spot, model: saved.model, title: `${ref.position} · 保存済み応答` }) : missing("保存済み応答");
+      return saved ? withContext({ position: ref.position, kind: ref.kind, spot: saved.spot, model: saved.model, unreachableReason: saved.unreachableReason, title: `${ref.position} · 保存済み応答` }) : missing("保存済み応答");
     }
     if (ref.kind === "opening") {
       const savedSpot = openingSpotFor(ref.position);
@@ -951,7 +951,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
             {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイレンジを生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
             {canGenerateFiveBet && entry.position === opener && <InlineGenerationControl description="この分岐のレンジを生成します。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
           </Panel>)}
-          {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand!} model={focusedEntry.model!} isOpening={focusedEntry.kind === "opening"} isLimpResponse={focusedEntry.kind === "limp_response"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} extra={extendedBreakdown(focusedEntry.kind, focusedEntry.spot!, focusedEntry.hand!)} spot={focusedEntry.spot!} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
+          {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand!} model={focusedEntry.model!} isOpening={focusedEntry.kind === "opening"} isLimpResponse={focusedEntry.kind === "limp_response"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} isContinuation={focusedEntry.kind === "bounded"} extra={extendedBreakdown(focusedEntry.kind, focusedEntry.spot!, focusedEntry.hand!)} spot={focusedEntry.spot!} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
         </div>
       </>}
       {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
