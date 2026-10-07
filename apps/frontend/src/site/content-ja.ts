@@ -11,7 +11,7 @@ export const ja: SiteCopy = {
     { label: "比較", href: "#compare" },
     { label: "料金", href: "#pricing" },
   ],
-  hero: { title1: "Don't just play.", title2: "Understand the reason.", lead: "ReysonAIは、ハンドごとに何をすべきかを示し、その理由をやさしい言葉で説明します。理由がわかれば、テーブルに座ったときにも判断を思い出せます。", primary: "アプリを開く", secondary: "使い方を見る", note: "無料プレビュー · アカウント不要 · 6-maxキャッシュ 100BB" },
+  hero: { coverTitle: "そのアクション、説明できますか？", coverSubtitle: "AIポーカー学習 · ReysonAI", coverScroll: "スクロールして詳しく ↓", title1: "Don't just play.", title2: "Understand the reason.", lead: "ReysonAIは、ハンドごとに何をすべきかを示し、その理由をやさしい言葉で説明します。理由がわかれば、テーブルに座ったときにも判断を思い出せます。", primary: "アプリを開く", secondary: "使い方を見る", note: "無料プレビュー · アカウント不要 · 6-maxキャッシュ 100BB" },
   preview: { bet: "ベット", check: "チェック", flop: "フロップ", unreachable: "このアクション経路では到達不能・推奨なし", simpleMode: "シンプル", matrixLabel: "13×13 スターティングハンド表", scrollLabel: "の表。狭い画面では横にスクロールできます", selectedHand: "選択中のハンド", suited: "スーテッド", offsuit: "オフスート", pair: "ペア", frequencyLabel: "アクション頻度", why: "理由", k7s: "K7s はスーテッドで、フロップ以降も戦いやすいハンドです。このBTNオープンの推定では、常にレイズします。", other: (spot: string, hand: string, action: string, value: number) => `保存済みの${spot}レンジでは、${hand} を ${value}% の頻度で${action}します。ハンドごとの詳しい説明はアプリで確認できます。`, explore: "アプリでこのレンジを見る", saved: "保存済みのAI推定", notGto: "GTOソリューションではありません", spotOpening: "BTNオープン", spotResponse: "BBの応答", actionPast: { raise: "レイズ", threeBet: "3ベット", call: "コール", fold: "フォールド" }, pauseTour: "ハンドの自動紹介を一時停止", resumeTour: "ハンドの自動紹介を再開", touring: "自動でハンドを紹介中。セルをクリックすると操作できます。", manual: "ハンドをクリックして確認できます。" },
   how: {
     title1: "局面から理由まで、", title2: "3ステップで。",
@@ -29,10 +29,12 @@ export const ja: SiteCopy = {
     items: [
       { level: "初心者", quote: "そもそも、どのハンドで参加すればいいの？", body: "シンプル表示で、各ハンドの主なアクションをまず一色で。よく出る局面から始められます。", gets: "シンプル表示 · よく出る局面から" },
       { level: "初中級者", quote: "チャートは覚えた。でも、そのアクションの理由が分からない。", body: "スタンダード表示で正確な頻度を確認し、ハンドごとにそのアクションを選ぶ理由を言葉で読めます。", gets: "スタンダード表示 · ハンドごとの理由" },
-      { level: "費用を抑えたい人", quote: "ソルバーは高くて、手が出ない。", body: "いまのプレビューは無料。有料のソルバーツールに払わなくても、レンジ表、ハンドごとの理由、20問のドリル、ランク戦、分析ページで練習できます。", gets: "ドリル · ランク戦 · 分析" },
+      { level: "費用を抑えたい人", quote: "ソルバーは高くて、手が出ない。", body: "無料プレビューでプリフロップのレンジと理由、練習、簡易レポートを試せます。Plusではポストフロップ学習と詳細レポートを予定しています。", gets: "プリフロップ練習 · 簡易レポート" },
     ],
     views: ["シンプル表示", "ハンド詳細", "無料プレビュー"],
-    freeList: ["保存済み局面のレンジ表", "ハンドごとの理由", "ドリルと振り返り", "プレー分析"],
+    freeList: ["プリフロップのレンジと理由", "プリフロップ練習", "簡易レポート"],
+    learnerShort: "正確な頻度と、ハンドごとの理由を確認できます。",
+    budgetShort: "無料で、プリフロップのレンジ・理由・練習・簡易レポートを試せます。",
     freeNote: "アカウント不要",
     note: "任意のゲームツリーで厳密なソルバー解を調べたいなら、ソルバー系アプリの方が適しています。",
   },
@@ -62,8 +64,8 @@ export const ja: SiteCopy = {
   },
   compare: {
     title1: "ソルバーアプリとは、", title2: "役割が違う。",
-    description: "GTO Wizard などのソルバー系GTOアプリは、厳密な理論の基準です。ReysonAIは、その戦略を理解し、練習し続けるために作られています。",
-    us: "ReysonAI", them: "ソルバー系GTOアプリ", themNote: "例：GTO Wizard",
+    description: "ソルバー系GTOアプリは、厳密な理論の基準です。ReysonAIは、その戦略を理解し、練習し続けるために作られています。",
+    us: "ReysonAI", them: "ソルバー系GTOアプリ",
     rows: [
       { label: "表示するもの", us: "AIが推定したレンジ。推定と明記", them: "ソルバーが計算したGTO戦略" },
       { label: "説明の仕方", us: "ハンドごとの理由を、やさしい言葉で", them: "頻度やEVなど、数字が中心" },
@@ -73,9 +75,9 @@ export const ja: SiteCopy = {
       { label: "精度", us: "実用的な近似。GTOではない", them: "解いたゲームの範囲で厳密" },
       { label: "向いている人", us: "習慣を作りたい初心者〜初中級者", them: "厳密な理論を研究したい人" },
     ],
-    note: "アプローチの一般的な比較です。個々の製品の機能は異なり、変わることがあります。GTO Wizard は各権利者の商標であり、ReysonAIとは関係ありません。",
+    note: "アプローチの一般的な比較です。個々の製品の機能は異なり、変わることがあります。",
   },
-  pricing: { title1: "まずは無料で。", title2: "Plusも1日約19円。", description: "", note: "Plusの有料機能と課金はまだ利用できません。", plans: [{ name: "Free", price: "¥0", cadence: "ずっと無料", description: "現在のプレビューのすべて。", features: ["保存済みのプリフロップレンジとハンド詳細", "シンプル／スタンダード表示", "トレーナー、振り返り、プレー分析"], action: "アプリを開く", href: "/analyze/ranges" as string | null, status: "提供中" }, { name: "Plus", price: "¥580", cadence: "/ 月", description: "準備ができたら、より深い練習の場を。", features: ["学習ツールの拡充", "ガイドつきトレーニングの追加", "卓に合わせた今後の機能"], action: "今後提供予定", href: null as string | null, status: "予定" }] },
+  pricing: { title1: "まずは無料で。", title2: "Plusも1日約19円。", description: "Free／Plusで予定している機能分けです。現在のプレビューは利用できます。", note: "予定している機能分けです。Plusの有料利用と課金はまだ提供していません。現在のプレビュー利用は有料権利の提供を意味しません。", plans: [{ name: "Free", price: "¥0", cadence: "ずっと無料", description: "プリフロップ学習と簡易レポート。", features: ["プリフロップのレンジと理由", "プリフロップ練習", "簡易レポート"], action: "アプリを開く", href: "/analyze/ranges" as string | null, status: "提供中" }, { name: "Plus", price: "¥580", cadence: "/ 月", description: "Freeの全機能に、ポストフロップ学習と詳細分析を。", features: ["Freeの全機能", "ポストフロップのレンジ・理由・練習", "詳細な分析レポート"], action: "今後提供予定", href: null as string | null, status: "予定" }] },
   faq: {
     title: "よくある質問に、率直に。",
     items: [
@@ -83,8 +85,8 @@ export const ja: SiteCopy = {
       { question: "GTO Wizard との違いは？", answer: "GTO Wizard などは、ソルバーが計算した戦略を示す厳密な理論の基準です。ReysonAIは学習のためのAI推定を、解説、ドリル、ランク戦、練習の分析とあわせて提供します。詳しくは上の比較をご覧ください。" },
       { question: "どのゲームに対応していますか？", answer: "6-maxキャッシュゲーム、100BB、アンティなしです。オープンは2.5BB（SBは3.5BB）。保存データのない局面は「未収録」と表示し、推測では埋めません。" },
       { question: "アカウントは必要ですか？", answer: "不要です。プロフィールと練習履歴はこのブラウザーに保存されます。アカウント機能は予定しています。" },
-      { question: "ポストフロップにも対応していますか？", answer: "対応するヘッズアップの流れで、フロップからリバーまでを試験的に提供しています。アプリ内でも試験運用と明示しています。" },
-      { question: "料金はかかりますか？", answer: "現在のプレビューは無料です。Plusは月額580円（30日換算で1日あたり約19円）です。まだ提供していません。" },
+      { question: "ポストフロップにも対応していますか？", answer: "ポストフロップのレンジ・理由・練習はPlusで提供予定です。現在は対応するヘッズアップの流れでフロップからリバーまでの試験機能がありますが、有料利用権の提供は始まっていません。" },
+      { question: "料金はかかりますか？", answer: "現在のプレビューは無料です。Freeはプリフロップのレンジ・理由・練習と簡易レポート、Plusはそれらにポストフロップ学習と詳細な分析レポートを加える予定です。Plusは月額580円（30日換算で1日約19円）を予定していますが、課金はまだ始まっていません。" },
     ],
   },
   final: { title1: "次のセッションは、", title2: "ひとつのハンドから。", description: "アプリを開いて、局面を選び、ハンドをタップするだけ。", action: "ReysonAI を開く", note: "無料プレビュー · アカウント不要" },
