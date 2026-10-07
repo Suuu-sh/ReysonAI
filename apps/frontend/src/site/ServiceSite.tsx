@@ -310,27 +310,37 @@ function Hero() {
   const stage = useRef<HTMLDivElement>(null);
   const ending = useRef<HTMLDivElement>(null);
   const [pinned, setPinned] = useState(false);
+  const pinState = useRef(false);
   const [maskEdge, setMaskEdge] = useState(0);
   useEffect(() => {
-    if (!motion) { setPinned(false); setMaskEdge(0); return; }
+    if (!motion) { pinState.current = false; setPinned(false); setMaskEdge(0); return; }
     const phone = window.matchMedia("(max-width: 720px)");
     let frame = 0;
     const update = () => {
       frame = 0;
       const header = document.querySelector(".site-header");
-      if (!phone.matches || !stage.current || !ending.current || !header) { setPinned(false); setMaskEdge(0); return; }
+      if (!phone.matches || !stage.current || !ending.current || !header) { pinState.current = false; setPinned(false); setMaskEdge(0); return; }
       const square = stage.current.getBoundingClientRect();
+      const matrix = stage.current.querySelector(".site-matrix")?.getBoundingClientRect();
       const question = ending.current.getBoundingClientRect();
       const edge = header.getBoundingClientRect().bottom;
-      setPinned(shouldPinCover(square.top, question.bottom, edge));
-      setMaskEdge(questionMaskEdge(question.top, edge + square.height, question.height));
+      const nextPinned = shouldPinCover(square.top, question.bottom, edge);
+      setPinned(nextPinned);
+      setMaskEdge(questionMaskEdge(question.top, matrix?.bottom ?? square.bottom, question.height));
+      if (pinState.current !== nextPinned) { pinState.current = nextPinned; frame = window.requestAnimationFrame(update); }
     };
     const schedule = () => { if (!frame) frame = window.requestAnimationFrame(update); };
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(schedule);
+    if (stage.current) observer?.observe(stage.current);
+    if (ending.current) observer?.observe(ending.current);
     update();
+    window.addEventListener("hashchange", schedule);
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
     phone.addEventListener("change", schedule);
     return () => {
+      observer?.disconnect();
+      window.removeEventListener("hashchange", schedule);
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
       phone.removeEventListener("change", schedule);
@@ -899,7 +909,7 @@ function Compare() {
         <SectionHead id="site-compare-title" title1={c.compare.title1} title2={c.compare.title2}><p>{c.compare.description}</p></SectionHead>
         <div className="site-compare-table" data-reveal>
           <table>
-            <thead><tr><td /><th scope="col" className="is-us"><span className="site-compare-heading"><BrandIcon size={18} /><span>{c.compare.us}</span></span></th><th scope="col"><span className="site-compare-heading">{c.compare.them}</span></th></tr></thead>
+            <thead><tr><td /><th scope="col" className="is-us"><span className="site-compare-heading"><span className="site-compare-label"><BrandIcon size={18} />{c.compare.us}</span></span></th><th scope="col"><span className="site-compare-heading">{c.compare.them}</span></th></tr></thead>
             <tbody>{c.compare.rows.map((row, index) => <tr key={comparisonRowIds[index]} className={scrolly && index < visibleRows ? "is-revealed" : undefined} style={{ "--i": index } as CSSProperties}>
               <th scope="row">{row.label}</th>
               <td className="is-us">{row.us}</td>

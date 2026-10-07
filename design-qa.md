@@ -757,6 +757,37 @@ Verification:
 - User found≤960 full-width square too large. Hero/Explorer/cover query now≤720;721–960 uses compact two-column layout with a50vw right square (384px at768), left typography/padding/margins scaled and no viewport min-height. All copy stays normal flow without clipping;>960 original layout unchanged. Other-section≤560 compact rules untouched;62ranges/1000ms/50:50 retained.
 - Targeted hero/boundarySSR tests5/build/diffcheck passed, covering560/720/721/768/960/961. No new rendered geometry measurement at commit time; exceptionally long locale text can grow naturally rather than clip. No merge/deploy.
 
+## 2026-10-07 — Keep all responsive persona choices visible
+- New service_site_next branch/worktree from origin/development724411f7. Fix only≤960px persona selectors: three equal minmax(0,1fr) tracks, shrinkable grid children/buttons/labels, block label wrapping including long unbreakable labels, and no button overflow clipping. Preserve≥44px targets/manual selection, all existing panel copy and full learner reason. No sideways selector scroll.
+- Targeted selector sizing/wrapping guard1/build/diffcheck passed. New previewhttp://127.0.0.1:5218 returns200; old5187 worktree/server untouched.5197 was occupied and was not modified. No new rendered label-bound measurements at commit time; no merge/deploy.
+
+## 2026-10-07 — Shrink responsive previews and use real hero-mask geometry
+- Service-only shrinkable text/grid children, wrapping CTA/footer/plan content, and all Audience previews constrained to their panels through960px. At<360px beginner matrix/cards use natural stacked flow and learner frequencies stack; full learner reason/copy remain untouched. No overflow hiding, fixed-height clipping or new scroll hold.
+- Hero mask≤720px now reads actual matrix.bottom against question.top instead of assuming header+placeholder height. Recompute after fixed-position state transition, ResizeObserver, resize, scroll and hash navigation; existing28px gradient, reduced-motion reset, opaque later content and62ranges/1000ms/50:50 retained.
+- Targeted persona/responsive/mask guards3/build/diffcheck passed. Preview5218 current; old5187 untouched. Browser representative-width/scroll checks pending, so no universal width or real-Safari claim. No merge/deploy.
+
+## 2026-10-07 — Erase question before range overlap
+- Advance the existing top-down question mask by56px while retaining its28px fade edge. At actual range bottom the overlapping portion is already fully erased; below it the gradient ends28px ahead. Reversible, reduced-motion/pinning/later opaque sections unchanged. Initial top56px of the adjoining question background is masked too; text remains below that area.
+- Focused geometry/mask test1 and diffcheck passed. Limited the existing CSS guard to its own cover block (later legitimate min-heights previously caused a false failure). Literal arithmetic change: no repeated build. Preview5218 updated; no new browser claim or deploy.
+
+## 2026-10-07 — Center comparison text and match heading typography
+- Keep logo but remove its width from label centering via absolute left placement and symmetric heading padding. Both labels inherit the same typeface/size with700 weight/1.4 line-height; wrapping remains enabled. Continuous black Reyson column/light surroundings unchanged.
+- Focused typography/centering guard1 and diffcheck passed. CSS-only no repeated build; preview5218 updated. No new rendered bounds claim, merge or deploy.
+
+## 2026-10-07 — Keep comparison logo adjacent
+- User corrected isolated label centering: logo and ReysonAI now remain one centered flex group with6px gap, no absolute icon/symmetric spacer. Shared heading typography and shrinkable wrapping retained.
+- Focused group/typography guard1/diffcheck passed; CSS-only no repeated build.5218 updated, no merge/deploy.
+
+## 2026-10-07 — Attach icon to text-centered comparison label
+- Label is a centered relative inline block; its nested logo sits directly beside its left edge (6px,4px on phones), not at the column edge or group center. Narrow phone logo10px and symmetric label-width allowance protect wrapping. Shared typography retained.
+- Focused centering guard1/build/diffcheck passed.5218 updated; no rendered narrow-column measurement claimed, no merge/deploy.
+
+## 2026-10-07 — Tighten header brand spacing
+- Service header brand gap7→4px at all widths. Comparison/footer/product headers unchanged.
+- Exact scoped CSS check/diffcheck passed; no repeated build for one CSS value.5218 updated; no merge/deploy.
+
+## 2026-10-07 — Further tighten header brand
+- Header-only logo/name gap4→2px per user. Diffcheck passed;5218 updated, no merge/deploy.
 ## 2026-10-07 — PR113 update against current development
 - Incorporated development `724411f7b91626cd489e7753608d729438e09938` into the same isolated branch. Only conflict was adjacent append-only sections in this QA file; both sections were retained. ServiceSite.tsx, site.css and site-surface.test.mjs exactly match development. No reach implementation/test edits, strategy/data regeneration, PR merge, main update or deployment.
 - Revalidated the combined tree: focused suite72 tests,70 PASS,0 FAIL,2 SKIP; the same10 new continuation regressions PASS. Typecheck, build and diffcheck PASS; existing large-chunk warning retained. Archive/source/artifact review checks PASS using the same verified saved bytes. No new full-suite result is claimed.

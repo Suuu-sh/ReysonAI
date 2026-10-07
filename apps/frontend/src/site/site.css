@@ -84,7 +84,7 @@
 .site-header { position: sticky; top: 0; z-index: 50; height: var(--header-height); border-bottom: 1px solid var(--line); background: var(--bg); transition: transform .45s var(--ease), background .3s ease, border-color .3s ease; }
 .site-header.is-scrolled, .site-header.is-open { border-bottom-color: var(--line); background: var(--bg); }
 .site-header-inner { display: flex; align-items: center; gap: 40px; width: min(100% - var(--page-gutter) * 2, var(--content-width)); height: 100%; margin-inline: auto; }
-.site-brand { display: inline-flex; align-items: center; gap: 7px; flex: 0 0 auto; font-family: "Space Grotesk", Inter, sans-serif; font-size: 19px; font-weight: 700; letter-spacing: -.035em; }
+.site-brand { display: inline-flex; align-items: center; gap: 2px; flex: 0 0 auto; font-family: "Space Grotesk", Inter, sans-serif; font-size: 19px; font-weight: 700; letter-spacing: -.035em; }
 .site-brand svg, .site-brand b { color: var(--pink); }
 .site-nav { display: flex; gap: 28px; margin-right: auto; }
 .site-nav a { position: relative; color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s ease; }
@@ -1091,4 +1091,46 @@
   .site-hero-actions .site-button { min-height: 44px; padding-inline: 12px; font-size: 13px; }
   .site-hero-secondary { min-height: 44px; font-size: 12px; }
   .site-hero-note { margin-top: 10px; font-size: 10px; }
+}
+
+/* Every responsive persona choice must remain visible without sideways scrolling. */
+@media (max-width: 960px) {
+  .site-audience-grid > *, .site-persona-list { min-width: 0; }
+  .site-persona-list { width: 100%; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .site .site-persona-list .site-persona { min-width: 0; min-height: 44px; width: 100%; padding: 8px 6px; overflow: visible; }
+  .site-persona-list .site-persona-level { display: block; min-width: 0; max-width: 100%; white-space: normal; overflow-wrap: anywhere; text-wrap: balance; text-align: center; }
+}
+
+/* Shrink real content instead of hiding overflow across service chapters. */
+.site :is(.site-wrap, .site-feature-copy, .site-section-head, .site-plan, .site-faq-inner, .site-footer-links) { min-width: 0; }
+.site :is(.site-points li, .site-plan p, .site-faq summary, .site-footer a) { overflow-wrap: anywhere; }
+@media (max-width: 960px) {
+  .site-persona-view, .site-persona-view > *, .site-persona-callout, .site-persona-detail-head > * { min-width: 0; max-width: 100%; }
+  .site-persona-view .site-mini-matrix { grid-template-columns: repeat(13, minmax(0, 1fr)); }
+  .site-persona-callout { gap: 8px; }
+  .site-persona-callout small { overflow-wrap: anywhere; }
+  .site-persona-pill { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-inline: 8px; }
+  .site-persona-detail-head { flex-wrap: wrap; }
+  .site-persona-view.is-free li { min-width: 0; overflow-wrap: anywhere; }
+  .site-persona-view.is-free li svg { flex: 0 0 auto; }
+  .site-footer-links { gap: 20px; }
+  .site .site-trainer-action, .site .site-trainer-next { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
+}
+@media (max-width: 359px) {
+  .site-persona-view.is-simple { grid-template-columns: minmax(0, 1fr); }
+  .site-persona-view.is-simple .site-mini-matrix { width: min(190px, 100%); justify-self: center; }
+  .site-persona-callout { grid-template-columns: auto auto; align-items: center; justify-content: center; }
+  .site-persona-callout small { grid-column: 1 / -1; }
+  .site-persona-stage.is-learner .site-hand-actions { grid-template-columns: minmax(0, 1fr); }
+  .site-persona-stage.is-learner .site-hand-action { justify-content: space-between; }
+}
+
+/* Center the label itself; attach its logo directly to its left edge. */
+.site-compare thead th, .site-compare thead th.is-us { font-family: inherit; font-weight: 700; line-height: 1.4; letter-spacing: 0; }
+.site-compare-heading { width: 100%; min-width: 0; padding-inline: 0; font: inherit; }
+.site-compare-label { position: relative; display: inline-block; min-width: 0; max-width: calc(100% - 40px); overflow-wrap: anywhere; text-align: center; }
+.site-compare-label > img { position: absolute; right: calc(100% + 6px); top: 50%; transform: translateY(-50%); }
+@media (max-width: 560px) {
+  .site-compare-label { max-width: calc(100% - 28px); }
+  .site-compare-label > img { width: 10px; height: 10px; right: calc(100% + 4px); }
 }
