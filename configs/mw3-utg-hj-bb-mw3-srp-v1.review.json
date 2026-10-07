@@ -5,14 +5,14 @@
   "strategy_type": "ai_estimate_not_gto",
   "author_model": "gpt-6-astra",
   "reviewer_model": "gpt-6-astra",
-  "reviewer_task": "/root/verify_mw3_guard_revision",
+  "reviewer_task": "/root/review_mw3_shared_model_boundary",
   "author_task": "mw3-utg-hj-bb-mw3-srp-v1-authored-v1",
-  "source_tree": "f39c0b8db644fbf55f4e84283cd3286d125f3f76",
-  "scope": "Independent source-context-only renewal for source commit eeb9a9d8228009abf0dbfeb30343ef2b1025b31a, tree f39c0b8db644fbf55f4e84283cd3286d125f3f76. source 範囲を数値生成・検証・配信コードに限定する変更。UI ファイル（.tsx/.css）は対象外。 Renewed protected-to-excluded dependency-edge guard and source-inventory documentation. Original scope reduction removes 96 paths per subject:23 TSX,6 CSS,67 others(59 TS,3 d.mts,3 mjs,1 JSON,1 PNG); removed non-UI application modules are not claimed to be presentation-only. Newly added verification/parser dependencies, if any, are listed in the independent source-impact proof. Retained numerical generation, verification, delivery, browser validation and MW3 Agent execution closure stays bound, including conservative type/declaration and required JSON dependencies. Legitimate UI-only changes preserve numerical acceptance; protected dependencies into excluded UI fail closed under the reviewed syntax contract. All16 subjects,112 saved numerical files/235515283 bytes,16 original canonical gzip archives,32 pins,recipe/profile/input bytes,inherited evidence,561 joint warnings and seven limitations remain unchanged. A distinct actual gpt-6-astra reviewer independently checked code, official saved-byte collection/verification, source closure, mutation negatives, contracts and typechecks. Authorizes installation of these exact manifests, receipts and receipt-derived SQL comments followed by final committed-inventory verification/CI. No strategy generation or renewed quantitative quality decision, no new simulation, actual-D1 execution, live-auth/browser E2E, merge, main change or production operation. Historical quantitative/D1/browser evidence remains historical.",
-  "manifest_sha256": "df484cc591258b4484013b5dad319235534639fa7a408fb52bd39eec078539c0",
+  "source_tree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+  "scope": "Independent MW3 source-context-only renewal for published source dff40dfe8bb9c3c4831bba86eb8d77e5ff2e042a, full Git tree 236a2144a49a0b0f43940ae9fe2c978728ab8d6c, following the adopted HU-v7 correction. The complete published tree equals local freeze 2029ad54d9906895d001f3caf4a19917c53606fa; its protected graph is identical to tested/payload-collected commit c44283fd0dd0232e40ff1198730ae6bc9e269d73 after three test-only changes, verified by final source recollection and Git-tree binding. Relative to the earlier ffe7 independent MW3 context, all sixteen closures have exactly five modified shared records, four naturally unreachable HU experiment records removed, and zero additions (134 pilot/135 authored records). The recursive collector, roots, parser, exclusions, exact-pair gate, frozen model binding, dedicated MW3 numerical/recipe/input/codec code and reserved registry pins remain unchanged. Altered HU defence/engine and HU-only Agent decision paths cannot affect the unchanged dedicated MW3 early-return path; locale changes add explanatory text only. All16 complete official snapshot collectors ran at the corrected product checkpoint; after three test-only changes, all16 actual source closures were recollected and their full current records verified against the final committed Git tree. Hash-bound prior unchanged-data evidence was reused only after rechecking all original112 raw files/235515283 bytes,16 canonical archives,32 pins and unchanged evidence/recipes/inputs. All561 warnings and seven limitations per spot are retained. Both original historical and earlier ffe7 receipts fail for this new source context. This receipt authorizes installation only of the exact renewed manifest, receipt and receipt-derived SQL comment, followed by committed-inventory checks and CI. It does not renew strategy quality, generate numerical artifacts, attest fresh acceptance-gate simulation, actual D1 or live-auth/browser E2E, or authorize main/production deployment.",
+  "manifest_sha256": "2d8179cced593a98bdc07a1f6f2d888abf14133d7dc32485934890c290d2e83a",
   "archive_sha256": "d84390b598755b265f5e5ae5e5601d05fc69e7346971b955c2ab0d4732ab577a",
-  "content_sha256": "ee926eaa65a0b4d62272c02d90fd34e8074ac003927e170ed633b181a3dc597d",
-  "sources_sha256": "7411e5ffb192f4690f42f786cc94e6e61b80cfa43417ba8f605720a5f6d62e1b",
+  "content_sha256": "95fe2fcba12d4392f388388b933a6555f93837cb17ca18e3f53687f5ffcc6783",
+  "sources_sha256": "a100042746d06aea2103c81f8cfb3f1daf2a99342e82f0677b85b3a7d2e89127",
   "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
   "spot": "UTG_open_HJ_call_BB_call",
   "deliveries": [
@@ -119,72 +119,89 @@
     "scope": "Source-only rebinding of unchanged historically accepted bounded AI-estimate artifacts to this exact current source/input manifest, reviewed numerical compatibility, separate identity-wiring amendment and static UI integration. Preserves all original per-spot quality conclusions, warnings, errata and limitations. Authorizes exact saved delivery/SQL preparation and new local verification; does not attest new numerical simulation, D1/API/runtime/browser success, production readiness or deployment authority."
   },
   "prior_source_context_receipt": {
-    "commit": "5478e49ac5281485dea308902449a6a6f69ccf61",
+    "commit": "dff40dfe8bb9c3c4831bba86eb8d77e5ff2e042a",
     "path": "configs/mw3-utg-hj-bb-mw3-srp-v1.review.json",
-    "bytes": 10736,
-    "sha256": "72634fa2cb674ea982ccebb575c6fa230c1463358b28a58886e7d35a2b5f84a3",
-    "source_tree": "87329a5ca48774811982cb186234d9ce8247f5be",
-    "reviewer_task": "/root/review_mw3_scope_change",
-    "provenance": "Exact prior acceptance remains in Git; see the compact prior-hash ledger. No full historical receipt or manifest copies added."
+    "bytes": 12324,
+    "sha256": "e157c5474bdbbb4ad71a3b2325ec287a6c74b92d67725df3bfa97531c6d025bd",
+    "source_tree": "f39c0b8db644fbf55f4e84283cd3286d125f3f76",
+    "reviewer_task": "/root/verify_mw3_guard_revision",
+    "provenance": "Exact previous receipt bytes are present at the published pre-install source commit; earlier history remains in Git."
   },
   "current_context_review": {
     "reviewer_model": "gpt-6-astra",
-    "reviewer_task": "/root/verify_mw3_guard_revision",
-    "implementation_author_task": "/root/fix_mw3_review_guard",
-    "source_commit": "eeb9a9d8228009abf0dbfeb30343ef2b1025b31a",
+    "reviewer_task": "/root/review_mw3_shared_model_boundary",
+    "implementation_author_task": "/root/correct_integrated_hu_runtime",
+    "source_commit": "dff40dfe8bb9c3c4831bba86eb8d77e5ff2e042a",
+    "reviewed_local_source_commit": "2029ad54d9906895d001f3caf4a19917c53606fa",
+    "source_tree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
     "proofs": [
       {
-        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/remote-source-identity.json",
-        "bytes": 910,
-        "sha256": "36a48cc6b978f7aeef712a94727955d28506ebad07d35a7056a63f2dcab3ee5c"
+        "path": "apps/frontend/docs/qa/pr94-hu-v7-mw3-review/remote-source-identity.json",
+        "bytes": 541,
+        "sha256": "38f80cbe36016ab481e15405e5b38c8358bbc4a622f2427b2948b2d32abbe6eb"
       },
       {
-        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/prior-hash-ledger.json",
-        "bytes": 12222,
-        "sha256": "016e9a1f01120c8a1f4a34bf72121d1c5a29945d84856b6a487959287502c161"
+        "path": "apps/frontend/docs/qa/pr94-hu-v7-mw3-review/prior-hash-ledger.json",
+        "bytes": 12234,
+        "sha256": "493775b5f6bec6ea9f812c48f2ead7f97c54a6b11aa737c0b357b3b138b6bc08"
       },
       {
-        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/source-impact.json",
-        "bytes": 9366,
-        "sha256": "06dba6d560c8f35469a7184e2c5ec216066a8547e0f85731bbf9e8d315442c37"
+        "path": "apps/frontend/docs/qa/pr94-hu-v7-mw3-review/source-impact.json",
+        "bytes": 11866,
+        "sha256": "0c993fdad75a8cd18bdf67b4c8bb891942a16230166cba8a2c01be30f1accc7a"
       },
       {
-        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/preservation.json",
+        "path": "apps/frontend/docs/qa/pr94-hu-v7-mw3-review/preservation.json",
+        "bytes": 97291,
+        "sha256": "848ce5eeb09f983b770ae95396825bf245e60d046c521dad2f8a01e87eb3d7a6"
+      },
+      {
+        "path": "apps/frontend/docs/qa/pr94-hu-v7-mw3-review/preservation-final.json",
+        "bytes": 97835,
+        "sha256": "3f418c37f0fa1169097dc8cdfc90d7dd545df30ee4f369073551b1ac319a0fd5"
+      },
+      {
+        "path": "apps/frontend/docs/qa/pr94-hu-v7-mw3-review/final-source-binding.json",
+        "bytes": 7526,
+        "sha256": "d3fa2e017ebb2dd576b041c9b1de554d3c7bcc7aceaa9aceee5f16c7a3c0ee7c"
+      },
+      {
+        "path": "apps/frontend/docs/qa/pr94-hu-v7-mw3-review/reachability-and-boundary.json",
+        "bytes": 7921,
+        "sha256": "1b44f6fb889e54cec9f7248cf0639b4423cb9bb8a76f6d147e3265e169b509ac"
+      },
+      {
+        "path": "apps/frontend/docs/qa/pr94-hu-v7-mw3-review/stale-receipt-rejection.json",
+        "bytes": 574,
+        "sha256": "7a9b37c2fba34067d91932d315abd50380c209b94348281451827cb3ecba4a5e"
+      },
+      {
+        "path": "apps/frontend/docs/qa/pr94-hu-v7-mw3-review/code-review.json",
+        "bytes": 2648,
+        "sha256": "dd467614deaf4f82bad15ab2052181f3747700dd6c7d913790984ddfee130690"
+      },
+      {
+        "path": "apps/frontend/docs/qa/pr94-hu-v7-mw3-review/test-results.json",
+        "bytes": 1390,
+        "sha256": "c2ba16932053c596122c69a6e5c3b0a412ee103dc6584cee2ae37890020c4df3"
+      },
+      {
+        "path": "apps/frontend/docs/qa/pr94-hu-v7-mw3-review/prior-ffe7-review-summary.json",
+        "bytes": 29302,
+        "sha256": "40d949b75516add119c38b152c0c3d3497303451e7a5c64a72402c5d87e9873c"
+      },
+      {
+        "path": "apps/frontend/docs/qa/pr94-hu-v7-mw3-review/prior-ffe7-preservation.json",
         "bytes": 96919,
-        "sha256": "438b86b79969e0295fe467ca51d40777b93330611217292f186a70ba6f135fde"
-      },
-      {
-        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/mutation-review.json",
-        "bytes": 4839,
-        "sha256": "6bdf7b10ebfa09950aca699d6cb815e37b7179bd7d5c9b4a2589dfe9d6c60492"
-      },
-      {
-        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/test-results.json",
-        "bytes": 3033,
-        "sha256": "d699873cfd0ae5e9a18aa0c427c446959b11e8e6672ca8848a1f09734f7b97ac"
-      },
-      {
-        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/code-review.json",
-        "bytes": 4473,
-        "sha256": "fa193ffe0dd1fbdd480b0e8711e77bb116c205834bffdac0cd6d5cdf11479c01"
-      },
-      {
-        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/excluded-inventory-verification.json",
-        "bytes": 7678,
-        "sha256": "9a01719a99e17bdb0564cdcd394899a8f6493586a6af6f6808851913cb3a66ff"
-      },
-      {
-        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/escape-probe.json",
-        "bytes": 1235,
-        "sha256": "bce71faf478200339d562138af0a9993be422ab54b448f344b884512c3a60989"
+        "sha256": "4a613ea72dcd759b9e3af09e55862aa57027839f5a41358e10c6b20068230037"
       }
     ],
-    "findings": "No remaining blocking code finding in the reviewed protected-edge guard. Independent review first rejected the regex checkpoint after reproducing three valid-syntax bypasses, then rejected the first AST checkpoint because the license path violated the unchanged archive schema and absolute/file imports were silently omitted. The final AST checkpoint resolves those findings, preserves the original protected numerical/runtime paths, removes the same 96 historical paths and adds exactly four bound parser/verification sources. Literal/type/re-export edges into excluded TSX/CSS reject before filtering; directly imported ordinary excluded TS becomes protected. Unsupported computed/local absolute/URL/query/fragment/extensionless imports fail closed. The sole computed bootstrap exception binds exact file path, whole-source SHA, exact expression and target. Existing source IO rejects repository escapes, generated paths, node_modules paths and symlinks. Captured verification executes the parser from exact recorded buffers with no live-package fallback.",
+    "findings": "No blocking MW3 source-context finding. Exactly five shared records change from the previous ffe7 review: HU defence.ts/engine.ts, Agent hand.ts/policy.ts and locale reasons-secondary.json. The four removed records are the exact-river-call-ev and observable-actions modules plus declaration sidecars; unchanged recursive collection excludes them only because their last HU import edges were removed, with no root/exclusion/guard alteration. Dedicated MW3 engine/classifier/policy/inputs/recipes/codecs and all exact identity subjects remain byte-identical. Agent hand.ts is byte-identical through the entire dedicated MW3 early-return branch and invokes the unchanged MW3 runtime before reaching any changed HU execution. The Agent preflop picker is unchanged; only its HU postflop path loses v10 canonicalization. Locale additions affect explanatory strings only. Source-only renewal is necessary because exact full-current provenance changed; neither historical f39 nor earlier ffe7 receipts are valid for the new manifests. Mandatory full official collection and final complete source-graph/Git-tree binding preserve all original raw artifacts, canonical archives, pins and numerical evidence.",
     "inherited_quality_unchanged": true,
     "numerical_generation": false,
     "new_d1_execution": false,
     "new_live_auth_e2e": false,
-    "historical_evidence": "Prior quantitative/D1/browser evidence is preserved through Git provenance, not re-certified for this source head."
+    "historical_evidence": "Prior numerical-quality/D1/browser evidence remains historical. Earlier independent ffe7 saved-byte evidence is hash-bound and reused only for unchanged artifacts; official final-tree collection and affected contracts are new."
   },
-  "reviewed_at": "2026-10-07T04:29:15.696Z"
+  "reviewed_at": "2026-10-07T16:32:13.924Z"
 }

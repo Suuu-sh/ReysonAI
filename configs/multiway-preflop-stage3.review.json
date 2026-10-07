@@ -9035,8 +9035,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 13872,
-      "sha256": "20943a5037654897b767a3983e79868c6f13258d35f3b80d749597fb0445dbcd"
+      "bytes": 15224,
+      "sha256": "548b6d8f18ddec60be52c413c6e134c6b95434783048303a61113e8eeaa60072"
     },
     {
       "path": ".gitignore",
@@ -9050,8 +9050,8 @@
     },
     {
       "path": "apps/frontend/package.json",
-      "bytes": 2433,
-      "sha256": "a37d38086aa3b687f2a6ebdc32c7dc7c54ab6a8ef86e70f01a7e43b6b6c39547"
+      "bytes": 2514,
+      "sha256": "7aa07c287011bd5c2f303680bc6f3fa07203ddb7692ed53b38b8de0907222696"
     },
     {
       "path": "apps/frontend/scripts/audit-estimates.mjs",
@@ -9125,8 +9125,8 @@
     },
     {
       "path": "apps/frontend/scripts/lib/reviewed-preflop.mjs",
-      "bytes": 10996,
-      "sha256": "443d0bf7b3b8ae60e5fcad471e695a2d3d4dbce786f4b1903d6307a84c5bc447"
+      "bytes": 11232,
+      "sha256": "2a8f47f783266bb37c98c3865e14182d4b80551a849c3aa1a80d36f0f5ba9230"
     },
     {
       "path": "apps/frontend/scripts/lib/reviewed-stage3.mjs",
@@ -9291,7 +9291,7 @@
     {
       "path": "apps/frontend/src/estimated/five-bet-responses.json",
       "bytes": 871890,
-      "sha256": "4f1b78b45e364c14f93cbe19cb7bef6e4ecfbc9076fd79d0834d2dd3b4b91d7c"
+      "sha256": "86a34ea4c482b9987c77112f6e64ba0940234ae262c6c460b0ad086c6a40476b"
     },
     {
       "path": "apps/frontend/src/estimated/four-bet-responses.json",
@@ -9445,8 +9445,8 @@
     },
     {
       "path": "apps/frontend/src/i18n.ts",
-      "bytes": 35960,
-      "sha256": "9a3ee1965bf1deec42b563d7187be40e0a3a57b6fcee0daa65fe82079b07a55d"
+      "bytes": 36000,
+      "sha256": "a0b410ac913eb68a03ce9d4bfce0da2133f0ec2d9375a688bffb410326239b21"
     },
     {
       "path": "apps/frontend/src/locale-metadata.ts",
@@ -9465,13 +9465,13 @@
     },
     {
       "path": "apps/frontend/src/locales/product-dictionary.json",
-      "bytes": 43279,
-      "sha256": "caf1cb5a84d2f20782cb4f02a011838369c30112e75bb819e0d7823121ccaeaf"
+      "bytes": 43357,
+      "sha256": "e670898fc830f5531b9ac93a096509461043ab7f3c67c6ce95987f0c4fbe41ab"
     },
     {
       "path": "apps/frontend/src/locales/product-direct.json",
-      "bytes": 44812,
-      "sha256": "062e6a2f513803db6432cc261923ef38147027091bfab3b906367f26e49d4413"
+      "bytes": 44794,
+      "sha256": "1108ed95ac1a899850c910e9aaa9332d2b2ed99a61be837b4666a2a97b99d27f"
     },
     {
       "path": "apps/frontend/src/locales/reason-copy.ts",
@@ -9485,8 +9485,8 @@
     },
     {
       "path": "apps/frontend/src/locales/reasons-secondary.json",
-      "bytes": 51990,
-      "sha256": "3af7ec7922716868fea0bdd124636b5a819092d853bd4dba384fedb81dccd626"
+      "bytes": 53169,
+      "sha256": "9372741925f4b3aed1b9b09e19127aae6259ec62c5d2d1903e0c89d3bed14419"
     },
     {
       "path": "apps/frontend/tests/fixtures/stage3-legacy-baseline.json",
@@ -9505,8 +9505,8 @@
     },
     {
       "path": "configs/multiway-preflop-stage2.review.json",
-      "bytes": 560889,
-      "sha256": "324aab2280e2b8cc389d9272aeecf76c63037ab4a0824ffebfc54087ee0b71e9"
+      "bytes": 527647,
+      "sha256": "9303299b12c65d9498626200a8de877bca06169923d275bf309a95c624210e54"
     },
     {
       "path": "configs/multiway-preflop-stage3.json",
@@ -9525,7 +9525,7 @@
     "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
     "format": "ustar+gzip-stage3-content-v1"
   },
-  "content_sha256": "8ac7e6e22051b95c1fe1f51be999373a8906af99318a82c057b45b985caf791d",
+  "content_sha256": "3c70ba453a0f8472b9cacbd2f47a14c03a752cb9e251828306e267ac9071e21e",
   "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
   "counts": {
     "catalog": 16132,
@@ -10125,6 +10125,85 @@
       "final_stage2_receipt": {
         "bytes": 556863,
         "sha256": "630a45330923d076c71d47b1a06cbcb96e88c8d6acc5058a6698b1e30f0e62e7"
+      }
+    },
+    "pr94_consolidated_source_renewal": {
+      "reviewer": "Independent gpt-6-astra source-context reviewer",
+      "reviewer_task": "/root/review_stage3_integrated_sources",
+      "reviewed_at_utc": "2026-10-07T14:02:39.588Z",
+      "status": "independently-reviewed",
+      "report": "apps/frontend/docs/qa/pr94-stage23-source-review/review-summary.json",
+      "reviewed_source_commit": "ffe7c657da5e8492673e3e06e7c3355966f596ed",
+      "reviewed_source_tree": "4f242de1ee2bc791f4ab8141d7116c47d73da0dc",
+      "scope": "Exact consolidated source-context and saved-data preservation only. Existing numerical approvals and their limitations remain authoritative. No new strategy-quality, GTO, full numerical simulation, private HU policy, browser, D1 rollback, CI or production approval.",
+      "required_followup": "Install exact ledger, recheck all bound sources and both receipts after commit, run final delivery CI and formally restored-data/browser acceptance. No main or production action is approved by these receipts.",
+      "prior_receipt": {
+        "path": "configs/multiway-preflop-stage3.review.json",
+        "bytes": 530588,
+        "sha256": "2f14e3a241dc0e08fa405b58d000aa507eed6279f0fdb15d54f57d4073823d65"
+      },
+      "source_records_before": 98,
+      "source_records_after": 98,
+      "final_stage2_receipt": {
+        "path": "configs/multiway-preflop-stage2.review.json",
+        "bytes": 525321,
+        "sha256": "570cecbbbabfb892f96c3baa6cc449f534dd37acc46af2cedc6dd1ffd69f85ea"
+      },
+      "artifacts_unchanged": 1805,
+      "saved_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+      "counts": {
+        "catalog": 16132,
+        "saved": 1801,
+        "unreachable": 5621,
+        "rare": 8710,
+        "hands": 304369
+      },
+      "verified": "Every Stage3 artifact and original archive retains exact bytes. Full publication validation recomputed the exact saved fingerprint, audit, coverage and reason projections. Stage3 binds the final Stage2 receipt body only after its independent renewal."
+    },
+    "pr94_adopted_v7_source_renewal": {
+      "status": "independently-reviewed",
+      "reviewer": "Independent gpt-6-astra/xhigh source-context reviewer",
+      "reviewer_task": "/root/review_stage3_integrated_sources",
+      "reviewed_at_utc": "2026-10-07T16:31:50.438Z",
+      "report": "apps/frontend/docs/qa/pr94-stage23-v7-source-review/review-summary.json",
+      "reviewed_source_commit": "dff40dfe8bb9c3c4831bba86eb8d77e5ff2e042a",
+      "reviewed_source_tree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+      "scope": "Source-context renewal for the adopted development-v7 HU computational/runtime contract and current tracked-policy delivery integration. All previously approved preflop data, archives, fingerprints, counts and historical review fields remain unchanged. No new strategy-quality, GTO, numerical-generation, browser, D1, full-suite, CI or production approval.",
+      "supersedes": "The prior ffe7 source-context evidence remains historical. Current selected40 HU execution now follows adopted development7c2 defence7/simulation3/evaluator2 rather than the unadopted history-v10 experiment. Policy/report bytes and honest generator attribution are unchanged.",
+      "verification": {
+        "runtime_body_parity": "20 complete computational modules equal exact7c2 after type erasure, explicit import adapters and four exact separately reviewed validation guards. No general expression/value normalization.",
+        "helper_parity": "19 extracted helpers,4 classifier declarations,8 remaining UI helpers match7c2; two Stage3/MW3 completion functions match6566786a.",
+        "runtime_replay": "Independent baseline/current outputs equal across425 deterministic engine cases and85 full UI case bundles.",
+        "source_closure": "Unmodified collectors;188 Stage2 and98 Stage3 paths, no missing local imports. Only six dormant experiment module/declaration paths became unreachable from Stage2 roots.",
+        "publication": "Strict unchanged-byte85-policy-tuple publication passes; missing, stale, mismatched, cross-contract and falsely attributed objects fail. Spot-scoped SQL and preflop-before-postflop strict ordering retained.",
+        "consumer_scope": "All2488 Stage3 flop endings reject HU/MW3 reuse; selected40 ordinary HU and367 deferred histories retain exact scope; injected FastFold stays isolated."
+      },
+      "limitations": "This source review does not promote any pending browser, D1, exact-final-head CI, private-policy, whole-suite or numerical-quality evidence. The255 adopted policy/report files retain their actual original generator metadata. Original ffe7 review limitations and superseded historical experiment evidence remain historical.",
+      "previous_independent_receipt": {
+        "path": "configs/multiway-preflop-stage3.review.json",
+        "bytes": 532669,
+        "sha256": "ef017dab46abb03809b1fbbca5d816765672cef3809c994485b42f3ad2caf4f5"
+      },
+      "expected_remote_receipt": {
+        "path": "configs/multiway-preflop-stage3.review.json",
+        "bytes": 530588,
+        "sha256": "2f14e3a241dc0e08fa405b58d000aa507eed6279f0fdb15d54f57d4073823d65"
+      },
+      "final_stage2_receipt": {
+        "path": "configs/multiway-preflop-stage2.review.json",
+        "bytes": 527647,
+        "sha256": "9303299b12c65d9498626200a8de877bca06169923d275bf309a95c624210e54"
+      },
+      "artifact_records_preserved": 1805,
+      "source_records_before": 98,
+      "source_records_after": 98,
+      "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+      "counts": {
+        "catalog": 16132,
+        "saved": 1801,
+        "unreachable": 5621,
+        "rare": 8710,
+        "hands": 304369
       }
     }
   }
