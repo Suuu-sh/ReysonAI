@@ -988,3 +988,19 @@
 @media (min-width: 360px) and (max-width: 960px) {
   .site-persona-stage.is-budget .site-persona-view.is-free ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+@media (max-width: 960px) {
+  .site-persona-stage.is-learner .site-persona-selected-copy { padding: 14px 14px 8px; gap: 8px; }
+  .site-persona-stage.is-learner .site-persona-quote { font-size: 18px; line-height: 1.45; }
+  .site-persona-stage.is-learner > .site-sample { display: none; }
+  .site-persona-stage.is-learner .site-persona-view.is-detail { padding: 8px 14px 14px; gap: 10px; }
+  .site-persona-stage.is-learner .site-persona-detail-head { gap: 10px; }
+  .site-persona-stage.is-learner .site-card { --card-w: 28px; }
+  .site-persona-stage.is-learner .site-persona-detail-head strong { font-size: 28px; }
+  .site-persona-stage.is-learner .site-persona-detail-head small { font-size: 12px; }
+  .site-persona-stage.is-learner .site-hand-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .site-persona-stage.is-learner .site-hand-action { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 0; font-size: 13px; }
+  .site-persona-stage.is-learner .site-hand-action b { margin-left: 0; }
+  .site-persona-stage.is-learner .site-persona-why { font-size: 14px; line-height: 1.5; }
+  .has-motion .site-persona-stage.is-learner .site-persona-view, .has-motion .site-persona-stage.is-learner .site-persona-view * { animation: none; }
+}

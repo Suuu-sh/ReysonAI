@@ -616,8 +616,8 @@ function Audience() {
             {running && active === index && <span className="site-persona-timer" aria-hidden="true" />}</>}
           </button>)}
         </div>
-        <div className={`site-mock site-persona-stage${phone && active === 2 ? " is-budget" : ""}`} role="tabpanel" id="site-persona-panel" aria-labelledby={`site-persona-${personaIds[active]}`}>
-          {phone && <div className="site-persona-selected-copy"><p className="site-persona-quote">{c.audience.items[active].quote}</p><p className="site-persona-body">{active === 2 ? c.audience.budgetShort : c.audience.items[active].body}</p>{active !== 2 && <span className="site-persona-gets">{c.audience.items[active].gets}</span>}</div>}
+        <div className={`site-mock site-persona-stage${phone && active === 2 ? " is-budget" : phone && active === 1 ? " is-learner" : ""}`} role="tabpanel" id="site-persona-panel" aria-labelledby={`site-persona-${personaIds[active]}`}>
+          {phone && <div className="site-persona-selected-copy"><p className="site-persona-quote">{c.audience.items[active].quote}</p><p className="site-persona-body">{active === 2 ? c.audience.budgetShort : active === 1 ? c.audience.learnerShort : c.audience.items[active].body}</p>{active === 0 && <span className="site-persona-gets">{c.audience.items[active].gets}</span>}</div>}
           <span className="site-sample">{c.audience.views[active]}</span>
           <div className="site-persona-views">
             <div className={`${view(0)} is-simple`} aria-hidden={active !== 0}>
@@ -632,7 +632,7 @@ function Audience() {
             <div className={`${view(1)} is-detail`} aria-hidden={active !== 1}>
               <div className="site-persona-detail-head"><HandCards hand="A5s" seed={1} /><div><strong>A5s</strong><small>{c.how.whyHand}</small></div></div>
               <ActionRows mode="response" values={a5s} />
-              <p className="site-persona-why"><span>{c.preview.why}</span>{c.how.whyNote}</p>
+              <p className="site-persona-why"><span>{c.preview.why}</span>{phone ? c.audience.learnerWhyShort : c.how.whyNote}</p>
             </div>
             <div className={`${view(2)} is-free`} aria-hidden={active !== 2}>
               <p className="site-persona-price"><strong>{free.price}</strong><small>{phone ? c.audience.freeNote : free.cadence}</small></p>

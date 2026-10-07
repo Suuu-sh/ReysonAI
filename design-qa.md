@@ -662,3 +662,7 @@ Verification:
 ## 2026-10-07 — Compact only the phone budget persona
 - Use localized short budget body on mobile; remove redundant selected gets chip/sample label/free badge, inline price36px with no-account note. Features stay14px in two columns≥360px/one column320px, CTA44px; Plus price/cadence/planned status preserved in compact wrapping divider row. Desktop original detailed copy/pricing unchanged.
 - Locale tests9/build/diffcheck passed. Parent375 Japanese measured budget panel≈357px; quote/body/price/features/CTA readable and Plus retained with natural scrolling. No clipping or forced height. No merge/deploy.
+
+## 2026-10-07 — Learner phone panel matches compact budget size
+- Mobile learner only: localized concise exact-frequency/body and A-blocker/wheel/mixed-call3bet summary derived from existing full Why facts; desktop full percentages/explanation retained. Remove redundant gets/sample label; cards28px, hand28px, three13px frequency columns and14px Why, padding14/gaps8–10. No ellipsis/clipping/new strategic claim.
+- Locale tests9/build/diffcheck passed. Parent375 Japanese learner panel≈357.17px, matching budget≈357.09px; quote/body/cards/frequencies readable/no overflow (0% naturally wraps within its column). No merge/deploy.
