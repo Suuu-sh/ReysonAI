@@ -9,7 +9,7 @@
 - 局面: `scripts/postflop-ai/spots.mjs`。保存済みプリフロップJSONから席、到達レンジ、ポット、スタックを決めます。
 - ボード・サイズ・シード: `scripts/data/postflop-ai-pilot.json`。
 - フロップ: `scripts/postflop-ai/policy.mjs`、`tree.ts`。ターン・リバー: 同ディレクトリの `later-policy.mjs`、`later-tree.ts`。
-- 保存候補: Git管理外の `.local/postflop-ai/{slug}-policy.json`、`{slug}-later-policy.json`。入力・方針ハッシュを検査して読み取ります。
+- 保存候補: Git管理の `scripts/data/postflop-ai/policies/{slug}-policy.json`、`{slug}-later-policy.json`、`{slug}-report.json`。入力・方針ハッシュを検査して読み取ります。本番D1への反映は main へのマージ時に CI（deploy-worker.yml の Publish postflop policies into D1）だけが行い、対応するレビュー済みプリフロップの取込と厳密なsource確認の完了後に実行します。全到達局面がそろっていないと止まります（`--require-all`）。SQLは指定局面だけを更新し、他の保存局面を保持します。手元から `--execute remote` しません。
 - 画面: `src/estimated/postflop-compute.ts` と共有の `scripts/postflop-ai/views.mjs`。ブラウザーとローカル読み取りミドルウェアで同じ計算を使います。
 - 防御計算: `scripts/postflop-ai/defence.mjs`。モデルと制限は [postflop-defence.md](postflop-defence.md) が正本です。
 

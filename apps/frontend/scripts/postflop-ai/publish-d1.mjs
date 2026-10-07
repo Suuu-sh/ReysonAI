@@ -89,11 +89,17 @@ export function buildSql(published, publishedAt = new Date().toISOString(), publ
 }
 
 // Every publishable spot, logging what is skipped and why.
-export function publishableSpots(log = console.log) {
+// requireAll (CI): every reachable spot must have fresh flop and turn/river policies.
+// SQL remains spot-scoped so unmentioned published histories are preserved.
+export function publishableSpots(log = console.log, { requireAll = false } = {}) {
   const published = [];
   for (const spot of POSTFLOP_SPOTS) {
     const result = spotArtifacts(spot);
-    if (result.skip) { log(`skip ${spot.id}: ${result.skip}`); continue; }
+    if (result.skip) {
+      if (requireAll && result.skip !== "unreachable") throw new Error(`${spot.id} is not publishable: ${result.skip}`);
+      log(`skip ${spot.id}: ${result.skip}`); continue;
+    }
+    if (requireAll && !result.laterCandidate) throw new Error(`${spot.id} has no turn/river policy`);
     published.push(result);
     log(`publish ${spot.id}${result.laterCandidate ? " +later" : ""}`);
   }

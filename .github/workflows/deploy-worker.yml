@@ -107,6 +107,11 @@ jobs:
           npm run build
           npm run test:sites
 
+      # Every reachable HU spot must have a fresh flop+turn/river policy and report in git
+      # (scripts/data/postflop-ai/policies); spot-scoped SQL preserves unmentioned histories.
+      - name: Check postflop policy delivery
+        run: node scripts/publish-d1.mjs --only postflop --require-all --out .local/postflop.sql
+
       - name: Retain exact validated delivery SQL
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -301,6 +306,15 @@ jobs:
       - name: Require live FastFold release gate after reviewed import
         working-directory: apps/backend
         run: node --experimental-strip-types scripts/verify-fastfold-readiness.mjs --configured
+
+      # Tracked postflop policies depend on the exact reviewed preflop snapshot.
+      # Publish only after its import and strict source-identity gate succeed.
+      - name: Publish postflop policies into D1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: node scripts/publish-d1.mjs --only postflop --require-all --out .local/postflop.sql --execute remote
 
       - name: Retain preflop recovery reference and import outcome
         if: always()

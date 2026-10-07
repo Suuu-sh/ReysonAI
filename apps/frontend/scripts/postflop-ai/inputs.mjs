@@ -43,11 +43,14 @@ const flopConfig = () => Object.fromEntries(Object.entries(config).filter(([key]
 // Results, unlike flop candidates, must be invalidated when later sizing changes.
 export const laterSizingHash = () => sha(Object.fromEntries(LATER_KEYS.map(key => [key, config[key]])));
 
-// Local-only artifacts of one spot under .local/postflop-ai/.
+// Published artifacts of one spot (policies and simulation report) live in git under
+// scripts/data/postflop-ai/policies/ and reach D1 through CI on main; offline research
+// artifacts (hand EV) stay local under .local/postflop-ai/.
+export const POLICY_DIR = "scripts/data/postflop-ai/policies";
 export function artifactPaths(spot) {
-  const base = join(root, ".local/postflop-ai", spot.slug);
+  const base = join(root, POLICY_DIR, spot.slug), local = join(root, ".local/postflop-ai", spot.slug);
   return { candidate: `${base}-policy.json`, laterCandidate: `${base}-later-policy.json`, report: `${base}-report.json`,
-    handEv: `${base}-hand-ev.json`, laterHandEv: `${base}-later-hand-ev.json` };
+    handEv: `${local}-hand-ev.json`, laterHandEv: `${local}-later-hand-ev.json` };
 }
 
 // One parsed artifact of a spot (a key of artifactPaths), or null when it does not exist.
