@@ -112,7 +112,7 @@ const initialRangeIndex = heroRanges.findIndex(range => range.id === "BTN_open")
 
 function heroActionLabels(copy: SiteCopy, range: HeroRange): Record<string, string> {
   const raise = range.stage === "response" ? copy.common.threeBet : range.stage === "threeBet" ? "4bet" : copy.common.raise;
-  return { check: copy.preview.check, bet33: `${copy.preview.bet} 33%`, bet75: `${copy.preview.bet} 75%`, bet125: `${copy.preview.bet} 125%`, raise, all_in: "5bet 100BB", call: copy.common.call, limp: `${copy.common.call} 1BB`, fold: copy.common.fold };
+  return { check: copy.preview.check, bet33: `${copy.preview.bet} 33%`, bet75: `${copy.preview.bet} 75%`, bet125: `${copy.preview.bet} 125%`, raise, all_in: "allin", call: copy.common.call, limp: `${copy.common.call} 1BB`, fold: copy.common.fold };
 }
 
 function rangeAccessibleContext(copy: SiteCopy, range: HeroRange) {
