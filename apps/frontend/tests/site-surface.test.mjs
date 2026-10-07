@@ -15,9 +15,9 @@ test("scrolly audience starts at the section edge instead of centering in its sc
 test("phone hero uses an inert decorative chart behind centered copy and CTAs", () => {
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  const mobile = css.slice(css.indexOf("@media screen and (max-width: 960px)"));
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 720px)"));
   assert.match(source, /className="site-hero-range" inert=\{decorative\} aria-hidden=\{decorative \|\| undefined\}/);
-  assert.match(source, /matchMedia\("\(max-width: 960px\)"\)/);
+  assert.match(source, /matchMedia\("\(max-width: 720px\)"\)/);
   assert.match(source, /query\.removeEventListener\("change", sync\)/);
   assert.match(mobile, /\.site-hero-copy \{[^}]*text-align: center;/);
   assert.match(mobile, /\.site-hero-range \{ position: absolute;[^}]*pointer-events: none;/);
@@ -33,9 +33,9 @@ test("phone hero uses an inert decorative chart behind centered copy and CTAs", 
 
 test("only the phone hero description is hidden, without removing locale copy or desktop presentation", () => {
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  const mobile = css.slice(css.indexOf("@media screen and (max-width: 960px)"));
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 720px)"));
   assert.match(mobile, /\.site-hero-lead \{ display: none; \}/);
-  assert.doesNotMatch(css.split("@media screen and (max-width: 960px)")[0], /\.site-hero-lead[^}]*display: none/);
+  assert.doesNotMatch(css.split("@media screen and (max-width: 720px)")[0], /\.site-hero-lead[^}]*display: none/);
   for (const locale of ["en", "ja", "es", "zh-CN"]) {
     assert.ok(render(locale).includes(escapeText(copies[locale].hero.lead)));
   }
@@ -43,7 +43,7 @@ test("only the phone hero description is hidden, without removing locale copy or
 
 test("phone cover fills remaining viewport without stretching or clipping the square range", () => {
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  const mobile = css.slice(css.indexOf("@media screen and (max-width: 960px)"));
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 720px)"));
   assert.match(css, /\.site-cover-ending \{ display: none; \}/);
   assert.match(mobile, /min-height: calc\(100svh - var\(--header-height\)\)/);
   assert.match(mobile, /\.site-hero-stage \{ display: block; flex: none; width: 100%; aspect-ratio: 1; \}/);
@@ -135,14 +135,14 @@ test("only ReysonAI comparison cells stay continuously black while the section s
 test("every non-two-column width uses the same decorative square hero", () => {
   const previousWindow = globalThis.window;
   try {
-    for (const width of [560, 768, 960, 961]) {
+    for (const width of [560, 720, 721, 768, 960, 961]) {
       globalThis.window = { matchMedia: query => ({ matches: query.includes("max-width") && width <= Number(query.match(/max-width: (\d+)/)[1]) }), localStorage: { getItem: () => null } };
       const html = render("en");
-      assert.equal(html.includes('class="site-hero-range" inert="" aria-hidden="true"'), width <= 960);
+      assert.equal(html.includes('class="site-hero-range" inert="" aria-hidden="true"'), width <= 720);
     }
   } finally { globalThis.window = previousWindow; }
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  assert.match(css, /@media screen and \(max-width: 960px\)/);
+  assert.match(css, /@media screen and \(max-width: 720px\)/);
   assert.match(css, /\/\* Compact only the three long[^]*@media \(max-width: 560px\)/);
 });
 
@@ -157,7 +157,7 @@ test("hero and shared English taglines use Understand the reason", () => {
 
 test("phone selected-hand panel stays compact without shrinking its action target", () => {
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  const mobile = css.slice(css.indexOf("@media screen and (max-width: 960px)"));
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 720px)"));
   assert.match(mobile, /\.site-hero-detail \.site-hand \{ gap: 12px 16px; padding-block: 14px; \}/);
   assert.match(mobile, /\.site-hero-deal \.site-card \{ --card-w: clamp\(36px, 10vw, 48px\); \}/);
   assert.match(mobile, /\.site-hero-reason \.site-hand-link \{ min-height: 44px;/);
@@ -235,7 +235,7 @@ function renderWithMotionPreference(locale, reducedMotion) {
 test("responsive hero mounts one matrix without the removed phone detail or playback", () => {
   const previousWindow = globalThis.window;
   try {
-    globalThis.window = { matchMedia: query => ({ matches: query === "(max-width: 960px)" }), localStorage: { getItem: () => null } };
+    globalThis.window = { matchMedia: query => ({ matches: query === "(max-width: 720px)" }), localStorage: { getItem: () => null } };
     const mobile = render("ja");
     assert.equal((mobile.match(/class="site-matrix"/g) ?? []).length, 1);
     assert.match(mobile, /class="site-hero-range" inert="" aria-hidden="true"/);
@@ -388,7 +388,7 @@ test("the hero range fills its column without a separate action legend", () => {
   assert.match(css, /\.site-header\s*\{[^}]*height: var\(--header-height\);/);
   assert.match(css, /--hero-height: calc\(100svh - var\(--header-height\)\); --hero-range-size: min\(var\(--hero-height\), calc\(100vw - min\(40vw, 480px\)\)\);/);
   assert.match(css, /\.site-hero-copy\s*\{[^}]*align-self: center; transform: translateY\(28px\);/);
-  assert.doesNotMatch(css.split("@media screen and (max-width: 960px)")[0], /\.site-hero-range\s*\{[^}]*(?:max-width:|width: min\(|margin-top: -)/);
+  assert.doesNotMatch(css.split("@media screen and (max-width: 720px)")[0], /\.site-hero-range\s*\{[^}]*(?:max-width:|width: min\(|margin-top: -)/);
   assert.match(css, /\.site-hero-main\s*\{ width: calc\(100% - var\(--page-gutter\) \* 2\); min-height: 0; grid-template-columns: 1fr;/);
   for (const locale of ["en", "ja"]) {
     const html = render(locale);
@@ -421,7 +421,7 @@ test("sections use a wider shared canvas without empty full-screen minimums", ()
   assert.match(css, /\.site-wrap\s*\{[^}]*width: min\(100% - var\(--page-gutter\) \* 2, var\(--content-width\)\)/);
   assert.match(css, /\.site-section\s*\{[^}]*padding: var\(--section-space\)/);
   assert.doesNotMatch(css, /\.site-section, \.site-final\s*\{[^}]*min-height:/);
-  assert.doesNotMatch(css.split("@media screen and (max-width: 960px)")[0], /\.site-hero\s*\{[^}]*min-height:/);
+  assert.doesNotMatch(css.split("@media screen and (max-width: 720px)")[0], /\.site-hero\s*\{[^}]*min-height:/);
   assert.match(css, /\.site-poker-table\s*\{[^}]*width: min\(100%, 760px\)/);
   assert.match(css, /@media \(min-width: 961px\) and \(max-height: 740px\)/);
   const tablet = css.split("@media (max-width: 960px)")[1].split("@media (max-width: 720px)")[0];

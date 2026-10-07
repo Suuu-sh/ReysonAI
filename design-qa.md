@@ -741,3 +741,7 @@ Verification:
 - Fresh branch after PR109/110 merged, based on latest main/development. Align hero-only responsive switch/CSS/cover mask query with existing two-column boundary960px:560/768/960 use the same full-width square dim decorative range, centered copy, hidden long description and question-cover mask;961+ retains right-hand two-column range.
 - Other-section compact rules remain≤560; no global tablet compaction.62savedranges/1000ms/50:50, reduced-motion/manual/offscreen boundaries retained. Taller squares on short landscape tablets may extend naturally; no clipping to force fit.
 - Targeted hero/boundary SSR tests5/build/diffcheck passed. No new rendered tablet/scroll measurement at commit time. No merge/deploy authorization for this new change.
+
+## 2026-10-07 — Restore moderate tablet right-column hero
+- User found≤960 full-width square too large. Hero/Explorer/cover query now≤720;721–960 uses compact two-column layout with a50vw right square (384px at768), left typography/padding/margins scaled and no viewport min-height. All copy stays normal flow without clipping;>960 original layout unchanged. Other-section≤560 compact rules untouched;62ranges/1000ms/50:50 retained.
+- Targeted hero/boundarySSR tests5/build/diffcheck passed, covering560/720/721/768/960/961. No new rendered geometry measurement at commit time; exceptionally long locale text can grow naturally rather than clip. No merge/deploy.
