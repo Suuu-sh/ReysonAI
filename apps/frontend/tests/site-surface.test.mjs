@@ -96,6 +96,15 @@ test("phone cover pins through full occlusion without extra runway and releases 
   assert.match(source, /cancelAnimationFrame\(frame\)/);
 });
 
+test("downstream phone content is opaque above the fixed cover with no spacer", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /\.site-after-cover \{ display: contents; \}/);
+  assert.match(css, /\.has-motion \.site-after-cover \{ display: flow-root; position: relative; z-index: 1; background: var\(--bg\); \}/);
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.match(source, /<Hero \/><div className="site-after-cover"><Audience \/>/);
+  assert.match(source, /<FinalCta \/><\/div><\/main>/);
+});
+
 test("hero and shared English taglines use Understand the reason", () => {
   for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
     const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");
