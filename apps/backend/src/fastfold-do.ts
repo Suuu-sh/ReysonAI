@@ -6,12 +6,14 @@ import type { FastFoldRuntimeEnv } from './fastfold-dispatch.ts';
 // D1-authoritative; no state migration or per-object cache can override owner/CAS checks.
 export class FastFoldRuntime extends DurableObject<FastFoldRuntimeEnv>{
  async handle(request:Request):Promise<Response>{
-  if(!new URL(request.url).pathname.startsWith('/v1/fastfold/'))return new Response(null,{status:404});
+  const path=new URL(request.url).pathname;
+  if(!path.startsWith('/v1/fastfold/'))return new Response(null,{status:404});
   // Binding RPC only, never an external HTTP route. This verifies the real HttpOnly
   // account session, expiry, origin, legal action, version and idempotency every call.
-  if(new URL(request.url).pathname.startsWith('/v1/fastfold/human/')){
+  if(path.startsWith('/v1/fastfold/human/')){
    const response=await routeHumanRank(request,this.env);
-   if(response.status<500)await this.scheduleHumanAlarm();
+   // History reads must not arm a future game sweep, including rejected reads.
+   if(response.status<500&&!(request.method==='GET'&&path==='/v1/fastfold/human/history'))await this.scheduleHumanAlarm();
    return response;
   }
   return routeFastFold(request,this.env);

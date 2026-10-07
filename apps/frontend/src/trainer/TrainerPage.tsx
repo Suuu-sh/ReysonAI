@@ -609,7 +609,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
             onStartReview={() => start(reviewDrill, true)}
             onClear={() => { if (window.confirm(localized("Clear all answer history?", "回答履歴をすべて消しますか？"))) { clearHistory(); setHistory([]); } }} />
         : section === "プレー分析" ? <PlayerAnalysis rank={rankState} rankedReady={rankedReady} history={history} onStart={() => { setPhase("library"); }} onOpenWeakness={() => onSectionChange("弱点")} />
-        : section === "セッション" ? <SessionPage drills={drills} reviews={reviewSessions} drafts={drafts}
+        : section === "セッション" ? <SessionPage drills={drills} reviews={reviewSessions} drafts={drafts} rankedReady={rankedReady && account.ready && Boolean(account.user?.verified) && !account.error} rankedOwner={account.user?.id ?? null}
             onResume={session => start(session.kind === "review" ? reviewDrill : drills.find(drill => drill.id === session.drillId)!, session.kind === "review")} />
         : phase === "edit" && editing ? <DrillEditor drill={editing.drill} isNew={editing.isNew} reviewCount={reviewCount}
             onChange={drill => setEditing({ ...editing, drill })} onCancel={() => setPhase("drills")}
