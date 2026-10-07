@@ -163,7 +163,7 @@ test("adjusted candidates without a baseline fingerprint still require a nonempt
   });
 });
 
-test("Stage C adjusted authoring guards reject before artifact lookup or injected generation", async () => {
+test("Implicit/standard adjusted authoring guards reject before artifact lookup or injected generation", async () => {
   for (const selected of [
     buildInputs(spotId, datasets, { tableProfile: { call: "high" } }),
     buildInputs(spotId, datasets, optionsFor("oop")),
@@ -172,8 +172,8 @@ test("Stage C adjusted authoring guards reject before artifact lookup or injecte
     const guarded = { ...selected, get spot() { throw new Error("Authoring must reject before constructing an artifact path"); } };
     const generator = async () => { generatorCalls++; throw new Error("No generation is authorized"); };
     const options = { model: "gpt-6-luna", generator };
-    await assert.rejects(generate(guarded, options), /Policy authoring with adjusted inputs is not enabled in Stage C/);
-    await assert.rejects(generateLater(guarded, null, options), /Policy authoring with adjusted inputs is not enabled in Stage C/);
+    await assert.rejects(generate(guarded, options), /Standard policy authoring with adjusted inputs is not enabled/);
+    await assert.rejects(generateLater(guarded, null, options), /Standard policy authoring with adjusted inputs is not enabled/);
     assert.equal(generatorCalls, 0);
   }
 });

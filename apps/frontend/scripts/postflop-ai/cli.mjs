@@ -1,10 +1,11 @@
-// npm run postflop-ai:<generate|generate-later|simulate|audit|hand-ev|spots> -- [--spot <id> | --all] [--samples N] [--model M] [--effort E]
+// npm run postflop-ai:<generate|generate-later|simulate|audit|hand-ev|spots> -- [--spot <id> | --all] [--samples N] [--model M] [--effort E] [--profile P --role villain|exploit] [--opponent-seat ip|oop] [--force]
 // Without --spot, the first pilot spot (BTN_open_BB_call) is used. --all runs every reachable
 // heads-up spot (single-raised and 3bet pots) in order; a failing spot is logged and skipped, then listed at the end.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { auditExperiment } from "./audit.mjs";
 import { generate, generateLater, loadCandidate, loadLaterCandidate, resolveEffort, resolveModel } from "./generate.mjs";
+import { generationInputOptions, normalizeGenerationOptions } from "./generation-options.mjs";
 import { artifactPaths, config, loadInputs } from "./inputs.mjs";
 import { simulateParallel } from "./simulation-parallel.mjs";
 import { generateHandEv } from "./hand-ev.mjs";
@@ -12,20 +13,21 @@ import { generateLaterHandEv } from "./later-hand-ev.mjs";
 import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, spotById } from "./spots.ts";
 
 const COMMANDS = ["generate", "generate-later", "simulate", "audit", "hand-ev", "later-hand-ev", "spots"];
-const USAGE = "Usage: postflop-ai <generate|generate-later|simulate|audit|hand-ev|later-hand-ev|spots> [--spot <id> | --all] [--samples N] [--model M] [--effort E]";
+const USAGE = "Usage: postflop-ai <generate|generate-later|simulate|audit|hand-ev|later-hand-ev|spots> [--spot <id> | --all] [--samples N] [--model M] [--effort E] [--profile P --role villain|exploit] [--opponent-seat ip|oop] [--force]";
 const [command, ...rest] = process.argv.slice(2);
 if (!COMMANDS.includes(command)) throw new Error(USAGE);
 
 const options = { all: false };
-const allowed = { generate: ["spot", "all", "model", "effort"], "generate-later": ["spot", "all", "model", "effort"], simulate: ["spot", "all", "samples"], audit: ["spot", "all"],
+const allowed = { generate: ["spot", "all", "model", "effort", "profile", "role", "force", "opponent-seat"], "generate-later": ["spot", "all", "model", "effort", "profile", "role", "force", "opponent-seat"], simulate: ["spot", "all", "samples"], audit: ["spot", "all"],
   "hand-ev": ["spot", "all"], "later-hand-ev": ["spot", "all"], spots: [] }[command];
 for (let i = 0; i < rest.length; i++) {
   const flag = rest[i].replace(/^--/, "");
   if (!rest[i].startsWith("--") || !allowed.includes(flag)) throw new Error(USAGE);
-  if (flag === "all") { options.all = true; continue; }
-  if (rest[i + 1] === undefined) throw new Error(USAGE);
+  if (flag === "all" || flag === "force") { options[flag] = true; continue; }
+  if (rest[i + 1] === undefined || rest[i + 1].startsWith("--")) throw new Error(USAGE);
   options[flag] = rest[++i];
 }
+const generationOptions = ["generate", "generate-later"].includes(command) ? normalizeGenerationOptions({ ...options, opponentSeat: options["opponent-seat"] }) : {};
 if (options.all && options.spot) throw new Error("Use either --spot or --all");
 const samplesOption = fallback => {
   const samples = options.samples === undefined ? fallback : Number(options.samples);
@@ -34,17 +36,17 @@ const samplesOption = fallback => {
 };
 
 async function runSpot(spotId) {
-  const inputs = loadInputs(spotId);
-  const paths = artifactPaths(inputs.spot);
+  const inputs = loadInputs(spotId, generationInputOptions(spotId, generationOptions.profile, generationOptions.opponentSeat));
+  const paths = artifactPaths(inputs.spot, generationOptions);
   if (command === "generate") {
     const model = resolveModel(options.model), effort = resolveEffort(options.effort);
-    const { candidate, reused } = await generate(inputs, { model, effort });
+    const { candidate, reused } = await generate(inputs, { model, effort, ...generationOptions });
     const meta = candidate.metadata;
     return `${reused ? "Reused" : "Saved"} local AI candidate (${inputs.spot.tree}) ${meta.source_hash.slice(0, 12)} (${meta.model}${meta.reasoning_effort ? `, effort ${meta.reasoning_effort}` : ""}; not GTO; not published)`;
   }
   if (command === "generate-later") {
     const model = resolveModel(options.model), effort = resolveEffort(options.effort);
-    const { candidate, reused } = await generateLater(inputs, loadCandidate(inputs), { model, effort });
+    const { candidate, reused } = await generateLater(inputs, loadCandidate(inputs, generationOptions.role), { model, effort, ...generationOptions });
     return `${reused ? "Reused" : "Saved"} local AI turn/river candidate ${candidate.metadata.policy_hash.slice(0, 12)} (${candidate.metadata.model}; not GTO; not published)`;
   }
   if (command === "simulate") {
@@ -91,12 +93,22 @@ if (command === "spots") {
   spotById(spotId);
   console.log(`[${spotId}] ${await runSpot(spotId)}`);
 } else {
-  const failures = [], skipped = POSTFLOP_SPOTS.filter(spot => !spot.reachable).map(spot => spot.id);
-  for (const spot of POSTFLOP_SPOTS.filter(item => item.reachable)) {
+  const profileMode = generationOptions.profile && generationOptions.profile !== "standard";
+  const attempted = profileMode ? POSTFLOP_SPOTS : POSTFLOP_SPOTS.filter(item => item.reachable);
+  const failures = [], skipped = profileMode ? [] : POSTFLOP_SPOTS.filter(spot => !spot.reachable).map(spot => spot.id);
+  for (const spot of attempted) {
     const started = Date.now();
     try {
       console.log(`[${spot.id}] ${await runSpot(spot.id)} (${Math.round((Date.now() - started) / 1000)}s)`);
     } catch (error) {
+      // Standard registry reachability must not pre-skip profile-only callers.
+      // Only explicit zero adjusted reach is skippable; missing sources/policies
+      // and malformed/stale artifacts remain failures, never fallback strategy.
+      if (profileMode && /saved history is unreachable after range adjustment/.test(error.message)) {
+        skipped.push(spot.id);
+        console.log(`[${spot.id}] SKIPPED: ${error.message}`);
+        continue;
+      }
       failures.push(`${spot.id}: ${error.message}`);
       console.error(`[${spot.id}] FAILED: ${error.message}`);
     }
