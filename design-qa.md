@@ -523,3 +523,9 @@ Verification:
 - At 650×360, tabs remain hidden and actions stay visible/full-width near the bottom; Back to Trainer restores the tab bar and its normal clearance after gameplay ends.
 - Scope is gameplay routes with `.game-details`; library and break views retain normal navigation. This preview is not live or production evidence.
 - Focused table UI tests, frontend typecheck, and direct Vite production bundling passed; no commit or push by implementer.
+
+## 2026-10-07 — Service-site audience scroll gap
+- Reproduced on `https://reysonai.com` and local baseline at 1280×720, continuous scrollY=720: the 300vh audience section inherited desktop flex centering, placing its sticky wrapper at y=872 while the section began at y=152.
+- Scoped `.site-audience.is-scrolly` to block layout, preserving the existing sticky scenes and mobile/reduced-motion flow.
+- Local browser after fix, same continuous scroll position: wrapper y=153, heading y=282, audience grid opacity=1. Forward/backward scrolling also kept the sticky content visible. Screenshots captured internally only.
+- Targeted `tests/site-surface.test.mjs`: 22 passed. Production build and Sites worker test results recorded in the PR.
