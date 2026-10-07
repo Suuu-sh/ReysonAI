@@ -599,3 +599,7 @@ Verification:
 ## 2026-10-07 — Hide only the phone hero description
 - At ≤560px hide `.site-hero-lead` in every locale. Keep headline, CTAs and preview note; desktop description and all translated source copy remain unchanged. Preserve square/fullbleed hero, compact rail and PR107 integration.
 - Parent computed-style QA: 390px description display:none; 1280px display:block. Targeted hide-scope/all-four-locale DOM test and diff check passed. CSS-only change: production build not repeated. No merge/deploy.
+
+## 2026-10-07 — Remove phone hero detail and playback
+- Remove the entire phone Selected hand/cards/frequencies/Why/explore/playback footer, matching desktop. Preserve decorative background tour behavior and square hero; saved/not-GTO caveat now uses the existing hero note like desktop. Drop unused rail explanation values/icon imports; other site sections unaffected.
+- Parent 390px visual: rail removed, square hero/caveat and following Audience retained. Existing Audience sticky-centering space is not a removed-rail leftover. Focused phone hero tests passed after scoping the no-desktop-legend assertion to the hero (other sections retain their legends). Production build/diff check passed. No merge/deploy.

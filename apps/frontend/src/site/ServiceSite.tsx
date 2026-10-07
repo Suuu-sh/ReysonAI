@@ -1,7 +1,7 @@
 import { PlayingCard, type CardSuit as Suit } from "../components/PlayingCard.tsx";
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { BrandIcon } from "../components/BrandIcon.tsx";
-import { ArrowRight, ArrowUpRight, Check, List, Pause, Play, X } from "@phosphor-icons/react";
+import { ArrowRight, Check, List, X } from "@phosphor-icons/react";
 import { TierEmblem, tierColor } from "../trainer/RankEmblem.tsx";
 import agentTableImage from "./assets/agent-table.webp";
 import previewRanges from "./range-preview.json";
@@ -215,16 +215,13 @@ const tourHands: Record<RangeMode, string[]> = {
 };
 
 function MobileExplorer() {
-  const { copy: c, motion, appHref } = useSite();
+  const { copy: c, motion } = useSite();
   const decorative = true;
   const [mode, setMode] = useState<RangeMode>("opening");
   const [selected, setSelected] = useState("A5o");
   const [touring, setTouring] = useState(true);
   const tourStep = useRef(0);
   const [ref, visible] = useInView<HTMLDivElement>("0px", false);
-  const values = frequencies(mode, selected);
-  const action = dominantAction(values);
-  const spot = mode === "opening" ? c.preview.spotOpening : c.preview.spotResponse;
   const isTouring = touring && motion;
 
   useEffect(() => {
@@ -252,43 +249,16 @@ function MobileExplorer() {
     return () => window.clearInterval(timer);
   }, [isTouring, visible]);
 
-  const explanation = mode === "opening" && selected === "K7s"
-    ? c.preview.k7s
-    : c.preview.other(spot, selected, action === "raise" && mode === "response" ? c.preview.actionPast.threeBet : c.preview.actionPast[action], values[action]);
-
   const selectedRow = Math.floor(cells.findIndex(cell => cell.hand === selected) / ranks.length);
 
   return <div className={`site-explorer is-${mode}`} ref={ref} data-tour-running={isTouring && visible}>
     <div className="site-wrap site-hero-main">
-      <HeroCopy showEstimate={false} />
+      <HeroCopy />
       <div className="site-hero-range" inert={decorative} aria-hidden={decorative || undefined}>
         <div className="site-hero-chart-frame" style={{ "--selected-row": selectedRow } as CSSProperties}>
           <RangeMatrix range={heroRanges.find(range => range.id === (mode === "opening" ? "BTN_open" : "BB_vs_BTN"))!} selected={selected} onSelect={hand => { setTouring(false); setSelected(hand); }} />
         </div>
         <div className="site-legend">{actions.filter(option => mode === "response" || option !== "call").map(option => <span key={option}><i className={`is-${option}`} />{actionLabel(c, mode, option)}</span>)}</div>
-      </div>
-    </div>
-    <div className="site-hero-detail">
-      <div className="site-wrap">
-        <div className="site-hand" aria-live={isTouring ? "off" : "polite"} aria-atomic="true">
-          <div className="site-hero-deal"><HandCards key={`${mode}-${selected}`} hand={selected} className="is-dealing" /></div>
-          <div className="site-hero-summary">
-            <span className="site-hand-label">{c.preview.selectedHand}</span>
-            <div className="site-hand-title"><strong>{selected}</strong><span>{selected.length === 2 ? c.preview.pair : selected.endsWith("s") ? c.preview.suited : c.preview.offsuit}</span></div>
-            <ActionRows mode={mode} values={values} />
-          </div>
-          <div className="site-hero-reason">
-            <p className="site-hand-why"><span>{c.preview.why}</span>{explanation}</p>
-            <a className="site-hand-link" href={appHref}>{c.preview.explore}<ArrowUpRight size={15} weight="bold" aria-hidden="true" /></a>
-          </div>
-        </div>
-        <div className="site-hero-playback">
-          {motion && <button type="button" className="site-tour-toggle" data-tour-toggle aria-label={isTouring ? c.preview.pauseTour : c.preview.resumeTour} onClick={() => setTouring(current => !current)}>{isTouring ? <Pause size={18} weight="fill" aria-hidden="true" /> : <Play size={18} weight="fill" aria-hidden="true" />}</button>}
-          <div className="site-tour" title={isTouring ? c.preview.touring : c.preview.manual}>
-            <span className="site-tour-caption">{isTouring ? c.preview.touring : c.preview.manual}</span>
-          </div>
-          <p className="site-hero-disclaimer">{c.preview.saved} · <b>{c.preview.notGto}</b></p>
-        </div>
       </div>
     </div>
   </div>;

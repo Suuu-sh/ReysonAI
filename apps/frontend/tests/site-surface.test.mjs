@@ -151,15 +151,15 @@ function renderWithMotionPreference(locale, reducedMotion) {
   }
 }
 
-test("responsive hero mounts one matrix and keeps phone controls outside its inert backdrop", () => {
+test("responsive hero mounts one matrix without the removed phone detail or playback", () => {
   const previousWindow = globalThis.window;
   try {
     globalThis.window = { matchMedia: query => ({ matches: query === "(max-width: 560px)" }), localStorage: { getItem: () => null } };
     const mobile = render("ja");
     assert.equal((mobile.match(/class="site-matrix"/g) ?? []).length, 1);
     assert.match(mobile, /class="site-hero-range" inert="" aria-hidden="true"/);
-    assert.match(mobile, /class="site-hero-detail"/);
-    assert.doesNotMatch(mobile.split('class="site-hero-detail"')[0], /class="site-mini-legend"/);
+    assert.doesNotMatch(mobile, /class="site-hero-detail"|class="site-hero-playback"/);
+    assert.doesNotMatch(mobile.split("</section>")[0], /class="site-mini-legend"/);
     delete globalThis.window;
     const desktop = render("en");
     assert.equal((desktop.match(/class="site-matrix"/g) ?? []).length, 1);
