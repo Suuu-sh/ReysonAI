@@ -84,7 +84,7 @@
 .site-header { position: sticky; top: 0; z-index: 50; height: var(--header-height); border-bottom: 1px solid var(--line); background: var(--bg); transition: transform .45s var(--ease), background .3s ease, border-color .3s ease; }
 .site-header.is-scrolled, .site-header.is-open { border-bottom-color: var(--line); background: var(--bg); }
 .site-header-inner { display: flex; align-items: center; gap: 40px; width: min(100% - var(--page-gutter) * 2, var(--content-width)); height: 100%; margin-inline: auto; }
-.site-brand { display: inline-flex; align-items: center; gap: 4px; flex: 0 0 auto; font-family: "Space Grotesk", Inter, sans-serif; font-size: 19px; font-weight: 700; letter-spacing: -.035em; }
+.site-brand { display: inline-flex; align-items: center; gap: 2px; flex: 0 0 auto; font-family: "Space Grotesk", Inter, sans-serif; font-size: 19px; font-weight: 700; letter-spacing: -.035em; }
 .site-brand svg, .site-brand b { color: var(--pink); }
 .site-nav { display: flex; gap: 28px; margin-right: auto; }
 .site-nav a { position: relative; color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s ease; }

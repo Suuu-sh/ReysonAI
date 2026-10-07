@@ -774,3 +774,6 @@ Verification:
 ## 2026-10-07 — Tighten header brand spacing
 - Service header brand gap7→4px at all widths. Comparison/footer/product headers unchanged.
 - Exact scoped CSS check/diffcheck passed; no repeated build for one CSS value.5218 updated; no merge/deploy.
+
+## 2026-10-07 — Further tighten header brand
+- Header-only logo/name gap4→2px per user. Diffcheck passed;5218 updated, no merge/deploy.
