@@ -131,6 +131,14 @@ const tourHands: Record<RangeMode, string[]> = {
 
 function Explorer() {
   const { copy: c, motion, appHref } = useSite();
+  const [decorative, setDecorative] = useState(() => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(max-width: 560px)").matches);
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 560px)");
+    const sync = () => setDecorative(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
   const [mode, setMode] = useState<RangeMode>("opening");
   const [selected, setSelected] = useState("A5o");
   const [touring, setTouring] = useState(true);
@@ -175,7 +183,7 @@ function Explorer() {
   return <div className={`site-explorer is-${mode}`} ref={ref} data-tour-running={isTouring && visible}>
     <div className="site-wrap site-hero-main">
       <HeroCopy />
-      <div className="site-hero-range">
+      <div className="site-hero-range" inert={decorative} aria-hidden={decorative || undefined}>
         <div className="site-hero-chart-frame" style={{ "--selected-row": selectedRow } as CSSProperties}>
           <RangeMatrix mode={mode} selected={selected} onSelect={hand => { setTouring(false); setSelected(hand); }} />
         </div>
@@ -319,7 +327,7 @@ function WhyScene() {
 }
 
 function HowItWorks() {
-  const { copy: c } = useSite();
+  const { copy: c, motion, locale } = useSite();
   const [active, setActive] = useState(0);
   const steps = useRef<(HTMLElement | null)[]>([]);
   useEffect(() => {
@@ -330,6 +338,18 @@ function HowItWorks() {
     for (const node of steps.current) if (node) observer.observe(node);
     return () => observer.disconnect();
   }, []);
+  useEffect(() => {
+    const cards = steps.current.filter((node): node is HTMLElement => !!node);
+    if (!motion || typeof ResizeObserver === "undefined") return;
+    const update = () => {
+      for (const card of cards) card.dataset.oversized = String(card.offsetHeight > window.innerHeight - 80);
+    };
+    const observer = new ResizeObserver(update);
+    for (const card of cards) observer.observe(card);
+    window.addEventListener("resize", update);
+    update();
+    return () => { observer.disconnect(); window.removeEventListener("resize", update); };
+  }, [motion, locale]);
   const scenes = [<TableScene key="table" />, <ReadScene key="read" />, <WhyScene key="why" />];
   const sceneNames = ["table", "read", "why"];
   return <section className="site-section site-how" id="how" aria-labelledby="site-how-title">

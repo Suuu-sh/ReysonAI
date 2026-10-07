@@ -25,6 +25,54 @@ test("phone storytelling uses native sticky flow with short-screen and reduced-m
   assert.doesNotMatch(audience, /addEventListener\("(?:wheel|touchmove)"/);
 });
 
+test("oversized translated phone How cards fall back to ordinary scrolling", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const how = source.slice(source.indexOf("function HowItWorks()"), source.indexOf("const drillPool"));
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(how, /if \(!motion \|\| typeof ResizeObserver === "undefined"\) return/);
+  assert.match(how, /card\.offsetHeight > window\.innerHeight - 80/);
+  assert.match(how, /new ResizeObserver\(update\)/);
+  assert.match(how, /observer\.disconnect\(\)/);
+  assert.match(css, /\.has-motion \.site-how-steps li\[data-oversized="true"\] \{ position: static; \}/);
+});
+
+test("phone hero uses an inert decorative chart behind centered copy and CTAs", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 560px)"));
+  assert.match(source, /className="site-hero-range" inert=\{decorative\} aria-hidden=\{decorative \|\| undefined\}/);
+  assert.match(source, /matchMedia\("\(max-width: 560px\)"\)/);
+  assert.match(source, /query\.removeEventListener\("change", sync\)/);
+  assert.match(mobile, /\.site-hero-copy \{[^}]*text-align: center;/);
+  assert.match(mobile, /\.site-hero-range \{ position: absolute;[^}]*pointer-events: none;/);
+  assert.match(mobile, /\.site-hero h1 \.site-hero-mark \{ color: #a8a8b3;/);
+  assert.match(mobile, /\.site-hero-opening \{ color: var\(--ink\);/);
+  assert.match(mobile, /\.site-hero-range \.site-matrix-scroll \{[^}]*margin: 0; padding: 0;/);
+  assert.match(mobile, /\.site-hero-actions \{ justify-content: center;/);
+  assert.match(mobile, /\.site-hero-range \.site-matrix \{ height: auto; aspect-ratio: 1;/);
+  assert.match(mobile, /\.has-motion \.site-hero-range \{ animation: none; \}/);
+  assert.match(mobile, /\.site-wrap\.site-hero-main \{[^}]*width: 100%; margin: 0; min-height: 0; aspect-ratio: 1; padding: 0;/);
+  assert.doesNotMatch(mobile.split("/* Compare")[0], /min-height: calc\(100svh - 64px\)/);
+});
+
+test("hero and shared English taglines use Understand the reason", () => {
+  for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
+    const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");
+    assert.match(content, /title2: "Understand the reason\."/);
+    assert.match(content, /tagline: "Don't just play\. Understand the reason\."/);
+    assert.doesNotMatch(content, /Understand why\./);
+  }
+});
+
+test("phone selected-hand panel stays compact without shrinking its action target", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 560px)"));
+  assert.match(mobile, /\.site-hero-detail \.site-hand \{ gap: 12px 16px; padding-block: 14px; \}/);
+  assert.match(mobile, /\.site-hero-deal \.site-card \{ --card-w: clamp\(36px, 10vw, 48px\); \}/);
+  assert.match(mobile, /\.site-hero-reason \.site-hand-link \{ min-height: 44px;/);
+  assert.match(mobile, /\.site-hero-summary \.site-hand-action\.is-spacer \{ display: none; \}/);
+});
+
 let server, ServiceSite, copies;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
