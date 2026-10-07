@@ -123,12 +123,13 @@ test("intermediate two-column hero removes only its viewport spacer and never cl
   assert.doesNotMatch(intermediate, /overflow:|max-height:|aspect-ratio:|hero-range-size/);
 });
 
-test("comparison uses dark backgrounds and readable text at all sizes", () => {
+test("only ReysonAI comparison cells stay continuously black while the section stays light", () => {
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  assert.match(css, /\.site-compare \{ background: var\(--bg\); color: var\(--ink\); \}/);
-  assert.match(css, /\.site-compare tbody td[^}]*color: var\(--ink\)/);
-  assert.match(css, /\.site-compare thead[^}]*background: var\(--bg\)/);
-  assert.doesNotMatch(css, /\.site-compare[^}]*var\(--paper(?:-ink)?\)/);
+  assert.match(css, /\.site-compare \{ background: var\(--paper\); color: var\(--paper-ink\); \}/);
+  const continuity = css.slice(css.indexOf("/* Keep only ReysonAI"));
+  assert.match(continuity, /thead th.is-us, \.site-compare tbody td.is-us \{ background: var\(--paper-ink\); border-top-color: var\(--paper-ink\); border-radius: 0;/);
+  assert.match(continuity, /inset: -12px 0; z-index: -1; background: var\(--paper-ink\)/);
+  assert.doesNotMatch(continuity, /grid-template|font-size|site-hero/);
 });
 
 test("hero and shared English taglines use Understand the reason", () => {
