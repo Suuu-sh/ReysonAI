@@ -948,7 +948,16 @@
   .site-how-steps { gap: 48px; }
   .site-how-steps li, .site-how-steps li:first-child { position: static; min-height: 0; padding-block: 20px; opacity: 1; }
   .site-how-inline { min-height: 0; margin-top: 20px; }
-  .site-persona-list { gap: 8px; }
+  .site-persona-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .site-persona-list .site-persona { min-width: 0; padding: 8px 6px; gap: 0; }
+  .site-persona-level { justify-content: center; gap: 5px; font-size: 12px; line-height: 1.4; }
+  .site .site-persona-level i { display: none; }
+  .site-persona-selected-copy { display: grid; gap: 10px; padding: 16px 16px 10px; }
+  .site-persona-stage > .site-sample { position: static; display: inline-block; margin: 0 16px 6px; }
+  .site-persona-view.is-simple { grid-template-columns: minmax(0, 1fr) minmax(0, .8fr); gap: 14px; }
+  .site-persona-view .site-card { --card-w: 36px; }
+  .site-persona-callout strong { font-size: 28px; }
+  .site-persona-view .site-mini-matrix { width: 100%; }
   .site-persona { min-height: 44px; padding: 12px; }
   .site-persona:not(.is-active) .site-persona-quote, .site-persona:not(.is-active) .site-persona-more { display: none; }
   .site-persona-quote { font-size: 20px; }

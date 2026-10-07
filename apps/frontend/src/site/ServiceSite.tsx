@@ -596,9 +596,9 @@ function Audience() {
   }
 
   function onListKey(event: ReactKeyboardEvent<HTMLDivElement>) {
-    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+    if (!["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)) return;
     event.preventDefault();
-    const next = (active + (event.key === "ArrowDown" ? 1 : -1) + personaIds.length) % personaIds.length;
+    const next = (active + (["ArrowDown", "ArrowRight"].includes(event.key) ? 1 : -1) + personaIds.length) % personaIds.length;
     choose(next);
     document.getElementById(`site-persona-${personaIds[next]}`)?.focus();
   }
@@ -608,15 +608,16 @@ function Audience() {
     <div className="site-wrap">
       <SectionHead id="site-audience-title" title1={c.audience.title1} title2={c.audience.title2} />
       <div className="site-audience-grid" data-reveal>
-        <div className="site-persona-list" role="tablist" aria-orientation="vertical" aria-labelledby="site-audience-title" onKeyDown={onListKey}>
+        <div className="site-persona-list" role="tablist" aria-orientation={phone ? "horizontal" : "vertical"} aria-labelledby="site-audience-title" onKeyDown={onListKey}>
           {c.audience.items.map((item, index) => <button type="button" role="tab" key={personaIds[index]} id={`site-persona-${personaIds[index]}`} aria-selected={active === index} aria-controls="site-persona-panel" tabIndex={active === index ? 0 : -1} className={`site-persona${active === index ? " is-active" : ""}`} onClick={() => choose(index)}>
             <span className="site-persona-level"><i>{index + 1}</i>{item.level}</span>
-            <span className="site-persona-quote">{item.quote}</span>
+            {!phone && <><span className="site-persona-quote">{item.quote}</span>
             <span className="site-persona-more"><span><span className="site-persona-body">{item.body}</span><span className="site-persona-gets">{item.gets}</span></span></span>
-            {running && active === index && <span className="site-persona-timer" aria-hidden="true" />}
+            {running && active === index && <span className="site-persona-timer" aria-hidden="true" />}</>}
           </button>)}
         </div>
         <div className="site-mock site-persona-stage" role="tabpanel" id="site-persona-panel" aria-labelledby={`site-persona-${personaIds[active]}`}>
+          {phone && <div className="site-persona-selected-copy"><p className="site-persona-quote">{c.audience.items[active].quote}</p><p className="site-persona-body">{c.audience.items[active].body}</p><span className="site-persona-gets">{c.audience.items[active].gets}</span></div>}
           <span className="site-sample">{c.audience.views[active]}</span>
           <div className="site-persona-views">
             <div className={`${view(0)} is-simple`} aria-hidden={active !== 0}>

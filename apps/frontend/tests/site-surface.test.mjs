@@ -67,6 +67,21 @@ test("phones use natural focused chapters with no pin or artificial hold", () =>
   assert.doesNotMatch(css, /data-cover-pinned|site-mobile-hold|--audience-track-height|--step-top/);
 });
 
+test("phone persona selectors precede one adjacent description and matching preview", () => {
+  const previousWindow = globalThis.window;
+  try {
+    globalThis.window = { matchMedia: () => ({ matches: true }), localStorage: { getItem: () => null } };
+    const html = render("ja");
+    const tabs = html.split('role="tablist"')[1].split('role="tabpanel"')[0];
+    assert.match(tabs, /aria-orientation="horizontal"/);
+    assert.equal((tabs.match(/role="tab"/g) ?? []).length, 3);
+    assert.doesNotMatch(tabs, /site-persona-body|site-persona-quote/);
+    const panel = html.split('role="tabpanel"')[1];
+    assert.ok(panel.indexOf('class="site-persona-selected-copy"') < panel.indexOf('class="site-persona-views"'));
+    assert.ok(panel.includes(escapeText(copies.ja.audience.items[0].body)));
+  } finally { globalThis.window = previousWindow; }
+});
+
 test("hero and shared English taglines use Understand the reason", () => {
   for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
     const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");
