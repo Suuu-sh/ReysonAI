@@ -749,3 +749,8 @@ Verification:
 ## 2026-10-07 — Keep all responsive persona choices visible
 - New service_site_next branch/worktree from origin/development724411f7. Fix only≤960px persona selectors: three equal minmax(0,1fr) tracks, shrinkable grid children/buttons/labels, block label wrapping including long unbreakable labels, and no button overflow clipping. Preserve≥44px targets/manual selection, all existing panel copy and full learner reason. No sideways selector scroll.
 - Targeted selector sizing/wrapping guard1/build/diffcheck passed. New previewhttp://127.0.0.1:5218 returns200; old5187 worktree/server untouched.5197 was occupied and was not modified. No new rendered label-bound measurements at commit time; no merge/deploy.
+
+## 2026-10-07 — Shrink responsive previews and use real hero-mask geometry
+- Service-only shrinkable text/grid children, wrapping CTA/footer/plan content, and all Audience previews constrained to their panels through960px. At<360px beginner matrix/cards use natural stacked flow and learner frequencies stack; full learner reason/copy remain untouched. No overflow hiding, fixed-height clipping or new scroll hold.
+- Hero mask≤720px now reads actual matrix.bottom against question.top instead of assuming header+placeholder height. Recompute after fixed-position state transition, ResizeObserver, resize, scroll and hash navigation; existing28px gradient, reduced-motion reset, opaque later content and62ranges/1000ms/50:50 retained.
+- Targeted persona/responsive/mask guards3/build/diffcheck passed. Preview5218 current; old5187 untouched. Browser representative-width/scroll checks pending, so no universal width or real-Safari claim. No merge/deploy.
