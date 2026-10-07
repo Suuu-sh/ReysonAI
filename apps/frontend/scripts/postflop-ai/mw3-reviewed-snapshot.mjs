@@ -3,6 +3,7 @@ import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadMw3Inputs, mw3Sha } from './mw3-inputs.mjs';
+import { mw3SourceDependencies, MW3_IMPORT_PARSER_RECORDS } from './mw3-source-dependencies.mjs';
 import { mw3Contract, mw3ImplementationHash, verifyMw3Artifact } from './mw3-artifacts.mjs';
 import { MW3_PILOT_AUTHORSHIP } from '../data/mw3-co-btn-bb-authored.mjs';
 import { resolveMw3AuthorIdentity } from './mw3-authored-source.mjs';
@@ -53,13 +54,13 @@ export function sourcePathsFor(identity) {
     }
     if (!/\.(?:mjs|ts|tsx|js|d\.mts)$/.test(path)) return;
     const text = readSafeFile(MW3_REPOSITORY, path).toString('utf8');
-    const imports = /(?:\bimport\s+(?:[^;]*?\s+from\s+)?|\bexport\s+[^;]*?\s+from\s+)["']([^"']+)["']|\bimport\s*\(\s*["']([^"']+)["']\s*\)/g;
-    for (const match of text.matchAll(imports)) {
-      const name = match[1] ?? match[2];
-      if (name.startsWith('.')) visit(relative(MW3_REPOSITORY, resolve(MW3_REPOSITORY, dirname(path), name)), path);
+    for (const dependency of mw3SourceDependencies(path, text)) {
+      if (dependency.path) visit(dependency.path, path);
+      else if (dependency.specifier.startsWith('.')) visit(relative(MW3_REPOSITORY,
+        resolve(MW3_REPOSITORY, dirname(path), dependency.specifier)), path);
     }
   };
-  [...MW3_CURRENT_IDENTITY_PATHS, ...MW3_COMPATIBILITY_SOURCE_PATHS].forEach(path => visit(path));
+  [...MW3_CURRENT_IDENTITY_PATHS, ...MW3_COMPATIBILITY_SOURCE_PATHS, ...MW3_IMPORT_PARSER_RECORDS].forEach(path => visit(path));
   const roots = [
     'mw3-reviewed-archive.mjs', 'mw3-reviewed-snapshot.mjs', 'mw3-reviewed-delivery.mjs', 'mw3-reviewed-restore.mjs', 'mw3-snapshot-cli.mjs', 'mw3-draft-pins.mjs', 'mw3-acceptance-evidence.mjs', 'mw3-browser-inputs.mjs', 'mw3-transport.mjs', 'mw3-delivery.mjs'];
   roots.forEach(name => visit(relative(MW3_REPOSITORY, resolve(MW3_REPOSITORY, FRONTEND, 'scripts/postflop-ai', name))));

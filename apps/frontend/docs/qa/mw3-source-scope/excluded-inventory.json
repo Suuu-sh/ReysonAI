@@ -1,102 +1,118 @@
 {
   "base_commit": "0838518ed50fae99b27584f30ee6ed6f6196acc0",
-  "method": "Compare prior manifest source inventories against sourcePathsFor on all 16 current identities; identical removed paths, no added paths, and no retained-to-excluded UI edge in every current closure.",
+  "method": "Compare prior manifest source inventories against sourcePathsFor on all 16 current identities; identical 96 removed paths, exactly four added parser verification dependencies, and no retained-to-excluded UI edge in every current closure.",
   "subjects": [
     {
       "spot": "CO_open_BTN_call_BB_call",
       "before": 228,
-      "retained": 132,
-      "removed": 96
+      "retained": 136,
+      "removed": 96,
+      "verification_added": 4
     },
     {
       "spot": "CO_open_BTN_call_SB_call",
       "before": 229,
-      "retained": 133,
-      "removed": 96
+      "retained": 137,
+      "removed": 96,
+      "verification_added": 4
     },
     {
       "spot": "HJ_open_BTN_call_BB_call",
       "before": 229,
-      "retained": 133,
-      "removed": 96
+      "retained": 137,
+      "removed": 96,
+      "verification_added": 4
     },
     {
       "spot": "HJ_open_BTN_call_SB_call",
       "before": 229,
-      "retained": 133,
-      "removed": 96
+      "retained": 137,
+      "removed": 96,
+      "verification_added": 4
     },
     {
       "spot": "HJ_open_CO_call_BB_call",
       "before": 229,
-      "retained": 133,
-      "removed": 96
+      "retained": 137,
+      "removed": 96,
+      "verification_added": 4
     },
     {
       "spot": "HJ_open_CO_call_BTN_call",
       "before": 229,
-      "retained": 133,
-      "removed": 96
+      "retained": 137,
+      "removed": 96,
+      "verification_added": 4
     },
     {
       "spot": "HJ_open_CO_call_SB_call",
       "before": 229,
-      "retained": 133,
-      "removed": 96
+      "retained": 137,
+      "removed": 96,
+      "verification_added": 4
     },
     {
       "spot": "UTG_open_BTN_call_BB_call",
       "before": 229,
-      "retained": 133,
-      "removed": 96
+      "retained": 137,
+      "removed": 96,
+      "verification_added": 4
     },
     {
       "spot": "UTG_open_BTN_call_SB_call",
       "before": 229,
-      "retained": 133,
-      "removed": 96
+      "retained": 137,
+      "removed": 96,
+      "verification_added": 4
     },
     {
       "spot": "UTG_open_CO_call_BB_call",
       "before": 229,
-      "retained": 133,
-      "removed": 96
+      "retained": 137,
+      "removed": 96,
+      "verification_added": 4
     },
     {
       "spot": "UTG_open_CO_call_BTN_call",
       "before": 229,
-      "retained": 133,
-      "removed": 96
+      "retained": 137,
+      "removed": 96,
+      "verification_added": 4
     },
     {
       "spot": "UTG_open_CO_call_SB_call",
       "before": 229,
-      "retained": 133,
-      "removed": 96
+      "retained": 137,
+      "removed": 96,
+      "verification_added": 4
     },
     {
       "spot": "UTG_open_HJ_call_BB_call",
       "before": 229,
-      "retained": 133,
-      "removed": 96
+      "retained": 137,
+      "removed": 96,
+      "verification_added": 4
     },
     {
       "spot": "UTG_open_HJ_call_BTN_call",
       "before": 229,
-      "retained": 133,
-      "removed": 96
+      "retained": 137,
+      "removed": 96,
+      "verification_added": 4
     },
     {
       "spot": "UTG_open_HJ_call_CO_call",
       "before": 229,
-      "retained": 133,
-      "removed": 96
+      "retained": 137,
+      "removed": 96,
+      "verification_added": 4
     },
     {
       "spot": "UTG_open_HJ_call_SB_call",
       "before": 229,
-      "retained": 133,
-      "removed": 96
+      "retained": 137,
+      "removed": 96,
+      "verification_added": 4
     }
   ],
   "counts": {
@@ -108,6 +124,12 @@
     ".ts": 59,
     ".tsx": 23
   },
+  "added_verification_paths": [
+    "apps/frontend/scripts/postflop-ai/mw3-source-dependencies.mjs",
+    "apps/frontend/scripts/postflop-ai/vendor/babel-parser-7.29.7.license.json",
+    "apps/frontend/scripts/postflop-ai/vendor/babel-parser-7.29.7.mjs",
+    "apps/frontend/scripts/postflop-ai/vendor/babel-parser-7.29.7.provenance.json"
+  ],
   "removed_paths": [
     "apps/backend/src/account.ts",
     "apps/backend/src/fastfold-dispatch.ts",

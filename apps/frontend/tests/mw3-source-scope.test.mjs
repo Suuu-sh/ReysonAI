@@ -6,8 +6,9 @@ import { dirname, join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
-import { currentMw3ArchiveIdentity, sourcePathsFor } from '../scripts/postflop-ai/mw3-reviewed-snapshot.mjs';
+import { collectMw3Snapshot, currentMw3ArchiveIdentity, sourcePathsFor } from '../scripts/postflop-ai/mw3-reviewed-snapshot.mjs';
 import { loadMw3Catalog } from '../scripts/postflop-ai/mw3-inputs.mjs';
+import { mw3SourceDependencies, MW3_IMPORT_PARSER_RECORDS } from '../scripts/postflop-ai/mw3-source-dependencies.mjs';
 
 const frontend = 'apps/frontend/';
 const presentation = [
@@ -49,6 +50,10 @@ test('protected imports into excluded UI fail at the dependency edge, before fil
       mkdirSync(dirname(join(directory, path)), { recursive: true });
       copyFileSync(join(root, path), join(directory, path));
     }
+    // This helper really existed in the removed UI-only closure. A direct
+    // protected import must restore its binding instead of treating all TS as UI.
+    copyFileSync(join(root, frontend, 'src/agent/mw3-kit-cache.ts'), join(directory, frontend, 'src/agent/mw3-kit-cache.ts'));
+    writeFileSync(join(directory, frontend, 'src/agent/ScopeBridge.tsx'), "export { rememberMw3AgentKit } from './mw3-kit-cache.ts';\n");
     const sourceFiles = identities.map(({ sourceFiles }) => ({ sourceFiles }));
     const cases = [
       ['src/estimated/mw3-browser.ts', "import { Ui } from './Mw3RangeView.tsx';", 'src/estimated/Mw3RangeView.tsx'],
@@ -58,6 +63,13 @@ test('protected imports into excluded UI fail at the dependency edge, before fil
       // hand.ts is retained transitively via a type import, not an explicit root.
       ['src/agent/hand.ts', "import type { Ui } from './AgentTable.tsx';", 'src/agent/AgentTable.tsx'],
       ['src/agent/hand.ts', "export type { Ui } from './AgentTable.tsx';", 'src/agent/AgentTable.tsx'],
+      ['src/agent/hand.ts', "type Ui = import('./AgentTable.tsx').Ui;", 'src/agent/AgentTable.tsx'],
+      ['src/estimated/mw3-browser.ts', "const probe = import(/* UI bridge */ './Mw3RangeView.tsx');", 'src/estimated/Mw3RangeView.tsx'],
+      ['src/estimated/mw3-browser.ts', "const probe = import(`./Mw3RangeView.tsx`);", 'src/estimated/Mw3RangeView.tsx'],
+      ['src/estimated/mw3-browser.ts', "import/* UI bridge */{ Ui }from'./Mw3RangeView.tsx';", 'src/estimated/Mw3RangeView.tsx'],
+      ['src/estimated/mw3-browser.ts', "export/* UI bridge */{ Ui }from'./Mw3RangeView.tsx';", 'src/estimated/Mw3RangeView.tsx'],
+      ['src/estimated/mw3-browser.ts', String.raw`import { Ui } from './Mw3RangeView.\x74sx';`, 'src/estimated/Mw3RangeView.tsx'],
+      ['src/agent/mw3-hand.ts', "import { rememberMw3AgentKit } from './ScopeBridge.tsx';", 'src/agent/ScopeBridge.tsx'],
     ];
     const script = String.raw`
       import assert from 'node:assert/strict';
@@ -78,9 +90,81 @@ test('protected imports into excluded UI fail at the dependency edge, before fil
         } finally { writeFileSync(path, before); }
         assert.deepEqual(identities.map(identity => sourcePathsFor(identity)), baseline);
       }
+      const helper = 'apps/frontend/src/agent/mw3-kit-cache.ts';
+      const source = join(root, 'apps/frontend/src/agent/mw3-hand.ts'), before = readFileSync(source);
+      try {
+        writeFileSync(source, Buffer.concat([before, Buffer.from("\nimport { rememberMw3AgentKit } from './mw3-kit-cache.ts';\n")]));
+        for (const [index, identity] of identities.entries()) {
+          assert.deepEqual(sourcePathsFor(identity), [...baseline[index], helper].sort());
+        }
+      } finally { writeFileSync(source, before); }
+      assert.deepEqual(identities.map(identity => sourcePathsFor(identity)), baseline);
     `;
     execFileSync(process.execPath, ['--input-type=module', '-e', script, directory, JSON.stringify(sourceFiles), JSON.stringify(cases)], { stdio: 'pipe' });
   } finally { rmSync(directory, { recursive: true, force: true }); }
+});
+
+test('AST dependency extraction ignores non-code and rejects unresolved or unsupported module targets', () => {
+  const path = `${frontend}src/agent/hand.ts`;
+  assert.deepEqual(mw3SourceDependencies(path, String.raw`
+    // import './AgentTable.tsx';
+    /* export { Ui } from './AgentTable.tsx'; */
+    const quote = "import './AgentTable.tsx';";
+    const template = ` + "`import './AgentTable.tsx';`" + String.raw`;
+    const regex = /import\(['"]ui/;
+  `), []);
+  for (const text of [
+    "const target = './AgentTable.tsx'; const ui = import(target);",
+    'const part = "AgentTable"; const ui = import(`./${part}.tsx`);',
+    "const ui = import('./Agent' + 'Table.tsx');",
+    "import './AgentTable.tsx?raw';", "export * from './AgentTable.tsx#fragment';",
+    "import './AgentTable';", "import '/src/agent/AgentTable.tsx';", "import 'file:///src/agent/AgentTable.tsx';",
+    String.raw`import 'C:\\src\\agent\\AgentTable.tsx';`, String.raw`import '.\\AgentTable.tsx';`,
+  ]) assert.throws(() => mw3SourceDependencies(path, text), /cannot be statically bound/);
+  assert.deepEqual(mw3SourceDependencies(path, String.raw`type Ui = import("./AgentTable.\u0074sx").Ui;`), [{ specifier: './AgentTable.tsx' }]);
+  assert.deepEqual(mw3SourceDependencies(path, "export/*comment*/type { Ui }from'./AgentTable.tsx';"), [{ specifier: './AgentTable.tsx' }]);
+  assert.deepEqual(mw3SourceDependencies(path.replace(/\.ts$/, '.d.mts'), "type Ui = import('./AgentTable.tsx').Ui;"), [{ specifier: './AgentTable.tsx' }]);
+});
+
+test('the vendored parser is the exact locked implementation with a byte-bound license and provenance', () => {
+  const vendor = new URL('../scripts/postflop-ai/vendor/', import.meta.url);
+  const provenance = JSON.parse(readFileSync(new URL('babel-parser-7.29.7.provenance.json', vendor)));
+  const bytes = readFileSync(new URL('babel-parser-7.29.7.mjs', vendor));
+  const prefix = '// Standalone pinned @babel/parser 7.29.7; see adjacent provenance and MIT license.\nconst exports = {};\n';
+  const suffix = '\nexport default exports;\n';
+  assert.ok(bytes.toString().startsWith(prefix)); assert.ok(bytes.toString().endsWith(suffix));
+  const upstream = bytes.subarray(Buffer.byteLength(prefix), bytes.length - Buffer.byteLength(suffix));
+  const digest = value => createHash('sha256').update(value).digest('hex');
+  assert.equal(upstream.length, provenance.upstream_bytes); assert.equal(digest(upstream), provenance.upstream_sha256);
+  assert.equal(bytes.length, provenance.vendored_bytes); assert.equal(digest(bytes), provenance.vendored_sha256);
+  const locked = JSON.parse(readFileSync(new URL('../package-lock.json', import.meta.url))).packages['node_modules/@babel/parser'];
+  for (const key of ['version', 'resolved', 'integrity', 'license']) assert.equal(provenance[key], locked[key]);
+  const license = JSON.parse(readFileSync(new URL('babel-parser-7.29.7.license.json', vendor)));
+  assert.equal(license.license, 'MIT'); assert.equal(Buffer.byteLength(license.text), 1086);
+  assert.equal(digest(license.text), '2e97627cb278aa7556fb9e8817368302301a595b6c7582512b8d74c57b773652');
+  assert.match(license.text, /Permission is hereby granted/);
+});
+
+test('official collection accepts the source inventory with all parser provenance and unchanged archive bytes', () => {
+  // Read/collect only: the reviewed saved fixtures are restored by MW3 CI before
+  // these tests. No recipe generation, receipt creation or output save occurs.
+  const snapshot = collectMw3Snapshot('CO_open_BTN_call_BB_call');
+  assert.deepEqual(snapshot.manifest.sources.map(row => row.path), sourcePathsFor(identities[0]));
+  const archive = readFileSync(new URL('../../../' + snapshot.manifest.archive.path, import.meta.url));
+  assert.deepEqual(snapshot.compressed, archive);
+  for (const path of MW3_IMPORT_PARSER_RECORDS) assert.ok(snapshot.manifest.sources.some(row => row.path === path));
+});
+
+test('the computed captured-parent import has one exact source, expression and target exception', () => {
+  const path = `${frontend}scripts/verify-mw3-local-d1.mjs`, target = `${frontend}scripts/ci/mw3-local-d1-oracle.mjs`;
+  const text = readFileSync(new URL('../scripts/verify-mw3-local-d1.mjs', import.meta.url), 'utf8');
+  assert.deepEqual(mw3SourceDependencies(path, text).filter(row => row.path), [{ path: target }]);
+  for (const [candidatePath, candidateText] of [
+    [path.replace('verify-mw3', 'other-mw3'), text],
+    [path, text + '\n// changed source bytes\n'],
+    [path, text.replace('pathToFileURL(join(captured.root, PARENT_ENTRY)).href', 'pathToFileURL(join(ORIGIN, PARENT_ENTRY)).href')],
+    [path, text.replace(target, `${frontend}src/agent/AgentTable.tsx`)],
+  ]) assert.throws(() => mw3SourceDependencies(candidatePath, candidateText), /computed import requires an explicit exact-source review/);
 });
 
 test('delivery, authority, shared executable dependencies and strict verification remain protected', () => {
@@ -90,6 +174,7 @@ test('delivery, authority, shared executable dependencies and strict verificatio
     // hand.ts is no longer an explicit root, but its type import remains bound.
     `${frontend}src/agent/hand.ts`, `${frontend}src/agent/preflop.ts`, `${frontend}src/estimated/datasets.ts`,
     `${frontend}scripts/postflop-ai/mw3-engine.mjs`, `${frontend}scripts/postflop-ai/mw3-runtime.mjs`,
+    `${frontend}scripts/postflop-ai/mw3-source-dependencies.mjs`, `${frontend}scripts/postflop-ai/vendor/babel-parser-7.29.7.mjs`, ...MW3_IMPORT_PARSER_RECORDS,
     `${frontend}scripts/postflop-ai/mw3-reviewed-snapshot.mjs`, `${frontend}scripts/postflop-ai/mw3-reviewed-restore.mjs`,
     `${frontend}scripts/postflop-ai/mw3-acceptance-evidence.mjs`, `${frontend}scripts/postflop-ai/mw3-source-identity.mjs`,
     `${frontend}scripts/ci/mw3-local-d1-oracle.mjs`, `${frontend}scripts/ci/mw3-local-command.mjs`,
@@ -153,6 +238,8 @@ test('the reduced ledger still executes the complete captured verification paren
         await import(pathToFileURL(join(root, 'apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs')));
         binding.assertLoaded('apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs');
         binding.assertLoaded('apps/frontend/scripts/postflop-ai/mw3-reviewed-snapshot.mjs');
+        binding.assertLoaded('apps/frontend/scripts/postflop-ai/mw3-source-dependencies.mjs');
+        binding.assertLoaded('apps/frontend/scripts/postflop-ai/vendor/babel-parser-7.29.7.mjs');
         binding.assertLoaded('apps/frontend/scripts/postflop-ai/mw3-source-identity-pairs.json');
         binding.finish('passed');
       } catch (error) { binding.finish('failed'); throw error; }
