@@ -5,14 +5,14 @@
   "strategy_type": "ai_estimate_not_gto",
   "author_model": "gpt-6-astra",
   "reviewer_model": "gpt-6-astra",
-  "reviewer_task": "/root/review_mw3_scope_change",
+  "reviewer_task": "/root/verify_mw3_guard_revision",
   "author_task": "mw3-utg-btn-sb-mw3-srp-v1-authored-v1",
-  "source_tree": "87329a5ca48774811982cb186234d9ce8247f5be",
-  "scope": "Independent source-context-only renewal for source commit 0b13156724bcf1f9c468df8cfd545192e9d4159c, tree 87329a5ca48774811982cb186234d9ce8247f5be. source 範囲を数値生成・検証・配信コードに限定する変更。UI ファイル（.tsx/.css）は対象外。 Removes frontend TSX/CSS roots/traversal and general backend index.ts; retains dedicated transport, browser validation, MW3 Agent runtime, strict verification and complete conservative TS/declaration dependencies. Required JSON exceptions retain recipes/profiles, configuration, compatibility evidence, runtime datasets and type-reachable locale data; this does not decouple every presentation-related TS/JSON edit. All16 subjects, exact112 saved numerical files, original16 canonical gzip archives, all32 delivery pins, recipe/profile/input bytes, inherited evidence,561 joint warnings and seven accepted limitations are unchanged. Different actual gpt-6-astra reviewer from the source implementation author independently ran official collection, current snapshot/receipt checks, scope tests, contract tests, typechecks and protected/UI mutation probes. Authorizes installation of these exact source-bound manifests, reviewer receipts and source-derived SQL comments, followed by official committed-inventory verification. No strategy generation or renewed quantitative quality decision; no new simulation, strict real-D1 run, browser/live-auth E2E, merge, main modification, production operation or deployment authorization. Historical D1 and quality evidence remain historical.",
-  "manifest_sha256": "524165130b63ac4b241637d76e3f3394cf024697951d25791883a900f35d59e0",
+  "source_tree": "f39c0b8db644fbf55f4e84283cd3286d125f3f76",
+  "scope": "Independent source-context-only renewal for source commit eeb9a9d8228009abf0dbfeb30343ef2b1025b31a, tree f39c0b8db644fbf55f4e84283cd3286d125f3f76. source 範囲を数値生成・検証・配信コードに限定する変更。UI ファイル（.tsx/.css）は対象外。 Renewed protected-to-excluded dependency-edge guard and source-inventory documentation. Original scope reduction removes 96 paths per subject:23 TSX,6 CSS,67 others(59 TS,3 d.mts,3 mjs,1 JSON,1 PNG); removed non-UI application modules are not claimed to be presentation-only. Newly added verification/parser dependencies, if any, are listed in the independent source-impact proof. Retained numerical generation, verification, delivery, browser validation and MW3 Agent execution closure stays bound, including conservative type/declaration and required JSON dependencies. Legitimate UI-only changes preserve numerical acceptance; protected dependencies into excluded UI fail closed under the reviewed syntax contract. All16 subjects,112 saved numerical files/235515283 bytes,16 original canonical gzip archives,32 pins,recipe/profile/input bytes,inherited evidence,561 joint warnings and seven limitations remain unchanged. A distinct actual gpt-6-astra reviewer independently checked code, official saved-byte collection/verification, source closure, mutation negatives, contracts and typechecks. Authorizes installation of these exact manifests, receipts and receipt-derived SQL comments followed by final committed-inventory verification/CI. No strategy generation or renewed quantitative quality decision, no new simulation, actual-D1 execution, live-auth/browser E2E, merge, main change or production operation. Historical quantitative/D1/browser evidence remains historical.",
+  "manifest_sha256": "b659cb8e1576cd711296fb3f10e3ea14913b8b13393f053f1dd29a7752cecb05",
   "archive_sha256": "fb452978edb7aaf29593c6af6c3cf8dbb5352009580606938b485aba5886095d",
-  "content_sha256": "d24592e2352c2f9e7f7589feafeb7e9e4ec6c1aaf4e99fe8d49c3d949ece2f2a",
-  "sources_sha256": "db50dfc8d45efbee855188842f233c6ab08643a1677226542ff1aca49f3a1076",
+  "content_sha256": "bfdd1d7efeff123d37d6ea6031f9626ce5c2eb9c6baabfaa745fee9fedf98c77",
+  "sources_sha256": "d3b4514a796a71e644b57a8e32cfd343e12defb8af0393ffe9dcb9fbe704ff1b",
   "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
   "spot": "UTG_open_BTN_call_SB_call",
   "deliveries": [
@@ -119,57 +119,72 @@
     "scope": "Source-only rebinding of unchanged historically accepted bounded AI-estimate artifacts to this exact current source/input manifest, reviewed numerical compatibility, separate identity-wiring amendment and static UI integration. Preserves all original per-spot quality conclusions, warnings, errata and limitations. Authorizes exact saved delivery/SQL preparation and new local verification; does not attest new numerical simulation, D1/API/runtime/browser success, production readiness or deployment authority."
   },
   "prior_source_context_receipt": {
-    "commit": "0838518ed50fae99b27584f30ee6ed6f6196acc0",
+    "commit": "5478e49ac5281485dea308902449a6a6f69ccf61",
     "path": "configs/mw3-utg-btn-sb-mw3-srp-v1.review.json",
-    "bytes": 13641,
-    "sha256": "490a5fbb5a01cdafe6d939ad7c75e8bd35627a3b1ab9f1b95de9acaddcf14b76",
-    "source_tree": "5146a5295fc6f9e10b622ab2446d4c06cb6d4e26",
-    "reviewer_task": "/root/review_mw3_source_context",
-    "provenance": "Exact prior record and full historical lineage remain in Git; see compact prior-hash ledger. No historical manifest/receipt copies added."
+    "bytes": 10754,
+    "sha256": "c48f3ab5dde779f77ca7359382bf19ccfdc222ff8847a58fbf58c3da5e037a54",
+    "source_tree": "87329a5ca48774811982cb186234d9ce8247f5be",
+    "reviewer_task": "/root/review_mw3_scope_change",
+    "provenance": "Exact prior acceptance remains in Git; see the compact prior-hash ledger. No full historical receipt or manifest copies added."
   },
   "current_context_review": {
     "reviewer_model": "gpt-6-astra",
-    "reviewer_task": "/root/review_mw3_scope_change",
-    "implementation_author_task": "/root/implement_mw3_scope_spec",
-    "source_commit": "0b13156724bcf1f9c468df8cfd545192e9d4159c",
+    "reviewer_task": "/root/verify_mw3_guard_revision",
+    "implementation_author_task": "/root/fix_mw3_review_guard",
+    "source_commit": "eeb9a9d8228009abf0dbfeb30343ef2b1025b31a",
     "proofs": [
       {
-        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-review/remote-source-identity.json",
-        "bytes": 1020,
-        "sha256": "eb2e612af94cc535093936706ce3b968956b7b9dc94e71828e606614c26245f4"
+        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/remote-source-identity.json",
+        "bytes": 910,
+        "sha256": "36a48cc6b978f7aeef712a94727955d28506ebad07d35a7056a63f2dcab3ee5c"
       },
       {
-        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-review/prior-hash-ledger.json",
+        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/prior-hash-ledger.json",
         "bytes": 12222,
-        "sha256": "6a55c134448ab2f79bb7b8349ccc3fe1afc3d0a2430d09c9cbeff214c09d6a94"
+        "sha256": "016e9a1f01120c8a1f4a34bf72121d1c5a29945d84856b6a487959287502c161"
       },
       {
-        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-review/source-impact.json",
-        "bytes": 90790,
-        "sha256": "7338c456f391efdde7aae17a61fb940ed112af368aed8fda7a5ee93e6e74cfd2"
+        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/source-impact.json",
+        "bytes": 9366,
+        "sha256": "06dba6d560c8f35469a7184e2c5ec216066a8547e0f85731bbf9e8d315442c37"
       },
       {
-        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-review/preservation.json",
+        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/preservation.json",
         "bytes": 96919,
-        "sha256": "8ab54d6d43383e3d25e6cb7043e40eee1d81921dc12b188829275dc24fc5343f"
+        "sha256": "438b86b79969e0295fe467ca51d40777b93330611217292f186a70ba6f135fde"
       },
       {
-        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-review/mutation-review.json",
-        "bytes": 3597,
-        "sha256": "babb0686337e04c26b0580965938fd1399b6e8581af7e28fb0692c244e35be7f"
+        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/mutation-review.json",
+        "bytes": 4839,
+        "sha256": "6bdf7b10ebfa09950aca699d6cb815e37b7179bd7d5c9b4a2589dfe9d6c60492"
       },
       {
-        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-review/test-results.json",
-        "bytes": 3373,
-        "sha256": "92c1265b2ab24ff58b7c7a2ef4f52c78f50b9f00b563d5e19a5d81bf894eed42"
+        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/test-results.json",
+        "bytes": 3033,
+        "sha256": "d699873cfd0ae5e9a18aa0c427c446959b11e8e6672ca8848a1f09734f7b97ac"
+      },
+      {
+        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/code-review.json",
+        "bytes": 4473,
+        "sha256": "fa193ffe0dd1fbdd480b0e8711e77bb116c205834bffdac0cd6d5cdf11479c01"
+      },
+      {
+        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/excluded-inventory-verification.json",
+        "bytes": 7678,
+        "sha256": "9a01719a99e17bdb0564cdcd394899a8f6493586a6af6f6808851913cb3a66ff"
+      },
+      {
+        "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/escape-probe.json",
+        "bytes": 1235,
+        "sha256": "bce71faf478200339d562138af0a9993be422ab54b448f344b884512c3a60989"
       }
     ],
-    "findings": "No blocking source-scope defect. Official collector reproduces original canonical gzip bytes for all16 subjects; all112 raw files,32 pins and retained evidence match. Current source inventory removes96 paths, adds0 and modifies only the collector per subject. Independent UI comment probes pass for all16; protected mutations fail closed. Source-context approval only.",
+    "findings": "No remaining blocking code finding in the reviewed protected-edge guard. Independent review first rejected the regex checkpoint after reproducing three valid-syntax bypasses, then rejected the first AST checkpoint because the license path violated the unchanged archive schema and absolute/file imports were silently omitted. The final AST checkpoint resolves those findings, preserves the original protected numerical/runtime paths, removes the same 96 historical paths and adds exactly four bound parser/verification sources. Literal/type/re-export edges into excluded TSX/CSS reject before filtering; directly imported ordinary excluded TS becomes protected. Unsupported computed/local absolute/URL/query/fragment/extensionless imports fail closed. The sole computed bootstrap exception binds exact file path, whole-source SHA, exact expression and target. Existing source IO rejects repository escapes, generated paths, node_modules paths and symlinks. Captured verification executes the parser from exact recorded buffers with no live-package fallback.",
     "inherited_quality_unchanged": true,
     "numerical_generation": false,
     "new_d1_execution": false,
     "new_live_auth_e2e": false,
-    "historical_evidence": "Prior quantitative quality, D1 and browser evidence is retained through Git provenance and is not re-certified for this source head."
+    "historical_evidence": "Prior quantitative/D1/browser evidence is preserved through Git provenance, not re-certified for this source head."
   },
-  "reviewed_at": "2026-10-06T19:15:16.580Z"
+  "reviewed_at": "2026-10-07T04:29:15.696Z"
 }

@@ -1,0 +1,587 @@
+{
+  "schema_version": 1,
+  "kind": "independent-mw3-protected-edge-acceptance",
+  "status": "PASS",
+  "reviewer_model": "gpt-6-astra",
+  "reviewer_task": "/root/verify_mw3_guard_revision",
+  "implementation_author_task": "/root/fix_mw3_review_guard",
+  "reviewed_at": "2026-10-07T04:29:15.696Z",
+  "source_commit": "eeb9a9d8228009abf0dbfeb30343ef2b1025b31a",
+  "source_tree": "f39c0b8db644fbf55f4e84283cd3286d125f3f76",
+  "scope": "Independent source-context-only renewal for source commit eeb9a9d8228009abf0dbfeb30343ef2b1025b31a, tree f39c0b8db644fbf55f4e84283cd3286d125f3f76. source 範囲を数値生成・検証・配信コードに限定する変更。UI ファイル（.tsx/.css）は対象外。 Renewed protected-to-excluded dependency-edge guard and source-inventory documentation. Original scope reduction removes 96 paths per subject:23 TSX,6 CSS,67 others(59 TS,3 d.mts,3 mjs,1 JSON,1 PNG); removed non-UI application modules are not claimed to be presentation-only. Newly added verification/parser dependencies, if any, are listed in the independent source-impact proof. Retained numerical generation, verification, delivery, browser validation and MW3 Agent execution closure stays bound, including conservative type/declaration and required JSON dependencies. Legitimate UI-only changes preserve numerical acceptance; protected dependencies into excluded UI fail closed under the reviewed syntax contract. All16 subjects,112 saved numerical files/235515283 bytes,16 original canonical gzip archives,32 pins,recipe/profile/input bytes,inherited evidence,561 joint warnings and seven limitations remain unchanged. A distinct actual gpt-6-astra reviewer independently checked code, official saved-byte collection/verification, source closure, mutation negatives, contracts and typechecks. Authorizes installation of these exact manifests, receipts and receipt-derived SQL comments followed by final committed-inventory verification/CI. No strategy generation or renewed quantitative quality decision, no new simulation, actual-D1 execution, live-auth/browser E2E, merge, main change or production operation. Historical quantitative/D1/browser evidence remains historical.",
+  "proofs": [
+    {
+      "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/remote-source-identity.json",
+      "bytes": 910,
+      "sha256": "36a48cc6b978f7aeef712a94727955d28506ebad07d35a7056a63f2dcab3ee5c"
+    },
+    {
+      "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/prior-hash-ledger.json",
+      "bytes": 12222,
+      "sha256": "016e9a1f01120c8a1f4a34bf72121d1c5a29945d84856b6a487959287502c161"
+    },
+    {
+      "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/source-impact.json",
+      "bytes": 9366,
+      "sha256": "06dba6d560c8f35469a7184e2c5ec216066a8547e0f85731bbf9e8d315442c37"
+    },
+    {
+      "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/preservation.json",
+      "bytes": 96919,
+      "sha256": "438b86b79969e0295fe467ca51d40777b93330611217292f186a70ba6f135fde"
+    },
+    {
+      "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/mutation-review.json",
+      "bytes": 4839,
+      "sha256": "6bdf7b10ebfa09950aca699d6cb815e37b7179bd7d5c9b4a2589dfe9d6c60492"
+    },
+    {
+      "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/test-results.json",
+      "bytes": 3033,
+      "sha256": "d699873cfd0ae5e9a18aa0c427c446959b11e8e6672ca8848a1f09734f7b97ac"
+    },
+    {
+      "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/code-review.json",
+      "bytes": 4473,
+      "sha256": "fa193ffe0dd1fbdd480b0e8711e77bb116c205834bffdac0cd6d5cdf11479c01"
+    },
+    {
+      "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/excluded-inventory-verification.json",
+      "bytes": 7678,
+      "sha256": "9a01719a99e17bdb0564cdcd394899a8f6493586a6af6f6808851913cb3a66ff"
+    },
+    {
+      "path": "apps/frontend/docs/qa/mw3-source-scope/independent-guard-review/escape-probe.json",
+      "bytes": 1235,
+      "sha256": "bce71faf478200339d562138af0a9993be422ab54b448f344b884512c3a60989"
+    }
+  ],
+  "subjects": [
+    {
+      "spot": "CO_open_BTN_call_BB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.manifest.json",
+        "bytes": 29777,
+        "sha256": "55436a234ee9b751353203a58184387b2297362a20e4e368da994303fa92a2b2"
+      },
+      "receipt": {
+        "path": "configs/mw3-co-btn-bb-mw3-srp-v1.review.json",
+        "bytes": 12164,
+        "sha256": "2159adf7bcea41d4d6c2c261e561e9c27e6e1c3b1ac3ab57f11c3d0a2c431f13"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.sql",
+        "bytes": 1591059,
+        "sha256": "c8feb53080ec3de65bcbec48faf84bbdfeffb6d5b85fbfcea192e5a417edf6d8"
+      },
+      "sql_statements_sha256": "eb304345a3c02180357ed53a375a6a5a858c126af98faaabf8e64e125ee28797",
+      "sql_statement_body_unchanged": true,
+      "archive": {
+        "path": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 363593,
+        "sha256": "b8adf765d22a128a88ce346ffda9f67615b98ada1e6579d56461da8910db8d9b"
+      },
+      "source_records": 136,
+      "sources_sha256": "8c41116eb6aafa882dc250f620be152f7ddd2eeea7e1ad7257360db007b7fb07",
+      "content_sha256": "28db6c36fd7baff1069f9aa9dd2f34f49b3a5dbcfb973e5a2f03d685b97fd38f",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "receipt_and_pin_mutation_rejected": true
+    },
+    {
+      "spot": "CO_open_BTN_call_SB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.manifest.json",
+        "bytes": 30166,
+        "sha256": "36629f8d30eb5113b8a89b82f78db894adcdbfed68ba689fe3481c4db8869833"
+      },
+      "receipt": {
+        "path": "configs/mw3-co-btn-sb-mw3-srp-v1.review.json",
+        "bytes": 12324,
+        "sha256": "5774a8285d5d4f2fc35a3c9d9f13c7ada52a3b64818625becf255cbea63a1965"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.sql",
+        "bytes": 1589911,
+        "sha256": "2a27a9aa72ffb12522855f546e5ea4e4cef06029230541ac31692ca026d2c399"
+      },
+      "sql_statements_sha256": "35b2f6e2790bb8f598ad73e851d61036fa24eba2f5b6fe630728e14972843b8c",
+      "sql_statement_body_unchanged": true,
+      "archive": {
+        "path": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 352115,
+        "sha256": "71b7423b1450638f8f2a6077c0d6c87b6715ebc81c9462a0f35cd5d83ddf1e7f"
+      },
+      "source_records": 137,
+      "sources_sha256": "cc4b438bc91844bfd2af58af59df44293dcec7484cc0882596b69ebde8760594",
+      "content_sha256": "30510e94d9a8997aa14d4e7f3fe4ea5e52cda342ee84f2eb1a913c3d34ec21ff",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "receipt_and_pin_mutation_rejected": true
+    },
+    {
+      "spot": "HJ_open_BTN_call_BB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.manifest.json",
+        "bytes": 30166,
+        "sha256": "0fac38dc943fe918ec3f6184e05c53d61a6b28bdb54bc36415777fc8442f8639"
+      },
+      "receipt": {
+        "path": "configs/mw3-hj-btn-bb-mw3-srp-v1.review.json",
+        "bytes": 12327,
+        "sha256": "36ba32d570b487d1a0c0ffa88bc7c0d7fa81d971c2ee592e09621cd9ae8eb4aa"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.sql",
+        "bytes": 1614488,
+        "sha256": "869d354ed4a860cb78b8b62b01278f33a668a8da0b3cab99b558d334136895b6"
+      },
+      "sql_statements_sha256": "7d46cf5846fff838c76d98579f6f5f76986e866dc674afe4a340e109d34a3dbc",
+      "sql_statement_body_unchanged": true,
+      "archive": {
+        "path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 357921,
+        "sha256": "a1d6d54a8d169260c7bf38cfb062915c2ab9e64f116dfb8101c7b63dad6fbb0a"
+      },
+      "source_records": 137,
+      "sources_sha256": "4f9545d55fd05be21a81903bacd449882f6b08153b9ddfce4d5bd94017685203",
+      "content_sha256": "ddcb444f0a746a36ec0ac080921d3b7f7a418e9a35c55d1c10def8a73842ecb3",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "receipt_and_pin_mutation_rejected": true
+    },
+    {
+      "spot": "HJ_open_BTN_call_SB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.manifest.json",
+        "bytes": 30166,
+        "sha256": "241f85482003cb9ad3b6a93239cfddf9f1c6b4a2a0b87e4ea6e303d8c4e4d43e"
+      },
+      "receipt": {
+        "path": "configs/mw3-hj-btn-sb-mw3-srp-v1.review.json",
+        "bytes": 12322,
+        "sha256": "69105994f965a887a397d265896fcbeaea1329b9ea7dfe6b9abdd5c7f2a0b4d0"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.sql",
+        "bytes": 1576072,
+        "sha256": "b7adafe4d20870191ec58426adbfc7ddbff380256f754cc2cee95e80872e416f"
+      },
+      "sql_statements_sha256": "a53d3772148bbe7acb87a26845cdaed73bc4f6c52e4159e1064e60cba13b2822",
+      "sql_statement_body_unchanged": true,
+      "archive": {
+        "path": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 349739,
+        "sha256": "f3ec418992730e69f548e354508c95e0a42e4963cb7dd6b8d15cacc3d500d45e"
+      },
+      "source_records": 137,
+      "sources_sha256": "8fad459dc17ba1531b4cc382f2836404003e8a1a5dd6c8e86845eabc8375e940",
+      "content_sha256": "01b9013c512b4e2f8cfcd94fa6f9712909d0e9ea2039b307cec79ce24fa182d6",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "receipt_and_pin_mutation_rejected": true
+    },
+    {
+      "spot": "HJ_open_CO_call_BB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.manifest.json",
+        "bytes": 30147,
+        "sha256": "53bb09e85a14d3805db81d724a082f2bd6d1d893db4c3985d6c21c9d025c7b95"
+      },
+      "receipt": {
+        "path": "configs/mw3-hj-co-bb-mw3-srp-v1.review.json",
+        "bytes": 12314,
+        "sha256": "67986c2ffcd34aa76885c07b1c81103edc12d85287cd52f42cfb88fe102118d0"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.sql",
+        "bytes": 1606790,
+        "sha256": "c6d0849d5ee8950ad1bbef15b0bf59e2718c40bd7c6b387971873f8db919ddaa"
+      },
+      "sql_statements_sha256": "6181a1192966003fab28cf4f5ce398df180388a8a34be83227c4918bddba0c07",
+      "sql_statement_body_unchanged": true,
+      "archive": {
+        "path": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 355876,
+        "sha256": "9e12080a2e5fbd5d642339a17508e7bd7cdff2aacf7739e3e416df816282ec0c"
+      },
+      "source_records": 137,
+      "sources_sha256": "bd84ef2d84cb407f95e79bcb195da967f3de9847ac8f7b39268dfae237f61158",
+      "content_sha256": "b8c4357fe676eb614bff17ba1da5372cc7cb9157724270660cf25e2e0751e220",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "receipt_and_pin_mutation_rejected": true
+    },
+    {
+      "spot": "HJ_open_CO_call_BTN_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.manifest.json",
+        "bytes": 30166,
+        "sha256": "2826372457ac18436e7b38a41281b2721fc939ce323c2a12197dd84fa398f3b1"
+      },
+      "receipt": {
+        "path": "configs/mw3-hj-co-btn-mw3-srp-v1.review.json",
+        "bytes": 12321,
+        "sha256": "5e325d8e4511fb5004d9137a6066e5d8516d4e263077ecbdfce82be5368706c1"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.sql",
+        "bytes": 1526887,
+        "sha256": "f62918be99f41ebe6ab29b851054092ae037f5d9e2b9af1ada5d3261bf02615f"
+      },
+      "sql_statements_sha256": "45d0dddf3b0a5d80e597dbf6980a51a017d44294c1562c2123316192eafda6e0",
+      "sql_statement_body_unchanged": true,
+      "archive": {
+        "path": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 346320,
+        "sha256": "b0ad2b74cdc937f228aa4cb862502390ba03606dc548218d713da5875e1a4d00"
+      },
+      "source_records": 137,
+      "sources_sha256": "4867e205a8b583715bcb1c9a4258064afb029e7b6b8e60f18366211472563ead",
+      "content_sha256": "2c1d8cf321df9fda563ed7e183e24aff4bb0f7e9e1598e92750ed08d409656f5",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "receipt_and_pin_mutation_rejected": true
+    },
+    {
+      "spot": "HJ_open_CO_call_SB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.manifest.json",
+        "bytes": 30147,
+        "sha256": "9bff38ae7456efc17afe753e61317ef26a87e7012386fceb89eef95e5cd66308"
+      },
+      "receipt": {
+        "path": "configs/mw3-hj-co-sb-mw3-srp-v1.review.json",
+        "bytes": 12316,
+        "sha256": "96fa54f3e942c474022079a8969625e7a6b157dbeb4dd48a24a64405678b8385"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.sql",
+        "bytes": 1575504,
+        "sha256": "7ccf064a9026d661c885b153290d98685d24466e9effbcbe23c76015a89cb186"
+      },
+      "sql_statements_sha256": "8f580a48cfe4816a792396ba3bd20a1f35ec209301111f23ac59928f45f1f44b",
+      "sql_statement_body_unchanged": true,
+      "archive": {
+        "path": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 349456,
+        "sha256": "2c41876d803519c8f05f347ecbf55404d29e17baf6f588089782d727f3ab13d7"
+      },
+      "source_records": 137,
+      "sources_sha256": "3d7a9fbdcdcad987cb243d29f7dbb64d0e09f0c5bb1627adf74c1503be502d23",
+      "content_sha256": "8311a37e32e45bec33903dd63ad71b7ceb9fb89b2607fa54453757cac65b039c",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "receipt_and_pin_mutation_rejected": true
+    },
+    {
+      "spot": "UTG_open_BTN_call_BB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.manifest.json",
+        "bytes": 30185,
+        "sha256": "bccc9628e40f7abc1093560a7310c1f9704ea108b17807df6df72b2a7584b5ea"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-btn-bb-mw3-srp-v1.review.json",
+        "bytes": 12334,
+        "sha256": "76a8c8d1d89fb96fbdc379a2d769852557d0ae1e2ba87b4cfe195c771525eddc"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.sql",
+        "bytes": 1609439,
+        "sha256": "bf7c920a6513db255f69e68fc3752ca0d79bced294fd267d86b4716c183e1f1e"
+      },
+      "sql_statements_sha256": "729fd2fd574e5efaec43df1d3a9b8b6fec519ccc541d62d976e20515d19be9d2",
+      "sql_statement_body_unchanged": true,
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 356007,
+        "sha256": "1a8ca191895c386944c903e6de9b9c7e1d25e77ce1f471a21036ee9321a4b69e"
+      },
+      "source_records": 137,
+      "sources_sha256": "90db2c04b4dd2c6cc58b37fb18632bf38452d3a197715bae6e7d63e6c73bde25",
+      "content_sha256": "5b723d26a1ea15cf0af0b621e53bea0f76ea6f6bcb6aa984f4b803f792333206",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "receipt_and_pin_mutation_rejected": true
+    },
+    {
+      "spot": "UTG_open_BTN_call_SB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.manifest.json",
+        "bytes": 30185,
+        "sha256": "b659cb8e1576cd711296fb3f10e3ea14913b8b13393f053f1dd29a7752cecb05"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-btn-sb-mw3-srp-v1.review.json",
+        "bytes": 12342,
+        "sha256": "aaf9345d7f4969bb1484b9dcf162f1c32df4189ed51165ddaf6381e36106fb1f"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.sql",
+        "bytes": 1574637,
+        "sha256": "0d068d2d67038e3cc0fb6da8186839449b6b861aad77de18fbaa08615a29b27f"
+      },
+      "sql_statements_sha256": "c45d44133a262915a7f55a16a788b1cc7809e25c250954c166bef12938fdf71d",
+      "sql_statement_body_unchanged": true,
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 349201,
+        "sha256": "fb452978edb7aaf29593c6af6c3cf8dbb5352009580606938b485aba5886095d"
+      },
+      "source_records": 137,
+      "sources_sha256": "d3b4514a796a71e644b57a8e32cfd343e12defb8af0393ffe9dcb9fbe704ff1b",
+      "content_sha256": "bfdd1d7efeff123d37d6ea6031f9626ce5c2eb9c6baabfaa745fee9fedf98c77",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "receipt_and_pin_mutation_rejected": true
+    },
+    {
+      "spot": "UTG_open_CO_call_BB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.manifest.json",
+        "bytes": 30166,
+        "sha256": "970afe6d090f6beeb81aa61864eb379391d52ca323b5f3b522a2983033fdec52"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-co-bb-mw3-srp-v1.review.json",
+        "bytes": 12321,
+        "sha256": "4b3cc19f8ca8c6b1de091c1dd13b3039739f39891be92de75974c72aca849c10"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.sql",
+        "bytes": 1605208,
+        "sha256": "5a158dbe64be2cf93ebaa154cb61a7a68c5e7a6833f711416b070701f31d1e03"
+      },
+      "sql_statements_sha256": "ea891c33decf677f93496875fe4618858e937c89dea0a69f1cb4abe91fa7de43",
+      "sql_statement_body_unchanged": true,
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 353793,
+        "sha256": "fab985466902709975e0e02e39d4eb9f5e41b0eb05f80d4d9f4824fe4d5913df"
+      },
+      "source_records": 137,
+      "sources_sha256": "6322560a589b6dc2d693da89b86877ef05ea5fc94116d56347fb0b7b202c08b3",
+      "content_sha256": "38fd9874f5b6f8b4b6481d85f8b31a8194e3376ca348b1e31e9c8134303817a9",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "receipt_and_pin_mutation_rejected": true
+    },
+    {
+      "spot": "UTG_open_CO_call_BTN_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.manifest.json",
+        "bytes": 30185,
+        "sha256": "e25bc0e5058776ca83c021c3ef2e09b801ac369927e7d4452fb85986384b03d9"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-co-btn-mw3-srp-v1.review.json",
+        "bytes": 12343,
+        "sha256": "9f5d6fdbafcd8268d196eb9d4f57b5bb0be6631b83693c2e84e79b6ddd2ae76b"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.sql",
+        "bytes": 1525883,
+        "sha256": "e0e16aa9e9dcb5a3981af24a65c59694b2225d6bda1c2f8c142edbac46ab4191"
+      },
+      "sql_statements_sha256": "3d11a0029c03f313f94d97417ba455ba2393adae39864894e65a7dd7385093cf",
+      "sql_statement_body_unchanged": true,
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 343601,
+        "sha256": "3a3d6f4d1cabcfcff881b5b90470ad153748264734fce92f0bd6a816fbe58604"
+      },
+      "source_records": 137,
+      "sources_sha256": "a86d263c5a43824cbf02cc7de56e7ac62060c8f89b7e040b9c79dbb7e4d83f0c",
+      "content_sha256": "e673faeca324d559e9bf082bf1b0d355925cf18c66dc4d3f0e262a9a4eb544c2",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "receipt_and_pin_mutation_rejected": true
+    },
+    {
+      "spot": "UTG_open_CO_call_SB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.manifest.json",
+        "bytes": 30166,
+        "sha256": "81d298f932a1fffa1b8929c7c03d752f3bc53a361612fe0a4b6670d086f9aee1"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-co-sb-mw3-srp-v1.review.json",
+        "bytes": 12327,
+        "sha256": "3885f7289afc24c2bcef1a7cb5c2408e813da0dd5b4242d72e2d638075488630"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.sql",
+        "bytes": 1568069,
+        "sha256": "5c4b09a3933e2edefeebef7084f25d69cd5e2327fdf5fff7a3acd2578daa774d"
+      },
+      "sql_statements_sha256": "15d60b9436082dbaee082c150d99226c1219fb2d54a93226c9fcdca1bd99c704",
+      "sql_statement_body_unchanged": true,
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 347918,
+        "sha256": "c859afc13e369cd1cf3ab8ea545d8115a5eaba4d55725de772f222a560f4b7a0"
+      },
+      "source_records": 137,
+      "sources_sha256": "f68990611dad0f1c3d36a87662120851ef6b949f4ed62a256b1aef2c6d464512",
+      "content_sha256": "913db05798794ef790448e3f937e18ff27810de6957df3332087e30fae626afa",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "receipt_and_pin_mutation_rejected": true
+    },
+    {
+      "spot": "UTG_open_HJ_call_BB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.manifest.json",
+        "bytes": 30166,
+        "sha256": "df484cc591258b4484013b5dad319235534639fa7a408fb52bd39eec078539c0"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-hj-bb-mw3-srp-v1.review.json",
+        "bytes": 12324,
+        "sha256": "e157c5474bdbbb4ad71a3b2325ec287a6c74b92d67725df3bfa97531c6d025bd"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.sql",
+        "bytes": 1602292,
+        "sha256": "5479c6b37b5786829aac74cee33a2ae21a63e1cdf162eb4c7c72576ba3a0c3a7"
+      },
+      "sql_statements_sha256": "fefbea4ba81a18d61626b746926b5973ae5c93c95adad192e06b88913d9d4450",
+      "sql_statement_body_unchanged": true,
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 352915,
+        "sha256": "d84390b598755b265f5e5ae5e5601d05fc69e7346971b955c2ab0d4732ab577a"
+      },
+      "source_records": 137,
+      "sources_sha256": "7411e5ffb192f4690f42f786cc94e6e61b80cfa43417ba8f605720a5f6d62e1b",
+      "content_sha256": "ee926eaa65a0b4d62272c02d90fd34e8074ac003927e170ed633b181a3dc597d",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "receipt_and_pin_mutation_rejected": true
+    },
+    {
+      "spot": "UTG_open_HJ_call_BTN_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.manifest.json",
+        "bytes": 30185,
+        "sha256": "96deb811a4c78cef08ac99295c31ab830e171138851c29070eb17e29767480eb"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-hj-btn-mw3-srp-v1.review.json",
+        "bytes": 12343,
+        "sha256": "b4c9f4094ce63ba94687dba3006d73aaa70e6452941d8535f04993a3eef65f71"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.sql",
+        "bytes": 1524093,
+        "sha256": "abbd9f6143dfa6901d1c58e1cb46ec3542fd14af621597743f0c31dd7b25fcee"
+      },
+      "sql_statements_sha256": "37102ffd0118a56f88de0ab91a2f4779ac545d6e5ccc5c62d0de38b467df6a7d",
+      "sql_statement_body_unchanged": true,
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 342470,
+        "sha256": "fae0fe5f2ce9fc718f68b9160e4f6e99ed14138b5319008cacb4684b1aca9f3e"
+      },
+      "source_records": 137,
+      "sources_sha256": "4b53dd770fd88976fa5b1a796700c13f3636fc38a491110da8d97cd4e5cf84f5",
+      "content_sha256": "fe8ab5dce8c4f506a2513762d3793f1de2d73cbe70bfbffda8c1f48cc296eb3e",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "receipt_and_pin_mutation_rejected": true
+    },
+    {
+      "spot": "UTG_open_HJ_call_CO_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.manifest.json",
+        "bytes": 30166,
+        "sha256": "566857767612f440e25d8144754563a97fb428745ee3ad1c23fe56302e6eb468"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-hj-co-mw3-srp-v1.review.json",
+        "bytes": 12327,
+        "sha256": "dea0526e718177d6941440225f0121f6233e99060c62dc26a93e0b7092f11f06"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.sql",
+        "bytes": 1519315,
+        "sha256": "73af9dcf1b7e0c9d520f06d8dbe60a7dba0dc8bba83161853c85e6a62d80d286"
+      },
+      "sql_statements_sha256": "22bd1af1be7bbd83782b0c5573d808b68f841c86ead795509a808c9adbbd6676",
+      "sql_statement_body_unchanged": true,
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 340387,
+        "sha256": "a0531cb661d36f6beee9076196a40e7a8fef414cbe2c60ffb9283ac1037ac19b"
+      },
+      "source_records": 137,
+      "sources_sha256": "bf935a2271560d1fd3a2bf9eebda46f89c075908e69ebc64b7f61cf88845c279",
+      "content_sha256": "d907d3a068355d1aab11c77e0fa5f7855e363e655b7fc4e7dcc4148b802d8fc0",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "receipt_and_pin_mutation_rejected": true
+    },
+    {
+      "spot": "UTG_open_HJ_call_SB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.manifest.json",
+        "bytes": 30166,
+        "sha256": "fb30185fd8e344ad1e94418544d001ca2bf2e7d7744008d34741559b9e08398b"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-hj-sb-mw3-srp-v1.review.json",
+        "bytes": 12327,
+        "sha256": "227980c4029dd6ae20205c66c28c9f88e7acb019b01622fa8fe41f6a8bcc1d9a"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.sql",
+        "bytes": 1562974,
+        "sha256": "bb14a12825bbbbf6ec7a10e2877037c878f535588b52999521483325bd12309e"
+      },
+      "sql_statements_sha256": "c2850ecbf6f0c73cbf21ad2196606b10241db2e5bfd154032d3d6c2212804757",
+      "sql_statement_body_unchanged": true,
+      "archive": {
+        "path": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.tar.gz",
+        "format": "ustar+gzip-content-addressed-v1",
+        "bytes": 346992,
+        "sha256": "ed25dd6a611d329ec8f78614320d66c5f84284ee4f3e2cf14129cbd75d5b7afa"
+      },
+      "source_records": 137,
+      "sources_sha256": "b37f66f6d731c23f9cc48331fa3407e8c5c1a293160138cc33b717931bdfda63",
+      "content_sha256": "02259fcc82ff6917e1644f9ee34e9e08e8a0ac91a2ed6eb1c31bffc680b071b5",
+      "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+      "receipt_and_pin_mutation_rejected": true
+    }
+  ],
+  "blocking_findings": [],
+  "qualifications": [
+    "Source-context renewal only; no numerical generation, new simulation or renewed quantitative-quality judgment.",
+    "The 67 removed non-UI files are no longer receipt-bound; dedicated application behavior remains outside this numerical approval.",
+    "Conservative type/declaration and required JSON dependencies remain protected; not every presentation-related TS/JSON edit is decoupled.",
+    "The static dependency contract covers supported ESM/TypeScript syntax, not arbitrary eval, user-defined loaders or arbitrary CommonJS require calls. Bare-package implementation is pinned by package-lock rather than individually added to this source ledger.",
+    "Historical actual-D1, quantitative and browser/live-auth evidence remains historical. No new such execution, merge, main modification or deployment is claimed.",
+    "Final installed committed-inventory verification and exact remote CI are required after receipt installation.",
+    "Reviewer-authored receipts are provenance records, not cryptographic signatures."
+  ],
+  "preservation": {
+    "raw_files": 112,
+    "raw_bytes": 235515283,
+    "original_compressed_archives": 16,
+    "pins": 32,
+    "joint_warnings": 561,
+    "accepted_limitations_per_subject": 7,
+    "sql_statement_bodies_unchanged": true
+  },
+  "install_plan": [
+    "Verify all protected sources match reviewed source tree f39c0b8db644fbf55f4e84283cd3286d125f3f76.",
+    "Install exact files under install/ only, with no archive, registry, input, recipe, profile or source replacement.",
+    "Commit on existing PR96 branch and keep Draft with PR44 target.",
+    "Run final committed-inventory restore/verify,32-pin parity,frontend/backend contracts,typechecks and UI/protected mutations.",
+    "Verify final remote CI for the exact published head; no merge, main, production D1 or deployment."
+  ],
+  "remaining_gates": [
+    "Final committed-inventory verification after installation",
+    "Final remote PR96 CI"
+  ]
+}

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "kind": "mw3-artifact-snapshot",
   "approval": "unapproved",
-  "source_tree": "87329a5ca48774811982cb186234d9ce8247f5be",
+  "source_tree": "f39c0b8db644fbf55f4e84283cd3286d125f3f76",
   "spot": {
     "id": "UTG_open_CO_call_BB_call",
     "slug": "utg-co-bb-mw3-srp-v1",
@@ -324,8 +324,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/mw3-reviewed-snapshot.mjs",
-      "bytes": 12800,
-      "sha256": "4596a82223f597935bcb349b2eb3da5bd8c529b2cab47a892bc6346e467cd4a4"
+      "bytes": 13131,
+      "sha256": "fbe62e4d9d6505f9071c2c551c14be0db176745ab61cec84d092af260f179b30"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/mw3-runtime.d.mts",
@@ -351,6 +351,11 @@
       "path": "apps/frontend/scripts/postflop-ai/mw3-snapshot-cli.mjs",
       "bytes": 3412,
       "sha256": "53b35eb31c0235ef72efe28d32bee831f77c840b5930fbda611287d06fafb343"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-source-dependencies.mjs",
+      "bytes": 4022,
+      "sha256": "449631ad0c6568583665a8556054ebb11ac0657144425d77e098965184b1333b"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/mw3-source-identity-pairs.json",
@@ -431,6 +436,21 @@
       "path": "apps/frontend/scripts/postflop-ai/types.ts",
       "bytes": 3516,
       "sha256": "97c61045c4cdfacc9eb881f53db077d505f96af8b5a16b52d52f72b00a369ee9"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/vendor/babel-parser-7.29.7.license.json",
+      "bytes": 1199,
+      "sha256": "2d42d222e7194b789f4ac900b0ba3e9c0ac7d70b87f3e66c05684d026f968e35"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/vendor/babel-parser-7.29.7.mjs",
+      "bytes": 512795,
+      "sha256": "274540fe50bd896d4b9e360845030f5b52580d4614ee11b37098d54a7041963f"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/vendor/babel-parser-7.29.7.provenance.json",
+      "bytes": 953,
+      "sha256": "344a68ba2b19f4471b7f0f23b9ac35f48a5bfd58bed5f73530837f68282b25cd"
     },
     {
       "path": "apps/frontend/scripts/verify-mw3-local-d1.mjs",
@@ -700,7 +720,7 @@
       "sha256": "fdc83f2ed78e0690e148b39fa23b8edc0bf204fe1a3f1ca4c4e6ea9377da2b55"
     }
   ],
-  "sources_sha256": "d24fdfe9e0cb18874d57fcc07452301c6f6a8368feabdf8dce1c53a81aeacba2",
+  "sources_sha256": "6322560a589b6dc2d693da89b86877ef05ea5fc94116d56347fb0b7b202c08b3",
   "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
   "artifacts": [
     {
@@ -766,5 +786,5 @@
     "bytes": 353793,
     "sha256": "fab985466902709975e0e02e39d4eb9f5e41b0eb05f80d4d9f4824fe4d5913df"
   },
-  "content_sha256": "48366aad3e46a267332008009d2c924f0ac4eff3c05c0e52772f2627f5cbc229"
+  "content_sha256": "38fd9874f5b6f8b4b6481d85f8b31a8194e3376ca348b1e31e9c8134303817a9"
 }
