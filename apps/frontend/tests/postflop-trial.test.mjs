@@ -55,7 +55,7 @@ test("only complete paths can enter the next street, with unsupported paths mark
   assert.equal(completedFlopContext({ actionBlocks: end("BTNの勝ち", 3), rangeType: "response", opener: "BTN", hero: "BB",
     callers: [], foldedHero: true, isDefaultTable: true }), null);
   assert.equal(completedFlopContext({ actionBlocks: end("2人でフロップへ", 5.5), rangeType: "response", opener: "BTN", hero: "BB",
-    callers: ["BB"], foldedHero: true, isDefaultTable: false }).pilotAvailable, false);
+    callers: ["BB"], foldedHero: true, isDefaultTable: false }).pilotAvailable, true);
   assert.deepEqual(completedFlopContext({ actionBlocks: end("2人でフロップへ", 2), rangeType: "limp",
     opener: "SB", hero: "BB", callers: [], foldedHero: false, isDefaultTable: true }).players, ["SB", "BB"]);
 });

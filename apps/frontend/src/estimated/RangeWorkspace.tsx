@@ -62,6 +62,8 @@ import { nextPendingStreetCardDialog } from "./street-card-dialog-state.ts";
 import { buildActionBlocks, encodeRangeUrl, multiwayContext, readRangeUrl, replaceRangeUrl } from "./range-url.ts";
 export { buildActionBlocks } from "./range-url.ts";
 import { PreflopCallEvBars } from "./PreflopCallEvBars.tsx";
+import { defaultOpponentSeat, normalizePostflopProfileState } from "./postflop-profile-state.ts";
+import type { OpponentProfile, OpponentSeat, PostflopProfileState } from "./postflop-profile-state.ts";
 import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, laterStart, recognizedFlop } from "./postflop-trial.ts";
 import { defaultFormat, formatLabel, isBuilt } from "./game-formats.ts";
 import { DEFAULT_PROFILE, adjustOpeningSpot, adjustmentReason, describeProfile, isDefaultProfile, markAdjustedModel, normalizeProfile } from "./table-profile.ts";
@@ -115,8 +117,8 @@ export function selectedHandForRangeEntry(entry: RangeEntry, selected: string) {
   return entry.spot?.hands.find(row => row.hand === selected) ?? entry.hand;
 }
 const legacySelectionStorageKey = "reysonai-legacy:estimated-selection:v1";
-function restoredSelection(initialRangeType: string): Omit<RangeUrlSelection, "coldAction"> & Partial<Pick<RangeUrlSelection, "coldAction">> {
-  const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, limpReraiseAction: null, limpFourBetAction: null, squeezeResponse: [], continuationActions: [], coldAction: null, selected: "AKo" };
+function restoredSelection(initialRangeType: string): Omit<RangeUrlSelection, "coldAction"> & Partial<Pick<RangeUrlSelection, "coldAction">> & PostflopProfileState {
+  const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, limpReraiseAction: null, limpFourBetAction: null, squeezeResponse: [], continuationActions: [], coldAction: null, selected: "AKo", ...normalizePostflopProfileState(null) };
   if (typeof window === "undefined") return fallback;
   try {
     const stored = window.sessionStorage.getItem(selectionStorageKey) ?? window.sessionStorage.getItem(legacySelectionStorageKey);
@@ -139,7 +141,7 @@ function restoredSelection(initialRangeType: string): Omit<RangeUrlSelection, "c
       saved.squeezeResponse.every((action: string) => squeezeActions.includes(action)) && !(saved.squeezeResponse[0] === "raise" && saved.squeezeResponse.length > 1) ? saved.squeezeResponse : [];
     const coldAction = saved.rangeType === "three_bet" && saved.coldAction && positions.indexOf(saved.coldAction.position) > positions.indexOf(saved.hero) && ["call", "raise"].includes(saved.coldAction.action) ? saved.coldAction : null;
     const continuationActions = Array.isArray(saved.continuationActions) && saved.continuationActions.length <= 24 && saved.continuationActions.every((action: string) => ["fold", "call", "four_bet", "all_in"].includes(action)) ? saved.continuationActions : [];
-    return { ...fallback, ...saved, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, coldAction, selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
+    return { ...fallback, ...saved, ...normalizePostflopProfileState(saved), pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, coldAction, selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
   } catch { return fallback; }
 }
 
@@ -371,6 +373,8 @@ function PostflopSignIn({ account, onBack }: { account: ReturnType<typeof useAcc
 export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange }: WorkspaceProps & { initialRangeType?: string; fourBet?: ReturnType<typeof loadFourBetDataset> }) {
   const [initialUrlState] = useState(() => readRangeUrl());
   const [initialSelection] = useState(() => initialUrlState ?? restoredSelection(initialRangeType));
+  const [opponentProfile, setOpponentProfile] = useState<OpponentProfile>(initialSelection.opponentProfile);
+  const [opponentSeat, setOpponentSeat] = useState<OpponentSeat | null>(initialSelection.opponentSeat);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showFlop, setShowFlop] = useState(initialUrlState?.showFlop ?? false);
   // Postflop (flop to river) requires Google sign-in; preflop ranges stay open to guests.
@@ -625,8 +629,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const currentRequestKey = useRef(requestKey);
   currentRequestKey.current = requestKey;
   useEffect(() => {
-    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, coldAction, selected }));
-  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, coldAction, selected]);
+    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, coldAction, selected, opponentProfile, opponentSeat }));
+  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, coldAction, selected, opponentProfile, opponentSeat]);
   useEffect(() => { setLocalEstimate(null); setLocalEstimateRequestKey(null); setLocalStatus(activeGenerationRequest ? "checking" : "idle"); setLocalError(""); }, [requestKey]);
   useEffect(() => {
     if (!activeGenerationRequest || !requestKey) return;
@@ -670,19 +674,20 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, raiseSizeFor };
   const continuationSources = useContinuationRanges(Boolean(continuationRootForSelection(actionState)));
   const actionBlocks = withContinuationAvailability(buildActionBlocks(actionState), continuationSources);
-  const flopContext = !currentError ? completedFlopContext({ actionBlocks, rangeType, opener, hero,
-    callers, foldedHero, pendingRaise, squeezeResponse, isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format), limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }) : null;
+  const flopContext = !currentError && isBuilt(format) ? completedFlopContext({ actionBlocks, rangeType, opener, hero,
+    callers, foldedHero, pendingRaise, squeezeResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }) : null;
   const flopActive = showFlop && Boolean(flopContext);
+  const effectiveOpponentSeat = opponentSeat ?? defaultOpponentSeat(flopContext);
   useEffect(() => {
     // Wait for dependent street resets before serializing a changed upstream path.
     if (flopChanged || turnChanged) return;
     replaceRangeUrl(encodeRangeUrl({ rangeType, opener, hero, callers, foldedHero, pendingRaise,
       continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction,
-      limpFourBetAction, squeezeResponse, continuationActions, selected, format, tableProfile, showFlop: flopActive,
+      limpFourBetAction, squeezeResponse, continuationActions, selected, format, tableProfile, opponentProfile, opponentSeat, showFlop: flopActive,
       flopCards, flopActions, turnCard, turnActions, riverCard, riverActions }, actionBlocks));
   }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse,
     coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse,
-    selected, format, tableProfile, flopActive, flopCards, flopActions, turnCard, turnActions,
+    selected, format, tableProfile, opponentProfile, opponentSeat, flopActive, flopCards, flopActions, turnCard, turnActions,
     riverCard, riverActions, flopChanged, turnChanged, actionBlocks]);
   const flopBoard = recognizedFlop(flopCards);
   const canEnterLaterStreets = Boolean(flopContext?.pilotAvailable && flopBoard && laterStart(flopActions, flopContext));
@@ -945,7 +950,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
         </Panel>
-        {flopActive ? <PostflopTrial context={flopContext!} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} /> : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
+        {flopActive ? <PostflopTrial context={flopContext!} tableProfile={tableProfile} opponentProfile={opponentProfile} opponentSeat={effectiveOpponentSeat} onOpponentProfileChange={setOpponentProfile} onOpponentSeatChange={setOpponentSeat} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} /> : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length } as CSSProperties}>
           {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model!.actions} actionLabels={entry.model!.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} {...(entry.unreachableReason ? { unreachableReason: entry.unreachableReason } : {})} /> : entry.loading ? <RangeMatrixSkeleton key={entry.position} className="multiway-range-panel missing-range-panel" ariaLabel={`${entry.position}のレンジ`} title={entry.title} label={entry.statusDescription ?? ""} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
             {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイレンジを生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}

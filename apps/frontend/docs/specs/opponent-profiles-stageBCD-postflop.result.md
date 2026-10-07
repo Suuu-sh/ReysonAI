@@ -126,3 +126,67 @@ buildには既存のlocale JSON重複キーと大きなbundleの警告がある�
 - 公開D1経路への相手像キーの実装／マイグレーション／公開は後続作業。今回は読み取り契約と計算側の受け口のみ。
 - EV補足は上記限定モデル。完全な後続方針木のEVやソルバー最適応答とは異なる。
 - ローカル起動を `npm run dev -- --host 127.0.0.1 --port 5173 --strictPort` で試したが、環境のsandboxにより `listen EPERM`。画面実装は今回の対象外で、ブラウザーの新規サーバー確認はできていない。
+
+---
+
+# 相手像ポストフロップ 段階B（画面）実装結果（2026-10-08）
+
+この節は上の段階Cの記録に対する追加結果です。対象は同じ `feature/opponent_profiles_postflop` / `apps/frontend`。ブランチ操作・commit・push・stash・reset・checkoutは実施していません。既存の `.wrangler/`、`output/` と並行作業は保持しています。
+
+## 変更ファイル
+
+- `src/estimated/postflop-trial.ts`: 標準卓であることをpilotの条件から除外。到達可能な保存局面・ポット形状は引き続き必要。
+- `src/estimated/postflop-profile-state.ts`: 選択値の検証と既定の相手席（最後のプリフロップアグレッサー、リンプポットはBB）。
+- `src/estimated/RangeWorkspace.tsx`: 相手像／席のURL優先復元・既存のper-tab session保存・計算設定の受け渡し。ログイン要件と対応ゲーム形式の制限は維持。
+- `src/estimated/range-url.ts`: `opponent_profile` / `opponent_seat` の往復と非標準卓でのストリート復元。標準／自動席は省略して従来URLの互換性を維持。
+- `src/estimated/PostflopProfileSettings.tsx`: 既存セグメントに合わせた相手像／席の設定カード、未生成表示／標準に戻すボタン、相手前提・調整印・任意の限定モデル補足。
+- `src/estimated/PostflopTrial.tsx`: フロップ〜リバーとハンド詳細／レンジfactsの全計算へオプションを渡す。設定ごとの読込／表示の無効化で、切替中に旧方針を表示しない。
+- `src/estimated/ranges.css`: 設定カードだけに限定したスタイル。モバイルは折り返しと44pxボタン、キーボードfocus。カラーストライプなし。
+- `src/estimated/postflop-browser.ts`: 相手像・席・卓の状況別の読込、villain／exploit候補、相手席のプリフロップ因子読込、取消しと欠損時の再読込。
+- `src/estimated/postflop-api.ts`: 本番の標準専用D1ルートに相手像を要求しないガード。
+- `scripts/postflop-ai/local-view.mjs`: 既存の読み取り専用middlewareで、フロップ方針が利用可能なら後続方針欠損だけではフロップを遮断しない。
+- `src/locales/copy.ts` / `src/locales/opponent-profile-copy.json`: 既存の翻訳辞書の仕組みに追加（ja/enは保存済みmeta、zh-CN/esは所有文言の翻訳）。
+- `tests/postflop-profile-state.test.mjs` / `tests/postflop-profile-browser.test.mjs` / `tests/postflop-profile-ui.test.mjs`: 新規回帰テスト。
+- `tests/postflop-trial.test.mjs`: 非標準卓のpilotが利用可能になる、今回の仕様変更に該当する1箇所の期待値だけを更新。
+- `AGENTS.md`: 今回の相手設定・装飾・欠損表示・限定補足の継続ルール。
+- 本結果ファイル。
+
+## 読込・表示の境界
+
+- ローカルは既存の `/local-postflop-spot` を使用。`opponentProfile` / `opponentSeat` / `tableProfile` を渡し、段階Cのローダーが `.local/postflop-ai/profiles/<profile>/<slug>-{villain,exploit}-{policy,later-policy}.json` を読みます。生成要求やLLM呼出しはしません。
+- 標準以外の卓でも標準候補を構造照合して、プリフロップから計算し直した到達レンジへ適用します。調整時に標準flop-baseは読み込まず、差し替えレンジを使います。
+- 相手像選択時は両役割の候補が必要。`PROFILE_POLICY_MISSING` は「この相手像の方針は準備中です」と明示し、標準への復帰は利用者のボタン操作だけ。相手像の選択は勝手に変更しません。
+- フロップの両方針があり後続だけ欠損なら、フロップは表示可能。ターン／リバーへ進むと同じ未生成状態になります。古いハッシュ／不正形式は未生成とは区別してエラーのままです。
+- 本番D1の相手像配信は未実装のため未生成扱い。標準D1方針を相手像の代わりに読ませません。DB・公開エンドポイント・公開方針は変更していません。
+- ハンド詳細の `profile_reference.max_ev_action` は存在する場合だけ限定モデルの補足として表示。方針頻度は変えず、EV数値表・EV API・研究用hand-EVモジュールは復活させていません。
+
+## 画面の操作手順
+
+1. `/app` または `/analyze/ranges` を開き、必要に応じてログイン。ゲーム設定で対応形式（Cash / 6-max / 100BB / no ante等）は維持したまま「卓の状況」のコール頻度／3bet頻度を変更。
+2. BTNオープン → BBコールなど保存済みHUのプリフロップを完了し、「フロップへ進む」で3枚選択。非標準卓でも保存済みポストフロップへ進める。
+3. フロップ画面の「相手の傾向」で標準／NIT／コーリングステーション／LAG／マニアックを選択。「相手の席」で表示された実席（IP/OOP）を選択。未指定の既定はBTNオープン→BBコールならBTN、BTN→BBの3bet→コールならBB、すべてのリンプポットならBB。
+4. URLに非標準なら `opponent_profile=nit` 等、明示席なら `opponent_seat=oop` 等が追加される。再読込／共有URLで復元し、URL指定がなければ同じタブのセッション設定から復元する。
+5. 方針未生成なら準備中の説明と「標準に戻す」が表示され、標準のレンジ／ハンド詳細で代用しない。戻すボタンを押した場合だけ標準を再表示。
+6. 対応する生成済み相手像方針がある場合、アクション列からターン／リバーへ進む。任意のハンド・正確なスートコンボの詳細で相手像の前提、結果の `adjusted` に応じた調整印、存在する最大EVアクション補足を確認する。
+7. Settings → Languageで日本語／English／简体中文／Españolを変更。すべての新しいラベル・説明・未生成表示も切替対象。モバイルではセグメントを折り返し、相手席を次の行に配置する。
+
+## 検証結果
+
+- `npm run typecheck`: 最終の翻訳修正後も成功（frontend＋runtime）。
+- `npm run build`: 最終差分で成功。`dist/client/index.html`、`dist/server/index.js`、`dist/.openai/hosting.json` を確認。既存の `product-direct.json` の重複キー警告と500KB超bundle警告は残る。
+- 新規回帰テスト: **23/23成功**（state 6、browser 10、UI 7）。非標準卓のpilot、全種の既定席、全相手像×明示／自動席のURL往復、欠損時に標準方針へ代用しないこと、フロップのみ生成済みの場合、四言語、React/jsdomでの切替・復帰、調整入力でのbase無効化、モバイルCSSを確認。最後の翻訳修正は該当テストだけ追加確認し、既に成功した無関係なテストは別担当で再実行していない。
+- `tests/postflop-*.test.mjs` 全27ファイルを分担して実行: **203件中201 pass / 2 fail / 0 skip**。全件成功ではない。親は、担当が既に成功確認した新規テスト・browser-client・publish-d1を除く残り22ファイルを `node --test --test-concurrency=2` で実行（173件中171 pass / 2 fail、161.5秒）。担当の10件新規browser＋既存7件、6件state、7件UIの結果と合算。
+- 変更対象の既存 `tests/range-url.test.mjs`: **14/14成功**。先行の5件と未実行だった9件に分けて確認。
+- `git diff --check`: 成功。最終のブランチ名は `feature/opponent_profiles_postflop`。ブランチ・commit・push操作はしていない。
+
+### 残った2件の無関係な失敗
+
+1. `tests/postflop-flop-base.test.mjs:113`: `local flop middleware serves stored Brotli with content-encoding, decoded by fetch`。既存HTTP試験が `listen EPERM: operation not permitted 127.0.0.1`。サーバーlisten権限の制約で、段階Cの結果にも記載済み。
+2. `tests/postflop-trial.test.mjs:63`（assertionは92行）: `every saved open response and 3bet response becomes a heads-up flop spot`。旧テストは `.local/postflop-ai/btn-bb-srp-v1-policy.json` を期待するが、現行の公開候補の正しいパスは `scripts/data/postflop-ai/policies/btn-bb-srp-v1-policy.json`。段階Cの結果にも記載済み。今回の相手像読み込みとは別の既存パス検査で、方針ファイルやテストを無関係に変更して通す対応はしていない。
+
+ログ: `/private/tmp/reysonai-opponent-profiles-stageB-typecheck.log`、`/private/tmp/reysonai-opponent-profiles-stageB-build.log`、`/private/tmp/reysonai-opponent-profiles-stageB-tests.log`、`/private/tmp/reysonai-opponent-profiles-stageB-suite-list.txt`。担当のfocused testsは各ツール実行結果で確認。
+
+## 未解決／対象外
+
+- 段階Dの方針生成・全ボード品質監査・D1公開は今回の範囲外。現時点のローカル `profiles` 方針ファイルは確認できておらず、実データの相手像モードは未生成表示が正常な状態。テスト用候補はメモリ内だけで、方針ファイルを新規公開していません。
+- ローカル起動 `npm run dev:guest -- --host 127.0.0.1 --port 5182 --strictPort` はsandboxの `listen EPERM` で失敗。既存previewへブラウザを開く試行もブラウザ許可が拒否されたため、それを回避していません。実ブラウザでのレンダリング／320pxや390pxの実レイアウト／実方針のフロップ〜リバー操作は未確認。代わりにReact/jsdomの操作回帰とCSS制約テストを実施し、上の手順を残しました。

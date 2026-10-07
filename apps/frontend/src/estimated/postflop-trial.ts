@@ -64,7 +64,7 @@ export function flopSpotFor({ actionBlocks = [], pendingRaise = null, squeezeRes
   return null;
 }
 
-export function completedFlopContext({ actionBlocks, rangeType, opener, hero, callers = [], foldedHero, isDefaultTable, pendingRaise = null, squeezeResponse = [], limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null }: CompletionOptions & { actionBlocks: readonly CompletionBlock[]; isDefaultTable: boolean }) {
+export function completedFlopContext({ actionBlocks, rangeType, opener, hero, callers = [], foldedHero, pendingRaise = null, squeezeResponse = [], limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null }: CompletionOptions & { actionBlocks: readonly CompletionBlock[]; isDefaultTable?: boolean }) {
   const end = actionBlocks.find(block => block.kind === "end");
   if (!end || end.continuationAvailable === false || !/^\d+人でフロップへ$/.test(end.result!)) return null;
   const potBb = Number(/^ポット ([\d.]+)bb$/.exec(end.pot!)?.[1]);
@@ -73,7 +73,7 @@ export function completedFlopContext({ actionBlocks, rangeType, opener, hero, ca
     : rangeType === "response" ? [opener, ...callers] : [opener, hero];
   const spot = flopSpotFor({ actionBlocks, pendingRaise, squeezeResponse, rangeType, opener, hero, callers, foldedHero, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
   if (spot && "history" in spot) players = [spot.oop, spot.ip];
-  const pilotAvailable = Boolean(spot?.reachable) && potBb === spot!.potBb && Boolean(isDefaultTable);
+  const pilotAvailable = Boolean(spot?.reachable) && potBb === spot!.potBb;
   return {
     players, potBb, pilotAvailable,
     spotId: pilotAvailable ? spot!.id : null, ip: pilotAvailable ? spot!.ip : null, oop: pilotAvailable ? spot!.oop : null,

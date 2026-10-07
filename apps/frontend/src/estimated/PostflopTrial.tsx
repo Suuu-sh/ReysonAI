@@ -1,5 +1,8 @@
 import { Dialog } from "../components/Dialog.tsx";
-import type { StrategyNode, StrategyCombo, ActionMix, PostflopDatasets } from "../../scripts/postflop-ai/types.ts";
+import type { StrategyNode, StrategyCombo, ActionMix, PostflopDatasets, InputOptions, InputOpponentProfile } from "../../scripts/postflop-ai/types.ts";
+import type { PlayerRole } from "../../scripts/postflop-ai/tree.ts";
+import { PostflopProfileSettings, ProfilePolicyPreparing, PostflopProfileNote } from "./PostflopProfileSettings.tsx";
+import { adjustedInputOptions } from "../../scripts/postflop-ai/input-options.ts";
 import type { BalancedFlopBase } from "../../scripts/postflop-ai/flop-base-core.ts";
 import type { PostflopSource } from "./postflop-browser.ts";
 import type { ExplanationFacts } from "./postflop-facts.ts";
@@ -8,7 +11,7 @@ type ProductLocale = ReturnType<typeof productLocale>;
 type Positions = { ip: string | null; oop: string | null };
 type DecisionLabels = { labels?: Record<string, string>; labelsJa?: Record<string, string>; options?: { action: string; allIn?: boolean }[] };
 type HandView = { hand?: string; actions: ActionMix; tiers?: Record<string, number>; combos?: StrategyCombo[]; combo?: StrategyCombo };
-type ExplanationState = { key: string; data: ExplanationFacts | null; error: string | null; loading: boolean };
+type ExplanationState = { errorCode?: string; key: string; data: ExplanationFacts | null; error: string | null; loading: boolean };
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { X } from "@phosphor-icons/react";
 import { ActionBars, barColor, Panel, SectionHeading, StatusState } from "../components/primitives.tsx";
@@ -21,7 +24,7 @@ import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLa
 import { isFlopBet } from "../../scripts/postflop-ai/tree.ts";
 import { computeBoard, computeExplain, computeLaterExplain, computeLaterRangeFacts, computeLaterView, computeRangeFacts } from "./postflop-compute.ts";
 import { deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot, loadPostflopFlop } from "./postflop-browser.ts";
-import { productLocale } from "../i18n.ts";
+import { localized, productLocale } from "../i18n.ts";
 
 // Action labels with real amounts come from the replay (decisionOptions in postflop-trial.ts); these
 // plain labels are only the fallback (amount-free) for actions a decision does not carry.
@@ -319,16 +322,20 @@ export function StreetCardDialog({ usedCards = [], street, currentCard = "", onA
   </Dialog>;
 }
 
-export function PostflopTrial({ context, cards, actions = [], turnCard = "", turnActions = [], riverCard = "", riverActions = [], displayMode = "standard" }: { context: NonNullable<ReturnType<typeof completedFlopContext>>; cards: string[]; actions?: string[]; turnCard?: string; turnActions?: string[]; riverCard?: string; riverActions?: string[]; displayMode?: string }) {
+export function PostflopTrial({ context, cards, actions = [], turnCard = "", turnActions = [], riverCard = "", riverActions = [], displayMode = "standard", tableProfile, opponentProfile = "standard", opponentSeat = "ip", onOpponentProfileChange, onOpponentSeatChange }: { tableProfile?: InputOptions["tableProfile"]; opponentProfile?: InputOpponentProfile; opponentSeat?: PlayerRole; onOpponentProfileChange?: (profile: InputOpponentProfile) => void; onOpponentSeatChange?: (seat: PlayerRole) => void; context: NonNullable<ReturnType<typeof completedFlopContext>>; cards: string[]; actions?: string[]; turnCard?: string; turnActions?: string[]; riverCard?: string; riverActions?: string[]; displayMode?: string }) {
+  const options = useMemo<InputOptions>(() => ({ tableProfile, opponentProfile, opponentSeat }), [tableProfile?.call, tableProfile?.three_bet, opponentProfile, opponentSeat]);
+  const requestKey = JSON.stringify(options);
   const board = recognizedFlop(cards);
   const [selectedHand, setSelectedHand] = useState("AKo");
-  const [data, setData] = useState<ReturnType<typeof computeBoard> | null>(null);
+  const [data, setData] = useState<(ReturnType<typeof computeBoard> & { requestKey: string }) | null>(null);
   const [status, setStatus] = useState("idle");
+  const [statusKey, setStatusKey] = useState(requestKey);
   const [error, setError] = useState("");
-  const [spotState, setSpotState] = useState<{ spotId: string | null; data: PostflopSource | null; error: string | null; loading: boolean }>({ spotId: null, data: null, error: null, loading: false });
-  const [datasetState, setDatasetState] = useState<{ spotId: string | null; datasets: PostflopDatasets | null; error: string | null; loading: boolean }>({ spotId: null, datasets: null, error: null, loading: false });
-  const [laterData, setLaterData] = useState<ReturnType<typeof computeLaterView> | null>(null);
+  const [spotState, setSpotState] = useState<{ spotId: string | null; data: PostflopSource | null; error: string | null; errorCode?: string; requestKey?: string; loading: boolean }>({ spotId: null, data: null, error: null, loading: false });
+  const [datasetState, setDatasetState] = useState<{ spotId: string | null; datasets: PostflopDatasets | null; error: string | null; errorCode?: string; requestKey?: string; loading: boolean }>({ spotId: null, datasets: null, error: null, loading: false });
+  const [laterData, setLaterData] = useState<(ReturnType<typeof computeLaterView> & { requestKey: string }) | null>(null);
   const [laterStatus, setLaterStatus] = useState("idle");
+  const [laterStatusKey, setLaterStatusKey] = useState(requestKey);
   const [laterError, setLaterError] = useState("");
   const [laterExplainState, setLaterExplainState] = useState<ExplanationState | null>(null);
   const [explainState, setExplainState] = useState<ExplanationState | null>(null);
@@ -354,94 +361,96 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     setSpotState({ spotId: null, data: null, error: null, loading: false });
     if (!context.pilotAvailable || !spotId) return undefined;
     const controller = new AbortController();
-    setSpotState({ spotId, data: null, error: null, loading: true });
-    loadPostflopSpot(spotId, controller.signal)
+    setSpotState({ spotId, requestKey, data: null, error: null, loading: true });
+    loadPostflopSpot(spotId, controller.signal, options)
       .then(result => {
         if (controller.signal.aborted) return;
         if (context.tree && result!.spot.tree !== context.tree) throw new Error("候補の局面が選択中のポットと一致しません。");
-        setSpotState({ spotId, data: result, error: null, loading: false });
+        setSpotState({ spotId, requestKey, data: result, error: null, loading: false });
       })
       .catch(reason => {
-        if (!controller.signal.aborted && !isAbortError(reason)) setSpotState({ spotId, data: null, error: reason.message, loading: false });
+        if (!controller.signal.aborted && !isAbortError(reason)) setSpotState({ spotId, requestKey, data: null, error: reason.message, errorCode: reason.code, loading: false });
       });
     return () => controller.abort();
-  }, [context.pilotAvailable, context.tree, spotId]);
+  }, [context.pilotAvailable, context.tree, spotId, options]);
 
   useEffect(() => {
     setDatasetState({ spotId: null, datasets: null, error: null, loading: false });
-    if (!context.pilotAvailable || spotState.spotId !== spotId || !spotState.data) return undefined;
+    if (!context.pilotAvailable || spotState.spotId !== spotId || spotState.requestKey !== requestKey || !spotState.data) return undefined;
     const controller = new AbortController();
-    setDatasetState({ spotId, datasets: null, error: null, loading: true });
-    loadPostflopDatasets(spotState.data.spot, controller.signal)
+    setDatasetState({ spotId, requestKey, datasets: null, error: null, loading: true });
+    loadPostflopDatasets(spotState.data.spot, controller.signal, options)
       .then(datasets => {
-        if (!controller.signal.aborted) setDatasetState({ spotId, datasets, error: null, loading: false });
+        if (!controller.signal.aborted) setDatasetState({ spotId, requestKey, datasets, error: null, loading: false });
       })
       .catch(reason => {
-        if (!controller.signal.aborted && !isAbortError(reason)) setDatasetState({ spotId, datasets: null, error: reason.message, loading: false });
+        if (!controller.signal.aborted && !isAbortError(reason)) setDatasetState({ spotId, requestKey, datasets: null, error: reason.message, errorCode: reason.code, loading: false });
       });
     return () => controller.abort();
-  }, [context.pilotAvailable, spotId, spotState.data, spotState.spotId]);
+  }, [context.pilotAvailable, spotId, spotState.data, spotState.spotId, spotState.requestKey, options, requestKey]);
 
-  const postflopSource = spotState.spotId === spotId ? spotState.data : null;
-  const postflopDatasets = datasetState.spotId === spotId ? datasetState.datasets : null;
+  const postflopSource = spotState.spotId === spotId && spotState.requestKey === requestKey ? spotState.data : null;
+  const postflopDatasets = datasetState.spotId === spotId && datasetState.requestKey === requestKey ? datasetState.datasets : null;
   const flopBase = flopBaseState && flopBaseState.spot === spotId && flopBaseState.board === board ? flopBaseState.base : null;
-  const sourceError = spotState.spotId === spotId && spotState.error ? spotState.error
-    : datasetState.spotId === spotId ? datasetState.error : null;
+  const sourceError = spotState.spotId === spotId && spotState.requestKey === requestKey && spotState.error ? spotState.error
+    : datasetState.spotId === spotId && datasetState.requestKey === requestKey ? datasetState.error : null;
+  const sourcePreparing = Boolean(sourceError && (spotState.requestKey === requestKey && spotState.errorCode === "PROFILE_POLICY_MISSING" || datasetState.requestKey === requestKey && datasetState.errorCode === "PROFILE_POLICY_MISSING"));
   useEffect(() => {
-    setData(null); setError("");
+    setStatusKey(requestKey); setData(null); setError("");
     if (!context.pilotAvailable || !spotId || !board || !decision.node) { setStatus("idle"); return undefined; }
-    if (sourceError) { setError(sourceError); setStatus("error"); return undefined; }
+    if (sourceError) { setError(sourceError); setStatus(sourcePreparing ? "preparing" : "error"); return undefined; }
     if (!postflopSource || !postflopDatasets) { setStatus("loading"); return undefined; }
     const controller = new AbortController();
     setStatus("loading");
-    loadPostflopFlop(spotId, board, controller.signal).then(base => {
+    (adjustedInputOptions(options) ? Promise.resolve(null) : loadPostflopFlop(spotId, board, controller.signal)).then(base => {
       if (controller.signal.aborted) return null;
       setFlopBaseState({ spot: spotId, board, base });
-      return deferPostflopCalculation(() => computeBoard({ spotId, board, history: actions, datasets: postflopDatasets,
+      return deferPostflopCalculation(() => computeBoard({ ...options, spotId, board, history: actions, datasets: postflopDatasets,
         flopCandidate: postflopSource.candidate, laterCandidate: postflopSource.laterCandidate, flopBase: base }), controller.signal);
     })
       .then(body => {
         if (controller.signal.aborted) return;
         if (body!.kind !== "ai_estimate_not_gto" || body!.spot !== spotId || body!.board !== board || !body!.nodes ||
             (context.tree && body!.tree !== context.tree)) throw new Error("候補の局面・盤面または形式が一致しません。");
-        setData(body); setStatus("ready");
+        setData({ ...body!, requestKey }); setStatus("ready");
       })
-      .catch(reason => { if (!isAbortError(reason)) { setError(reason.message); setStatus("error"); } });
+      .catch(reason => { if (!controller.signal.aborted && !isAbortError(reason)) { setError(reason.message); setStatus(reason.code === "PROFILE_POLICY_MISSING" ? "preparing" : "error"); } });
     return () => controller.abort();
-  }, [board, context.pilotAvailable, context.tree, decision.node, flopPath, postflopDatasets, postflopSource, sourceError, spotId]);
+  }, [board, context.pilotAvailable, context.tree, decision.node, flopPath, postflopDatasets, postflopSource, sourceError, spotId, sourcePreparing, options, requestKey]);
 
   useEffect(() => {
-    setLaterData(null); setLaterError("");
+    setLaterStatusKey(requestKey); setLaterData(null); setLaterError("");
     if (!context.pilotAvailable || !spotId || !board || !later?.node || !turnCard) { setLaterStatus("idle"); return undefined; }
-    if (sourceError) { setLaterError(sourceError); setLaterStatus("error"); return undefined; }
+    if (sourceError) { setLaterError(sourceError); setLaterStatus(sourcePreparing ? "preparing" : "error"); return undefined; }
     if (!postflopSource || !postflopDatasets) { setLaterStatus("loading"); return undefined; }
     const controller = new AbortController();
     setLaterStatus("loading");
-    deferPostflopCalculation(() => computeLaterView({ spotId, flop: board, flopActions: flopPath, turn: turnCard,
+    deferPostflopCalculation(() => computeLaterView({ ...options, spotId, flop: board, flopActions: flopPath, turn: turnCard,
       turnActions: turnPath, river: riverCard, riverActions: riverPath, datasets: postflopDatasets,
       flopCandidate: postflopSource.candidate, laterCandidate: postflopSource.laterCandidate }), controller.signal)
       .then(body => {
+        if (controller.signal.aborted) return;
         if (body!.kind !== "ai_estimate_not_gto" || body.street !== later!.street || body.node !== later!.node ||
             body.actor !== later!.actor || body.line !== later!.line || !Array.isArray(body.rows) || body.rows.length !== 169) {
           throw new Error("候補の局面または形式が一致しません。");
         }
-        setLaterData(body); setLaterStatus("ready");
+        setLaterData({ ...body!, requestKey }); setLaterStatus("ready");
       })
-      .catch(reason => { if (!isAbortError(reason)) { setLaterError(reason.message); setLaterStatus("error"); } });
+      .catch(reason => { if (!controller.signal.aborted && !isAbortError(reason)) { setLaterError(reason.message); setLaterStatus(reason.code === "PROFILE_POLICY_MISSING" ? "preparing" : "error"); } });
     return () => controller.abort();
   }, [board, context.pilotAvailable, flopPath, later?.actor, later?.line, later?.node, later?.street,
-    postflopDatasets, postflopSource, riverCard, riverPath, sourceError, spotId, turnCard, turnPath]);
+    postflopDatasets, postflopSource, riverCard, riverPath, sourceError, spotId, turnCard, turnPath, sourcePreparing, options, requestKey]);
 
-  const current = decision.node && data?.board === board && data.spot === spotId && data.nodes[decision.node];
+  const current = decision.node && data?.requestKey === requestKey && postflopSource && postflopDatasets && data?.board === board && data.spot === spotId && data.nodes[decision.node];
   const aggregates = useMemo(() => current ? matrixFor(current) : null, [current]);
   const totals = useMemo(() => current ? rangeTotals(current) : null, [current]);
   const matrixNode = useMemo(() => current ? { actingPosition: current.seat } : null, [current]);
   const chosen = aggregates?.get(selectedHand);
   const laterLabels = labelsFor(later?.node, decisionLabelsOf(later));
   const laterLabelKey = JSON.stringify(laterLabels);
-  const laterCurrent = useMemo(() => later?.node && laterData?.street === later!.street && laterData.node === later!.node &&
+  const laterCurrent = useMemo(() => later?.node && laterData?.requestKey === requestKey && postflopSource && postflopDatasets && laterData?.street === later!.street && laterData.node === later!.node &&
     laterData.actor === later!.actor && laterData.line === later!.line ? mergeSameLabelActions(laterData, laterLabels) : null,
-  [laterData, later?.node, later?.street, later?.actor, later?.line, laterLabelKey]);
+  [laterData, later?.node, later?.street, later?.actor, later?.line, laterLabelKey, requestKey, postflopSource, postflopDatasets]);
   const laterAggregates = useMemo(() => laterCurrent ? laterMatrixFor(laterCurrent) : null, [laterCurrent]);
   const laterChosen = laterAggregates?.get(selectedHand);
   const selectedLaterRow = laterCurrent?.rows.find(row => row.hand === selectedHand);
@@ -449,7 +458,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const laterActions = laterCurrent ? Object.keys(selectedLaterRow?.mix ?? {}) : [];
   const laterHeading = later ? laterNodeTitle(later!.node, context, later!.street) : "";
   const [selectedLaterCombo, setSelectedLaterCombo] = useState("all");
-  useEffect(() => { setSelectedLaterCombo("all"); }, [selectedHand, board, turnCard, riverCard, laterCurrent?.street, laterCurrent?.node]);
+  useEffect(() => { setSelectedLaterCombo("all"); }, [selectedHand, board, turnCard, riverCard, laterCurrent?.street, laterCurrent?.node, requestKey]);
   const laterCombo = laterChosen?.combos?.find(item => item.cards === selectedLaterCombo);
   const laterView: HandView | null | undefined = selectedLaterCombo === "all" ? laterChosen : laterCombo
     ? { ...laterChosen, actions: laterCombo.mix, tiers: { [laterCombo.tier]: 1 }, combo: laterCombo } : null;
@@ -457,7 +466,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     ? laterChosen?.combos?.filter(item => item.weight > 0).map(({ cards, weight }) => ({ cards, weight }))
     : laterCombo ? [{ cards: laterCombo.cards, weight: laterCombo.weight }] : null;
   const laterExplainInput = laterCurrent && laterChosen && !laterChosen.unreachable && laterExplainCombos?.length && spotId && board
-    ? { spotId, flop: board, flopActions: flopPath, turn: turnCard, turnActions: turnPath,
+    ? { ...options, spotId, flop: board, flopActions: flopPath, turn: turnCard, turnActions: turnPath,
       river: laterCurrent.street === "river" ? riverCard : "",
       riverActions: laterCurrent.street === "river" ? riverPath : "",
       ...(selectedLaterCombo === "all" ? { combos: laterExplainCombos } : laterCombo ? { cards: laterCombo.cards } : {}) }
@@ -469,14 +478,14 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
       : { data: null, error: null, loading: true }
     : { data: null, error: null, loading: false };
   const [selectedCombo, setSelectedCombo] = useState("all");
-  useEffect(() => { setSelectedCombo("all"); }, [selectedHand, board, decision.node]);
+  useEffect(() => { setSelectedCombo("all"); }, [selectedHand, board, decision.node, requestKey]);
   const combo = chosen?.combos?.find(item => item.cards === selectedCombo);
   const prevBet = actions.find(isFlopBet) ?? "bet33";
   const explainCombos = selectedCombo === "all"
     ? chosen?.combos?.filter(item => item.weight > 0).map(({ cards, weight }) => ({ cards, weight }))
     : combo ? [{ cards: combo!.cards, weight: combo.weight }] : null;
   const explainInput = chosen && !chosen.unreachable && explainCombos?.length && board && decision.node
-    ? { spotId: spotId!, board, node: decision.node, prev: prevBet,
+    ? { ...options, spotId: spotId!, board, node: decision.node, prev: prevBet,
       ...(selectedCombo === "all" ? { combos: explainCombos } : { cards: combo!.cards }) } : null;
   const explainKey = explainInput ? JSON.stringify(explainInput) : null;
   const explain = explainKey && explainState?.key === explainKey ? explainState.data : null;
@@ -497,6 +506,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
       return range_facts ? { ...explanation, range_facts } : explanation;
     }, controller.signal)
       .then(body => {
+        if (controller.signal.aborted) return;
         const matchesSelection = selectedCombo === "all"
           ? (body as ExplanationFacts)?.aggregate?.kind === "hand_class_average" && body.cards === null
           : body?.cards === combo?.cards;
@@ -504,7 +514,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
         setExplainState({ key: explainKey, data: body, error: null, loading: false });
       })
       .catch(reason => {
-        if (!isAbortError(reason)) setExplainState({ key: explainKey, data: null, error: reason.message, loading: false });
+        if (!controller.signal.aborted && !isAbortError(reason)) setExplainState({ key: explainKey, data: null, error: reason.message, errorCode: reason.code, loading: false });
       });
     return () => controller.abort();
   }, [combo?.cards, board, decision.node, explainKey, flopBase, flopPath, postflopDatasets, postflopSource, sourceError, spotId]);
@@ -521,15 +531,16 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
       return range_facts ? { ...explanation, range_facts } : explanation;
     }, controller.signal)
       .then(body => {
+        if (controller.signal.aborted) return;
         if (body!.kind !== "ai_estimate_not_gto" || body!.spot !== spotId || body.street !== laterCurrent?.street ||
             body.node !== laterCurrent?.node || body.line !== laterCurrent?.line || !body.actions || !Number.isFinite(body.equity)) {
           throw new Error(productLocale() !== "ja" ? "Explanation does not match this decision." : "説明の局面が選択中の判断と一致しません。");
         }
         return body;
       })
-      .then(body => setLaterExplainState({ key: laterExplainKey, data: body, error: null, loading: false }))
+      .then(body => { if (!controller.signal.aborted && body) setLaterExplainState({ key: laterExplainKey, data: body, error: null, loading: false }); })
       .catch(reason => {
-        if (!isAbortError(reason)) setLaterExplainState({ key: laterExplainKey, data: null, error: reason.message, loading: false });
+        if (!controller.signal.aborted && !isAbortError(reason)) setLaterExplainState({ key: laterExplainKey, data: null, error: reason.message, errorCode: reason.code, loading: false });
       });
     return () => controller.abort();
   }, [laterCurrent?.line, laterCurrent?.node, laterCurrent?.street, laterExplainKey,
@@ -537,18 +548,20 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const view: HandView | null | undefined = selectedCombo === "all" ? chosen : combo ? { ...chosen, actions: combo.mix, tiers: { [combo.tier]: 1 }, combo } : null;
   const english = productLocale() !== "ja";
   return <div className="postflop-trial" aria-label={english ? "Postflop estimate" : "ポストフロップ試作"}>
-    {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title="この局面のポストフロップ方針は未収録">現在のAI試作があるのは、標準設定の2人のポットのうち、シングルレイズポット（オープン→1人がコール）、3betポット、4betポット、SBのリンプから始まるポットだけです。プリフロップの行動ブロックから戻れます。</StatusState></Panel>
+    <PostflopProfileSettings profile={opponentProfile} seat={opponentSeat} positions={context} onProfileChange={onOpponentProfileChange} onSeatChange={onOpponentSeatChange} />
+    {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title={localized("No postflop policy recorded for this spot", "この局面のポストフロップ方針は未収録")}>{localized("The current AI trial covers heads-up single-raised pots (one open and one caller), 3-bet pots, 4-bet pots, and pots beginning with an SB limp. Return using the preflop action blocks.", "現在のAI試作があるのは、2人のポットのうち、シングルレイズポット（オープン→1人がコール）、3betポット、4betポット、SBのリンプから始まるポットだけです。プリフロップの行動ブロックから戻れます。")}</StatusState></Panel>
       : !cards.every(Boolean) ? <Panel className="postflop-unavailable"><StatusState title={english ? "Select a flop" : "フロップを選択してください"}>{english ? "Open the flop cards in the action path and choose any three cards." : "上のアクション列にあるフロップカードを押して、任意の3枚を選んでください。"}</StatusState></Panel>
       : !board ? <Panel className="postflop-unavailable"><StatusState title={english ? "Invalid flop cards" : "フロップのカードが正しくありません"}>{english ? "Choose three distinct cards from the deck." : "重複しないカードを3枚選んでください。"}</StatusState></Panel>
       : <>
-        {decision.node && status === "loading" && <PostflopLoading title="ローカル候補を読み込み中" />}
-        {decision.node && status === "error" && <Panel><StatusState title="ローカル候補を表示できません" tone="error">{error}</StatusState></Panel>}
+        {(sourcePreparing || decision.node && statusKey === requestKey && status === "preparing" || later?.node && laterStatusKey === requestKey && laterStatus === "preparing") && <ProfilePolicyPreparing onRestoreStandard={onOpponentProfileChange ? () => onOpponentProfileChange("standard") : undefined} />}
+        {decision.node && !sourcePreparing && status === "loading" && <PostflopLoading title="ローカル候補を読み込み中" />}
+        {decision.node && statusKey === requestKey && !sourcePreparing && status === "error" && <Panel><StatusState title="ローカル候補を表示できません" tone="error">{error}</StatusState></Panel>}
         {!decision.node && !start && <Panel><StatusState title={english ? "Flop action complete" : "フロップの判断終了"}>{decision.result}</StatusState></Panel>}
         {!decision.node && start && !turnCard && <Panel><StatusState title={english ? "Select a turn card" : "ターンを選択してください"}>{english ? "Choose a turn card in the action path above." : "上のアクション列にあるターンカードを押して、1枚選んでください。"}</StatusState></Panel>}
         {!decision.node && start && turnReplay && !later?.node && !riverCard && turnReplay.state.end && !["fold", "raise-fold"].includes(turnReplay.state.end.type) && turnReplay.stacks.ip > 0 && turnReplay.stacks.oop > 0 && <Panel><StatusState title={english ? "Select a river card" : "リバーを選択してください"}>{english ? "The turn action is complete. Choose one river card in the action path above." : "ターンの判断が終わりました。上のアクション列にあるリバーカードを押して、1枚選んでください。"}</StatusState></Panel>}
         {!decision.node && start && turnReplay && !later?.node && (turnReplay.end?.type === "fold" || turnReplay.end?.type === "raise-fold" || turnReplay.stacks.ip <= 0 || turnReplay.stacks.oop <= 0 || Boolean(riverReplay?.state.end)) && <Panel><StatusState title={english ? "Later-street action complete" : "後続ストリートの判断終了"}>{english ? "The action has ended; no later decision is available." : "フォールドまたはオールインでアクションが終了しました。後続の判断はありません。"}</StatusState></Panel>}
-        {!decision.node && start && later?.node && laterStatus === "loading" && <PostflopLoading title={english ? "Loading local later-street estimate" : "後続ストリートの候補を読み込み中"} />}
-        {!decision.node && start && later?.node && laterStatus === "error" && <Panel><StatusState title={english ? "Cannot show the local later-street estimate" : "後続ストリートの候補を表示できません"} tone="error">{laterError}</StatusState></Panel>}
+        {!decision.node && start && later?.node && !sourcePreparing && laterStatus === "loading" && <PostflopLoading title={english ? "Loading local later-street estimate" : "後続ストリートの候補を読み込み中"} />}
+        {!decision.node && start && later?.node && laterStatusKey === requestKey && !sourcePreparing && laterStatus === "error" && <Panel><StatusState title={english ? "Cannot show the local later-street estimate" : "後続ストリートの候補を表示できません"} tone="error">{laterError}</StatusState></Panel>}
         {current && aggregates && <div className="postflop-range-layout">
           <StrategyMatrix node={matrixNode} title={`${nodeTitle(decision.node, context)} · ${english ? "range" : "レンジ"}`} ariaLabel={english ? `${current.seat} flop range` : `${current.seat}のフロップレンジ`}
             aggregates={aggregates} actions={current.actions as string[]} actionLabels={labels} simplified={displayMode === "simple"}
@@ -569,6 +582,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
                   <div className="postflop-view-line static">
                     <h3 className="postflop-view-title">{view.combo ? <>{view.combo.cards.match(/../g)!.map(card => <span key={card} className={`suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>)}</> : <>{selectedHand}<small>{english ? "Average" : "平均"}</small></>}</h3>
                     </div>
+                <PostflopProfileNote profile={opponentProfile} adjusted={data?.adjusted} explain={explain} labels={labels} />
                 <ComboPicker hand={selectedHand} combos={chosen.combos} actions={current.actions as string[]} selected={selectedCombo} onSelect={setSelectedCombo} labels={labels} />
                 <HandReasons node={decision.node} labels={labels} raiseAllIn={raiseAllInOf(decision)} hand={view.combo ? { ...view, hand: view.combo.cards } : view} texture={data!.texture} explain={explain} boardCards={board}
                   loading={Boolean(explainLoading)} error={Boolean(explainError)}
@@ -599,6 +613,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
                   <div className="postflop-view-line static">
                       <h3 className="postflop-view-title">{laterView.combo ? <>{laterView.combo.cards.match(/../g)!.map(card => <span key={card} className={`suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>)}</> : <>{selectedHand}<small>{english ? "Average" : "平均"}</small></>}</h3>
                     </div>
+                  <PostflopProfileNote profile={opponentProfile} adjusted={laterData?.adjusted} explain={laterExplain.data} labels={laterLabels} />
                   <ComboPicker hand={selectedHand} combos={laterChosen.combos} actions={laterActions} selected={selectedLaterCombo} onSelect={setSelectedLaterCombo} labels={laterLabels}
                     missingReason={english ? "Board overlap or no reach on this action path" : "ボードと重複、またはこの行動経路に到達しない"}
                     missingTitle={english ? "Board overlap or no reach on this action path" : "ボードと重複、またはこの行動経路に到達しません"} />

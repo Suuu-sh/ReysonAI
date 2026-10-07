@@ -145,9 +145,19 @@ export function postflopResponse(pathname, params) {
       throw new Error("候補に対応する最新の監査レポートがありません。");
     }
     if (pathname === "/local-postflop-spot") {
+      let optionalLater, laterPolicyError;
+      try {
+        optionalLater = isOpponentMode(inputs) ? loadLaterCandidate(inputs, candidate) : readArtifact(inputs.spot, "laterCandidate");
+      } catch (error) {
+        if (error.code !== "PROFILE_POLICY_MISSING") throw error;
+        // An absent turn/river role must not prevent an available flop pair from
+        // being read. Later calculations still fail closed with this same code.
+        optionalLater = null;
+        laterPolicyError = { error: error.message, code: error.code, state: "not_generated" };
+      }
       // Same body as the worker's /v1/postflop/spot: the artifacts the browser computes from.
       return { status: 200, body: { kind: "ai_estimate_not_gto", spot: inputs.spot, candidate,
-        laterCandidate: isOpponentMode(inputs) ? loadLaterCandidate(inputs, candidate) : readArtifact(inputs.spot, "laterCandidate"), report,
+        laterCandidate: optionalLater, report, ...(laterPolicyError ? { laterPolicyError } : {}),
         ...adjustment(inputs), ...(inputs.adjusted ? { audit_scope: isOpponentMode(inputs) ? "structure_only_unpublished" : "standard_saved_ranges" } : {}) } };
     }
     let data;

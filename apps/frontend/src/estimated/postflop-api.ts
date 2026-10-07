@@ -9,7 +9,14 @@ const API_ROUTES = new Set(["spot", "flop"]);
 export type PostflopRoute = keyof typeof LOCAL_PATHS;
 
 export function postflopUrl(route: PostflopRoute, params: URLSearchParams | Record<string, string>, base = (import.meta as ImportMeta & { env?: { VITE_API_BASE?: string } }).env?.VITE_API_BASE): string {
-  const query = new URLSearchParams(params).toString();
+  const search = new URLSearchParams(params);
+  // D1 has only standard (spot_id, stage) policies. Do not send a profile to
+  // that endpoint: an older worker could silently answer with standard data.
+  if (base && search.has("opponentProfile") && search.get("opponentProfile") !== "standard") {
+    throw Object.assign(new Error("Opponent-profile policies are not generated for the published API."),
+      { code: "PROFILE_POLICY_MISSING", state: "not_generated" });
+  }
+  const query = search.toString();
   const path = base && API_ROUTES.has(route) ? `${String(base).replace(/\/$/, "")}/v1/postflop/${route}` : LOCAL_PATHS[route];
   return `${path}?${query}`;
 }
