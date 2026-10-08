@@ -1,0 +1,38 @@
+name: Verify authenticated free MCP
+on:
+  pull_request:
+    branches: [development, main]
+    paths: ['apps/mcp/**', 'apps/backend/src/account.ts', 'apps/backend/migrations/0007_accounts.sql', 'apps/frontend/src/estimated/**', '.github/workflows/verify-mcp.yml']
+  push:
+    branches: ['feat/authenticated-free-mcp']
+    paths: ['apps/mcp/**', '.github/workflows/verify-mcp.yml']
+permissions:
+  contents: read
+concurrency:
+  group: mcp-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/mcp
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24.19.0'
+          cache: npm
+          cache-dependency-path: apps/mcp/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build:check
+      - name: Existing API account and range contracts remain unchanged
+        working-directory: apps/backend
+        run: node --experimental-strip-types --test tests/account.test.mjs tests/account-local.test.mjs tests/native-account.test.mjs tests/preflop-datasets.test.mjs
