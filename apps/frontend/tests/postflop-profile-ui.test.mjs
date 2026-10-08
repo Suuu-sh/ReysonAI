@@ -161,20 +161,19 @@ test("later-only missing profile policy remains a non-error preparing state with
   } finally { await act(async () => root.unmount()); missingLater = false; }
 });
 
-test("supplement is optional, profile-only and explicitly limited without EV values/columns", () => {
+test("profile note localizes assumptions and adjustment without postflop EV supplements", () => {
   for (const locale of ["en", "ja", "zh-CN", "es"]) {
     window.localStorage.setItem("reysonai:locale:v1", locale);
-    const html = renderToStaticMarkup(createElement(module.PostflopProfileNote, { profile: "nit", adjusted: { tableProfile: {}, opponentProfile: "nit" },
-      explain: { profile_reference: { max_ev_action: "check" } }, labels: { check: "Check" } }));
-    assert.match(html, /postflop-adjusted-marker/); assert.match(html, /postflop-profile-supplement/);
-    assert.doesNotMatch(html, /<table|action_ev_bb|EV column/);
-    if (locale === "en") assert.match(html, /no future betting.*Not solver output; does not change frequencies/);
-    if (locale === "zh-CN") { assert.match(html, /限定模型补充/); assert.match(html, /最高 EV 动作为过牌/); assert.doesNotMatch(html, /Check/); }
-    if (locale === "es") { assert.match(html, /Complemento de modelo limitado/); assert.match(html, /mayor EV es Pasar/); assert.doesNotMatch(html, /Check/); }
+    const html = renderToStaticMarkup(createElement(module.PostflopProfileNote, { profile: "nit", adjusted: { tableProfile: {}, opponentProfile: "nit" } }));
+    assert.match(html, /postflop-adjusted-marker/);
+    assert.doesNotMatch(html, /postflop-profile-supplement|<table|action_ev_bb|EV|highest|最大/);
+    if (locale === "en") assert.match(html, /These frequencies are AI decisions assuming the opponent is/);
+    if (locale === "ja") assert.match(html, /この頻度は相手が/);
+    if (locale === "zh-CN") assert.match(html, /这些频率是以对手为/);
+    if (locale === "es") assert.match(html, /Estas frecuencias son decisiones de IA/);
   }
   window.localStorage.setItem("reysonai:locale:v1", "en");
-  assert.doesNotMatch(renderToStaticMarkup(createElement(module.PostflopProfileNote, { profile: "standard", explain: { profile_reference: { max_ev_action: "check" } }, labels: { check: "Check" } })), /postflop-profile-supplement|assuming the opponent/);
-  assert.doesNotMatch(renderToStaticMarkup(createElement(module.PostflopProfileNote, { profile: "nit", explain: { profile_reference: { max_ev_action: null } }, labels: {} })), /postflop-profile-supplement/);
+  assert.doesNotMatch(renderToStaticMarkup(createElement(module.PostflopProfileNote, { profile: "standard" })), /postflop-profile-supplement|assuming the opponent/);
 });
 
 test("mobile segments retain 44px targets and wrapping without decorative stripes", async () => {

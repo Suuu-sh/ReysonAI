@@ -100,7 +100,13 @@ test("profile SB flats can reach otherwise-unreachable SRP without changing stan
 });
 
 test("history HU supports table profiles and exact available opponent factors, missing profiles fail closed", () => {
-  const recorded = POSTFLOP_SPOTS.find(item => "history" in item), id = recorded.id;
+  // Select a persisted history whose factors are all tracked datasets. The
+  // catalog also contains local-only continuation sources absent in clean clones.
+  const historyNames = new Set([...names, "multiway-responses", "multiway2-responses", "squeeze-responses", "cold-three-bet-responses", "cold-four-bet-responses"]);
+  const recorded = POSTFLOP_SPOTS.find(item => "history" in item &&
+    Object.values(item.ranges).every(factors => factors.every(([name]) => historyNames.has(name))));
+  assert.ok(recorded, "a tracked-data-only HU history must exist");
+  const id = recorded.id;
   for (const factors of Object.values(recorded.ranges)) for (const [name] of factors) datasets[name] = read(name);
   const adjusted = loadInputs(id, { tableProfile: table });
   assert.deepEqual(buildInputs(id, datasets, { tableProfile: table }), adjusted);
@@ -132,6 +138,95 @@ test("profile sources never fall back on missing, mismatched, malformed or zero-
   assert.throws(() => buildInputs(id, ds, options), /unreachable after range adjustment/);
   assert.throws(() => loadInputs(id, { opponentProfile: "nit" }), /requires opponentSeat/);
   assert.throws(() => loadInputs(id, { opponentProfile: "unknown", opponentSeat: "oop" }), /Unknown opponent profile/);
+});
+
+// Exercise the same assembly boundary with a single saved factor per seat. This
+// permits exhaustive schema checks without depending on local continuation data
+// or requiring every preflop source to have a published postflop catalog entry.
+function assembleSourceAction(baseline, selected, action) {
+  const base = loadInputs("BTN_open_BB_call");
+  const factor = ["fixture", baseline.id, action];
+  base.spot = { ...base.spot, ranges: { [base.spot.oop]: [factor], [base.spot.ip]: [factor] } };
+  const sources = { fixture: { spots: [baseline] }, "profiles/nit/villain/fixture": { spots: [selected] } };
+  return finalizeInputs(base, { opponentProfile: "nit", opponentSeat: "oop" }, name => sources[name], sha, base.structure_hash);
+}
+
+const sizeFields = {
+  open: "open_size_bb", three_bet: "three_bet_size_bb", four_bet: "four_bet_size_bb",
+  limp: "limp_size_bb", raise: "raise_size_bb", squeeze: "squeeze_size_bb", all_in: "all_in_size_bb",
+};
+const standardNames = [...names, "five-bet-responses", "multiway-responses", "multiway2-responses",
+  "squeeze-responses", "cold-three-bet-responses", "cold-four-bet-responses"];
+
+test("all tracked standard and opponent-profile sized actions retain original saved geometry", () => {
+  for (const name of standardNames) {
+    const standard = read(name);
+    for (const baseline of standard.spots) for (const action of Object.keys(sizeFields)) {
+      if (baseline.hands.some(row => row[action] > 0)) {
+        assert.doesNotThrow(() => assembleSourceAction(baseline, baseline, action), `${name}/${baseline.id}/${action}`);
+      }
+    }
+  }
+  for (const profile of ["nit", "station", "lag", "maniac"]) for (const name of [...names, "five-bet-responses"]) {
+    const standard = read(name);
+    for (const selected of read(`profiles/${profile}/villain/${name}`).spots) {
+      const baseline = standard.spots.find(source => source.id === selected.id);
+      assert.ok(baseline, `${profile}/${name}/${selected.id} needs a saved standard source`);
+      for (const action of Object.keys(sizeFields)) if (selected.hands.some(row => row[action] > 0)) {
+        assert.doesNotThrow(() => assembleSourceAction(baseline, selected, action), `${profile}/${name}/${selected.id}/${action}`);
+      }
+    }
+  }
+});
+
+test("positive sized actions reject missing, null, nonfinite or changed row totals including profile-only hands", () => {
+  const cases = [
+    ["opening-ranges", "BTN_open", "open"], ["opening-ranges", "SB_open", "limp"],
+    ["preflop-ranges", "BB_vs_BTN", "three_bet"],
+    ["three-bet-responses", read("three-bet-responses").spots[0].id, "four_bet"],
+    ["limp-responses", "SB_vs_BB_iso", "raise"],
+    ["multiway-responses", read("multiway-responses").spots[0].id, "squeeze"],
+    ["four-bet-responses", read("four-bet-responses").spots[0].id, "all_in"],
+  ];
+  for (const [name, id, action] of cases) {
+    const baseline = structuredClone(read(name).spots.find(source => source.id === id));
+    const index = baseline.hands.findIndex(row => row[action] > 0), field = sizeFields[action];
+    assert.ok(index >= 0, `${name}/${id}/${action}`);
+    const selected = structuredClone(baseline), expected = selected.hands[index][field];
+    // The selected profile may make a previously zero-frequency hand positive.
+    baseline.hands[index][action] = 0;
+    delete baseline.hands[index][field];
+    assert.doesNotThrow(() => assembleSourceAction(baseline, selected, action));
+    for (const invalid of [undefined, null, NaN, Infinity, -1, expected + 1]) {
+      selected.hands[index][field] = invalid;
+      if (invalid === undefined) delete selected.hands[index][field];
+      assert.throws(() => assembleSourceAction(baseline, selected, action), /source action size changed/, `${action}/${invalid}`);
+    }
+  }
+});
+
+test("historical continuation sized actions require raise_to_size_bb from saved action_sizes_bb", () => {
+  for (const action of ["four_bet", "all_in"]) {
+    // Minimal in-memory schema fixture: no gitignored continuation JSON is read.
+    const baseline = {
+      id: "continuation_fixture", hero: "BB", effective_stack_bb: 100,
+      action_sizes_bb: { [action]: action === "all_in" ? 100 : 26 },
+      hands: [{ hand: "AA", [action]: 0, raise_to_size_bb: null }],
+    };
+    const selected = structuredClone(baseline), expected = baseline.action_sizes_bb[action];
+    selected.hands[0][action] = 100;
+    selected.hands[0].raise_to_size_bb = expected;
+    // Standard source has one positive hand too, while this one is profile-only.
+    baseline.hands.push({ hand: "KK", [action]: 100, raise_to_size_bb: expected });
+    selected.hands.push(structuredClone(baseline.hands[1]));
+    assert.doesNotThrow(() => assembleSourceAction(baseline, selected, action));
+    for (const invalid of [undefined, null, NaN, Infinity, expected + 1]) {
+      selected.hands[0].raise_to_size_bb = invalid;
+      if (invalid === undefined) delete selected.hands[0].raise_to_size_bb;
+      selected.hands[0][sizeFields[action]] = expected; // Wrong field cannot hide a missing shared total.
+      assert.throws(() => assembleSourceAction(baseline, selected, action), /source action size changed/);
+    }
+  }
 });
 
 test("structure identity excludes ranges/reach, but includes actual geometry and game/flop settings", () => {

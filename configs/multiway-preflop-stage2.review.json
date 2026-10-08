@@ -348,6 +348,29 @@
           "existing_spots": "Standard publish 85 spots unchanged; 960 profile policies resolve after merge; typecheck/build pass"
         },
         "limitations": "Source-only. Postflop policies are AI estimates, not GTO."
+      },
+      {
+        "date": "2026-10-08",
+        "reviewer": "Claude main session",
+        "reviewed_base_commit": "9653ddec",
+        "report": "apps/frontend/docs/specs/opponent-profiles-d1.result.md",
+        "scope": "Source-only review of PR #123 review fixes (profile EV supplement removed, sized-action validation for profile ranges, test fixtures, locale copy, classic grid hatching). No preflop data generated or edited; no renewal of original Astra strategy/data-quality approval.",
+        "blocking_findings": 0,
+        "before_content_sha256": "bddc9cc98c32e5e500ed1d941d9685905765735e2a462f435427911d12a598dd",
+        "after_content_sha256": "ec2083b77956d04211dabdcecb34d8ed4187caaa2100af6147b00d1606e544bb",
+        "source_identity": {
+          "previous": 195,
+          "current": 195,
+          "modified": 4,
+          "added": 0,
+          "removed": 0,
+          "unchanged": 191
+        },
+        "verification": {
+          "artifact_and_archive_identity": "All 1888 artifact records and the archive unchanged",
+          "existing_spots": "All standard and profile preflop sources pass the stricter size validation; typecheck/build pass"
+        },
+        "limitations": "Source-only. Postflop policies are AI estimates, not GTO."
       }
     ],
     "copy_amendments": [
@@ -10382,8 +10405,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/input-options.ts",
-      "bytes": 8762,
-      "sha256": "a21d68f9fe65721c9fea4e7d2158f4c3905d071a48e74e9c462e19b1a11af04b"
+      "bytes": 9456,
+      "sha256": "b47576f40c71001ca6405d2c09fadcfef0e7f688421b42678d3b4873a6b7db73"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
@@ -10522,8 +10545,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/profile-reference.ts",
-      "bytes": 7665,
-      "sha256": "1eb87d412273be46af9a0706600814ff21f7d024b3f15b6de24c5c7a9ba5f4b8"
+      "bytes": 2246,
+      "sha256": "ac122a565b23f345e5351629df2d7d4bc4911e662f6abf9b615a77b1782205cc"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/publish-d1.mjs",
@@ -10977,8 +11000,8 @@
     },
     {
       "path": "apps/frontend/src/locales/opponent-profile-copy.json",
-      "bytes": 4096,
-      "sha256": "ec27c13206faba83132a2c4f4001d5f9e9cbc522ed5a4a9e0c612e7877bfa531"
+      "bytes": 3594,
+      "sha256": "78185190652e7fa4a282577851cf74a58abfbfed28e04ed40d393069542d52b7"
     },
     {
       "path": "apps/frontend/src/locales/product-dictionary.json",
@@ -10987,8 +11010,8 @@
     },
     {
       "path": "apps/frontend/src/locales/product-direct.json",
-      "bytes": 44794,
-      "sha256": "1108ed95ac1a899850c910e9aaa9332d2b2ed99a61be837b4666a2a97b99d27f"
+      "bytes": 45331,
+      "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
     },
     {
       "path": "apps/frontend/src/locales/reason-copy.ts",
@@ -11036,7 +11059,7 @@
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
     }
   ],
-  "content_sha256": "bddc9cc98c32e5e500ed1d941d9685905765735e2a462f435427911d12a598dd",
+  "content_sha256": "ec2083b77956d04211dabdcecb34d8ed4187caaa2100af6147b00d1606e544bb",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,

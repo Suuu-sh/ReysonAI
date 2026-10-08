@@ -1,4 +1,4 @@
-import type { FrequencyRow, InputOptions, Inputs, RangeFactor, SourceDataset, SourceSpot } from "./types.ts";
+import type { FrequencyRow, InputOptions, Inputs, RangeFactor, SourceAction, SourceDataset, SourceHand, SourceSpot } from "./types.ts";
 import type { OpeningSpot, ResponseDataset } from "../../src/estimated/preflop-types.ts";
 import type { TableAdjustments } from "../../src/estimated/table-profile.ts";
 import { adjustOpeningSpot, applyTableProfile, isDefaultProfile, normalizeProfile } from "../../src/estimated/table-profile.ts";
@@ -77,6 +77,28 @@ function validateSource(source: SourceSpot | undefined, baseline: SourceSpot, la
       Object.keys(actual).some(key => !(key in expected))) throw new Error(`${label}: source geometry changed`);
 }
 
+const ACTION_SIZE_FIELDS: Partial<Record<SourceAction, string>> = {
+  open: "open_size_bb", three_bet: "three_bet_size_bb", four_bet: "four_bet_size_bb",
+  limp: "limp_size_bb", raise: "raise_size_bb", squeeze: "squeeze_size_bb", all_in: "all_in_size_bb",
+};
+
+function validateActionSize(row: SourceHand, action: SourceAction, baseline: SourceSpot, label: string) {
+  const field = ACTION_SIZE_FIELDS[action];
+  if (!field || row[action] <= 0) return;
+  const saved = baseline as unknown as Record<string, unknown>;
+  // Continuation sources store raise totals in one shared row field, unlike
+  // ordinary sources' action-specific fields. Read geometry from the original
+  // saved source, never from the substituted profile's row.
+  const actionSizes = saved.action_sizes_bb as Partial<Record<SourceAction, number | null>> | undefined;
+  const rowField = actionSizes ? "raise_to_size_bb" : field;
+  const expected = actionSizes ? actionSizes[action]
+    : action === "limp" ? 1 : action === "raise" ? saved.raise_to_bb ?? saved.raise_size_bb : saved[field];
+  const actual = (row as unknown as Record<string, unknown>)[rowField];
+  if (typeof expected !== "number" || !Number.isFinite(expected) || expected <= 0 || actual !== expected) {
+    throw new Error(`${label}: source action size changed ${row.hand}/${action} (missing or mismatched ${rowField})`);
+  }
+}
+
 export function finalizeInputs(base: BaseInputs, options: InputOptions, read: ReadDataset, sha: Hash, structure_hash: string): Inputs {
   const normalized = normalizedInputOptions(options);
   if (!adjustedInputOptions(options)) return { ...base, structure_hash };
@@ -106,19 +128,13 @@ export function finalizeInputs(base: BaseInputs, options: InputOptions, read: Re
       }
       usedSources.push({ seat, dataset, spot: selected! });
       const rows = new Map(selected!.hands.map(row => [row.hand, row]));
-      return { action, rows, hands: baseline.hands, source: selected! };
+      return { action, rows, hands: baseline.hands, baseline };
     });
-    seatRows[seat] = maps[0].hands.map(({ hand }) => ({ hand, freq: maps.reduce((reach, { action, rows, source }) => {
+    seatRows[seat] = maps[0].hands.map(({ hand }) => ({ hand, freq: maps.reduce((reach, { action, rows, baseline }) => {
       const row = rows.get(hand), frequency = row?.[action];
       if (!Number.isFinite(frequency) || frequency! < 0 || frequency! > 100) throw new Error(`${spot.id}: invalid saved action ${hand}/${action}`);
-      // Positive raises must still use the saved geometry, even for profile-only hands.
-      const fields: Partial<Record<string, string>> = { open: "open_size_bb", three_bet: "three_bet_size_bb", four_bet: "four_bet_size_bb", limp: "limp_size_bb", raise: "raise_size_bb", squeeze: "squeeze_size_bb", all_in: "all_in_size_bb" };
-      const field = fields[action];
-      if (frequency! > 0 && field && Object.hasOwn(row!, field)) {
-        const geometry = source as unknown as Record<string, unknown>;
-        const expected = action === "limp" ? 1 : action === "raise" ? geometry.raise_to_bb ?? geometry.raise_size_bb : geometry[field];
-        if (expected !== undefined && (row as unknown as Record<string, unknown>)[field] !== expected) throw new Error(`${spot.id}: source action size changed ${hand}/${action}`);
-      }
+      // Missing sizing is invalid too, including profile-only positive hands.
+      validateActionSize(row!, action, baseline, spot.id);
       return reach * frequency! / 100;
     }, 100) }));
     if (!seatRows[seat].some(row => row.freq > 0)) throw new Error(`${spot.id}: ${seat} saved history is unreachable after range adjustment`);

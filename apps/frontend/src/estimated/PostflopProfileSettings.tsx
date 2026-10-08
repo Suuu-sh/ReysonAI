@@ -1,7 +1,6 @@
 import type { InputAdjustment, InputOpponentProfile } from "../../scripts/postflop-ai/types.ts";
 import type { PlayerRole } from "../../scripts/postflop-ai/tree.ts";
-import type { ExplanationFacts } from "./postflop-facts.ts";
-import { localized, translateProductCopy } from "../i18n.ts";
+import { localized } from "../i18n.ts";
 import nit from "./profiles/nit/villain/meta.json" with { type: "json" };
 import station from "./profiles/station/villain/meta.json" with { type: "json" };
 import lag from "./profiles/lag/villain/meta.json" with { type: "json" };
@@ -53,16 +52,11 @@ export function ProfilePolicyPreparing({ onRestoreStandard }: { onRestoreStandar
   </Panel>;
 }
 
-export function PostflopProfileNote({ profile, adjusted, explain, labels }: {
+export function PostflopProfileNote({ profile, adjusted }: {
   profile: InputOpponentProfile; adjusted?: InputAdjustment;
-  explain?: (ExplanationFacts & { profile_reference?: { max_ev_action: string | null } }) | null;
-  labels: Record<string, string>;
 }) {
-  const maxAction = profile !== "standard" ? explain?.profile_reference?.max_ev_action : null;
-  const actionLabel = maxAction && labels[maxAction] ? translateProductCopy(labels[maxAction]) : null;
   return <div className="postflop-profile-note">
     {adjusted && <small className="postflop-adjusted-marker">{localized("Adjusted for table / opponent tendencies", "卓の状況／相手の傾向に合わせて調整")}</small>}
     {profile !== "standard" && <p>{localized("These frequencies are AI decisions assuming the opponent is {0}.", "この頻度は相手が{0}の前提でのAIの判断です。").replace("{0}", opponentProfileCopy(profile).name)}</p>}
-    {actionLabel && <p className="postflop-profile-supplement">{localized("Limited-model supplement: highest EV action is {0}. Opponent raises count as calls; no future betting. Not solver output; does not change frequencies.", "限定モデルの補足：EV最大は{0}。相手のレイズはコール扱い・将来のベットなし。ソルバー出力ではなく、頻度は変更しません。").replace("{0}", actionLabel)}</p>}
   </div>;
 }

@@ -48,6 +48,14 @@ test("preflop call EV uses the flop-style right column without inventing other a
   assert.equal(renderToStaticMarkup(createElement(PreflopCallEvBars, { items, facts: { eqr: 0.9, equityPct: 45.5 } })), "");
 });
 
+test("classic matrix background excludes unreachable cells and preserves their hatching", () => {
+  const css = readFileSync(new URL("../src/styles.css", import.meta.url), "utf8");
+  const rangeCss = readFileSync(new URL("../src/estimated/ranges.css", import.meta.url), "utf8");
+  assert.match(css, /\[data-matrix="classic"\] \.matrix button:not\(\.unreachable-hand\) \{ background: #1c1c21 !important; \}/);
+  assert.doesNotMatch(css, /\[data-matrix="classic"\] \.matrix button\s*\{[^}]*background/);
+  assert.match(rangeCss, /\.matrix button\.unreachable-hand \{ background: repeating-linear-gradient\(/);
+});
+
 test("standard matrix keeps a dominant solid cell and puts only mixed frequencies in a bottom strip", () => {
   const aggregates = new Map([
     ["AA", { actions: { raise: 1, fold: 0 }, comboCount: 6 }],
@@ -55,7 +63,7 @@ test("standard matrix keeps a dominant solid cell and puts only mixed frequencie
     ["K5s", { actions: { raise: 0.4, fold: 0.6 }, comboCount: 4, unreachable: true }],
   ]);
   const props = { node: { actingPosition: "BTN" }, aggregates, actions: ["raise", "fold"], onSelect() {} };
-  const cell = (html, hand) => html.match(new RegExp(`<button[^>]*><strong>${hand}</strong>[\\s\\S]*?</button>`))?.[0] ?? "";
+  const cell = (html, hand) => [...html.matchAll(/<button\b[^>]*>[\s\S]*?<\/button>/g)].find(([markup]) => markup.includes(`<strong>${hand}</strong>`))?.[0] ?? "";
   const standard = renderToStaticMarkup(createElement(StrategyMatrix, props));
   const mixed = cell(standard, "K6s");
   assert.match(mixed, /background:#d9477f/);
@@ -64,7 +72,7 @@ test("standard matrix keeps a dominant solid cell and puts only mixed frequencie
   assert.match(mixed, /width:25\.0%;background:#26262c/);
   assert.doesNotMatch(cell(standard, "AA"), /cell-mix/);
   assert.match(cell(standard, "K5s"), /unreachable-hand/);
-  assert.doesNotMatch(cell(standard, "K5s"), /cell-mix/);
+  assert.doesNotMatch(cell(standard, "K5s"), /cell-fill|cell-mix/);
 
   const simple = renderToStaticMarkup(createElement(StrategyMatrix, { ...props, simplified: true }));
   assert.match(cell(simple, "K6s"), /background:#d9477f/);

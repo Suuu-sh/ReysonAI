@@ -7,7 +7,6 @@ import { NODES, effectiveMix, referencePolicyFor } from "../scripts/postflop-ai/
 import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
 import { LATER_NODES } from "../scripts/postflop-ai/later-tree.ts";
 import { parseCards } from "../scripts/postflop-ai/model.ts";
-import { rake, settle } from "../scripts/postflop-ai/engine.ts";
 import { profileReferenceFacts } from "../scripts/postflop-ai/profile-reference.ts";
 import { flopUiComboFactsCanonical } from "../scripts/postflop-ai/flop-ui-facts.ts";
 import { explainLaterCombo } from "../scripts/postflop-ai/explain-later.ts";
@@ -92,7 +91,7 @@ test("profile reach follows the same saved mixes, including high-SPR river shove
   assert.equal(facing.mix.call, 37);
 });
 
-test("profile facts keep raw shown mix separate from the fully evaluated one-step EV reference", () => {
+test("profile facts retain frequency context without action EV or action ranking", () => {
   const inputs = inputsFor("station", "oop");
   const result = mixAt(inputs, river, { flop: ["check"], turn: ["check", "check"], river: ["check"] }, "AsAc");
   const beforeReach = result.model.rangeOf(result.table, river, "BB").slice();
@@ -101,41 +100,26 @@ test("profile facts keep raw shown mix separate from the fully evaluated one-ste
   assert.equal(facts.role, "exploit");
   assert.deepEqual(facts.shown_mix, fixture.later_first);
   assert.equal(facts.balanced_mix.allin, 0);
-  assert.deepEqual(facts.evaluated_actions, facts.legal_actions);
-  assert.ok(facts.evaluated_actions.includes("allin"));
-  assert.ok(facts.max_ev_action);
   assert.equal(facts.unsupported_reason, null);
+  assert.deepEqual(Object.keys(facts).sort(), ["kind", "profile", "role", "shown_mix", "balanced_mix", "frequency_reference", "assumptions", "legal_actions", "unsupported_reason"].sort());
   assert.deepEqual(result.model.mix(result.table, river, result.node, result.combo, result.raw), fixture.later_first);
   assert.deepEqual(result.model.rangeOf(result.table, river, "BB"), beforeReach);
   const missing = profileReferenceFacts(inputs, flopPolicy, laterPolicy, null, river, result.node, result.combo, result.raw);
-  assert.equal(missing.max_ev_action, null);
+  assert.equal(missing.balanced_mix, null);
+  assert.deepEqual(missing.shown_mix, fixture.later_first);
   assert.match(missing.unsupported_reason, /replayed/);
 });
 
-test("facing reference evaluates raise too, or explicitly withholds a complete maximum", () => {
+test("facing profile reference preserves legal actions and saved frequencies without EV evaluation", () => {
   const inputs = inputsFor();
   const result = mixAt(inputs, river, { flop: ["check"], turn: ["check", "check"], river: ["bet75"] }, "AsAc");
   const facts = profileReferenceFacts(inputs, flopPolicy, laterPolicy, result.table, river, result.node, result.combo, result.raw);
   assert.deepEqual(facts.legal_actions, ["fold", "call", "raise"]);
-  assert.ok(facts.evaluated_actions.includes("raise"));
-  assert.ok(facts.max_ev_action);
-  assert.equal(facts.action_ev_bb.fold, 0);
   assert.deepEqual(facts.shown_mix, fixture.later_facing);
+  assert.doesNotMatch(JSON.stringify(facts), /action_ev_bb|max_ev_action|ev_model|evaluated_actions|unsupported_actions/);
 });
 
-test("incomplete opponent support does not claim a call/fold-only maximum when raising is legal", () => {
-  const inputs = { ...inputsFor(), seatRows: { ...base.seatRows, BB: [] } };
-  const result = mixAt(inputs, river, { flop: ["check"], turn: ["check", "check"], river: ["bet75"] }, "AsAc");
-  const facts = profileReferenceFacts(inputs, flopPolicy, laterPolicy, result.table, river, result.node, result.combo, result.raw);
-  assert.deepEqual(facts.legal_actions, ["fold", "call", "raise"]);
-  assert.deepEqual(facts.evaluated_actions, ["fold"]);
-  assert.equal(facts.max_ev_action, null);
-  assert.ok(facts.unsupported_actions.call);
-  assert.ok(facts.unsupported_actions.raise);
-  assert.match(facts.unsupported_reason, /unsupported/);
-});
-
-test("flop UI and later explanations include profile-only supplement and standard output remains unchanged", () => {
+test("flop UI and later explanations include profile-only frequency context and standard output remains unchanged", () => {
   const common = { boardCards: flop, node: "bb_vs_75", cards: "QsQc", history: ["bet75"], policy: flopPolicy };
   const facts = flopUiComboFactsCanonical({ ...common, inputs: inputsFor("nit", "oop") });
   assert.equal(facts.profile_reference.role, "villain");
@@ -158,42 +142,4 @@ test("absent/default options retain the same standard defence instance and polic
   const node = table.log.at(-1).node, combo = parseCards("AsAc", 2), raw = legacy.baseMix(table, river, node, combo);
   assert.deepEqual(legacy.mix(table, river, node, combo, raw), defenceFor({ ...base, opponentProfile: "standard" }, flopPolicy, laterPolicy).mix(table, river, node, combo, raw));
   assert.equal(profileReferenceFacts(base, flopPolicy, laterPolicy, table, river, node, combo, raw), null);
-});
-
-
-test("folded aggressive reference refunds unmatched bets and raises before rake, matching engine settlement", () => {
-  const inputs = inputsFor(), alwaysFold = structuredClone(laterPolicy);
-  for (const street of ["turn", "river"]) for (const rule of alwaysFold.streets[street].rules) {
-    if ("fold" in rule.mix) rule.mix = Object.fromEntries(Object.keys(rule.mix).map(action => [action, action === "fold" ? 100 : 0]));
-  }
-  const model = defenceFor(inputs, flopPolicy, alwaysFold), combo = parseCards("7s2d", 2);
-  for (const [path, aggressiveActions, expectedMax] of [
-    [{ flop: ["check"], turn: ["check", "check"], river: [] }, ["bet33", "bet75", "bet125", "allin"], "bet33"],
-    [{ flop: ["check"], turn: ["check", "check"], river: ["bet75"] }, ["raise"], "raise"],
-  ]) {
-    const table = replayDecision(inputs, river, path), node = table.log.at(-1).node;
-    const actor = table.log.at(-1).seat, opponent = table.other(actor), originalStack = table.stacks[actor];
-    const raw = model.baseMix(table, river, node, combo);
-    const facts = profileReferenceFacts(inputs, flopPolicy, alwaysFold, table, river, node, combo, raw);
-    assert.deepEqual(facts.evaluated_actions, facts.legal_actions);
-    for (const action of aggressiveActions) {
-      const folded = replayDecision(inputs, river, { ...path, river: [...path.river, action] });
-      const wager = folded.pot - table.pot, excess = Math.max(0, folded.invested[actor] - folded.invested[opponent]);
-      const matchedPot = folded.pot - excess;
-      assert.ok(excess > 0);
-      folded.winner = actor; // The immediate responder chooses Fold.
-      settle(folded, {}, river);
-      assert.ok(Math.abs(folded.pot - matchedPot) < 1e-12);
-      assert.ok(Math.abs(folded.stacks[actor] - (originalStack - wager + excess)) < 1e-12);
-      const settledIncrement = folded.stacks[actor] - originalStack + folded.pot - rake(folded.pot);
-      const expected = table.pot - rake(matchedPot);
-      assert.ok(Math.abs(settledIncrement - expected) < 1e-12);
-      assert.equal(facts.action_ev_bb[action], Math.round(expected * 1e4) / 1e4);
-    }
-    // All first-node bet sizes now have identical fold payoff rather than fake
-    // larger-wager rake penalties; the maximum remains deterministic on ties.
-    assert.equal(facts.max_ev_action, expectedMax);
-    assert.equal(profileReferenceFacts(inputs, flopPolicy, alwaysFold, table, river, node, combo, raw).max_ev_action, expectedMax);
-    assert.deepEqual(model.mix(table, river, node, combo, raw), raw);
-  }
 });

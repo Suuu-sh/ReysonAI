@@ -583,7 +583,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
                   <div className="postflop-view-line static">
                     <h3 className="postflop-view-title">{view.combo ? <>{view.combo.cards.match(/../g)!.map(card => <span key={card} className={`suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>)}</> : <>{selectedHand}<small>{english ? "Average" : "平均"}</small></>}</h3>
                     </div>
-                <PostflopProfileNote profile={opponentProfile} adjusted={data?.adjusted} explain={explain} labels={labels} />
+                <PostflopProfileNote profile={opponentProfile} adjusted={data?.adjusted} />
                 <ComboPicker hand={selectedHand} combos={chosen.combos} actions={current.actions as string[]} selected={selectedCombo} onSelect={setSelectedCombo} labels={labels} />
                 <HandReasons node={decision.node} labels={labels} raiseAllIn={raiseAllInOf(decision)} hand={view.combo ? { ...view, hand: view.combo.cards } : view} texture={data!.texture} explain={explain} boardCards={board}
                   loading={Boolean(explainLoading)} error={Boolean(explainError)}
@@ -614,7 +614,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
                   <div className="postflop-view-line static">
                       <h3 className="postflop-view-title">{laterView.combo ? <>{laterView.combo.cards.match(/../g)!.map(card => <span key={card} className={`suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>)}</> : <>{selectedHand}<small>{english ? "Average" : "平均"}</small></>}</h3>
                     </div>
-                  <PostflopProfileNote profile={opponentProfile} adjusted={laterData?.adjusted} explain={laterExplain.data} labels={laterLabels} />
+                  <PostflopProfileNote profile={opponentProfile} adjusted={laterData?.adjusted} />
                   <ComboPicker hand={selectedHand} combos={laterChosen.combos} actions={laterActions} selected={selectedLaterCombo} onSelect={setSelectedLaterCombo} labels={laterLabels}
                     missingReason={english ? "Board overlap or no reach on this action path" : "ボードと重複、またはこの行動経路に到達しない"}
                     missingTitle={english ? "Board overlap or no reach on this action path" : "ボードと重複、またはこの行動経路に到達しません"} />
