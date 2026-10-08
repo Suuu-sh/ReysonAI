@@ -215,3 +215,22 @@ test("SQLite partial imports preserve other profile units and standard histories
     assert.deepEqual(db.prepare("SELECT * FROM dataset_versions WHERE name = 'postflop-profiles'").get(), versionBefore);
   } finally { db.close(); }
 });
+
+test("a profile pair generated for a non-default (SB) opponent seat publishes with that seat", () => {
+  const selected = POSTFLOP_SPOTS.find(spot => spot.id === "UTG_open_SB_call");
+  assert.throws(() => loadInputs(selected.id, generationInputOptions(selected.id, "nit")), /unreachable/);
+  const inputs = loadInputs(selected.id, generationInputOptions(selected.id, "nit", "oop"));
+  const flop = {}, later = {};
+  for (const role of ["villain", "exploit"]) {
+    const metadata = { kind: "ai_estimate_not_gto", profile: "nit", role, spot: selected.id, tree: selected.tree, opponent_seat: "oop",
+      source_hash: inputs.fingerprint, structure_hash: inputs.structure_hash, config_version: config.version };
+    const policy = referencePolicyFor(selected.tree), laterPolicy = referenceLaterPolicy();
+    flop[role] = { metadata: { ...metadata, policy_hash: policySha(policy) }, policy };
+    later[role] = { metadata: { ...metadata, policy_hash: policySha(laterPolicy), flop_policy_hash: flop[role].metadata.policy_hash }, policy: laterPolicy };
+  }
+  const item = { profile: "nit", spot: selected, flop, later };
+  const published = publishableProfiles(() => {}, { spots: [selected], read: artifactsFor([item]) });
+  assert.equal(published.length, 1);
+  const mixed = structuredClone(item); mixed.later.exploit.metadata.opponent_seat = "ip";
+  assert.throws(() => publishableProfiles(() => {}, { spots: [selected], read: artifactsFor([mixed]) }), /mixes opponent seats/);
+});

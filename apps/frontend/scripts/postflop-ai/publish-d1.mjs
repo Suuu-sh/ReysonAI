@@ -195,7 +195,10 @@ export function publishableProfiles(log = console.log, { requireAll = false, spo
       if (!present && "history" in spot) { log(`skip ${profile}/${spot.id}: profile policy is not generated`); continue; }
       if (present && present !== 4) throw new Error(`Incomplete generated profile policy: ${present}/4 files`);
       let inputs;
-      try { inputs = inputsFor(spot.id, generationInputOptions(spot.id, profile)); }
+      // A pair generated for a non-default seat (e.g. SB) records it; earlier pairs use the default.
+      const seats = new Set(POLICY_ROLES.flatMap(role => [flop[role], later[role]]).map(item => item?.metadata?.opponent_seat).filter(Boolean));
+      if (seats.size > 1) throw new Error("Profile policy pair mixes opponent seats");
+      try { inputs = inputsFor(spot.id, generationInputOptions(spot.id, profile, [...seats][0])); }
       catch (error) {
         if (!present && /unreachable after range adjustment/.test(error.message)) {
           log(`skip ${profile}/${spot.id}: unreachable adjusted history`); continue;

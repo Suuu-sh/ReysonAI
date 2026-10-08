@@ -166,7 +166,7 @@ test("profile generation saves in delivery storage with identity; valid existing
   assert.deepEqual(result.candidate.metadata, { kind: "ai_estimate_not_gto", scope: "12 representative flops; flop only; not published",
     spot: inputs.spot.id, tree: inputs.spot.tree, source_hash: inputs.fingerprint, structure_hash: inputs.structure_hash,
     policy_hash: sha(result.candidate.policy), config_version: config.version, model: "mock-model", reasoning_effort: "high",
-    prompt_hash: sha(promptFor(inputs, request)), profile: "nit", role: "villain" });
+    prompt_hash: sha(promptFor(inputs, request)), profile: "nit", role: "villain", opponent_seat: inputs.opponentSeat });
   const path = artifactPaths(inputs.spot, request).candidate;
   assert.ok(path.includes("/scripts/data/postflop-ai/profiles/nit/"));
   assert.equal(readFileSync(path, "utf8"), `${JSON.stringify(result.candidate, null, 2)}\n`);

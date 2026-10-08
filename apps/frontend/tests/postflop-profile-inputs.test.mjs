@@ -255,3 +255,9 @@ test("three-player standard inputs retain every seat; HU adjustments reject MW3 
       /MW3 table\/opponent range adjustments are not supported/);
   }
 });
+
+test("an opponent seat without a profile preflop source or reach is a preparing state, not a generic error", () => {
+  const history = POSTFLOP_SPOTS.find(spot => spot.id === "BTN_open_SB_3bet_BB_call_BTN_fold");
+  if (history) assert.throws(() => loadInputs(history.id, { opponentProfile: "nit", opponentSeat: "ip" }), error => error.code === "PROFILE_POLICY_MISSING");
+  assert.throws(() => loadInputs("UTG_open_SB_call", { opponentProfile: "nit", opponentSeat: "ip" }), error => error.code === "PROFILE_POLICY_MISSING");
+});

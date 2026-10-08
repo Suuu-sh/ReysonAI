@@ -99,6 +99,10 @@ function validateActionSize(row: SourceHand, action: SourceAction, baseline: Sou
   }
 }
 
+function profileUnsupported(message: string): Error & { code: string; state: string } {
+  return Object.assign(new Error(message), { code: "PROFILE_POLICY_MISSING", state: "not_generated" });
+}
+
 export function finalizeInputs(base: BaseInputs, options: InputOptions, read: ReadDataset, sha: Hash, structure_hash: string): Inputs {
   const normalized = normalizedInputOptions(options);
   if (!adjustedInputOptions(options)) return { ...base, structure_hash };
@@ -119,7 +123,13 @@ export function finalizeInputs(base: BaseInputs, options: InputOptions, read: Re
       if (!baseline) throw new Error(`${spot.id}: missing source ${file}/${id}`);
       const villain = normalized.opponentProfile !== "standard" && seat === opponent;
       const dataset = villain ? `profiles/${normalized.opponentProfile}/villain/${file}` : file;
-      let selected = villain ? read(dataset)?.spots.find(item => item.id === id) : baseline;
+      let selected: SourceSpot | undefined = baseline;
+      if (villain) {
+        // A profile without this history's preflop source cannot reach the flop: same
+        // preparing state as an ungenerated profile policy, never a substituted range.
+        try { selected = read(dataset)?.spots.find(item => item.id === id); } catch { selected = undefined; }
+        if (!selected) throw profileUnsupported(`${spot.id}/${seat}/${dataset}/${id}: missing profile source (profile preflop source is not generated)`);
+      }
       validateSource(selected, baseline, `${spot.id}/${seat}/${dataset}/${id}`);
       if (!villain && !isDefaultProfile(normalized.tableProfile)) {
         selected = file === "opening-ranges"
@@ -137,7 +147,10 @@ export function finalizeInputs(base: BaseInputs, options: InputOptions, read: Re
       validateActionSize(row!, action, baseline, spot.id);
       return reach * frequency! / 100;
     }, 100) }));
-    if (!seatRows[seat].some(row => row.freq > 0)) throw new Error(`${spot.id}: ${seat} saved history is unreachable after range adjustment`);
+    if (!seatRows[seat].some(row => row.freq > 0)) {
+      const message = `${spot.id}: ${seat} saved history is unreachable after range adjustment`;
+      throw normalized.opponentProfile !== "standard" ? profileUnsupported(message) : new Error(message);
+    }
   }
   const adjusted = { tableProfile: normalized.tableProfile, opponentProfile: normalized.opponentProfile };
   return { ...base, structure_hash, seatRows, adjusted, ...normalized,

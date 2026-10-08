@@ -335,7 +335,7 @@ export async function generate(inputs, { model = resolveModel(), effort = resolv
   const candidate = { metadata: { kind: "ai_estimate_not_gto", scope: "12 representative flops; flop only; not published",
     spot: inputs.spot.id, tree: inputs.spot.tree, source_hash: inputs.fingerprint, structure_hash: inputs.structure_hash, policy_hash: sha(policy), config_version: config.version,
     model, reasoning_effort: usedEffort, prompt_hash: sha(prompt),
-    ...(selected.profile !== "standard" ? { profile: selected.profile, role: selected.role } : {}) }, policy };
+    ...(selected.profile !== "standard" ? { profile: selected.profile, role: selected.role, opponent_seat: inputs.opponentSeat } : {}) }, policy };
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, `${JSON.stringify(candidate, null, 2)}\n`, { flag: selected.force ? "w" : "wx" });
   return { candidate, reused: false };
@@ -387,7 +387,7 @@ export async function generateLater(inputs, flopCandidate, { model = resolveMode
   const candidate = { metadata: { kind: "ai_estimate_not_gto", scope: "turn and river; not published",
     spot: inputs.spot.id, source_hash: inputs.fingerprint, structure_hash: inputs.structure_hash, flop_policy_hash: flopCandidate.metadata.policy_hash, policy_hash: sha(policy),
     config_version: config.version, model, reasoning_effort: started.reasoningEffort ?? effort, prompt_hash: sha(prompt),
-    ...(selected.profile !== "standard" ? { profile: selected.profile, role: selected.role } : {}) }, policy };
+    ...(selected.profile !== "standard" ? { profile: selected.profile, role: selected.role, opponent_seat: inputs.opponentSeat } : {}) }, policy };
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, `${JSON.stringify(candidate, null, 2)}\n`, { flag: selected.force ? "w" : "wx" });
   return { candidate, reused: false };
