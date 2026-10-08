@@ -1,7 +1,7 @@
 import { AuthorizationError, OAuthError, OAuthAuthorizationServer, type AuthRequest, type OAuthHelpers } from '@cloudflare/workers-oauth-provider';
 import { HISTORY_SCOPE, RANGE_SCOPE, SCOPES } from './access.ts';
 import type { McpConfiguration, McpEnv } from './config.ts';
-import { errorResponse, escapeHtml, html, readBoundedBody, SECURITY_HEADERS } from './http.ts';
+import { errorResponse, escapeHtml, html, oauthFormHtml, readBoundedBody, SECURITY_HEADERS } from './http.ts';
 import { authorizationFailureDetails } from './auth-diagnostics.ts';
 import { accountExists, browserSession, sessionProof, validSessionProof } from './session.ts';
 
@@ -89,7 +89,7 @@ export async function authorizationPage(request: Request, env: McpEnv, config: M
       const requested = details.scope.join(" ");
       const proof = await sessionProof(session, `consent:${consent.handle}:${requested}`);
       const scopes = details.scope.map(scope => `<label><input type="checkbox" name="scope" value="${escapeHtml(scope)}" checked> ${escapeHtml(LABELS[scope] ?? scope)}</label><br>`).join('');
-      return html(`<h1>Connect ${escapeHtml(details.clientName)} to ReysonAI?</h1>
+      return oauthFormHtml(`<h1>Connect ${escapeHtml(details.clientName)} to ReysonAI?</h1>
 <p>This app will receive permission to act for your signed-in ReysonAI account: ${escapeHtml(session.email)}. Review the client and destination before continuing.</p>
 <p>Client ID: ${escapeHtml(details.clientId)}<br>Access returns to: <strong>${escapeHtml(details.redirectHost)}</strong>.</p>
 ${details.redirectIsLoopback ? '<p><strong>This grants access to an app on your computer. Continue only if you just started this connection.</strong></p>' : ''}
@@ -144,5 +144,5 @@ export async function connectionsPage(request: Request, env: McpEnv, config: Mcp
   if (cursor && cursor.length > 2048) return errorResponse('invalid_cursor', 400);
   const grants = await oauth.listUserGrants(session.userId, { limit: 20, cursor });
   const entries = await Promise.all(grants.items.filter(grant => grant.userId === session.userId && grant.resource === config.resource).map(async grant => `<li>Client: ${escapeHtml(grant.clientId)}<br>Permissions: ${escapeHtml(grant.scope.join(', '))}<form method="post"><input type="hidden" name="grant" value="${escapeHtml(grant.id)}"><input type="hidden" name="session_proof" value="${await sessionProof(session, `revoke:${grant.id}`)}"><button>Revoke this connection</button></form></li>`));
-  return html(`<h1>Your ReysonAI MCP connections</h1><p>Signing out of the website does not revoke these separate connections. Revoke each one here when you no longer want it to read your data.</p><ul>${entries.join('')}</ul>${grants.cursor ? `<a href="?cursor=${encodeURIComponent(grants.cursor)}">Next page</a>` : ''}`);
+  return oauthFormHtml(`<h1>Your ReysonAI MCP connections</h1><p>Signing out of the website does not revoke these separate connections. Revoke each one here when you no longer want it to read your data.</p><ul>${entries.join('')}</ul>${grants.cursor ? `<a href="?cursor=${encodeURIComponent(grants.cursor)}">Next page</a>` : ''}`);
 }
