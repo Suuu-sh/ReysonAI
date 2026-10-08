@@ -1,7 +1,8 @@
 import { AuthorizationError, OAuthError, OAuthAuthorizationServer, type AuthRequest, type OAuthHelpers } from '@cloudflare/workers-oauth-provider';
 import { HISTORY_SCOPE, RANGE_SCOPE, SCOPES } from './access.ts';
 import type { McpConfiguration, McpEnv } from './config.ts';
-import { errorResponse, escapeHtml, html, readBoundedBody } from './http.ts';
+import { errorResponse, escapeHtml, html, readBoundedBody, SECURITY_HEADERS } from './http.ts';
+import { authorizationFailureDetails } from './auth-diagnostics.ts';
 import { accountExists, browserSession, sessionProof, validSessionProof } from './session.ts';
 
 import { advanceGrantRevision, claimAuthorizationCode, claimRefreshToken, grantRevoked, revokeGrantAuthoritatively, validGrant } from './revocation.ts';
@@ -120,7 +121,7 @@ ${details.redirectIsLoopback ? '<p><strong>This grants access to an app on your 
   } catch (error) {
     if (error instanceof RangeError) return errorResponse('payload_too_large', 413);
     // Render validation failures locally; never construct a redirect from untrusted input.
-    if (error instanceof AuthorizationError) return errorResponse('authorization_request_invalid_or_expired', 400);
+    if (error instanceof AuthorizationError) return Response.json(authorizationFailureDetails(error, request.method), { status: 400, headers: SECURITY_HEADERS });
     throw error;
   }
 }
