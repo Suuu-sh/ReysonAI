@@ -122,3 +122,12 @@ node scripts/postflop-ai/audit-all-boards.mjs --profile standard --table-profile
 - 公開D1への相手像配信・取り込みは段階B/Cと同じく後続作業。ローカル生成・点検は公開や最適性の証明ではありません。
 - EVで頻度を決定する処理、hand-EV研究計算、flop-base生成、画面変更は追加していません。
 - 全件テスト、標準85局面の固定seed全件監査、実方針の全ボード監査は再実行していません。本依頼の生成機構に対する追加テストと影響範囲の回帰だけを確認しています。
+
+## 実行結果（2026-10-08, Claude）
+
+- 生成: gpt-6.1-sol / effort high。HU 35局面（相手像で到達する局面）× 4相手像 × villain/exploit × flop/later = 960ファイル（`.local/postflop-ai/profiles/`、未公開）。一時的な認証切れ2件は個別に再生成。
+- 未対応: マルチウェイ後HU 25局面は相手像の `multiway-responses` プリフロップデータが無いため生成不可（段階Aの拡張が必要）。相手像レンジで到達しない64件はスキップ。
+- 破綻チェック（全1,755フロップ・flop+later）: 4相手像とも error 0。警告は maniac の air-allin 87件（river_ip_first 63・river_oop_first 24）のみ。
+- 卓の状況（call=high / call=low / three_bet=high）の standard 全ボード点検: 85局面 error 0。警告 413〜414件は標準卓の 413件と同水準（overcall・value-only-raise が中心）。
+- 傾向（BTN_open_BB_call、ルール単純平均）: 相手BTNのCベット 標準46% / NIT15 / station18 / LAG52 / maniac73。自分BBの対75%フォールド 標準40 / 対NIT57 / 対station38 / 対LAG32 / 対maniac23。
+- 残課題: D1 配信経路（相手像キー）、マルチウェイ後局面の相手像プリフロップデータ。
