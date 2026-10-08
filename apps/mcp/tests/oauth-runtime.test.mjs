@@ -13,6 +13,13 @@ const scope=[range,history,'offline_access'].join(' ');
 async function readRpc(response) { const text=await response.text(); if(response.headers.get('content-type')?.includes('text/event-stream')) { const data=text.split('\n').filter(line=>line.startsWith('data: ')).map(line=>JSON.parse(line.slice(6))); return data.find(item=>item.id===1)??data.at(-1); } return JSON.parse(text); }
 const cookie=s=>`__Host-reysonai=${sessions[s]}`;
 function field(html,name){const escaped=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');return html.match(new RegExp(`name="${escaped}" value="([^"]*)"`))?.[1].replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(+n));}
+async function consentCallback(response,denied=false){
+ assert.equal(response.status,200);assert.equal(response.headers.get('location'),null);
+ const body=await response.text();const label=denied?'Return to the app':'Continue to the app';
+ const match=body.match(new RegExp(`<a href="([^"]+)" rel="noreferrer">${label}</a>`));
+ assert.ok(match,'consent completion link missing');
+ return new URL(match[1].replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(+n)));
+}
 const bindings={MCP_ENABLED:'true',MCP_ACCESS_MODE:'authenticated_free',MCP_ORIGIN:origin,MCP_ALLOWED_ORIGINS:app,AUTH_ENABLED:'true',AUTH_APP_URL:app};
 
 // Real pinned OAuth provider + MCP SDK in workerd. Only D1/KV/user sessions/clients are local fixtures.
@@ -42,7 +49,7 @@ test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolat
  };
  const approve=attempt=>call('/oauth/mcp/authorize',{method:'POST',headers:{origin,'content-type':'application/x-www-form-urlencoded',cookie:attempt.browserCookie},body:attempt.form});
  const exchange=(code,verifier,extra={})=>call('/oauth/mcp/token',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'authorization_code',client_id:client.clientId,redirect_uri:'https://client.example/callback',resource:origin+'/mcp',code,code_verifier:verifier,...extra})});
- const connect=async options=>{const attempt=await requestAuth(options);assert.equal(attempt.res.status,200,attempt.page);const res=await approve(attempt);assert.equal(res.status,303,await res.clone().text());const callback=new URL(res.headers.get('location'));assert.equal(callback.searchParams.get('iss'),origin);const code=callback.searchParams.get('code');const token=await exchange(code,attempt.verifier);assert.equal(token.status,200,await token.clone().text());return {attempt,code,tokens:await token.json()};};
+ const connect=async options=>{const attempt=await requestAuth(options);assert.equal(attempt.res.status,200);const res=await approve(attempt);const callback=await consentCallback(res);assert.equal(callback.searchParams.get('iss'),origin);const code=callback.searchParams.get('code');const token=await exchange(code,attempt.verifier);assert.equal(token.status,200,await token.clone().text());return {attempt,code,tokens:await token.json()};};
  const rpc=(token,method,params={},extra={})=>call('/mcp',{method:'POST',headers:{'content-type':'application/json',accept:'application/json, text/event-stream','mcp-protocol-version':'2025-06-18',...(token?{authorization:`Bearer ${token}`}:{})},body:JSON.stringify({jsonrpc:'2.0',id:1,method,params}),...extra});
  await t.test('challenge and discovery require dedicated OAuth access; no public registration',async()=>{
   for(const headers of [{},{cookie:cookie('alice')},{authorization:'Bearer '+sessions.alice},{authorization:'Bearer fake.google.jwt'}]){const res=await call('/mcp',{method:'POST',headers,body:'{}'});assert.equal(res.status,401);assert.match(res.headers.get('www-authenticate'),/oauth-protected-resource/);assert.match(res.headers.get('cache-control'),/no-store/);}
@@ -58,12 +65,12 @@ test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolat
   const switched=await approve({...a,browserCookie:a.browserCookie.replace(sessions.alice,sessions.bob)});assert.equal(switched.status,403);
   const noCookie=await approve({...a,browserCookie:cookie('alice')});assert.equal(noCookie.status,400);
   const b=await requestAuth({scopes:range});b.form.append('scope',history);assert.equal((await approve(b)).status,400);
-  const denied=await requestAuth();denied.form.set('decision','deny');const d=await approve(denied);assert.equal(d.status,303);assert.equal(new URL(d.headers.get('location')).searchParams.get('error'),'access_denied');assert.equal((await approve(denied)).status,400);
+  const denied=await requestAuth();denied.form.set('decision','deny');const d=await approve(denied);assert.equal((await consentCallback(d,true)).searchParams.get('error'),'access_denied');assert.equal((await approve(denied)).status,400);
  });
  const full=await connect();
  await t.test('code verifier, audience, replay and stateless MCP protocol',async()=>{
   const replay=await connect({user:'bob'}); assert.equal((await exchange(replay.code,replay.attempt.verifier)).status,400); assert.equal((await rpc(replay.tokens.access_token,'tools/list')).status,401);
-  const pending=await requestAuth({user:'bob'});const approved=await approve(pending);const code=new URL(approved.headers.get('location')).searchParams.get('code');
+  const pending=await requestAuth({user:'bob'});const approved=await approve(pending);const code=(await consentCallback(approved)).searchParams.get('code');
   assert.equal((await exchange(code,'wrong-verifier')).status,400);
   assert.equal((await exchange(code,pending.verifier,{resource:'https://attacker.example/mcp'})).status,400);
   const initialize=await rpc(full.tokens.access_token,'initialize',{protocolVersion:'2025-06-18',capabilities:{},clientInfo:{name:'test',version:'1'}});assert.equal(initialize.status,200,await initialize.clone().text());
@@ -94,18 +101,18 @@ test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolat
   const renewed=await call('/oauth/mcp/token',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'refresh_token',client_id:client.clientId,refresh_token:linked.tokens.refresh_token,resource:origin+'/mcp'})});assert.equal(renewed.status,200);
  });
  await t.test('authoritative single-use code claim rejects concurrent and stale-KV redemption',async()=>{
-  const pending=await requestAuth();const approved=await approve(pending);const code=new URL(approved.headers.get('location')).searchParams.get('code');const grantId=code.split(':')[1];
+  const pending=await requestAuth();const approved=await approve(pending);const code=(await consentCallback(approved)).searchParams.get('code');const grantId=code.split(':')[1];
   const kv=await mf.getKVNamespace('OAUTH_KV');const grantKey=`grant:alice:${grantId}`;const stale=await kv.get(grantKey);assert.ok(stale);
   const first=await exchange(code,pending.verifier);assert.equal(first.status,200);const firstTokens=await first.json();assert.equal((await rpc(firstTokens.access_token,'tools/list')).status,200);
   await kv.put(grantKey,stale);
   const replay=await exchange(code,pending.verifier);assert.equal(replay.status,400);assert.equal((await replay.json()).error,'invalid_grant');assert.equal((await rpc(firstTokens.access_token,'tools/list')).status,401);
   const deniedRefresh=await call('/oauth/mcp/token',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'refresh_token',client_id:client.clientId,refresh_token:firstTokens.refresh_token,resource:origin+'/mcp'})});assert.equal(deniedRefresh.status,400);
   const claim=await db.prepare('SELECT grant_id FROM mcp_code_redemptions WHERE user_id=? AND grant_id=?').bind('alice',grantId).all();assert.equal(claim.results.length,1);
-  const invalid=await requestAuth();const before=await approve(invalid);const invalidCode=new URL(before.headers.get('location')).searchParams.get('code');const invalidId=invalidCode.split(':')[1];
+  const invalid=await requestAuth();const before=await approve(invalid);const invalidCode=(await consentCallback(before)).searchParams.get('code');const invalidId=invalidCode.split(':')[1];
   assert.equal((await exchange(invalidCode,'wrong-verifier')).status,400);
   const unclaimed=await db.prepare('SELECT grant_id FROM mcp_code_redemptions WHERE user_id=? AND grant_id=?').bind('alice',invalidId).all();assert.equal(unclaimed.results.length,0);
   assert.equal((await exchange(invalidCode,invalid.verifier)).status,200);
-  const parallel=await requestAuth();const accepted=await approve(parallel);const parallelCode=new URL(accepted.headers.get('location')).searchParams.get('code');
+  const parallel=await requestAuth();const accepted=await approve(parallel);const parallelCode=(await consentCallback(accepted)).searchParams.get('code');
   const attempts=await Promise.all([exchange(parallelCode,parallel.verifier),exchange(parallelCode,parallel.verifier)]);
   assert.ok(attempts.filter(result=>result.status===200).length<=1);assert.ok(attempts.some(result=>result.status!==200));
   // The detected replay revokes the grant, including any request that was issuing concurrently.
@@ -132,7 +139,7 @@ test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolat
  });
  await t.test('unchecked offline access grants no refresh and stale provider KV cannot restore RFC7009-revoked access',async()=>{
   const unchecked=await requestAuth();unchecked.form.delete('scope');for(const value of [range,history])unchecked.form.append('scope',value);
-  const accepted=await approve(unchecked);assert.equal(accepted.status,303);const token=await exchange(new URL(accepted.headers.get('location')).searchParams.get('code'),unchecked.verifier);assert.equal((await token.json()).refresh_token,undefined);
+  const accepted=await approve(unchecked);const token=await exchange((await consentCallback(accepted)).searchParams.get('code'),unchecked.verifier);assert.equal((await token.json()).refresh_token,undefined);
   const linked=await connect();const kv=await mf.getKVNamespace('OAUTH_KV');const grantId=linked.tokens.refresh_token.split(':')[1];
   const keys=[`grant:alice:${grantId}`,...(await kv.list({prefix:`token:alice:${grantId}:`})).keys.map(key=>key.name)];
   const stale=await Promise.all(keys.map(async key=>[key,await kv.get(key)]));
@@ -146,11 +153,11 @@ test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolat
  await t.test('pre-registered confidential basic/post clients exchange and refresh with strict replay denial',async()=>{
   for(const registered of client.confidential){
    assert.ok(registered.clientSecret);
-   const pending=await requestAuth({changes:{client_id:registered.clientId}});const approved=await approve(pending);assert.equal(approved.status,303);
+   const pending=await requestAuth({changes:{client_id:registered.clientId}});const approved=await approve(pending);assert.equal(approved.status,200);assert.equal(approved.headers.get('location'),null);
    const headers={'content-type':'application/x-www-form-urlencoded'};
    const credentials=registered.method==='client_secret_post'?{client_id:registered.clientId,client_secret:registered.clientSecret}:{};
    if(registered.method==='client_secret_basic')headers.authorization='Basic '+Buffer.from(encodeURIComponent(registered.clientId)+':'+encodeURIComponent(registered.clientSecret)).toString('base64');
-   const code=new URL(approved.headers.get('location')).searchParams.get('code');
+   const code=(await consentCallback(approved)).searchParams.get('code');
    const exchanged=await call('/oauth/mcp/token',{method:'POST',headers,body:new URLSearchParams({grant_type:'authorization_code',code,code_verifier:pending.verifier,redirect_uri:'https://client.example/callback',resource:origin+'/mcp',...credentials})});assert.equal(exchanged.status,200);const tokens=await exchanged.json();
    const refreshBody=new URLSearchParams({grant_type:'refresh_token',refresh_token:tokens.refresh_token,resource:origin+'/mcp',...credentials});
    const refreshed=await call('/oauth/mcp/token',{method:'POST',headers,body:refreshBody});assert.equal(refreshed.status,200);const fresh=await refreshed.json();

@@ -1,7 +1,7 @@
 import { AuthorizationError, OAuthError, OAuthAuthorizationServer, type AuthRequest, type OAuthHelpers } from '@cloudflare/workers-oauth-provider';
 import { HISTORY_SCOPE, RANGE_SCOPE, SCOPES } from './access.ts';
 import type { McpConfiguration, McpEnv } from './config.ts';
-import { errorResponse, escapeHtml, html, oauthFormHtml, readBoundedBody, SECURITY_HEADERS } from './http.ts';
+import { consentCompletionHtml, errorResponse, escapeHtml, html, oauthFormHtml, readBoundedBody, SECURITY_HEADERS } from './http.ts';
 import { authorizationFailureDetails } from './auth-diagnostics.ts';
 import { accountExists, browserSession, sessionProof, validSessionProof } from './session.ts';
 
@@ -105,7 +105,7 @@ ${details.redirectIsLoopback ? '<p><strong>This grants access to an app on your 
     if (!handle || handle.length > 512 || !await validSessionProof(session, `consent:${handle}:${form.get("requested") ?? ""}`, form.get('session_proof') ?? '')) return errorResponse('consent_session_changed_or_invalid', 403);
     if (form.get('decision') === 'deny') {
       const denied = await oauth.denyConsent(request, handle);
-      return new Response(null, { status: 303, headers: denied.headers });
+      return consentCompletionHtml('denied', denied.headers.get('location'), denied.headers);
     }
     if (form.get('decision') !== 'approve') return errorResponse('invalid_decision', 400);
     const selected = form.getAll('scope');
@@ -116,8 +116,7 @@ ${details.redirectIsLoopback ? '<p><strong>This grants access to an app on your 
       request: approved.request, userId: session.userId, metadata: {}, scope: approved.request.scope,
       props: { userId: session.userId },
     });
-    approved.headers.set('location', redirectTo);
-    return new Response(null, { status: 303, headers: approved.headers });
+    return consentCompletionHtml('approved', redirectTo, approved.headers);
   } catch (error) {
     if (error instanceof RangeError) return errorResponse('payload_too_large', 413);
     // Render validation failures locally; never construct a redirect from untrusted input.

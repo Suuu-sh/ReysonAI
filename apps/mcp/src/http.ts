@@ -34,6 +34,24 @@ export function oauthFormHtml(body: string, status = 200, supplied?: Headers): R
   response.headers.set('referrer-policy', 'strict-origin');
   return response;
 }
+/**
+ * Show a completed consent decision and let the user follow only the OAuth provider's
+ * already-validated callback. Pass completeAuthorization's redirectTo for approval, or
+ * denyConsent's Location for denial; never build this destination from request input.
+ */
+export function consentCompletionHtml(decision: 'approved' | 'denied', redirectTo: string | null, supplied?: Headers): Response {
+  const headers = new Headers(supplied);
+  headers.delete('location');
+  const approved = decision === 'approved';
+  const heading = approved ? 'Connection approved' : 'Connection declined';
+  const message = approved
+    ? 'Access was approved. Continue to the app to finish.'
+    : 'No access was granted. You can return to the app.';
+  const link = redirectTo
+    ? `<p><a href="${escapeHtml(redirectTo)}" rel="noreferrer">${approved ? 'Continue to the app' : 'Return to the app'}</a></p>`
+    : '<p>You can close this page.</p>';
+  return html(`<h1>${heading}</h1><p>${message}</p>${link}`, 200, headers);
+}
 export async function readBoundedBody(request: Request, limit = 16384): Promise<string> {
   const reader = request.body?.getReader();
   if (!reader) return '';
