@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "reysonai-mcp-local-test-only",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-07",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "vars": {
+    "MCP_ENABLED": "false",
+    "MCP_ACCESS_MODE": "authenticated_free",
+    "MCP_ORIGIN": "https://api.example.invalid",
+    "MCP_ALLOWED_ORIGINS": "https://app.example.invalid",
+    "AUTH_ENABLED": "true",
+    "AUTH_APP_URL": "https://app.example.invalid"
+  },
+  "kv_namespaces": [{ "binding": "OAUTH_KV", "id": "00000000000000000000000000000000" }],
+  "d1_databases": [{ "binding": "DB", "database_name": "reysonai-mcp-local-test-only", "database_id": "00000000-0000-0000-0000-000000000000" }]
+}
