@@ -11,7 +11,7 @@ export type Level4 = "huge" | "many" | "some" | "few" | "none";
 export type Desc = {
   f: HandFeatures | null; name: string; en: NarrativeLanguage;
   m: "nuts" | "strong" | "medium" | "weak" | "none"; dr: "combo" | "strong" | "weak" | "none";
-  made: string; draw: string; over: string; backdoor: string; has: string; worse: string;
+  made: string; draw: string; over: string; backdoor: string; has: string; worse: string; worseNamed?: boolean;
   outs: Level4; improve: string; blockers: string[]; unblock: string; vulnerable: boolean; boardDraws: string;
   river: boolean; aceHigh: boolean; air: boolean; short: string; tag: string; standing: string;
 };
@@ -114,7 +114,8 @@ export function describeHand(f: HandFeatures | null, name: string, en: Narrative
 
   const aceHigh = f.aceHigh;
   const hiRank = Math.max(...holeRanks), loRank = Math.min(...holeRanks);
-  const highPhrase = mk.category === "highCard" && !pocket ? e(narrative("{0}-high with {1}", [R(hiRank), art(R(loRank))], en), `${R(hiRank)}ハイ（${R(loRank)}）`) : "";
+  const boardOnlyPair = mk.kind === "boardPair" || mk.kind === "boardTwoPair";
+  const highPhrase = (mk.category === "highCard" || boardOnlyPair) && !pocket && !mk.playsBoard ? e(narrative("{0}-high with {1}", [R(hiRank), art(R(loRank))], en), `${R(hiRank)}ハイ（${R(loRank)}）`) : "";
   const hasParts = [made && mk.category !== "highCard" ? made : "", draw, over].filter(Boolean);
   const isAir = m === "none" && dr === "none";
   if (isAir) {
@@ -122,11 +123,15 @@ export function describeHand(f: HandFeatures | null, name: string, en: Narrative
     hasParts.push(highPhrase || (mk.playsBoard ? made : e(narrative("only the board's cards", [], en), "ボードのカードだけ")));
     if (backdoor) hasParts.push(backdoor);
   } else if (!hasParts.length && backdoor) hasParts.push(backdoor);
-  const has = mk.playsBoard && isAir ? made : isAir ? e(narrative("only {0}", [join(hasParts, en)], en), `${join(hasParts, en)}だけ`) : join(hasParts, en);
+  // "only the board's cards" already says "only"; wrapping it again read "only only".
+  const boardCardsOnly = isAir && !highPhrase && !mk.playsBoard;
+  const has = mk.playsBoard && isAir ? made : isAir && !boardCardsOnly ? e(narrative("only {0}", [join(hasParts, en)], en), `${join(hasParts, en)}だけ`) : join(hasParts, en);
 
   // ---- worse hands that keep paying a value hand
   const w = (a: string, b: string, c: string, d2: string) => e(river ? a : b, river ? c : d2);
   let worse = "";
+  // True only when `worse` names classes that brute force says lose to us (not a generic fallback).
+  let worseNamed = false;
   // Worse hands for the strong made hands come from the holdings that really lose to us (hand-features worseClasses).
   const PHR: Record<string, [string, string]> = {
     pair: [narrative("one-pair hands", [], en), "ワンペア"], twoPair: [narrative("weaker two pair", [], en), "劣るツーペア"],
@@ -135,9 +140,11 @@ export function describeHand(f: HandFeatures | null, name: string, en: Narrative
     fullHouse: [narrative("lower full houses", [], en), "劣るフルハウス"], quads: [narrative("lower quads", [], en), "劣るフォーカード"],
   };
   const fromClasses = () => {
-    const names: string[] = (mk.worseClasses ?? []).filter((c: string) => PHR[c]).slice(0, 3);
+    // On an unpaired board "sets" names pocket pairs that hit; require that shape to mostly lose too.
+    const names: string[] = (mk.worseClasses ?? []).filter((c: string) => PHR[c] && (c !== "trips" || f.boardInfo.paired || mk.worsePairs?.set)).slice(0, 3);
     const parts = names.map(c => en ? PHR[c][0] : PHR[c][1]);
     if (!river && names.includes("pair")) parts.push(e(narrative("draws", [], en), "ドロー"));
+    worseNamed = parts.length > 0;
     return parts.length ? join(parts, en) : e(narrative("weaker hands", [], en), "劣る手");
   };
   if (mk.playsBoard) worse = w(narrative("weaker pairs and ace-high", [], en), narrative("weaker pairs and draws", [], en), "劣るペアやエースハイ", "劣るペアやドロー");
@@ -148,6 +155,7 @@ export function describeHand(f: HandFeatures | null, name: string, en: Narrative
     case "overpair": {
       const wp = mk.worsePairs ?? {};
       const parts = [wp.topPair ? e(narrative("top pair", [], en), "トップペア") : "", wp.underpair ? e(narrative("underpairs", [], en), "アンダーペア") : "", !river ? e(narrative("draws", [], en), "ドロー") : ""].filter(Boolean);
+      worseNamed = Boolean(wp.topPair || wp.underpair);
       worse = parts.length ? join(parts, en) : e(narrative("weaker hands", [], en), "劣る手"); break;
     }
     case "topPair": case "secondPair": case "bottomPair": case "underpair": {
@@ -159,6 +167,7 @@ export function describeHand(f: HandFeatures | null, name: string, en: Narrative
         mk.kind === "topPair" ? "" : e(narrative("ace-high", [], en), "エースハイ"),
         !river ? (mk.kind === "topPair" ? e(narrative("draws", [], en), "ドロー") : e(narrative("weak draws", [], en), "弱いドロー")) : "",
       ].filter(Boolean);
+      worseNamed = Boolean(strongKicker && wp.topPair || wp.lower);
       worse = parts.length ? join(parts, en) : e(narrative("weaker hands", [], en), "劣る手"); break;
     }
     default: worse = w(narrative("weaker pairs and ace-high", [], en), narrative("weaker pairs and draws", [], en), "劣るペアやエースハイ", "劣るペアやドロー");
@@ -216,7 +225,7 @@ export function describeHand(f: HandFeatures | null, name: string, en: Narrative
       + narrative("{0}.", [!river && boardDraws ? narrative(", though the {0} on this board can still overtake it", [boardDraws], en) : showAbove ? narrative(", with {0} board {1} above the pair", [NUM[Math.min(above, 4)], above === 1 ? "card" : "cards"], en) : ""], en)
     : `${tag}は${["ほぼ全てのハンドに勝っています", "大半のハンドに勝っています", "全ハンドの中位あたりの強さです", "大半のハンドに負けています"][level]}。`
       + `${!river && boardDraws ? `ただしこのボードの${boardDraws}に${tag}は逆転される余地があります。` : showAbove ? `${tag}より上のランクのボードカードが${NUM[Math.min(above, 4)]}あります。` : ""}`;
-  return { f, name, en, m: m as Desc["m"], dr, made, draw, over, backdoor, has, worse, outs, improve: en ? join(impr, en) : impr.join("、"), blockers, unblock,
+  return { f, name, en, m: m as Desc["m"], dr, made, draw, over, backdoor, has, worse, worseNamed, outs, improve: en ? join(impr, en) : impr.join("、"), blockers, unblock,
     vulnerable: Boolean(mk.vulnerable), boardDraws, river, aceHigh, air: m === "none" && dr === "none",
     short: (mk.category !== "highCard" && made) || draw || has, tag, standing };
 }
@@ -404,8 +413,12 @@ export function facingHandSentences(d: Desc, action: string, role: Role, c: HC):
         : e(narrative("{0} has {1}{2}: the draw and the chance to pair up give it enough equity against a wide betting range to call.", [d.name, d.draw, d.over ? narrative(" and {0}", [d.over], c.en) : ""], c.en), `${d.name}は${d.draw}${d.over ? `と${d.over}` : ""}を持ち、ドローとペアになる可能性があるので、幅広いベットレンジに対してコールできるだけのエクイティがあります。`));
       out.push(improveLine(d, c));
     } else if (d.m === "medium" || d.m === "weak") {
-      out.push(e(narrative("{0} has {1}: it beats {2}'s bluffs and the lower pairs but loses to the value{3}, so it is a bluff-catcher.", [d.name, d.made, o, mixEn], c.en),
-        `${d.name}は${d.made}で、相手のブラフや下位のペアには勝ち、バリューには負けるブラフキャッチャーです${mixJa}。`));
+      // Name the worse holdings only when brute force says they really lose to this hand.
+      out.push(d.worseNamed
+        ? e(narrative("{0} has {1}: it beats {2}'s bluffs and {3} but loses to the value{4}, so it is a bluff-catcher.", [d.name, d.made, o, d.worse, mixEn], c.en),
+          `${d.name}は${d.made}で、相手のブラフや${d.worse}には勝ち、バリューには負けるブラフキャッチャーです${mixJa}。`)
+        : e(narrative("{0} has {1}: it beats {2}'s bluffs but loses to the value{3}, so it is a bluff-catcher.", [d.name, d.made, o, mixEn], c.en),
+          `${d.name}は${d.made}で、相手のブラフには勝ち、バリューには負けるブラフキャッチャーです${mixJa}。`));
       if (d.draw) out.push(e(narrative("The {0} adds some outs when it is behind.", [d.draw], c.en), `${d.draw}があり、負けているときにもアウツが残ります。`));
     } else {
       out.push(d.f?.aceHighValue

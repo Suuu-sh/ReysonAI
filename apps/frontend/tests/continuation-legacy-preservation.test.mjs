@@ -50,6 +50,8 @@ function assertLegacyBytes(name, bytes) {
 const ranges = Object.fromEntries([
   "opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "limp-responses", "limp-deep-responses",
 ].map(name => [name, JSON.parse(readFileSync(new URL(`${name}.json`, legacyRoot), "utf8"))]));
+// This immutable fixture is the original HU boundary. New history families
+// have separate product/fingerprint coverage in postflop-multiway.test.mjs.
 const spots = POSTFLOP_SPOTS.filter(spot => spot.reachable && Object.hasOwn(baseline.hu_source_hashes, spot.id));
 
 test("stage two leaves the shared game configuration byte-identical to development", () => {

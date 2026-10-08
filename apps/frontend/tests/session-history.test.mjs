@@ -1,0 +1,50 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { build } from 'esbuild';
+import { JSDOM } from 'jsdom';
+import React, { act } from 'react';
+import { createRoot } from 'react-dom/client';
+import { sessionHistoryRows } from '../src/trainer/session-history.ts';
+const bundled = await build({stdin:{contents:'export { SessionPage } from "./src/trainer/SessionPage.tsx";',resolveDir:new URL('..',import.meta.url).pathname,loader:'tsx'},bundle:true,write:false,platform:'node',format:'esm',external:['react','react-dom'],jsx:'automatic',define:{'import.meta.url':JSON.stringify(new URL('../src/estimated/datasets.ts',import.meta.url).href)},loader:{'.css':'empty'}});
+const code=bundled.outputFiles[0].text.replace(/from "(react(?:\/jsx-runtime)?|react-dom)"/g,(_,n)=>`from "${import.meta.resolve(n)}"`);
+const {SessionPage}=await import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`);
+const at=1700000000000;
+const hand={at,tableId:'saved-table',pos:'BTN',returnBb:2,vpip:true,pfr:false,threeBetOpp:false,threeBet:false,facedThreeBet:false,foldedToThreeBet:false,sawFlop:false,showdown:false,wonShowdown:false};
+const answer={spotId:'UTG_open',hand:'AA',cards:['As','Ah'],action:'open',result:'best',score:1};
+const practice={at:at-100,answered:1,score:1,durationMs:1000,hands:[answer]};
+const props={drills:[{id:'one',name:'Exact saved drill',sessions:[practice]}],reviews:[{...practice,id:'review-one'}],drafts:{one:{drillName:'Saved draft',reviewOnly:false,savedAt:at+100,elapsedMs:3000,session:{answered:1,score:1,log:[answer]}}},onResume(){}};
+async function harness(run,fetcher=async()=>{throw Error('unexpected network')},extra={},saved=[hand]) {
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/learn/sessions'});dom.window.localStorage.setItem('reysonai:agent-hands:v1',JSON.stringify(saved));dom.window.localStorage.setItem('reysonai:locale:v1','en');
+ const previous={window:globalThis.window,document:globalThis.document,HTMLElement:globalThis.HTMLElement,fetch:globalThis.fetch};Object.assign(globalThis,{window:dom.window,document:dom.window.document,HTMLElement:dom.window.HTMLElement,fetch:fetcher,IS_REACT_ACT_ENVIRONMENT:true});
+ const root=createRoot(dom.window.document.querySelector('#root'));
+ const click=async text=>{const b=[...dom.window.document.querySelectorAll('button')].find(b=>b.textContent===text);assert.ok(b,`missing ${text}`);await act(async()=>b.click());};
+ try{await act(async()=>root.render(React.createElement(SessionPage,{...props,...extra})));await run({dom,root,click});}finally{await act(async()=>root.unmount());dom.window.close();Object.assign(globalThis,previous);delete globalThis.IS_REACT_ACT_ENVIRONMENT;}
+}
+test('legacy Agent summaries remain separate hands, never gain invented sessions/accuracy or rewrite storage',async()=>{
+ const records=[hand,{...hand,returnBb:-3},{at:'invalid'}];const before=JSON.stringify(records),rows=sessionHistoryRows([],records,{});assert.equal(rows.length,2);assert.ok(rows.every(row=>!('sessionId' in row.record)&&!('score' in row.record)));assert.equal(JSON.stringify(records),before);
+ await harness(async({dom,click})=>{const stored=dom.window.localStorage.getItem('reysonai:agent-hands:v1');await click('Agent matches');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,2);assert.ok([...dom.window.document.querySelectorAll('tbody tr')].every(r=>r.children[5].textContent==='—'));await click('Saved hand · saved-table');assert.match(dom.window.document.body.textContent,/without session IDs, cards or action logs/);await click('Sessions');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,2);assert.equal(dom.window.localStorage.getItem('reysonai:agent-hands:v1'),stored);},undefined,{},records);
+});
+test('drill/review/draft exact logs, resume and list Back survive mode switching',async()=>{
+ const resumed=[];await harness(async({dom,click})=>{await click('Drills');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,3);await click('Saved draft');assert.match(dom.window.document.body.textContent,/AA/);await click('Resume');assert.equal(resumed[0].status,'draft');assert.deepEqual(resumed[0].hands,[answer]);await click('Sessions');await click('In progress');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,1);await click('Completed');await click('Review drill');assert.match(dom.window.document.body.textContent,/Your recorded action/);},undefined,{onResume:r=>resumed.push(r)});
+});
+test('ranked loads only with authenticated readiness; local data never substitutes; paging appends confirmed IDs',async()=>{
+ let calls=0;await harness(({dom})=>assert.match(dom.window.document.body.textContent,/verified sign-in/),async()=>{calls++;return Response.json({});});assert.equal(calls,0);
+ const fetched=[];await harness(async({dom,click})=>{assert.equal(fetched.length,3);assert.ok(fetched.every(r=>r.opts.credentials==='include'&&r.opts.cache==='no-store'&&!r.url.includes('user_id')));await click('Ranked');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,3);await click('Human FastFold · Load older results');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,4);assert.equal(dom.window.document.body.textContent.includes('Human FastFold · Load older results'),false);await click('Human FastFold');assert.match(dom.window.document.body.textContent,/Server-confirmed personal result/);assert.match(dom.window.document.body.textContent,/1,000 → 1,001/);},async(url,opts)=>{fetched.push({url,opts});const q=new URL(url).searchParams,season=q.get('season');return Response.json({season,items:[{id:season+(q.has('cursor')?'-older':''),at:at-1000,beforeRating:1000,afterRating:1001,hero:'BTN',netBb:2,heroCards:['As','Kd'],board:[],log:null,answered:20,accuracy:.75}],nextCursor:season==='human-fastfold-v1'&&!q.has('cursor')?'cursor-one':null});},{rankedReady:true,rankedOwner:'owner-A'});
+});
+test('sign-out masks ranked results immediately and discards late responses',async()=>{
+ const pending=[];await harness(async({dom,root})=>{await act(async()=>root.render(React.createElement(SessionPage,{...props,rankedReady:false,rankedOwner:null})));assert.match(dom.window.document.body.textContent,/verified sign-in/);await act(async()=>pending.forEach(([season,done])=>done(Response.json({season,items:[{id:'private-owner-A',at,beforeRating:1000,afterRating:900}],nextCursor:null}))));assert.doesNotMatch(dom.window.document.body.textContent,/private-owner-A|900/);},url=>new Promise(done=>pending.push([new URL(url).searchParams.get('season'),done])),{rankedReady:true,rankedOwner:'owner-A'});
+});
+test('malformed ranked pages remain unavailable with retry while local storage is retained',async()=>{
+ await harness(async({dom,click})=>{await click('Ranked');assert.equal(dom.window.document.querySelectorAll('[role="alert"]').length,3);assert.equal(dom.window.document.querySelectorAll('tbody tr').length,0);assert.match(dom.window.localStorage.getItem('reysonai:agent-hands:v1'),/saved-table/);},async()=>Response.json({season:'wrong',items:[],nextCursor:null}),{rankedReady:true,rankedOwner:'owner-A'});
+});
+test('switching authenticated owners clears selected details and never applies the previous owner response',async()=>{
+ const pending=[];
+ await harness(async({dom,root,click})=>{
+  await act(async()=>pending.slice(0,3).forEach(([season,done])=>done(Response.json({season,items:[{id:'owner-A-'+season,at,beforeRating:1777,afterRating:1888,hero:'BTN',netBb:2}],nextCursor:null}))));
+  await click('Ranked');await click('Human FastFold');assert.match(dom.window.document.body.textContent,/1,777 → 1,888/);
+  await act(async()=>root.render(React.createElement(SessionPage,{...props,rankedReady:true,rankedOwner:'owner-B'})));
+  assert.doesNotMatch(dom.window.document.body.textContent,/1,777|1,888/);
+  await act(async()=>pending.slice(3).forEach(([season,done])=>done(Response.json({season,items:[{id:'owner-B-'+season,at,beforeRating:1222,afterRating:1333,hero:'BTN',netBb:1}],nextCursor:null}))));
+  await click('Human FastFold');assert.match(dom.window.document.body.textContent,/1,222 → 1,333/);assert.doesNotMatch(dom.window.document.body.textContent,/1,777|1,888/);
+ },url=>new Promise(done=>pending.push([new URL(url).searchParams.get('season'),done])),{rankedReady:true,rankedOwner:'owner-A'});
+});

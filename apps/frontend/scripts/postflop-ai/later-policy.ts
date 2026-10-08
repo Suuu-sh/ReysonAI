@@ -1,6 +1,7 @@
 import type { ActionMix, HandTier, LaterPolicy, OpponentProfile, PreviousLine } from "./types.ts";
 import type { LaterStreet } from "./later-tree.ts";
-import { handTier, LINES, RUNOUT_TEXTURES, runoutTexture, TIERS } from "./model.ts";
+import { LINES, RUNOUT_TEXTURES, runoutTexture, TIERS } from "./model.ts";
+import { handTier } from "./hu-hand-tier.ts";
 import { LATER_NODES, STREETS, streetNodes } from "./later-tree.ts";
 import { raiseDepth } from "./tree.ts";
 import { raiseReferenceRow, withRaise } from "./policy.ts";

@@ -1,0 +1,30 @@
+{
+  "status": "PASS_REQUIRED_PR44_FINAL_STATS_UI_STORAGE",
+  "testedHead": "3fe0735025cfc45366a95eeb05841c464608fe24",
+  "visualSource": "92b0da4c7ff4ae420b53d89cf164000c78b9990f",
+  "same_compiled_js_sha256": "9051a0feb861a3e1ded228af7171a265eb32c000518223df6fb12a7df407b34e",
+  "same_css_sha256": "0f15a16decf49aff0e573e330a220386c359187c4e0b5ab495035925727e4dbe",
+  "browser": "formal Chrome earlier390/normal Stats;formal IAB new18447origin storage after Chrome timeout",
+  "storage_checks": [
+    "both keys absent before settlement",
+    "actual approved saved-policy flop/turn/river checks and showdown",
+    "exactly1 completed BTN hand returnBb-2.5 vpiptrue pfrfalse",
+    "legacy key absent",
+    "same raw record after browser reload"
+  ],
+  "case17": {
+    "classification": "pre-existing acceptance requirement discrepancy; not new PR44 regression, outside current MW3/Stats scope",
+    "base": "7df430ef0e92a6b9fd237d89739045aec012e5b1",
+    "integration": "f89cec1e393e63c46cb2914f542a776879e1abb0",
+    "evidence": "hu-browser-baseline-public-dom-comparison.json",
+    "three_browser_cases": "initial/AcKd/BBdefence base and integration each1table,0MW3region;507buttons/1188percentage styles match",
+    "resolution": "No new HU2table feature authorized or added; historicalcase17 stays gap, not mandatory blocker for current narrow scope"
+  },
+  "required_feature_remaining": [],
+  "outside_scope": [
+    "Actual Google OAuth E2E unchanged",
+    "Existing case17 HU1 vs original2 requirement",
+    "production/merge"
+  ],
+  "auth_fixture": "original isolated component account hook and deterministic seed; no product auth bypass"
+}

@@ -21,7 +21,7 @@ export function defaultOpponentSeat(context?: { spotId?: string | null; ip?: str
   if (!context?.spotId) return "ip";
   try {
     const spot = spotById(context.spotId);
-    const limped = spot.kind === "limp" || ("history" in spot && spot.history.some(step => step.action === "limp"));
+    const limped = spot.kind === "limp" || ((spot.kind === "sqp" || spot.kind === "ccp" || spot.kind === "c4bp") && spot.history.some(step => step.action === "limp"));
     const seat = limped ? "BB" : spot.aggressor;
     return seat === spot.oop ? "oop" : "ip";
   } catch {

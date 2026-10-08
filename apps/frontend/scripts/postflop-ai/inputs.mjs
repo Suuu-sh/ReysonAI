@@ -2,7 +2,7 @@ import { adjustedInputOptions, finalizeInputs, inputStructureHash } from "./inpu
 import { profileArtifactKey } from "./candidate-source.ts";
 import { multiwayInputData } from "./multiway-inputs.mjs";
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { combosOf } from "../lib/equity.ts";
@@ -19,6 +19,18 @@ export function useArtifactSource(next) { const previous = source; source = next
 
 export const root = (() => { try { return fileURLToPath(new URL("../..", import.meta.url)); } catch { return ""; } })();
 const read = name => source ? source.ranges[name] : JSON.parse(readFileSync(new URL(`../../src/estimated/${name}.json`, import.meta.url), "utf8"));
+// New continuation files are large. Cache immutable parsed files by filesystem
+// identity without hiding edits from the running authoring/dev process.
+const rangeCache = new Map();
+function readMultiwayRange(name) {
+  if (source) return source.ranges[name];
+  const url = new URL(`../../src/estimated/${name}.json`, import.meta.url);
+  const stat = statSync(url), identity = `${stat.mtimeMs}:${stat.size}:${stat.ino}`;
+  const cached = rangeCache.get(name);
+  if (cached?.identity === identity) return cached.data;
+  const data = JSON.parse(readFileSync(url, "utf8"));
+  rangeCache.set(name, { identity, data }); return data;
+}
 export const config = pilotConfig;
 const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
@@ -84,8 +96,8 @@ export function loadInputs(spotId = DEFAULT_SPOT_ID, options = {}) {
 function loadBaseInputs(spotId, allowUnreachable = false) {
   const spot = spotById(spotId);
   if (!spot.reachable && !allowUnreachable) throw new Error(`${spot.id} is unreachable: the saved ${spot.responseId} range never calls`);
-  if ("history" in spot) {
-    const { sources, seatRows } = multiwayInputData(spot, read);
+  if (spot.history) {
+    const { sources, seatRows } = multiwayInputData(spot, readMultiwayRange);
     const fingerprint = sha({ spot, sources, gameConfig, config: flopConfig() });
     return { spot, sources, config, fingerprint, seatRows };
   }

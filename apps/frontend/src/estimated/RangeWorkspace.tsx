@@ -1,5 +1,4 @@
-import { chooseContinuationAction, continuationRootForSelection } from "./continuation-flow.ts";
-import { continuationSavedRange, continuationUnreachableCopy, useContinuationRanges, withContinuationAvailability } from "./continuation-ranges.ts";
+/// <reference lib="es2023.array" />
 import type { CSSProperties, MouseEvent, ReactNode } from "react";
 import type { Profile } from "../profile.ts";
 import type { MatrixModel } from "../data.ts";
@@ -12,15 +11,19 @@ import type { StreetCardDialog as StreetCardDialogName } from "./street-card-dia
 import type { PreflopCallEvFacts } from "./PreflopCallEvBars.tsx";
 
 type DisplayHand = FrequencyRow & Partial<{ reason: string; adjusted: "add" | "drop"; shift_bb: number; saved_open: number; open_size_bb: number | null; three_bet_size_bb: number | null; four_bet_size_bb: number | null; all_in_size_bb: number | null; squeeze_size_bb: number | null; equity_vs_shove_pct: number | null }>;
-type DisplaySpot = { id: string; hands: DisplayHand[]; table_profile?: TableProfile; open_size_bb?: number; three_bet_size_bb?: number; four_bet_size_bb?: number; squeeze_size_bb?: number; limp_reraise_size_bb?: number; prior_action?: string | null; call_break_even_equity_pct?: number };
-type RangeEntry = { loading?: boolean; position: string; kind: string; title: string; spot?: DisplaySpot | null; model?: MatrixModel | null; hand?: DisplayHand; statusTitle?: string; statusDescription?: string; unreachableReason?: string | null; rangeBlockKey?: string; raiseToBb?: number; allInSizeBb?: number; fourBetSizeBb?: number; threeBetSizeBb?: number };
+type DisplaySpot = { unreachable?: boolean; id: string; hands: DisplayHand[]; table_profile?: TableProfile; open_size_bb?: number; three_bet_size_bb?: number; four_bet_size_bb?: number | null; squeeze_size_bb?: number; limp_reraise_size_bb?: number; prior_action?: string | null; call_break_even_equity_pct?: number };
+type RangeEntry = { loading?: boolean; retryContinuation?: boolean; retryStage3?: boolean; position: string; kind: string; title: string; spot?: DisplaySpot | null; model?: MatrixModel | null; hand?: DisplayHand; statusTitle?: string; statusDescription?: string; unreachableReason?: string | null; rangeBlockKey?: string; raiseToBb?: number; allInSizeBb?: number; fourBetSizeBb?: number | null; threeBetSizeBb?: number };
 type LocalRange = { position: string; available_actions?: string[]; raise_to_bb?: number; rows: [string, number, number, number][] };
 type LocalEstimate = { scenario?: string; ranges: LocalRange[] };
 type LocalEstimateResponse = { error?: string; data?: LocalEstimate; pending?: boolean; cached?: boolean };
 type InlineFact = { key?: string; label: string; unit?: string; value: number | null | undefined };
 type WorkspaceActionBlock = Partial<Omit<ActionBlock, "key" | "kind">> & { key: string; kind: string; cards?: string[]; street?: string; potBb?: number; pending?: boolean; flopIndex?: number; laterIndex?: number };
+type EstimatedRangesProps = WorkspaceProps & { initialRangeType?: string; fourBet?: ReturnType<typeof loadFourBetDataset>; mw3Client?: typeof mw3DeliveryClient };
 type WorkspaceProps = { profile?: Profile | null; onEditProfile?: () => void; onSectionChange?: (section: string) => void };
-type ActionPathProps = RangeBuildState & { leading?: ReactNode; expanded?: boolean; blocks?: WorkspaceActionBlock[]; selectedRangeBlock?: string | null; onSelectRangeBlock?: (key: string | null) => void; onRewindActionBlock?: ((block: WorkspaceActionBlock) => void) | null; onEnterPostflop?: (() => void) | null; onOpenFlopCards?: () => void; onOpenLaterCard?: (street: string) => void; onFlopAction?: (block: WorkspaceActionBlock, action: string) => void; onLaterAction?: (block: WorkspaceActionBlock, action: string) => void; onAct?: (position: string, action: string) => void; onContinuationAction?: (action: string) => void; onColdAction?: (value: RangeUrlSelection["coldAction"]) => void; onBoundedContinuation?: (block: WorkspaceActionBlock, action: string) => void; onSqueezeResponse?: (role: string, action: string) => void; onFourBet?: () => void; onAllIn?: () => void; onShoveResponse?: (action: string) => void };
+type ActionPathProps = RangeBuildState & { leading?: ReactNode; expanded?: boolean; blocks?: WorkspaceActionBlock[]; selectedRangeBlock?: string | null; onSelectRangeBlock?: (key: string | null) => void; onRewindActionBlock?: ((block: WorkspaceActionBlock) => void) | null; onEnterPostflop?: (() => void) | null; onOpenFlopCards?: () => void; onOpenLaterCard?: (street: string) => void; onFlopAction?: (block: WorkspaceActionBlock, action: string) => void; onLaterAction?: (block: WorkspaceActionBlock, action: string) => void; onAct?: (position: string, action: string) => void; onContinuationAction?: (action: string) => void; onColdAction?: (value: RangeUrlSelection["coldAction"]) => void; onSqueezeResponse?: (role: string, action: string) => void; onBoundedContinuation?: (block: WorkspaceActionBlock, action: string) => void; onStage3Action?: (block: WorkspaceActionBlock, action: string) => void; onFourBet?: () => void; onAllIn?: () => void; onShoveResponse?: (action: string) => void };
+import { stage3Copy } from "./stage3-copy.ts";
+import { chooseStage3Action, normalizeStage3Selection, stage3RootForSelection, stage3LiveSeats } from "./stage3-flow.ts";
+import { useStage3UiRuntime, withStage3Availability } from "./stage3-ranges.ts";
 import { accountStorage } from "../account/session.ts";
 import { dataset as publishedDataset } from "./datasets.ts";
 import { useMemo, useState, useEffect, useRef } from "react";
@@ -36,6 +39,9 @@ import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "./o
 import { LIMP_FOUR_BET_RESPONSE_ID, findLimpDeepResponseSpot, limpFourBetMatrixModel, validateLimpDeepResponses } from "./limp-deep-responses.ts";
 import { LIMP_RERAISE_RESPONSE_ID, findLimpResponseSpot, limpResponsesMatrixModel, validateLimpResponses } from "./limp-responses.ts";
 import { extendedBreakdown, extendedModel, extendedUnreachableReason, findExtendedSpot, useExtendedDatasets } from "./extended-ranges.ts";
+import { continuationCopy } from "./continuation-copy.ts";
+import { chooseContinuationAction, continuationLiveSeats, continuationRootForSelection } from "./continuation-flow.ts";
+import { continuationRangeBreakdown, continuationUnreachableCopy, useContinuationUiRuntime, withContinuationAvailability } from "./continuation-ranges.ts";
 import { limpActionTransition, responseActionTransition, rewindActionBlockTransition } from "./action-path.ts";
 import { displayModes } from "./display-mode.ts";
 import { displayModeKey } from "../profile.ts";
@@ -54,7 +60,10 @@ import {
 import { ArrowCounterClockwise, CaretDown, DotsThreeVertical, GearSix } from "@phosphor-icons/react";
 import { RangeContextCard } from "./RangeContextCard.tsx";
 import { GameFormatDialog } from "./GameFormatDialog.tsx";
+import { Mw3PostflopTrial, useMw3RangeSession } from "./Mw3PostflopTrial.tsx";
+import { mw3DeliveryClient } from "./mw3-browser.ts";
 import { FlopCardDialog, PostflopTrial, StreetCardDialog, suitLabels } from "./PostflopTrial.tsx";
+import { ProfilePolicyPreparing } from "./PostflopProfileSettings.tsx";
 import { useAccount } from "../account/AuthPanel.tsx";
 import { LearningGate, learningAllowed } from "../account/LearningAccess.tsx";
 import { Cards, ChatText, Path } from "@phosphor-icons/react";
@@ -117,8 +126,8 @@ export function selectedHandForRangeEntry(entry: RangeEntry, selected: string) {
   return entry.spot?.hands.find(row => row.hand === selected) ?? entry.hand;
 }
 const legacySelectionStorageKey = "reysonai-legacy:estimated-selection:v1";
-function restoredSelection(initialRangeType: string): Omit<RangeUrlSelection, "coldAction"> & Partial<Pick<RangeUrlSelection, "coldAction">> & PostflopProfileState {
-  const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, limpReraiseAction: null, limpFourBetAction: null, squeezeResponse: [], continuationActions: [], coldAction: null, selected: "AKo", ...normalizePostflopProfileState(null) };
+function restoredSelection(initialRangeType: string): RangeUrlSelection & PostflopProfileState {
+  const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, limpReraiseAction: null, limpFourBetAction: null, squeezeResponse: [], continuationActions: [], stage3RootId: null, stage3Actions: [], coldAction: null, selected: "AKo", ...normalizePostflopProfileState(null) };
   if (typeof window === "undefined") return fallback;
   try {
     const stored = window.sessionStorage.getItem(selectionStorageKey) ?? window.sessionStorage.getItem(legacySelectionStorageKey);
@@ -139,9 +148,12 @@ function restoredSelection(initialRangeType: string): Omit<RangeUrlSelection, "c
     const squeezeActions = ["fold", "call", "raise"];
     const squeezeResponse = pendingRaise === "squeeze" && Array.isArray(saved.squeezeResponse) && saved.squeezeResponse.length <= 2 &&
       saved.squeezeResponse.every((action: string) => squeezeActions.includes(action)) && !(saved.squeezeResponse[0] === "raise" && saved.squeezeResponse.length > 1) ? saved.squeezeResponse : [];
-    const coldAction = saved.rangeType === "three_bet" && saved.coldAction && positions.indexOf(saved.coldAction.position) > positions.indexOf(saved.hero) && ["call", "raise"].includes(saved.coldAction.action) ? saved.coldAction : null;
-    const continuationActions = Array.isArray(saved.continuationActions) && saved.continuationActions.length <= 24 && saved.continuationActions.every((action: string) => ["fold", "call", "four_bet", "all_in"].includes(action)) ? saved.continuationActions : [];
-    return { ...fallback, ...saved, ...normalizePostflopProfileState(saved), pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, coldAction, selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
+    const coldAction = saved.rangeType === "three_bet" && positions.indexOf(saved.coldAction?.position) > positions.indexOf(saved.hero)
+      && ["call", "raise"].includes(saved.coldAction?.action) ? saved.coldAction : null;
+    const continuationActions = Array.isArray(saved.continuationActions) && saved.continuationActions.length <= 24
+      && saved.continuationActions.every((action: string) => ["fold", "call", "four_bet", "all_in"].includes(action)) ? saved.continuationActions : [];
+    const stage3 = saved.stage3RootId ? normalizeStage3Selection(saved.stage3RootId, saved.stage3Actions) : null;
+    return { ...fallback, ...saved, ...normalizePostflopProfileState(saved), coldAction, continuationActions, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, ...(stage3 ?? { stage3RootId: null, stage3Actions: [] }), selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
   } catch { return fallback; }
 }
 
@@ -158,7 +170,7 @@ const formatFact = ({ value, unit }: InlineFact) => unit === "bb"
   ? `${value! > 0 ? "+" : ""}${Number(value).toFixed(2)}bb`
   : `${Number(value).toFixed(1)}%`;
 
-function AiReason({ hand, reasonState, inlineFacts, hideCallEv = false }: { hand: DisplayHand; reasonState: ReturnType<typeof useDetailedReasons>; inlineFacts?: InlineFact[] | null; hideCallEv?: boolean | null }) {
+export function AiReason({ hand, reasonState, inlineFacts, hideCallEv = false }: { hand: DisplayHand; reasonState: ReturnType<typeof useDetailedReasons>; inlineFacts?: InlineFact[] | null; hideCallEv?: boolean | null }) {
   const { data, loading, error } = reasonState;
   const detailed = data?.hands[hand.hand];
   const english = productLocale() !== "ja";
@@ -193,7 +205,7 @@ function endResultLabel(result: string) {
 
 function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isFourBet, isFiveBet, isContinuation, extra = null, spot, position, onReturnToComparison, displayMode }: { hand: DisplayHand; model: MatrixModel; isOpening?: boolean; isLimpResponse?: boolean; isThreeBet?: boolean; isFourBet?: boolean; isFiveBet?: boolean; isContinuation?: boolean; extra?: ReturnType<typeof extendedBreakdown>; spot: DisplaySpot; position: string; onReturnToComparison?: () => void; displayMode: string }) {
   const reasonState = useDetailedReasons(spot?.id);
-  const equityFact = reasonState.data?.fact_labels!.find(fact => fact.key.startsWith("equity_vs_") && fact.key.endsWith("_pct"));
+  const equityFact = reasonState.data?.fact_labels!.find(fact => fact.key === "equity_pct" || fact.key.startsWith("equity_vs_") && fact.key.endsWith("_pct"));
   const savedFacts = reasonState.data?.hands[hand.hand]?.facts;
   const callEvFacts = savedFacts && equityFact ? { eqr: savedFacts.eqr, equityPct: savedFacts[equityFact.key], callEvBb: savedFacts.call_ev_bb } : null;
   const hasCallEv = callEvFacts && Object.values(callEvFacts).every(Number.isFinite);
@@ -291,7 +303,7 @@ function ActionDropdown({ position, options, onSelect }: { position: string; opt
   </div>;
 }
 
-export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onEnterPostflop = null, onOpenFlopCards = () => {}, onOpenLaterCard = () => {}, onFlopAction = () => {}, onLaterAction = () => {}, onAct = () => {}, onContinuationAction = () => {}, onColdAction = () => {}, onBoundedContinuation = () => {}, onSqueezeResponse = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }: ActionPathProps) {
+export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onEnterPostflop = null, onOpenFlopCards = () => {}, onOpenLaterCard = () => {}, onFlopAction = () => {}, onLaterAction = () => {}, onAct = () => {}, onContinuationAction = () => {}, onColdAction = () => {}, onSqueezeResponse = () => {}, onBoundedContinuation = () => {}, onStage3Action = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }: ActionPathProps) {
   const blocks: WorkspaceActionBlock[] = providedBlocks ?? buildActionBlocks(state);
   const seatsRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -302,6 +314,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
     if (block.kind === "flop" && block.street) onLaterAction(block, action);
     else if (block.kind === "flop") onFlopAction(block, action);
     else if (block.stage === "limp-bb" || block.stage === "limp-sb-response" || block.stage === "limp-bb-reraise" || block.stage === "limp-sb-four-bet") onAct(block.position!, action);
+    else if (block.stage3Node) onStage3Action(block, action);
     else if (block.continuationNode) onBoundedContinuation(block, action);
     else if (block.kind === "squeeze-response") onSqueezeResponse(block.role!, action);
     else if (block.kind === "seat") onAct(block.position!, action);
@@ -334,7 +347,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
         const chosenOption = block.options!.find(option => option.action === block.chosen);
         if (block.kind === "end") return <div className="action-seat action-seat-end" key={block.key}>
           <div className="action-seat-heading"><strong>終了</strong></div>
-          <p className="action-seat-result">{endResultLabel(block.result!)}</p>
+          <p className="action-seat-result">{block.continuationAvailable === false ? continuationCopy(block.continuationStatus === "unreachable" ? "unreachable" : block.continuationStatus === "loading" ? "loading" : block.continuationStatus === "error" ? "error" : "missing") : endResultLabel(block.result!)}</p>
           <small>{block.pot}</small>
           {/^\d+人でフロップへ$/.test(block.result!) && onEnterPostflop && <button type="button" className="enter-postflop" onClick={onEnterPostflop}>フロップへ進む →</button>}
         </div>;
@@ -350,7 +363,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
               return <button type="button" key={option.action} className={selected ? "chosen" : ""} aria-pressed={selected} disabled={disabled} title={selected && onRewindActionBlock ? "クリックしてこのアクション前に戻る" : undefined} onClick={event => { event.stopPropagation(); selected && onRewindActionBlock ? onRewindActionBlock(block) : select(block, option.action); }}><OptionLabel label={option.label} /></button>;
             })}
             {block.kind === "pending" && <small className="action-path-pending">推定レンジ準備中</small>}
-            {block.active && !block.chosen && block.kind !== "forced" && block.kind !== "pending" && <ActionDropdown position={block.position!} options={block.options!.filter(option => !option.disabled)} onSelect={action => select(block, action)} />}
+            {block.active && !block.chosen && block.kind !== "forced" && block.kind !== "pending" && block.options!.some(option => !option.disabled) && <ActionDropdown position={block.position!} options={block.options!.filter(option => !option.disabled)} onSelect={action => select(block, action)} />}
           </div> : <span className={`action-seat-summary${block.kind === "pending" ? " action-path-pending" : ""}`}>{chosenOption?.label ?? (block.kind === "pending" ? "推定レンジ準備中" : "—")}</span>}
         </div>;
       })}
@@ -370,7 +383,20 @@ function PostflopSignIn({ account, onBack }: { account: ReturnType<typeof useAcc
     backLabel={localized("Back to preflop ranges", "プリフロップのレンジに戻る")} /></div>;
 }
 
-export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange }: WorkspaceProps & { initialRangeType?: string; fourBet?: ReturnType<typeof loadFourBetDataset> }) {
+// Query navigation is a fresh, validated range selection. Remounting the
+// session atomically restores all streets and cancels the old session's async
+// effects, so a late source response cannot write over Back/Forward navigation.
+export function EstimatedRanges(props: EstimatedRangesProps) {
+  const [navigation, setNavigation] = useState(0);
+  useEffect(() => {
+    const restore = () => { if (window.location.pathname === "/analyze/ranges") setNavigation(value => value + 1); };
+    window.addEventListener("popstate", restore);
+    return () => window.removeEventListener("popstate", restore);
+  }, []);
+  return <EstimatedRangeSession key={navigation} {...props} />;
+}
+
+function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange, mw3Client = mw3DeliveryClient }: EstimatedRangesProps) {
   const [initialUrlState] = useState(() => readRangeUrl());
   const [initialSelection] = useState(() => initialUrlState ?? restoredSelection(initialRangeType));
   const [opponentProfile, setOpponentProfile] = useState<OpponentProfile>(initialSelection.opponentProfile);
@@ -425,6 +451,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [limpFourBetAction, setLimpFourBetAction] = useState(initialSelection.limpFourBetAction);
   const [continuationActions, setContinuationActions] = useState<string[]>(initialSelection.continuationActions ?? []);
   const [squeezeResponse, setSqueezeResponse] = useState(initialSelection.squeezeResponse);
+  const [stage3RootId, setStage3RootId] = useState(initialSelection.stage3RootId ?? null);
+  const [stage3Actions, setStage3Actions] = useState(initialSelection.stage3Actions ?? []);
   const [format, setFormat] = useState<GameFormat>(() => {
     if (initialUrlState) return initialUrlState.format;
     try {
@@ -483,7 +511,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setCallers([]);
     setFoldedHero(false);
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setContinuationActions([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setContinuationActions([]); setStage3RootId(null); setStage3Actions([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
     setLimpAction(null); setLimpResponseAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
@@ -498,7 +526,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setOpener(value);
     setRangeType("open");
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setContinuationActions([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setContinuationActions([]); setStage3RootId(null); setStage3Actions([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
     setLimpAction(null); setLimpResponseAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
@@ -507,13 +535,24 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setFoldedHero(false);
   }
 
+  function selectStage3(block: WorkspaceActionBlock, action: string | null) {
+    const next = chooseStage3Action(block, action);
+    if (!next) return;
+    setRangeType(next.rangeType); setOpener(next.opener); setHero(next.hero); setCallers(next.callers);
+    setPendingRaise(next.pendingRaise); setColdAction(next.coldAction); setFoldedHero(false);
+    setStage3RootId(next.stage3RootId); setStage3Actions(next.stage3Actions);
+    setSqueezeResponse([]); setContinuationActions([]); setContinuationAction(null); setShoveResponse(null);
+    setFocusedRange(null); setSelectedRangeBlock(null);
+    setShowFlop(false); setFlopDialogOpen(false); setStreetCardDialog(null); setFlopActions([]);
+  }
+
   function actAt(position: string, action: string) {
     setContinuationActions([]);
     setShowFlop(false); setFlopDialogOpen(false); setFlopActions([]);
     const index = positions.indexOf(position);
     const next = positions[index + 1];
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setContinuationActions([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setContinuationActions([]); setStage3RootId(null); setStage3Actions([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
     setFocusedRange(null);
     const limpTransition = limpActionTransition({ rangeType, opener, hero, limpAction, limpResponseAction, limpReraiseAction, position, action });
     if (limpTransition) {
@@ -552,12 +591,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   }
 
   function rewindToActionBlock(block: WorkspaceActionBlock) {
-    if (block.continuationNode) {
-      setShowFlop(false); setFlopDialogOpen(false); setStreetCardDialog(null); setFlopActions([]); setTurnActions([]); setRiverActions([]);
-      setFocusedRange(null); setSelectedRangeBlock(current => current === block.key ? null : block.key);
-      const next = chooseContinuationAction({ rangeType, opener, hero, squeezeResponse, continuationActions }, block, null);
-      setSqueezeResponse(next.squeezeResponse); setContinuationActions(next.continuationActions); return;
-    }
+    if (block.kind === "forced" || block.kind === "pending") return;
     if (block.kind === "flop" && block.street === "turn") {
       setTurnActions(current => current.slice(0, block.laterIndex ?? 0));
       setRiverCard(""); setRiverActions([]);
@@ -574,11 +608,23 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       setSelectedRangeBlock(block.key);
       return;
     }
-    setShowFlop(false); setFlopDialogOpen(false); setFlopActions([]);
-    setContinuationActions([]);
-    const transition = rewindActionBlockTransition({ rangeType, opener, hero, callers, squeezeResponse, block: block as ActionBlock });
+    setShowFlop(false); setFlopDialogOpen(false); setStreetCardDialog(null); setFlopActions([]); setTurnActions([]); setRiverActions([]);
+    if (block.stage3Node) {
+      selectStage3(block, null);
+      setSelectedRangeBlock(current => current === block.key ? null : block.key);
+      return;
+    }
+    if (block.continuationNode) {
+      setStage3RootId(null); setStage3Actions([]);
+      const next = chooseContinuationAction({ squeezeResponse, continuationActions }, block, null);
+      setSqueezeResponse(next.squeezeResponse); setContinuationActions(next.continuationActions);
+      setFocusedRange(null); setSelectedRangeBlock(current => current === block.key ? null : block.key);
+      return;
+    }
+    const transition = rewindActionBlockTransition({ rangeType, opener, hero, callers, limpAction, limpResponseAction, squeezeResponse, block: block as ActionBlock });
+    setContinuationActions([]); setStage3RootId(null); setStage3Actions([]);
     setFocusedRange(null);
-    setColdAction(null);
+    setColdAction(transition?.coldAction ?? null);
     setSelectedRangeBlock(current => current === block.key ? null : block.key);
     if (!transition) return;
     setRangeType(transition.rangeType);
@@ -600,7 +646,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setShowFlop(false); setFlopDialogOpen(false); setFlopActions([]);
     setRangeType("four_bet");
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setContinuationActions([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setContinuationActions([]); setStage3RootId(null); setStage3Actions([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
     setLimpAction(null); setLimpResponseAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
@@ -613,7 +659,9 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const priorCallers = sortedCallers.filter(position => positions.indexOf(position) < positions.indexOf(hero));
   // Saved multiway / squeeze ranges replace the local-generation fallback for SB/BB after one caller.
   const savedMultiway = isComparison && multiwayContext(opener, callers, hero) && (pendingRaise !== "squeeze" || callers.length === 1);
-  const multiwayRequest = isComparison && !savedMultiway && priorCallers.length > 0 && priorCallers.length === sortedCallers.filter(position => position !== hero).length
+  const boundedSelection = continuationRootForSelection({ rangeType, opener, hero, callers, pendingRaise, coldAction });
+  const stage3Selection = stage3RootForSelection({ rangeType, opener, hero, callers, foldedHero, pendingRaise, coldAction, stage3RootId, stage3Actions });
+  const multiwayRequest = isComparison && !stage3Selection && !boundedSelection && priorCallers.length !== 2 && !savedMultiway && priorCallers.length > 0 && priorCallers.length === sortedCallers.filter(position => position !== hero).length
     ? { opener, hero, callers: priorCallers }
     : null;
   const fiveBet = useFiveBetSpot(opener, hero, isFourBet && pendingRaise === "all_in");
@@ -629,8 +677,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const currentRequestKey = useRef(requestKey);
   currentRequestKey.current = requestKey;
   useEffect(() => {
-    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, coldAction, selected, opponentProfile, opponentSeat }));
-  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, coldAction, selected, opponentProfile, opponentSeat]);
+    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions, coldAction, selected, opponentProfile, opponentSeat }));
+  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions, coldAction, selected, opponentProfile, opponentSeat]);
   useEffect(() => { setLocalEstimate(null); setLocalEstimateRequestKey(null); setLocalStatus(activeGenerationRequest ? "checking" : "idle"); setLocalError(""); }, [requestKey]);
   useEffect(() => {
     if (!activeGenerationRequest || !requestKey) return;
@@ -671,30 +719,47 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     const candidate = dataset && positions.indexOf(position) > positions.indexOf(opener) ? findSpot(dataset!, opener, position) : null;
     return candidate?.hands.find(row => row.three_bet_size_bb !== null)?.three_bet_size_bb ?? null;
   };
-  const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, raiseSizeFor };
-  const continuationSources = useContinuationRanges(Boolean(continuationRootForSelection(actionState)));
-  const actionBlocks = withContinuationAvailability(buildActionBlocks(actionState), continuationSources);
-  const flopContext = !currentError && isBuilt(format) ? completedFlopContext({ actionBlocks, rangeType, opener, hero,
-    callers, foldedHero, pendingRaise, squeezeResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }) : null;
+  const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions, raiseSizeFor };
+  const continuationRuntime = useContinuationUiRuntime(Boolean(boundedSelection) || callers.length >= 2);
+  const structuralActionBlocks = buildActionBlocks(actionState);
+  const stage3Runtime = useStage3UiRuntime(structuralActionBlocks.some(block => block.stage3Node));
+  const actionBlocks = withStage3Availability(withContinuationAvailability(structuralActionBlocks, continuationRuntime.runtime, continuationRuntime.error), stage3Runtime.runtime, stage3Runtime.error);
+  const liveContinuationSeats = stage3LiveSeats(actionBlocks) ?? continuationLiveSeats(actionBlocks);
+  const flopContext = !currentError && isBuilt(format) ? completedFlopContext({ actionBlocks, rangeType, opener, hero, pendingRaise, squeezeResponse,
+    callers, foldedHero, isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format), limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }) : null;
   const flopActive = showFlop && Boolean(flopContext);
+  const mw3Session = useMw3RangeSession(flopContext, { flopCards, flopActions, turnCard, turnActions, riverCard, riverActions }, mw3Client, showFlop && postflopAllowed && opponentProfile === "standard");
+  // Temporary loading/missing policy data is not proof that an otherwise valid
+  // board/history is invalid. Persist the validated selection, not whether its
+  // strategy can be rendered in this particular async frame. Exact zero support
+  // is different: only a proved unreachable terminal invalidates that intent.
+  const sourceProvesUnreachable = actionBlocks.at(-1)?.continuationStatus === "unreachable";
+  const urlFlopContext = !currentError && isBuilt(format) && !sourceProvesUnreachable ? completedFlopContext({
+    ...actionState, actionBlocks: structuralActionBlocks,
+    isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format),
+  }) : null;
+  const persistFlop = showFlop && Boolean(urlFlopContext);
+  // HU archetypes have no MW3 policies. Keep the selected assumption, but never
+  // show standard MW3 frequencies until the user explicitly restores Standard.
+  const mw3ProfilePreparing = opponentProfile !== "standard" && (flopContext?.kind === "mw3_srp" || flopContext?.kind === "multiway_unavailable");
   const effectiveOpponentSeat = opponentSeat ?? defaultOpponentSeat(flopContext);
   useEffect(() => {
     // Wait for dependent street resets before serializing a changed upstream path.
     if (flopChanged || turnChanged) return;
     replaceRangeUrl(encodeRangeUrl({ rangeType, opener, hero, callers, foldedHero, pendingRaise,
       continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction,
-      limpFourBetAction, squeezeResponse, continuationActions, selected, format, tableProfile, opponentProfile, opponentSeat, showFlop: flopActive,
+      limpFourBetAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions, selected, format, tableProfile, opponentProfile, opponentSeat, showFlop: persistFlop,
       flopCards, flopActions, turnCard, turnActions, riverCard, riverActions }, actionBlocks));
   }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse,
-    coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse,
-    selected, format, tableProfile, opponentProfile, opponentSeat, flopActive, flopCards, flopActions, turnCard, turnActions,
+    coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions,
+    selected, format, tableProfile, opponentProfile, opponentSeat, persistFlop, flopCards, flopActions, turnCard, turnActions,
     riverCard, riverActions, flopChanged, turnChanged, actionBlocks]);
   const flopBoard = recognizedFlop(flopCards);
   const canEnterLaterStreets = Boolean(flopContext?.pilotAvailable && flopBoard && laterStart(flopActions, flopContext));
   const laterBlocks = canEnterLaterStreets
     ? buildLaterActionBlocks({ flopActions, turnCard, turnActions, riverCard, riverActions }, flopContext)
     : [];
-  const pendingStreetCard = (flopActive ? (laterBlocks.find(block => block.kind === "board" && block.pending) as { street: StreetCardDialogName } | undefined)?.street ?? null : null) as StreetCardDialogName | null;
+  const pendingStreetCard: StreetCardDialogName | null = flopActive ? (flopContext?.kind === "mw3_srp" ? mw3Session.navigation?.pendingStreet : (laterBlocks.find(block => block.kind === "board" && block.pending) as { street: StreetCardDialogName } | undefined)?.street) ?? null : null;
   const previousPendingStreetCard = useRef<StreetCardDialogName | null>(null);
   useEffect(() => {
     const nextDialog = nextPendingStreetCardDialog(pendingStreetCard, previousPendingStreetCard.current);
@@ -703,9 +768,11 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   }, [pendingStreetCard]);
   const combinedBlocks: WorkspaceActionBlock[] = flopActive
     ? [...actionBlocks.filter(block => block.kind !== "end"), { key: "flop-board", kind: "board", cards: flopCards, street: "flop", potBb: flopContext!.potBb },
-      ...(flopContext!.pilotAvailable && flopBoard
-        ? [...buildFlopActionBlocks(flopActions, flopContext).filter(block => !(canEnterLaterStreets && block.kind === "end")), ...laterBlocks]
-        : [])]
+      ...(flopContext!.kind === "mw3_srp"
+        ? mw3Session.navigation?.blocks ?? []
+        : flopContext!.pilotAvailable && flopBoard
+          ? [...buildFlopActionBlocks(flopActions, flopContext).filter(block => !(canEnterLaterStreets && block.kind === "end")), ...laterBlocks]
+          : [])]
     : actionBlocks;
   const responseSpot = !isOpening && !isLimp && dataset && positions.indexOf(hero) > positions.indexOf(opener) ? findSpot(dataset!, opener, hero) : null;
   const responseModel = responseSpot ? matrixModel(responseSpot) : null;
@@ -719,12 +786,28 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     if (!extended.data) return { ...missing("読み込み中", "保存済みレンジを読み込んでいます。"), loading: true };
     const savedSpot = findExtendedSpot(extended.data, ref, opener);
     if (!savedSpot) return missing("レンジ未収録", "この履歴のレンジはまだ保存されていません。");
+    if ((savedSpot as DisplaySpot).unreachable === true) return missing(continuationCopy("unreachable"), continuationCopy("unreachableDetail"));
     return { position: ref.position, kind: ref.kind, spot: savedSpot, model: extendedModel(ref.kind, savedSpot, dataset!, openingDataset!), title,
       hand: savedSpot.hands.find(row => row.hand === selected), unreachableReason: extendedUnreachableReason(ref.kind, savedSpot) };
   };
   const extendedTitle = (ref: RangeRef) => ref.kind === "multiway" ? `${ref.position} · オープン＋コールへの応答`
     : ref.kind === "cold" ? `${ref.position} · ${ref.threeBettor}の3betへのコールド応答`
     : ref.priorAction ? `${ref.position} · スクイーズへの応答（${opener}${ref.priorAction === "fold" ? "フォールド" : "コール"}後）` : `${ref.position} · スクイーズへの応答`;
+  const continuationEntry = (ref: RangeRef, historical = false): RangeEntry => {
+    const selectedRuntime = ref.kind === "stage3" || stage3Selection ? stage3Runtime : continuationRuntime;
+    const title = `${ref.position} · ${ref.extraSeat ? stage3Copy("extraSeat") : continuationCopy("saved")}${historical ? continuationCopy("history") : ""}`;
+    const missing = (statusTitle: string, statusDescription: string): RangeEntry => ({ position: ref.position, kind: "pending", title, statusTitle, statusDescription, retryStage3: ref.kind === "stage3" || Boolean(stage3Selection), retryContinuation: Boolean(selectedRuntime.runtime?.missingSources?.length || selectedRuntime.error) });
+    if (selectedRuntime.error) return missing(continuationCopy("error"), selectedRuntime.error.message);
+    if (!selectedRuntime.runtime) return missing(continuationCopy("loading"), continuationCopy("loadingDetail"));
+    try {
+      const saved = selectedRuntime.runtime.select(ref);
+      if (saved.status === "rare") return missing(stage3Copy("rare"), stage3Copy("rareDetail"));
+      if (saved.status === "unreachable") return missing(continuationCopy("unreachable"), continuationCopy("unreachableDetail"));
+      if (saved.status !== "saved") return missing(continuationCopy("missing"), continuationCopy("missingDetail"));
+      return { position: ref.position, kind: "bounded", title, spot: saved.spot as DisplaySpot, model: saved.model,
+        hand: saved.spot.hands.find(row => row.hand === selected), unreachableReason: ref.kind === "stage3" || stage3Selection ? continuationCopy("unreachableHand") : continuationUnreachableCopy().reason };
+    } catch (error) { return missing(continuationCopy("error"), (error as Error).message); }
+  };
   const rangeEntries: RangeEntry[] = [];
   const addSaved = (position: string, kind: string, savedSpot: DisplaySpot | null | undefined, savedModel: MatrixModel | null, title: string, unreachableReason?: string | null) => rangeEntries.push({ position, kind, spot: savedSpot, model: savedModel, title, unreachableReason, hand: savedSpot?.hands.find(row => row.hand === selected) });
   if (isOpening) {
@@ -750,20 +833,6 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     } else {
       addSaved("SB", "opening", openerSpot, openerModel, "SB · オープンレンジ（リンプ選択）");
       addSaved("BB", "limp_response", bbLimpSpot, bbLimpModel, "BB · SBリンプへの応答");
-    }
-  } else if (actionBlocks.some(block => block.continuationNode)) {
-    // At a terminal show every live participant's latest saved range (the squeezer's
-    // squeeze is a root block, not a continuation node); otherwise the decisions so far.
-    const live = actionBlocks.find(block => block.continuationTerminal)?.continuationTerminal?.live_participants;
-    const shown = live
-      ? live.map(seat => [...actionBlocks].reverse().find(block => block.position === seat && block.rangeRef && ["bounded", "saved-source"].includes(block.rangeRef.kind))).filter((block): block is ActionBlock => Boolean(block))
-      : actionBlocks.filter(block => block.rangeRef && (block.active || block.continuationNode && block.chosen !== "fold"));
-    for (const block of shown) {
-      const ref = block.rangeRef!;
-      if (!["bounded", "saved-source"].includes(ref.kind)) continue;
-      const saved = continuationSources && continuationSavedRange(ref, continuationSources);
-      if (saved) addSaved(ref.position, ref.kind, saved.spot, saved.model, `${ref.position} · 保存済み応答`, saved.unreachableReason);
-      else rangeEntries.push({ position: ref.position, kind: "pending", title: `${ref.position} · 保存済み応答`, statusTitle: "レンジ未収録" });
     }
   } else if (isComparison && pendingRaise === "squeeze" && savedMultiway) {
     const [caller] = callers;
@@ -793,6 +862,9 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       else if (pendingRaise !== "squeeze" && multiwayContext(opener, callers, position)) {
         const { caller } = multiwayContext(opener, callers, position)!;
         rangeEntries.push(extendedEntry({ kind: "multiway", position, caller }, extendedTitle({ kind: "multiway", position })));
+      } else if (actionBlocks.find(block => block.position === position)?.rangeRef?.kind === "saved-source") {
+        const block = actionBlocks.find(block => block.position === position);
+        rangeEntries.push(continuationEntry(block!.rangeRef!, Boolean(block!.chosen)));
       } else {
         const localRange = currentLocalEstimate?.ranges.find(range => range.position === position);
         rangeEntries.push(localRange ? { position, kind: "local", model: localMatrix(localRange), title: `${position} · ${pendingRaise === "squeeze" ? "スクイーズ選択" : position === hero ? "現在の応答" : "コール選択"}（レイズ先 ${localRange.raise_to_bb}BB）`, raiseToBb: localRange.raise_to_bb } : { position, kind: "pending", title: `${position} · 推定レンジ準備中`, statusTitle: "レンジ未収録", statusDescription: pendingRaise === "squeeze" ? "この局面の推定レンジはまだ生成・保存されていません。" : "この履歴のレンジはまだ保存されていません。" });
@@ -833,10 +905,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       rangeBlockKey: block.key,
     });
 
-    if (ref.kind === "bounded" || ref.kind === "saved-source") {
-      const saved = continuationSources && continuationSavedRange(ref, continuationSources);
-      return saved ? withContext({ position: ref.position, kind: ref.kind, spot: saved.spot, model: saved.model, unreachableReason: saved.unreachableReason, title: `${ref.position} · 保存済み応答` }) : missing("保存済み応答");
-    }
+    if (ref.kind === "stage3" || ref.kind === "bounded" || ref.kind === "saved-source") return withContext(continuationEntry(ref, role === "previous" || Boolean(block.chosen)));
     if (ref.kind === "opening") {
       const savedSpot = openingSpotFor(ref.position);
       return savedSpot ? withContext({ position: ref.position, kind: "opening", spot: savedSpot, model: openingModelFor(savedSpot), title: openingTitle(ref.position) }) : missing("オープンレンジ");
@@ -881,11 +950,22 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     if (localRange) return withContext({ position: ref.position, kind: "local", model: localMatrix(localRange), title: `${ref.position} · レンジ（レイズ先 ${localRange.raise_to_bb}BB）`, raiseToBb: localRange.raise_to_bb });
     return missing(ref.reason ? "推定レンジ準備中" : "この履歴のレンジ");
   };
+  if (liveContinuationSeats) {
+    rangeEntries.splice(0);
+    for (const position of liveContinuationSeats) {
+      const block = actionBlocks.findLast(item => item.position === position && item.rangeRef);
+      if (block) rangeEntries.push(continuationEntry(block!.rangeRef as RangeRef, Boolean(block!.chosen)));
+    }
+    const cursor = actionBlocks.at(-1)!;
+    const history = cursor.stage3Terminal?.history ?? cursor.stage3Node?.history ?? cursor.continuationTerminal?.history ?? cursor.continuationNode?.history ?? [];
+    const raiser = history.findLast(item => ["open", "three_bet", "squeeze", "four_bet", "all_in"].includes(item.action))?.seat;
+    rangeEntries.sort((a, b) => Number(b.position === raiser) - Number(a.position === raiser));
+  }
   const selectedBlockIndex = actionBlocks.findIndex(block => block.key === selectedRangeBlock);
   const selectedActionEntries = selectedBlockIndex < 0 ? null : [
     ...(isOpening ? [] : [actionRangeEntry(actionBlocks[selectedBlockIndex - 1], "previous")]),
     actionRangeEntry(actionBlocks[selectedBlockIndex], "selected"),
-  ].filter(Boolean) as RangeEntry[];
+  ].filter((entry): entry is RangeEntry => Boolean(entry && (!liveContinuationSeats || liveContinuationSeats.includes(entry.position))));
   // Keep the focused action pair first, but never hide other active participants' ranges.
   const visibleRangeEntries = prioritizeParticipantRanges(rangeEntries, selectedActionEntries);
   const focusedEntry = visibleRangeEntries.find(entry => entry.position === focusedRange && entry.model);
@@ -944,19 +1024,26 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           onAct={actAt}
           onFourBet={selectFourBet}
           onAllIn={() => { setContinuationAction(null); setShoveResponse(null); setColdAction(null); setFocusedRange(null); setSelectedRangeBlock(null); setPendingRaise("all_in"); }}
-          onBoundedContinuation={(block, action) => { setShowFlop(false); setFlopDialogOpen(false); setStreetCardDialog(null); setFlopActions([]); setTurnActions([]); setRiverActions([]); const next = chooseContinuationAction(actionState, block, action); setSqueezeResponse(next.squeezeResponse); setContinuationActions(next.continuationActions); setFocusedRange(null); setSelectedRangeBlock(null); }}
+          onStage3Action={selectStage3}
+          onBoundedContinuation={(block, action) => {
+            setStage3RootId(null); setStage3Actions([]);
+            const next = chooseContinuationAction({ squeezeResponse, continuationActions }, block, action);
+            setSqueezeResponse(next.squeezeResponse); setContinuationActions(next.continuationActions);
+            setFocusedRange(null); setSelectedRangeBlock(null); setShowFlop(false); setFlopDialogOpen(false); setStreetCardDialog(null); setFlopActions([]); setTurnActions([]); setRiverActions([]);
+          }}
           onSqueezeResponse={(role, action) => { setFocusedRange(null); setSelectedRangeBlock(null); setSqueezeResponse(current => role === "opener" ? [action] : [current[0], action]); }}
-          onColdAction={action => { setFocusedRange(null); setSelectedRangeBlock(null); setContinuationAction(null); setContinuationActions([]); setColdAction(action); }}
+          onColdAction={action => { setFocusedRange(null); setSelectedRangeBlock(null); setContinuationAction(null); setContinuationActions([]); setStage3RootId(null); setStage3Actions([]); setSqueezeResponse([]); setColdAction(action); setShowFlop(false); setFlopDialogOpen(false); setFlopActions([]); }}
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
         </Panel>
-        {flopActive ? <PostflopTrial context={flopContext!} tableProfile={tableProfile} opponentProfile={opponentProfile} opponentSeat={effectiveOpponentSeat} onOpponentProfileChange={setOpponentProfile} onOpponentSeatChange={setOpponentSeat} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} /> : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
+        {flopActive ? (mw3ProfilePreparing ? <ProfilePolicyPreparing onRestoreStandard={() => setOpponentProfile("standard")} /> : flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? <Mw3PostflopTrial context={flopContext!} session={mw3Session} cards={flopCards} displayMode={displayMode} /> : <PostflopTrial context={flopContext!} tableProfile={tableProfile} opponentProfile={opponentProfile} opponentSeat={effectiveOpponentSeat} onOpponentProfileChange={setOpponentProfile} onOpponentSeatChange={setOpponentSeat} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} />) : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length } as CSSProperties}>
-          {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model!.actions} actionLabels={entry.model!.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} {...(entry.unreachableReason ? { unreachableReason: entry.unreachableReason } : {})} /> : entry.loading ? <RangeMatrixSkeleton key={entry.position} className="multiway-range-panel missing-range-panel" ariaLabel={`${entry.position}のレンジ`} title={entry.title} label={entry.statusDescription ?? ""} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
+          {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} actionLabels={entry.model.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} {...(entry.unreachableReason ? { unreachableReason: entry.unreachableReason } : {})} /> : entry.loading ? <RangeMatrixSkeleton key={entry.position} className="multiway-range-panel missing-range-panel" ariaLabel={`${entry.position}のレンジ`} title={entry.title} label={entry.statusDescription ?? ""} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
+            {entry.retryContinuation && <button type="button" onClick={entry.retryStage3 ? stage3Runtime.retry : continuationRuntime.retry}>{continuationCopy("retry")}</button>}
             {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイレンジを生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
             {canGenerateFiveBet && entry.position === opener && <InlineGenerationControl description="この分岐のレンジを生成します。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
           </Panel>)}
-          {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand!} model={focusedEntry.model!} isOpening={focusedEntry.kind === "opening"} isLimpResponse={focusedEntry.kind === "limp_response"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} isContinuation={focusedEntry.kind === "bounded"} extra={extendedBreakdown(focusedEntry.kind, focusedEntry.spot!, focusedEntry.hand!)} spot={focusedEntry.spot!} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
+          {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand!} model={focusedEntry.model!} isOpening={focusedEntry.kind === "opening"} isLimpResponse={focusedEntry.kind === "limp_response"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} isContinuation={focusedEntry.kind === "bounded"} extra={focusedEntry.kind === "bounded" ? continuationRangeBreakdown(focusedEntry.spot!) : extendedBreakdown(focusedEntry.kind, focusedEntry.spot!, focusedEntry.hand!)} spot={focusedEntry.spot!} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
         </div>
       </>}
       {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}

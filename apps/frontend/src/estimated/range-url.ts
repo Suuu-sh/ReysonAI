@@ -1,19 +1,23 @@
-import type { HistoryAction, ContinuationTerminal, ContinuationDecision } from "./continuation-tree.ts";
-import { appendContinuationBlocks, chooseContinuationAction, continuationRootForSelection } from "./continuation-flow.ts";
+import type { Stage3Decision, Stage3Terminal } from "./stage3-types.ts";
+import type { ContinuationDecision, ContinuationTerminal, ContinuationFamily, HistoryAction } from "./continuation-tree.ts";
 import type { FormatKey, GameFormat } from "./game-formats.ts";
 import { normalizePostflopProfileState } from "./postflop-profile-state.ts";
 import type { PostflopProfileState } from "./postflop-profile-state.ts";
 import type { TableProfile } from "./table-profile.ts";
 import type { ResponseDataset, ThreeBetDataset, FourBetDataset } from "./preflop-types.ts";
-export type RangeRef = { kind: string; position: string; caller?: string; squeezer?: string; priorAction?: string | null; threeBettor?: string; opponent?: string; reason?: string; dataset?: string; id?: string };
+export type RangeRef = { dataset?: string; id?: string; rootId?: string; extraSeat?: boolean; kind: string; position: string; caller?: string; squeezer?: string; priorAction?: string | null; threeBettor?: string; opponent?: string; reason?: string };
 export type ActionOption = { action: string; label: string; disabled?: boolean };
-export type ActionBlock = { key: string; position: string; stack: string; kind: string; options: ActionOption[]; active: boolean; chosen: string | null | undefined; rangeRef?: RangeRef; stage?: string; role?: string; result?: string; pot?: string; historical?: boolean; postflopEvents?: HistoryAction[]; continuationTerminal?: ContinuationTerminal; continuationNode?: ContinuationDecision; continuationFamily?: string; priorContinuationActions?: string[]; continuationAvailable?: boolean };
-export type RangeBuildState = Partial<RangeUrlSelection> & Pick<RangeUrlSelection, "rangeType" | "opener" | "hero"> & { spot?: { three_bet_size_bb?: number; four_bet_size_bb?: number } | null; raiseToBb?: number | null; raiseSizeFor?: (position: string) => number | null };
+export type ActionBlock = { key: string; position: string; stack: string; kind: string; options: ActionOption[]; active: boolean; chosen: string | null | undefined; rangeRef?: RangeRef; stage?: string; role?: string; result?: string; pot?: string; historical?: boolean; continuationFamily?: ContinuationFamily; continuationNode?: ContinuationDecision; priorContinuationActions?: string[]; postflopEvents?: HistoryAction[]; continuationTerminal?: ContinuationTerminal; continuationAvailable?: boolean; continuationStatus?: string; stage3Node?: Stage3Decision; stage3Terminal?: Stage3Terminal; stage3RootId?: string; priorStage3Actions?: string[]; stage3Entrance?: { rootId: string; action: string }; stage3Status?: string };
+export type RangeBuildState = Partial<RangeUrlSelection> & Pick<RangeUrlSelection, "rangeType" | "opener" | "hero"> & { spot?: { three_bet_size_bb?: number; four_bet_size_bb?: number | null } | null; raiseToBb?: number | null; raiseSizeFor?: (position: string) => number | null };
 export type RangeEncodingState = RangeBuildState & Partial<Omit<RangeUrlState, "tableProfile">> & { tableProfile?: Partial<TableProfile>; hand?: string };
+import { appendStage3Blocks, withStage3Entrances, stage3RootForSelection, normalizeStage3Selection } from "./stage3-flow.ts";
+import { canonicalMw3RangeSelection } from "./mw3-range-state.ts";
 import { hands } from "../data.ts";
 import { positions, fourBetToSize, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb, threeBetToSize } from "./sizing.ts";
 import { limpActionTransition, nextActorsAfterRaise, responseActionTransition } from "./action-path.ts";
 import { multiwaySpots } from "./multiway-responses.ts";
+import { appendContinuationBlocks, chooseContinuationAction, continuationRootForSelection } from "./continuation-flow.ts";
+import { multiway2Spots } from "./multiway2-responses.ts";
 import { dataset as publishedDataset } from "./datasets.ts";
 import { defaultFormat, formatOptions, isBuilt } from "./game-formats.ts";
 import { completedFlopContext, flopDecision, laterDecision, laterStart, replayLater } from "./postflop-trial.ts";
@@ -29,13 +33,6 @@ export function multiwayContext(opener: string, callers: string[], position: str
 
 const startingContribution: Record<string, number> = { SB: 0.5, BB: 1 };
 const formatBb = (value: number | null | undefined) => value === null || value === undefined ? "—" : String(Math.round(value * 100) / 100);
-// An uncalled bet is returned, so the largest contribution only counts up to the next largest.
-const potLabel = (contribution: Record<string, number>) => {
-  const values = Object.values(contribution).sort((a, b) => b - a);
-  const counted = values.length > 1 ? [Math.min(values[0], values[1]), ...values.slice(1)] : values;
-  return `ポット ${formatBb(counted.reduce((sum, value) => sum + value, 0))}bb`;
-};
-
 function buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction = null, limpFourBetAction = null }: Pick<RangeUrlSelection, "limpAction" | "limpResponseAction"> & Partial<Pick<RangeUrlSelection, "limpReraiseAction" | "limpFourBetAction">>): ActionBlock[] {
   const contribution = { ...startingContribution };
   const stackOf = (position: string) => formatBb(100 - (contribution[position] ?? 0));
@@ -100,10 +97,11 @@ function buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseActi
 }
 
 // Builds the seat blocks in acting order; each later block's options depend on the choices before it.
-export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null, squeezeResponse = [], continuationActions = [], raiseSizeFor = () => null }: RangeBuildState): ActionBlock[] {
+export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null, squeezeResponse = [], continuationActions = [], stage3RootId = null, stage3Actions = [], raiseSizeFor = () => null }: RangeBuildState): ActionBlock[] {
   if (rangeType === "limp") return buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
-  const boundedState = { rangeType, opener, hero, callers, pendingRaise, coldAction, squeezeResponse, continuationActions };
+  const boundedState = { rangeType, opener, hero, callers, foldedHero, pendingRaise, coldAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions };
   const boundedRoot = continuationRootForSelection(boundedState);
+  const stage3Root = stage3RootForSelection(boundedState);
   const opening = rangeType === "open";
   const openerIndex = positions.indexOf(opener);
   const heroIndex = opening ? openerIndex : positions.indexOf(hero);
@@ -135,7 +133,8 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
       : `Raise ${formatBb(index === heroIndex ? threeBetSizeBb : raiseSizeFor(position))}`;
     const options = [{ action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(openSizeFor(opener))}` }, { action: "raise", label: raiseLabel }];
     // Seats behind the 3-bettor still act before the opener: fold, cold call or cold 4bet
-    // (saved cold-three-bet ranges). What follows a cold call / cold 4bet has no data yet.
+    // (saved cold-three-bet ranges). Supported cold actions enter the exact
+    // bounded catalog after the remaining outside seats explicitly fold.
     if (rangeType === "three_bet" && index > heroIndex) {
       const coldIndex = coldAction ? positions.indexOf(coldAction.position) : -1;
       if (coldAction && index > coldIndex && !boundedRoot) continue;
@@ -155,7 +154,10 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
     else if (reraised || pendingRaise === "squeeze") { chosen = "raise"; contribution[position] = earlierCallers.length ? threeBetToSize(opener, position, earlierCallers.length) : raiseToBb ?? threeBetSizeBb ?? 0; }
     const hasEarlierCaller = callers.some(caller => positions.indexOf(caller) < index);
     const multiway = hasEarlierCaller ? multiwayContext(opener, callers, position) : null;
-    const rangeRef: RangeRef = multiway
+    const multiway2 = multiway2Spots.find(item => item.opener === opener && item.hero === position && JSON.stringify(item.callers) === JSON.stringify(earlierCallers));
+    const rangeRef: RangeRef = multiway2
+      ? { kind: "saved-source", position, dataset: "multiway2-responses", id: multiway2.id }
+      : multiway
       ? { kind: "multiway", position, caller: multiway.caller }
       : hasEarlierCaller || (pendingRaise === "squeeze" && index === heroIndex)
       ? { kind: "pending", position, reason: pendingRaise === "squeeze" ? "スクイーズ後の応答データはまだ保存されていません。" : "このマルチウェイ局面の応答データはまだ保存されていません。" }
@@ -164,7 +166,8 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
         : { kind: "response", position };
     blocks.push({ key: position, position, stack, active: index === heroIndex && chosen === null, chosen, options, kind: "seat", rangeRef });
   }
-  if (boundedRoot) return appendContinuationBlocks(blocks, boundedRoot, boundedState);
+  if (stage3Root) return appendStage3Blocks(blocks, stage3Root, boundedState);
+  if (boundedRoot) return withStage3Entrances(appendContinuationBlocks(blocks, boundedRoot, boundedState), boundedState);
   if (coldAction) {
     blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result: "データなし", pot: `${coldAction.position}の${coldAction.action === "call" ? "コールドコール" : "コールド4bet"}以降の推定レンジはまだありません。` });
     return blocks;
@@ -192,40 +195,12 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
   }
   const end = handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, contribution, threeBetSizeBb, spot });
   if (end) blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], ...end });
-  const squeeze = pendingRaise === "squeeze" && callers.length === 1 ? multiwayContext(opener, callers, hero) : null;
-  if (squeeze) return appendSqueezeResponses(blocks, { opener, caller: squeeze.caller, squeezer: hero, squeezeResponse, contribution, stackOf });
   const pendingActors = pendingRaise === "squeeze" ? nextActorsAfterRaise(hero, [opener, ...callers]) : [];
   for (const position of pendingActors) {
     blocks.push({ key: `pending-${position}`, position, stack: stackOf(position), kind: "pending", rangeRef: { kind: "pending", position, reason: "スクイーズ後の応答データはまだ保存されていません。" }, active: true, chosen: null, options: [
       { action: "fold", label: "Fold", disabled: true }, { action: "call", label: "Call", disabled: true },
     ] });
   }
-  return blocks;
-}
-
-// After SB/BB squeezes an open plus one caller: the opener responds (caller still
-// behind), then the caller responds to the opener's fold or call. A 4bet ends the
-// saved data.
-function appendSqueezeResponses(blocks: ActionBlock[], { opener, caller, squeezer, squeezeResponse, contribution, stackOf }: { opener: string; caller: string; squeezer: string; squeezeResponse: string[]; contribution: Record<string, number>; stackOf: (position: string) => string }) {
-  const size = threeBetToSize(opener, squeezer, 1);
-  const [openerAction = null, callerAction = null] = squeezeResponse;
-  const options = (position: string) => [
-    { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(size)}` }, { action: "raise", label: `Raise ${formatBb(fourBetToSize(position, squeezer))}` },
-  ];
-  const noData = (position: string) => blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result: "データなし", pot: `${position}の4bet後の応答レンジはまだありません。` });
-  blocks.push({ key: `squeeze-${opener}`, position: opener, stack: stackOf(opener), kind: "squeeze-response", role: "opener", active: !openerAction, chosen: openerAction,
-    rangeRef: { kind: "squeeze", position: opener, caller, squeezer, priorAction: null }, options: options(opener) });
-  if (!openerAction) return blocks;
-  if (openerAction === "raise") { noData(opener); return blocks; }
-  if (openerAction === "call") contribution[opener] = size;
-  blocks.push({ key: `squeeze-${caller}`, position: caller, stack: stackOf(caller), kind: "squeeze-response", role: "caller", active: !callerAction, chosen: callerAction,
-    rangeRef: { kind: "squeeze", position: caller, caller, squeezer, priorAction: openerAction }, options: options(caller) });
-  if (!callerAction) return blocks;
-  if (callerAction === "raise") { noData(caller); return blocks; }
-  if (callerAction === "call") contribution[caller] = size;
-  const players = [squeezer, ...(openerAction === "call" ? [opener] : []), ...(callerAction === "call" ? [caller] : [])];
-  blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [],
-    result: players.length > 1 ? `${players.length}人でフロップへ` : `${squeezer}の勝ち`, pot: potLabel(contribution) });
   return blocks;
 }
 
@@ -262,7 +237,7 @@ export type RangeUrlSelection = {
   foldedHero: boolean; pendingRaise: string | null; continuationAction: string | null;
   shoveResponse: string | null; coldAction: { position: string; action: string } | null;
   limpAction: string | null; limpResponseAction: string | null; limpReraiseAction: string | null;
-  limpFourBetAction: string | null; squeezeResponse: string[]; continuationActions: string[]; selected: string;
+  limpFourBetAction: string | null; squeezeResponse: string[]; continuationActions: string[]; stage3RootId?: string | null; stage3Actions?: string[]; selected: string;
 };
 export type RangeUrlState = RangeUrlSelection & PostflopProfileState & {
   format: typeof defaultFormat; tableProfile: TableProfile;
@@ -275,7 +250,7 @@ export const defaultRangeSelection: RangeUrlSelection = {
   rangeType: "open", opener: "UTG", hero: "HJ", callers: [], foldedHero: false,
   pendingRaise: null, continuationAction: null, shoveResponse: null, coldAction: null,
   limpAction: null, limpResponseAction: null, limpReraiseAction: null,
-  limpFourBetAction: null, squeezeResponse: [], continuationActions: [], selected: "AKo",
+  limpFourBetAction: null, squeezeResponse: [], continuationActions: [], stage3RootId: null, stage3Actions: [], selected: "AKo",
 };
 const emptyPostflop = () => ({ showFlop: false, flopCards: ["", "", ""], flopActions: [], turnCard: "", turnActions: [], riverCard: "", riverActions: [] });
 const validHand = (hand: string | null | undefined) => hands.includes(hand!) ? hand! : "AKo";
@@ -347,6 +322,8 @@ function replayPreflop(value: string | null) {
       if (action !== "fold") state = { ...state, coldAction: { position: block.position, action }, continuationAction: null };
     } else if (block.kind === "forced") {
       if (action !== "fold") break;
+    } else if (block.continuationNode) {
+      state = { ...state, ...chooseContinuationAction(state, block, action) };
     } else if (block.kind === "squeeze-response") {
       state = { ...state, squeezeResponse: block.role === "opener" ? [action] : [state.squeezeResponse[0], action] };
     } else if (block.kind === "shove-response") {
@@ -361,7 +338,7 @@ function replayPreflop(value: string | null) {
       const limp = limpActionTransition({ ...state, position: block.position, action });
       if (limp) {
         state = { ...state, ...limp, callers: [], foldedHero: false, pendingRaise: null,
-          continuationAction: null, shoveResponse: null, coldAction: null, squeezeResponse: [],
+          continuationAction: null, shoveResponse: null, coldAction: null, squeezeResponse: [], continuationActions: [],
           limpReraiseAction: limp.limpReraiseAction ?? null, limpFourBetAction: limp.limpFourBetAction ?? null };
       } else if (state.rangeType === "open") {
         const next = positions[positions.indexOf(block.position) + 1];
@@ -372,7 +349,7 @@ function replayPreflop(value: string | null) {
         const transition = responseActionTransition({ ...state, position: block.position, action });
         if (!transition) break;
         state = { ...state, ...transition, continuationAction: null, shoveResponse: null,
-          coldAction: null, squeezeResponse: [], limpReraiseAction: null, limpFourBetAction: null };
+          coldAction: null, squeezeResponse: [], continuationActions: [], limpReraiseAction: null, limpFourBetAction: null };
       }
     }
     index += 1;
@@ -436,8 +413,20 @@ export function encodeRangeUrl(state: RangeEncodingState, actionBlocks = buildRa
   const opponent = normalizePostflopProfileState(state);
   if (opponent.opponentProfile !== "standard") params.set("opponent_profile", opponent.opponentProfile);
   if (opponent.opponentSeat) params.set("opponent_seat", opponent.opponentSeat);
+  const stage3 = stage3RootForSelection(state);
+  if (stage3) {
+    const normalized = normalizeStage3Selection(stage3.id, state.stage3Actions)!;
+    params.set("stage3_root", normalized.stage3RootId);
+    if (normalized.stage3Actions.length) params.set("stage3_actions", normalized.stage3Actions.join(","));
+  }
   const actions = chosenPreflopTokens(actionBlocks);
   if (actions.length) params.set("preflop_actions", actions.join("-"));
+  const context = completedFlopContext({ ...state, actionBlocks,
+    isDefaultTable: Object.keys(defaultFormat).every(key => format[key as keyof GameFormat] === defaultFormat[key as keyof GameFormat])
+      && profileLevel(state.tableProfile?.call) === "normal" && profileLevel(state.tableProfile?.three_bet) === "normal" });
+  if (context?.kind === "mw3_srp" && state.showFlop !== false && Array.isArray(state.flopCards)) {
+    state = { ...state, ...canonicalMw3RangeSelection(context.mw3Spot, state) };
+  }
   const flop = state.showFlop === false ? null : boardCards(state.flopCards?.join(""), 3);
   if (flop) {
     params.set("board", flop.join(""));
@@ -458,7 +447,7 @@ export function encodeRangeUrl(state: RangeEncodingState, actionBlocks = buildRa
 export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState | null {
   const raw = typeof query === "string" ? query.replace(/^[^?]*\?/, "").split("#")[0] : query;
   const params = new URLSearchParams(raw);
-  const keys = ["gametype", "depth", "open", "ante", "rake", "call", "three_bet", "preflop_actions", "board", "flop_actions", "turn", "turn_actions", "river", "river_actions", "hand", "opponent_profile", "opponent_seat"];
+  const keys = ["stage3_root", "stage3_actions", "gametype", "depth", "open", "ante", "rake", "call", "three_bet", "preflop_actions", "board", "flop_actions", "turn", "turn_actions", "river", "river_actions", "hand", "opponent_profile", "opponent_seat"];
   if (!keys.some(key => params.has(key))) return null;
   const gametype = params.get("gametype") ?? `${defaultFormat.game}-${defaultFormat.table}`;
   const [game, table] = gametype.split("-");
@@ -468,17 +457,28 @@ export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState |
     rake: params.get("rake") ?? defaultFormat.rake };
   const knownFormat = gametype === `${game}-${table}` && (!params.has("ante") || ["0", "1"].includes(params.get("ante")!))
     && (Object.keys(defaultFormat) as FormatKey[]).every(key => formatOptions[key].some(option => option.value === format[key]));
-  const state: RangeUrlState = { ...replayPreflop(params.get("preflop_actions")),
+  const stage3 = params.has("stage3_root") ? normalizeStage3Selection(params.get("stage3_root")!, (params.get("stage3_actions") ?? "").split(",").filter(Boolean)) : null;
+  const state: RangeUrlState = { ...replayPreflop(params.get("preflop_actions")), ...(stage3 ?? {}),
     selected: validHand(params.get("hand")), format: knownFormat ? format : { ...defaultFormat },
     tableProfile: { call: profileLevel(params.get("call")), three_bet: profileLevel(params.get("three_bet")) }, ...emptyPostflop(),
     ...normalizePostflopProfileState({ opponentProfile: params.get("opponent_profile"), opponentSeat: params.get("opponent_seat") }) };
   const flop = boardCards(params.get("board"), 3);
   if (!flop || !isBuilt(state.format)) return state;
-  const context = completedFlopContext({ ...state, actionBlocks: buildRangeUrlActionBlocks(state) });
+  const context = completedFlopContext({ ...state, actionBlocks: buildRangeUrlActionBlocks(state),
+    isDefaultTable: (Object.keys(defaultFormat) as FormatKey[]).every(key => state.format[key as keyof GameFormat] === defaultFormat[key as keyof GameFormat])
+      && state.tableProfile.call === "normal" && state.tableProfile.three_bet === "normal" });
   // A board cannot revive a closed/winning preflop path. A completed path
   // without a pilot still has an active read-only placeholder in the workspace.
   if (!context) return state;
   state.showFlop = true; state.flopCards = flop;
+  if (context.kind === "mw3_srp") {
+    const turn = boardCards(params.get("turn"), 1, flop);
+    const river = turn ? boardCards(params.get("river"), 1, [...flop, ...turn]) : null;
+    return { ...state, ...canonicalMw3RangeSelection(context.mw3Spot, { flopCards: flop,
+      flopActions: parsePostflopActions(params.get("flop_actions")), turnCard: turn?.[0] ?? "",
+      turnActions: parsePostflopActions(params.get("turn_actions")), riverCard: river?.[0] ?? "",
+      riverActions: parsePostflopActions(params.get("river_actions")) }) };
+  }
   if (!context.pilotAvailable) {
     state.flopActions = parsePostflopActions(params.get("flop_actions"));
     const turn = boardCards(params.get("turn"), 1, flop);

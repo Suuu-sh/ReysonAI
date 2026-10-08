@@ -26,7 +26,16 @@ export type Multiway2Dataset = typeof import("./multiway2-responses.json");
 export type SqueezeDataset = typeof import("./squeeze-responses.json");
 export type ColdThreeBetDataset = typeof import("./cold-three-bet-responses.json");
 export type ColdFourBetDataset = typeof import("./cold-four-bet-responses.json");
-type RawContinuationDataset = typeof import("./continuation-responses.json");
+// Explicit saved-file schema: typechecking does not import the 27 MB restored
+// delivery payload into the executable source provenance/capture graph.
+type RawContinuationDataset = {
+  metadata: { schema_version: string; storage?: string; strategy_type: string; game: string; effective_stack_bb: number;
+    open_size_bb: number; ante_bb: number; rake: { rate: number; cap_bb: number; no_flop_no_drop: boolean; calibrated: boolean };
+    families: string[]; legal_actions: string[]; aggregation_model: string; defense_audit_model: string; method: string;
+    opponent_model: string; call_ev_policy: string; unreachable_hands: string; sizing_semantics: string };
+  catalog_spot_count: number; omitted_unreachable_count: number; spot_count: number; hand_classes_per_spot: number;
+  entry_count: number; spots: ContinuationStoredSpot[];
+};
 export type ContinuationHand = { hand: string; fold: number; call: number; four_bet: number; all_in: number; raise_to_size_bb: number | null };
 export type ContinuationStoredSpot = import("./continuation-tree.ts").ContinuationDecision & { unreachable: boolean; hands: ContinuationHand[] };
 export type ContinuationDataset = Omit<RawContinuationDataset, "spots" | "metadata"> & { metadata: RawContinuationDataset["metadata"] & { storage?: string }; spots: ContinuationStoredSpot[] };

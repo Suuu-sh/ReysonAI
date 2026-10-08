@@ -8,7 +8,8 @@ export type FlopHistoryView = StrategyNode & { node: string };
 // exactly the same rows. Facing decisions use the computed defence (defence.mjs); every other
 // decision (checks, bets, raises) keeps the AI policy mix.
 import { comboRange } from "./browser-inputs.ts";
-import { handTier, TIERS } from "./model.ts";
+import { TIERS } from "./model.ts";
+import { handTier } from "./hu-hand-tier.ts";
 import { LATER_NODES } from "./later-tree.ts";
 import { laterPolicyMix } from "./later-policy.ts";
 import { NODES, nodeRole, policyMix, scaleByPath, treeNodes } from "./policy.ts";

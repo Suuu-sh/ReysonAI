@@ -188,10 +188,10 @@ test("mobile segments retain 44px targets and wrapping without decorative stripe
 
 test("unsupported postflop context explicitly localizes its message in all four locales", () => {
   const expected = {
-    en: "The current AI trial covers heads-up single-raised pots",
-    ja: "現在のAI試作があるのは、2人のポットのうち",
-    "zh-CN": "当前 AI 试用支持单次加注的单挑底池",
-    es: "La prueba actual de IA cubre botes heads-up con una sola subida",
+    en: "This exact history has no saved postflop policy for the selected settings.",
+    ja: "この履歴と選択した設定のポストフロップ方針は未収録です。",
+    "zh-CN": "此完整行动记录和所选设置尚无保存的翻牌后策略。",
+    es: "Este historial exacto no tiene una estrategia postflop guardada para los ajustes elegidos.",
   };
   for (const [locale, copy] of Object.entries(expected)) {
     window.localStorage.setItem("reysonai:locale:v1", locale);
@@ -205,4 +205,31 @@ test("unsupported postflop context explicitly localizes its message in all four 
     assert.doesNotMatch(unavailable, /default settings|標準設定|默认设置|configuración predeterminada/);
   }
   window.localStorage.setItem("reysonai:locale:v1", "en");
+});
+
+test("MW3 does not substitute standard policies for a selected HU opponent profile", async () => {
+  const workspace = await readFile(new URL("../src/estimated/RangeWorkspace.tsx", import.meta.url), "utf8");
+  assert.match(workspace, /useMw3RangeSession\([^;]*showFlop && postflopAllowed && opponentProfile === "standard"\)/,
+    "nonstandard opponent profiles must disable the standard MW3 runtime");
+  assert.match(workspace, /const mw3ProfilePreparing = opponentProfile !== "standard" && \(flopContext\?\.kind === "mw3_srp" \|\| flopContext\?\.kind === "multiway_unavailable"\)/);
+  assert.match(workspace, /mw3ProfilePreparing \? <ProfilePolicyPreparing onRestoreStandard=\{\(\) => setOpponentProfile\("standard"\)\} \/> : flopContext!\.kind === "mw3_srp"/,
+    "the preparing state must precede MW3 rendering and require explicit restoration");
+
+  window.localStorage.setItem("reysonai:locale:v1", "en");
+  function Harness() {
+    const [profile, setProfile] = useState("nit");
+    return profile !== "standard"
+      ? createElement(module.ProfilePolicyPreparing, { onRestoreStandard: () => setProfile("standard") })
+      : createElement("div", { "data-testid": "restored-mw3" }, "Standard MW3");
+  }
+  const root = createRoot(document.getElementById("root"));
+  try {
+    await act(async () => root.render(createElement(Harness)));
+    assert.equal(document.querySelector("[data-testid=restored-mw3]"), null);
+    assert.match(document.body.textContent, /Standard frequencies are not substituted/);
+    assert.ok(button("Return to Standard"));
+    await act(async () => button("Return to Standard").click());
+    assert.ok(document.querySelector("[data-testid=restored-mw3]"));
+    assert.equal(document.querySelector(".postflop-profile-preparing"), null);
+  } finally { await act(async () => root.unmount()); }
 });

@@ -1,0 +1,32 @@
+{
+  "name": "@reysonai/mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.20.0"
+  },
+  "scripts": {
+    "test": "node --experimental-strip-types --test tests/*.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "build:check": "wrangler deploy --dry-run --config wrangler.test.jsonc --outdir .local/build"
+  },
+  "dependencies": {
+    "@cloudflare/workers-oauth-provider": "1.2.3",
+    "@modelcontextprotocol/server": "2.0.0",
+    "agents": "0.27.0",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261007.1",
+    "esbuild": "0.28.2",
+    "miniflare": "5.20261001.0-alpha",
+    "typescript": "7.0.2",
+    "wrangler": "4.147.0"
+  },
+  "overrides": {
+    "@modelcontextprotocol/client": "2.2.0",
+    "@modelcontextprotocol/sdk": "1.31.0",
+    "sharp": "0.35.5"
+  }
+}

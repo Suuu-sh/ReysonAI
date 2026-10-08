@@ -1,6 +1,10 @@
-import test from "node:test";
+import test, { after } from "node:test";
+import { mkdtempSync, realpathSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import assert from "node:assert/strict";
 import { join } from "node:path";
+import { openBoardCheckpoints } from "../scripts/postflop-ai/all-board-checkpoints.mjs";
+import { sha } from "../scripts/postflop-ai/browser-inputs.ts";
 import {
   parseAuditArgs, auditInputOptions, auditOutputDir, selectAuditSpotIds, prepareAuditSpot,
   auditBoards, makeAuditWorkerData, runAllBoardsAudit, summarizeAuditRows,
@@ -18,9 +22,20 @@ const ids = boards.map(board => board.id);
 const base = loadInputs(spotId);
 const policy = referencePolicyFor(base.spot.tree);
 const options = args => parseAuditArgs(["--workers", "2", ...args]);
+const checkpointRoots = [];
+after(() => { for (const path of checkpointRoots) rmSync(path, { recursive: true, force: true }); });
 const fake = (overrides = {}) => ({
+  // Real identity/checkpoint validation remains enabled. Isolate only filesystem
+  // location and output collection, rather than bypassing the acceptance gate.
+  openBoardCheckpoints: (_path, identity, ids) => {
+    const path = mkdtempSync(join(realpathSync(tmpdir()), "reyson-profile-board-checkpoints-"));
+    checkpointRoots.push(path);
+    return openBoardCheckpoints(path, identity, ids);
+  },
+  writeImmutableAllBoardOutput: (path, text) => overrides.writeFileSync(path, text),
   loadInputs: (_id, inputOptions) => ({ ...base, ...inputOptions }),
-  loadCandidate: () => ({ policy }), loadLaterCandidate: () => ({ policy: { fakeLater: true } }),
+  loadCandidate: () => ({ policy, metadata: { policy_hash: sha(policy) } }),
+  loadLaterCandidate: () => ({ policy: { fakeLater: true }, metadata: { policy_hash: sha({ fakeLater: true }) } }),
   canonicalFlops: () => boards, ...overrides,
 });
 const missing = (stage = "flop", role = "villain") => Object.assign(
@@ -195,12 +210,12 @@ test("audit continues missing/stale/unreachable spots, partitions reports and re
     loadCandidate: inputs => {
       if (inputs.spot.id === spotIds[0]) throw missing();
       if (inputs.spot.id === spotIds[1]) throw new Error("AI policy source is stale");
-      return { policy };
+      return { policy, metadata: { policy_hash: sha(policy) } };
     },
     runWorker: async data => { workerData.push(data); return data.boardIds.map(board => ({ board, findings: [] })); },
   }));
   assert.equal(result.exitCode, 1);
-  assert.deepEqual(result.reports.map(report => report.status), ["not_generated", "failed", "unreachable", "passed"]);
+  assert.deepEqual(result.reports.map(report => report.status), ["not_generated", "failed", "unreachable", "passed"], JSON.stringify(result.reports));
   assert.deepEqual(result.counters, { passed: 1, failed: 1, missing: 1, unreachable: 1, errors: 1, warnings: 0 });
   assert.equal(workerData.length, 2);
   assert.ok(workerData.every(data => data.inputOptions.opponentProfile === "nit" && data.inputOptions.tableProfile.call === "high"));
@@ -213,15 +228,32 @@ test("audit continues missing/stale/unreachable spots, partitions reports and re
   assert.ok([...writes.keys()].every(path => path.startsWith("/audit/profiles/nit/call_high__three_bet_normal/")));
 });
 
-test("successful standard report and summary preserve legacy identity with injected workers", async () => {
+test("successful standard reports and summary use immutable full identity with injected workers", async () => {
   const writes = new Map();
   const result = await runAllBoardsAudit(options(["--spot", spotId, "--street", "flop"]), fake({
     baseOutDir: "/audit", mkdirSync: () => {}, log: () => {}, writeFileSync: (path, text) => writes.set(path, text),
     runWorker: async data => data.boardIds.map(board => ({ board, findings: [] })),
   }));
-  assert.equal(result.exitCode, 0);
-  assert.deepEqual(JSON.parse(writes.get(`/audit/${spotId}.json`)), { spot: spotId, street: "flop", boards: 2, clean: 2, errors: 0, findings: [] });
-  assert.equal(writes.get("/audit/summary.md"), `# All-board balance audit (1,755 canonical flops; AI estimate, not GTO)\n\n| spot | boards | clean | error findings | most common finding |\n|---|---:|---:|---:|---|\n| ${spotId} | 2 | 2 | 0 | — |\n`);
+  assert.equal(result.exitCode, 0, JSON.stringify(result.reports));
+  const report = result.reports[0];
+  assert.match(report.resultName, new RegExp(`^${spotId}--[a-f0-9]{64}\\.json$`));
+  assert.equal(report.resultName, `${spotId}--${report.identity_hash}.json`);
+  const saved = JSON.parse(writes.get(join(result.outDir, report.resultName)));
+  assert.equal(saved.spot, spotId);
+  assert.equal(saved.street, "flop");
+  assert.equal(saved.boards, 2);
+  assert.equal(saved.clean, 2);
+  assert.equal(saved.errors, 0);
+  assert.equal(saved.identity_hash, report.identity_hash);
+  assert.equal(saved.source_hash, base.fingerprint);
+  assert.equal(saved.policy_hash, sha(policy));
+  assert.equal(saved.later_policy_hash, sha({ fakeLater: true }));
+  assert.equal(saved.unreachable, 0);
+  assert.equal(saved.evaluated_boards, 2);
+  assert.deepEqual(saved.later_coverage, {});
+  assert.deepEqual(saved.findings, []);
+  assert.equal(writes.has(`/audit/${spotId}.json`), false);
+  assert.equal(writes.get("/audit/summary.md"), `# All-board balance audit (1,755 canonical flops; AI estimate, not GTO)\n\n| spot | boards | unreachable | clean | error findings | most common finding |\n|---|---:|---:|---:|---:|---|\n| [${spotId}](${report.resultName}) | 2 | 0 | 2 | 0 | — |\n`);
   assert.equal(writes.size, 2);
 });
 
@@ -265,6 +297,6 @@ test("failed spot workers settle fully before the next spot starts", async () =>
       return Promise.resolve(data.boardIds.map(board => ({ board, findings: [] })));
     },
   }));
-  assert.deepEqual(result.reports.map(report => report.status), ["failed", "passed"]);
+  assert.deepEqual(result.reports.map(report => report.status), ["failed", "passed"], JSON.stringify(result.reports));
   assert.equal(result.exitCode, 1);
 });

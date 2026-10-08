@@ -1,0 +1,929 @@
+{
+  "kind": "pr44-current-source-sql-and-remaining-qa-checkpoint",
+  "previous_saved_commit": "0e118db8c475dd3764dec2fc922f3e92889c1d8d",
+  "development_base": "5bd354392cbc288b2b9565f827ffcafe8ea5641b",
+  "source_freeze_commit": "a10ec338e1bbae0333eb98daf166c2f1c8b27365",
+  "source_tree": "505e847fe38911016a4662d18c26ced2bdd89edd",
+  "sql_packaging": {
+    "status": "PASS_SQL_PACKAGING_ONLY_NOT_EXECUTED",
+    "method": "Unmodified official mw3-snapshot-cli.mjs sql, serially; no recipes, numerical authoring, receipt edits, database, network, registry or product source changes",
+    "node": "24.19.0",
+    "count": 16,
+    "bytes": 25172621,
+    "ledger_sha256": "46ed929acd7d59995c430a2a64c93924da51eb68476786ffbcb16c8f9819e9b8",
+    "prior_sql_inventory": {
+      "current_checkout": 0,
+      "original_701_git_tree": 0,
+      "comparison": "No old SQL payload available; no claim of old SQL body equality"
+    },
+    "records": [
+      {
+        "spot": "CO_open_BTN_call_BB_call",
+        "paths": {
+          "manifest": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.manifest.json",
+          "archive": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.tar.gz",
+          "receipt": "configs/mw3-co-btn-bb-mw3-srp-v1.review.json",
+          "sql": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.sql"
+        },
+        "argv": [
+          "scripts/postflop-ai/mw3-snapshot-cli.mjs",
+          "sql",
+          "--spot",
+          "CO_open_BTN_call_BB_call",
+          "--source-hash",
+          "9826ec09f4b8420f866c8ac656e6f755966423c2d843bcb604eff97dbd6a89c3"
+        ],
+        "exit_code": 0,
+        "cli_status": "sql_only_not_executed",
+        "sql_bytes": 1591059,
+        "sql_sha256": "d05dd85bd73292488c9b41c8bf5205b59950dd3f32448d7b3cd3a2105fe8730d",
+        "sql_body_after_comments_sha256": "eb304345a3c02180357ed53a375a6a5a858c126af98faaabf8e64e125ee28797",
+        "sql_statements": 100,
+        "immutable_headers": 2,
+        "immutable_parts": 98,
+        "canonical_receipt_sha256": "8c58da3f8fc38d297d00ce79219ef71f41a8ce01e84dfa463439f82a30c42f98",
+        "original_archive_sha256": "b8adf765d22a128a88ce346ffda9f67615b98ada1e6579d56461da8910db8d9b",
+        "manifest_sha256": "5cac0ab75990b5ad65bbb8b10542f4513c266c0b08cbb18872a9d5712f138ee5",
+        "manifest_approval": "unapproved",
+        "receipt_status": "independently-reviewed",
+        "delivery_pins": [
+          {
+            "spotId": "CO_open_BTN_call_BB_call",
+            "stage": "flop",
+            "deliveryHash": "4c8d43795b1d11d85d938c877431a72be30bc68269d10f7e4bc26de1cdeed8ad",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "3682c70f1cd131a825d67dc564bb45706d5b8885c0de4ef6bfe8493fe13fef06",
+            "sourceHash": "9826ec09f4b8420f866c8ac656e6f755966423c2d843bcb604eff97dbd6a89c3"
+          },
+          {
+            "spotId": "CO_open_BTN_call_BB_call",
+            "stage": "later",
+            "deliveryHash": "bcdeb4ca96a84c211ef508bc422436a40a355c1e343218cd0fee509a422d8148",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "d840d8174ff3ad1fe983e5fbd0696b9c28296f5e4d8af394b12d76e070b18582",
+            "sourceHash": "9826ec09f4b8420f866c8ac656e6f755966423c2d843bcb604eff97dbd6a89c3"
+          }
+        ],
+        "inputs_unchanged": true,
+        "stdout_sha256": "ecd8f48db723aa4e33d2225217cfc8688060a9c8aa747f056fe3ab2434aac280",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call",
+        "paths": {
+          "manifest": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.manifest.json",
+          "archive": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.tar.gz",
+          "receipt": "configs/mw3-co-btn-sb-mw3-srp-v1.review.json",
+          "sql": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.sql"
+        },
+        "argv": [
+          "scripts/postflop-ai/mw3-snapshot-cli.mjs",
+          "sql",
+          "--spot",
+          "CO_open_BTN_call_SB_call",
+          "--source-hash",
+          "3573dde6357353f3d848b0370205de4cc99ee11ced39267b35e65927bc235e0d"
+        ],
+        "exit_code": 0,
+        "cli_status": "sql_only_not_executed",
+        "sql_bytes": 1589911,
+        "sql_sha256": "752c14ca3e49a08cb54d5d2efc8f78541275a91f7d7f0b0608d4aba7c88ab9cc",
+        "sql_body_after_comments_sha256": "35b2f6e2790bb8f598ad73e851d61036fa24eba2f5b6fe630728e14972843b8c",
+        "sql_statements": 100,
+        "immutable_headers": 2,
+        "immutable_parts": 98,
+        "canonical_receipt_sha256": "4fedce28c3dd92ee57651d854a9e16a88b2c60cdd76991351842ea3ca185d164",
+        "original_archive_sha256": "71b7423b1450638f8f2a6077c0d6c87b6715ebc81c9462a0f35cd5d83ddf1e7f",
+        "manifest_sha256": "95c29b08f69076e1fa03ff3d19731dfd1e6f8b921f6bb9fd52973b29fa0939d2",
+        "manifest_approval": "unapproved",
+        "receipt_status": "independently-reviewed",
+        "delivery_pins": [
+          {
+            "spotId": "CO_open_BTN_call_SB_call",
+            "stage": "flop",
+            "deliveryHash": "5d30c32819503b35eb4776cbb6ff3ccd65b83a30b4df48fa9ee57ad5b676735f",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "20fb64ba62887d36b0280c0b9c49b87d735713ec70f8797de22d0530654ee2bb",
+            "sourceHash": "3573dde6357353f3d848b0370205de4cc99ee11ced39267b35e65927bc235e0d"
+          },
+          {
+            "spotId": "CO_open_BTN_call_SB_call",
+            "stage": "later",
+            "deliveryHash": "300deabfd54fff4225a00ba8ff84d3aeef0f6c48517d592d446125b2fb2b6d23",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "214f4e53cea61b08d0941f6eaf083950eb24eeee95a7cab36f5dd6ba28bc7211",
+            "sourceHash": "3573dde6357353f3d848b0370205de4cc99ee11ced39267b35e65927bc235e0d"
+          }
+        ],
+        "inputs_unchanged": true,
+        "stdout_sha256": "5214d59e5e72386c783132a34446030bb7a5a0bc6f0107bbbaf425fc9f471470",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_call",
+        "paths": {
+          "manifest": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.manifest.json",
+          "archive": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.tar.gz",
+          "receipt": "configs/mw3-hj-btn-bb-mw3-srp-v1.review.json",
+          "sql": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.sql"
+        },
+        "argv": [
+          "scripts/postflop-ai/mw3-snapshot-cli.mjs",
+          "sql",
+          "--spot",
+          "HJ_open_BTN_call_BB_call",
+          "--source-hash",
+          "6762971b2c93bc1d26aec6a2e82cc9292a03fb22e6cc497c9b0e346ae3f9df45"
+        ],
+        "exit_code": 0,
+        "cli_status": "sql_only_not_executed",
+        "sql_bytes": 1614488,
+        "sql_sha256": "e9cfa1b8e47be5a3b8091effff7abb0de920e4eba2407067b4d468b580c503f6",
+        "sql_body_after_comments_sha256": "7d46cf5846fff838c76d98579f6f5f76986e866dc674afe4a340e109d34a3dbc",
+        "sql_statements": 101,
+        "immutable_headers": 2,
+        "immutable_parts": 99,
+        "canonical_receipt_sha256": "7621804164e0df26518f9562cd5173f174353dfbf870bee499caf4b1f0fade58",
+        "original_archive_sha256": "a1d6d54a8d169260c7bf38cfb062915c2ab9e64f116dfb8101c7b63dad6fbb0a",
+        "manifest_sha256": "f283cc6401786da7bffc330e98d93567e3c38700451edac8493b519d1a21900e",
+        "manifest_approval": "unapproved",
+        "receipt_status": "independently-reviewed",
+        "delivery_pins": [
+          {
+            "spotId": "HJ_open_BTN_call_BB_call",
+            "stage": "flop",
+            "deliveryHash": "da4cba6972420b5ff615d6392d47dc963b0638a29c747b9314f2cf871d95e7cc",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "6f6a824c47368119bfe3ac6761e0ac5993f9eec3a352d505ce949e5c0b76b593",
+            "sourceHash": "6762971b2c93bc1d26aec6a2e82cc9292a03fb22e6cc497c9b0e346ae3f9df45"
+          },
+          {
+            "spotId": "HJ_open_BTN_call_BB_call",
+            "stage": "later",
+            "deliveryHash": "c53b9061809b04c62af049e0a9eec8c37f4295e977384a5c3497f6132737b6ba",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "764e2765a604e30c5e981b481946918de916004e135d7b98619aa9670185b33c",
+            "sourceHash": "6762971b2c93bc1d26aec6a2e82cc9292a03fb22e6cc497c9b0e346ae3f9df45"
+          }
+        ],
+        "inputs_unchanged": true,
+        "stdout_sha256": "8a4bf060f067c8699af3361c76d1ab06eb51d885a0a5f03f4c07323b1c2fa8ef",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call",
+        "paths": {
+          "manifest": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.manifest.json",
+          "archive": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.tar.gz",
+          "receipt": "configs/mw3-hj-btn-sb-mw3-srp-v1.review.json",
+          "sql": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.sql"
+        },
+        "argv": [
+          "scripts/postflop-ai/mw3-snapshot-cli.mjs",
+          "sql",
+          "--spot",
+          "HJ_open_BTN_call_SB_call",
+          "--source-hash",
+          "380bee458c9d5e112d268dab4e0d4ef201a45a58babe78234c5e6af0c91f6235"
+        ],
+        "exit_code": 0,
+        "cli_status": "sql_only_not_executed",
+        "sql_bytes": 1576072,
+        "sql_sha256": "1d118e9456d5fcc808fbbfd0cc035eca1ce419d8a92a7f47616ecab760fed653",
+        "sql_body_after_comments_sha256": "a53d3772148bbe7acb87a26845cdaed73bc4f6c52e4159e1064e60cba13b2822",
+        "sql_statements": 99,
+        "immutable_headers": 2,
+        "immutable_parts": 97,
+        "canonical_receipt_sha256": "dc5645a1db58dabdef4efb01dfc88f7f2a642f1fb521c0d362a7953fa6283543",
+        "original_archive_sha256": "f3ec418992730e69f548e354508c95e0a42e4963cb7dd6b8d15cacc3d500d45e",
+        "manifest_sha256": "13d60744136fa5019504458cd52e3ed41cdf886adf7832fd91ce87adf27fa8cf",
+        "manifest_approval": "unapproved",
+        "receipt_status": "independently-reviewed",
+        "delivery_pins": [
+          {
+            "spotId": "HJ_open_BTN_call_SB_call",
+            "stage": "flop",
+            "deliveryHash": "cee641a36e91368a41b1f7e79622dd90b464d425c4f5b127956ff4c90b9323c2",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "2b74e501f33fb5713bca56c692ff5834ace14ac146dbbe8dc73fbdc4cf3156e5",
+            "sourceHash": "380bee458c9d5e112d268dab4e0d4ef201a45a58babe78234c5e6af0c91f6235"
+          },
+          {
+            "spotId": "HJ_open_BTN_call_SB_call",
+            "stage": "later",
+            "deliveryHash": "2e6ce4d41eb9857465199f2774e702590b738530df09429c6b3523761b441cfc",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "2bcb06e852bc7de9a4dcf47b37016be0fea2d413e925971a921d0131d22b3234",
+            "sourceHash": "380bee458c9d5e112d268dab4e0d4ef201a45a58babe78234c5e6af0c91f6235"
+          }
+        ],
+        "inputs_unchanged": true,
+        "stdout_sha256": "977800df36585b5c7afdd5a21fc45f118c47d25fd34756a2082ddb096ce399c0",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_call",
+        "paths": {
+          "manifest": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.manifest.json",
+          "archive": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.tar.gz",
+          "receipt": "configs/mw3-hj-co-bb-mw3-srp-v1.review.json",
+          "sql": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.sql"
+        },
+        "argv": [
+          "scripts/postflop-ai/mw3-snapshot-cli.mjs",
+          "sql",
+          "--spot",
+          "HJ_open_CO_call_BB_call",
+          "--source-hash",
+          "23bc49a7a78a03506d6f0d73dfd541dc5cc81397b26a7338f47810f7326843c2"
+        ],
+        "exit_code": 0,
+        "cli_status": "sql_only_not_executed",
+        "sql_bytes": 1606790,
+        "sql_sha256": "4357e109279c7658649096fb4d68d86f6cebf321831a4f9386f77e8aa6562623",
+        "sql_body_after_comments_sha256": "6181a1192966003fab28cf4f5ce398df180388a8a34be83227c4918bddba0c07",
+        "sql_statements": 101,
+        "immutable_headers": 2,
+        "immutable_parts": 99,
+        "canonical_receipt_sha256": "60e8917c118848bbdfc969ded36ba47695a195af1a82ebc1572f2794ab482cd7",
+        "original_archive_sha256": "9e12080a2e5fbd5d642339a17508e7bd7cdff2aacf7739e3e416df816282ec0c",
+        "manifest_sha256": "3852f27a8181f194e83a00f462e543aff13349187bfc240e03e9bf4c3515cbca",
+        "manifest_approval": "unapproved",
+        "receipt_status": "independently-reviewed",
+        "delivery_pins": [
+          {
+            "spotId": "HJ_open_CO_call_BB_call",
+            "stage": "flop",
+            "deliveryHash": "75fffa9b7c5af63da62d254fc23b06dfe85d79313bbde5e72ff2536556ed12e1",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "ddee6d15195c7b205e52b0c2d8da2dc32258ac1a1cdaeb61f3213877a65e4b0f",
+            "sourceHash": "23bc49a7a78a03506d6f0d73dfd541dc5cc81397b26a7338f47810f7326843c2"
+          },
+          {
+            "spotId": "HJ_open_CO_call_BB_call",
+            "stage": "later",
+            "deliveryHash": "7df78fdad444be2866905f02df9a05dd6d3e3b3de76103f5ba83cacf82da2607",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "c97fae4f58b39daaab0497253ae27e84b48527b492ccb687dffccd70c87d7403",
+            "sourceHash": "23bc49a7a78a03506d6f0d73dfd541dc5cc81397b26a7338f47810f7326843c2"
+          }
+        ],
+        "inputs_unchanged": true,
+        "stdout_sha256": "0b09fb9d812cdb2451f2e82dfb4d37cddbfdd3f426fddcaa51addfd5c9d73c36",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call",
+        "paths": {
+          "manifest": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.manifest.json",
+          "archive": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.tar.gz",
+          "receipt": "configs/mw3-hj-co-btn-mw3-srp-v1.review.json",
+          "sql": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.sql"
+        },
+        "argv": [
+          "scripts/postflop-ai/mw3-snapshot-cli.mjs",
+          "sql",
+          "--spot",
+          "HJ_open_CO_call_BTN_call",
+          "--source-hash",
+          "278b706399c3efc7907abdc072b0060e2f40e188cb6b4fa05a633544ef86080d"
+        ],
+        "exit_code": 0,
+        "cli_status": "sql_only_not_executed",
+        "sql_bytes": 1526887,
+        "sql_sha256": "f2eec8eefcb7acc41610890ee1754c194bfc2c312089f1f1c09d4af60051ade2",
+        "sql_body_after_comments_sha256": "45d0dddf3b0a5d80e597dbf6980a51a017d44294c1562c2123316192eafda6e0",
+        "sql_statements": 96,
+        "immutable_headers": 2,
+        "immutable_parts": 94,
+        "canonical_receipt_sha256": "5d1b15e1dc744ceb8e9c9fa4457ff9a476ffc3590487174a09b56f8107774483",
+        "original_archive_sha256": "b0ad2b74cdc937f228aa4cb862502390ba03606dc548218d713da5875e1a4d00",
+        "manifest_sha256": "dc9153d5343863b256d9ccad836bfba2efbf98c54abcbe31787bbdb0384a9d87",
+        "manifest_approval": "unapproved",
+        "receipt_status": "independently-reviewed",
+        "delivery_pins": [
+          {
+            "spotId": "HJ_open_CO_call_BTN_call",
+            "stage": "flop",
+            "deliveryHash": "e7773c69bd680c1271612c3ebfc15c899872aa1655737b146d70497a673a323e",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "4d70d9c413145446820b4c528c98dad9f3b87f7968230bc4e7ac5b29c98645de",
+            "sourceHash": "278b706399c3efc7907abdc072b0060e2f40e188cb6b4fa05a633544ef86080d"
+          },
+          {
+            "spotId": "HJ_open_CO_call_BTN_call",
+            "stage": "later",
+            "deliveryHash": "7e499cb944dd020b96ac35b55cdfd26f2699e55acf251b123d4c18a0ef5ac216",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "c6c3a9dbba07d11d6ae3534f6c580fc7c5aa0c7ebc6094a3bd5eab80794e590c",
+            "sourceHash": "278b706399c3efc7907abdc072b0060e2f40e188cb6b4fa05a633544ef86080d"
+          }
+        ],
+        "inputs_unchanged": true,
+        "stdout_sha256": "54a44ff66dcb1e0d148dd8c4c2b7cb5e3c0c1d8ca2eaba3c7b672495c063a2ae",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call",
+        "paths": {
+          "manifest": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.manifest.json",
+          "archive": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.tar.gz",
+          "receipt": "configs/mw3-hj-co-sb-mw3-srp-v1.review.json",
+          "sql": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.sql"
+        },
+        "argv": [
+          "scripts/postflop-ai/mw3-snapshot-cli.mjs",
+          "sql",
+          "--spot",
+          "HJ_open_CO_call_SB_call",
+          "--source-hash",
+          "d9d3209ec4900d28ca2d8259c813c5bd48d4019528f2123cc6ed168e22c8cbb1"
+        ],
+        "exit_code": 0,
+        "cli_status": "sql_only_not_executed",
+        "sql_bytes": 1575504,
+        "sql_sha256": "1c4b757677f27f7bfedf3d9f4df5ccdc9a8426320e72429c32f4764e88a567d7",
+        "sql_body_after_comments_sha256": "8f580a48cfe4816a792396ba3bd20a1f35ec209301111f23ac59928f45f1f44b",
+        "sql_statements": 99,
+        "immutable_headers": 2,
+        "immutable_parts": 97,
+        "canonical_receipt_sha256": "d75bf911e75f1c99b1f973eeb6f2c5711aea150d002693dbfc84afdea28dc701",
+        "original_archive_sha256": "2c41876d803519c8f05f347ecbf55404d29e17baf6f588089782d727f3ab13d7",
+        "manifest_sha256": "eb418a976a1de2c89656c2cf2910c04a03fb1c04c352b5ccecbe95ff43db566c",
+        "manifest_approval": "unapproved",
+        "receipt_status": "independently-reviewed",
+        "delivery_pins": [
+          {
+            "spotId": "HJ_open_CO_call_SB_call",
+            "stage": "flop",
+            "deliveryHash": "ce8132397a2eccb7c3b2c41dbb3d1058f4292d2c22100eb5292869cb16155704",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "78a92f687a5a4fcc623ae4b91608d12eead3592c8ab9b07244e1b2858a8a33fa",
+            "sourceHash": "d9d3209ec4900d28ca2d8259c813c5bd48d4019528f2123cc6ed168e22c8cbb1"
+          },
+          {
+            "spotId": "HJ_open_CO_call_SB_call",
+            "stage": "later",
+            "deliveryHash": "9029fab129d6d3dfc9b5cfb057343e4cac14500da275708cd40b7c0421e9ed94",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "1382306ac507d03a34e8222e9543e809c6fdd164470df7eaafafe76f69fb2586",
+            "sourceHash": "d9d3209ec4900d28ca2d8259c813c5bd48d4019528f2123cc6ed168e22c8cbb1"
+          }
+        ],
+        "inputs_unchanged": true,
+        "stdout_sha256": "f64a88cc3dcc07e7e039d28e8daeb40cc8ce2ce1e4071cbc62430c8a12cb8f2e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_call",
+        "paths": {
+          "manifest": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.manifest.json",
+          "archive": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.tar.gz",
+          "receipt": "configs/mw3-utg-btn-bb-mw3-srp-v1.review.json",
+          "sql": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.sql"
+        },
+        "argv": [
+          "scripts/postflop-ai/mw3-snapshot-cli.mjs",
+          "sql",
+          "--spot",
+          "UTG_open_BTN_call_BB_call",
+          "--source-hash",
+          "3effc9977afa66aa817c2e1c697f6789a593bdf3418741ab33fe34236dd5b7f2"
+        ],
+        "exit_code": 0,
+        "cli_status": "sql_only_not_executed",
+        "sql_bytes": 1609439,
+        "sql_sha256": "d4cadb40abf2d238c4c5776f661fd2e78cea886591a46ea9a05f8edae033c9d1",
+        "sql_body_after_comments_sha256": "729fd2fd574e5efaec43df1d3a9b8b6fec519ccc541d62d976e20515d19be9d2",
+        "sql_statements": 101,
+        "immutable_headers": 2,
+        "immutable_parts": 99,
+        "canonical_receipt_sha256": "dd5466f80e902a363ee769663091abc4c7ae8c4a4735610b6cbfe59452a84ee6",
+        "original_archive_sha256": "1a8ca191895c386944c903e6de9b9c7e1d25e77ce1f471a21036ee9321a4b69e",
+        "manifest_sha256": "50de2e884232ccb66f009df3ef4ab2510ce4d45d1facd67d595312eb395a3761",
+        "manifest_approval": "unapproved",
+        "receipt_status": "independently-reviewed",
+        "delivery_pins": [
+          {
+            "spotId": "UTG_open_BTN_call_BB_call",
+            "stage": "flop",
+            "deliveryHash": "4aa2ec01bfe9d59f86193b3a170390084cfed23513f3236353f34364b78517d5",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "5405d51426d387f652d4447e0afc54186c2a6ed22637083d9aed3e628824be70",
+            "sourceHash": "3effc9977afa66aa817c2e1c697f6789a593bdf3418741ab33fe34236dd5b7f2"
+          },
+          {
+            "spotId": "UTG_open_BTN_call_BB_call",
+            "stage": "later",
+            "deliveryHash": "d7c52388810b7944b23e242862e9e112b6a08fa26d73ca5a61ee373bd9c6df15",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "282afaf9fa0cecc7ae680a18707a1aa71a16bb4fc7dd15463031d7fddfe898aa",
+            "sourceHash": "3effc9977afa66aa817c2e1c697f6789a593bdf3418741ab33fe34236dd5b7f2"
+          }
+        ],
+        "inputs_unchanged": true,
+        "stdout_sha256": "67c61a84f52b79b1ade26b4f722e6c20f395d37113230d1ae70128b5cf9881ac",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call",
+        "paths": {
+          "manifest": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.manifest.json",
+          "archive": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.tar.gz",
+          "receipt": "configs/mw3-utg-btn-sb-mw3-srp-v1.review.json",
+          "sql": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.sql"
+        },
+        "argv": [
+          "scripts/postflop-ai/mw3-snapshot-cli.mjs",
+          "sql",
+          "--spot",
+          "UTG_open_BTN_call_SB_call",
+          "--source-hash",
+          "2aa18f5793aa280d843bd3f175f391cc3409186c21e08bcc7b63570aab558858"
+        ],
+        "exit_code": 0,
+        "cli_status": "sql_only_not_executed",
+        "sql_bytes": 1574637,
+        "sql_sha256": "96e4ceece3a5f004dd81117639707ee23f5ea057b5cff11a7701faadc5ba7219",
+        "sql_body_after_comments_sha256": "c45d44133a262915a7f55a16a788b1cc7809e25c250954c166bef12938fdf71d",
+        "sql_statements": 99,
+        "immutable_headers": 2,
+        "immutable_parts": 97,
+        "canonical_receipt_sha256": "9426bcf2b1c262a827c4b7a40f61262066e68e0e5b17f61f741738f1e76ecb03",
+        "original_archive_sha256": "fb452978edb7aaf29593c6af6c3cf8dbb5352009580606938b485aba5886095d",
+        "manifest_sha256": "291f8ad372c5c98d8ecca1b63a932db1a9f23d663a2534f9cb9e59607c45b077",
+        "manifest_approval": "unapproved",
+        "receipt_status": "independently-reviewed",
+        "delivery_pins": [
+          {
+            "spotId": "UTG_open_BTN_call_SB_call",
+            "stage": "flop",
+            "deliveryHash": "029d0402b784532ad46b5e2ecce71c3a1540ea0a30539d64150bcf9d4811310e",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "c608d2b4eeaf2c9419f27fb7fa9ed818ee07ecb370e704db92268fcb806612d7",
+            "sourceHash": "2aa18f5793aa280d843bd3f175f391cc3409186c21e08bcc7b63570aab558858"
+          },
+          {
+            "spotId": "UTG_open_BTN_call_SB_call",
+            "stage": "later",
+            "deliveryHash": "08f2e05bd9745f5ad5d476b96930592bcf889325d984ca686acb61a287d7bfd3",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "2616b7536253785714314be66ae6084d7ae8004dbf8773cf5e183b22bc7396f7",
+            "sourceHash": "2aa18f5793aa280d843bd3f175f391cc3409186c21e08bcc7b63570aab558858"
+          }
+        ],
+        "inputs_unchanged": true,
+        "stdout_sha256": "95d6193adcb9d45ca64d1507df6bcafdfd2b546ac8ae4307ac5e968a318af767",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_call",
+        "paths": {
+          "manifest": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.manifest.json",
+          "archive": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.tar.gz",
+          "receipt": "configs/mw3-utg-co-bb-mw3-srp-v1.review.json",
+          "sql": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.sql"
+        },
+        "argv": [
+          "scripts/postflop-ai/mw3-snapshot-cli.mjs",
+          "sql",
+          "--spot",
+          "UTG_open_CO_call_BB_call",
+          "--source-hash",
+          "4ca502b9b4c22ca9d67058d9be52c52539549f2442cfb08983296d09afacd95d"
+        ],
+        "exit_code": 0,
+        "cli_status": "sql_only_not_executed",
+        "sql_bytes": 1605208,
+        "sql_sha256": "a27f24644ff7a74cc0f3b06b516fdce89a662bd9dcf7d063354349864a34bbde",
+        "sql_body_after_comments_sha256": "ea891c33decf677f93496875fe4618858e937c89dea0a69f1cb4abe91fa7de43",
+        "sql_statements": 101,
+        "immutable_headers": 2,
+        "immutable_parts": 99,
+        "canonical_receipt_sha256": "869a4a6da558519a3108dfdcc4f1dfa4cbfa6b2481124e048f3d2262a27de53d",
+        "original_archive_sha256": "fab985466902709975e0e02e39d4eb9f5e41b0eb05f80d4d9f4824fe4d5913df",
+        "manifest_sha256": "e97e68f5de15bebc30f6e087441d079ca79c80dc4ec74ae51aa858ae526c3534",
+        "manifest_approval": "unapproved",
+        "receipt_status": "independently-reviewed",
+        "delivery_pins": [
+          {
+            "spotId": "UTG_open_CO_call_BB_call",
+            "stage": "flop",
+            "deliveryHash": "bd91d467dbaf60b1ae5bb4e265d81ede9173befd88ac613eabdec459d16dafee",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "e8ad7a1aa002559e51f485ef68f4163ce9ba5955be5d0bcc7b83f4250bda48ef",
+            "sourceHash": "4ca502b9b4c22ca9d67058d9be52c52539549f2442cfb08983296d09afacd95d"
+          },
+          {
+            "spotId": "UTG_open_CO_call_BB_call",
+            "stage": "later",
+            "deliveryHash": "f669db4d3263a3049fcf3ccaa1bf898670dad7214cad87cbf41e8ff464f01fa8",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "a9aea007ce66ddaae4d08843e6280f777d10f38aa4c353aa737e8a22e21bb772",
+            "sourceHash": "4ca502b9b4c22ca9d67058d9be52c52539549f2442cfb08983296d09afacd95d"
+          }
+        ],
+        "inputs_unchanged": true,
+        "stdout_sha256": "ae2b4b0dcb581aa43465992fdead875cfff9350b42f485698b7b015884d37cb9",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call",
+        "paths": {
+          "manifest": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.manifest.json",
+          "archive": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.tar.gz",
+          "receipt": "configs/mw3-utg-co-btn-mw3-srp-v1.review.json",
+          "sql": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.sql"
+        },
+        "argv": [
+          "scripts/postflop-ai/mw3-snapshot-cli.mjs",
+          "sql",
+          "--spot",
+          "UTG_open_CO_call_BTN_call",
+          "--source-hash",
+          "e1328f1fc8ad265f473579189abf32246e4b7bf5bdd2cdc108bea1b2b59f15ed"
+        ],
+        "exit_code": 0,
+        "cli_status": "sql_only_not_executed",
+        "sql_bytes": 1525883,
+        "sql_sha256": "684ccb1af402fa678c6cfc3356192e3258b8fe16ec26acff919b26d2e64e9ab9",
+        "sql_body_after_comments_sha256": "3d11a0029c03f313f94d97417ba455ba2393adae39864894e65a7dd7385093cf",
+        "sql_statements": 96,
+        "immutable_headers": 2,
+        "immutable_parts": 94,
+        "canonical_receipt_sha256": "ebb01b7c9e3e47b94f2b8ba48eafcb8573622021bea062e4189ac353ac779792",
+        "original_archive_sha256": "3a3d6f4d1cabcfcff881b5b90470ad153748264734fce92f0bd6a816fbe58604",
+        "manifest_sha256": "29f2745a4f77696a57dd04ab9f7a0b7fd06a246548b2303de81d6fd038767eee",
+        "manifest_approval": "unapproved",
+        "receipt_status": "independently-reviewed",
+        "delivery_pins": [
+          {
+            "spotId": "UTG_open_CO_call_BTN_call",
+            "stage": "flop",
+            "deliveryHash": "76bb1356d12a275d0351fd48e9b7c5d8bd2ea42f646552197d35a217be56d8f8",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "5b7868e198248e206b68b42934d11ae51a250695f3e80da609192bfce5fc4527",
+            "sourceHash": "e1328f1fc8ad265f473579189abf32246e4b7bf5bdd2cdc108bea1b2b59f15ed"
+          },
+          {
+            "spotId": "UTG_open_CO_call_BTN_call",
+            "stage": "later",
+            "deliveryHash": "c196c22dd82a699ceeb828a43edfb53cbc72db52ee5a6166bbe10a31ef367a27",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "20925575ef96ecf8af3bc94e84bf390a1a8a411acd8d0699f1a685233db05297",
+            "sourceHash": "e1328f1fc8ad265f473579189abf32246e4b7bf5bdd2cdc108bea1b2b59f15ed"
+          }
+        ],
+        "inputs_unchanged": true,
+        "stdout_sha256": "3049d2ed199497f0e679b07abf63737c459b7e757a778a1f2ed59b24841d7f1d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call",
+        "paths": {
+          "manifest": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.manifest.json",
+          "archive": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.tar.gz",
+          "receipt": "configs/mw3-utg-co-sb-mw3-srp-v1.review.json",
+          "sql": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.sql"
+        },
+        "argv": [
+          "scripts/postflop-ai/mw3-snapshot-cli.mjs",
+          "sql",
+          "--spot",
+          "UTG_open_CO_call_SB_call",
+          "--source-hash",
+          "552657bcc5e1dd53785ecd44d152a9367e1296ec7e7263ef90d5b5b47394af60"
+        ],
+        "exit_code": 0,
+        "cli_status": "sql_only_not_executed",
+        "sql_bytes": 1568069,
+        "sql_sha256": "dcc65a72d7643c4dd5384b3cde939d82dd885a080d9b026b325ee692eec27aff",
+        "sql_body_after_comments_sha256": "15d60b9436082dbaee082c150d99226c1219fb2d54a93226c9fcdca1bd99c704",
+        "sql_statements": 99,
+        "immutable_headers": 2,
+        "immutable_parts": 97,
+        "canonical_receipt_sha256": "0eaa0f503b8995b8392e602d91d4fb89bc7660af01a1827e028ad4f9d15b5ff2",
+        "original_archive_sha256": "c859afc13e369cd1cf3ab8ea545d8115a5eaba4d55725de772f222a560f4b7a0",
+        "manifest_sha256": "2f17554981558a61d562fbd37b79eeaae08a747e99badd19250a1665173b825c",
+        "manifest_approval": "unapproved",
+        "receipt_status": "independently-reviewed",
+        "delivery_pins": [
+          {
+            "spotId": "UTG_open_CO_call_SB_call",
+            "stage": "flop",
+            "deliveryHash": "0bb86ee2d5cb471d9954a7d7f3cc11a9629744f9934329662f2d1c55d6697a31",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "8c86933a924941071673fb70a6767b5c99a8db402fd5348a7c9a915d7b2574d0",
+            "sourceHash": "552657bcc5e1dd53785ecd44d152a9367e1296ec7e7263ef90d5b5b47394af60"
+          },
+          {
+            "spotId": "UTG_open_CO_call_SB_call",
+            "stage": "later",
+            "deliveryHash": "4141a16a5845c07afea24a466df27d0499e7ba4ff479561ede64e9800ed497fd",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "1968323969e89f53b7c792bccbf81ef7ea10555e19392b63d38a3e1b5b26b46d",
+            "sourceHash": "552657bcc5e1dd53785ecd44d152a9367e1296ec7e7263ef90d5b5b47394af60"
+          }
+        ],
+        "inputs_unchanged": true,
+        "stdout_sha256": "9b1bd90aff22018371076ab73483b5308b2fb678255655ba397be31fabe50369",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_call",
+        "paths": {
+          "manifest": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.manifest.json",
+          "archive": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.tar.gz",
+          "receipt": "configs/mw3-utg-hj-bb-mw3-srp-v1.review.json",
+          "sql": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.sql"
+        },
+        "argv": [
+          "scripts/postflop-ai/mw3-snapshot-cli.mjs",
+          "sql",
+          "--spot",
+          "UTG_open_HJ_call_BB_call",
+          "--source-hash",
+          "3d53be2b1a7c90f5950be69b82850ef81fa535e3442d836368e914fdf55b2862"
+        ],
+        "exit_code": 0,
+        "cli_status": "sql_only_not_executed",
+        "sql_bytes": 1602292,
+        "sql_sha256": "f14ef91bad0371cbc877c7ad3ee43897d27ffc84fbcc93e0fe99fee062865b00",
+        "sql_body_after_comments_sha256": "fefbea4ba81a18d61626b746926b5973ae5c93c95adad192e06b88913d9d4450",
+        "sql_statements": 101,
+        "immutable_headers": 2,
+        "immutable_parts": 99,
+        "canonical_receipt_sha256": "ce6208415121f617c920d9832f3812e3582a1ba71bee519aefa2cc89837e5e4a",
+        "original_archive_sha256": "d84390b598755b265f5e5ae5e5601d05fc69e7346971b955c2ab0d4732ab577a",
+        "manifest_sha256": "fdecc4ff66267bf3c8e4c54e7d47ee03c00286402eab6c5283d610c08593221f",
+        "manifest_approval": "unapproved",
+        "receipt_status": "independently-reviewed",
+        "delivery_pins": [
+          {
+            "spotId": "UTG_open_HJ_call_BB_call",
+            "stage": "flop",
+            "deliveryHash": "281abf5777b51568dc98ae2a7b7fbc37727062e99a882431b49a5807c73cbdde",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "92cdeb04b45c836e4f6e266bc3b985ef463386544423140ed8a661a60f30c2fc",
+            "sourceHash": "3d53be2b1a7c90f5950be69b82850ef81fa535e3442d836368e914fdf55b2862"
+          },
+          {
+            "spotId": "UTG_open_HJ_call_BB_call",
+            "stage": "later",
+            "deliveryHash": "742daf0c4e7d7a4a3c4a9b7012e1adbdab5ea6ed08dac28414412d190d9bb8d3",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "c7039fc8732099fa9d5e2d34eb938fc7e9342baa2c0a3ec789050abe2b3f0840",
+            "sourceHash": "3d53be2b1a7c90f5950be69b82850ef81fa535e3442d836368e914fdf55b2862"
+          }
+        ],
+        "inputs_unchanged": true,
+        "stdout_sha256": "78bfc39ea72fc60bcd4bff830234246c2c6402496dc87bb27cd42cf6f9aa9c18",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call",
+        "paths": {
+          "manifest": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.manifest.json",
+          "archive": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.tar.gz",
+          "receipt": "configs/mw3-utg-hj-btn-mw3-srp-v1.review.json",
+          "sql": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.sql"
+        },
+        "argv": [
+          "scripts/postflop-ai/mw3-snapshot-cli.mjs",
+          "sql",
+          "--spot",
+          "UTG_open_HJ_call_BTN_call",
+          "--source-hash",
+          "bf2cc8a36a97c8b77c2ee525d9bebfb774814f3e21b1aea53cb46c1b21c45e8e"
+        ],
+        "exit_code": 0,
+        "cli_status": "sql_only_not_executed",
+        "sql_bytes": 1524093,
+        "sql_sha256": "15330d693d26f4d1f76df5ce281861c3016753da3924046ffd08caf65994dd94",
+        "sql_body_after_comments_sha256": "37102ffd0118a56f88de0ab91a2f4779ac545d6e5ccc5c62d0de38b467df6a7d",
+        "sql_statements": 96,
+        "immutable_headers": 2,
+        "immutable_parts": 94,
+        "canonical_receipt_sha256": "508c85e3a7af379c8f37d2c10a6426941f4a2db8ed3cf1be98f7c4f418c8cccd",
+        "original_archive_sha256": "fae0fe5f2ce9fc718f68b9160e4f6e99ed14138b5319008cacb4684b1aca9f3e",
+        "manifest_sha256": "4802c85777a6a2de9fad9a52041d9bb11301be211bf0df70a32f229dd7e26c42",
+        "manifest_approval": "unapproved",
+        "receipt_status": "independently-reviewed",
+        "delivery_pins": [
+          {
+            "spotId": "UTG_open_HJ_call_BTN_call",
+            "stage": "flop",
+            "deliveryHash": "5439f957cdcbbc13d5d8ad23ec5b685e5b03a726e6111c96c1527134ac43cb9a",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "89473138898d53835332a3777235f611216427e2d653adc8808dfaafb3bc11d8",
+            "sourceHash": "bf2cc8a36a97c8b77c2ee525d9bebfb774814f3e21b1aea53cb46c1b21c45e8e"
+          },
+          {
+            "spotId": "UTG_open_HJ_call_BTN_call",
+            "stage": "later",
+            "deliveryHash": "234b4b1dde7a12b0d47fbbb508d7ee41c3616c369bb7eb3dc2f7acd3b9496068",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "8bdb93150f6528eb7613fae8a91a61a2f443a34ca6848526f63fb89063c0a287",
+            "sourceHash": "bf2cc8a36a97c8b77c2ee525d9bebfb774814f3e21b1aea53cb46c1b21c45e8e"
+          }
+        ],
+        "inputs_unchanged": true,
+        "stdout_sha256": "b6055da540309969a3cdf7a08cdc595800840049fbc36858056fd48e89ccc2ae",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call",
+        "paths": {
+          "manifest": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.manifest.json",
+          "archive": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.tar.gz",
+          "receipt": "configs/mw3-utg-hj-co-mw3-srp-v1.review.json",
+          "sql": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.sql"
+        },
+        "argv": [
+          "scripts/postflop-ai/mw3-snapshot-cli.mjs",
+          "sql",
+          "--spot",
+          "UTG_open_HJ_call_CO_call",
+          "--source-hash",
+          "f8d9dc162bd8bb8e401972747dba8e8ce8b8d244d7419af718376ad368d08734"
+        ],
+        "exit_code": 0,
+        "cli_status": "sql_only_not_executed",
+        "sql_bytes": 1519315,
+        "sql_sha256": "cf3da5769d6f9416faf183a61c2fdbe3083a1b185c7bf09d49708cc6166ce051",
+        "sql_body_after_comments_sha256": "22bd1af1be7bbd83782b0c5573d808b68f841c86ead795509a808c9adbbd6676",
+        "sql_statements": 96,
+        "immutable_headers": 2,
+        "immutable_parts": 94,
+        "canonical_receipt_sha256": "08591189202c8af78a79f19672953e9383fe8729bcd49e5a4e8ef070559c0bbd",
+        "original_archive_sha256": "a0531cb661d36f6beee9076196a40e7a8fef414cbe2c60ffb9283ac1037ac19b",
+        "manifest_sha256": "21d92d75485d7a3b7aa7661c4571d2dfeba71ad8d47161772e1816c4ced73b4d",
+        "manifest_approval": "unapproved",
+        "receipt_status": "independently-reviewed",
+        "delivery_pins": [
+          {
+            "spotId": "UTG_open_HJ_call_CO_call",
+            "stage": "flop",
+            "deliveryHash": "f957d312947d1eec25b3341bbf3f6e8d757265688cbf939cf6e781ac2f272cbb",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "d6ee35e17d0287de2150fade7b14a1eb32dd047a866d67e33510240fe83a9205",
+            "sourceHash": "f8d9dc162bd8bb8e401972747dba8e8ce8b8d244d7419af718376ad368d08734"
+          },
+          {
+            "spotId": "UTG_open_HJ_call_CO_call",
+            "stage": "later",
+            "deliveryHash": "adc75543803c6dceae64be212bf0a2fd63869babbcd2f8a8fbf3523b119f5af7",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "e67aaaf82ed04e6c290675cc2f6dc68c33bb9ef751d84ada53ebc171eb9e3f0e",
+            "sourceHash": "f8d9dc162bd8bb8e401972747dba8e8ce8b8d244d7419af718376ad368d08734"
+          }
+        ],
+        "inputs_unchanged": true,
+        "stdout_sha256": "2632243851c9375e1dc3350a12f5091c0717330eff03da97d5fbae626acb0ba0",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call",
+        "paths": {
+          "manifest": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.manifest.json",
+          "archive": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.tar.gz",
+          "receipt": "configs/mw3-utg-hj-sb-mw3-srp-v1.review.json",
+          "sql": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.sql"
+        },
+        "argv": [
+          "scripts/postflop-ai/mw3-snapshot-cli.mjs",
+          "sql",
+          "--spot",
+          "UTG_open_HJ_call_SB_call",
+          "--source-hash",
+          "ced4f58d35c1636ee9b4197eef7c636823e8dd0a2f4718f39a3d0b84f5f267c9"
+        ],
+        "exit_code": 0,
+        "cli_status": "sql_only_not_executed",
+        "sql_bytes": 1562974,
+        "sql_sha256": "be60f27b8ee3b0cfc1cd3a3634b451cdf4d812a873dd91f09d354c7b1a7aecd6",
+        "sql_body_after_comments_sha256": "c2850ecbf6f0c73cbf21ad2196606b10241db2e5bfd154032d3d6c2212804757",
+        "sql_statements": 99,
+        "immutable_headers": 2,
+        "immutable_parts": 97,
+        "canonical_receipt_sha256": "ab0d81da14f7260ccb03a89365bee4550533676d9e5a7decfaca01c75807d979",
+        "original_archive_sha256": "ed25dd6a611d329ec8f78614320d66c5f84284ee4f3e2cf14129cbd75d5b7afa",
+        "manifest_sha256": "da58492e76a4cdbfccf218d487486bc826ea4472169c9a054f4bc5c7931e846d",
+        "manifest_approval": "unapproved",
+        "receipt_status": "independently-reviewed",
+        "delivery_pins": [
+          {
+            "spotId": "UTG_open_HJ_call_SB_call",
+            "stage": "flop",
+            "deliveryHash": "70131b3742203fad717c5d2a418e270476ebd0f4906d9a99e55c21d7714ae9c8",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "a1e92759270e9fd3f0911b080cd42b46898bf0e3749ea7c403f0f6768dd688c1",
+            "sourceHash": "ced4f58d35c1636ee9b4197eef7c636823e8dd0a2f4718f39a3d0b84f5f267c9"
+          },
+          {
+            "spotId": "UTG_open_HJ_call_SB_call",
+            "stage": "later",
+            "deliveryHash": "af5e72db20253f928399c0fbba2413c232a323b5c0b8be005ccacfc28862b68b",
+            "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+            "policyHash": "5c7413b2881aa52304ff3ebe7d2911dace4bb9a2deda13a7a838bc0fd03ac5d9",
+            "sourceHash": "ced4f58d35c1636ee9b4197eef7c636823e8dd0a2f4718f39a3d0b84f5f267c9"
+          }
+        ],
+        "inputs_unchanged": true,
+        "stdout_sha256": "1daee34ba4cab1d4b5bc18fa47fa970edfdf147bbaf074d02905a47d14e87604",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "post_commit_restore_gate_at_0e118db": {
+    "status": "verified-independently-reviewed-saved-bytes",
+    "accepted_pairs": 16,
+    "registered_pairs": 16,
+    "log_sha256": "5d1cf0c4e9475f226c8c46bb5a0cc0f509eee4d800b4591aa393a7e518f01b88",
+    "qualification": "Source, manifests, receipts, archives and pins remain unchanged. No repeat of the heavy full-inventory restore gate is claimed for this SQL-only checkpoint; each new SQL passed the official snapshot/receipt/transport gates during packaging."
+  },
+  "strict_local_d1": {
+    "status": "BLOCKED_ENVIRONMENT",
+    "host": "darwin",
+    "entry_exit_code": 1,
+    "stderr": "Strict LOCAL MW3 verification failed: Expected values to be strictly equal:\n\n'darwin' !== 'linux'\n\n",
+    "diagnostic_scope": "Official CLI platform-entry-refusal diagnostic only; no saved-SQL or D1 acceptance established",
+    "diagnostic_wrangler_argument": "Confirmed nonexistent frontend node_modules/wrangler/bin/wrangler.js; used only as an explicit not-installed diagnostic input; rejected before path resolution",
+    "runtime_installed": false,
+    "capture_started": false,
+    "database_started": false,
+    "worker_started": false,
+    "gates_reached": [],
+    "stderr_sha256": "e11a4d09126e3442eddc8f6d4e63a9b03a71b324a33f737b9b10f221593ed8c1",
+    "required_runtime": {
+      "platform": "linux",
+      "node": ">=22.20",
+      "wrangler": "4.147.0",
+      "miniflare": "5.20261001.0-alpha",
+      "workerd": "1.20261001.1",
+      "esbuild": "0.28.1",
+      "registry_mode": "activated"
+    },
+    "required_gates": [
+      "Exact saved SQL/runtime/source/receipt identity",
+      "Two complete imports of each whole SQL file",
+      "Exact headers, ordered parts, payload hashes and counts",
+      "All 27 unrelated table schema/row preservation and unrelated MW3 sentinel",
+      "Both late immutable-conflict whole-batch rollbacks",
+      "Four activated API phases with corruption rejection/repair and fresh worker restart",
+      "Birth-bound ownership, bounded resources and complete cleanup"
+    ]
+  },
+  "browser": {
+    "status": "BLOCKED_FORMAL_TOOL_UNAVAILABLE",
+    "tool_discovery": "Current ALL_TOOLS has no mcp__cua_repl.js or other browser control tool; no tool-search capability is exposed",
+    "final_base_stats_390px": "NOT RUN",
+    "new_browser_tab": "NOT CREATED",
+    "new_fixture_server": "NOT STARTED",
+    "protected_ports": [
+      5173,
+      5191,
+      8787
+    ],
+    "other_tabs_servers": "NOT OPERATED",
+    "fixture_readiness": "Prior a10 bundle is CSS-incomplete and may not be used; clean-current-source shared analysis.css fixture build is still required"
+  },
+  "case17": {
+    "status": "BLOCKED",
+    "source_heads": {
+      "base": "7df430ef0e92a6b9fd237d89739045aec012e5b1",
+      "integration": "f89cec1e393e63c46cb2914f542a776879e1abb0"
+    },
+    "fixture_scope": {
+      "game": "cash-6max 100bb",
+      "preflop": "BTN open 2.5 / BB call",
+      "board": "As7d2c",
+      "sources": "isolated saved HU fixture and original local account hook; not live login or production API/binary proof"
+    },
+    "observed_panel_count_base": 1,
+    "observed_panel_count_integration": 1,
+    "original_requirement": "Unfocused HU comparison has two active participant tables; selecting exact-hand detail may focus one, closing restores two. No authorized exclusive-one override found.",
+    "public_matrix_buttons_compared": 507,
+    "percentage_styles_compared": 1188,
+    "scoped_dom_differences": 0,
+    "outer_history_pressed_difference": "BTN pressed/active differs in initial and AcKd; retained outside the matrix scope",
+    "new_two_table_feature": false,
+    "new_final_base_browser_run": false,
+    "existing_comparison_sha256": "eefafd16d3fa09e4828b37791eb9b0f5f36c429e4a4a796041f8d6990dcf047b"
+  },
+  "remaining_platform_cases": 31,
+  "original_701_catalog": {
+    "PASS": 15,
+    "FAIL": 1,
+    "BLOCKED": 1,
+    "qualification": "Historical exact-701 report retained; no full 17-case final-base rerun claimed"
+  },
+  "numerical_strategy_changed": false,
+  "receipt_or_approval_changed": false,
+  "registry_changed": false,
+  "product_source_changed": false,
+  "database_executed": false,
+  "production_changed": false,
+  "merged": false,
+  "record_correction": "The earlier checkpoint/PR statement that original MW3 SQL files with old receipt comments remained in this consumer checkout was inaccurate. Both original701 Git tree and checkpoint0e contained zero MW3 SQL files. These are newly emitted canonical packaging files; no old SQL body comparison is claimed."
+}

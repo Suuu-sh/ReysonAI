@@ -1,3 +1,6 @@
+import { allBoardIdentity, allBoardSummaryName, assertAllBoardRunIdentity, openBoardCheckpoints, writeImmutableAllBoardOutput } from "./all-board-checkpoints.mjs";
+import { defenceFor } from "./defence.ts";
+import { hasPostflopDeal } from "./range-support.mjs";
 // Offline all-1,755-canonical-flop audit. Reads saved policies; never generates them.
 import { availableParallelism } from "node:os";
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -16,7 +19,8 @@ const root = fileURLToPath(new URL("../..", import.meta.url));
 const baseOutDir = join(root, ".local/postflop-ai/all-boards-audit");
 const profiles = ["standard", "nit", "station", "lag", "maniac"];
 const usage = "Usage: audit-all-boards.mjs [--spot <id> ...] [--street flop|later|all] [--workers N] [--profile standard|nit|station|lag|maniac] [--opponent-seat ip|oop] [--table-profile <call>,<three_bet> (low|normal|high; standard aliases normal)]";
-const defaults = { loadInputs, loadCandidate, loadLaterCandidate, checkFlopBalance, checkLaterBalance, checkProfileBalance, canonicalFlops };
+const defaults = { loadInputs, loadCandidate, loadLaterCandidate, checkFlopBalance, checkLaterBalance, checkProfileBalance, canonicalFlops,
+  allBoardIdentity, assertAllBoardRunIdentity, openBoardCheckpoints, writeImmutableAllBoardOutput, defenceFor, hasPostflopDeal };
 
 export function parseAuditArgs(args = [], spots = POSTFLOP_SPOTS) {
   const options = { spots: [], street: "all", workers: Math.max(1, availableParallelism() - 1), profile: "standard" };
@@ -74,7 +78,10 @@ export function prepareAuditSpot(spotId, street, inputOptions = {}, dependencies
     stage = "flop";
     const flop = deps.loadCandidate(inputs);
     stage = "later";
-    const later = street === "flop" ? null : deps.loadLaterCandidate(inputs, flop);
+    // Standard runs retain development's flop/later lineage even for a
+    // flop-only check. Profile flop checks may legitimately lack later roles.
+    const profile = inputs.opponentProfile && inputs.opponentProfile !== "standard";
+    const later = street === "flop" && profile ? null : deps.loadLaterCandidate(inputs, flop);
     if (street !== "flop" && !later) throw new Error("Saved later policy is missing");
     return { status: "ready", inputs, flop, later };
   } catch (error) {
@@ -86,18 +93,26 @@ export function prepareAuditSpot(spotId, street, inputOptions = {}, dependencies
   }
 }
 
-export function auditBoards(spotId, street, boardIds, inputOptions = {}, dependencies = {}) {
+export function auditBoards(spotId, street, boardIds, inputOptions = {}, dependencies = {}, { onBoard = () => {}, expectedIdentityHash } = {}) {
   const deps = { ...defaults, ...dependencies };
   const prepared = prepareAuditSpot(spotId, street, inputOptions, deps);
   if (prepared.status !== "ready") throw Object.assign(new Error(prepared.error.message), prepared.error);
   const { inputs, flop, later } = prepared;
+  if (expectedIdentityHash !== undefined) deps.assertAllBoardRunIdentity(inputs, flop, later, street, expectedIdentityHash);
   const profile = (inputs.opponentProfile ?? "standard") !== "standard";
   const byId = new Map(deps.canonicalFlops().map(board => [board.id, board]));
-  return boardIds.map(id => {
+  const rows = [];
+  const record = row => { rows.push(row); onBoard(row); };
+  for (const id of boardIds) {
+    deps.defenceFor(inputs, flop.policy, null).releaseBoardCaches();
+    if (later) deps.defenceFor(inputs, flop.policy, later.policy).releaseBoardCaches();
     const board = byId.get(id);
     if (!board) throw new Error(`Unknown canonical flop: ${id}`);
     const boardList = [{ ...board, cards: [...board.cards] }];
-    let findings = [];
+    if (!profile && inputs.spot.history && !deps.hasPostflopDeal(inputs, board.cards)) {
+      record({ board: id, unreachable: true, findings: [] }); continue;
+    }
+    let findings = [], laterCoverage;
     if (profile) {
       // Rule advisories are board-independent, but root reach is checked on each
       // board with real card removal. Do not require arbitrary zero-mix branches.
@@ -106,35 +121,48 @@ export function auditBoards(spotId, street, boardIds, inputOptions = {}, depende
       }).findings;
       const blocked = findings.filter(f => f.check === "unreachable-branch" && /No compatible positive-weight holecard assignment/.test(f.detail ?? ""));
       if (blocked.length && findings.every(f => f.severity !== "error" || blocked.includes(f))) {
-        return { board: id, status: "unreachable", findings: [] };
+        record({ board: id, status: "unreachable", unreachable: true, findings: [] }); continue;
       }
       findings = findings.map(f => ({ ...f, street: /^(turn|river)_/.test(f.node) ? "later" : "flop" }))
         .filter(f => street !== "later" || f.street === "later" || f.severity === "error");
     } else {
       if (street !== "later") findings.push(...deps.checkFlopBalance(inputs, flop.policy, { boardList }).findings.map(f => ({ ...f, street: "flop" })));
-      if (street !== "flop") findings.push(...deps.checkLaterBalance(inputs, flop.policy, later.policy, { boardList }).findings
-        .filter(f => f.check !== "no-overrides" && f.check !== "role-copy").map(f => ({ ...f, street: "later" })));
+      if (street !== "flop") {
+        const audit = deps.checkLaterBalance(inputs, flop.policy, later.policy, { boardList });
+        laterCoverage = audit.coverage;
+        findings.push(...audit.findings.filter(f => f.check !== "no-overrides" && f.check !== "role-copy").map(f => ({ ...f, street: "later" })));
+      }
     }
-    return { board: id, findings: findings.map(({ check, severity, node, street: s, direction, ...detail }) =>
-      ({ check, severity, node, street: s, direction, ...(profile ? detail : {}) })) };
-  });
+    record({ board: id, ...(laterCoverage ? { later_coverage: laterCoverage } : {}),
+      findings: findings.map(({ check, severity, node, street: s, direction, ...detail }) =>
+      ({ check, severity, node, street: s, direction, ...(profile ? detail : {}) })) });
+  }
+  return rows;
 }
 
 export function makeAuditWorkerData(spotId, options, boardIds) {
   return { spotId, street: options.street, boardIds, inputOptions: auditInputOptions(spotId, options) };
 }
 
-function runWorker(data) {
+function runWorker(data, onBoard = () => {}) {
   return new Promise((resolveRows, reject) => {
-    const worker = new Worker(fileURLToPath(import.meta.url), { workerData: data });
-    let received = false;
-    worker.once("message", message => {
-      received = true;
-      if (message.auditError) reject(Object.assign(new Error(message.auditError.message), message.auditError));
-      else resolveRows(message);
+    const worker = new Worker(fileURLToPath(import.meta.url), { workerData: data,
+      resourceLimits: { maxOldGenerationSizeMb: 384, maxYoungGenerationSizeMb: 64 } });
+    const rows = [];
+    let complete = false;
+    worker.on("message", message => {
+      try {
+        if (message.auditError) throw Object.assign(new Error(message.auditError.message), message.auditError);
+        if (message.type === "checkpoint") {
+          if (!data.boardIds.includes(message.row?.board)) throw new Error("Unexpected worker board");
+          onBoard(message.row); rows.push(message.row);
+        } else if (message.type === "done") {
+          complete = true; resolveRows(rows);
+        } else throw new Error("Unexpected audit worker message");
+      } catch (error) { worker.terminate(); reject(error); }
     });
     worker.once("error", reject);
-    worker.once("exit", code => { if (!received) reject(new Error(`Audit worker exited without a report (${code})`)); });
+    worker.once("exit", code => { if (code !== 0 || !complete) reject(new Error(`Audit worker exited (${code}) before completion`)); });
   });
 }
 
@@ -147,9 +175,9 @@ export function summarizeAuditRows(spotId, street, rows) {
     entry.boards++; if (entry.examples.length < 5) entry.examples.push(row.board);
     counts.set(key, entry);
   }
-  const ranked = [...counts.values()].sort((a, b) => b.boards - a.boards);
+  const ranked = [...counts.values()].sort((a, b) => b.boards - a.boards || a.key.localeCompare(b.key));
   const errors = ranked.filter(entry => entry.key.includes(" error ")).reduce((sum, entry) => sum + entry.boards, 0);
-  const checked = rows.filter(row => row.status !== "unreachable");
+  const checked = rows.filter(row => !row.unreachable && row.status !== "unreachable");
   return { spot: spotId, street, boards: rows.length, clean: checked.filter(row => !row.findings.length).length, errors, findings: ranked };
 }
 
@@ -159,28 +187,52 @@ export async function runAllBoardsAudit(options, dependencies = {}) {
   const outDir = auditOutputDir(options, deps.baseOutDir);
   deps.mkdirSync(outDir, { recursive: true });
   const reports = [];
-  const profile = options.profile !== "standard";
+  const profile = (options.profile ?? "standard") !== "standard";
   const extended = profile || !isDefaultProfile(options.tableProfile);
   for (const spotId of selectAuditSpotIds(options, deps.spots ?? POSTFLOP_SPOTS)) {
     const started = Date.now(), inputOptions = auditInputOptions(spotId, options);
     const prepared = prepareAuditSpot(spotId, options.street, inputOptions, deps);
-    let report, status = prepared.status;
+    let report, resultName, status = prepared.status;
     if (status === "ready") {
       try {
-        const count = Math.min(options.workers, boardIds.length);
-        const chunks = Array.from({ length: count }, (_, w) => boardIds.filter((_, i) => i % count === w));
-        // Wait for every sibling before advancing to another spot, including when
-        // one fails. Never leak a previous spot's workers into the next batch.
-        const results = await Promise.allSettled(chunks.map(chunk => deps.runWorker(makeAuditWorkerData(spotId, options, chunk))));
+        const { inputs, flop, later } = prepared;
+        const identity = deps.allBoardIdentity(inputs, flop, later, options.street);
+        const cache = deps.openBoardCheckpoints(join(outDir, "checkpoints"), identity, boardIds);
+        const pending = boardIds.filter(id => !cache.rows.has(id));
+        deps.log(`${spotId}: resume ${cache.rows.size}/${boardIds.length} checked boards; identity ${cache.key}`);
+        const count = Math.min(options.workers, availableParallelism(), pending.length);
+        const chunks = Array.from({ length: count }, (_, w) => pending.filter((_, i) => i % count === w));
+        // All siblings must settle before another spot starts, even after a failure.
+        const results = await Promise.allSettled(chunks.map(chunk => {
+          const data = { ...makeAuditWorkerData(spotId, options, chunk), expectedIdentityHash: cache.key };
+          return deps.runWorker(data, row => cache.write(row)).then(rows => {
+            // Supports injected workers while enforcing the same checkpoint validation.
+            for (const row of rows) cache.write(row);
+            return rows;
+          });
+        }));
         const failure = results.find(result => result.status === "rejected");
         if (failure) throw failure.reason;
-        const rows = results.flatMap(result => result.value);
+        if (cache.rows.size !== boardIds.length) throw new Error("Incomplete all-board audit");
+        const final = prepareAuditSpot(spotId, options.street, inputOptions, deps);
+        if (final.status !== "ready") throw new Error("All-board inputs/policies changed during execution");
+        deps.assertAllBoardRunIdentity(final.inputs, final.flop, final.later, options.street, cache.key);
+        const rows = boardIds.map(id => cache.rows.get(id));
+        resultName = allBoardSummaryName(spotId, cache.key);
         report = summarizeAuditRows(spotId, options.street, rows);
+        Object.assign(report, { identity_hash: cache.key, source_hash: inputs.fingerprint,
+          policy_hash: flop.metadata.policy_hash, later_policy_hash: later?.metadata.policy_hash ?? null,
+          unreachable: rows.filter(row => row.unreachable || row.status === "unreachable").length,
+          evaluated_boards: rows.filter(row => !row.unreachable && row.status !== "unreachable").length,
+          later_coverage: rows.reduce((total, row) => {
+            for (const [key, value] of Object.entries(row.later_coverage ?? {})) total[key] = (total[key] ?? 0) + value;
+            return total;
+          }, {}) });
         status = report.errors ? "failed" : "passed";
         if (extended) Object.assign(report, { status, profile: options.profile, opponentSeat: prepared.inputs.opponentSeat ?? null, tableProfile: normalizeProfile(options.tableProfile),
-          visitedBoards: rows.length, checkedBoards: rows.filter(row => row.status !== "unreachable").length,
-          unreachableBoards: rows.filter(row => row.status === "unreachable").length,
-          unreachableBoardExamples: rows.filter(row => row.status === "unreachable").slice(0, 5).map(row => row.board),
+          visitedBoards: rows.length, checkedBoards: rows.filter(row => !row.unreachable && row.status !== "unreachable").length,
+          unreachableBoards: rows.filter(row => row.unreachable || row.status === "unreachable").length,
+          unreachableBoardExamples: rows.filter(row => row.unreachable || row.status === "unreachable").slice(0, 5).map(row => row.board),
           warnings: rows.reduce((n, row) => n + row.findings.filter(f => f.severity === "warn").length, 0),
           ...(profile ? { rule_advisory_scope: "board-independent policy rules; counts repeat on compatible boards",
             board_check_scope: "flop root compatible positive-weight reach; no exhaustive later runout/branch scan" } : {}) });
@@ -192,8 +244,9 @@ export async function runAllBoardsAudit(options, dependencies = {}) {
     if (!report.spot) report = { spot: spotId, street: options.street, profile: options.profile,
       opponentSeat: options.opponentSeat ?? "auto", tableProfile: normalizeProfile(options.tableProfile), status, boards: 0, clean: 0,
       errors: status === "failed" ? 1 : 0, findings: [], ...report };
-    deps.writeFileSync(join(outDir, `${spotId}.json`), `${JSON.stringify(report, null, 2)}\n`);
-    reports.push({ ...report, status });
+    if (resultName && report.identity_hash) deps.writeImmutableAllBoardOutput(join(outDir, resultName), `${JSON.stringify(report, null, 2)}\n`);
+    else deps.writeFileSync(join(outDir, `${spotId}-incomplete.json`), `${JSON.stringify(report, null, 2)}\n`);
+    reports.push({ ...report, status, ...(resultName ? { resultName } : {}) });
     if (status === "passed" || (status === "failed" && report.boards)) {
       deps.log(`${spotId}: ${report.boards} boards, ${report.clean} clean, ${report.errors} error findings, ${Math.round((Date.now() - started) / 1000)}s`);
       for (const entry of report.findings.slice(0, 5)) deps.log(`  ${entry.boards}/${report.boards} ${entry.key}`);
@@ -206,18 +259,19 @@ export async function runAllBoardsAudit(options, dependencies = {}) {
     counters.warnings += report.warnings ?? report.findings.filter(f => f.key.includes(" warn ")).reduce((sum, f) => sum + f.boards, 0);
   }
   const hasFailure = counters.failed || counters.missing;
-  // Successful unadjusted reports preserve the original filenames/JSON/table.
+  // The mutable summary is only an index; completed reports are identity-specific.
   const detailed = extended || reports.some(report => report.status !== "passed");
   const md = ["# All-board balance audit (1,755 canonical flops; AI estimate, not GTO)", "",
     ...(detailed ? [`Profile: ${options.profile}; opponent seat: ${options.opponentSeat ?? "auto"}; table: ${profileKey(options.tableProfile ?? {})}.`,
       `Status: ${hasFailure ? "INCOMPLETE / FAILED" : "PASS"}. Passed: ${counters.passed}; failed: ${counters.failed}; NOT GENERATED (未生成): ${counters.missing}; unreachable spots: ${counters.unreachable}; error findings: ${counters.errors}; warnings: ${counters.warnings}.`,
       ...(profile ? ["Profile advisories are rule-level, not range-weighted board-quality measurements. Each compatible canonical flop receives a root-reach check; later policies receive structural checks, not an exhaustive turn/river runout scan."] : []), ""] : []),
-    detailed ? "| spot | status | boards visited | boards checked | unreachable boards | clean | error findings | most common finding / reason |" : "| spot | boards | clean | error findings | most common finding |",
-    detailed ? "|---|---|---:|---:|---:|---:|---:|---|" : "|---|---:|---:|---:|---|",
+    detailed ? "| spot | status | boards visited | boards checked | unreachable boards | clean | error findings | most common finding / reason |" : "| spot | boards | unreachable | clean | error findings | most common finding |",
+    detailed ? "|---|---|---:|---:|---:|---:|---:|---|" : "|---|---:|---:|---:|---:|---|",
     ...reports.map(s => {
+      const label = s.resultName ? `[${s.spot}](${s.resultName})` : s.spot;
       const note = s.error?.message ?? (s.findings[0] ? `${s.findings[0].key} (${s.findings[0].boards})` : "—");
-      return detailed ? `| ${s.spot} | ${s.status === "not_generated" ? "NOT GENERATED (未生成)" : s.status} | ${s.boards} | ${s.checkedBoards ?? s.boards} | ${s.unreachableBoards ?? 0} | ${s.clean} | ${s.errors} | ${note} |`
-        : `| ${s.spot} | ${s.boards} | ${s.clean} | ${s.errors} | ${note} |`;
+      return detailed ? `| ${label} | ${s.status === "not_generated" ? "NOT GENERATED (未生成)" : s.status} | ${s.boards} | ${s.checkedBoards ?? s.boards} | ${s.unreachableBoards ?? 0} | ${s.clean} | ${s.errors} | ${note} |`
+        : `| ${label} | ${s.boards} | ${s.unreachable ?? 0} | ${s.clean} | ${s.errors} | ${note} |`;
     })];
   deps.writeFileSync(join(outDir, "summary.md"), `${md.join("\n")}\n`);
   if (detailed) deps.writeFileSync(join(outDir, "summary.json"), `${JSON.stringify({ profile: options.profile,
@@ -227,7 +281,12 @@ export async function runAllBoardsAudit(options, dependencies = {}) {
 }
 
 if (!isMainThread) {
-  try { parentPort.postMessage(auditBoards(workerData.spotId, workerData.street, workerData.boardIds, workerData.inputOptions)); }
+  try {
+    auditBoards(workerData.spotId, workerData.street, workerData.boardIds, workerData.inputOptions, {}, {
+      onBoard: row => parentPort.postMessage({ type: "checkpoint", row }), expectedIdentityHash: workerData.expectedIdentityHash,
+    });
+    parentPort.postMessage({ type: "done" });
+  }
   catch (error) { parentPort.postMessage({ auditError: describeError(error, error.stage) }); }
 } else if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try { process.exitCode = (await runAllBoardsAudit(parseAuditArgs(process.argv.slice(2)))).exitCode; }

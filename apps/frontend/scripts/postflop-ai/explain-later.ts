@@ -22,12 +22,13 @@ type DefenceModel = ReturnType<typeof defenceFor>;
 // This is a range-weighted estimate, not a solver or GTO result.
 import { evaluate } from "../lib/equity.ts";
 import { seatRange } from "./browser-inputs.ts";
-import { handTier, parseCards, parseFlopBoard, runoutTexture } from "./model.ts";
+import { parseCards, parseFlopBoard, runoutTexture } from "./model.ts";
+import { handTier } from "./hu-hand-tier.ts";
 import { scaleByPath, validatePolicy } from "./policy.ts";
 import { LATER_NODES, laterNodeRole } from "./later-tree.ts";
 import { laterPolicyMix, validateLaterPolicy } from "./later-policy.ts";
 import { flopState } from "./tree.ts";
-import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.ts";
+import { laterDecisionState as laterDecision, laterStart, replayLater } from "./street-state.mjs";
 import { defenceFor, isFacingNode, replayOrNull } from "./defence.ts";
 import { averageExplanationFacts } from "./explain-aggregate.ts";
 import { profileReferenceFacts } from "./profile-reference.ts";

@@ -8,7 +8,7 @@ import type { PostflopSource } from "./postflop-browser.ts";
 import type { ExplanationFacts } from "./postflop-facts.ts";
 import type { completedFlopContext } from "./postflop-trial.ts";
 type ProductLocale = ReturnType<typeof productLocale>;
-type Positions = { ip: string | null; oop: string | null };
+type Positions = { ip?: string | null; oop?: string | null };
 type DecisionLabels = { labels?: Record<string, string>; labelsJa?: Record<string, string>; options?: { action: string; allIn?: boolean }[] };
 type HandView = { hand?: string; actions: ActionMix; tiers?: Record<string, number>; combos?: StrategyCombo[]; combo?: StrategyCombo };
 type ExplanationState = { errorCode?: string; key: string; data: ExplanationFacts | null; error: string | null; loading: boolean };
@@ -24,6 +24,7 @@ import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLa
 import { isFlopBet } from "../../scripts/postflop-ai/tree.ts";
 import { computeBoard, computeExplain, computeLaterExplain, computeLaterRangeFacts, computeLaterView, computeRangeFacts } from "./postflop-compute.ts";
 import { deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot, loadPostflopFlop } from "./postflop-browser.ts";
+import { continuationCopy, postflopAvailabilityError } from "./continuation-copy.ts";
 import { localized, productLocale } from "../i18n.ts";
 
 // Action labels with real amounts come from the replay (decisionOptions in postflop-trial.ts); these
@@ -163,7 +164,7 @@ function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missin
   const missing = missingReason ?? (english ? "Overlaps the board" : "ボードと重複");
   const missingDescription = missingTitle ?? (english ? "Unavailable because the cards overlap the board" : "ボードのカードと重なるため存在しません");
   const tierName = (tier: string) => english
-    ? ({ monster: "Two pair or better", strong: "Top pair or better", draw: "Draw", medium: "Weak pair", air: "Unpaired high cards" } as Record<string, string>)[tier]
+    ? ({ monster: "Two pair or better with your own cards", strong: "Top pair or better", draw: "Draw", medium: "Weak pair", air: "Unpaired high cards" } as Record<string, string>)[tier]
     : tierLabels[tier];
   const pair = hand[0] === hand[1];
   const byCell = new Map(combos.map(combo => {
@@ -198,7 +199,7 @@ function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missin
     <div className="postflop-suit-side">
       <button type="button" className={`postflop-suit-all${selected === "all" ? " selected" : ""}`} aria-pressed={selected === "all"} onClick={() => onSelect("all")}>{english ? "All combos (average)" : "すべて（平均）"}</button>
       <ul className="postflop-tier-legend">
-        <li><i className="postflop-tier-dot tier-monster" />{english ? "Two pair or better" : "強い役"}</li>
+        <li><i className="postflop-tier-dot tier-monster" />{english ? "Two pair or better with your own cards" : "強い役"}</li>
         <li><i className="postflop-tier-dot tier-strong" />{english ? "Top pair or better" : "トップペア以上"}</li>
         <li><i className="postflop-tier-dot tier-draw" />{english ? "Draw" : "ドロー"}</li>
         <li><i className="postflop-suit-cell blocked" />{missing}</li>
@@ -414,7 +415,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
             (context.tree && body!.tree !== context.tree)) throw new Error("候補の局面・盤面または形式が一致しません。");
         setData({ ...body!, requestKey }); setStatus("ready");
       })
-      .catch(reason => { if (!controller.signal.aborted && !isAbortError(reason)) { setError(reason.message); setStatus(reason.code === "PROFILE_POLICY_MISSING" ? "preparing" : "error"); } });
+      .catch(reason => { if (!controller.signal.aborted && !isAbortError(reason)) { setError(postflopAvailabilityError(reason)); setStatus(reason.code === "PROFILE_POLICY_MISSING" ? "preparing" : "error"); } });
     return () => controller.abort();
   }, [board, context.pilotAvailable, context.tree, decision.node, flopPath, postflopDatasets, postflopSource, sourceError, spotId, sourcePreparing, options, requestKey]);
 
@@ -436,7 +437,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
         }
         setLaterData({ ...body!, requestKey }); setLaterStatus("ready");
       })
-      .catch(reason => { if (!controller.signal.aborted && !isAbortError(reason)) { setLaterError(reason.message); setLaterStatus(reason.code === "PROFILE_POLICY_MISSING" ? "preparing" : "error"); } });
+      .catch(reason => { if (!controller.signal.aborted && !isAbortError(reason)) { setLaterError(postflopAvailabilityError(reason)); setLaterStatus(reason.code === "PROFILE_POLICY_MISSING" ? "preparing" : "error"); } });
     return () => controller.abort();
   }, [board, context.pilotAvailable, flopPath, later?.actor, later?.line, later?.node, later?.street,
     postflopDatasets, postflopSource, riverCard, riverPath, sourceError, spotId, turnCard, turnPath, sourcePreparing, options, requestKey]);
@@ -548,8 +549,8 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const view: HandView | null | undefined = selectedCombo === "all" ? chosen : combo ? { ...chosen, actions: combo.mix, tiers: { [combo.tier]: 1 }, combo } : null;
   const english = productLocale() !== "ja";
   return <div className="postflop-trial" aria-label={english ? "Postflop estimate" : "ポストフロップ試作"}>
-    <PostflopProfileSettings profile={opponentProfile} seat={opponentSeat} positions={context} onProfileChange={onOpponentProfileChange} onSeatChange={onOpponentSeatChange} />
-    {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title={localized("No postflop policy recorded for this spot", "この局面のポストフロップ方針は未収録")}>{localized("The current AI trial covers heads-up single-raised pots (one open and one caller), 3-bet pots, 4-bet pots, and pots beginning with an SB limp. Return using the preflop action blocks.", "現在のAI試作があるのは、2人のポットのうち、シングルレイズポット（オープン→1人がコール）、3betポット、4betポット、SBのリンプから始まるポットだけです。プリフロップの行動ブロックから戻れます。")}</StatusState></Panel>
+    <PostflopProfileSettings profile={opponentProfile} seat={opponentSeat} positions={{ ip: context.ip ?? null, oop: context.oop ?? null }} onProfileChange={onOpponentProfileChange} onSeatChange={onOpponentSeatChange} />
+    {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title={localized("No postflop policy recorded for this spot", "この局面のポストフロップ方針は未収録")}>{continuationCopy("noPolicyDetail")}</StatusState></Panel>
       : !cards.every(Boolean) ? <Panel className="postflop-unavailable"><StatusState title={english ? "Select a flop" : "フロップを選択してください"}>{english ? "Open the flop cards in the action path and choose any three cards." : "上のアクション列にあるフロップカードを押して、任意の3枚を選んでください。"}</StatusState></Panel>
       : !board ? <Panel className="postflop-unavailable"><StatusState title={english ? "Invalid flop cards" : "フロップのカードが正しくありません"}>{english ? "Choose three distinct cards from the deck." : "重複しないカードを3枚選んでください。"}</StatusState></Panel>
       : <>

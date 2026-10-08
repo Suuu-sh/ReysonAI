@@ -1,0 +1,84 @@
+{
+  "head": "d5554c82c2c855138c27096c9e16d1757b17e845",
+  "officialOldReceiptsFailClosed": [
+    {
+      "name": "stage2",
+      "error": "Review source/configuration identity changed"
+    },
+    {
+      "name": "stage3",
+      "error": "Stage 3 review source/configuration identity changed"
+    }
+  ],
+  "stage2ArchiveFiles": 1614,
+  "stage3ArchiveFiles": 1805,
+  "stage2ArtifactRecords": 1888,
+  "stage3ArtifactRecords": 1805,
+  "allExceptExactFivePriorApprovedPR86AmendmentsMatch": true,
+  "artifactDelta": {
+    "stage2": [
+      {
+        "before": {
+          "path": "apps/frontend/src/estimated/five-bet-responses.json",
+          "bytes": 871890,
+          "sha256": "4f1b78b45e364c14f93cbe19cb7bef6e4ecfbc9076fd79d0834d2dd3b4b91d7c"
+        },
+        "after": {
+          "path": "apps/frontend/src/estimated/five-bet-responses.json",
+          "bytes": 871890,
+          "sha256": "86a34ea4c482b9987c77112f6e64ba0940234ae262c6c460b0ad086c6a40476b"
+        }
+      },
+      {
+        "before": {
+          "path": "apps/frontend/src/estimated/profiles/lag/villain/meta.json",
+          "bytes": 4504,
+          "sha256": "9b2c390fb9f14aa5f9f457993ab56e27c3cd298c0dd23c990a97f83c0b5a1b26"
+        },
+        "after": {
+          "path": "apps/frontend/src/estimated/profiles/lag/villain/meta.json",
+          "bytes": 4504,
+          "sha256": "12cbf7299d4b63c56e51e676327ae3a272b155d407139b0792be93bc480192f7"
+        }
+      },
+      {
+        "before": {
+          "path": "apps/frontend/src/estimated/profiles/maniac/villain/meta.json",
+          "bytes": 4755,
+          "sha256": "f6bf5ba0b64922c4bc96f12eb5b7f917c5f668db6677b51f68abb899f48c16a0"
+        },
+        "after": {
+          "path": "apps/frontend/src/estimated/profiles/maniac/villain/meta.json",
+          "bytes": 4755,
+          "sha256": "35991dc4f545e893c060aef5196bbf4e840f4f68c6e73884f9a1d716015731d9"
+        }
+      },
+      {
+        "before": {
+          "path": "apps/frontend/src/estimated/profiles/nit/villain/meta.json",
+          "bytes": 4679,
+          "sha256": "a5fe39ff5aaf11ad558544ec14a6ecc7da90c17a2f71261ca220fb9d72b4997f"
+        },
+        "after": {
+          "path": "apps/frontend/src/estimated/profiles/nit/villain/meta.json",
+          "bytes": 4679,
+          "sha256": "e7f937fc1c1b7ebb9381886a71ca4a7782499652c75321f06367bcb005853249"
+        }
+      },
+      {
+        "before": {
+          "path": "apps/frontend/src/estimated/profiles/station/villain/meta.json",
+          "bytes": 4767,
+          "sha256": "139041bd129507aefa5d6703ba2b2662982b3ae90d0f1787acf08ebb5181c3c9"
+        },
+        "after": {
+          "path": "apps/frontend/src/estimated/profiles/station/villain/meta.json",
+          "bytes": 4767,
+          "sha256": "05443e075c6ec95e9d19441a9ffe655ed9f6e8a9bae040e69184c0134dd8ce77"
+        }
+      }
+    ],
+    "stage3": []
+  },
+  "scope": "Isolated reviewer-only exact-byte decoding. Official restoration and review gates were not bypassed or altered; no server or numerical generation."
+}

@@ -1,11 +1,13 @@
-import { multiwayInputData } from "./multiway-inputs.mjs";
 import { adjustedInputOptions, finalizeInputs, inputStructureHash } from "./input-options.ts";
 import type { FrequencyRow, InputOptions, Inputs, PostflopDatasets, SourceAction, SourceDataset, SourceHand, SourceSpot } from "./types.ts";
 import type { WeightedCombo } from "../lib/equity.ts";
+import type { MultiwaySpot, Spot } from "./spots.ts";
+import { multiwayInputData } from "./multiway-inputs.mjs";
 import { combosOf } from "../lib/equity.ts";
 import { gameConfig } from "../../src/estimated/sizing.ts";
 import { parseCards } from "./model.ts";
 import { DEFAULT_SPOT_ID, createPostflopSpots } from "./spots-core.ts";
+import { multiwaySpotById } from "./multiway-spots.ts";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
 const SHA256_K = [
@@ -97,14 +99,15 @@ const DATASET_ALIASES: Record<string, string[]> = {
 
 function buildBaseInputs(spotId: string, datasets: PostflopDatasets, allowUnreachable: boolean): Omit<Inputs, "structure_hash"> {
   const config = pilotConfig;
-  const spot = createPostflopSpots(datasets).spotById(spotId);
+  const spot: Spot = multiwaySpotById(spotId) ?? createPostflopSpots(datasets).spotById(spotId);
   if (!spot.reachable && !allowUnreachable) throw new Error(`${spot.id} is unreachable: the saved ${spot.responseId} range never calls`);
 
-  if ("history" in spot) {
-    const { sources, seatRows } = multiwayInputData(spot, (name: string) => getDataset(datasets, name));
+  if (spot.history) {
+    const { sources, seatRows } = multiwayInputData(spot as MultiwaySpot, (name: string) => getDataset(datasets, name));
     const fingerprint = sha({ spot, sources, gameConfig, config: flopConfig() });
-    return { spot, sources, config, fingerprint, seatRows };
+    return { spot, sources, config: pilotConfig, fingerprint, seatRows };
   }
+
   const openingData = getDataset(datasets, "opening", "openingRanges", "opening-ranges");
   const responseData = getDataset(datasets, "responses", "preflopRanges", "preflop-ranges");
   const threeBetData = getDataset(datasets, "threeBets", "threeBetResponses", "three-bet-responses");

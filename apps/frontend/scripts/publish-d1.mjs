@@ -6,68 +6,47 @@
 // CI publishes postflop on main with --only postflop --require-all --execute remote.
 import { assertContinuationPublication } from "./lib/continuation-publication.mjs";
 import { execFileSync } from "node:child_process";
-import { createHash } from "node:crypto";
-import { closeSync, openSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join, relative, resolve } from "node:path";
+import { closeSync, openSync, mkdirSync, writeFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { buildSql as buildPostflopSql, publishableProfiles, publishableSpots, quote } from "./postflop-ai/publish-d1.mjs";
+import { buildSql as buildPostflopSql, publishableProfiles, publishableSpots } from "./postflop-ai/publish-d1.mjs";
 import { publishableFlopBases, flopBaseSqlLines } from "./postflop-ai/flop-base-d1.mjs";
+import { ESTIMATED_DIR, preflopDatasetEntries, preflopSqlChunks } from "./lib/preflop-sql.mjs";
+export { ESTIMATED_DIR, PART_CHARS, preflopDatasets, buildPreflopSql, preflopDatasetEntries, preflopSqlChunks } from "./lib/preflop-sql.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-export const ESTIMATED_DIR = join(root, "src/estimated");
-// Characters per stored part: at most 3 UTF-8 bytes each keeps a statement under D1's 100 KB.
-export const PART_CHARS = 30_000;
 
-// Dataset name → compact JSON text, for every *.json under src/estimated (e.g. "reasons/BB_vs_BTN").
-export function preflopDatasets(dir = ESTIMATED_DIR) {
-  const found = {};
-  const walk = current => {
-    for (const entry of readdirSync(current, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
-      const path = join(current, entry.name);
-      if (entry.isDirectory()) walk(path);
-      else if (entry.name.endsWith(".json")) found[relative(dir, path).replace(/\.json$/, "")] = JSON.stringify(JSON.parse(readFileSync(path, "utf8")));
-    }
-  };
-  walk(dir);
-  return found;
-}
-
-export function buildPreflopSql(datasets) {
-  const lines = ["-- Preflop datasets: delivery copy of apps/frontend/src/estimated/**/*.json.",
-    "DELETE FROM preflop_dataset_parts;", "DELETE FROM preflop_datasets;"];
-  for (const [name, text] of Object.entries(datasets)) {
-    const parts = [];
-    for (let index = 0; index < text.length; index += PART_CHARS) parts.push(text.slice(index, index + PART_CHARS));
-    const hash = createHash("sha256").update(text).digest("hex");
-    lines.push(`INSERT INTO preflop_datasets (name, content_hash, bytes, parts) VALUES (${quote(name)}, ${quote(hash)}, ${Buffer.byteLength(text)}, ${parts.length});`);
-    parts.forEach((body, part) => lines.push(`INSERT INTO preflop_dataset_parts (name, part, body) VALUES (${quote(name)}, ${part}, ${quote(body)});`));
-  }
-  return `${lines.join("\n")}\n`;
-}
-
-function main(argv) {
+async function main(argv) {
   const arg = name => { const index = argv.indexOf(name); return index >= 0 ? argv[index + 1] : undefined; };
   const only = arg("--only");
   if (only && !["preflop", "postflop", "flop-base"].includes(only)) throw new Error("--only must be preflop, postflop or flop-base");
   const execute = arg("--execute");
   if (execute && !["local", "remote"].includes(execute)) throw new Error("--execute must be local or remote");
   const out = resolve(arg("--out") ?? join(root, ".local/reysonai-d1.sql"));
-  let sql = "";
+  let preflop = false;
   if (!only || only === "preflop") {
     const stage2 = assertContinuationPublication(ESTIMATED_DIR, { allowLegacyOnly: argv.includes("--allow-legacy-only") });
+    const { assertStage3Publication } = await import("./lib/stage3-publication.mjs");
+    const stage3 = assertStage3Publication(ESTIMATED_DIR, { allowLegacyOnly: argv.includes("--allow-legacy-only") });
     if (stage2.status === "legacy-only") console.warn("Explicit legacy-only snapshot: executing this SQL removes any previously published Stage 2 datasets.");
-    const datasets = preflopDatasets();
-    sql += buildPreflopSql(datasets);
-    console.log(`${Object.keys(datasets).length} preflop datasets`);
-  }
-  if (!only || only === "postflop") {
-    const spots = publishableSpots(console.log, { requireAll: argv.includes("--require-all") });
-    const profiles = publishableProfiles(console.log, { requireAll: argv.includes("--require-all") });
-    sql += buildPostflopSql(spots, undefined, profiles);
-    console.log(`${spots.length} postflop spots; ${profiles.length * 4} profile policy rows`);
+    if (stage3.status === "legacy-only") console.warn("Explicit legacy-only snapshot: executing this SQL removes any previously published Stage 3 datasets.");
+    preflop = true;
   }
   mkdirSync(dirname(out), { recursive: true });
-  writeFileSync(out, sql);
+  const descriptor = openSync(out, "w");
+  try {
+    if (preflop) {
+      let count = 0;
+      for (const chunk of preflopSqlChunks(preflopDatasetEntries(), () => count++)) writeFileSync(descriptor, chunk);
+      console.log(`${count} preflop datasets`);
+    }
+    if (!only || only === "postflop") {
+      const spots = publishableSpots(console.log, { requireAll: argv.includes("--require-all") });
+      const profiles = publishableProfiles(console.log, { requireAll: argv.includes("--require-all") });
+      writeFileSync(descriptor, buildPostflopSql(spots, undefined, undefined, profiles));
+      console.log(`${spots.length} postflop spots; ${profiles.length * 4} profile policy rows`);
+    }
+  } finally { closeSync(descriptor); }
   if (!only || only === "flop-base") {
     // Stream, avoiding V8's maximum string size and a large in-memory SQL copy.
     const descriptor = openSync(out, "a");
@@ -81,4 +60,4 @@ function main(argv) {
   }
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) main(process.argv.slice(2));
+if (import.meta.url === pathToFileURL(process.argv[1]).href) await main(process.argv.slice(2));

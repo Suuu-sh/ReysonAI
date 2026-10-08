@@ -1,0 +1,27 @@
+{
+  "accountSessionURL": "http://localhost:8787/v1/account/session",
+  "failure": "TCP connection refused; curl exit 7; HTTP 000; no listener on 8787",
+  "checkedCredentialFiles": [
+    {
+      "path": "/Users/yota/Projects/Products/SolveaGTO/apps/backend/.dev.vars",
+      "exists": false
+    },
+    {
+      "path": "/Users/yota/Documents/Codex/2026-10-06/task-2/reysonai-pr44-integration/apps/backend/.dev.vars",
+      "exists": false
+    },
+    {
+      "path": "/Users/yota/Documents/Codex/2026-10-06/task-3/reysonai-stage3/apps/backend/.dev.vars",
+      "exists": false
+    }
+  ],
+  "declaredLocalAppOrigin": "http://localhost:5173",
+  "declaredAllowedOrigin": "http://localhost:5173",
+  "declaredGoogleCallback": "http://localhost:8787/v1/account/google/callback",
+  "googleConsoleClientOriginsVerified": false,
+  "reason": "No credential file/client identity available; no Google console accessed",
+  "existingLocalReysonLoggedInTab": false,
+  "existingLocalTabs": "Only unrelated Hermes localhost3000 and new task fixture present; existing tabs not claimed or altered",
+  "protectedPorts": "5191 already listening; 5173 and 8787 not listening at investigation; no existing server started/stopped",
+  "minimalRealAuthRequirement": "Owner identifies already authorized separate development OAuth client/ignored secret file and a registered app/callback origin usable for isolated QA. Current fixed5173/8787 config cannot be used with dedicated18344/18350 origins without an approved config/origin change. No new client, grant or security change performed."
+}

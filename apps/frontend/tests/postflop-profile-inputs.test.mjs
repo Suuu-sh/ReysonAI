@@ -2,8 +2,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { buildInputs, sha } from "../scripts/postflop-ai/browser-inputs.ts";
-import { inputStructureHash } from "../scripts/postflop-ai/input-options.ts";
+import { finalizeInputs, inputStructureHash } from "../scripts/postflop-ai/input-options.ts";
 import { loadInputs, useArtifactSource } from "../scripts/postflop-ai/inputs.mjs";
+import { loadMw3Catalog, loadMw3Inputs } from "../scripts/postflop-ai/mw3-inputs.mjs";
 import { POSTFLOP_SPOTS } from "../scripts/postflop-ai/spots.ts";
 import { adjustOpeningSpot, applyTableProfile } from "../src/estimated/table-profile.ts";
 import { gameConfig } from "../src/estimated/sizing.ts";
@@ -141,4 +142,21 @@ test("structure identity excludes ranges/reach, but includes actual geometry and
   assert.notEqual(inputStructureHash({ spot: { ...base.spot, tree: "oop_leads" } }, gameConfig, config, sha), hash);
   assert.notEqual(inputStructureHash(base, { ...gameConfig, ante_bb: 1 }, config, sha), hash);
   assert.notEqual(inputStructureHash(base, gameConfig, { bet: [0.5] }, sha), hash);
+});
+
+
+test("three-player standard inputs retain every seat; HU adjustments reject MW3 explicitly", () => {
+  const spot = loadMw3Catalog().find(item => item.reachable);
+  assert.ok(spot);
+  const base = loadMw3Inputs(spot.id);
+  const structure = sha({ spot: base.spot });
+  const standard = finalizeInputs(base, {}, () => assert.fail("unadjusted inputs must not reload sources"), sha, structure);
+  assert.deepEqual(standard.seatRows, base.seatRows);
+  assert.equal(Object.keys(standard.seatRows).length, 3);
+  assert.equal(standard.fingerprint, base.fingerprint);
+  assert.equal(standard.structure_hash, structure);
+  for (const options of [{ tableProfile: table }, { opponentProfile: "nit", opponentSeat: "ip" }]) {
+    assert.throws(() => finalizeInputs(base, options, () => assert.fail("MW3 must reject before HU source selection"), sha, structure),
+      /MW3 table\/opponent range adjustments are not supported/);
+  }
 });

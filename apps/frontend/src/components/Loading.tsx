@@ -1,7 +1,8 @@
+import "./loading.css";
 import type { CSSProperties, ReactNode } from "react";
 
 // Shared loading UI. Skeletons keep the final layout in place; spinners mark short waits.
-// Every variant announces itself once through role="status" with a text label. Styles: loading.css (loaded globally by main.tsx).
+// Every variant announces itself once through role="status" with a text label. Styles are a direct source dependency through loading.css.
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 

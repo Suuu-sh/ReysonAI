@@ -291,6 +291,18 @@
     "{0}持有{1}{2}，听牌和配对机会使其面对较宽下注范围时有足够胜率跟注。",
     "{0} tiene {1}{2}: el proyecto y la posibilidad de formar pareja le dan suficiente equity para pagar contra un rango amplio de apuesta."
   ],
+  "{0} has {1}: it beats {2}'s bluffs and {3} but loses to the value{4}, so it is a bluff-catcher.": [
+    "{0}持有{1}，击败{2}的诈唬和{3}，但输给价值牌{4}，因此是抓诈唬牌。",
+    "{0} tiene {1}: gana a los faroles de {2} y a {3}, pero pierde contra el valor{4}, así que es un cazafaroles."
+  ],
+  "This size is mixed in less often for the same reasons as the main action.": [
+    "此尺度出于与主要行动相同的理由，以较低频率混合使用。",
+    "Este tamaño se mezcla con menos frecuencia por las mismas razones que la acción principal."
+  ],
+  "{0} has {1}: it beats {2}'s bluffs but loses to the value{3}, so it is a bluff-catcher.": [
+    "{0}持有{1}，击败{2}的诈唬，但输给价值牌{3}，因此是抓诈唬牌。",
+    "{0} tiene {1}: gana a los faroles de {2}, pero pierde contra el valor{3}, así que es un cazafaroles."
+  ],
   "{0} has {1}: it beats {2}'s bluffs and the lower pairs but loses to the value{3}, so it is a bluff-catcher.": [
     "{0}持有{1}，击败{2}的诈唬和更小对子，但输给价值牌{3}，因此是抓诈唬牌。",
     "{0} tiene {1}: gana a los faroles de {2} y a las parejas inferiores, pero pierde contra el valor{3}, así que es un cazafaroles."
@@ -783,6 +795,14 @@
     "手牌与公共牌重叠，无法使用",
     "No disponible porque las cartas coinciden con el board"
   ],
+  "Two pair or better with your own cards": [
+    "用手牌组成的两对及以上",
+    "Dobles parejas o más con tus propias cartas"
+  ],
+  "two pair or better with your own cards": [
+    "用手牌组成的两对及以上",
+    "dobles parejas o más con tus propias cartas"
+  ],
   "Two pair or better": [
     "两对及以上",
     "Dobles parejas o más"
@@ -1262,5 +1282,85 @@
   "standing|{0} is {1}": [
     "{0}{1}",
     "{0} está {1}"
+  ],
+  "Equity versus all live players’ current ranges": [
+    "对所有未弃牌玩家当前范围的胜率",
+    "Equidad frente a los rangos actuales de todos los jugadores activos"
+  ],
+  "Hero reach for this history": [
+    "本行动记录中Hero的到达率",
+    "Alcance de Hero en este historial"
+  ],
+  "Additional amount to call": [
+    "本次跟注需追加的筹码",
+    "Importe adicional para pagar"
+  ],
+  "Actual pot after Hero calls": [
+    "Hero跟注后的实际底池",
+    "Bote real después de que Hero pague"
+  ],
+  "Chips from folded players": [
+    "已弃牌玩家投入的筹码",
+    "Fichas de jugadores que se retiraron"
+  ],
+  "Fold frequency weighted by own reach combos": [
+    "按自身到达组合加权的弃牌频率",
+    "Frecuencia de retirada ponderada por combos de alcance propio"
+  ],
+  "Call frequency weighted by own reach combos": [
+    "按自身到达组合加权的跟注频率",
+    "Frecuencia de pago ponderada por combos de alcance propio"
+  ],
+  "4-bet frequency weighted by own reach combos": [
+    "按自身到达组合加权的4bet频率",
+    "Frecuencia de 4-bet ponderada por combos de alcance propio"
+  ],
+  "All-in frequency weighted by own reach combos": [
+    "按自身到达组合加权的全押频率",
+    "Frecuencia de all-in ponderada por combos de alcance propio"
+  ],
+  "Equity margin above the call threshold": [
+    "高于跟注所需胜率的差值",
+    "Margen de equidad sobre el umbral de pago"
+  ],
+  "All-in target call frequency": [
+    "面对全押的目标跟注频率",
+    "Frecuencia objetivo de pago frente a all-in"
+  ],
+  "Saved fold frequency": [
+    "已保存的弃牌频率",
+    "Frecuencia guardada de retirada"
+  ],
+  "Saved call frequency": [
+    "已保存的跟注频率",
+    "Frecuencia guardada de pago"
+  ],
+  "Saved 4-bet frequency": [
+    "已保存的4bet频率",
+    "Frecuencia guardada de 4-bet"
+  ],
+  "Saved all-in frequency": [
+    "已保存的全押频率",
+    "Frecuencia guardada de all-in"
+  ],
+  "Raise-to size (total)": [
+    "加注至（总额）",
+    "Tamaño de subida (total)"
+  ],
+  "Squeeze frequency weighted by own reach combos": [
+    "按自身到达组合加权的挤压加注频率",
+    "Frecuencia de squeeze ponderada por los combos de alcance propio"
+  ],
+  "Saved squeeze frequency": [
+    "已保存的挤压加注频率",
+    "Frecuencia de squeeze guardada"
+  ],
+  "squeeze": [
+    "挤压加注",
+    "squeeze"
+  ],
+  "The saved source actions or card compatibility make this hand unreachable in this history. A saved 100% fold is a placeholder, not a recommendation.": [
+    "已保存的前置行动或卡牌兼容性使这手牌无法出现在此行动记录中。保存的100%弃牌只是占位值，不是行动建议。",
+    "Las acciones previas guardadas o la compatibilidad de las cartas hacen que esta mano no pueda llegar a este historial. El 100% de retirada guardado es un marcador de posición, no una recomendación."
   ]
 }

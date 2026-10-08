@@ -3,17 +3,16 @@
 import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { preparePreflopDelivery, assertDeliveryBundle, assertPublishedMetadata, REPOSITORY } from "./lib/reviewed-preflop.mjs";
+import { preparePreflopDeliveryStream, assertDeliveryBundleFile, assertPublishedMetadata, REPOSITORY } from "./lib/reviewed-preflop.mjs";
 import { METADATA_SQL, verifyPublishedPreflop, missingPreflopSchema } from "./lib/preflop-delivery.mjs";
 
 if (process.argv.length !== 3 || process.argv[2] !== "--remote") throw new Error("Explicit --remote is required; use verify-preflop-local-d1.mjs for local checks");
 if (process.env.GITHUB_ACTIONS !== "true" || process.env.GITHUB_REF !== "refs/heads/main" ||
     !["push", "workflow_dispatch"].includes(process.env.GITHUB_EVENT_NAME)) throw new Error("Remote import is restricted to the main deployment workflow");
 const directory = resolve(".local/reviewed-preflop");
-const expected = preparePreflopDelivery();
-const sql = readFileSync(join(directory, "preflop.sql"), "utf8");
+const expected = preparePreflopDeliveryStream();
 const manifest = JSON.parse(readFileSync(join(directory, "delivery.json"), "utf8"));
-assertDeliveryBundle(sql, manifest, expected);
+assertDeliveryBundleFile(join(directory, "preflop.sql"), manifest, expected);
 const outcome = state => writeFileSync(join(directory, "import-outcome.json"), JSON.stringify({ state,
   sql_sha256: manifest.sql.sha256, reviewed_content_sha256: manifest.reviewed_content_sha256,
   github_sha: process.env.GITHUB_SHA, at: new Date().toISOString() }, null, 2) + "\n");
@@ -48,7 +47,7 @@ if (needsImport) {
   writeFileSync(join(directory, "before-import-bookmark.json"), bookmark);
   console.log("Importing one reviewed preflop snapshot; D1 is briefly unavailable during its atomic import.");
   // Re-read immediately before the mutating command; no generic SQL argument.
-  assertDeliveryBundle(readFileSync(join(directory, "preflop.sql"), "utf8"), manifest, expected);
+  assertDeliveryBundleFile(join(directory, "preflop.sql"), manifest, expected);
   outcome("import-started-outcome-unconfirmed");
   run(["d1", "execute", "reysonai", "--remote", "--yes", "--config", "wrangler.jsonc", "--file", join(directory, "preflop.sql")], { stdio: "inherit" });
 } else console.log("Reviewed dataset metadata is already current; verifying full payloads without reimport.");

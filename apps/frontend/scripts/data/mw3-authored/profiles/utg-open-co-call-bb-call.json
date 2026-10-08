@@ -1,0 +1,1343 @@
+{
+  "version": 1,
+  "status": "authored_pending_compile_and_independent_review",
+  "model": "gpt-6-astra",
+  "id": "UTG_open_CO_call_BB_call",
+  "priority": 5,
+  "sourceFingerprint": "4ca502b9b4c22ca9d67058d9be52c52539549f2442cfb08983296d09afacd95d",
+  "seats": [
+    "BB",
+    "UTG",
+    "CO"
+  ],
+  "roleMap": {
+    "BB": "first",
+    "UTG": "middle",
+    "CO": "last"
+  },
+  "semantics": {
+    "first": "second_caller",
+    "middle": "opener",
+    "last": "first_caller"
+  },
+  "potBb": 8.0,
+  "stackBb": 97.5,
+  "topology": "bb",
+  "rationale": "CO versus UTG is 68.8 combos: 31.0% 77-JJ, 11.8% 22-66, no suited-connector flats. BB remains 186.1 with 11.0% low pairs. UTG c-bets through a very pair-heavy CO; last-seat low-board value and high-card air behave differently.",
+  "sourceRanges": {
+    "UTG": {
+      "sourceId": "UTG_open",
+      "weightedCombos": 212.5,
+      "supportHands": 49,
+      "support": [
+        {
+          "hand": "AA",
+          "freq": 100
+        },
+        {
+          "hand": "AKs",
+          "freq": 100
+        },
+        {
+          "hand": "AQs",
+          "freq": 100
+        },
+        {
+          "hand": "AJs",
+          "freq": 100
+        },
+        {
+          "hand": "ATs",
+          "freq": 100
+        },
+        {
+          "hand": "A9s",
+          "freq": 75
+        },
+        {
+          "hand": "A8s",
+          "freq": 75
+        },
+        {
+          "hand": "A7s",
+          "freq": 50
+        },
+        {
+          "hand": "A6s",
+          "freq": 50
+        },
+        {
+          "hand": "A5s",
+          "freq": 100
+        },
+        {
+          "hand": "A4s",
+          "freq": 100
+        },
+        {
+          "hand": "A3s",
+          "freq": 75
+        },
+        {
+          "hand": "A2s",
+          "freq": 75
+        },
+        {
+          "hand": "AKo",
+          "freq": 100
+        },
+        {
+          "hand": "KK",
+          "freq": 100
+        },
+        {
+          "hand": "KQs",
+          "freq": 100
+        },
+        {
+          "hand": "KJs",
+          "freq": 100
+        },
+        {
+          "hand": "KTs",
+          "freq": 100
+        },
+        {
+          "hand": "K9s",
+          "freq": 50
+        },
+        {
+          "hand": "AQo",
+          "freq": 100
+        },
+        {
+          "hand": "KQo",
+          "freq": 100
+        },
+        {
+          "hand": "QQ",
+          "freq": 100
+        },
+        {
+          "hand": "QJs",
+          "freq": 100
+        },
+        {
+          "hand": "QTs",
+          "freq": 100
+        },
+        {
+          "hand": "Q9s",
+          "freq": 50
+        },
+        {
+          "hand": "AJo",
+          "freq": 100
+        },
+        {
+          "hand": "KJo",
+          "freq": 50
+        },
+        {
+          "hand": "QJo",
+          "freq": 25
+        },
+        {
+          "hand": "JJ",
+          "freq": 100
+        },
+        {
+          "hand": "JTs",
+          "freq": 100
+        },
+        {
+          "hand": "J9s",
+          "freq": 75
+        },
+        {
+          "hand": "ATo",
+          "freq": 25
+        },
+        {
+          "hand": "TT",
+          "freq": 100
+        },
+        {
+          "hand": "T9s",
+          "freq": 100
+        },
+        {
+          "hand": "T8s",
+          "freq": 25
+        },
+        {
+          "hand": "99",
+          "freq": 100
+        },
+        {
+          "hand": "98s",
+          "freq": 100
+        },
+        {
+          "hand": "97s",
+          "freq": 25
+        },
+        {
+          "hand": "88",
+          "freq": 100
+        },
+        {
+          "hand": "87s",
+          "freq": 50
+        },
+        {
+          "hand": "77",
+          "freq": 100
+        },
+        {
+          "hand": "76s",
+          "freq": 50
+        },
+        {
+          "hand": "66",
+          "freq": 100
+        },
+        {
+          "hand": "65s",
+          "freq": 50
+        },
+        {
+          "hand": "55",
+          "freq": 75
+        },
+        {
+          "hand": "54s",
+          "freq": 25
+        },
+        {
+          "hand": "44",
+          "freq": 50
+        },
+        {
+          "hand": "33",
+          "freq": 25
+        },
+        {
+          "hand": "22",
+          "freq": 25
+        }
+      ]
+    },
+    "CO": {
+      "sourceId": "CO_vs_UTG",
+      "weightedCombos": 68.8,
+      "supportHands": 29,
+      "support": [
+        {
+          "hand": "AA",
+          "freq": 15
+        },
+        {
+          "hand": "AKs",
+          "freq": 10
+        },
+        {
+          "hand": "AQs",
+          "freq": 35
+        },
+        {
+          "hand": "AJs",
+          "freq": 60
+        },
+        {
+          "hand": "ATs",
+          "freq": 65
+        },
+        {
+          "hand": "A9s",
+          "freq": 30
+        },
+        {
+          "hand": "A8s",
+          "freq": 25
+        },
+        {
+          "hand": "A7s",
+          "freq": 5
+        },
+        {
+          "hand": "AKo",
+          "freq": 20
+        },
+        {
+          "hand": "KK",
+          "freq": 15
+        },
+        {
+          "hand": "KQs",
+          "freq": 60
+        },
+        {
+          "hand": "KJs",
+          "freq": 65
+        },
+        {
+          "hand": "KTs",
+          "freq": 50
+        },
+        {
+          "hand": "AQo",
+          "freq": 35
+        },
+        {
+          "hand": "KQo",
+          "freq": 35
+        },
+        {
+          "hand": "QQ",
+          "freq": 20
+        },
+        {
+          "hand": "QJs",
+          "freq": 65
+        },
+        {
+          "hand": "QTs",
+          "freq": 45
+        },
+        {
+          "hand": "AJo",
+          "freq": 25
+        },
+        {
+          "hand": "JJ",
+          "freq": 50
+        },
+        {
+          "hand": "JTs",
+          "freq": 50
+        },
+        {
+          "hand": "TT",
+          "freq": 65
+        },
+        {
+          "hand": "99",
+          "freq": 75
+        },
+        {
+          "hand": "88",
+          "freq": 80
+        },
+        {
+          "hand": "77",
+          "freq": 85
+        },
+        {
+          "hand": "66",
+          "freq": 65
+        },
+        {
+          "hand": "55",
+          "freq": 40
+        },
+        {
+          "hand": "44",
+          "freq": 20
+        },
+        {
+          "hand": "33",
+          "freq": 10
+        }
+      ]
+    },
+    "BB": {
+      "sourceId": "BB_vs_UTG_COcall",
+      "weightedCombos": 186.1,
+      "supportHands": 51,
+      "support": [
+        {
+          "hand": "AKs",
+          "freq": 25
+        },
+        {
+          "hand": "AQs",
+          "freq": 65
+        },
+        {
+          "hand": "AJs",
+          "freq": 85
+        },
+        {
+          "hand": "ATs",
+          "freq": 90
+        },
+        {
+          "hand": "A9s",
+          "freq": 80
+        },
+        {
+          "hand": "A8s",
+          "freq": 80
+        },
+        {
+          "hand": "A7s",
+          "freq": 80
+        },
+        {
+          "hand": "A6s",
+          "freq": 80
+        },
+        {
+          "hand": "A5s",
+          "freq": 70
+        },
+        {
+          "hand": "A4s",
+          "freq": 75
+        },
+        {
+          "hand": "A3s",
+          "freq": 75
+        },
+        {
+          "hand": "A2s",
+          "freq": 50
+        },
+        {
+          "hand": "AKo",
+          "freq": 35
+        },
+        {
+          "hand": "KK",
+          "freq": 10
+        },
+        {
+          "hand": "KQs",
+          "freq": 85
+        },
+        {
+          "hand": "KJs",
+          "freq": 85
+        },
+        {
+          "hand": "KTs",
+          "freq": 90
+        },
+        {
+          "hand": "K9s",
+          "freq": 50
+        },
+        {
+          "hand": "AQo",
+          "freq": 50
+        },
+        {
+          "hand": "KQo",
+          "freq": 60
+        },
+        {
+          "hand": "QQ",
+          "freq": 45
+        },
+        {
+          "hand": "QJs",
+          "freq": 90
+        },
+        {
+          "hand": "QTs",
+          "freq": 80
+        },
+        {
+          "hand": "AJo",
+          "freq": 60
+        },
+        {
+          "hand": "KJo",
+          "freq": 60
+        },
+        {
+          "hand": "QJo",
+          "freq": 50
+        },
+        {
+          "hand": "JJ",
+          "freq": 70
+        },
+        {
+          "hand": "JTs",
+          "freq": 90
+        },
+        {
+          "hand": "J9s",
+          "freq": 80
+        },
+        {
+          "hand": "ATo",
+          "freq": 60
+        },
+        {
+          "hand": "KTo",
+          "freq": 15
+        },
+        {
+          "hand": "TT",
+          "freq": 85
+        },
+        {
+          "hand": "T9s",
+          "freq": 85
+        },
+        {
+          "hand": "T8s",
+          "freq": 80
+        },
+        {
+          "hand": "99",
+          "freq": 95
+        },
+        {
+          "hand": "98s",
+          "freq": 80
+        },
+        {
+          "hand": "97s",
+          "freq": 60
+        },
+        {
+          "hand": "88",
+          "freq": 95
+        },
+        {
+          "hand": "87s",
+          "freq": 80
+        },
+        {
+          "hand": "86s",
+          "freq": 60
+        },
+        {
+          "hand": "77",
+          "freq": 95
+        },
+        {
+          "hand": "76s",
+          "freq": 80
+        },
+        {
+          "hand": "75s",
+          "freq": 50
+        },
+        {
+          "hand": "66",
+          "freq": 95
+        },
+        {
+          "hand": "65s",
+          "freq": 50
+        },
+        {
+          "hand": "64s",
+          "freq": 50
+        },
+        {
+          "hand": "55",
+          "freq": 95
+        },
+        {
+          "hand": "54s",
+          "freq": 50
+        },
+        {
+          "hand": "44",
+          "freq": 50
+        },
+        {
+          "hand": "33",
+          "freq": 50
+        },
+        {
+          "hand": "22",
+          "freq": 50
+        }
+      ]
+    }
+  },
+  "specialValues": {
+    "first": {
+      "nutsFlop": [
+        28,
+        42,
+        27,
+        25
+      ],
+      "nutsTurn": [
+        42,
+        73,
+        19
+      ],
+      "nutsRiver": [
+        53,
+        79,
+        18
+      ],
+      "absoluteFlop": 20,
+      "absoluteTurn": [
+        37,
+        67,
+        16
+      ],
+      "absoluteRiver": [
+        71,
+        88,
+        32
+      ],
+      "nutsRaiseBias": -6,
+      "absoluteRaiseBias": -4
+    },
+    "middle": {
+      "nutsFlop": [
+        74,
+        73,
+        60,
+        55
+      ],
+      "nutsTurn": [
+        56,
+        82,
+        25
+      ],
+      "nutsRiver": [
+        67,
+        87,
+        24
+      ],
+      "absoluteFlop": 53,
+      "absoluteTurn": [
+        51,
+        78,
+        21
+      ],
+      "absoluteRiver": [
+        81,
+        94,
+        39
+      ],
+      "nutsRaiseBias": 1,
+      "absoluteRaiseBias": 0
+    },
+    "last": {
+      "nutsFlop": [
+        77,
+        81,
+        70,
+        67
+      ],
+      "nutsTurn": [
+        74,
+        83,
+        66
+      ],
+      "nutsRiver": [
+        81,
+        88,
+        71
+      ],
+      "absoluteFlop": 67,
+      "absoluteTurn": [
+        71,
+        81,
+        60
+      ],
+      "absoluteRiver": [
+        87,
+        94,
+        83
+      ],
+      "nutsRaiseBias": -2,
+      "absoluteRaiseBias": -1
+    }
+  },
+  "sharedCallCaution": {
+    "first": -4,
+    "middle": -3,
+    "last": -4
+  },
+  "authorAnchors": {
+    "first": {
+      "flop": [
+        [
+          20,
+          5,
+          5,
+          1,
+          0
+        ],
+        [
+          24,
+          7,
+          8,
+          1,
+          1
+        ],
+        [
+          30,
+          10,
+          12,
+          2,
+          1
+        ],
+        [
+          27,
+          5,
+          9,
+          1,
+          0
+        ],
+        [
+          33,
+          7,
+          14,
+          1,
+          1
+        ],
+        [
+          39,
+          9,
+          17,
+          2,
+          1
+        ],
+        [
+          14,
+          3,
+          4,
+          1,
+          0
+        ],
+        [
+          16,
+          4,
+          6,
+          1,
+          0
+        ],
+        [
+          19,
+          5,
+          7,
+          1,
+          1
+        ],
+        [
+          23,
+          4,
+          3,
+          1,
+          0
+        ],
+        [
+          27,
+          6,
+          4,
+          1,
+          1
+        ],
+        [
+          31,
+          8,
+          5,
+          1,
+          1
+        ]
+      ],
+      "turn": [
+        [
+          29,
+          12,
+          12,
+          3,
+          1
+        ],
+        [
+          57,
+          28,
+          21,
+          4,
+          2
+        ],
+        [
+          14,
+          5,
+          5,
+          1,
+          0
+        ]
+      ],
+      "river": [
+        [
+          25,
+          10,
+          0,
+          2,
+          1
+        ],
+        [
+          59,
+          21,
+          0,
+          2,
+          2
+        ],
+        [
+          11,
+          3,
+          0,
+          1,
+          0
+        ]
+      ],
+      "defend": [
+        [
+          98,
+          80,
+          42,
+          20,
+          1
+        ],
+        [
+          95,
+          58,
+          26,
+          6,
+          0
+        ],
+        [
+          90,
+          35,
+          12,
+          1,
+          0
+        ],
+        [
+          87,
+          23,
+          14,
+          1,
+          0
+        ],
+        [
+          79,
+          10,
+          6,
+          0,
+          0
+        ],
+        [
+          81,
+          19,
+          9,
+          0,
+          0
+        ]
+      ],
+      "raise_base": [
+        [
+          32,
+          2,
+          5,
+          0,
+          0
+        ],
+        [
+          37,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          31,
+          1,
+          1,
+          0,
+          0
+        ],
+        [
+          27,
+          1,
+          1,
+          0,
+          0
+        ]
+      ],
+      "later_defence": [
+        [
+          -3,
+          -8,
+          -9,
+          -5,
+          -1
+        ],
+        [
+          -9,
+          -18,
+          -42,
+          -9,
+          -1
+        ]
+      ],
+      "notes": "BB must pass both UTG and a narrow CO caller; maintain nut-support leads on low connected boards, not a broad range lead."
+    },
+    "middle": {
+      "flop": [
+        [
+          62,
+          56,
+          19,
+          11,
+          6
+        ],
+        [
+          54,
+          41,
+          19,
+          7,
+          3
+        ],
+        [
+          39,
+          25,
+          17,
+          4,
+          1
+        ],
+        [
+          61,
+          39,
+          23,
+          4,
+          2
+        ],
+        [
+          54,
+          28,
+          23,
+          2,
+          1
+        ],
+        [
+          45,
+          20,
+          20,
+          1,
+          1
+        ],
+        [
+          33,
+          22,
+          11,
+          2,
+          1
+        ],
+        [
+          28,
+          16,
+          10,
+          1,
+          1
+        ],
+        [
+          23,
+          12,
+          8,
+          1,
+          0
+        ],
+        [
+          53,
+          31,
+          9,
+          8,
+          3
+        ],
+        [
+          43,
+          22,
+          8,
+          5,
+          2
+        ],
+        [
+          35,
+          15,
+          7,
+          3,
+          1
+        ]
+      ],
+      "turn": [
+        [
+          38,
+          22,
+          14,
+          4,
+          2
+        ],
+        [
+          66,
+          40,
+          23,
+          4,
+          3
+        ],
+        [
+          19,
+          8,
+          6,
+          1,
+          1
+        ]
+      ],
+      "river": [
+        [
+          37,
+          20,
+          0,
+          3,
+          1
+        ],
+        [
+          68,
+          35,
+          0,
+          2,
+          3
+        ],
+        [
+          16,
+          5,
+          0,
+          1,
+          0
+        ]
+      ],
+      "defend": [
+        [
+          100,
+          91,
+          46,
+          27,
+          2
+        ],
+        [
+          99,
+          75,
+          29,
+          12,
+          1
+        ],
+        [
+          96,
+          52,
+          15,
+          4,
+          0
+        ],
+        [
+          94,
+          36,
+          18,
+          3,
+          0
+        ],
+        [
+          87,
+          19,
+          9,
+          1,
+          0
+        ],
+        [
+          89,
+          30,
+          11,
+          1,
+          0
+        ]
+      ],
+      "raise_base": [
+        [
+          39,
+          4,
+          6,
+          1,
+          0
+        ],
+        [
+          44,
+          3,
+          4,
+          0,
+          0
+        ],
+        [
+          39,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          34,
+          1,
+          2,
+          0,
+          0
+        ]
+      ],
+      "later_defence": [
+        [
+          -2,
+          -7,
+          -10,
+          -6,
+          -1
+        ],
+        [
+          -7,
+          -19,
+          -46,
+          -12,
+          -2
+        ]
+      ],
+      "notes": "UTG has premium overpairs, but CO pocket-pair density discourages automatic high-frequency barrels or thin medium bets."
+    },
+    "last": {
+      "flop": [
+        [
+          61,
+          53,
+          21,
+          15,
+          7
+        ],
+        [
+          65,
+          53,
+          23,
+          15,
+          6
+        ],
+        [
+          65,
+          50,
+          21,
+          14,
+          5
+        ],
+        [
+          63,
+          43,
+          22,
+          6,
+          3
+        ],
+        [
+          68,
+          44,
+          25,
+          6,
+          4
+        ],
+        [
+          66,
+          42,
+          22,
+          5,
+          3
+        ],
+        [
+          39,
+          27,
+          13,
+          4,
+          2
+        ],
+        [
+          41,
+          27,
+          15,
+          4,
+          2
+        ],
+        [
+          37,
+          24,
+          13,
+          3,
+          1
+        ],
+        [
+          59,
+          35,
+          12,
+          10,
+          5
+        ],
+        [
+          61,
+          34,
+          13,
+          10,
+          4
+        ],
+        [
+          58,
+          31,
+          11,
+          8,
+          3
+        ]
+      ],
+      "turn": [
+        [
+          56,
+          37,
+          20,
+          9,
+          4
+        ],
+        [
+          71,
+          46,
+          25,
+          7,
+          5
+        ],
+        [
+          45,
+          23,
+          14,
+          4,
+          3
+        ]
+      ],
+      "river": [
+        [
+          56,
+          33,
+          0,
+          6,
+          3
+        ],
+        [
+          73,
+          39,
+          0,
+          4,
+          4
+        ],
+        [
+          44,
+          19,
+          0,
+          2,
+          3
+        ]
+      ],
+      "defend": [
+        [
+          100,
+          91,
+          43,
+          31,
+          1
+        ],
+        [
+          99,
+          74,
+          27,
+          15,
+          1
+        ],
+        [
+          96,
+          51,
+          14,
+          5,
+          0
+        ],
+        [
+          94,
+          35,
+          17,
+          4,
+          0
+        ],
+        [
+          87,
+          19,
+          8,
+          1,
+          0
+        ],
+        [
+          89,
+          29,
+          10,
+          2,
+          0
+        ]
+      ],
+      "raise_base": [
+        [
+          36,
+          4,
+          5,
+          1,
+          0
+        ],
+        [
+          41,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          36,
+          1,
+          1,
+          0,
+          0
+        ],
+        [
+          31,
+          1,
+          1,
+          0,
+          0
+        ]
+      ],
+      "later_defence": [
+        [
+          -3,
+          -7,
+          -9,
+          -8,
+          -1
+        ],
+        [
+          -8,
+          -20,
+          -43,
+          -14,
+          -1
+        ]
+      ],
+      "notes": "CO lacks suited-connector flats but has dense mid/low pairs. Probe value on low boards rather than importing BTN semi-bluff density."
+    }
+  }
+}

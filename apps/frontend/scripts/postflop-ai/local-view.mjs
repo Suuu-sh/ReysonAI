@@ -1,3 +1,5 @@
+import { isFreshSimulationReport } from "./publish-d1.mjs";
+import { assertPostflopDeal } from "./range-support.mjs";
 // Read-only local preview of the audited pilot. Never generates or publishes a policy.
 import { loadInputs, readArtifact, requireArtifact } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "./generate.mjs";
@@ -16,6 +18,7 @@ const adjustment = inputs => inputs.adjusted ? { adjusted: inputs.adjusted, stru
 
 export function buildLocalBoard(boardId, inputs, candidate) {
   const board = parseFlopBoard(boardId);
+  if (inputs.spot.history) assertPostflopDeal(inputs, board.cards);
   candidate = resolveFlopCandidate(inputs, candidate);
   const policy = candidate.policy;
   const { spot } = inputs;
@@ -27,6 +30,7 @@ export function buildLocalBoard(boardId, inputs, candidate) {
 export function explainLocalCombo(params, inputs, candidate) {
   candidate = resolveFlopCandidate(inputs, candidate);
   const board = parseFlopBoard(params.get("board"));
+  if (inputs.spot.history) assertPostflopDeal(inputs, board.cards);
   const prev = FLOP_BETS.includes(params.get("prev")) ? params.get("prev") : FLOP_BETS[0];
   const options = { boardCards: board.cards, node: params.get("node"), prev,
     inputs, policy: validatePolicy(candidate.policy, inputs.spot.tree) };
@@ -133,31 +137,39 @@ export function postflopResponse(pathname, params) {
     const inputs = loadInputs(params.get("spot") || DEFAULT_SPOT_ID, options);
     const candidate = loadCandidate(inputs);
     const laterRoute = ["/local-postflop-later", "/local-postflop-later-explain"].includes(pathname);
-    const laterCandidate = laterRoute ? loadLaterCandidate(inputs, candidate) : null;
-    if (laterRoute && !laterCandidate) {
+    let laterCandidate, laterPolicyError;
+    try { laterCandidate = loadLaterCandidate(inputs, candidate); }
+    catch (error) {
+      if (laterRoute || error.code !== "PROFILE_POLICY_MISSING") throw error;
+      laterCandidate = null;
+      laterPolicyError = { error: error.message, code: error.code, state: "not_generated" };
+    }
+    if ((laterRoute || inputs.spot.history && !isOpponentMode(inputs)) && !laterCandidate) {
       const error = new Error("ターン・リバーのAI方針がありません。");
       error.code = "LATER_POLICY_MISSING";
       throw error;
     }
     const report = isOpponentMode(inputs) ? null : requireArtifact(inputs.spot, "report");
-    if (report && (report.source_hash !== (inputs.baselineFingerprint ?? inputs.fingerprint) || report.policy_hash !== candidate.metadata.policy_hash ||
-        report.simulation_version !== SIMULATION_VERSION || report.spot !== inputs.spot.id || report.results?.length !== 72)) {
+    // Table-adjusted views reuse the saved standard policy but must not claim
+    // its report audited the adjusted ranges. Validate against original inputs.
+    const reportInputs = inputs.adjusted && inputs.baselineFingerprint ? loadInputs(inputs.spot.id) : inputs;
+    const currentReport = report && isFreshSimulationReport(reportInputs, candidate, laterCandidate, report);
+    // Preserve the existing read-only legacy preview contract. Its recovered
+    // defence-5 report is historical evidence, not current acceptance. New HU
+    // histories always require the strict gate; publication uses it for all spots.
+    const preservedLegacyReport = report && !inputs.spot.history && report.source_hash === (inputs.baselineFingerprint ?? inputs.fingerprint) &&
+      report.policy_hash === candidate.metadata.policy_hash && report.simulation_version === SIMULATION_VERSION &&
+      report.spot === inputs.spot.id && report.results?.length === 72;
+    if (report && !currentReport && !preservedLegacyReport) {
       throw new Error("候補に対応する最新の監査レポートがありません。");
     }
     if (pathname === "/local-postflop-spot") {
-      let optionalLater, laterPolicyError;
-      try {
-        optionalLater = isOpponentMode(inputs) ? loadLaterCandidate(inputs, candidate) : readArtifact(inputs.spot, "laterCandidate");
-      } catch (error) {
-        if (error.code !== "PROFILE_POLICY_MISSING") throw error;
-        // An absent turn/river role must not prevent an available flop pair from
-        // being read. Later calculations still fail closed with this same code.
-        optionalLater = null;
-        laterPolicyError = { error: error.message, code: error.code, state: "not_generated" };
-      }
+      const optionalLater = laterCandidate;
       // Same body as the worker's /v1/postflop/spot: the artifacts the browser computes from.
       return { status: 200, body: { kind: "ai_estimate_not_gto", spot: inputs.spot, candidate,
-        laterCandidate: optionalLater, report, ...(laterPolicyError ? { laterPolicyError } : {}),
+        laterCandidate: optionalLater, report,
+        report_status: report ? (currentReport ? "current" : "preserved-historical") : "not-applicable",
+        ...(laterPolicyError ? { laterPolicyError } : {}),
         ...adjustment(inputs), ...(inputs.adjusted ? { audit_scope: isOpponentMode(inputs) ? "structure_only_unpublished" : "standard_saved_ranges" } : {}) } };
     }
     let data;

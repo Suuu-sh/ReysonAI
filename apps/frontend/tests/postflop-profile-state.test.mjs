@@ -82,5 +82,10 @@ test("unsupported game formats and guest sign-in cannot be bypassed by an oppone
   const source = readFileSync(new URL("../src/estimated/RangeWorkspace.tsx", import.meta.url), "utf8");
   assert.match(source, /const flopContext = !currentError && isBuilt\(format\)/);
   assert.match(source, /if \(flopActive && !postflopAllowed\) return/);
-  assert.ok(source.indexOf("if (flopActive && !postflopAllowed) return") < source.indexOf("{flopActive ? <PostflopTrial"));
+  const guestGate = source.indexOf("if (flopActive && !postflopAllowed) return");
+  const postflopRender = source.indexOf("{flopActive ? (");
+  assert.ok(guestGate >= 0 && postflopRender > guestGate, "sign-in gate must precede every postflop rendering branch");
+  for (const component of ["<PostflopTrial ", "<Mw3PostflopTrial ", "<ProfilePolicyPreparing "]) {
+    assert.ok(source.indexOf(component) > postflopRender, `${component} must remain behind the sign-in gate`);
+  }
 });

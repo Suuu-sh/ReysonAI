@@ -34,21 +34,31 @@ export function inputStructureHash(inputs: Pick<BaseInputs, "spot">, gameConfig:
 }
 
 function rangeFactors(spot: Inputs["spot"]): Record<string, readonly RangeFactor[]> {
-  if ("ranges" in spot) return spot.ranges;
+  if (spot.ranges) return spot.ranges;
+  if (spot.history || !["srp", "3bp", "4bp"].includes(spot.kind)) {
+    throw new Error(`${spot.id}: missing saved history range factors for ${spot.kind}`);
+  }
   const requiredId = (id: string | undefined, field: string): string => {
     if (!id) throw new Error(`${spot.id}: missing source identifier ${field}`);
     return id;
   };
   const open: RangeFactor = ["opening-ranges", spot.openingId, "open"];
   if (spot.kind === "srp") return { [spot.opener]: [open], [spot.caller]: [["preflop-ranges", spot.responseId, "call"]] };
-  if (spot.kind === "4bp") return {
-    [spot.opener]: [open, ["three-bet-responses", requiredId(spot.fourBetId, "fourBetId"), "four_bet"]],
-    [spot.threeBettor]: [["preflop-ranges", requiredId(spot.threeBetId, "threeBetId"), "three_bet"], ["four-bet-responses", spot.responseId, "call"]],
-  };
-  return {
-    [spot.opener]: [open, ["three-bet-responses", spot.responseId, "call"]],
-    [spot.threeBettor]: [["preflop-ranges", requiredId(spot.threeBetId, "threeBetId"), "three_bet"]],
-  };
+  if (spot.kind === "4bp") {
+    const threeBettor = requiredId(spot.threeBettor, "threeBettor");
+    return {
+      [spot.opener]: [open, ["three-bet-responses", requiredId(spot.fourBetId, "fourBetId"), "four_bet"]],
+      [threeBettor]: [["preflop-ranges", requiredId(spot.threeBetId, "threeBetId"), "three_bet"], ["four-bet-responses", spot.responseId, "call"]],
+    };
+  }
+  if (spot.kind === "3bp") {
+    const threeBettor = requiredId(spot.threeBettor, "threeBettor");
+    return {
+      [spot.opener]: [open, ["three-bet-responses", spot.responseId, "call"]],
+      [threeBettor]: [["preflop-ranges", requiredId(spot.threeBetId, "threeBetId"), "three_bet"]],
+    };
+  }
+  throw new Error(`${spot.id}: unsupported HU range-factor kind ${spot.kind}`);
 }
 
 function sourceGeometry(source: SourceSpot) {
@@ -70,6 +80,12 @@ function validateSource(source: SourceSpot | undefined, baseline: SourceSpot, la
 export function finalizeInputs(base: BaseInputs, options: InputOptions, read: ReadDataset, sha: Hash, structure_hash: string): Inputs {
   const normalized = normalizedInputOptions(options);
   if (!adjustedInputOptions(options)) return { ...base, structure_hash };
+  // The HU adjustment contract selects exactly two roles. Never collapse the
+  // separately reviewed three-player engine into these two-seat ranges.
+  const geometry = base.spot as unknown as { kind: string; seats?: readonly string[] };
+  if (geometry.kind === "mw3_srp" || (geometry.seats?.length ?? 0) > 2) {
+    throw new Error(`${base.spot.id}: MW3 table/opponent range adjustments are not supported`);
+  }
   const { spot } = base;
   const opponent = normalized.opponentSeat ? spot[normalized.opponentSeat] : undefined;
   const factors = rangeFactors(spot);

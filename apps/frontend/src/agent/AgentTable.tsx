@@ -8,6 +8,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ChartBar, Eye, FastForward, Info, Lightning } from "@phosphor-icons/react";
 import { preloadDatasets } from "../estimated/datasets.ts";
 import { loadPostflopDatasets, loadPostflopSpot } from "../estimated/postflop-browser.ts";
+import { mw3DeliveryClient, type Mw3DeliveryClient, type Mw3Kit } from "../estimated/mw3-browser.ts";
+import { rememberMw3AgentKit, touchMw3AgentKit } from "./mw3-kit-cache.ts";
+import { mw3Copy } from "../estimated/mw3-copy.ts";
 import { spotById } from "../../scripts/postflop-ai/spots.ts";
 import { localized, translateProductCopy } from "../i18n.ts";
 import { AGENT_TABLE, GUEST_AGENT, agentTableById } from "./characters.ts";
@@ -22,7 +25,7 @@ import { playerRead } from "./player-read.ts";
 import { PlayStyleCard, PlayStyleDashboard } from "./PlayStyleDashboard.tsx";
 import "./agent.css";
 
-export const AGENT_DATASETS = ["five-bet-responses", "cold-three-bet-responses", "multiway-responses", "squeeze-responses", "limp-deep-responses"];
+export const AGENT_DATASETS = ["five-bet-responses", "cold-three-bet-responses", "multiway-responses", "squeeze-responses", "limp-deep-responses", "cold-four-bet-responses", "multiway2-responses", "continuation-responses"];
 const STREETS = ["preflop", "flop", "turn", "river"];
 const CARDS: Record<string, number> = { preflop: 0, flop: 3, turn: 4, river: 5 };
 const CARDS_TO_STREET: Record<number, string> = { 0: "preflop", 3: "flop", 4: "turn", 5: "river" };
@@ -39,12 +42,13 @@ const bb = (value?: number) => value == null ? "" : `${+value.toFixed(2)}`;
 const pts = (value: number) => toPoints(value).toLocaleString();
 const signed = (points: number) => `${points > 0 ? "+" : ""}${points.toLocaleString()}`;
 
-export function actionLabel(entry: { action: string; to?: number }) {
+export function actionLabel(entry: { action: string; to?: number; amountBb?: number; allIn?: boolean }) {
   const { action, to } = entry;
   const amount = to ? ` ${bb(to)}` : "";
   if (action === "fold") return localized("Fold", "フォールド");
   if (action === "check") return localized("Check", "チェック");
-  if (action === "call") return `${localized("Call", "コール")}${amount}`;
+  if (action === "call") return `${localized("Call", "コール")}${amount}${entry.allIn && entry.amountBb != null ? ` (${localized("All-in", "オールイン")})` : ""}`;
+  if (entry.allIn) return `${localized("All-in", "オールイン")}${amount}`;
   if (action === "limp") return localized("Limp", "リンプ");
   if (action === "open") return `${localized("Raise", "レイズ")}${amount}`;
   if (action === "three_bet") return `3bet${amount}`;
@@ -56,8 +60,14 @@ export function actionLabel(entry: { action: string; to?: number }) {
   if (bet) return `${localized("Bet", "ベット")}${amount || ` ${bet[1]}%`}`;
   return action;
 }
+// A size token may address an effective all-in. Never show its unplayed nominal
+// percentage under the actual all-in amount; legacy options have no allIn flag.
+export function AgentActionSizeHint({ option }: { option: { key: string; allIn?: boolean } }) {
+  return !option.allIn && /^bet\d+$/.test(option.key) ? <small>{option.key.slice(3)}%</small> : null;
+}
 // Raises and bets read as street totals; a call reads as the chips it adds.
 function asDisplayed(entries: LogEntry[], entry: LogEntry) {
+  if (entry.action === "call" && entry.amountBb != null) return { ...entry, to: entry.amountBb };
   if (entry.action !== "call" || entry.to == null) return entry;
   const index = entries.indexOf(entry);
   const before = entries.slice(0, index).reverse().find(item => item.pos === entry.pos && item.street === entry.street);
@@ -80,14 +90,15 @@ function chipState(revealed: LogEntry[], street: string) {
   return { committed, front };
 }
 
-type HistoryItem = { no: number; winners: string; mine: number | null; showdown: boolean; cards: string[]; resultBb: number | null; log: LogEntry[]; board: string[] };
+type HistoryItem = { no: number; winners: string; mine: number | null; showdown: boolean; cards: string[]; resultBb: number | null; log: LogEntry[]; board: string[]; nameOf: (position: string) => string };
 
-export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = false, exitDisabled = false, handoffKey, onHandBoundary, waitingHeader, waitingSidebar }: { tableId: string; watch?: boolean; onExit: () => void; waitingMode?: boolean; exitDisabled?: boolean; handoffKey?: string; onHandBoundary?: () => void; waitingHeader?: ReactNode; waitingSidebar?: ReactNode }) {
+export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = false, exitDisabled = false, handoffKey, onHandBoundary, waitingHeader, waitingSidebar, mw3Client = mw3DeliveryClient }: { tableId: string; watch?: boolean; onExit: () => void; waitingMode?: boolean; exitDisabled?: boolean; handoffKey?: string; onHandBoundary?: () => void; waitingHeader?: ReactNode; waitingSidebar?: ReactNode; mw3Client?: Mw3DeliveryClient }) {
   const table = agentTableById(tableId)!;
   const [ready, setReady] = useState(false);
   const [session, setSession] = useState<Session>(() => createSession({ tableId, seed: `${tableId}-${Date.now()}`, humanSeat: watch ? null : 0 }));
   const [humanActions, setHumanActions] = useState<string[]>([]);
   const [kits, setKits] = useState<Map<string, PostflopKit | null>>(() => new Map());
+  const [mw3Kits, setMw3Kits] = useState<Map<string, { client: Mw3DeliveryClient; kit: Mw3Kit | null }>>(() => new Map());
   const [shown, setShown] = useState(0);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [speed, setSpeed] = useState<Speed>(() => readPref("reysonai:agent-speed", "normal"));
@@ -110,28 +121,56 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
   const agents = useMemo(() => createAgent({ profileId: handRead && handRead.confidence !== "collecting" ? handRead.style.id : null }), [handRead]);
   const result: HandResult | null = useMemo(() => {
     if (!ready) return null;
-    return playHand({ seed: handSeed(session), human: humanPos, humanActions, agents, postflop: id => kits.has(id) ? kits.get(id) : undefined });
-  }, [ready, session, humanPos, humanActions, kits, agents]);
+    return playHand({ seed: handSeed(session), human: humanPos, humanActions, agents, postflop: id => kits.has(id) ? kits.get(id) : undefined,
+      mw3: { supportsSpot: mw3Client.supportsSpot, kit: id => mw3Kits.get(id)?.client === mw3Client ? mw3Kits.get(id)!.kit : undefined } });
+  }, [ready, session, humanPos, humanActions, kits, agents, mw3Client, mw3Kits]);
+
+  // Reusing A in a new hand must touch both caches, not only newly loaded
+  // spots. The helper returns the same Map when already newest, preventing a
+  // setState replay loop. Active hand references survive any later eviction.
+  useEffect(() => {
+    if (result?.postflopKind !== "mw3_srp" || !result.spotId || !["awaiting", "done"].includes(result.status)) return;
+    const id = result.spotId, cached = mw3Kits.get(id);
+    if (cached?.client !== mw3Client || !cached.kit) return;
+    mw3Client.touchSpot?.(id);
+    setMw3Kits(current => touchMw3AgentKit(current, id));
+  }, [session.handNo, result?.postflopKind, result?.spotId, result?.status, mw3Client]);
 
   // Load the reached spot's saved postflop policy (null when it is missing: the pot is checked down).
   useEffect(() => {
     if (result?.status !== "needs_postflop" || !result.spotId) return;
     const id = result.spotId;
+    if (result.postflopKind === "mw3_srp") {
+      const controller = new AbortController();
+      mw3Client.load(id, controller.signal).then(kit => {
+        if (!controller.signal.aborted) setMw3Kits(current => rememberMw3AgentKit(current, id, { client: mw3Client, kit }));
+      }, () => {
+        if (!controller.signal.aborted) setMw3Kits(current => rememberMw3AgentKit(current, id, { client: mw3Client, kit: null }));
+      });
+      return () => controller.abort();
+    }
     let cancelled = false;
     (async () => {
       let kit: PostflopKit | null = null;
       try {
         const spot = spotById(id);
         const [datasets, body] = await Promise.all([loadPostflopDatasets(spot), loadPostflopSpot(id)]);
-        kit = makePostflopKit(id, datasets, body?.candidate, body?.laterCandidate);
+        // This Agent consumer uses standard HU policies only. Profile pairs are
+        // not a standard candidate and must never be reduced to one role here.
+        const candidate = body?.candidate, laterCandidate = body?.laterCandidate;
+        if (candidate && !("villain" in candidate) && laterCandidate && !("villain" in laterCandidate)) {
+          kit = makePostflopKit(id, datasets, candidate, laterCandidate);
+        }
       } catch { kit = null; }
       if (!cancelled) setKits(current => new Map(current).set(id, kit));
     })();
     return () => { cancelled = true; };
-  }, [result?.status, result?.spotId]);
+  }, [result?.status, result?.spotId, result?.postflopKind, mw3Client]);
 
   const log = result?.log ?? [];
   const waiting = result?.status === "needs_postflop";
+  const unavailable = result?.status === "unavailable";
+  const mw3Text = mw3Copy();
   // Reveal the log one action at a time; a new street pauses a little longer for the deal.
   useEffect(() => {
     if (shown >= log.length) return;
@@ -172,12 +211,13 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
     recorded.current = session.handNo;
     if (humanPos && !waitingMode) saveAgentHand(handRecord(result!, tableId, humanPos));
     setHistory(current => [{ no: session.handNo + 1, winners: (result!.winners ?? []).map(nameOf).join(" / "),
-      log: [...revealed], board: [...boardCards], resultBb: humanPos && Number.isFinite(result!.returns![humanPos]) ? result!.returns![humanPos] : null, cards: humanPos ? [...(result!.holeCards[humanPos] ?? [])] : [], mine: humanPos && Number.isFinite(result!.returns![humanPos]) ? toPoints(result!.returns![humanPos]) : null, showdown: Boolean(result!.showdown) }, ...current].slice(0, 30));
+      nameOf, log: [...revealed], board: [...boardCards], resultBb: humanPos && Number.isFinite(result!.returns![humanPos]) ? result!.returns![humanPos] : null, cards: humanPos ? [...(result!.holeCards[humanPos] ?? [])] : [], mine: humanPos && Number.isFinite(result!.returns![humanPos]) ? toPoints(result!.returns![humanPos]) : null, showdown: Boolean(result!.showdown) }, ...current].slice(0, 30));
   }, [done, humanPos, session.handNo, result, tableId, nameOf]);
 
   const act = (key: string) => setHumanActions(current => [...current, key]);
   const nextHand = useCallback(() => {
-    if (!result || result.status !== "done" || handoffKey) return;
+    if (!result || result.status !== "done") return;
+    if (handoffKey) return;
     setSession(current => finishHand(current, result.returns!));
     setHumanActions([]); setShown(0);
   }, [result, handoffKey]);
@@ -223,7 +263,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
   if (loadError) return <div className="agent-page"><p className="agent-error">{loadError}</p></div>;
   const order = humanSeat >= 0 ? humanSeat : 0;
   const standings = session.seats.map((seat, index) => ({ seat, index })).sort((a, b) => b.seat.points - a.seat.points);
-  const actingPos = !done ? (pending?.pos ?? (!allShown ? log[shown]?.pos : null)) : null;
+  const actingPos = !done && !unavailable ? (pending?.pos ?? (!allShown ? log[shown]?.pos : null)) : null;
   const winnerLine = done ? resultLine(result!, nameOf) : null;
   const myDelta = done && humanPos ? toPoints(result!.returns![humanPos] ?? 0) : null;
 
@@ -235,9 +275,8 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
             {value === "fast" && <Lightning size={12} weight="fill" />}{value === "fast" ? localized("Fast", "速い") : localized("Normal", "ふつう")}</button>)}
         </div>
         {liveRead && <button type="button" className="agent-toggle" onClick={() => setStyleOpen(true)}><ChartBar size={13} weight="bold" />{localized("Play style", "プレイスタイル")}</button>}
-        <span className="agent-rule" tabIndex={0}><Info size={13} />{localized("Beta · heads-up flops", "β版 · フロップはHUのみ")}
-          <span className="agent-rule-tip" role="tooltip">{localized("Reyson Agent is in beta and multiway pots aren't supported yet. A call that would bring a third player to the flop isn't offered (agents fold that share instead), and lines without saved data fold.",
-            "Reyson Agentはβ版で、まだマルチウェイに対応していません。3人目としてフロップへ行くコールは選べず（Agentはその頻度をフォールドに回します）、保存データのない場面はフォールドになります。")}</span></span>
+        <span className="agent-rule" tabIndex={0}><Info size={13} />{mw3Text.beta}
+          <span className="agent-rule-tip" role="tooltip">{mw3Text.rule}</span></span>
       </div>
   </>;
   return <div className="agent-page" style={{ "--table-theme": table.theme } as any}>
@@ -260,7 +299,8 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
                 : totalPot - frontTotal > 0.001
                   ? <div className="agent-pot"><span>{localized("Pot", "ポット")}</span><b>{pts(totalPot - frontTotal)}</b>{frontTotal > 0 && <small>{localized("total", "合計")} {pts(totalPot)}</small>}</div>
                   : <div className="agent-pot is-total"><span>{localized("Total", "合計")}</span><b>{pts(totalPot)}</b></div>}
-              {waiting && <LoadingInline className="agent-thinking">{localized("Reading the AI estimate…", "AI推定を読み込み中…")}</LoadingInline>}
+              {waiting && <LoadingInline className="agent-thinking">{result?.postflopKind === "mw3_srp" ? mw3Text.loading : localized("Reading the AI estimate…", "AI推定を読み込み中…")}</LoadingInline>}
+              {unavailable && <div className="agent-note" role="status">{mw3Text.unavailable}</div>}
               {done && result?.policyMissing && <div className="agent-note">{localized("No saved postflop policy for this line, so it was checked down.", "この経路のAI方針がないため、チェックダウンしました")}</div>}
             </>}>
             {!done && session.seats.map((seat, index) => {
@@ -302,11 +342,15 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
                 <b>{localized("Your turn", "あなたの番")}</b>
                 <small>{pending.toCall ? localized(`To call ${bb(pending.toCall)}BB`, `コール額 ${bb(pending.toCall)}BB`) : localized("You can check", "チェックできます")} · {localized("pot", "ポット")} {bb(pending.pot)}BB</small>
                 {pending.notice === "no_data" && <details className="agent-turn-note" open={!compact || undefined}><summary>{profileText("Beta · details", "β版・詳細", "测试版 · 详情", "Beta · detalles")}</summary><small>{localized("Beta: this line (e.g. a squeeze or cold 4-bet pot) has no saved postflop strategy yet, so the hand is checked down to showdown.", "β版のため、この流れ（スクイーズやコールド4betのポットなど）のポストフロップ方針はまだありません。ショーダウンまでチェックで進みます。")}</small></details>}
-                {pending.notice === "no_multiway" && <details className="agent-turn-note" open={!compact || undefined}><summary>{profileText("Beta · details", "β版・詳細", "测试版 · 详情", "Beta · detalles")}</summary><small>{localized("Beta: multiway pots aren't supported yet, so a call that would make the flop three-way isn't offered.", "β版のため、まだマルチウェイ（3人以上でのフロップ）に対応していません。ここでのコールは3人目になるため選べません。")}</small></details>}
+                {pending.notice === "no_multiway" && <details className="agent-turn-note" open={!compact || undefined}><summary>{profileText("Beta · details", "β版・詳細", "测试版 · 详情", "Beta · detalles")}</summary><small>{mw3Text.blocked}</small></details>}
               </div>
               <div className="agent-buttons">{pending.options.map((option, index) => <PokerActionButton key={option.key} tone={tone(option.key)} onClick={() => act(option.key)}>
-                <kbd>{index + 1}</kbd><span>{actionLabel({ action: option.key, to: option.key === "call" ? pending.toCall : option.to })}</span>
-                {/^bet\d+$/.test(option.key) && <small>{option.key.slice(3)}%</small>}</PokerActionButton>)}</div>
+                <kbd>{index + 1}</kbd><span>{actionLabel({ action: option.key, to: option.key === "call" ? pending.toCall : option.to, amountBb: option.amountBb, allIn: option.allIn })}</span>
+                <AgentActionSizeHint option={option} /></PokerActionButton>)}</div>
+            </>
+            : unavailable ? <>
+              <p className="agent-summary" role="status">{mw3Text.ended}</p>
+              {result?.postflopKind === "mw3_srp" && result.spotId && mw3Client.supportsSpot(result.spotId) && <button type="button" className="agent-skip" onClick={() => setMw3Kits(current => { const next = new Map(current); next.delete(result.spotId!); return next; })}>{mw3Text.retry}</button>}
             </>
             : done ? <>
               <p className="agent-summary">{myDelta == null ? winnerLine : <>{localized("This hand", "このハンド")} <b className={myDelta > 0 ? "up" : myDelta < 0 ? "down" : ""}>{signed(myDelta)}</b></>}</p>
@@ -320,7 +364,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
         </footer>
       </section>
 
-      <GameplayDetails profileSwitches={session.seats.filter(seat => seat.kind === "agent").map(seat => { const character = characterFor(seat.agentId); if (!character) return null; return <button type="button" className="agent-mini-profile" key={character.id} aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en,avatar:<AgentAvatar id={character.id} color={character.color} size={64}/>,kind:"agent",type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado")})}><AgentAvatar id={character.id} color={character.color} size={32}/></button>; })} currentCards={humanPos ? result?.holeCards[humanPos] : []} history={history.map(item => ({id:item.no,cards:item.cards,resultBb:item.resultBb,details:<HandLog entries={item.log} nameOf={nameOf} board={item.board}/>}))} requestedPanel={styleOpen ? "tools" : null} onClose={() => setStyleOpen(false)} profile={opponentProfile && <OpponentProfile profile={opponentProfile} onClose={() => setOpponentProfile(null)} />}>
+      <GameplayDetails profileSwitches={session.seats.filter(seat => seat.kind === "agent").map(seat => { const character = characterFor(seat.agentId); if (!character) return null; return <button type="button" className="agent-mini-profile" key={character.id} aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en,avatar:<AgentAvatar id={character.id} color={character.color} size={64}/>,kind:"agent",type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado")})}><AgentAvatar id={character.id} color={character.color} size={32}/></button>; })} currentCards={humanPos ? result?.holeCards[humanPos] : []} history={history.map(item => ({id:item.no,cards:item.cards,resultBb:item.resultBb,details:<HandLog entries={item.log} nameOf={item.nameOf} board={item.board}/>}))} requestedPanel={styleOpen ? "tools" : null} onClose={() => setStyleOpen(false)} profile={opponentProfile && <OpponentProfile profile={opponentProfile} onClose={() => setOpponentProfile(null)} />}>
         {waitingMode && <GamePanel id="queue" label={profileText("Queue / rank", "待機 / ランク", "队列 / 评分", "Cola / rango")}>{waitingSidebar}</GamePanel>}
         <GamePanel id="session" label={profileText(waitingMode ? "Agents" : "Session", waitingMode ? "Agent" : "セッション", waitingMode ? "Agent" : "会话", waitingMode ? "Agents" : "Sesión")}>
         {waitingMode && <section className="agent-panel"><h3>{profileText("Practice Agents", "練習相手のAgent", "练习Agent", "Agents de práctica")}</h3>{table.agents.map(character => <div className="ff-opponent" key={character.id}><button type="button" className="agent-mini-profile" aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en,kind:"agent",type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado"),avatar:<StyleAvatar id="balanced" color={character.color} size={64}/>})}><StyleAvatar id="balanced" color={character.color} size={32}/></button><div><strong>{character.name.en}</strong><small>{profileText("Balanced · preflop", "バランス型・プリフロップ", "平衡型 · 翻牌前", "Equilibrado · preflop")}</small></div></div>)}</section>}
@@ -353,7 +397,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
           </li>)}</ul>
         </section>}
         </GamePanel>
-        <GamePanel id="tools" label={profileText("Tools", "設定", "工具", "Controles")} mobileOnly>{tools}{liveRead && <PlayStyleDashboard read={liveRead} onClose={() => setStyleOpen(false)} />}</GamePanel>
+        <GamePanel id="tools" label={profileText("Tools", "設定", "工具", "Controles")} mobileOnly>{tools}{liveRead && styleOpen && <PlayStyleDashboard read={liveRead} onClose={() => setStyleOpen(false)} />}</GamePanel>
       </GameplayDetails>
     </div>
 

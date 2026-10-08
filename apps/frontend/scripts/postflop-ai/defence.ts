@@ -44,7 +44,8 @@ import { packEquities, packWeights, unpackWeights } from "./cached-values.ts";
 // Pure and dependency-free (no node:*), so it runs in the browser worker, the edge worker and Node.
 import { evaluate, seedFor, seededRandom } from "../lib/equity.ts";
 import { comboRange } from "./browser-inputs.ts";
-import { flopTextureKeys, handTier, runoutTexture, TIERS } from "./model.ts";
+import { flopTextureKeys, runoutTexture, TIERS } from "./model.ts";
+import { handTier } from "./hu-hand-tier.ts";
 import { NODES, effectiveMix, referenceMix, withRaise } from "./policy.ts";
 import { LATER_NODES } from "./later-tree.ts";
 import { referenceLaterTierMix } from "./later-policy.ts";

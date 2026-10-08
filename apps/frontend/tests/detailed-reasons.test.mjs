@@ -1,12 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { expandStage3Reasons } from "../src/estimated/stage3-reason-format.ts";
 import { expandContinuationReasons } from "../src/estimated/continuation-reason-format.ts";
 import { hands } from "../src/data.ts";
 
 const dir = new URL("../src/estimated/reasons/", import.meta.url);
 const load = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url)));
 const sources = [
+  [existsSync(new URL("../src/estimated/stage3-responses.json", import.meta.url)) ? load("stage3-responses") : { spots: [] }, [["squeeze", "スクイーズ"], ["four_bet", "4bet"], ["all_in", "オールイン"], ["call", "コール"], ["fold", "フォールド"]]],
   [existsSync(new URL("../src/estimated/continuation-responses.json", import.meta.url)) ? load("continuation-responses") : { spots: [] }, [["four_bet", "4bet"], ["all_in", "オールイン"], ["call", "コール"], ["fold", "フォールド"]]],
   [load("opening-ranges"), [["open", "オープン"], ["limp", "リンプ"], ["fold", "フォールド"]]],
   [load("preflop-ranges"), [["three_bet", "3bet"], ["call", "コール"], ["fold", "フォールド"]]],
@@ -28,7 +30,7 @@ test("every detailed-reason file covers all 169 hands of an existing spot and qu
   const files = readdirSync(dir).filter(name => name.endsWith(".json"));
   assert.ok(files.length >= 1);
   for (const file of files) {
-    const data = expandContinuationReasons(JSON.parse(readFileSync(new URL(file, dir))));
+    const data = expandStage3Reasons(expandContinuationReasons(JSON.parse(readFileSync(new URL(file, dir)))));
     const match = sources.map(([dataset, actions]) => [dataset.spots.find(s => s.id === data.spot_id), actions]).find(([spot]) => spot);
     assert.ok(match, `${file}: unknown spot ${data.spot_id}`);
     const [spot, actions] = match;
@@ -36,6 +38,12 @@ test("every detailed-reason file covers all 169 hands of an existing spot and qu
     assert.ok(Array.isArray(data.fact_labels) && data.fact_labels.length, `${file}: fact_labels`);
     for (const row of spot.hands) {
       const reason = data.hands[row.hand].reason;
+      if (data.type === "stage3" && data.hands[row.hand].facts.reach_pct === 0) {
+        assert.equal(row.fold, 100, `${file} ${row.hand}: zero-reach placeholder`);
+        assert.equal(data.hands[row.hand].facts.equity_pct, null);
+        assert.doesNotMatch(reason, /最終配分は/, `${file} ${row.hand}: placeholder is not a recommendation`);
+        continue;
+      }
       if (reason.includes("対象外")) continue;
       for (const [key, name] of actions) {
         if (row[key]) assert.match(reason, new RegExp(`${name} ${row[key]}%`), `${file} ${row.hand}`);

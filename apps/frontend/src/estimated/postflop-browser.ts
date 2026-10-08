@@ -165,7 +165,7 @@ export function loadPostflopSpot(spotId: string, signal?: AbortSignal, options: 
 }
 
 export function datasetsNeededForSpot(spot: Spot): string[] {
-  if ("history" in spot) return ["hu-after-multiway-spots", ...new Set(Object.values(spot.ranges).flatMap(factors => factors.map(([file]) => file)))];
+  if (spot?.history && spot?.ranges) return ["hu-after-multiway-spots", ...new Set<string>(Object.values(spot.ranges).flat().map(factor => factor[0]))];
   switch (spot?.kind) {
     case "srp": return ["opening-ranges", "preflop-ranges"];
     case "3bp": return ["opening-ranges", "preflop-ranges", "three-bet-responses"];
@@ -210,7 +210,8 @@ export async function loadPostflopDatasets(spot: Spot, signal?: AbortSignal, opt
     const opponent = spot[normalized.opponentSeat!];
     // Only the opponent's observed preflop factors use profile datasets. Requiring
     // unused profile files would incorrectly block supported history-type spots.
-    const profileNames = "ranges" in spot ? [...new Set(spot.ranges[opponent].map(([file]) => file))]
+    const profileNames = spot.kind === "limp" || spot.kind === "sqp" || spot.kind === "ccp" || spot.kind === "c4bp"
+      ? [...new Set(spot.ranges[opponent].map(([file]) => file))]
       : opponent === spot.opener ? ["opening-ranges", ...(spot.kind === "srp" ? [] : ["three-bet-responses"])]
       : ["preflop-ranges", ...(spot.kind === "4bp" ? ["four-bet-responses"] : [])];
     names.push(...profileNames.map(name => `profiles/${normalized.opponentProfile}/villain/${name}`));
