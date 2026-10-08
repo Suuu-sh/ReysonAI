@@ -9,7 +9,12 @@ export const SECURITY_HEADERS = {
 
 export function privateResponse(response: Response): Response {
   const result = new Response(response.body, response);
-  for (const [name, value] of Object.entries(SECURITY_HEADERS)) result.headers.set(name, value);
+  const preserveFormReferrerPolicy = result.headers.get('content-type')?.toLowerCase().startsWith('text/html')
+    && result.headers.get('referrer-policy')?.trim().toLowerCase() === 'strict-origin';
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+    if (name === 'referrer-policy' && preserveFormReferrerPolicy) continue;
+    result.headers.set(name, value);
+  }
   return result;
 }
 export function errorResponse(error: string, status: number): Response {
@@ -21,6 +26,13 @@ export function html(body: string, status = 200, supplied?: Headers): Response {
   for (const [name, value] of Object.entries(SECURITY_HEADERS)) headers.set(name, value);
   headers.set('content-type', 'text/html; charset=utf-8');
   return new Response(`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>ReysonAI connections</title><body><main>${body}</main></body></html>`, { status, headers });
+}
+/** Consent and connection forms need a same-origin Origin header on POST.
+ * strict-origin keeps that Origin while limiting Referer to the page origin. */
+export function oauthFormHtml(body: string, status = 200, supplied?: Headers): Response {
+  const response = html(body, status, supplied);
+  response.headers.set('referrer-policy', 'strict-origin');
+  return response;
 }
 export async function readBoundedBody(request: Request, limit = 16384): Promise<string> {
   const reader = request.body?.getReader();
