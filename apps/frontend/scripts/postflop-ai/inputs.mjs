@@ -35,11 +35,12 @@ export const laterSizingHash = () => sha(Object.fromEntries(LATER_KEYS.map(key =
 
 // Published artifacts of one spot (policies and simulation report) live in git under
 // scripts/data/postflop-ai/policies/ and reach D1 through CI on main; offline research
-// artifacts (hand EV) stay local under .local/postflop-ai/.
+// artifacts (hand EV) and the profile generation report stay local under .local/postflop-ai/.
 export const POLICY_DIR = "scripts/data/postflop-ai/policies";
+export const PROFILE_DIR = "scripts/data/postflop-ai/profiles";
 export function artifactPaths(spot, { profile = "standard", role } = {}) {
   if (profile !== "standard") return Object.fromEntries(["candidate", "laterCandidate"].map(kind =>
-    [kind, join(root, ".local/postflop-ai", `${profileArtifactKey(spot, kind, profile, role)}.json`)]));
+    [kind, join(root, "scripts/data/postflop-ai", `${profileArtifactKey(spot, kind, profile, role)}.json`)]));
   const base = join(root, POLICY_DIR, spot.slug), local = join(root, ".local/postflop-ai", spot.slug);
   return { candidate: `${base}-policy.json`, laterCandidate: `${base}-later-policy.json`, report: `${base}-report.json`,
     handEv: `${local}-hand-ev.json`, laterHandEv: `${local}-later-hand-ev.json` };
@@ -55,7 +56,14 @@ export function readArtifact(spot, kind, options = {}) {
     if (source) return source.profileArtifact?.(key) ?? null;
   } else if (source) return source.artifact(spot, kind) ?? null;
   const path = artifactPaths(spot, options)[kind];
-  return existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : null;
+  // Published bytes are authoritative, including errors: never hide a malformed
+  // public file behind an older local candidate or a standard policy.
+  if (existsSync(path)) return JSON.parse(readFileSync(path, "utf8"));
+  if (options.profile && options.profile !== "standard") {
+    const legacy = join(root, ".local/postflop-ai", `${profileArtifactKey(spot, kind, options.profile, options.role)}.json`);
+    if (existsSync(legacy)) return JSON.parse(readFileSync(legacy, "utf8"));
+  }
+  return null;
 }
 
 // Like readArtifact, but a missing file is an ENOENT error (the local view maps it to 404).

@@ -113,7 +113,8 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
     // Views are deterministic per published dataset, so cache them at the edge under the
     // dataset hash: a republish changes the key instead of waiting for entries to expire.
     const cache = (globalThis as { caches?: { default?: EdgeCache } }).caches?.default;
-    const versionName = url.pathname === "/v1/postflop/flop" ? "flop-base" : "postflop";
+    const versionName = url.pathname === "/v1/postflop/flop" ? "flop-base"
+      : url.pathname === "/v1/postflop/profile-policy" ? "postflop-profiles" : "postflop";
     const version = cache ? await datasetVersion(env.DB, versionName) : null;
     // Flop bases are served as stored Brotli; clients without br get a decompressed variant, cached apart.
     const brotli = /\bbr\b/.test(request.headers.get("accept-encoding") ?? "");
@@ -122,7 +123,10 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
     const hit = key ? await cache!.match(key) : undefined;
     if (hit) return notModified(request, hit) ?? hit;
     const { status, body, text, bytes, etag } = await routePostflop(env.DB, url.pathname, url.searchParams);
-    if (status !== 200) return errorResponse(status, String((body as JsonRecord).error ?? "error"));
+    if (status !== 200) {
+      if (url.pathname === "/v1/postflop/profile-policy") return new Response(JSON.stringify(body), { status, headers: JSON_HEADERS });
+      return errorResponse(status, String((body as JsonRecord).error ?? "error"));
+    }
     if (bytes) {
       const headers: Record<string, string> = { "content-type": "application/json", vary: "accept-encoding", "cache-control": "public, max-age=300, s-maxage=86400", ...(etag ? { etag } : {}) };
       let flop: Response;

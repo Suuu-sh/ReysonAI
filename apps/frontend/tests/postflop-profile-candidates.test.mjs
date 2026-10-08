@@ -181,8 +181,8 @@ test("Implicit/standard adjusted authoring guards reject before artifact lookup 
 test("profile artifact paths are role-specific and cannot target standard storage", () => {
   for (const role of ["villain", "exploit"]) {
     const paths = artifactPaths(base.spot, { profile, role });
-    assert.ok(paths.candidate.endsWith(`/.local/postflop-ai/profiles/${profile}/${base.spot.slug}-${role}-policy.json`));
-    assert.ok(paths.laterCandidate.endsWith(`/.local/postflop-ai/profiles/${profile}/${base.spot.slug}-${role}-later-policy.json`));
+    assert.ok(paths.candidate.endsWith(`/scripts/data/postflop-ai/profiles/${profile}/${base.spot.slug}-${role}-policy.json`));
+    assert.ok(paths.laterCandidate.endsWith(`/scripts/data/postflop-ai/profiles/${profile}/${base.spot.slug}-${role}-later-policy.json`));
     assert.equal(profileArtifactKey(base.spot, "candidate", profile, role), `profiles/${profile}/${base.spot.slug}-${role}-policy`);
   }
   assert.ok(artifactPaths(base.spot).candidate.includes("/scripts/data/postflop-ai/policies/"));

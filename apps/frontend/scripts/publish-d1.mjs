@@ -10,7 +10,7 @@ import { createHash } from "node:crypto";
 import { closeSync, openSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { buildSql as buildPostflopSql, publishableSpots, quote } from "./postflop-ai/publish-d1.mjs";
+import { buildSql as buildPostflopSql, publishableProfiles, publishableSpots, quote } from "./postflop-ai/publish-d1.mjs";
 import { publishableFlopBases, flopBaseSqlLines } from "./postflop-ai/flop-base-d1.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
@@ -62,8 +62,9 @@ function main(argv) {
   }
   if (!only || only === "postflop") {
     const spots = publishableSpots(console.log, { requireAll: argv.includes("--require-all") });
-    sql += buildPostflopSql(spots);
-    console.log(`${spots.length} postflop spots`);
+    const profiles = publishableProfiles(console.log, { requireAll: argv.includes("--require-all") });
+    sql += buildPostflopSql(spots, undefined, profiles);
+    console.log(`${spots.length} postflop spots; ${profiles.length * 4} profile policy rows`);
   }
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, sql);

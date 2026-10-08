@@ -153,7 +153,7 @@ test("role-specific profile loaders reject swapped, absent, wrong-profile and wr
   }
 });
 
-test("profile generation saves locally with identity; valid existing candidate is reused without calling mock", async () => withUniqueFiles(async inputs => {
+test("profile generation saves in delivery storage with identity; valid existing candidate is reused without calling mock", async () => withUniqueFiles(async inputs => {
   let calls = 0;
   const generator = async (prompt, request) => {
     calls++; assert.match(prompt, /role: villain/); assert.equal(request.model, "mock-model");
@@ -168,7 +168,7 @@ test("profile generation saves locally with identity; valid existing candidate i
     policy_hash: sha(result.candidate.policy), config_version: config.version, model: "mock-model", reasoning_effort: "high",
     prompt_hash: sha(promptFor(inputs, request)), profile: "nit", role: "villain" });
   const path = artifactPaths(inputs.spot, request).candidate;
-  assert.ok(path.includes("/.local/postflop-ai/profiles/nit/"));
+  assert.ok(path.includes("/scripts/data/postflop-ai/profiles/nit/"));
   assert.equal(readFileSync(path, "utf8"), `${JSON.stringify(result.candidate, null, 2)}\n`);
   const reused = await generate(inputs, request);
   assert.equal(reused.reused, true); assert.equal(calls, 1); assert.deepEqual(reused.candidate, result.candidate);
@@ -288,7 +288,7 @@ test("generated on-disk role pairs resolve through Stage C flop/later compositio
     for (const [kind, generated, pair] of [["candidate", flop.candidate, flopPair], ["laterCandidate", later.candidate, laterPair]]) {
       const key = profileArtifactKey(inputs.spot, kind, "nit", role);
       const path = artifactPaths(inputs.spot, request)[kind];
-      assert.ok(path.endsWith(`/.local/postflop-ai/${key}.json`));
+      assert.ok(path.endsWith(`/scripts/data/postflop-ai/${key}.json`));
       pair[role] = JSON.parse(readFileSync(path, "utf8"));
       assert.deepEqual(pair[role], generated);
     }
@@ -308,4 +308,31 @@ test("generated on-disk role pairs resolve through Stage C flop/later compositio
     const role = laterNodeRole(rule.node) === inputs.opponentSeat ? "villain" : "exploit";
     assert.deepEqual(rule, laterPair[role].policy.streets[street].rules.find(item => item.node === rule.node && item.tier === rule.tier && item.texture === rule.texture && item.line === rule.line));
   }
+}));
+
+test("compatible legacy candidates promote byte-for-byte to public storage without provider calls; public bytes win", async () => withUniqueFiles(async inputs => {
+  const { readArtifact, root } = await import("../scripts/postflop-ai/inputs.mjs");
+  const { join } = await import("node:path");
+  const request = options("nit", "villain", { generator: async () => { throw new Error("Provider must not run"); } });
+  const flop = rawCandidate(inputs), later = rawCandidate(inputs, "villain", referenceLaterPolicy(), { flop_policy_hash: flop.metadata.policy_hash });
+  const localPaths = [];
+  try {
+    for (const [kind, candidate] of [["candidate", flop], ["laterCandidate", later]]) {
+      const path = join(root, ".local/postflop-ai", `${profileArtifactKey(inputs.spot, kind, "nit", "villain")}.json`);
+      localPaths.push(path); mkdirSync(dirname(path), { recursive: true });
+      const bytes = `\n${JSON.stringify(candidate)}\n\n`;
+      writeFileSync(path, bytes);
+      assert.deepEqual(readArtifact(inputs.spot, kind, request), candidate);
+      const result = kind === "candidate" ? await generate(inputs, request) : await generateLater(inputs, flop, request);
+      assert.equal(result.reused, true);
+      assert.equal(readFileSync(artifactPaths(inputs.spot, request)[kind], "utf8"), bytes);
+      writeFileSync(path, "broken legacy JSON");
+      assert.deepEqual(readArtifact(inputs.spot, kind, request), candidate);
+    }
+    const publicPath = artifactPaths(inputs.spot, request).candidate;
+    writeFileSync(publicPath, "broken public JSON");
+    writeFileSync(localPaths[0], JSON.stringify(flop));
+    assert.throws(() => readArtifact(inputs.spot, "candidate", request));
+    await assert.rejects(generate(inputs, request));
+  } finally { for (const path of localPaths) rmSync(path, { force: true }); }
 }));

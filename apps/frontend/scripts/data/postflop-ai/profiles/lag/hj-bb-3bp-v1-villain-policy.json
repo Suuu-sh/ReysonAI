@@ -1,0 +1,1987 @@
+{
+  "metadata": {
+    "kind": "ai_estimate_not_gto",
+    "scope": "12 representative flops; flop only; not published",
+    "spot": "HJ_open_BB_3bet_call",
+    "tree": "oop_leads",
+    "source_hash": "6ffd001cea8ab1c6815fa36065e0a6012861d306112a122cfb2174023e9f68b7",
+    "structure_hash": "0c85abd89c3e3197cc9b9a9eba75601bba242eef8ee476f70a8399f4d3a60cae",
+    "policy_hash": "ca4d68a80e3654bc51c250ff609b72b6236733711b67145da367f6be151a8630",
+    "config_version": 2,
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "high",
+    "prompt_hash": "466bd057ab62e24c7b10e0ffbf18677b151b97050154e231de8ba01e905e7db5",
+    "profile": "lag",
+    "role": "villain"
+  },
+  "policy": {
+    "version": 1,
+    "kind": "ai_estimate_not_gto",
+    "rules": [
+      {
+        "node": "oop_first",
+        "texture": "any",
+        "tier": "monster",
+        "mix": {
+          "check": 25,
+          "bet33": 20,
+          "bet75": 45,
+          "bet125": 10
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "any",
+        "tier": "strong",
+        "mix": {
+          "check": 35,
+          "bet33": 40,
+          "bet75": 23,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "any",
+        "tier": "draw",
+        "mix": {
+          "check": 43,
+          "bet33": 20,
+          "bet75": 30,
+          "bet125": 7
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "any",
+        "tier": "medium",
+        "mix": {
+          "check": 62,
+          "bet33": 30,
+          "bet75": 7,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "any",
+        "tier": "air",
+        "mix": {
+          "check": 78,
+          "bet33": 16,
+          "bet75": 5,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "ip_vs_33",
+        "texture": "any",
+        "tier": "monster",
+        "mix": {
+          "fold": 0,
+          "call": 42,
+          "raise": 58
+        }
+      },
+      {
+        "node": "ip_vs_33",
+        "texture": "any",
+        "tier": "strong",
+        "mix": {
+          "fold": 3,
+          "call": 76,
+          "raise": 21
+        }
+      },
+      {
+        "node": "ip_vs_33",
+        "texture": "any",
+        "tier": "draw",
+        "mix": {
+          "fold": 8,
+          "call": 62,
+          "raise": 30
+        }
+      },
+      {
+        "node": "ip_vs_33",
+        "texture": "any",
+        "tier": "medium",
+        "mix": {
+          "fold": 18,
+          "call": 70,
+          "raise": 12
+        }
+      },
+      {
+        "node": "ip_vs_33",
+        "texture": "any",
+        "tier": "air",
+        "mix": {
+          "fold": 63,
+          "call": 25,
+          "raise": 12
+        }
+      },
+      {
+        "node": "ip_vs_75",
+        "texture": "any",
+        "tier": "monster",
+        "mix": {
+          "fold": 0,
+          "call": 39,
+          "raise": 61
+        }
+      },
+      {
+        "node": "ip_vs_75",
+        "texture": "any",
+        "tier": "strong",
+        "mix": {
+          "fold": 9,
+          "call": 73,
+          "raise": 18
+        }
+      },
+      {
+        "node": "ip_vs_75",
+        "texture": "any",
+        "tier": "draw",
+        "mix": {
+          "fold": 22,
+          "call": 52,
+          "raise": 26
+        }
+      },
+      {
+        "node": "ip_vs_75",
+        "texture": "any",
+        "tier": "medium",
+        "mix": {
+          "fold": 42,
+          "call": 49,
+          "raise": 9
+        }
+      },
+      {
+        "node": "ip_vs_75",
+        "texture": "any",
+        "tier": "air",
+        "mix": {
+          "fold": 80,
+          "call": 9,
+          "raise": 11
+        }
+      },
+      {
+        "node": "ip_vs_125",
+        "texture": "any",
+        "tier": "monster",
+        "mix": {
+          "fold": 1,
+          "call": 37,
+          "raise": 62
+        }
+      },
+      {
+        "node": "ip_vs_125",
+        "texture": "any",
+        "tier": "strong",
+        "mix": {
+          "fold": 20,
+          "call": 66,
+          "raise": 14
+        }
+      },
+      {
+        "node": "ip_vs_125",
+        "texture": "any",
+        "tier": "draw",
+        "mix": {
+          "fold": 40,
+          "call": 38,
+          "raise": 22
+        }
+      },
+      {
+        "node": "ip_vs_125",
+        "texture": "any",
+        "tier": "medium",
+        "mix": {
+          "fold": 64,
+          "call": 29,
+          "raise": 7
+        }
+      },
+      {
+        "node": "ip_vs_125",
+        "texture": "any",
+        "tier": "air",
+        "mix": {
+          "fold": 90,
+          "call": 2,
+          "raise": 8
+        }
+      },
+      {
+        "node": "oop_vs_raise",
+        "texture": "any",
+        "tier": "monster",
+        "mix": {
+          "fold": 1,
+          "call": 35,
+          "raise": 64
+        }
+      },
+      {
+        "node": "oop_vs_raise",
+        "texture": "any",
+        "tier": "strong",
+        "mix": {
+          "fold": 24,
+          "call": 61,
+          "raise": 15
+        }
+      },
+      {
+        "node": "oop_vs_raise",
+        "texture": "any",
+        "tier": "draw",
+        "mix": {
+          "fold": 39,
+          "call": 38,
+          "raise": 23
+        }
+      },
+      {
+        "node": "oop_vs_raise",
+        "texture": "any",
+        "tier": "medium",
+        "mix": {
+          "fold": 71,
+          "call": 21,
+          "raise": 8
+        }
+      },
+      {
+        "node": "oop_vs_raise",
+        "texture": "any",
+        "tier": "air",
+        "mix": {
+          "fold": 88,
+          "call": 3,
+          "raise": 9
+        }
+      },
+      {
+        "node": "ip_vs_raise2",
+        "texture": "any",
+        "tier": "monster",
+        "mix": {
+          "fold": 2,
+          "call": 42,
+          "raise": 56
+        }
+      },
+      {
+        "node": "ip_vs_raise2",
+        "texture": "any",
+        "tier": "strong",
+        "mix": {
+          "fold": 39,
+          "call": 52,
+          "raise": 9
+        }
+      },
+      {
+        "node": "ip_vs_raise2",
+        "texture": "any",
+        "tier": "draw",
+        "mix": {
+          "fold": 56,
+          "call": 32,
+          "raise": 12
+        }
+      },
+      {
+        "node": "ip_vs_raise2",
+        "texture": "any",
+        "tier": "medium",
+        "mix": {
+          "fold": 86,
+          "call": 12,
+          "raise": 2
+        }
+      },
+      {
+        "node": "ip_vs_raise2",
+        "texture": "any",
+        "tier": "air",
+        "mix": {
+          "fold": 97,
+          "call": 1,
+          "raise": 2
+        }
+      },
+      {
+        "node": "oop_vs_raise3",
+        "texture": "any",
+        "tier": "monster",
+        "mix": {
+          "fold": 3,
+          "call": 55,
+          "raise": 42
+        }
+      },
+      {
+        "node": "oop_vs_raise3",
+        "texture": "any",
+        "tier": "strong",
+        "mix": {
+          "fold": 52,
+          "call": 43,
+          "raise": 5
+        }
+      },
+      {
+        "node": "oop_vs_raise3",
+        "texture": "any",
+        "tier": "draw",
+        "mix": {
+          "fold": 70,
+          "call": 24,
+          "raise": 6
+        }
+      },
+      {
+        "node": "oop_vs_raise3",
+        "texture": "any",
+        "tier": "medium",
+        "mix": {
+          "fold": 94,
+          "call": 5,
+          "raise": 1
+        }
+      },
+      {
+        "node": "oop_vs_raise3",
+        "texture": "any",
+        "tier": "air",
+        "mix": {
+          "fold": 99,
+          "call": 0,
+          "raise": 1
+        }
+      },
+      {
+        "node": "ip_vs_raise4",
+        "texture": "any",
+        "tier": "monster",
+        "mix": {
+          "fold": 5,
+          "call": 95
+        }
+      },
+      {
+        "node": "ip_vs_raise4",
+        "texture": "any",
+        "tier": "strong",
+        "mix": {
+          "fold": 60,
+          "call": 40
+        }
+      },
+      {
+        "node": "ip_vs_raise4",
+        "texture": "any",
+        "tier": "draw",
+        "mix": {
+          "fold": 79,
+          "call": 21
+        }
+      },
+      {
+        "node": "ip_vs_raise4",
+        "texture": "any",
+        "tier": "medium",
+        "mix": {
+          "fold": 97,
+          "call": 3
+        }
+      },
+      {
+        "node": "ip_vs_raise4",
+        "texture": "any",
+        "tier": "air",
+        "mix": {
+          "fold": 100,
+          "call": 0
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "any",
+        "tier": "monster",
+        "mix": {
+          "check": 18,
+          "bet33": 22,
+          "bet75": 47,
+          "bet125": 13
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "any",
+        "tier": "strong",
+        "mix": {
+          "check": 25,
+          "bet33": 46,
+          "bet75": 27,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "any",
+        "tier": "draw",
+        "mix": {
+          "check": 30,
+          "bet33": 30,
+          "bet75": 32,
+          "bet125": 8
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "any",
+        "tier": "medium",
+        "mix": {
+          "check": 42,
+          "bet33": 44,
+          "bet75": 12,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "any",
+        "tier": "air",
+        "mix": {
+          "check": 60,
+          "bet33": 28,
+          "bet75": 10,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "bb_vs_33",
+        "texture": "any",
+        "tier": "monster",
+        "mix": {
+          "fold": 0,
+          "call": 35,
+          "raise": 65
+        }
+      },
+      {
+        "node": "bb_vs_33",
+        "texture": "any",
+        "tier": "strong",
+        "mix": {
+          "fold": 5,
+          "call": 70,
+          "raise": 25
+        }
+      },
+      {
+        "node": "bb_vs_33",
+        "texture": "any",
+        "tier": "draw",
+        "mix": {
+          "fold": 11,
+          "call": 54,
+          "raise": 35
+        }
+      },
+      {
+        "node": "bb_vs_33",
+        "texture": "any",
+        "tier": "medium",
+        "mix": {
+          "fold": 24,
+          "call": 62,
+          "raise": 14
+        }
+      },
+      {
+        "node": "bb_vs_33",
+        "texture": "any",
+        "tier": "air",
+        "mix": {
+          "fold": 69,
+          "call": 17,
+          "raise": 14
+        }
+      },
+      {
+        "node": "bb_vs_75",
+        "texture": "any",
+        "tier": "monster",
+        "mix": {
+          "fold": 1,
+          "call": 33,
+          "raise": 66
+        }
+      },
+      {
+        "node": "bb_vs_75",
+        "texture": "any",
+        "tier": "strong",
+        "mix": {
+          "fold": 14,
+          "call": 65,
+          "raise": 21
+        }
+      },
+      {
+        "node": "bb_vs_75",
+        "texture": "any",
+        "tier": "draw",
+        "mix": {
+          "fold": 28,
+          "call": 41,
+          "raise": 31
+        }
+      },
+      {
+        "node": "bb_vs_75",
+        "texture": "any",
+        "tier": "medium",
+        "mix": {
+          "fold": 48,
+          "call": 40,
+          "raise": 12
+        }
+      },
+      {
+        "node": "bb_vs_75",
+        "texture": "any",
+        "tier": "air",
+        "mix": {
+          "fold": 85,
+          "call": 3,
+          "raise": 12
+        }
+      },
+      {
+        "node": "bb_vs_125",
+        "texture": "any",
+        "tier": "monster",
+        "mix": {
+          "fold": 2,
+          "call": 31,
+          "raise": 67
+        }
+      },
+      {
+        "node": "bb_vs_125",
+        "texture": "any",
+        "tier": "strong",
+        "mix": {
+          "fold": 26,
+          "call": 57,
+          "raise": 17
+        }
+      },
+      {
+        "node": "bb_vs_125",
+        "texture": "any",
+        "tier": "draw",
+        "mix": {
+          "fold": 46,
+          "call": 28,
+          "raise": 26
+        }
+      },
+      {
+        "node": "bb_vs_125",
+        "texture": "any",
+        "tier": "medium",
+        "mix": {
+          "fold": 70,
+          "call": 21,
+          "raise": 9
+        }
+      },
+      {
+        "node": "bb_vs_125",
+        "texture": "any",
+        "tier": "air",
+        "mix": {
+          "fold": 93,
+          "call": 0,
+          "raise": 7
+        }
+      },
+      {
+        "node": "btn_vs_raise",
+        "texture": "any",
+        "tier": "monster",
+        "mix": {
+          "fold": 1,
+          "call": 43,
+          "raise": 56
+        }
+      },
+      {
+        "node": "btn_vs_raise",
+        "texture": "any",
+        "tier": "strong",
+        "mix": {
+          "fold": 20,
+          "call": 67,
+          "raise": 13
+        }
+      },
+      {
+        "node": "btn_vs_raise",
+        "texture": "any",
+        "tier": "draw",
+        "mix": {
+          "fold": 34,
+          "call": 45,
+          "raise": 21
+        }
+      },
+      {
+        "node": "btn_vs_raise",
+        "texture": "any",
+        "tier": "medium",
+        "mix": {
+          "fold": 64,
+          "call": 29,
+          "raise": 7
+        }
+      },
+      {
+        "node": "btn_vs_raise",
+        "texture": "any",
+        "tier": "air",
+        "mix": {
+          "fold": 85,
+          "call": 7,
+          "raise": 8
+        }
+      },
+      {
+        "node": "bb_vs_raise2",
+        "texture": "any",
+        "tier": "monster",
+        "mix": {
+          "fold": 3,
+          "call": 37,
+          "raise": 60
+        }
+      },
+      {
+        "node": "bb_vs_raise2",
+        "texture": "any",
+        "tier": "strong",
+        "mix": {
+          "fold": 44,
+          "call": 45,
+          "raise": 11
+        }
+      },
+      {
+        "node": "bb_vs_raise2",
+        "texture": "any",
+        "tier": "draw",
+        "mix": {
+          "fold": 61,
+          "call": 24,
+          "raise": 15
+        }
+      },
+      {
+        "node": "bb_vs_raise2",
+        "texture": "any",
+        "tier": "medium",
+        "mix": {
+          "fold": 89,
+          "call": 8,
+          "raise": 3
+        }
+      },
+      {
+        "node": "bb_vs_raise2",
+        "texture": "any",
+        "tier": "air",
+        "mix": {
+          "fold": 97,
+          "call": 0,
+          "raise": 3
+        }
+      },
+      {
+        "node": "btn_vs_raise3",
+        "texture": "any",
+        "tier": "monster",
+        "mix": {
+          "fold": 3,
+          "call": 61,
+          "raise": 36
+        }
+      },
+      {
+        "node": "btn_vs_raise3",
+        "texture": "any",
+        "tier": "strong",
+        "mix": {
+          "fold": 48,
+          "call": 48,
+          "raise": 4
+        }
+      },
+      {
+        "node": "btn_vs_raise3",
+        "texture": "any",
+        "tier": "draw",
+        "mix": {
+          "fold": 65,
+          "call": 30,
+          "raise": 5
+        }
+      },
+      {
+        "node": "btn_vs_raise3",
+        "texture": "any",
+        "tier": "medium",
+        "mix": {
+          "fold": 92,
+          "call": 7,
+          "raise": 1
+        }
+      },
+      {
+        "node": "btn_vs_raise3",
+        "texture": "any",
+        "tier": "air",
+        "mix": {
+          "fold": 99,
+          "call": 0,
+          "raise": 1
+        }
+      },
+      {
+        "node": "bb_vs_raise4",
+        "texture": "any",
+        "tier": "monster",
+        "mix": {
+          "fold": 6,
+          "call": 94
+        }
+      },
+      {
+        "node": "bb_vs_raise4",
+        "texture": "any",
+        "tier": "strong",
+        "mix": {
+          "fold": 65,
+          "call": 35
+        }
+      },
+      {
+        "node": "bb_vs_raise4",
+        "texture": "any",
+        "tier": "draw",
+        "mix": {
+          "fold": 84,
+          "call": 16
+        }
+      },
+      {
+        "node": "bb_vs_raise4",
+        "texture": "any",
+        "tier": "medium",
+        "mix": {
+          "fold": 98,
+          "call": 2
+        }
+      },
+      {
+        "node": "bb_vs_raise4",
+        "texture": "any",
+        "tier": "air",
+        "mix": {
+          "fold": 100,
+          "call": 0
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "high",
+        "tier": "monster",
+        "mix": {
+          "check": 22,
+          "bet33": 25,
+          "bet75": 43,
+          "bet125": 10
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "mid",
+        "tier": "monster",
+        "mix": {
+          "check": 30,
+          "bet33": 15,
+          "bet75": 43,
+          "bet125": 12
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "low",
+        "tier": "monster",
+        "mix": {
+          "check": 38,
+          "bet33": 10,
+          "bet75": 40,
+          "bet125": 12
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "high",
+        "tier": "strong",
+        "mix": {
+          "check": 32,
+          "bet33": 43,
+          "bet75": 23,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "mid",
+        "tier": "strong",
+        "mix": {
+          "check": 40,
+          "bet33": 32,
+          "bet75": 26,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "low",
+        "tier": "strong",
+        "mix": {
+          "check": 48,
+          "bet33": 24,
+          "bet75": 26,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "dry_high",
+        "tier": "draw",
+        "mix": {
+          "check": 40,
+          "bet33": 35,
+          "bet75": 22,
+          "bet125": 3
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "dry_high",
+        "tier": "medium",
+        "mix": {
+          "check": 55,
+          "bet33": 37,
+          "bet75": 7,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "dry_high",
+        "tier": "air",
+        "mix": {
+          "check": 72,
+          "bet33": 23,
+          "bet75": 4,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "dry_mid",
+        "tier": "draw",
+        "mix": {
+          "check": 48,
+          "bet33": 28,
+          "bet75": 21,
+          "bet125": 3
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "dry_mid",
+        "tier": "medium",
+        "mix": {
+          "check": 65,
+          "bet33": 29,
+          "bet75": 5,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "dry_mid",
+        "tier": "air",
+        "mix": {
+          "check": 80,
+          "bet33": 16,
+          "bet75": 3,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "dry_low",
+        "tier": "draw",
+        "mix": {
+          "check": 52,
+          "bet33": 22,
+          "bet75": 23,
+          "bet125": 3
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "dry_low",
+        "tier": "medium",
+        "mix": {
+          "check": 72,
+          "bet33": 22,
+          "bet75": 5,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "dry_low",
+        "tier": "air",
+        "mix": {
+          "check": 87,
+          "bet33": 10,
+          "bet75": 2,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "wet_high",
+        "tier": "draw",
+        "mix": {
+          "check": 48,
+          "bet33": 12,
+          "bet75": 32,
+          "bet125": 8
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "wet_high",
+        "tier": "medium",
+        "mix": {
+          "check": 70,
+          "bet33": 18,
+          "bet75": 10,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "wet_high",
+        "tier": "air",
+        "mix": {
+          "check": 82,
+          "bet33": 8,
+          "bet75": 8,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "wet_mid",
+        "tier": "draw",
+        "mix": {
+          "check": 51,
+          "bet33": 10,
+          "bet75": 31,
+          "bet125": 8
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "wet_mid",
+        "tier": "medium",
+        "mix": {
+          "check": 76,
+          "bet33": 13,
+          "bet75": 9,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "wet_mid",
+        "tier": "air",
+        "mix": {
+          "check": 87,
+          "bet33": 5,
+          "bet75": 6,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "wet_low",
+        "tier": "draw",
+        "mix": {
+          "check": 56,
+          "bet33": 8,
+          "bet75": 28,
+          "bet125": 8
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "wet_low",
+        "tier": "medium",
+        "mix": {
+          "check": 82,
+          "bet33": 9,
+          "bet75": 8,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "wet_low",
+        "tier": "air",
+        "mix": {
+          "check": 91,
+          "bet33": 3,
+          "bet75": 5,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "monotone_high",
+        "tier": "draw",
+        "mix": {
+          "check": 52,
+          "bet33": 26,
+          "bet75": 20,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "monotone_high",
+        "tier": "medium",
+        "mix": {
+          "check": 78,
+          "bet33": 18,
+          "bet75": 3,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "monotone_high",
+        "tier": "air",
+        "mix": {
+          "check": 88,
+          "bet33": 9,
+          "bet75": 2,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "monotone_mid",
+        "tier": "draw",
+        "mix": {
+          "check": 58,
+          "bet33": 22,
+          "bet75": 18,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "monotone_mid",
+        "tier": "medium",
+        "mix": {
+          "check": 84,
+          "bet33": 13,
+          "bet75": 2,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "monotone_mid",
+        "tier": "air",
+        "mix": {
+          "check": 92,
+          "bet33": 6,
+          "bet75": 1,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "monotone_low",
+        "tier": "draw",
+        "mix": {
+          "check": 64,
+          "bet33": 18,
+          "bet75": 16,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "monotone_low",
+        "tier": "medium",
+        "mix": {
+          "check": 88,
+          "bet33": 9,
+          "bet75": 2,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "monotone_low",
+        "tier": "air",
+        "mix": {
+          "check": 95,
+          "bet33": 3,
+          "bet75": 1,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "paired_high",
+        "tier": "draw",
+        "mix": {
+          "check": 48,
+          "bet33": 32,
+          "bet75": 17,
+          "bet125": 3
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "paired_high",
+        "tier": "medium",
+        "mix": {
+          "check": 62,
+          "bet33": 33,
+          "bet75": 4,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "paired_high",
+        "tier": "air",
+        "mix": {
+          "check": 76,
+          "bet33": 20,
+          "bet75": 3,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "paired_mid",
+        "tier": "draw",
+        "mix": {
+          "check": 54,
+          "bet33": 27,
+          "bet75": 16,
+          "bet125": 3
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "paired_mid",
+        "tier": "medium",
+        "mix": {
+          "check": 70,
+          "bet33": 25,
+          "bet75": 4,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "paired_mid",
+        "tier": "air",
+        "mix": {
+          "check": 83,
+          "bet33": 13,
+          "bet75": 3,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "paired_low",
+        "tier": "draw",
+        "mix": {
+          "check": 60,
+          "bet33": 22,
+          "bet75": 15,
+          "bet125": 3
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "paired_low",
+        "tier": "medium",
+        "mix": {
+          "check": 78,
+          "bet33": 17,
+          "bet75": 4,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "oop_first",
+        "texture": "paired_low",
+        "tier": "air",
+        "mix": {
+          "check": 89,
+          "bet33": 8,
+          "bet75": 2,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "high",
+        "tier": "monster",
+        "mix": {
+          "check": 15,
+          "bet33": 28,
+          "bet75": 45,
+          "bet125": 12
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "mid",
+        "tier": "monster",
+        "mix": {
+          "check": 18,
+          "bet33": 18,
+          "bet75": 49,
+          "bet125": 15
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "low",
+        "tier": "monster",
+        "mix": {
+          "check": 22,
+          "bet33": 14,
+          "bet75": 49,
+          "bet125": 15
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "high",
+        "tier": "strong",
+        "mix": {
+          "check": 20,
+          "bet33": 53,
+          "bet75": 25,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "mid",
+        "tier": "strong",
+        "mix": {
+          "check": 25,
+          "bet33": 43,
+          "bet75": 30,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "low",
+        "tier": "strong",
+        "mix": {
+          "check": 30,
+          "bet33": 36,
+          "bet75": 32,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "dry_high",
+        "tier": "draw",
+        "mix": {
+          "check": 27,
+          "bet33": 40,
+          "bet75": 28,
+          "bet125": 5
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "dry_high",
+        "tier": "medium",
+        "mix": {
+          "check": 34,
+          "bet33": 51,
+          "bet75": 13,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "dry_high",
+        "tier": "air",
+        "mix": {
+          "check": 58,
+          "bet33": 31,
+          "bet75": 9,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "dry_mid",
+        "tier": "draw",
+        "mix": {
+          "check": 30,
+          "bet33": 35,
+          "bet75": 30,
+          "bet125": 5
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "dry_mid",
+        "tier": "medium",
+        "mix": {
+          "check": 40,
+          "bet33": 44,
+          "bet75": 14,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "dry_mid",
+        "tier": "air",
+        "mix": {
+          "check": 62,
+          "bet33": 27,
+          "bet75": 9,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "dry_low",
+        "tier": "draw",
+        "mix": {
+          "check": 34,
+          "bet33": 30,
+          "bet75": 31,
+          "bet125": 5
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "dry_low",
+        "tier": "medium",
+        "mix": {
+          "check": 46,
+          "bet33": 38,
+          "bet75": 14,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "dry_low",
+        "tier": "air",
+        "mix": {
+          "check": 67,
+          "bet33": 23,
+          "bet75": 8,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "wet_high",
+        "tier": "draw",
+        "mix": {
+          "check": 32,
+          "bet33": 20,
+          "bet75": 38,
+          "bet125": 10
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "wet_high",
+        "tier": "medium",
+        "mix": {
+          "check": 49,
+          "bet33": 29,
+          "bet75": 19,
+          "bet125": 3
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "wet_high",
+        "tier": "air",
+        "mix": {
+          "check": 68,
+          "bet33": 14,
+          "bet75": 14,
+          "bet125": 4
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "wet_mid",
+        "tier": "draw",
+        "mix": {
+          "check": 35,
+          "bet33": 17,
+          "bet75": 38,
+          "bet125": 10
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "wet_mid",
+        "tier": "medium",
+        "mix": {
+          "check": 55,
+          "bet33": 23,
+          "bet75": 19,
+          "bet125": 3
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "wet_mid",
+        "tier": "air",
+        "mix": {
+          "check": 72,
+          "bet33": 10,
+          "bet75": 14,
+          "bet125": 4
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "wet_low",
+        "tier": "draw",
+        "mix": {
+          "check": 39,
+          "bet33": 14,
+          "bet75": 37,
+          "bet125": 10
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "wet_low",
+        "tier": "medium",
+        "mix": {
+          "check": 61,
+          "bet33": 19,
+          "bet75": 17,
+          "bet125": 3
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "wet_low",
+        "tier": "air",
+        "mix": {
+          "check": 77,
+          "bet33": 8,
+          "bet75": 12,
+          "bet125": 3
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "monotone_high",
+        "tier": "draw",
+        "mix": {
+          "check": 37,
+          "bet33": 33,
+          "bet75": 26,
+          "bet125": 4
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "monotone_high",
+        "tier": "medium",
+        "mix": {
+          "check": 57,
+          "bet33": 35,
+          "bet75": 7,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "monotone_high",
+        "tier": "air",
+        "mix": {
+          "check": 76,
+          "bet33": 18,
+          "bet75": 5,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "monotone_mid",
+        "tier": "draw",
+        "mix": {
+          "check": 42,
+          "bet33": 29,
+          "bet75": 25,
+          "bet125": 4
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "monotone_mid",
+        "tier": "medium",
+        "mix": {
+          "check": 63,
+          "bet33": 29,
+          "bet75": 7,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "monotone_mid",
+        "tier": "air",
+        "mix": {
+          "check": 81,
+          "bet33": 13,
+          "bet75": 5,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "monotone_low",
+        "tier": "draw",
+        "mix": {
+          "check": 47,
+          "bet33": 25,
+          "bet75": 24,
+          "bet125": 4
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "monotone_low",
+        "tier": "medium",
+        "mix": {
+          "check": 69,
+          "bet33": 23,
+          "bet75": 7,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "monotone_low",
+        "tier": "air",
+        "mix": {
+          "check": 85,
+          "bet33": 10,
+          "bet75": 4,
+          "bet125": 1
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "paired_high",
+        "tier": "draw",
+        "mix": {
+          "check": 32,
+          "bet33": 39,
+          "bet75": 24,
+          "bet125": 5
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "paired_high",
+        "tier": "medium",
+        "mix": {
+          "check": 40,
+          "bet33": 48,
+          "bet75": 10,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "paired_high",
+        "tier": "air",
+        "mix": {
+          "check": 61,
+          "bet33": 30,
+          "bet75": 7,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "paired_mid",
+        "tier": "draw",
+        "mix": {
+          "check": 36,
+          "bet33": 34,
+          "bet75": 25,
+          "bet125": 5
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "paired_mid",
+        "tier": "medium",
+        "mix": {
+          "check": 46,
+          "bet33": 42,
+          "bet75": 10,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "paired_mid",
+        "tier": "air",
+        "mix": {
+          "check": 66,
+          "bet33": 25,
+          "bet75": 7,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "paired_low",
+        "tier": "draw",
+        "mix": {
+          "check": 41,
+          "bet33": 29,
+          "bet75": 25,
+          "bet125": 5
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "paired_low",
+        "tier": "medium",
+        "mix": {
+          "check": 52,
+          "bet33": 36,
+          "bet75": 10,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "btn_first",
+        "texture": "paired_low",
+        "tier": "air",
+        "mix": {
+          "check": 71,
+          "bet33": 21,
+          "bet75": 6,
+          "bet125": 2
+        }
+      },
+      {
+        "node": "ip_vs_33",
+        "texture": "wet",
+        "tier": "draw",
+        "mix": {
+          "fold": 6,
+          "call": 58,
+          "raise": 36
+        }
+      },
+      {
+        "node": "ip_vs_33",
+        "texture": "monotone",
+        "tier": "draw",
+        "mix": {
+          "fold": 14,
+          "call": 66,
+          "raise": 20
+        }
+      },
+      {
+        "node": "ip_vs_33",
+        "texture": "paired",
+        "tier": "strong",
+        "mix": {
+          "fold": 3,
+          "call": 84,
+          "raise": 13
+        }
+      },
+      {
+        "node": "ip_vs_75",
+        "texture": "wet",
+        "tier": "draw",
+        "mix": {
+          "fold": 18,
+          "call": 50,
+          "raise": 32
+        }
+      },
+      {
+        "node": "ip_vs_75",
+        "texture": "monotone",
+        "tier": "draw",
+        "mix": {
+          "fold": 30,
+          "call": 53,
+          "raise": 17
+        }
+      },
+      {
+        "node": "ip_vs_75",
+        "texture": "paired",
+        "tier": "strong",
+        "mix": {
+          "fold": 12,
+          "call": 77,
+          "raise": 11
+        }
+      },
+      {
+        "node": "ip_vs_125",
+        "texture": "wet",
+        "tier": "draw",
+        "mix": {
+          "fold": 35,
+          "call": 38,
+          "raise": 27
+        }
+      },
+      {
+        "node": "ip_vs_125",
+        "texture": "monotone",
+        "tier": "draw",
+        "mix": {
+          "fold": 48,
+          "call": 38,
+          "raise": 14
+        }
+      },
+      {
+        "node": "ip_vs_125",
+        "texture": "paired",
+        "tier": "strong",
+        "mix": {
+          "fold": 25,
+          "call": 67,
+          "raise": 8
+        }
+      },
+      {
+        "node": "oop_vs_raise",
+        "texture": "wet",
+        "tier": "draw",
+        "mix": {
+          "fold": 34,
+          "call": 38,
+          "raise": 28
+        }
+      },
+      {
+        "node": "oop_vs_raise",
+        "texture": "monotone",
+        "tier": "draw",
+        "mix": {
+          "fold": 48,
+          "call": 37,
+          "raise": 15
+        }
+      },
+      {
+        "node": "oop_vs_raise",
+        "texture": "paired",
+        "tier": "strong",
+        "mix": {
+          "fold": 30,
+          "call": 61,
+          "raise": 9
+        }
+      },
+      {
+        "node": "bb_vs_33",
+        "texture": "wet",
+        "tier": "draw",
+        "mix": {
+          "fold": 8,
+          "call": 51,
+          "raise": 41
+        }
+      },
+      {
+        "node": "bb_vs_33",
+        "texture": "monotone",
+        "tier": "draw",
+        "mix": {
+          "fold": 18,
+          "call": 58,
+          "raise": 24
+        }
+      },
+      {
+        "node": "bb_vs_33",
+        "texture": "paired",
+        "tier": "strong",
+        "mix": {
+          "fold": 6,
+          "call": 77,
+          "raise": 17
+        }
+      },
+      {
+        "node": "bb_vs_75",
+        "texture": "wet",
+        "tier": "draw",
+        "mix": {
+          "fold": 23,
+          "call": 40,
+          "raise": 37
+        }
+      },
+      {
+        "node": "bb_vs_75",
+        "texture": "monotone",
+        "tier": "draw",
+        "mix": {
+          "fold": 36,
+          "call": 44,
+          "raise": 20
+        }
+      },
+      {
+        "node": "bb_vs_75",
+        "texture": "paired",
+        "tier": "strong",
+        "mix": {
+          "fold": 18,
+          "call": 69,
+          "raise": 13
+        }
+      },
+      {
+        "node": "bb_vs_125",
+        "texture": "wet",
+        "tier": "draw",
+        "mix": {
+          "fold": 40,
+          "call": 29,
+          "raise": 31
+        }
+      },
+      {
+        "node": "bb_vs_125",
+        "texture": "monotone",
+        "tier": "draw",
+        "mix": {
+          "fold": 55,
+          "call": 29,
+          "raise": 16
+        }
+      },
+      {
+        "node": "bb_vs_125",
+        "texture": "paired",
+        "tier": "strong",
+        "mix": {
+          "fold": 32,
+          "call": 58,
+          "raise": 10
+        }
+      },
+      {
+        "node": "btn_vs_raise",
+        "texture": "wet",
+        "tier": "draw",
+        "mix": {
+          "fold": 29,
+          "call": 45,
+          "raise": 26
+        }
+      },
+      {
+        "node": "btn_vs_raise",
+        "texture": "monotone",
+        "tier": "draw",
+        "mix": {
+          "fold": 43,
+          "call": 44,
+          "raise": 13
+        }
+      },
+      {
+        "node": "btn_vs_raise",
+        "texture": "paired",
+        "tier": "strong",
+        "mix": {
+          "fold": 26,
+          "call": 66,
+          "raise": 8
+        }
+      }
+    ]
+  }
+}

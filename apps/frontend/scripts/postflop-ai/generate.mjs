@@ -1,9 +1,10 @@
 // Explicit, local-only Codex generation of compact AI policy rules.
-// It never writes a published strategy or silently regenerates an existing candidate.
+// Profile candidates are authored in git delivery storage; generation itself never publishes to D1.
+// It never silently regenerates an existing candidate.
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
+import { copyFileSync, constants, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { artifactPaths, boards, config, readArtifact, requireArtifact, root, seatRange } from "./inputs.mjs";
 import { LATER_NODES, STREETS, openingActions, streetNodes } from "./later-tree.ts";
 import { boardHeight, boardTexture, handTier, LINES, parseCards, RUNOUT_TEXTURES, TIERS } from "./model.ts";
@@ -11,7 +12,7 @@ import { NODES, treeNodes, validatePolicy } from "./policy.ts";
 import { FLOP_BETS, facingNode, flopBetLabel, raiseDepth } from "./tree.ts";
 import { validateLaterPolicy } from "./later-policy.ts";
 import { normalizeGenerationOptions } from "./generation-options.mjs";
-import { isOpponentMode, matchesCandidateSource, resolveFlopCandidate, resolveLaterCandidate } from "./candidate-source.ts";
+import { isOpponentMode, matchesCandidateSource, profileArtifactKey, resolveFlopCandidate, resolveLaterCandidate } from "./candidate-source.ts";
 
 // Local Codex model for new candidates: --model, else POSTFLOP_AI_MODEL, else this default.
 // Existing candidates are reused as saved (the first BTN/BB pilot was made with gpt-6-sol).
@@ -303,14 +304,26 @@ export function runClaude(prompt, { model, timeoutMs = 1800000, onThread = () =>
 }
 const generatorFor = model => model.startsWith("claude-") ? runClaude : runCodex;
 
+// A compatible legacy profile candidate is promoted byte-for-byte only after the
+// ordinary loaders validate identity/content/linkage. Never overwrite public bytes.
+function reuseProfileArtifact(inputs, selected, kind, path, load) {
+  const legacy = selected.profile !== "standard"
+    ? join(root, ".local/postflop-ai", `${profileArtifactKey(inputs.spot, kind, selected.profile, selected.role)}.json`) : null;
+  if (selected.force || (!existsSync(path) && (!legacy || !existsSync(legacy)))) return null;
+  const candidate = load();
+  if (selected.profile !== "standard" && candidate.metadata.source_hash !== inputs.fingerprint) throw new Error("Profile candidate input fingerprint is stale; use --force to overwrite");
+  if (!existsSync(path)) {
+    mkdirSync(dirname(path), { recursive: true });
+    copyFileSync(legacy, path, constants.COPYFILE_EXCL);
+  }
+  return { candidate, reused: true };
+}
+
 export async function generate(inputs, { model = resolveModel(), effort = resolveEffort(), generator = generatorFor(model), ...options } = {}) {
   const selected = authoringOptions(inputs, options);
   const path = artifactPaths(inputs.spot, selected).candidate;
-  if (existsSync(path) && !selected.force) {
-    const candidate = loadCandidate(inputs, selected.role);
-    if (selected.profile !== "standard" && candidate.metadata.source_hash !== inputs.fingerprint) throw new Error("Profile candidate input fingerprint is stale; use --force to overwrite");
-    return { candidate, reused: true };
-  }
+  const reused = reuseProfileArtifact(inputs, selected, "candidate", path, () => loadCandidate(inputs, selected.role));
+  if (reused) return reused;
   providerOptions(model, effort);
   const prompt = promptFor(inputs, selected);
   let started = {};
@@ -363,11 +376,8 @@ export async function generateLater(inputs, flopCandidate, { model = resolveMode
         flopCandidate.metadata.config_version !== config.version || flopCandidate.metadata.tree !== inputs.spot.tree) throw new Error("Profile flop candidate input or policy is stale");
   }
   const path = artifactPaths(inputs.spot, selected).laterCandidate;
-  if (existsSync(path) && !selected.force) {
-    const candidate = loadLaterCandidate(inputs, flopCandidate, selected.role);
-    if (selected.profile !== "standard" && candidate.metadata.source_hash !== inputs.fingerprint) throw new Error("Profile candidate input fingerprint is stale; use --force to overwrite");
-    return { candidate, reused: true };
-  }
+  const reused = reuseProfileArtifact(inputs, selected, "laterCandidate", path, () => loadLaterCandidate(inputs, flopCandidate, selected.role));
+  if (reused) return reused;
   providerOptions(model, effort);
   const prompt = promptForLater(inputs, selected);
   let started = {};
