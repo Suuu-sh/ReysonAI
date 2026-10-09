@@ -178,3 +178,64 @@ test("rejects unpublished solutions and invalid resolve input", async () => {
   assert.equal(invalid.status, 400);
   assert.deepEqual(await invalid.json(), { error: "action history is empty" });
 });
+
+test("public dataset and FastFold history responses keep their distinct CORS contracts", async () => {
+  const appOrigin = "https://app.reysonai.com";
+  const dataset = JSON.stringify({ kind: "ai_estimate_not_gto", rows: [] });
+  const DB = {
+    prepare(sql) {
+      return {
+        bind() { return this; },
+        async all() {
+          if (sql.startsWith("SELECT content_hash, parts FROM preflop_datasets")) {
+            return { results: [{ content_hash: "fixture-hash", parts: 1 }] };
+          }
+          if (sql.startsWith("SELECT part, body FROM preflop_dataset_parts")) {
+            return { results: [{ part: 0, body: dataset }] };
+          }
+          throw new Error(`Unexpected test query: ${sql}`);
+        },
+      };
+    },
+  };
+  const publicEnv = { DB, ALLOWED_ORIGIN: appOrigin };
+
+  const allowedDataset = await worker.fetch(new Request("https://api.reysonai.com/v1/preflop/datasets/opening-ranges", {
+    headers: { origin: appOrigin },
+  }), publicEnv);
+  assert.equal(allowedDataset.status, 200);
+  assert.equal(await allowedDataset.text(), dataset);
+  assert.equal(allowedDataset.headers.get("access-control-allow-origin"), appOrigin);
+  assert.equal(allowedDataset.headers.get("access-control-allow-credentials"), null);
+
+  const deniedDataset = await worker.fetch(new Request("https://api.reysonai.com/v1/preflop/datasets/opening-ranges", {
+    headers: { origin: "https://evil.invalid" },
+  }), publicEnv);
+  assert.equal(deniedDataset.status, 200);
+  assert.equal(deniedDataset.headers.get("access-control-allow-origin"), null);
+  assert.equal(deniedDataset.headers.get("access-control-allow-credentials"), null);
+
+  const historyEnv = {
+    ...publicEnv,
+    AUTH_ENABLED: "true",
+    AUTH_APP_URL: appOrigin,
+    GOOGLE_REDIRECT_URI: "https://api.reysonai.com/v1/account/google/callback",
+    AUTH_RATE_LIMIT_KEY: "test-only",
+    FASTFOLD_ENABLED: "true",
+    FASTFOLD_RUNTIME: { getByName() { throw new Error("anonymous history must not reach a runtime object"); } },
+  };
+  const anonymousHistory = await worker.fetch(new Request("https://api.reysonai.com/v1/fastfold/human/history", {
+    headers: { origin: appOrigin },
+  }), historyEnv);
+  assert.equal(anonymousHistory.status, 401);
+  assert.deepEqual(await anonymousHistory.json(), { enabled: false, error: "sign_in_required" });
+  assert.equal(anonymousHistory.headers.get("access-control-allow-origin"), appOrigin);
+  assert.equal(anonymousHistory.headers.get("access-control-allow-credentials"), "true");
+
+  const deniedHistory = await worker.fetch(new Request("https://api.reysonai.com/v1/fastfold/human/history", {
+    headers: { origin: "https://evil.invalid" },
+  }), historyEnv);
+  assert.equal(deniedHistory.status, 401);
+  assert.equal(deniedHistory.headers.get("access-control-allow-origin"), null);
+  assert.equal(deniedHistory.headers.get("access-control-allow-credentials"), null);
+});
