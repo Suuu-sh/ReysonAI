@@ -1,0 +1,28 @@
+✔ published preflop verification hashes actual Unicode bodies (2.269109ms)
+✔ copied metadata cannot hide corruption, orphan/missing or misordered parts (1.157005ms)
+✔ only a missing preflop table allows schema initialization (0.475574ms)
+✔ LFS archive restores all1614 exact reviewed files without generating data (473.823767ms)
+✔ pointer-only, corrupt, incomplete and nonregular archives are rejected (1211.060913ms)
+✔ clean checkout restoration refuses changed candidates, symlinks and missing LFS payload (1598.559229ms)
+✔ review gate rejects changed/missing/extra data and changed source identities (2.774237ms)
+✔ source graph binds sampler/RNG, dedicated evaluator, configs and scoped schema (43.997811ms)
+✔ committed review manifest matches every artifact and source byte (430.982976ms)
+✔ delivery verification rejects substituted SQL or metadata (0.68486ms)
+✔ published metadata must match names, hashes, bytes and parts exactly (0.544802ms)
+✔ merged profile warnings remain advisory without weakening Stage 2 errors (2.756393ms)
+✔ Stage 3 review gate rejects unapproved candidates and changed artifact/source/archive identities (4.874879ms)
+✔ Stage 3 storage namespace cannot absorb any legacy artifact or traversing filename (0.424104ms)
+✔ both review source graphs bind isolated Stage 3 authoring and safe delivery dependencies (35.939226ms)
+✔ review source graphs follow static-literal dynamic imports and their recursive dependencies (63.00478ms)
+✔ Actions restores both reviewed archives before full verification and never authors Stage 3 (2.235024ms)
+✔ explicit Stage 3-only build and pipeline routes refuse authoring in CI before any generator (4747.246829ms)
+✔ legacy and profile-only build paths do not eagerly import the Stage 3 catalog (0.538977ms)
+✔ legacy-only audits and postflop-only publication do not eagerly load Stage 3 validators (0.550093ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15502.36397

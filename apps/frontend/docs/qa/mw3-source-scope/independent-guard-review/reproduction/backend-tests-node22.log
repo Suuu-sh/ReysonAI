@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: worker rejects unknown Mw3 hashes without reading D1 under the immutable build registry
+ok 1 - worker rejects unknown Mw3 hashes without reading D1 under the immutable build registry
+  ---
+  duration_ms: 40.308004
+  type: 'test'
+  ...
+# Subtest: worker Mw3 registration cannot publish with writes, unknown routes or query flags
+ok 2 - worker Mw3 registration cannot publish with writes, unknown routes or query flags
+  ---
+  duration_ms: 4.2079
+  type: 'test'
+  ...
+# Subtest: mw3 delivery is closed by default and cannot publish through a query or D1 row
+ok 3 - mw3 delivery is closed by default and cannot publish through a query or D1 row
+  ---
+  duration_ms: 46.018222
+  type: 'test'
+  ...
+# Subtest: review-pinned synthetic test registry permits only exact bytes; browser restores the identical policy
+ok 4 - review-pinned synthetic test registry permits only exact bytes; browser restores the identical policy
+  ---
+  duration_ms: 8.284344
+  type: 'test'
+  ...
+# Subtest: corrupt, duplicate, missing or exceptional delivery fails closed even for conditional GET
+ok 5 - corrupt, duplicate, missing or exceptional delivery fails closed even for conditional GET
+  ---
+  duration_ms: 8.767855
+  type: 'test'
+  ...
+# Subtest: invalid part selectors and non-GET methods never touch D1
+ok 6 - invalid part selectors and non-GET methods never touch D1
+  ---
+  duration_ms: 2.494937
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 217.483944

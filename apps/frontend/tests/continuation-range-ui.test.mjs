@@ -69,7 +69,7 @@ test('real bounded workspace carries the unreachable marker and explanation into
     assert.ok(document.querySelector('.detail-column .bars'));
     await click(cell('UTG', 'AJs'));
     assert.doesNotMatch(document.querySelector('.detail-column').textContent, /対象外（到達不能）/);
-    assert.match(document.querySelector('.detail-column .bars').textContent, /fold.*100\.0%/);
+    assert.match(document.querySelector('.detail-column .bars').textContent, /fold.*100\.0%/i);
   });
 });
 

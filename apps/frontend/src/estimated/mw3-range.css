@@ -1,0 +1,17 @@
+.mw3-range-view { min-width: 0; display: grid; gap: 10px; }
+.mw3-view-heading { display: flex; justify-content: space-between; gap: 12px; color: var(--text-muted); font-size: 12px; }
+.mw3-history, .mw3-actions { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.mw3-history button, .mw3-actions button { flex-shrink: 0; min-height: 40px; padding: 6px 10px; border: 1px solid var(--line); background: var(--surface-raised); color: var(--text); border-radius: 4px; cursor: pointer; }
+.mw3-tables { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 12px; min-width: 0; }
+.mw3-tables.has-detail .mw3-hand-detail { grid-column: 1 / -1; }
+.mw3-tables .matrix-panel { min-width: 0; }
+.mw3-tables .matrix { min-height: 300px; }
+.mw3-historical .matrix button:not(.unreachable-hand) { background: var(--surface-raised); }
+.mw3-historical small, .mw3-end { color: var(--text-muted); font-size: 12px; }
+.mw3-hand-detail { min-width: 0; display: grid; gap: 12px; align-content: start; }
+.mw3-hand-detail p { margin: 0; color: var(--text-muted); line-height: 1.5; }
+.mw3-hand-detail select { width: 100%; min-height: 40px; }
+.mw3-price { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin: 0; font-size: 13px; }
+.mw3-price dt { color: var(--text-muted); }
+.mw3-price dd { margin: 0; }
+@media (max-width: 760px) { .mw3-history button, .mw3-actions button { min-height: 44px; } }

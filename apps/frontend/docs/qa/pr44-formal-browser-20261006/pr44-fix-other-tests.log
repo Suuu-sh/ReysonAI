@@ -1,0 +1,28 @@
+skipped: no local postflop policies
+✔ same seed and human actions replay the same hand (21.023708ms)
+✔ chips are conserved: returns plus rake sum to zero (18.981959ms)
+✔ no flop is ever contested by three or more players (247.01125ms)
+✔ an agent plays the saved preflop frequencies (3.7085ms)
+✔ a call that would make the pot three-way moves to fold (table rule) (0.145458ms)
+✔ a heads-up line maps to its postflop spot (2.047666ms)
+✔ without a postflop policy the pot is checked down (1.909583ms)
+✔ a human in a pot without a postflop policy checks each street instead of skipping (6.79575ms)
+✔ a human out of position is asked on the flop even when the saved tree checks for them (96.2055ms)
+✔ the human is asked and the replay continues with the answer (0.211709ms)
+✔ session: button moves each hand and points use 1BB = 100 (0.298625ms)
+✔ hand classes (0.052292ms)
+✔ agent-game stats: flags per hand and summary (1.051625ms)
+✔ player read: latest 1000 hands, collecting threshold, style and targeted tendencies (1.42575ms)
+✔ style introductions stay under the selected card in en (806.073792ms)
+✔ style introductions stay under the selected card in ja (18.708542ms)
+✔ style introductions stay under the selected card in zh-CN (14.344583ms)
+✔ style introductions stay under the selected card in es (16.963208ms)
+✔ shared map frame stays shrinkable with a readable plot and the compact roster remains scoped (0.89725ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1614.423625

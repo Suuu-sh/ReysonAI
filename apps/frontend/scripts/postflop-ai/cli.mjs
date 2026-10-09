@@ -2,6 +2,7 @@
 // Without --spot, the first pilot spot (BTN_open_BB_call) is used. --all runs every reachable
 // heads-up spot (single-raised and 3bet pots) in order; a failing spot is logged and skipped, then listed at the end.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { dirname } from "node:path";
 import { auditExperiment } from "./audit.mjs";
 import { generate, generateLater, loadCandidate, loadLaterCandidate, resolveEffort, resolveModel } from "./generate.mjs";
@@ -10,6 +11,9 @@ import { simulateParallel } from "./simulation-parallel.mjs";
 import { generateHandEv } from "./hand-ev.mjs";
 import { generateLaterHandEv } from "./later-hand-ev.mjs";
 import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, spotById } from "./spots.ts";
+import { auditFileRecord, AUDIT_REPOSITORY, captureAuditIdentity, identityHash } from "./audit-identity.mjs";
+import { assertSafeFile } from "./reviewed-postflop-archive.mjs";
+import { isFreshSimulationReport } from "./publish-d1.mjs";
 
 const COMMANDS = ["generate", "generate-later", "simulate", "audit", "hand-ev", "later-hand-ev", "spots"];
 const USAGE = "Usage: postflop-ai <generate|generate-later|simulate|audit|hand-ev|later-hand-ev|spots> [--spot <id> | --all] [--samples N] [--model M] [--effort E]";
@@ -34,6 +38,8 @@ const samplesOption = fallback => {
 };
 
 async function runSpot(spotId) {
+  const startedAt = new Date().toISOString();
+  const auditStart = command === "audit" ? captureAuditIdentity() : null;
   const inputs = loadInputs(spotId);
   const paths = artifactPaths(inputs.spot);
   if (command === "generate") {
@@ -71,11 +77,37 @@ async function runSpot(spotId) {
   const candidate = loadCandidate(inputs);
   if (!existsSync(paths.report)) throw new Error("Simulation report missing; run postflop-ai:simulate first");
   const laterCandidate = loadLaterCandidate(inputs, candidate);
+  const savedReport = JSON.parse(readFileSync(paths.report, "utf8"));
+  // Known stale versions cannot equal a fresh replay. Fail before expensive
+  // work, while retaining historical report bytes unchanged on disk.
+  if (!isFreshSimulationReport(inputs, candidate, laterCandidate, savedReport)) throw new Error("Saved simulation report is stale/incomplete for current inputs, policies, defence and sample configuration");
+  const artifactRecords = () => Object.fromEntries(["candidate", "laterCandidate", "report"].map(kind => [kind,
+    auditFileRecord(AUDIT_REPOSITORY, `apps/frontend/.local/postflop-ai/${inputs.spot.slug}${{ candidate: "-policy.json", laterCandidate: "-later-policy.json", report: "-report.json" }[kind]}`).sha256]));
+  const artifactStart = artifactRecords();
   const replay = await simulateParallel(inputs, candidate.policy, config.samples_per_board_profile_seat, laterCandidate);
-  const result = auditExperiment(inputs, candidate, JSON.parse(readFileSync(paths.report, "utf8")), laterCandidate, { replay });
-  return [`PASS: ${result.checkedCombos} expanded combo decisions, ${result.resultCount} comparisons, fixed-seed replay.`,
+  const result = auditExperiment(inputs, candidate, savedReport, laterCandidate, { replay });
+  const auditEnd = captureAuditIdentity();
+  if (identityHash(auditStart) !== identityHash(auditEnd) || identityHash(artifactStart) !== identityHash(artifactRecords()) ||
+      loadInputs(spotId).fingerprint !== inputs.fingerprint) throw new Error("Audit source, inputs or policy/report bytes changed during execution");
+  const message = [`PASS: ${result.checkedCombos} expanded combo decisions, ${result.resultCount} comparisons, fixed-seed replay.`,
     `Advisory EV warnings: ${result.warnings.length}${result.warnings.length ? `; ${result.warnings.slice(0, 5).join(" | ")}` : ""}`,
     "AI estimate only; human review required before any publication."].join("\n");
+  const log = `[${spotId}] ${message}\n`;
+  const proof = { schema_version: 1, spot: spotId, scope: "Actual fixed-seed CLI audit; independent review and all-board acceptance remain separate",
+    status: "pass", command: `node scripts/postflop-ai/cli.mjs audit --spot ${spotId}`, exit_code: 0,
+    started_at: startedAt, completed_at: new Date().toISOString(), source_fingerprint: inputs.fingerprint,
+    flop_policy_hash: candidate.metadata.policy_hash, later_policy_hash: laterCandidate?.metadata.policy_hash ?? null,
+    artifact_sha256: artifactStart, checkedCombos: result.checkedCombos, comparisons: result.resultCount, warnings: result.warnings.length,
+    fixed_seed_replay_pass: true, execution: { node_version: process.version, platform: process.platform, arch: process.arch },
+    audit_identity: { start: auditStart, end: auditEnd, sha256: identityHash(auditStart) },
+    log: { text: log, sha256: createHash("sha256").update(log).digest("hex") } };
+  const evidenceRelative = `apps/frontend/.local/postflop-ai/audit-evidence/${spotId}-replay-${Date.parse(startedAt)}.json`;
+  assertSafeFile(AUDIT_REPOSITORY, evidenceRelative, { missing: true });
+  const evidencePath = new URL(`../../.local/postflop-ai/audit-evidence/${spotId}-replay-${Date.parse(startedAt)}.json`, import.meta.url);
+  mkdirSync(dirname(evidencePath.pathname), { recursive: true });
+  assertSafeFile(AUDIT_REPOSITORY, evidenceRelative, { missing: true });
+  writeFileSync(evidencePath, `${JSON.stringify(proof, null, 2)}\n`, { flag: "wx" });
+  return `${message}\nExecution evidence: ${evidenceRelative}`;
 }
 
 if (command === "spots") {

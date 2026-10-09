@@ -1,0 +1,26 @@
+✔ enumerates exact HU endings, excludes impossible/all-in paths, selects 40 and defers 367 exact histories (3.360715ms)
+✔ every new input is Node/browser identical and each live hand equals all saved action factors (246.558598ms)
+✔ folded participants are never included as postflop dead cards or opponent ranges (4.426017ms)
+✔ complete observed action sequence matches in Agent and rejects reordered/missing folds and deferred paths (303.727833ms)
+✔ range workspace squeeze ending opens the correct HU spot with the correct remaining seats (2.873129ms)
+✔ legacy 44 plus limp4bet input fingerprints remain unchanged (335.975908ms)
+✔ missing, incomplete or invalid saved source cannot become a substitute range (10.827282ms)
+✔ local D1-compatible SQL preserves existing policies and supports safe retry (3.942854ms)
+✔ AA-only support rejects impossible boards instead of manufacturing combos (0.993659ms)
+✔ fresh authoring rejects changed source actors and chip sizes (12.444688ms)
+✔ packed caches preserve exact values, missing/null states, updates and sparse reach weights (3.883873ms)
+✔ batched and point range equity match the frozen reference bit-for-bit, including blockers and query transitions (107.221094ms)
+✔ large runs cache counterfactual continuation hands without retaining point prefix tables (94.463584ms)
+✔ allocation-free draw detection keeps every reference tier (including wheel and suit ownership) (65.285067ms)
+✔ board workers preserve simulation seeds, board order and both heads-up trees (2163.293907ms)
+✔ hand-EV scheduling leaves the source order intact and sends expensive boards first (0.409066ms)
+✔ hand-EV board workers use exactly the shared browser core despite reordered tasks and handle failures (353244.188108ms)
+✔ bounded simulation caches preserve seeded reports exactly (1908.406268ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 359965.927351

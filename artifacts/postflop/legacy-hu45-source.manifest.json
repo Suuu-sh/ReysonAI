@@ -1,0 +1,1011 @@
+{
+  "schema_version": 1,
+  "kind": "preserved-legacy-postflop-source",
+  "status": "historical-not-current-audit-approval",
+  "source": {
+    "method": "user-authorized read-only legacy source transfer",
+    "filename": "ReysonAI-HU45-readonly-2026-10-04.zip",
+    "baseline_commit": "33574ad6bf08f5e99e73b46eacd4a874a639e1c9"
+  },
+  "archive": {
+    "path": "artifacts/postflop/legacy-hu45-source.zip",
+    "bytes": 441204,
+    "sha256": "5f5dd88540c00ce7426146b91b1fd9c0cc10974b146ba02a175cc067395e7b0a"
+  },
+  "spots": [
+    "BTN_open_BB_3bet_call",
+    "BTN_open_BB_4bp_call",
+    "BTN_open_BB_call",
+    "BTN_open_SB_3bet_call",
+    "BTN_open_SB_4bp_call",
+    "CO_open_BB_3bet_call",
+    "CO_open_BB_4bp_call",
+    "CO_open_BB_call",
+    "CO_open_BTN_3bet_call",
+    "CO_open_BTN_4bp_call",
+    "CO_open_BTN_call",
+    "CO_open_SB_3bet_call",
+    "CO_open_SB_4bp_call",
+    "HJ_open_BB_3bet_call",
+    "HJ_open_BB_4bp_call",
+    "HJ_open_BB_call",
+    "HJ_open_BTN_3bet_call",
+    "HJ_open_BTN_4bp_call",
+    "HJ_open_BTN_call",
+    "HJ_open_CO_3bet_call",
+    "HJ_open_CO_4bp_call",
+    "HJ_open_CO_call",
+    "HJ_open_SB_3bet_call",
+    "HJ_open_SB_4bp_call",
+    "SB_limp_BB_check",
+    "SB_limp_BB_iso_SB_reraise_BB_4bet_call",
+    "SB_limp_BB_iso_SB_reraise_call",
+    "SB_limp_BB_iso_call",
+    "SB_open_BB_3bet_call",
+    "SB_open_BB_4bp_call",
+    "SB_open_BB_call",
+    "UTG_open_BB_3bet_call",
+    "UTG_open_BB_4bp_call",
+    "UTG_open_BB_call",
+    "UTG_open_BTN_3bet_call",
+    "UTG_open_BTN_4bp_call",
+    "UTG_open_BTN_call",
+    "UTG_open_CO_3bet_call",
+    "UTG_open_CO_4bp_call",
+    "UTG_open_CO_call",
+    "UTG_open_HJ_3bet_call",
+    "UTG_open_HJ_4bp_call",
+    "UTG_open_HJ_call",
+    "UTG_open_SB_3bet_call",
+    "UTG_open_SB_4bp_call"
+  ],
+  "report_defence_version": 5,
+  "note": "Exact recovered bytes. Current baseline defence version is 6; this archive does not claim current audit PASS or authorize publication.",
+  "files": [
+    {
+      "spot": "BTN_open_BB_3bet_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/btn-bb-3bp-v1-later-policy.json",
+      "bytes": 57497,
+      "sha256": "c58d22346607bb4676d69c805de3173ca1d8a97fddaafd729b77104ede6cd9f9"
+    },
+    {
+      "spot": "BTN_open_BB_3bet_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/btn-bb-3bp-v1-policy.json",
+      "bytes": 41650,
+      "sha256": "dd617b7362a47bfd415065612565c8e669f41eb27d1f88ceaa6c16aa781a36ba"
+    },
+    {
+      "spot": "BTN_open_BB_3bet_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/btn-bb-3bp-v1-report.json",
+      "bytes": 35011,
+      "sha256": "84ff41b2f9cd60ccb9f2c347f49296dbd0489e404ae5f9aa53312032f18c8720"
+    },
+    {
+      "spot": "BTN_open_BB_4bp_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/btn-bb-4bp-v1-later-policy.json",
+      "bytes": 36600,
+      "sha256": "bb15fd1ba6a6ef72a8ea3c849248f786a575019bc44858dd344ed1b349d0f8ec"
+    },
+    {
+      "spot": "BTN_open_BB_4bp_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/btn-bb-4bp-v1-policy.json",
+      "bytes": 19613,
+      "sha256": "df6dbd3b553a58b1343d0cdc1cde244b6e565e92487c4a4e19fa82306b078ce9"
+    },
+    {
+      "spot": "BTN_open_BB_4bp_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/btn-bb-4bp-v1-report.json",
+      "bytes": 35106,
+      "sha256": "bef85c583f7ec688b218939c39a16ce2282d905e4e3cacc641c28b8951d42c47"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/btn-bb-srp-v1-later-policy.json",
+      "bytes": 46352,
+      "sha256": "019072f903a8cef2c2583dcf1a7ea30a593cfe7ee1e114b8e82542d912f060a9"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/btn-bb-srp-v1-policy.json",
+      "bytes": 19585,
+      "sha256": "b6199a5e950ab80853885c434e708c3e5d552b31d6d8e3b19b963f0891bf0409"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/btn-bb-srp-v1-report.json",
+      "bytes": 34680,
+      "sha256": "2d228dd335161d182ac16c88f164be5bbc851fbf5fd8d3ff68e097c22b348c41"
+    },
+    {
+      "spot": "BTN_open_SB_3bet_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/btn-sb-3bp-v1-later-policy.json",
+      "bytes": 50737,
+      "sha256": "7735e0bc7c80656cd57d03baa92c96bfc2ce4b5fdc40d169ed96301e791a4a00"
+    },
+    {
+      "spot": "BTN_open_SB_3bet_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/btn-sb-3bp-v1-policy.json",
+      "bytes": 34396,
+      "sha256": "ecc0e8ce9e5bb578a09d6778aaada48c7859429d9a14b9bb687d9bd8db5b1418"
+    },
+    {
+      "spot": "BTN_open_SB_3bet_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/btn-sb-3bp-v1-report.json",
+      "bytes": 35035,
+      "sha256": "b311f9c689d69872be094dbc244e20856fdda3f9daba496bc4527643c8fd8891"
+    },
+    {
+      "spot": "BTN_open_SB_4bp_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/btn-sb-4bp-v1-later-policy.json",
+      "bytes": 55077,
+      "sha256": "464df137c1b4b750a48abed70d7c3a31890848aa959ee96accc2eaade63059a5"
+    },
+    {
+      "spot": "BTN_open_SB_4bp_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/btn-sb-4bp-v1-policy.json",
+      "bytes": 18654,
+      "sha256": "2018f54c267baa59bfbc0d60fe21386abac4f9bd63dd84167e1c956893515aca"
+    },
+    {
+      "spot": "BTN_open_SB_4bp_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/btn-sb-4bp-v1-report.json",
+      "bytes": 35094,
+      "sha256": "af33b2a829a4667de19a917fc7e28bcafc4dccb00540ab76ac0d17b118ef214e"
+    },
+    {
+      "spot": "CO_open_BB_3bet_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-bb-3bp-v1-later-policy.json",
+      "bytes": 42079,
+      "sha256": "cf325dfa963bb030e86ee84bd1cc2b0085de321108572289286f7eedd0321dd9"
+    },
+    {
+      "spot": "CO_open_BB_3bet_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-bb-3bp-v1-policy.json",
+      "bytes": 34948,
+      "sha256": "db9b1e80580fa6cd5edfe20045417c45b8fe046298792e4e3e2681868b363343"
+    },
+    {
+      "spot": "CO_open_BB_3bet_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-bb-3bp-v1-report.json",
+      "bytes": 34935,
+      "sha256": "34e92a84d32b19671984f498021dabe031aae55adf85c1fb42f49d5d0e5b0054"
+    },
+    {
+      "spot": "CO_open_BB_4bp_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-bb-4bp-v1-later-policy.json",
+      "bytes": 37810,
+      "sha256": "dff43e5257acbc27110fc69c8ad8e5676bf37132f72afd24debe75466b27469c"
+    },
+    {
+      "spot": "CO_open_BB_4bp_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-bb-4bp-v1-policy.json",
+      "bytes": 18858,
+      "sha256": "917a9db7599d4d0669fb63e2b8ee31c2a82c0630383fed1cde5adbafed1641c9"
+    },
+    {
+      "spot": "CO_open_BB_4bp_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-bb-4bp-v1-report.json",
+      "bytes": 35037,
+      "sha256": "57b60567d88e5b4b207afde0beb8af6ba04939d2bfe2be5fe151b342e12b6110"
+    },
+    {
+      "spot": "CO_open_BB_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-bb-srp-v1-later-policy.json",
+      "bytes": 50084,
+      "sha256": "ceb5a48a7140ab3a2be18dabee48e5f42293ec7494d6d80ab71ea38e559501ab"
+    },
+    {
+      "spot": "CO_open_BB_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-bb-srp-v1-policy.json",
+      "bytes": 21496,
+      "sha256": "244f03b3a562f92bae39f1d461acbee9d6eff5feb105924cd1860ad819f31a96"
+    },
+    {
+      "spot": "CO_open_BB_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-bb-srp-v1-report.json",
+      "bytes": 34656,
+      "sha256": "2e6caf17844eba915313d0698e4872781ddd9a2617ae18ec3f2819d3a80b6294"
+    },
+    {
+      "spot": "CO_open_BTN_3bet_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-btn-3bp-v1-later-policy.json",
+      "bytes": 43894,
+      "sha256": "847df1f088e12e72171b5ec29a3330c1a94e6afbe7442a5471df8f7fea1f3bdb"
+    },
+    {
+      "spot": "CO_open_BTN_3bet_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-btn-3bp-v1-policy.json",
+      "bytes": 19408,
+      "sha256": "d1c3ad32ce387f7fb1d843ccf0f8fa7cb130f5273049b7dcd89aa8340227f121"
+    },
+    {
+      "spot": "CO_open_BTN_3bet_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-btn-3bp-v1-report.json",
+      "bytes": 34854,
+      "sha256": "a00765de0609c5d07e7f287fb3ba78111e34111a01e5ee54d6b1d016df06b269"
+    },
+    {
+      "spot": "CO_open_BTN_4bp_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-btn-4bp-v1-later-policy.json",
+      "bytes": 38112,
+      "sha256": "79a9ee90f3c71991106a4ea43a1b77f40a4d8542bf4280b2ea808dab21ffe86f"
+    },
+    {
+      "spot": "CO_open_BTN_4bp_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-btn-4bp-v1-policy.json",
+      "bytes": 34398,
+      "sha256": "8da55ace718edbd14719c457bfad2903fe1c580bd2fe04c4dd3e132c55179fa6"
+    },
+    {
+      "spot": "CO_open_BTN_4bp_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-btn-4bp-v1-report.json",
+      "bytes": 35063,
+      "sha256": "6cd118f4d2a904777653ca8df4753a3f399eb4953c6b6766369d4bcfb9d89a20"
+    },
+    {
+      "spot": "CO_open_BTN_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-btn-srp-v1-later-policy.json",
+      "bytes": 48210,
+      "sha256": "e8cd75bbc9531fcced696ad270a73faadf83167f387e9acbb29ee22ee18b6e15"
+    },
+    {
+      "spot": "CO_open_BTN_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-btn-srp-v1-policy.json",
+      "bytes": 34384,
+      "sha256": "25f731c52dd863e3780bf111ffb4ce5226ae075c7ea4042bc4d776a24fd62aea"
+    },
+    {
+      "spot": "CO_open_BTN_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-btn-srp-v1-report.json",
+      "bytes": 34712,
+      "sha256": "e0dd3f65fd2cad8b3dd71a2a8a19008eea9ff6cdb1473f40889a8825995a6a28"
+    },
+    {
+      "spot": "CO_open_SB_3bet_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-sb-3bp-v1-later-policy.json",
+      "bytes": 58393,
+      "sha256": "98c644ee7184c598ae2d068c3e586a7c3b0b0573ba75aaa9db1a3d321ffe42dc"
+    },
+    {
+      "spot": "CO_open_SB_3bet_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-sb-3bp-v1-policy.json",
+      "bytes": 35511,
+      "sha256": "56282a96bf555cbc011fcaa17e7ffbfc6aa79ef5971fefa69f8170bb1cd767a9"
+    },
+    {
+      "spot": "CO_open_SB_3bet_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-sb-3bp-v1-report.json",
+      "bytes": 34997,
+      "sha256": "95feb2cf385c4815f243b6f8eb6dc87ef712fddf1a2d16c1110ce8e352080be3"
+    },
+    {
+      "spot": "CO_open_SB_4bp_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-sb-4bp-v1-later-policy.json",
+      "bytes": 43369,
+      "sha256": "7281c671b4671d31c578c2967300a4d84e124401473770325ba7413887799857"
+    },
+    {
+      "spot": "CO_open_SB_4bp_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-sb-4bp-v1-policy.json",
+      "bytes": 20817,
+      "sha256": "16fc0d275803b6dd3e130e5c4bc8f12b1990fdaf28e66dedfef316846cb6f871"
+    },
+    {
+      "spot": "CO_open_SB_4bp_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/co-sb-4bp-v1-report.json",
+      "bytes": 35027,
+      "sha256": "8f8b47d85cae81972501172f3c4baef4589299df890d872abdf854f757cb89fb"
+    },
+    {
+      "spot": "HJ_open_BB_3bet_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-bb-3bp-v1-later-policy.json",
+      "bytes": 48863,
+      "sha256": "90fd16d9be17f7c47ed2585bb2f145c3af726c52b9a100f16a85dcd299ddf12f"
+    },
+    {
+      "spot": "HJ_open_BB_3bet_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-bb-3bp-v1-policy.json",
+      "bytes": 35145,
+      "sha256": "286d649911700b697471753333515e254b2cf3b316ad783e7d49379152a273e4"
+    },
+    {
+      "spot": "HJ_open_BB_3bet_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-bb-3bp-v1-report.json",
+      "bytes": 34950,
+      "sha256": "a08f8d1ee1e6a72c674a3e6d9c51b56166c580ab1c2e22d14e64c6a071410c20"
+    },
+    {
+      "spot": "HJ_open_BB_4bp_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-bb-4bp-v1-later-policy.json",
+      "bytes": 51322,
+      "sha256": "e1b0b98faf5ce20774c08e48cac4d30acafd2417cc6ed65844940ea40e6ebfc1"
+    },
+    {
+      "spot": "HJ_open_BB_4bp_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-bb-4bp-v1-policy.json",
+      "bytes": 18646,
+      "sha256": "3ac136980f3552d1b275df41355c0640c6fd0029432afc8f31b18e41a75915fc"
+    },
+    {
+      "spot": "HJ_open_BB_4bp_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-bb-4bp-v1-report.json",
+      "bytes": 35045,
+      "sha256": "796c034717f8cc478c21e14d42f2331dbf81edb20b284c78dcf4ea2a2c2698e9"
+    },
+    {
+      "spot": "HJ_open_BB_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-bb-srp-v1-later-policy.json",
+      "bytes": 50687,
+      "sha256": "e40c762a44ed723aafadef8bdaef1496858d3d134e35b8ddd48c5ed0c21fbc53"
+    },
+    {
+      "spot": "HJ_open_BB_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-bb-srp-v1-policy.json",
+      "bytes": 19687,
+      "sha256": "46443c0312f1e76c33c1911c512fcf71a46ac5b62565f38863c71a977755b2ae"
+    },
+    {
+      "spot": "HJ_open_BB_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-bb-srp-v1-report.json",
+      "bytes": 34641,
+      "sha256": "e616111efea3d498cc9c7f3e1143eb61791446201636022fa3ca52806a35d75f"
+    },
+    {
+      "spot": "HJ_open_BTN_3bet_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-btn-3bp-v1-later-policy.json",
+      "bytes": 42081,
+      "sha256": "e4201fc7f43bf50a5b70acc65c7d11efed237084453fd35d56666d8dfa0d887f"
+    },
+    {
+      "spot": "HJ_open_BTN_3bet_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-btn-3bp-v1-policy.json",
+      "bytes": 21588,
+      "sha256": "2177993941eef23c6e66d67643885c7de2529ffb9aa6fe5aab9d0ff880956193"
+    },
+    {
+      "spot": "HJ_open_BTN_3bet_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-btn-3bp-v1-report.json",
+      "bytes": 34862,
+      "sha256": "4d0e86a5361cd693db51a9b70b047aca0b9d1d7ae640025e7220e83eab65fe79"
+    },
+    {
+      "spot": "HJ_open_BTN_4bp_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-btn-4bp-v1-later-policy.json",
+      "bytes": 44516,
+      "sha256": "ef5280ba2aad29f66527abd8ac6d6cf5b41787f6e2659feafaee1312bf7c6776"
+    },
+    {
+      "spot": "HJ_open_BTN_4bp_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-btn-4bp-v1-policy.json",
+      "bytes": 34383,
+      "sha256": "069508af1ed5d56020447b972c466b936b084920cb65b7daafc6583ab33e9982"
+    },
+    {
+      "spot": "HJ_open_BTN_4bp_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-btn-4bp-v1-report.json",
+      "bytes": 35073,
+      "sha256": "ac13476843f5c23981088b74a2b37131d71a7b7a46d8736aaeb3bb26efd080c4"
+    },
+    {
+      "spot": "HJ_open_BTN_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-btn-srp-v1-later-policy.json",
+      "bytes": 39360,
+      "sha256": "53e53a622806d1f943ee907d14da86e329b641d3d4897502e5b703f06ee20623"
+    },
+    {
+      "spot": "HJ_open_BTN_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-btn-srp-v1-policy.json",
+      "bytes": 34377,
+      "sha256": "31aaa10d05126bb59f063787003f68c3db6d5571205438337c7f9e449324a58b"
+    },
+    {
+      "spot": "HJ_open_BTN_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-btn-srp-v1-report.json",
+      "bytes": 34667,
+      "sha256": "4fc3c65e5bc4075e51c3d66169b3ead0a636bd5159361da8e94ae69ed82249bb"
+    },
+    {
+      "spot": "HJ_open_CO_3bet_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-co-3bp-v1-later-policy.json",
+      "bytes": 42097,
+      "sha256": "a34231b1c231e7da7bfd95974c27fbd2092841332cb5dde50c2e048a8086d714"
+    },
+    {
+      "spot": "HJ_open_CO_3bet_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-co-3bp-v1-policy.json",
+      "bytes": 19606,
+      "sha256": "a270aed9ff15596e8c28aff483ccdb84652018db7888c42e704eb0933973be59"
+    },
+    {
+      "spot": "HJ_open_CO_3bet_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-co-3bp-v1-report.json",
+      "bytes": 34832,
+      "sha256": "d02a497c2f51f04e7ada1dc58f8e2ffaf567868bd081b6003a546471cce7e767"
+    },
+    {
+      "spot": "HJ_open_CO_4bp_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-co-4bp-v1-later-policy.json",
+      "bytes": 49158,
+      "sha256": "5a0eb0848a6372c8b9aca859b9a65f4d9430cb31eee3ecf6860cf42e9ae6d2fd"
+    },
+    {
+      "spot": "HJ_open_CO_4bp_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-co-4bp-v1-policy.json",
+      "bytes": 35172,
+      "sha256": "9fff352e34ca751199919bed41727df54b2d3f200c8de2226f0e5d61f561b946"
+    },
+    {
+      "spot": "HJ_open_CO_4bp_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-co-4bp-v1-report.json",
+      "bytes": 35059,
+      "sha256": "af04fa943bc3e70e9e4d9f8c381b7b78c35a3e3c8d8361ed5ab33713223c4bb5"
+    },
+    {
+      "spot": "HJ_open_CO_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-co-srp-v1-later-policy.json",
+      "bytes": 50409,
+      "sha256": "edcd9a12acd090fb7f2e9aa81198d6a06553b4fb475e1ea6fd10047f4b83e688"
+    },
+    {
+      "spot": "HJ_open_CO_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-co-srp-v1-policy.json",
+      "bytes": 34380,
+      "sha256": "56248316daf1f121f6dc163a1206f20357d7fac291d1245a354692d5e9a431cb"
+    },
+    {
+      "spot": "HJ_open_CO_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-co-srp-v1-report.json",
+      "bytes": 34658,
+      "sha256": "240f254615e80ccbca24739daaefca12b4401b875bb7bc674955f4a5f42f117d"
+    },
+    {
+      "spot": "HJ_open_SB_3bet_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-sb-3bp-v1-later-policy.json",
+      "bytes": 37786,
+      "sha256": "fd2deb8fafe7721c7803a23af4625a7a9440a2127f3dc3c62020cc7415947e49"
+    },
+    {
+      "spot": "HJ_open_SB_3bet_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-sb-3bp-v1-policy.json",
+      "bytes": 34956,
+      "sha256": "d5997b81b6122193da0dd78840cc2af587dded61be4a62c8cc1db821d1543092"
+    },
+    {
+      "spot": "HJ_open_SB_3bet_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-sb-3bp-v1-report.json",
+      "bytes": 34975,
+      "sha256": "ac7e16146b5225463c07c1f9fd893478ca21dcf36940dcda0d29f4b2f4d45ec3"
+    },
+    {
+      "spot": "HJ_open_SB_4bp_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-sb-4bp-v1-later-policy.json",
+      "bytes": 39328,
+      "sha256": "207d992574624df638ba84d981039facb24a7aac461962bbba7664b69a0f5236"
+    },
+    {
+      "spot": "HJ_open_SB_4bp_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-sb-4bp-v1-policy.json",
+      "bytes": 22027,
+      "sha256": "0f969b0da79ebe67d34e8b20a95ed3a104ad5495a3459d2531b27899e0990486"
+    },
+    {
+      "spot": "HJ_open_SB_4bp_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/hj-sb-4bp-v1-report.json",
+      "bytes": 35033,
+      "sha256": "b0803dccdbc2ddf3f3527ab7b5fed5ac8cec3bd1e704da91560e1e52f5851a1c"
+    },
+    {
+      "spot": "SB_open_BB_3bet_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-3bp-v1-later-policy.json",
+      "bytes": 51311,
+      "sha256": "26676617f783ec31584b92eb543d3c2de4c2f983faa7fe95a8f084b68f4abe29"
+    },
+    {
+      "spot": "SB_open_BB_3bet_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-3bp-v1-policy.json",
+      "bytes": 21703,
+      "sha256": "1025af7cd3bd7b5f892757d5d78928a2402c555398062940e3b309db2020a757"
+    },
+    {
+      "spot": "SB_open_BB_3bet_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-3bp-v1-report.json",
+      "bytes": 34848,
+      "sha256": "a259e599bbd14aed736cdb94b3cdc348db9708acb07cb4991d5c96445e5c8a67"
+    },
+    {
+      "spot": "SB_open_BB_4bp_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-4bp-v1-later-policy.json",
+      "bytes": 37217,
+      "sha256": "602881ec256b5de5b54db8f9126f1b51abce214d7dffecd7933e0bd3735c7243"
+    },
+    {
+      "spot": "SB_open_BB_4bp_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-4bp-v1-policy.json",
+      "bytes": 37807,
+      "sha256": "fb5cde907a8b966874e7c3157145222fef0a646cca0bec3e14d11b7775e34785"
+    },
+    {
+      "spot": "SB_open_BB_4bp_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-4bp-v1-report.json",
+      "bytes": 35035,
+      "sha256": "fcb3f24bda5257fa1ffe985e1c1c255525a52b13e8d28e4818ec342087f09318"
+    },
+    {
+      "spot": "SB_limp_BB_iso_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-iso-v1-later-policy.json",
+      "bytes": 36580,
+      "sha256": "7304acad65c4349bd199e312618a5a8668f870564ac7df65ba02f0289ba655c3"
+    },
+    {
+      "spot": "SB_limp_BB_iso_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-iso-v1-policy.json",
+      "bytes": 21693,
+      "sha256": "01459c1c1c3254b9d86ff2cfea9374f049ccbfc054866a242b179c43d8c8c6c7"
+    },
+    {
+      "spot": "SB_limp_BB_iso_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-iso-v1-report.json",
+      "bytes": 34662,
+      "sha256": "e52bc7f61d9cb8db330e576bd3818f23aec33d19ea356fbd70f8c1c2783ae3db"
+    },
+    {
+      "spot": "SB_limp_BB_iso_SB_reraise_BB_4bet_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-limp-4bp-v1-later-policy.json",
+      "bytes": 36313,
+      "sha256": "0d26e7989acbd98b2d855c01e62f7cf91c46f859a6f0d0570e464a8f78883f08"
+    },
+    {
+      "spot": "SB_limp_BB_iso_SB_reraise_BB_4bet_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-limp-4bp-v1-policy.json",
+      "bytes": 10276,
+      "sha256": "6ca8e6f3acfc7ab9e31ac0320cb9bfbb8643d242c018104cfee0b9ce4c36852d"
+    },
+    {
+      "spot": "SB_limp_BB_iso_SB_reraise_BB_4bet_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-limp-4bp-v1-report.json",
+      "bytes": 35065,
+      "sha256": "fbee607ae4440942099b23af36242cd33b105818fb397cb2bfd690d111ea4248"
+    },
+    {
+      "spot": "SB_limp_BB_iso_SB_reraise_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-limp-reraise-v1-later-policy.json",
+      "bytes": 36574,
+      "sha256": "9aff2b97364d566311d605297805da632d46a3226491319fd19f3bca799b645f"
+    },
+    {
+      "spot": "SB_limp_BB_iso_SB_reraise_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-limp-reraise-v1-policy.json",
+      "bytes": 35297,
+      "sha256": "0e763fa32736c581eef714e40456819205110ec09f1e9d2afda1c9569c1b4930"
+    },
+    {
+      "spot": "SB_limp_BB_iso_SB_reraise_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-limp-reraise-v1-report.json",
+      "bytes": 34906,
+      "sha256": "557645ddead50daa513476366da0e804ac43fe5e92e22ffbc3808ce3a357a655"
+    },
+    {
+      "spot": "SB_limp_BB_check",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-limp-v1-later-policy.json",
+      "bytes": 48840,
+      "sha256": "81cb7dd2d6b69807b207dc8443abf318f6f67c3bd23ec92daf121503b2d11c7f"
+    },
+    {
+      "spot": "SB_limp_BB_check",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-limp-v1-policy.json",
+      "bytes": 34367,
+      "sha256": "015d067bb9bed3d492836a062d3f3183c65f63fbc7ebc60aef7eda9e7373b1c2"
+    },
+    {
+      "spot": "SB_limp_BB_check",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-limp-v1-report.json",
+      "bytes": 34704,
+      "sha256": "75b3bad95e0c9ae095ab37bce3cc83fac5400f2e395a34394fc49d8eea64e4ce"
+    },
+    {
+      "spot": "SB_open_BB_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-srp-v1-later-policy.json",
+      "bytes": 57136,
+      "sha256": "5ca88759583dcd81a6a95fcc5cb8cc547c4e7e6a57da201242c4336e576c6b4e"
+    },
+    {
+      "spot": "SB_open_BB_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-srp-v1-policy.json",
+      "bytes": 34385,
+      "sha256": "114e71acad9d4c6718ffbae2ce1f56b1071f7d9ae6e55b89a269ea936c598b1f"
+    },
+    {
+      "spot": "SB_open_BB_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/sb-bb-srp-v1-report.json",
+      "bytes": 34673,
+      "sha256": "a66b3b44737f6c7b922f049c351ae4198965677cd799e987fa6a9d6ebdfeaeb1"
+    },
+    {
+      "spot": "UTG_open_BB_3bet_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-bb-3bp-v1-later-policy.json",
+      "bytes": 48604,
+      "sha256": "5b0e502a949cf35546cc9d7355829a21559a76bd187bb0ee5befbdf653407d07"
+    },
+    {
+      "spot": "UTG_open_BB_3bet_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-bb-3bp-v1-policy.json",
+      "bytes": 35887,
+      "sha256": "690f0828ff8a08237ae2712be80a33ae983fd50fd972f2e542e70bfaaba59f6c"
+    },
+    {
+      "spot": "UTG_open_BB_3bet_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-bb-3bp-v1-report.json",
+      "bytes": 34974,
+      "sha256": "95a051cfe9791a29a7fbe6e814d7c2234e519c086f9c31c6de733a5c0f124d24"
+    },
+    {
+      "spot": "UTG_open_BB_4bp_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-bb-4bp-v1-later-policy.json",
+      "bytes": 44554,
+      "sha256": "cafff4afdeb6152b52fc920b3e69470de3b916ce963a538d0d91c44fafe6a848"
+    },
+    {
+      "spot": "UTG_open_BB_4bp_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-bb-4bp-v1-policy.json",
+      "bytes": 18270,
+      "sha256": "fcfbc3e0c9b6301e739ed216e92d6d3c5a16a97c183453fe7c29e1cf2a41f42e"
+    },
+    {
+      "spot": "UTG_open_BB_4bp_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-bb-4bp-v1-report.json",
+      "bytes": 35079,
+      "sha256": "e2174f4fc51d1572ddfd5704889dd68a907456cf247f85b20e7806c627fad329"
+    },
+    {
+      "spot": "UTG_open_BB_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-bb-srp-v1-later-policy.json",
+      "bytes": 50375,
+      "sha256": "f2d96a267d36e363bb2ee91c452177d0e0b9200bc2f107d5a300b31611bf4066"
+    },
+    {
+      "spot": "UTG_open_BB_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-bb-srp-v1-policy.json",
+      "bytes": 19984,
+      "sha256": "639ad3f3bf333dc6ca9f2ea7331d83e14bb4c311fb01ebf81ea6f0747b64d733"
+    },
+    {
+      "spot": "UTG_open_BB_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-bb-srp-v1-report.json",
+      "bytes": 34698,
+      "sha256": "0b484cc05e48fa32210b6a9048fdecd67c0cfabf6e2ab92730cea6e0f4719d2e"
+    },
+    {
+      "spot": "UTG_open_BTN_3bet_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-btn-3bp-v1-later-policy.json",
+      "bytes": 37803,
+      "sha256": "ef78f2d6bc41ec2377d69f6795218a25a11e17bf3e8b92886d316da52646b1be"
+    },
+    {
+      "spot": "UTG_open_BTN_3bet_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-btn-3bp-v1-policy.json",
+      "bytes": 18457,
+      "sha256": "8e84dc664e0b31d6fdd9bc7d33680fea9ad7d23a99dd1e20e7395d6187f90851"
+    },
+    {
+      "spot": "UTG_open_BTN_3bet_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-btn-3bp-v1-report.json",
+      "bytes": 34886,
+      "sha256": "d1a8c962e63cb915645be7f6d75d0dc924f62743703d4fee8979e5cc91be6c08"
+    },
+    {
+      "spot": "UTG_open_BTN_4bp_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-btn-4bp-v1-later-policy.json",
+      "bytes": 37775,
+      "sha256": "d754fbf6be5d3e97a43305d59c8b39ee911f11ed4627809bb298f7e4440f2cd8"
+    },
+    {
+      "spot": "UTG_open_BTN_4bp_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-btn-4bp-v1-policy.json",
+      "bytes": 34382,
+      "sha256": "5ec0bc70be8b267a8f9e25a10b241cfce9522484360d75e6671df43a92d6738f"
+    },
+    {
+      "spot": "UTG_open_BTN_4bp_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-btn-4bp-v1-report.json",
+      "bytes": 35096,
+      "sha256": "9b3be9f9dc5ceac4bce2cf4c3a5b5183bbd3da0cabe8401f9d536d2ee02b229a"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-btn-srp-v1-later-policy.json",
+      "bytes": 43025,
+      "sha256": "9c2d62ec2271e9e8f8ae4611c8b64f8869edc752ae041968853bc1649eea3550"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-btn-srp-v1-policy.json",
+      "bytes": 35145,
+      "sha256": "0f2828e22e1df77ee1df3e81c6aa618093a62af66c19371660080b67b726d4dd"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-btn-srp-v1-report.json",
+      "bytes": 34708,
+      "sha256": "f09ebaeeab560589279602f1710717baeed17aa7e149de889ebe73794d391c89"
+    },
+    {
+      "spot": "UTG_open_CO_3bet_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-co-3bp-v1-later-policy.json",
+      "bytes": 58448,
+      "sha256": "ea6ba83bae1ce64d0c622b18c8f4045ce4ca9b377a37684bf0ff048a71ec2342"
+    },
+    {
+      "spot": "UTG_open_CO_3bet_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-co-3bp-v1-policy.json",
+      "bytes": 20131,
+      "sha256": "2a1e54399426ef18633f8985444d87da458f7e0100b8e65513cc493f5beba988"
+    },
+    {
+      "spot": "UTG_open_CO_3bet_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-co-3bp-v1-report.json",
+      "bytes": 34862,
+      "sha256": "3c76884f4077a958dfc79141214ba2cda52d80c66035d87b75e1c48d1830c40e"
+    },
+    {
+      "spot": "UTG_open_CO_4bp_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-co-4bp-v1-later-policy.json",
+      "bytes": 46433,
+      "sha256": "0333246ce07da90a8ab56f0c4179991c32f6ad153f26f6a81d57c89b77a49390"
+    },
+    {
+      "spot": "UTG_open_CO_4bp_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-co-4bp-v1-policy.json",
+      "bytes": 34399,
+      "sha256": "734b7f2a64c9ba7e4af5cfb75e607752becaf2e7ece81bec9fac58023d84eb71"
+    },
+    {
+      "spot": "UTG_open_CO_4bp_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-co-4bp-v1-report.json",
+      "bytes": 35086,
+      "sha256": "8ba2af0763c5dadde5fb7a902644a9afa63030b4dce2f78cec365b38424f66e4"
+    },
+    {
+      "spot": "UTG_open_CO_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-co-srp-v1-later-policy.json",
+      "bytes": 43919,
+      "sha256": "3d08e269feabebaeeb004809cb76863a87f05f87908ab2da43ac592a7c61c0c2"
+    },
+    {
+      "spot": "UTG_open_CO_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-co-srp-v1-policy.json",
+      "bytes": 36583,
+      "sha256": "c84631d9955d84988cd9b0685ec65b472b252d50ad214b855fe32c911b03b9c6"
+    },
+    {
+      "spot": "UTG_open_CO_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-co-srp-v1-report.json",
+      "bytes": 34696,
+      "sha256": "f807d56b9bc3e0e5e5be162d18847540d85d3f0a39fd068c197374fbe1006ea9"
+    },
+    {
+      "spot": "UTG_open_HJ_3bet_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-hj-3bp-v1-later-policy.json",
+      "bytes": 41156,
+      "sha256": "57eab2e4ff45739bce003370b806edad760df4e6698c640f6c7e84fd8b5d7fbf"
+    },
+    {
+      "spot": "UTG_open_HJ_3bet_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-hj-3bp-v1-policy.json",
+      "bytes": 19317,
+      "sha256": "97d1d313793305662771674e93a5e2f93c16f0165b7c092e8e7746aa8cf89df3"
+    },
+    {
+      "spot": "UTG_open_HJ_3bet_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-hj-3bp-v1-report.json",
+      "bytes": 34867,
+      "sha256": "ad8c567820e66e171fb00c622cadd3b732e58aa9afe8015623971586b9f38d46"
+    },
+    {
+      "spot": "UTG_open_HJ_4bp_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-hj-4bp-v1-later-policy.json",
+      "bytes": 59648,
+      "sha256": "7baf0b472e1c032f804c89f4fd9089998aca171cf8bdb447d0a12a0a575c635e"
+    },
+    {
+      "spot": "UTG_open_HJ_4bp_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-hj-4bp-v1-policy.json",
+      "bytes": 35161,
+      "sha256": "eeaca19cf2c8bb016795ff92553f9867a43be69fb3771f34bc21939ecaae5be3"
+    },
+    {
+      "spot": "UTG_open_HJ_4bp_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-hj-4bp-v1-report.json",
+      "bytes": 35052,
+      "sha256": "9e4df25afdfd17f8bea1e06d20730f01e9c3e4621c8e99f07d1edda1f9e8576b"
+    },
+    {
+      "spot": "UTG_open_HJ_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-hj-srp-v1-later-policy.json",
+      "bytes": 36576,
+      "sha256": "b4545b767fe90b71f64eb9ef4c8d714e48bc12cd47174621f1c023b517012e28"
+    },
+    {
+      "spot": "UTG_open_HJ_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-hj-srp-v1-policy.json",
+      "bytes": 35406,
+      "sha256": "d8b44731cabcca434230a53ccdd035cc2013b92a8ca506ff48b826efff4696dc"
+    },
+    {
+      "spot": "UTG_open_HJ_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-hj-srp-v1-report.json",
+      "bytes": 34693,
+      "sha256": "13edbe6c084be5552cdf3643bfa5a21efd034a38a6fb44536479899c434e3ed8"
+    },
+    {
+      "spot": "UTG_open_SB_3bet_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-sb-3bp-v1-later-policy.json",
+      "bytes": 43346,
+      "sha256": "e37644c83bf1558d75e084b0b7ccd1fd37fd5f08ab1f499c03d5446122e4f113"
+    },
+    {
+      "spot": "UTG_open_SB_3bet_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-sb-3bp-v1-policy.json",
+      "bytes": 36879,
+      "sha256": "6da03df49477d9ed2cfc5814d6afb37a0fc8fc2215cbb8a0c14cf65794fbf824"
+    },
+    {
+      "spot": "UTG_open_SB_3bet_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-sb-3bp-v1-report.json",
+      "bytes": 34971,
+      "sha256": "6a4ee4f2ec34549c2d7717ee8caed980285262d59592822abe58abbfa4e958eb"
+    },
+    {
+      "spot": "UTG_open_SB_4bp_call",
+      "kind": "later_candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-sb-4bp-v1-later-policy.json",
+      "bytes": 36598,
+      "sha256": "61b38e74c712d220bc656e57856ca90957a0513cc1e1c5d4d15d2a4fc2d8dc9a"
+    },
+    {
+      "spot": "UTG_open_SB_4bp_call",
+      "kind": "candidate",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-sb-4bp-v1-policy.json",
+      "bytes": 18450,
+      "sha256": "5c9962f2d1c55039c7b2beee4f70e667de8705b982704c44f2a60ff77538bd4b"
+    },
+    {
+      "spot": "UTG_open_SB_4bp_call",
+      "kind": "report",
+      "member": "ReysonAI-HU45-readonly-2026-10-04/payload/utg-sb-4bp-v1-report.json",
+      "bytes": 35083,
+      "sha256": "d478d97c07195963c120843c724b2ef4f1a666ad3cc6236b249163874827d162"
+    }
+  ]
+}

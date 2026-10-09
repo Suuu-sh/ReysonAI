@@ -1,4 +1,4 @@
-import test from "node:test";
+import test, { afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -8,7 +8,8 @@ import { canonicalFlop, canonicalFlops, comboKey, mapCards, suitPermutations } f
 import { packFrame, unpackFrame } from "../scripts/postflop-ai/flop-base-codec.ts";
 import { buildFlopBase, FLOP_BASE_VERSION, isFreshFlopBase, storedFlopNodes, storedFlopExplanation } from "../scripts/postflop-ai/flop-base-core.ts";
 import { flopNodes, flopNodesCanonical } from "../scripts/postflop-ai/views.ts";
-import { flopUiFacts } from "../scripts/postflop-ai/flop-ui-facts.ts";
+import { flopUiFacts, releaseFlopUiFacts } from "../scripts/postflop-ai/flop-ui-facts.ts";
+import { defenceFor } from "../scripts/postflop-ai/defence.ts";
 import { referencePolicy } from "../scripts/postflop-ai/policy.ts";
 import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
 import { loadInputs } from "../scripts/postflop-ai/inputs.mjs";
@@ -16,7 +17,7 @@ import { sha } from "../scripts/postflop-ai/browser-inputs.ts";
 import { seededRandom } from "../scripts/lib/equity.ts";
 import { treeHistories } from "../scripts/postflop-ai/tree.ts";
 import { computeBoard, computeExplain } from "../src/estimated/postflop-compute.ts";
-import { computeBoardBatch } from "../scripts/postflop-ai/board-batch.mjs";
+import { isolatedBoardBatch } from "./helpers/isolated-board-batch.mjs";
 import { flopBaseBytesParts, buildFlopBaseSql, flopBaseMiddleware } from "../scripts/postflop-ai/flop-base-d1.mjs";
 import { readFreshFlopBase } from "../scripts/postflop-ai/flop-base-files.mjs";
 import opening from "../src/estimated/opening-ranges.json" with { type: "json" };
@@ -28,6 +29,14 @@ const laterCandidate = { policy: referenceLaterPolicy(), metadata: {} };
 laterCandidate.metadata = { source_hash: inputs.fingerprint, flop_policy_hash: candidate.metadata.policy_hash, policy_hash: sha(laterCandidate.policy) };
 const options = { inputs, candidate, laterCandidate };
 const request = { spotId: inputs.spot.id, datasets, flopCandidate: candidate, laterCandidate };
+
+// These batch-style tests never revisit a completed board. Use the same cache
+// lifecycle as offline board workers while retaining every board and assertion.
+function releaseBoardCaches() {
+  defenceFor(inputs, candidate.policy, null).releaseBoardCaches();
+  releaseFlopUiFacts(inputs, candidate.policy);
+}
+afterEach(releaseBoardCaches);
 
 test("all 22,100 flops map to exactly 1,755 suit classes, with full card/holes round trips", () => {
   const keys = new Set(); let count = 0;
@@ -51,6 +60,29 @@ test("columnar frames preserve nullable classes, nested arrays, precise f64 weig
   assert.deepEqual(unpackFrame(packFrame(records)), records);
 });
 
+// Keep worker fixtures isolated from the in-process whole-board graphs.
+// Worker-count coverage stays 1 vs 2, with both original boards.
+test("board workers write deterministic resumable files, identical across worker counts", async () => {
+  const one = mkdtempSync(join(tmpdir(), "flop-base-one-")), two = mkdtempSync(join(tmpdir(), "flop-base-two-"));
+  const boardList = ["As7d2c", "KhKd4h"].map(board => ({ id: canonicalFlop(board).key, cards: canonicalFlop(board).cards }));
+  try {
+    for (const [outputDir, parallelism] of [[one, 1], [two, 2]]) {
+      await isolatedBoardBatch({ kind: "flop-base", inputs, policy: candidate.policy, laterCandidate, samples: 1,
+        boardList, parallelism, taskOptions: { outputDir, candidate, laterCandidate } });
+    }
+    for (const board of boardList) {
+      const a = brotliDecompressSync(readFileSync(join(one, `${board.id}.json.br`))).toString();
+      const b = brotliDecompressSync(readFileSync(join(two, `${board.id}.json.br`))).toString();
+      if (a !== b) {
+        let at = 0; while (a[at] === b[at]) at++;
+        assert.fail(`${board.id} differs at ${at}: ${a.slice(at - 100, at + 180)} != ${b.slice(at - 100, at + 180)}`);
+      }
+      assert.ok(readFreshFlopBase(inputs.spot, board.id, inputs, candidate, laterCandidate, one));
+      assert.equal(readFreshFlopBase(inputs.spot, board.id, inputs, { ...candidate, metadata: { policy_hash: "changed" } }, laterCandidate, one), null);
+    }
+  } finally { rmSync(one, { recursive: true }); rmSync(two, { recursive: true }); }
+});
+
 test("20 seeded random flops have identical remapped and directly computed mixes", () => {
   const random = seededRandom(20261001);
   for (let at = 0; at < 20; at++) {
@@ -64,6 +96,7 @@ test("20 seeded random flops have identical remapped and directly computed mixes
         assert.deepEqual(direct[name].rows[index].combos, node.rows[index].combos.map(combo => ({ ...combo, cards: comboKey(combo.cards, canonical.fromCanonical) })));
       }
     }
+    releaseBoardCaches();
   }
 });
 
@@ -94,6 +127,7 @@ test("5 flops: JSON stored/remapped views and combo/class UI facts deep-equal th
       assert.deepEqual(computeBoard({ ...request, board, flopBase: stale }), computeBoard({ ...request, board }));
     }
     assert.equal(storedFlopNodes(base, inputs, "2c3d4h"), null);
+    releaseBoardCaches();
   }
 });
 
@@ -126,26 +160,6 @@ test("local flop middleware serves stored Brotli with content-encoding, decoded 
   assert.equal(typeof flopBaseMiddleware, "function");
 });
 
-test("board workers write deterministic resumable files, identical across worker counts", async () => {
-  const one = mkdtempSync(join(tmpdir(), "flop-base-one-")), two = mkdtempSync(join(tmpdir(), "flop-base-two-"));
-  const boardList = ["As7d2c", "KhKd4h"].map(board => ({ id: canonicalFlop(board).key, cards: canonicalFlop(board).cards }));
-  try {
-    for (const [outputDir, parallelism] of [[one, 1], [two, 2]]) {
-      await computeBoardBatch({ kind: "flop-base", inputs, policy: candidate.policy, laterCandidate, samples: 1,
-        boardList, parallelism, taskOptions: { outputDir, candidate, laterCandidate } });
-    }
-    for (const board of boardList) {
-      const a = brotliDecompressSync(readFileSync(join(one, `${board.id}.json.br`))).toString();
-      const b = brotliDecompressSync(readFileSync(join(two, `${board.id}.json.br`))).toString();
-      if (a !== b) {
-        let at = 0; while (a[at] === b[at]) at++;
-        assert.fail(`${board.id} differs at ${at}: ${a.slice(at - 100, at + 180)} != ${b.slice(at - 100, at + 180)}`);
-      }
-      assert.ok(readFreshFlopBase(inputs.spot, board.id, inputs, candidate, laterCandidate, one));
-      assert.equal(readFreshFlopBase(inputs.spot, board.id, inputs, { ...candidate, metadata: { policy_hash: "changed" } }, laterCandidate, one), null);
-    }
-  } finally { rmSync(one, { recursive: true }); rmSync(two, { recursive: true }); }
-});
 
 test("the base stores no EV and a base that still carries EV is stale", () => {
   assert.ok(FLOP_BASE_VERSION >= 6);

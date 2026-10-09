@@ -27,14 +27,27 @@ for (const locale of ["en", "ja", "zh-CN", "es"]) {
     assert.equal(summary.querySelectorAll('li[aria-current="true"]').length, 1);
     assert.ok([...summary.querySelectorAll("li")].every(li => li.title && li.textContent.trim()));
     assert.equal(summary.nextElementSibling.className, "shared-style-map");
-    assert.ok(doc.querySelector(".play-style-map-point"));
+    const map = summary.nextElementSibling.querySelector(".play-style-map");
+    assert.equal(map.className, "play-style-map");
+    assert.equal(map.tagName, "FIGURE");
+    assert.ok(map.getAttribute("aria-label")?.trim());
+    assert.equal(map.querySelector(".play-style-map-y").getAttribute("aria-hidden"), "true");
+    assert.equal(map.querySelector(".play-style-map-x").tagName, "FIGCAPTION");
+    const point = map.querySelector(".play-style-map-point");
+    assert.ok(point);
+    assert.equal(point.parentElement, map.querySelector(".play-style-map-grid"));
+    assert.equal(point.getAttribute("role"), "img");
+    assert.ok(point.getAttribute("aria-label")?.trim());
+    assert.equal(point.style.left, "76.4%");
+    assert.equal(point.style.top, "36.8%");
     assert.equal(doc.querySelectorAll(".style-row").length, 8);
   });
 }
 
-test("axis width stays bounded and the compact roster does not restyle the drill roster", async () => {
+test("shared map frame stays shrinkable with a readable plot and the compact roster remains scoped", async () => {
   const css = await readFile(new URL("../src/agent/agent.css", import.meta.url), "utf8");
   assert.match(css, /\.shared-style-map \.play-style-map \{ grid-template-columns:40px minmax\(0,1fr\)/);
   assert.match(css, /\.shared-style-map \.play-style-map-y \{ min-width:0; overflow-wrap:anywhere;/);
   assert.match(css, /\.style-roster-compact \{ grid-template-columns: repeat\(4, minmax\(0, 1fr\)\)/);
+  assert.match(css, /\.style-roster-compact li \{ min-width: 0; overflow-wrap: anywhere;/);
 });

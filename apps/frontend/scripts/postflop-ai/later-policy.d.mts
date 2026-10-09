@@ -1,4 +1,4 @@
-import type { ReferenceTier } from "./policy.mjs";
+import type { HandTier as ReferenceTier } from "./types.ts";
 
 /** Fixed turn/river comparator; river rules never contain the draw tier. */
 type ReferenceRules<Tier extends ReferenceTier> = {

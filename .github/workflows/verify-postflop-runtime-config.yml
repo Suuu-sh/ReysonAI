@@ -1,7 +1,7 @@
 name: Verify public postflop runtime config
 on:
   pull_request:
-    branches: [development, main, feat/native-google-session-bridge]
+    branches: [development, main, feat/native-google-session-bridge, codex/fix/pr44_frozen_loading/01a11189]
     paths:
       - 'apps/backend/**'
       - 'configs/**'

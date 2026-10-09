@@ -2,17 +2,17 @@
 // There is intentionally no generate/update-review/fallback mode in CI.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { preparePreflopDelivery, assertDeliveryBundle, assertPublishedMetadata } from "./lib/reviewed-preflop.mjs";
+import { preparePreflopDeliveryStream, writePreflopDeliveryFile, assertDeliveryBundleFile, assertPublishedMetadata } from "./lib/reviewed-preflop.mjs";
 const argv = process.argv.slice(2);
 const arg = name => { const index = argv.indexOf(name); return index >= 0 ? argv[index + 1] : undefined; };
 const started = performance.now();
-const expected = preparePreflopDelivery();
+const expected = preparePreflopDeliveryStream();
 const out = resolve(arg("--out") ?? ".local/reviewed-preflop");
 if (argv.includes("--check-bundle")) {
-  assertDeliveryBundle(readFileSync(join(out, "preflop.sql"), "utf8"), JSON.parse(readFileSync(join(out, "delivery.json"), "utf8")), expected);
+  assertDeliveryBundleFile(join(out, "preflop.sql"), JSON.parse(readFileSync(join(out, "delivery.json"), "utf8")), expected);
 } else {
   mkdirSync(out, { recursive: true });
-  writeFileSync(join(out, "preflop.sql"), expected.sql);
+  writePreflopDeliveryFile(join(out, "preflop.sql"), expected);
   writeFileSync(join(out, "delivery.json"), JSON.stringify(expected.manifest, null, 2) + "\n");
 }
 if (arg("--database-result")) {

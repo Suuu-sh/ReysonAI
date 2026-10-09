@@ -76,7 +76,7 @@ export function loadPostflopSpot(spotId: string, signal?: AbortSignal) {
 }
 
 export function datasetsNeededForSpot(spot: Spot): string[] {
-  if ("history" in spot) return ["hu-after-multiway-spots", ...new Set(Object.values(spot.ranges).flatMap(factors => factors.map(([file]) => file)))];
+  if (spot?.history && spot?.ranges) return ["hu-after-multiway-spots", ...new Set<string>(Object.values(spot.ranges).flat().map(factor => factor[0]))];
   switch (spot?.kind) {
     case "srp": return ["opening-ranges", "preflop-ranges"];
     case "3bp": return ["opening-ranges", "preflop-ranges", "three-bet-responses"];
