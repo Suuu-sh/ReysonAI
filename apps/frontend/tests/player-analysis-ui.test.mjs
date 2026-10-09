@@ -3,6 +3,7 @@ import { after, before, test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { JSDOM } from "jsdom";
 import { createServer } from "vite";
 
 let server;
@@ -69,17 +70,21 @@ test("player analysis shows a distinct ReysonAI Score trend", () => {
   assert.match(html, /class="analysis-score-line"/);
 });
 
-test("drill styles reuse animals only after the existing diverse-sample threshold", async () => {
+test("drill styles keep animal avatars with type labels after the existing diverse-sample threshold", async () => {
   const { practiceAnimal } = await server.ssrLoadModule("/src/trainer/practice-style.ts");
+  const { STYLES } = await server.ssrLoadModule("/src/agent/player-read.ts");
   assert.equal(practiceAnimal({ ready: false, style: { key: "nit" } }).id, "collecting");
   for (const [key, id] of [["nit", "nit"], ["tag", "tag"], ["lag", "lag"], ["calling", "station"], ["tight", "tight_passive"], ["balanced", "balanced"]]) {
     assert.equal(practiceAnimal({ ready: true, style: { key } }).id, id);
   }
   const html = renderToStaticMarkup(createElement(PlayerAnalysis, { history: [], onStart() {} }));
   assert.match(html, /ドリルのプレイスタイル/);
-  assert.match(html, /Agent卓のVPIP・PFR/);
-  assert.match(html, /カメ/);
-  assert.match(html, /サメ/);
+  assert.match(html, /タイプは同じドリル問題の推定方針との差を表します。Agent卓のVPIP・PFR/);
+  const document = new JSDOM(html).window.document;
+  const ids = ["nit", "tight_passive", "tag", "passive", "balanced", "aggressive", "station", "lag"];
+  const roster = [...document.querySelectorAll(".style-roster li")];
+  assert.deepEqual(roster.map(item => item.querySelector("span")?.textContent), ids.map(id => STYLES[id].name.ja));
+  assert.equal(document.querySelectorAll(".style-roster svg.style-unit[aria-hidden=\"true\"]").length, ids.length);
 });
 
 test("ranked stats require live FastFold access and never substitute legacy quiz or drill records", async () => {
