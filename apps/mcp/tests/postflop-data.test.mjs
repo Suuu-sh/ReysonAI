@@ -6,6 +6,7 @@ import { canonicalFlop } from "../../frontend/scripts/postflop-ai/flop-isomorphi
 import { compactFlopBase, packFrame, packView } from "../../frontend/scripts/postflop-ai/flop-base-codec.ts";
 import { getSavedPostflopRange, listPostflopCoverage } from "../src/postflop-data.ts";
 import { McpDataError } from "../src/data.ts";
+import { buildSql } from "../../frontend/scripts/postflop-ai/publish-d1.mjs";
 
 const digest = value => createHash("sha256").update(value).digest("hex");
 const board = "Kc7d2h";
@@ -142,6 +143,31 @@ test("coverage discovers only released spots, saved boards, and histories from a
   assert.equal(histories.canonicalFlop, boardKey);
   assert.deepEqual(histories.histories.map(item => [item.history, item.node, item.seat]), [[[], "btn_first", "BTN"], [["bet33"], "bb_vs_33", "BB"]]);
   assert.equal(histories.histories[0].actions[0], "check");
+});
+
+test("MCP accepts the standard publication written alongside profile-only rows", async () => {
+  const publisherSpot = { id: spotId, slug: "hj-btn-srp-v1", kind: "srp", tree: "oop_checks",
+    ip: "BTN", oop: "HJ", potBb: 5.5, stackBb: 97.5 };
+  const candidate = { metadata: { policy_hash: flopHash }, policy: flopPolicy };
+  const laterCandidate = { metadata: { policy_hash: laterHash }, policy: laterPolicy };
+  const entry = { spot: publisherSpot, candidate, laterCandidate, report: {} };
+  const rolePair = { villain: candidate, exploit: candidate };
+  const sql = buildSql([entry], timestamp, "mcp-profile-contract", [{ profile: "station", spot: publisherSpot,
+    opponentSeat: "oop", flop: rolePair, later: { villain: laterCandidate, exploit: laterCandidate } }]);
+  const line = sql.split("\n").find(item => item.startsWith("INSERT INTO dataset_versions") && item.includes("'postflop',"));
+  const match = /VALUES \('postflop', '([a-f0-9]{64})', '([^']+)', '((?:[^']|'')*)'\);$/.exec(line ?? "");
+  assert.ok(match, "publisher emits a parseable standard dataset_versions row");
+
+  const fixture = makeFixture();
+  const version = fixture.tables.versions.find(item => item.name === "postflop");
+  version.content_hash = match[1];
+  version.published_at = match[2];
+  version.detail_json = match[3].replaceAll("''", "'");
+  const result = await getSavedPostflopRange(fixture.db, { spotId, flop: "Ks7h2c" });
+  assert.equal(result.kind, "ai_estimate_not_gto");
+  assert.equal(result.source.releaseHash, match[1], "MCP accepted and bound the publisher's exact version metadata");
+  assert.equal(result.source.dataset, "postflop_flop_base_br");
+  assert.ok(result.hands.length > 0);
 });
 
 test("saved flop-board pagination handles first, middle and final pages", async () => {

@@ -7,7 +7,7 @@ export type FlopFactOptions = { boardCards: readonly number[]; node: string; car
   combos?: readonly { cards: string; weight: number }[] };
 type ResponseCombo = WeightedCombo & { fold: number };
 type Context = { defence: ReturnType<typeof defenceFor>; table: Table | null; villains: WeightedCombo[]; responses: Record<string, ResponseCombo[]>;
-  tables?: RankTable[]; calledRanges?: Record<string, ReturnType<typeof makeRange>> };
+  unsupportedResponses: Record<string, string>; tables?: RankTable[]; calledRanges?: Record<string, ReturnType<typeof makeRange>> };
 // Only the numeric facts consumed by postflop-explanation.ts. No obsolete evidence groups
 // or independent 120-runout equity simulation: UI equity already comes from defence/betting.
 // Direct and stored paths use this same projection in canonical suit coordinates.
@@ -41,17 +41,26 @@ function contextFor(inputs: Inputs, policy: FlopPolicy, board: readonly number[]
   if (cache.has(key)) return cache.get(key)!;
   if (cache.size >= 120) cache.delete(cache.keys().next().value!);
   const defence = defenceFor(inputs, policy, null);
+  const requireSavedPolicy = Boolean(inputs.opponentProfile && inputs.opponentProfile !== "standard");
   const table = replayOrNull(inputs, board, { flop: history });
   const role = nodeRole(node), opponent = inputs.spot[otherRole(role)];
   const villains = table ? defence.rangeItems(table, board, opponent)
-    : scaleByPath(seatRange(inputs, opponent, board), otherRole(role), flopState(inputs.spot.tree, history).steps, policy, board);
-  const responses: Record<string, ResponseCombo[]> = {};
+    : scaleByPath(seatRange(inputs, opponent, board), otherRole(role), flopState(inputs.spot.tree, history).steps, policy, board, { requireSavedPolicy });
+  const responses: Record<string, ResponseCombo[]> = {}, unsupportedResponses: Record<string, string> = {};
   const response = (action: string, responseNode: string) => {
     const after = replayOrNull(inputs, board, { flop: [...history, action] });
-    responses[action] = villains.map(item => {
-      const base = policyMix(policy, responseNode, item.combo, board);
-      return { ...item, fold: (after ? defence.mix(after, board, responseNode, item.combo, base) : base).fold / 100 };
-    });
+    try {
+      responses[action] = villains.map(item => {
+        const base = policyMix(policy, responseNode, item.combo, board, { requireSavedPolicy });
+        return { ...item, fold: (after ? defence.mix(after, board, responseNode, item.combo, base) : base).fold / 100 };
+      });
+    } catch (error) {
+      if (requireSavedPolicy && (error as { code?: string })?.code === "PROFILE_POLICY_MISSING") {
+        unsupportedResponses[action] = responseNode;
+        return;
+      }
+      throw error;
+    }
   };
   if (node.endsWith("_first")) for (const bet of FLOP_BETS) response(bet, facingNode(role, bet));
   else if (NODES[node].includes("raise")) {
@@ -59,7 +68,7 @@ function contextFor(inputs: Inputs, policy: FlopPolicy, board: readonly number[]
     const answer = flopState(inputs.spot.tree, [...history, "raise"]).node;
     if (answer) response("raise", answer);
   }
-  const value = { defence, table, villains, responses };
+  const value = { defence, table, villains, responses, unsupportedResponses };
   cache.set(key, value);
   return value;
 }
@@ -69,7 +78,7 @@ export function flopUiComboFactsCanonical({ boardCards, node, cards, history, pr
   if (flopState(inputs.spot.tree, history).node !== node) throw new Error("Flop explanation history does not reach the node");
   const hero = cardIds(cards, 2);
   if (hero.some(card => boardCards.includes(card))) throw new Error("ボードと重なるカードです。");
-  const { defence, table, villains, responses } = contextFor(inputs, policy, boardCards, node, history);
+  const { defence, table, villains, responses, unsupportedResponses } = contextFor(inputs, policy, boardCards, node, history);
   const compatible = (combo: readonly number[]) => !combo.includes(hero[0]) && !combo.includes(hero[1]);
   const actions: Record<string, { foldShare: number }> = {};
   for (const [action, range] of Object.entries(responses)) {
@@ -77,11 +86,13 @@ export function flopUiComboFactsCanonical({ boardCards, node, cards, history, pr
     for (const item of range) if (compatible(item.combo)) { total += item.weight; folded += item.weight * item.fold; }
     actions[action] = { foldShare: rounded(total ? folded / total : 0) };
   }
-  const facing = table ? defence.facts(table, boardCards, node, hero, policyMix(policy, node, hero, boardCards)) : null;
+  const base = policyMix(policy, node, hero, boardCards, { requireSavedPolicy: Boolean(inputs.opponentProfile && inputs.opponentProfile !== "standard") });
+  const facing = table ? defence.facts(table, boardCards, node, hero, base) : null;
   const betting = table ? defence.bettingFacts(table, boardCards, node, hero) : null;
-  const profileReference = profileReferenceFacts(inputs, policy, null, table, boardCards, node, hero, policyMix(policy, node, hero, boardCards));
+  const profileReference = profileReferenceFacts(inputs, policy, null, table, boardCards, node, hero, base);
   return { kind: "ai_estimate_not_gto", cards: comboKey(cards), node,
     ...(profileReference ? { profile_reference: profileReference } : {}),
+    ...(Object.keys(unsupportedResponses).length ? { unsupported_actions: unsupportedResponses } : {}),
     equity: facing?.equity ?? betting?.equity_vs_defender ?? 0,
     actions,
     ...(facing ? { defence: {

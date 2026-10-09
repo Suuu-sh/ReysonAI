@@ -54,7 +54,8 @@ function opponentRange(node, inputs, policy, flop, hero, prev) {
   const table = replayOrNull(inputs, flop, { flop: history });
   if (table) return defenceFor(inputs, policy, null).rangeItems(table, flop, spot[role]).filter(item => !item.combo.some(card => dead.has(card)));
   const { steps } = flopState(spot.tree, history);
-  return scaleByPath(seatRange(inputs, spot[role], flop).filter(item => !item.combo.some(card => dead.has(card))), role, steps, policy, flop);
+  return scaleByPath(seatRange(inputs, spot[role], flop).filter(item => !item.combo.some(card => dead.has(card))), role, steps, policy, flop,
+    { requireSavedPolicy: Boolean(inputs.opponentProfile && inputs.opponentProfile !== "standard") });
 }
 
 const FIRST_NODES = { btn_first: "ip", oop_first: "oop" };
@@ -103,6 +104,8 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
   const equity = total ? villains.reduce((sum, item) => sum + item.weight * item.equity, 0) / total : 0;
   const ahead = villains.filter(item => item.equity >= 0.5), behind = villains.filter(item => item.equity < 0.5);
   const actions = {};
+  const unsupportedActions = {};
+  const requireSavedPolicy = Boolean(inputs.opponentProfile && inputs.opponentProfile !== "standard");
   let defenceFacts = null;
   let bettingFacts = null;
   // Villain responses use the computed defence (defence.ts) after the line `history` + hero's action.
@@ -112,12 +115,21 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
 
   const vsResponse = (responseNode, action, line) => {
     const table = replayOrNull(inputs, flop, { flop: [...history, ...line] });
-    const response = villains.map(item => {
-      const base = policyMix(policy, responseNode, item.combo, flop);
-      const mix = table ? defence.mix(table, flop, responseNode, item.combo, base) : base;
-      const fold = mix.fold / 100;
-      return { item, fold, cont: 1 - fold };
-    });
+    let response;
+    try {
+      response = villains.map(item => {
+        const base = policyMix(policy, responseNode, item.combo, flop, { requireSavedPolicy });
+        const mix = table ? defence.mix(table, flop, responseNode, item.combo, base) : base;
+        const fold = mix.fold / 100;
+        return { item, fold, cont: 1 - fold };
+      });
+    } catch (error) {
+      if (requireSavedPolicy && error?.code === "PROFILE_POLICY_MISSING") {
+        unsupportedActions[action] = responseNode;
+        return;
+      }
+      throw error;
+    }
     const scale = (list, key) => list.map(({ item, ...rest }) => ({ ...item, weight: item.weight * rest[key] })).filter(item => item.weight > 0);
     const folds = response.reduce((sum, entry) => sum + entry.item.weight * entry.fold, 0);
     actions[action] = {
@@ -154,12 +166,13 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
       if (answer) vsResponse(answer, "raise", ["raise"]);
     }
     if (table) {
-      defenceFacts = defence.facts(table, flop, node, hero, policyMix(policy, node, hero, flop));
+      defenceFacts = defence.facts(table, flop, node, hero, policyMix(policy, node, hero, flop, { requireSavedPolicy }));
       bettingFacts = defence.bettingFacts(table, flop, node, hero);
     }
   }
-  const profileReference = profileReferenceFacts(inputs, policy, null, table, flop, node, hero, policyMix(policy, node, hero, flop));
-  return { kind: "ai_estimate_not_gto", cards, node, ...(profileReference ? { profile_reference: profileReference } : {}), equity: defenceFacts?.equity ?? equity, combos: villains.length, actions,
+  const profileReference = profileReferenceFacts(inputs, policy, null, table, flop, node, hero, policyMix(policy, node, hero, flop, { requireSavedPolicy }));
+  return { kind: "ai_estimate_not_gto", cards, node, ...(profileReference ? { profile_reference: profileReference } : {}),
+    ...(Object.keys(unsupportedActions).length ? { unsupported_actions: unsupportedActions } : {}), equity: defenceFacts?.equity ?? equity, combos: villains.length, actions,
     ...(defenceFacts ? { defence: defenceFacts } : {}), ...(bettingFacts ? { betting: bettingFacts } : {}) };
 }
 

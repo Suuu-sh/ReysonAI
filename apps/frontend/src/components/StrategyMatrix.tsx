@@ -80,7 +80,6 @@ export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, 
                     : stripOrder(mixedActions).map(action => <span key={action} style={{ width: pct(aggregate.actions[action]), background: color(action) } as CSSProperties} />)}
                 </span>}
                 <strong>{hand}</strong>
-                <strong>{hand}</strong>
               </button>
             );
           })}

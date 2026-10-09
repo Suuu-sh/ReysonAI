@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { createHash } from "node:crypto";
 import { MAX_VALUE_BYTES, buildSql } from "../scripts/postflop-ai/publish-d1.mjs";
 import { postflopUrl } from "../src/estimated/postflop-api.ts";
 
@@ -23,6 +24,23 @@ test("publish SQL replaces only supplied spots, escapes quotes and records the p
 test("publish refuses a value over the D1 statement budget", () => {
   const huge = { ...entry, report: { text: "x".repeat(MAX_VALUE_BYTES) } };
   assert.throws(() => buildSql([huge]), /X_open_Y_call report/);
+});
+
+test("profile metadata does not contaminate the standard postflop version contract or hash", () => {
+  const publishedAt = "2026-10-09T12:00:00.000Z", publicationRevision = "revision-123";
+  const baseline = buildSql([entry], publishedAt, publicationRevision);
+  const rolePair = { villain: candidate, exploit: candidate };
+  const profileUnit = { profile: "nit", spot, opponentSeat: "oop", flop: rolePair, later: rolePair };
+  const withProfiles = buildSql([entry], publishedAt, publicationRevision, [profileUnit]);
+  const standardVersion = sql => sql.split("\n").find(line => line.startsWith("INSERT INTO dataset_versions") && line.includes("'postflop',"));
+  const baselineVersion = standardVersion(baseline), profileVersion = standardVersion(withProfiles);
+  assert.equal(profileVersion, baselineVersion, "profile metadata must not change the standard dataset row");
+
+  const hashes = { [spot.id]: { flop: candidate.metadata.policy_hash, later: null } };
+  const expectedHash = createHash("sha256").update(JSON.stringify({ publicationRevision, publishedAt, hashes })).digest("hex");
+  const detail = { mode: "spot-upsert", publication_revision: publicationRevision, touched_spots: hashes };
+  assert.equal(profileVersion, `INSERT INTO dataset_versions (name, content_hash, published_at, detail_json) VALUES ('postflop', '${expectedHash}', '${publishedAt}', '${JSON.stringify(detail)}');`);
+  assert.doesNotMatch(profileVersion, /profilePolicies|profiles/);
 });
 
 test("postflop URLs expose only read-only spot and flop artifacts, no hand-EV", () => {
@@ -75,13 +93,11 @@ test("profile SQL stores role-specific policy only, upserts supplied units, and 
   }
   assert.match(inserts[0], /"opponent_seat":"ip"/);
   const changed = structuredClone(item); changed.flop.villain.metadata.policy_hash = "changed";
-  for (const name of ["postflop", "postflop-profiles"]) {
-    assert.notEqual(datasetHash(sql, name), datasetHash(buildSql([entry], at, "profile-publication-id", [changed]), name));
-  }
+  assert.equal(datasetHash(sql, "postflop"), datasetHash(buildSql([entry], at, "profile-publication-id", [changed]), "postflop"));
+  assert.notEqual(datasetHash(sql, "postflop-profiles"), datasetHash(buildSql([entry], at, "profile-publication-id", [changed]), "postflop-profiles"));
   const metadataOnly = structuredClone(item); metadataOnly.flop.villain.metadata.model = "new-authoring-model";
-  for (const name of ["postflop", "postflop-profiles"]) {
-    assert.notEqual(datasetHash(sql, name), datasetHash(buildSql([entry], at, "profile-publication-id", [metadataOnly]), name));
-  }
+  assert.equal(datasetHash(sql, "postflop"), datasetHash(buildSql([entry], at, "profile-publication-id", [metadataOnly]), "postflop"));
+  assert.notEqual(datasetHash(sql, "postflop-profiles"), datasetHash(buildSql([entry], at, "profile-publication-id", [metadataOnly]), "postflop-profiles"));
   assert.throws(() => buildSql([], at, "profile-publication-id", [{ ...item, later: { ...item.later,
     exploit: { ...item.later.exploit, policy: { text: "x".repeat(MAX_VALUE_BYTES) } } } }]), /nit\/BTN_open_BB_call\/exploit\/later policy/);
 });
@@ -182,9 +198,8 @@ test("profile partial A-to-B-to-A publication never reuses a cache revision", ()
   const a1 = buildSql([], at, undefined, [unit("nit")]);
   const b = buildSql([], at, undefined, [unit("station")]);
   const a2 = buildSql([], at, undefined, [unit("nit")]);
-  for (const name of ["postflop", "postflop-profiles"]) {
-    assert.equal(new Set([a1, b, a2].map(sql => datasetHash(sql, name))).size, 3);
-  }
+  assert.ok([a1, b, a2].every(sql => !sql.includes("'postflop',")), "profile-only writes leave the standard version row untouched");
+  assert.equal(new Set([a1, b, a2].map(sql => datasetHash(sql, "postflop-profiles"))).size, 3);
   assert.doesNotMatch(buildSql([entry]), /'postflop-profiles'/, "standard publication must preserve the profile revision");
 });
 
@@ -200,12 +215,14 @@ test("SQLite partial imports preserve other profile units and standard histories
     const third = { ...unit("nit"), spot: otherSpot };
     db.exec(buildSql([entry], undefined, undefined, [first, other, third]));
     const standardBefore = db.prepare("SELECT * FROM postflop_policies").all();
+    const standardVersionBefore = db.prepare("SELECT * FROM dataset_versions WHERE name = 'postflop'").get();
     const untouchedBefore = db.prepare("SELECT * FROM postflop_profile_policies WHERE profile = 'station' OR spot_id = 'preserved_profile_spot' ORDER BY profile, spot_id, opponent_seat, role, stage").all();
     const changed = structuredClone(first);
     changed.flop.villain.metadata.model = "new-authoring-model";
     const patch = buildSql([], undefined, undefined, [changed]);
     db.exec(patch); db.exec(patch); db.exec(buildSql([]));
     assert.deepEqual(db.prepare("SELECT * FROM postflop_policies").all(), standardBefore);
+    assert.deepEqual(db.prepare("SELECT * FROM dataset_versions WHERE name = 'postflop'").get(), standardVersionBefore);
     assert.deepEqual(db.prepare("SELECT * FROM postflop_profile_policies WHERE profile = 'station' OR spot_id = 'preserved_profile_spot' ORDER BY profile, spot_id, opponent_seat, role, stage").all(), untouchedBefore);
     assert.equal(db.prepare("SELECT COUNT(*) AS n FROM postflop_profile_policies").get().n, 12);
     assert.equal(JSON.parse(db.prepare("SELECT metadata_json FROM postflop_profile_policies WHERE profile = 'nit' AND spot_id = 'BTN_open_BB_call' AND role = 'villain' AND stage = 'flop'").get().metadata_json).model, "new-authoring-model");

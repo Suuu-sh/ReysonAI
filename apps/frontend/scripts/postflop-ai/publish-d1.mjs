@@ -133,8 +133,12 @@ export function buildSql(published, publishedAt = new Date().toISOString(), publ
   }
   // A partial publication gets a new revision even for A -> B -> A. Hashing
   // only the touched content would revive a stale cache for untouched rows.
-  lines.push("DELETE FROM dataset_versions WHERE name = 'postflop';");
-  lines.push(`INSERT INTO dataset_versions (name, content_hash, published_at, detail_json) VALUES ('postflop', ${quote(sha(JSON.stringify({ publicationRevision, publishedAt, hashes, profiles: profileHashes })))}, ${quote(publishedAt)}, ${jsonValue({ mode: "spot-upsert", publication_revision: publicationRevision, touched_spots: hashes, profilePolicies: profiles.length * 4 }, "dataset detail")});`);
+  // Keep standard policy metadata isolated from profile-only writes: MCP reads
+  // this exact three-key detail contract and hashes only the standard catalog.
+  if (published.length) {
+    lines.push("DELETE FROM dataset_versions WHERE name = 'postflop';");
+    lines.push(`INSERT INTO dataset_versions (name, content_hash, published_at, detail_json) VALUES ('postflop', ${quote(sha(JSON.stringify({ publicationRevision, publishedAt, hashes })))}, ${quote(publishedAt)}, ${jsonValue({ mode: "spot-upsert", publication_revision: publicationRevision, touched_spots: hashes }, "dataset detail")});`);
+  }
   if (profiles.length) {
     const profileDetail = { kind: "ai_estimate_not_gto", mode: "profile-spot-upsert", publication_revision: publicationRevision,
       touched_profiles: Object.fromEntries(PROFILE_IDS.map(profile => [profile, {

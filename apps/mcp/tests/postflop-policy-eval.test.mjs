@@ -233,7 +233,7 @@ test("one-node evaluation matches the frontend projection and is deterministic w
   assert.equal(first.calculation.adapterVersion, MCP_DEFENCE_ADAPTER_VERSION);
   assert.equal(first.calculation.adapterVersion, "mcp-postflop-defence-v1");
   assert.equal(first.calculation.baseSourceSha256, MCP_DEFENCE_BASE_SOURCE_SHA256);
-  assert.equal(first.calculation.baseSourceSha256, "47aba428f9c798079411014d638b7d80c25efaf15d4770fb1f144b19c0462a1d");
+  assert.equal(first.calculation.baseSourceSha256, "6b76dbbfb541c1de35d3355aad313db83623a81b9bcc33a8d37b637611f14ad0");
   assert.equal(first.frequencyBasis, "preflop_range_weighted_projection");
   assert.equal(first.handClassCount, 169);
   assert.equal(first.hands.length, 169);

@@ -21,11 +21,12 @@ const cardText = (card: number): string => "23456789TJQKA"[card >> 2] + "cdhs"[c
 const lineFor = (previousAggressor: PlayerRole | null, role: PlayerRole): PreviousLine => previousAggressor === null
   ? "checked" : previousAggressor === role ? "aggressor" : "defender";
 
-export function scaleLaterPath<T extends WeightedCombo>(items: T[], role: PlayerRole, steps: readonly ReachStep[], policy: LaterPolicy, board: readonly number[], previousAggressor: PlayerRole | null): T[] {
+export function scaleLaterPath<T extends WeightedCombo>(items: T[], role: PlayerRole, steps: readonly ReachStep[], policy: LaterPolicy, board: readonly number[], previousAggressor: PlayerRole | null,
+  { requireSavedPolicy = false }: { requireSavedPolicy?: boolean } = {}): T[] {
   return steps.filter(step => step.role === role).reduce((range, step) => {
     const line = lineFor(previousAggressor, role);
     return range.map(item => ({ ...item,
-      weight: item.weight * laterPolicyMix(policy, step.node, item.combo, board, line)[step.action] / 100,
+      weight: item.weight * laterPolicyMix(policy, step.node, item.combo, board, line, { requireSavedPolicy })[step.action] / 100,
     }));
   }, items);
 }
@@ -42,15 +43,17 @@ export function flopNodes(inputs: Inputs, policy: FlopPolicy, boardCards: readon
 export function flopNodesCanonical(inputs: Inputs, policy: FlopPolicy, boardCards: readonly number[], history: string[] | null = null): StrategyNodes {
   const { spot } = inputs;
   const defence = defenceFor(inputs, policy, null);
+  const requireSavedPolicy = Boolean(inputs.opponentProfile && inputs.opponentProfile !== "standard");
   return Object.fromEntries(treeNodes(spot.tree).map(node => {
     const actions = NODES[node];
     const seat = spot[nodeRole(node)]; // btn_* / ip_* = IP, bb_* / oop_* = OOP
+    try {
     // A line the engine resolves differently (e.g. a wager merged into an all-in) keeps the policy mix.
     const path = history && flopState(spot.tree, history).node === node ? history : historyFor(spot.tree, node, FLOP_BETS[0]);
     const table = replayOrNull(inputs, boardCards, { flop: path });
     const reach = table ? defence.rangeOf(table, boardCards, seat) : null;
     const mixOf = (combo: readonly number[]): ActionMix => {
-      const base = policyMix(policy, node, combo, boardCards);
+      const base = policyMix(policy, node, combo, boardCards, { requireSavedPolicy });
       return table ? defence.mix(table, boardCards, node, combo, base) : base;
     };
     const rows = inputs.seatRows[seat].map(row => {
@@ -72,6 +75,14 @@ export function flopNodesCanonical(inputs: Inputs, policy: FlopPolicy, boardCard
         reachWeight: detail.reduce((sum, combo) => sum + combo.reachWeight, 0) };
     });
     return [node, { seat, actions, rows }];
+    } catch (error) {
+      if (requireSavedPolicy && (error as { code?: string })?.code === "PROFILE_POLICY_MISSING") {
+        // This table is eagerly built for every node. Keep supported decisions visible
+        // and mark only the node whose authored profile policy is absent.
+        return [node, { unavailable: true, node, seat, actions, rows: [] }];
+      }
+      throw error;
+    }
   }));
 }
 
@@ -96,6 +107,7 @@ export function laterMixRows({ actor, role, board, node, line, inputs, flopPolic
   const actions = LATER_NODES[node];
   const rows = inputs.seatRows[actor];
   if (!rows) throw new Error(`Missing saved range for ${actor}`);
+  const requireSavedPolicy = Boolean(inputs.opponentProfile && inputs.opponentProfile !== "standard");
   const defence = defenceFor(inputs, flopPolicy, laterPolicy);
   const table = replayOrNull(inputs, board, paths);
   // Reach weights of the acting range, bluff cap included (the policy scaling below is the fallback).
@@ -104,9 +116,9 @@ export function laterMixRows({ actor, role, board, node, line, inputs, flopPolic
     let combos = comboRange([row], "freq", board);
     if (dense) combos = combos.map(item => ({ ...item, weight: dense[comboId(item.combo[0], item.combo[1])] }));
     else {
-      combos = scaleByPath(combos, role, flopSteps, flopPolicy, board.slice(0, 3));
-      if (turnSteps) combos = scaleLaterPath(combos, role, turnSteps, laterPolicy, turnBoard, turnPreviousAggressor);
-      if (riverSteps) combos = scaleLaterPath(combos, role, riverSteps, laterPolicy, riverBoard!, riverPreviousAggressor!);
+      combos = scaleByPath(combos, role, flopSteps, flopPolicy, board.slice(0, 3), { requireSavedPolicy });
+      if (turnSteps) combos = scaleLaterPath(combos, role, turnSteps, laterPolicy, turnBoard, turnPreviousAggressor, { requireSavedPolicy });
+      if (riverSteps) combos = scaleLaterPath(combos, role, riverSteps, laterPolicy, riverBoard!, riverPreviousAggressor!, { requireSavedPolicy });
     }
     const totals = Object.fromEntries(actions.map(action => [action, 0]));
     const tiers = Object.fromEntries(TIERS.map(tier => [tier, 0])) as Record<import("./types.ts").HandTier, number>;
@@ -116,7 +128,7 @@ export function laterMixRows({ actor, role, board, node, line, inputs, flopPolic
       if (!item.weight) continue;
       const rawTier = handTier(item.combo, board);
       const tier = rawTier === "draw" && node.startsWith("river_") ? "medium" : rawTier;
-      let mix = laterPolicyMix(laterPolicy, node, item.combo, board, line);
+      let mix = laterPolicyMix(laterPolicy, node, item.combo, board, line, { requireSavedPolicy });
       if (table) mix = defence.mix(table, board, node, item.combo, mix);
       detail.push({ cards: item.combo.map(cardText).join(""), tier, weight: item.weight,
         mix: Object.fromEntries(actions.map(action => [action, mix[action] / 100])) });
