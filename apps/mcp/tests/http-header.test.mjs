@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { consentCompletionHtml, errorResponse, html, oauthFormHtml, privateResponse, SECURITY_HEADERS } from '../src/http.ts';
+import { consentCompletionHtml, errorResponse, html, oauthConsentFormHtml, oauthFormHtml, privateResponse, SECURITY_HEADERS } from '../src/http.ts';
 
 test('OAuth form HTML keeps strict-origin through the private response wrapper', async () => {
   const response = privateResponse(oauthFormHtml('<form method="post"></form>'));
@@ -13,12 +13,42 @@ test('OAuth form HTML keeps strict-origin through the private response wrapper',
   assert.equal(response.headers.get('x-frame-options'), SECURITY_HEADERS['x-frame-options']);
 });
 
+test('consent form script uses a unique nonce preserved by the private response wrapper', async () => {
+  const render = () => privateResponse(oauthConsentFormHtml(nonce => `<form method="post"></form><script nonce="${nonce}">document.querySelector('form')</script>`));
+  const first = render();
+  const second = render();
+  const firstBody = await first.text();
+  const secondBody = await second.text();
+  const nonce = firstBody.match(/<script nonce="([a-f0-9]{32})">/)?.[1];
+
+  assert.ok(nonce);
+  assert.notEqual(nonce, secondBody.match(/<script nonce="([a-f0-9]{32})">/)?.[1]);
+  assert.equal(first.headers.get('referrer-policy'), 'strict-origin');
+  assert.equal(first.headers.get('content-security-policy'), `${SECURITY_HEADERS['content-security-policy']}; script-src 'nonce-${nonce}'`);
+  const scriptPolicy = first.headers.get('content-security-policy').split(';').find(part => part.trim().startsWith('script-src'));
+  assert.ok(scriptPolicy);
+  assert.ok(!scriptPolicy.includes('unsafe-inline'));
+});
+
 test('ordinary HTML and JSON error responses retain no-referrer', () => {
   assert.equal(privateResponse(html('<p>Sign in</p>')).headers.get('referrer-policy'), 'no-referrer');
   assert.equal(privateResponse(errorResponse('invalid_origin', 403)).headers.get('referrer-policy'), 'no-referrer');
   assert.equal(privateResponse(new Response('{}', {
     headers: { 'content-type': 'application/json', 'referrer-policy': 'strict-origin' },
   })).headers.get('referrer-policy'), 'no-referrer');
+});
+
+test('account pages include responsive, keyboard-visible styling without external assets', async () => {
+  const response = privateResponse(html('<p>Sign in</p>'));
+  const body = await response.text();
+
+  assert.match(body, /<html lang="en">/);
+  assert.match(body, /name="viewport" content="width=device-width, initial-scale=1"/);
+  assert.match(body, /<style>[\s\S]*@media\(max-width:520px\)/);
+  assert.match(body, /a:focus-visible,button:focus-visible,input:focus-visible/);
+  assert.match(body, /prefers-reduced-motion:reduce/);
+  assert.doesNotMatch(body, /<(?:script|link|img|iframe|source)\b|@import|url\s*\(/i);
+  assert.equal(response.headers.get('content-security-policy'), SECURITY_HEADERS['content-security-policy']);
 });
 
 test('approved consent completion uses the supplied callback as an escaped ordinary link', async () => {
@@ -35,7 +65,8 @@ test('approved consent completion uses the supplied callback as an escaped ordin
   assert.equal(response.headers.get('content-security-policy'), SECURITY_HEADERS['content-security-policy']);
   assert.equal(response.headers.get('x-frame-options'), SECURITY_HEADERS['x-frame-options']);
   assert.equal(response.headers.getSetCookie().length, 1);
-  assert.match(body, /href="https:\/\/client\.example\/callback\?step=approved&#38;source=fixture" rel="noreferrer">Continue to the app/);
+  assert.match(body, /class="completion-link" href="https:\/\/client\.example\/callback\?step=approved&#38;source=fixture" rel="noreferrer">Continue to the app/);
+  assert.match(body, /class="completion completion-approved"/);
   assert.doesNotMatch(body, /<(?:form|script|iframe|img|source|link)\b|\bsrc=/i);
   assert.doesNotMatch(body, /<meta\b[^>]*http-equiv\s*=\s*["']?refresh/i);
 });
@@ -52,7 +83,8 @@ test('declined consent completion uses only the provider Location and retains it
   assert.equal(response.headers.getSetCookie().length, 1);
   assert.match(body, /Connection declined/);
   assert.match(body, /No access was granted/);
-  assert.match(body, /href="https:\/\/client\.example\/callback\?error=access_denied&#38;source=fixture" rel="noreferrer">Return to the app/);
+  assert.match(body, /class="completion-link" href="https:\/\/client\.example\/callback\?error=access_denied&#38;source=fixture" rel="noreferrer">Return to the app/);
+  assert.match(body, /class="completion completion-denied"/);
   assert.doesNotMatch(body, /<(?:form|script|iframe|img|source|link)\b|\bsrc=/i);
   assert.doesNotMatch(body, /<meta\b[^>]*http-equiv\s*=\s*["']?refresh/i);
 });

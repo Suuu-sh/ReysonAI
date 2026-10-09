@@ -16,7 +16,7 @@ function field(html,name){const escaped=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&
 async function consentCallback(response,denied=false){
  assert.equal(response.status,200);assert.equal(response.headers.get('location'),null);
  const body=await response.text();const label=denied?'Return to the app':'Continue to the app';
- const match=body.match(new RegExp(`<a href="([^"]+)" rel="noreferrer">${label}</a>`));
+ const match=body.match(new RegExp(`<a class="completion-link" href="([^"]+)" rel="noreferrer">${label}</a>`));
  assert.ok(match,'consent completion link missing');
  return new URL(match[1].replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(+n)));
 }
@@ -42,12 +42,12 @@ test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolat
   const params=new URLSearchParams({response_type:'code',client_id:client.clientId,redirect_uri:'https://client.example/callback',scope:scopes,state:'test-state',resource:origin+'/mcp',code_challenge:challenge,code_challenge_method:'S256',...changes});
   const res=await call('/oauth/mcp/authorize?'+params,{headers:user?{cookie:cookie(user)}:{}});const page=await res.text();
   const form=new URLSearchParams({handle:field(page,'handle')??'',session_proof:field(page,'session_proof')??'',decision:'approve'});
-  for(const item of scopes.split(' '))form.append('scope',item);
+  for(const item of scopes.split(' '))if(item!=='offline_access')form.append('scope',item);
   const consentCookies=res.headers.getSetCookie().map(value=>value.split(';')[0]).join('; ');
   const browserCookie=(user?cookie(user)+'; ':'')+consentCookies;
   return {res,page,form,verifier,browserCookie,params};
  };
- const approve=attempt=>call('/oauth/mcp/authorize',{method:'POST',headers:{origin,'content-type':'application/x-www-form-urlencoded',cookie:attempt.browserCookie},body:attempt.form});
+ const approve=(attempt,{selectRefresh=true}={})=>{if(selectRefresh&&attempt.form.get('decision')==='approve'&&!attempt.form.getAll('scope').includes('offline_access'))attempt.form.append('scope','offline_access');return call('/oauth/mcp/authorize',{method:'POST',headers:{origin,'content-type':'application/x-www-form-urlencoded',cookie:attempt.browserCookie},body:attempt.form});};
  const exchange=(code,verifier,extra={})=>call('/oauth/mcp/token',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'authorization_code',client_id:client.clientId,redirect_uri:'https://client.example/callback',resource:origin+'/mcp',code,code_verifier:verifier,...extra})});
  const connect=async options=>{const attempt=await requestAuth(options);assert.equal(attempt.res.status,200);const res=await approve(attempt);const callback=await consentCallback(res);assert.equal(callback.searchParams.get('iss'),origin);const code=callback.searchParams.get('code');const token=await exchange(code,attempt.verifier);assert.equal(token.status,200,await token.clone().text());return {attempt,code,tokens:await token.json()};};
  const rpc=(token,method,params={},extra={})=>call('/mcp',{method:'POST',headers:{'content-type':'application/json',accept:'application/json, text/event-stream','mcp-protocol-version':'2025-06-18',...(token?{authorization:`Bearer ${token}`}:{})},body:JSON.stringify({jsonrpc:'2.0',id:1,method,params}),...extra});
@@ -62,8 +62,10 @@ test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolat
  await t.test('signed-out, redirect, origin, PKCE, scope and account-switch consent fail closed',async()=>{
   assert.equal((await requestAuth({user:null})).res.status,401);
   for(const changes of [{redirect_uri:'https://attacker.example/callback'},{resource:'https://attacker.example/mcp'},{code_challenge_method:'plain'},{code_challenge:''},{scope:'admin'}])assert.equal((await requestAuth({changes})).res.status,400);
-  const a=await requestAuth();assert.ok(!a.page.includes('<script>'));assert.match(a.page,/Fixture &#60;script&#62;/);assert.match(a.page,/client\.example/);
-  assert.match(a.page,/Access tokens expire after five minutes/);assert.match(a.page,/value="offline_access" checked/);assert.equal(field(a.page,'requested'),undefined);
+  const a=await requestAuth();assert.match(a.page,/<script nonce="[a-f0-9]{32}">/);assert.match(a.page,/Fixture &#60;script&#62;/);assert.match(a.page,/client\.example/);
+  assert.match(a.page,/class="consent-flow" aria-labelledby="consent-title"/);assert.match(a.page,/class="client-details"/);assert.match(a.page,/class="permissions"/);
+  assert.match(a.page,/id="allow-access" type="submit" name="decision" value="approve" disabled>Allow access/);assert.match(a.page,/name="decision" value="deny" formnovalidate>Deny/);
+  assert.match(a.page,/Access tokens expire after five minutes/);assert.match(a.page,/id="offline-access" type="checkbox" name="scope" value="offline_access" required/);assert.doesNotMatch(a.page,/value="offline_access"[^>]*checked/);assert.match(a.page,/Required to allow this connection/);assert.equal(field(a.page,'requested'),undefined);
   const badOrigin=await call('/oauth/mcp/authorize',{method:'POST',headers:{origin:'https://evil.test','content-type':'application/x-www-form-urlencoded',cookie:a.browserCookie},body:a.form});assert.equal(badOrigin.status,403);
   const switched=await approve({...a,browserCookie:a.browserCookie.replace(sessions.alice,sessions.bob)});assert.equal(switched.status,403);
   const noCookie=await approve({...a,browserCookie:cookie('alice')});assert.equal(noCookie.status,400);
@@ -77,10 +79,11 @@ test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolat
   const tamperedOffer=await requestAuth({scopes:range});const offerKey=`mcp:consent-offer:${digest(field(tamperedOffer.page,'handle'))}`;
   await (await mf.getKVNamespace('OAUTH_KV')).put(offerKey,JSON.stringify({version:1,requestedScopes:[range,history],offeredScopes:[range,history,'offline_access']}));
   assert.equal((await approve(tamperedOffer)).status,403);
-  const optional=await requestAuth({scopes:range});assert.match(optional.page,/client did not request this permission/);assert.match(optional.page,/value="offline_access">/);optional.form.append('scope','offline_access');
+  const optional=await requestAuth({scopes:range});assert.match(optional.page,/client did not request it/);assert.match(optional.page,/value="offline_access" required/);optional.form.append('scope','offline_access');
   const optionalApproved=await approve(optional);const optionalCode=(await consentCallback(optionalApproved)).searchParams.get('code');
   const optionalTokens=await (await exchange(optionalCode,optional.verifier)).json();assert.ok(optionalTokens.refresh_token);assert.equal(optionalTokens.scope,`${range} offline_access`);
-  const denied=await requestAuth();denied.form.set('decision','deny');const d=await approve(denied);assert.equal((await consentCallback(d,true)).searchParams.get('error'),'access_denied');assert.equal((await approve(denied)).status,400);
+  const denied=await requestAuth();denied.form.set('decision','deny');const d=await approve(denied,{selectRefresh:false});assert.equal((await consentCallback(d,true)).searchParams.get('error'),'access_denied');assert.equal((await approve(denied,{selectRefresh:false})).status,400);
+  const unselected=await requestAuth();const rejected=await approve(unselected,{selectRefresh:false});assert.equal(rejected.status,400);assert.equal((await rejected.json()).error,'invalid_scope');unselected.form.append('scope','offline_access');assert.equal((await approve(unselected,{selectRefresh:false})).status,200);
  });
  const full=await connect();
  await t.test('code verifier, audience, replay and stateless MCP protocol',async()=>{
@@ -97,8 +100,8 @@ test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolat
  await t.test('own history cannot cross accounts or silently acquire additional scopes',async()=>{
   await db.prepare('INSERT INTO account_data(user_id,data_json,version) VALUES (?,?,?)').bind('alice',JSON.stringify({'reysonai.trainer.history.v1':[],'reysonai:profile:v1':{secret:'must-not-leak'}}),1).run();
   const res=await rpc(full.tokens.access_token,'tools/call',{name:'get_my_learning_history',arguments:{}});assert.equal(res.status,200);const text=await res.text();assert.ok(!text.includes('must-not-leak'));assert.ok(!text.includes('bob@'));
-  const ranged=await connect({scopes:range});assert.equal(ranged.tokens.refresh_token,undefined);const list=await readRpc(await rpc(ranged.tokens.access_token,'tools/list'));assert.ok(!list.result.tools.some(tool=>tool.name==='get_my_learning_history'));
-  assert.equal(ranged.tokens.scope,range);
+  const ranged=await connect({scopes:range});assert.ok(ranged.tokens.refresh_token);const list=await readRpc(await rpc(ranged.tokens.access_token,'tools/list'));assert.ok(!list.result.tools.some(tool=>tool.name==='get_my_learning_history'));
+  assert.equal(ranged.tokens.scope,`${range} offline_access`);
   const denied=await readRpc(await rpc(ranged.tokens.access_token,'tools/call',{name:'get_my_learning_history',arguments:{}}));assert.ok(denied.error||denied.result?.isError);
   for(const name of ['list_postflop_coverage','get_saved_postflop_range']){
    const result=await readRpc(await rpc(ranged.tokens.access_token,'tools/call',{name,arguments:{spotId:'BTN_open_BB_call',flop:'Kc7d2h'}}));
@@ -157,10 +160,9 @@ test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolat
   // A lost refresh response requires reconnecting; replay never preserves an old token for 30 days.
   const retried=await refresh(retryable.tokens.refresh_token);assert.equal(retried.status,400);assert.equal((await rpc(latest.access_token,'tools/list')).status,401);
  });
- await t.test('unchecked offline access grants no refresh and stale provider KV cannot restore RFC7009-revoked access',async()=>{
-  const unchecked=await requestAuth();unchecked.form.delete('scope');for(const value of [range,history])unchecked.form.append('scope',value);
-  const accepted=await approve(unchecked);const token=await exchange((await consentCallback(accepted)).searchParams.get('code'),unchecked.verifier);const uncheckedTokens=await token.json();assert.equal(uncheckedTokens.refresh_token,undefined);assert.equal(uncheckedTokens.scope,`${range} ${history}`);
-  const linked=await connect();const kv=await mf.getKVNamespace('OAUTH_KV');const grantId=linked.tokens.refresh_token.split(':')[1];
+ await t.test('refresh permission enables 30-day refresh; stale provider KV cannot restore RFC7009-revoked access',async()=>{
+  const linked=await connect();assert.ok(linked.tokens.refresh_token);assert.equal(linked.tokens.scope,scope);
+  const kv=await mf.getKVNamespace('OAUTH_KV');const grantId=linked.tokens.refresh_token.split(':')[1];
   const keys=[`grant:alice:${grantId}`,...(await kv.list({prefix:`token:alice:${grantId}:`})).keys.map(key=>key.name)];
   const stale=await Promise.all(keys.map(async key=>[key,await kv.get(key)]));
   const revoked=await call('/oauth/mcp/token',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({client_id:client.clientId,token:linked.tokens.refresh_token,token_type_hint:'refresh_token'})});assert.equal(revoked.status,200);
