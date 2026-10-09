@@ -5,7 +5,7 @@ import type { PostflopSource } from "./postflop-browser.ts";
 import type { ExplanationFacts } from "./postflop-facts.ts";
 import type { completedFlopContext } from "./postflop-trial.ts";
 type ProductLocale = ReturnType<typeof productLocale>;
-type Positions = { ip: string | null; oop: string | null };
+type Positions = { ip?: string | null; oop?: string | null };
 type DecisionLabels = { labels?: Record<string, string>; labelsJa?: Record<string, string>; options?: { action: string; allIn?: boolean }[] };
 type HandView = { hand?: string; actions: ActionMix; tiers?: Record<string, number>; combos?: StrategyCombo[]; combo?: StrategyCombo };
 type ExplanationState = { key: string; data: ExplanationFacts | null; error: string | null; loading: boolean };
@@ -21,6 +21,7 @@ import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLa
 import { isFlopBet } from "../../scripts/postflop-ai/tree.ts";
 import { computeBoard, computeExplain, computeLaterExplain, computeLaterRangeFacts, computeLaterView, computeRangeFacts } from "./postflop-compute.ts";
 import { deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot, loadPostflopFlop } from "./postflop-browser.ts";
+import { continuationCopy, postflopAvailabilityError } from "./continuation-copy.ts";
 import { productLocale } from "../i18n.ts";
 
 // Action labels with real amounts come from the replay (decisionOptions in postflop-trial.ts); these
@@ -406,7 +407,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
             (context.tree && body!.tree !== context.tree)) throw new Error("候補の局面・盤面または形式が一致しません。");
         setData(body); setStatus("ready");
       })
-      .catch(reason => { if (!isAbortError(reason)) { setError(reason.message); setStatus("error"); } });
+      .catch(reason => { if (!isAbortError(reason)) { setError(postflopAvailabilityError(reason)); setStatus("error"); } });
     return () => controller.abort();
   }, [board, context.pilotAvailable, context.tree, decision.node, flopPath, postflopDatasets, postflopSource, sourceError, spotId]);
 
@@ -427,7 +428,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
         }
         setLaterData(body); setLaterStatus("ready");
       })
-      .catch(reason => { if (!isAbortError(reason)) { setLaterError(reason.message); setLaterStatus("error"); } });
+      .catch(reason => { if (!isAbortError(reason)) { setLaterError(postflopAvailabilityError(reason)); setLaterStatus("error"); } });
     return () => controller.abort();
   }, [board, context.pilotAvailable, flopPath, later?.actor, later?.line, later?.node, later?.street,
     postflopDatasets, postflopSource, riverCard, riverPath, sourceError, spotId, turnCard, turnPath]);
@@ -537,7 +538,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const view: HandView | null | undefined = selectedCombo === "all" ? chosen : combo ? { ...chosen, actions: combo.mix, tiers: { [combo.tier]: 1 }, combo } : null;
   const english = productLocale() !== "ja";
   return <div className="postflop-trial" aria-label={english ? "Postflop estimate" : "ポストフロップ試作"}>
-    {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title="この局面のポストフロップ方針は未収録">現在のAI試作があるのは、標準設定の2人のポットのうち、シングルレイズポット（オープン→1人がコール）、3betポット、4betポット、SBのリンプから始まるポットだけです。プリフロップの行動ブロックから戻れます。</StatusState></Panel>
+    {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title="この局面のポストフロップ方針は未収録">{continuationCopy("noPolicyDetail")}</StatusState></Panel>
       : !cards.every(Boolean) ? <Panel className="postflop-unavailable"><StatusState title={english ? "Select a flop" : "フロップを選択してください"}>{english ? "Open the flop cards in the action path and choose any three cards." : "上のアクション列にあるフロップカードを押して、任意の3枚を選んでください。"}</StatusState></Panel>
       : !board ? <Panel className="postflop-unavailable"><StatusState title={english ? "Invalid flop cards" : "フロップのカードが正しくありません"}>{english ? "Choose three distinct cards from the deck." : "重複しないカードを3枚選んでください。"}</StatusState></Panel>
       : <>

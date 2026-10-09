@@ -6,6 +6,7 @@
 /packages/reysonai-sdk-ts/dist/
 /packages/reysonai-sdk-ts/node_modules/
 /apps/frontend/node_modules/
+/apps/frontend/node_modules
 /apps/frontend/dist/
 /apps/frontend/.local/
 .DS_Store
@@ -19,3 +20,9 @@ __pycache__/
 /apps/frontend/src/estimated/reasons/sq2_*.json
 /apps/frontend/src/estimated/reasons/cc_*.json
 /apps/frontend/src/estimated/reasons/c4_*.json
+# Reviewed Stage 3 uses its own deterministic LFS archive and normal-Git receipt.
+/apps/frontend/src/estimated/stage3-responses.json
+/apps/frontend/src/estimated/stage3-call-equities.json
+/apps/frontend/src/estimated/stage3-audit-report.json
+/apps/frontend/src/estimated/stage3-coverage.json
+/apps/frontend/src/estimated/reasons/s3_*.json

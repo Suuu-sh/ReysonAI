@@ -1,0 +1,30 @@
+- navigation "Main navigation":
+  - button "Range":
+    - generic: Range
+  - button "Trainer":
+    - generic: Trainer
+  - button "Sessions":
+    - generic: Sessions
+  - button "Stats":
+    - generic: Stats
+  - button "Settings":
+    - generic: Settings
+- main:
+  - region "Sign in to start learning":
+    - heading "Sign in to start learning" [level=1]
+    - paragraph: Learning tools save your progress to your account.
+    - list:
+      - strong: Trainer
+      - generic: Drill spots and check every answer
+      - strong: Sessions
+      - generic: Keep your practice history
+      - strong: Play analysis
+      - generic: See accuracy by spot and street
+      - strong: Weak spots
+      - generic: Find the decisions you miss most
+    - button "Continue with Google" [disabled]:
+      - text: Continue with Google
+    - status: Cannot reach the sign-in service. Check your connection and reload.
+    - paragraph: Google Workspace and custom-domain accounts work too.
+    - button "Range analysis works without signing in":
+      - text: Range analysis works without signing in

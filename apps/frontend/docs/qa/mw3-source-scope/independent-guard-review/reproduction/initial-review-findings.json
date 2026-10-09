@@ -1,0 +1,25 @@
+{
+  "status": "CHANGES_REQUESTED",
+  "reviewer_task": "/root/verify_mw3_guard_revision",
+  "remote_commit": "c7fe6855a9ffbe7f3e6bb84a6502a9ade18daa10",
+  "local_commit": "fce31f0b71f740d4fce8507937df672f2f087733",
+  "source_tree": "e0db02438f040b8de73aa6addfdd325c0c267337",
+  "blocking_findings": [{
+    "location": "apps/frontend/scripts/postflop-ai/mw3-reviewed-snapshot.mjs:56",
+    "issue": "Regex scanner omits valid comment-separated and template-literal imports, allowing a retained source to reach excluded UI with an unchanged protected dependency closure.",
+    "reproduction": "edge-probe.mjs",
+    "evidence": "edge-probe.json",
+    "cases": ["commented dynamic import", "no-substitution-template dynamic import", "comment-separated static import"],
+    "receipt_issuance": false
+  }],
+  "verified_unaffected": {
+    "raw_files": 112,
+    "raw_bytes": 235515283,
+    "original_archives": 16,
+    "delivery_pins": 32,
+    "sql_statement_bodies_unchanged": true,
+    "numerical_generation": false,
+    "excluded_paths_per_subject": 96,
+    "counts": {"tsx":23,"css":6,"ts":59,"d.mts":3,"mjs":3,"json":1,"png":1}
+  }
+}

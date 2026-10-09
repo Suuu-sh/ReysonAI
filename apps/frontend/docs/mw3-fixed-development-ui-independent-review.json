@@ -1,0 +1,221 @@
+{
+  "kind": "static-type-erasure-comparison-not-runtime-test",
+  "created_at": "2026-10-05T05:37:48.001Z",
+  "retained": "d29a50aed0208b57f80d5ecc305f8b17468aa8a5",
+  "development": "ada7dd0e4b9a2015028cf3f512b04d3075b04669",
+  "local_development_checkpoint": "267102cd416d8e37c66f5e032a1f175f6ac6f612",
+  "normalizations": [
+    "esbuild type erasure to ESNext, JSX preserved; Babel AST excludes comments and source locations",
+    "mjs import suffix normalized to relocated ts suffix",
+    "ParenthesizedExpression nodes unwrapped; literal quotation differences ignored"
+  ],
+  "files": [
+    {
+      "path": "apps/frontend/src/admin/coverage.ts",
+      "current_sha256": "3496e9c611f45744f3604b8347330da12d8d1ae86d0b3245ddce1bfaaaa90bb3",
+      "retained_sha256": "7e5703de089ea27218a12e4d29ef86e5ac500fda35fd835cdc0782202f314d9b",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "e45266ea8d7810d620664dc70240cc876d8c5557e18f65a2bc9d289f80e61b40",
+      "erased_current_sha256": "e45266ea8d7810d620664dc70240cc876d8c5557e18f65a2bc9d289f80e61b40"
+    },
+    {
+      "path": "apps/frontend/src/agent/AgentTable.tsx",
+      "current_sha256": "c396b56ac08ffe0497c1873eb6ab919919548a5cfa1c5b76585bce10ed5e499e",
+      "retained_sha256": "26101b7cc61bc208902bc9305dab07eff1c7e4ab4c8d206a8fabb7d9e057b8b2",
+      "erased_ast_equal": false,
+      "erased_old_sha256": "910fe2aaa63e4b062c11778845cd17d52d396414b117f2da87deb1f5017b4155",
+      "erased_current_sha256": "e1c073305cd1a14621fcaf829f9bf892a582ba1eae8d2aebc689d34d8723bfff"
+    },
+    {
+      "path": "apps/frontend/src/agent/preflop.ts",
+      "current_sha256": "f1347b6e4e576192f666734676a32a433597659ab2681df19c4ce6dda6bf2999",
+      "retained_sha256": "898f8722dd9071441630acfa0cda3cd658de4a6fcf451715ecc1982e486687f4",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "e24aa86ff88d78e891e47a6ef7e0c7188b088c00778301ea51bcddef789fbaca",
+      "erased_current_sha256": "e24aa86ff88d78e891e47a6ef7e0c7188b088c00778301ea51bcddef789fbaca"
+    },
+    {
+      "path": "apps/frontend/src/estimated/PostflopTrial.tsx",
+      "current_sha256": "02987ca5246656cad66663375ca11b458e55761d030edf584f21dbb18303972f",
+      "retained_sha256": "16bcbd3e6f63764b4222f6605692f7ba1c3af0b9ca95a0fd4cd2f0849b4fb297",
+      "erased_ast_equal": false,
+      "erased_old_sha256": "495585280b529bfcfaff68714836308e344393961a37e8862978abe104466330",
+      "erased_current_sha256": "aff8f16f4c6af3f11046e3a1d7c128ea3fb1fed001eb46ac62ab4dc21b82f323"
+    },
+    {
+      "path": "apps/frontend/src/estimated/RangeWorkspace.tsx",
+      "current_sha256": "4588483b0c9426c7e5f84d786bfa0654189edcebc87dc35d956ecee4303228d5",
+      "retained_sha256": "1aba090c22ed7abbbb067497803927d246d29dd19f2a4006562c86ed95b014c8",
+      "erased_ast_equal": false,
+      "erased_old_sha256": "9f9a69905d62aa9c1a3f981d08f883f282671b8ebe3fd00b2f3e06b9dbc89c50",
+      "erased_current_sha256": "562dd4c98d15cfc65e09e3a97203603b3fa850bbea1c8ddd1cbaba5967581991"
+    },
+    {
+      "path": "apps/frontend/src/estimated/english-reasons.ts",
+      "current_sha256": "6c8419d053903beefb4bdec1987a5f8654800cdf0222b6568aead74d182b09e7",
+      "retained_sha256": "cd1f84c6df008f5c24c1b86868b39d0d27a5efe9ed9e3f5dd54be6b5a91b5c2d",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "cedb413aa20f149367a032f795c63b8c3ba0d03c41453238ce30561a90acbfd1",
+      "erased_current_sha256": "cedb413aa20f149367a032f795c63b8c3ba0d03c41453238ce30561a90acbfd1"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-advanced.ts",
+      "current_sha256": "fff583b94330743e1180cdc1dfdbe00237153c170065ce15cde571398ef1fa6e",
+      "retained_sha256": "334da25504f64cef2d42f1bbcfd76027c77270943f002d9132fc8062c21e0cc7",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "6c3a6916b275d8fb6718edf5c00297359b87cdef80e077ba86f6f1d9081801bd",
+      "erased_current_sha256": "6c3a6916b275d8fb6718edf5c00297359b87cdef80e077ba86f6f1d9081801bd"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-browser.ts",
+      "current_sha256": "455cbb2316602ef02284542ed52285e0887491d7e26388b5559a2f616c72dcaa",
+      "retained_sha256": "35c2c1bffb4f9dfb336fa926b3ba9b572087191ac8b1a04ae1c375c3b795c03a",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "4ab4224afa1809874b27bb05a8ccaaaed870fb569a9207b5734ac24eae6ac71b",
+      "erased_current_sha256": "4ab4224afa1809874b27bb05a8ccaaaed870fb569a9207b5734ac24eae6ac71b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-compute.ts",
+      "current_sha256": "6ba93d8279dccc50b72167f690500976ad41c0d86c090a0db9b6dcb6cb7b480b",
+      "retained_sha256": "956528f6118e6539d6e3cef71db11f4baedae8791c7cae3f838f2059fc8e1d3c",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "a5e8aede17301f0c969509cd59739180031eb86869782d874ad87d10b683a9ec",
+      "erased_current_sha256": "a5e8aede17301f0c969509cd59739180031eb86869782d874ad87d10b683a9ec"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-explanation.ts",
+      "current_sha256": "e0dc543e959e3b0ebd9cb2522b12aeee0b7e5a2d1388aa4936efdb2bf2974714",
+      "retained_sha256": "0b1e05018db057b5dc06478ef9e7b3096db4c5f7efffc9e1dfac4808f2c0ff29",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "6b60a9514206545dde1aa37d4b924b5709b2e32f30da8b55c2c31ff419bbf71b",
+      "erased_current_sha256": "6b60a9514206545dde1aa37d4b924b5709b2e32f30da8b55c2c31ff419bbf71b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-trial.ts",
+      "current_sha256": "9df425ebb59f4a67bc715deef6000ff1b7c9b0e4cf24640c0fd81c6ef24b1ff2",
+      "retained_sha256": "74ef504d56fb28deb28c41227626657bec9db6f3ce61bdfde73530cb42ac0f8a",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "0239b4943b35de0726c31c7a05bdf6326345f1cf9930e8672b610279f3071541",
+      "erased_current_sha256": "0239b4943b35de0726c31c7a05bdf6326345f1cf9930e8672b610279f3071541"
+    },
+    {
+      "path": "apps/frontend/src/estimated/range-url.ts",
+      "current_sha256": "9353ef813259e3344a71d3ac794c400276e4847db7ffe8929b5aa883a2e8d2a0",
+      "retained_sha256": "2d7dd32007fa208537354a871987d2d0b6d85a8a27c8eea044ce444eed523127",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "aa089775c5adcf1d0128fc5501b1c6fb47619ee94c788beee7629d280a9a4d3c",
+      "erased_current_sha256": "aa089775c5adcf1d0128fc5501b1c6fb47619ee94c788beee7629d280a9a4d3c"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-facts.ts",
+      "current_sha256": "3fa4237c1cd8ac34454121584c5e44bbef24d179c989fa37d7f85f263964ca69",
+      "retained_sha256": null,
+      "status": "new-type-file"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-flow.ts",
+      "current_sha256": "db108ecba3b902163e36893e8f39a873958bc59f5c0f3a4a36d2b21a942b2ab0",
+      "retained_sha256": "116ed31b6cc5cefc687677ec345681e2630416f4c15856cc13d76bd0c42bc3ce",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "761dca82f9e58f32898972f7e01413ba923f388f5a423f9faff73c79737d2ad2",
+      "erased_current_sha256": "761dca82f9e58f32898972f7e01413ba923f388f5a423f9faff73c79737d2ad2"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-ranges.ts",
+      "current_sha256": "243f02d89171cec41420668807d137ceb69a6ab9328b05dcd661a774f9a11e38",
+      "retained_sha256": "8dcf0c3b5ef824340628beea6cedf360983194c24e461fa1bf22c045d0320b08",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "6e6c0e2765f9f53002f5befc819518474742c27be1fc491b62e5fe2b2230716b",
+      "erased_current_sha256": "6e6c0e2765f9f53002f5befc819518474742c27be1fc491b62e5fe2b2230716b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-copy.ts",
+      "current_sha256": "25ad668b39b5bd5d7a9e716027081f49edb57af27022f75eb85fdf76f337e3be",
+      "retained_sha256": "2a0dfd95ec1185521e13f404f8ac25d4d6210b2d4721bbaf9af2c2b677c3bee7",
+      "erased_ast_equal": false,
+      "erased_old_sha256": "ba8bb14af74353660803f3cacdce06148ee45cf5355130b5bc944214361da955",
+      "erased_current_sha256": "bcda0acf44c1e0b4cf2efd24decf5cba27008dfb9bdce1fb7d4e99149ea2eede"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-action-copy.ts",
+      "current_sha256": "4f99cee975b42413bb87372695be9b22421b55cb6402204486eb0bf6f858958f",
+      "retained_sha256": "ac23991c9fbb1871cf403c6b9f096adb3bad389579d492f82bb9a650aedf63e4",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "6fadbc55c1a1ba851aaee0f3317553b5235a3184ce9c93f9b0b05076119d00a4",
+      "erased_current_sha256": "6fadbc55c1a1ba851aaee0f3317553b5235a3184ce9c93f9b0b05076119d00a4"
+    },
+    {
+      "path": "apps/frontend/src/estimated/mw3-copy.ts",
+      "current_sha256": "827326721d795b1e4bf1fa5973867e346461545a502aadfdc0df1472942babe4",
+      "retained_sha256": "d0f155e35baaa4783432e220eda378a427924c538422e2b767b339bdce52fefb",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "5bdc7cc8595b56671d42ba6ace95047637c7f4ef3c5ef7aa8d9c89c8af30b027",
+      "erased_current_sha256": "5bdc7cc8595b56671d42ba6ace95047637c7f4ef3c5ef7aa8d9c89c8af30b027"
+    },
+    {
+      "path": "apps/frontend/src/estimated/mw3-explanation.ts",
+      "current_sha256": "40d0ebb81bc32320f215caabc0bb2dc7fa23c25d6a3813c3c6a87db8afb07c36",
+      "retained_sha256": "ca66ac9a6e53de9eb4d85cf6801958e1a68c1510713ec4156f2ed96ca789fdb6",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "e3e7705b286470a7a01ce9351ee2b9b32541033939d75ea1f64777d09160192d",
+      "erased_current_sha256": "e3e7705b286470a7a01ce9351ee2b9b32541033939d75ea1f64777d09160192d"
+    },
+    {
+      "path": "apps/frontend/src/estimated/Mw3RangeView.tsx",
+      "current_sha256": "a42a0e07ed21d1b19567d7e0e971225a00d7d1cdde7380cd954b25f4749299b6",
+      "retained_sha256": "2e78b4d997d42af8546666b6a507a4fd6c6b4f4f7eccab4389ea3f91f8f45e2f",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "c772683282c617b9315ef8fcac1b9dd11b66c0d7b33bee08f2e2a4d5f5f376c4",
+      "erased_current_sha256": "c772683282c617b9315ef8fcac1b9dd11b66c0d7b33bee08f2e2a4d5f5f376c4"
+    },
+    {
+      "path": "apps/frontend/src/estimated/Mw3PostflopTrial.tsx",
+      "current_sha256": "7e379fd1f7418ce2cd24b5f2191d1e00221bafa3d3685df29a2bb9dadf7d0a13",
+      "retained_sha256": "818350ae6ee76dff6775a185dfa800dd148bd2ccbd2595e00c6bb3d5840e2a82",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "18b56be8c99cc33e65859ab3794d9680482c66a68eeaca6375525845aee93058",
+      "erased_current_sha256": "18b56be8c99cc33e65859ab3794d9680482c66a68eeaca6375525845aee93058"
+    },
+    {
+      "path": "apps/frontend/src/estimated/mw3-range-state.ts",
+      "current_sha256": "932b75bcb5a1922eb63385b1f68ce6fa855a3b9c541b1877fd304198f0079b1b",
+      "retained_sha256": "3201c88a237145639b65f492db8236b2554696d2a9ce8d944729978be4e52678",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "95d5cc37fb83087ffc92cbea135c149ed2f3ad4bb117ba4992c6f4ce0350e569",
+      "erased_current_sha256": "95d5cc37fb83087ffc92cbea135c149ed2f3ad4bb117ba4992c6f4ce0350e569"
+    },
+    {
+      "path": "apps/frontend/src/estimated/mw3-browser.ts",
+      "current_sha256": "e80e55e9f5dc37aadd804b22db4d06810737e10bc3f53de3095dab794bb47e4e",
+      "retained_sha256": "e80e55e9f5dc37aadd804b22db4d06810737e10bc3f53de3095dab794bb47e4e",
+      "erased_ast_equal": true,
+      "erased_old_sha256": "0d6c16d32ebca9b977f33b4affe0484633b495ecbd57c9187e92dee7d2bc4ca3",
+      "erased_current_sha256": "0d6c16d32ebca9b977f33b4affe0484633b495ecbd57c9187e92dee7d2bc4ca3"
+    }
+  ],
+  "development_components": [
+    {
+      "path": "apps/frontend/src/components/PlayingCard.tsx",
+      "sha256": "ed368a7e9ab0ecb05bbea2ed56108649a21722e54505592cf7e58f5aea7aeb6e",
+      "byte_identical_to_development_checkpoint": true
+    },
+    {
+      "path": "apps/frontend/src/components/Dialog.tsx",
+      "sha256": "56ad41600174f7e9bf539fc55cbfb9b8cab744d699b5d9ae85ef435881ab8833",
+      "byte_identical_to_development_checkpoint": true
+    },
+    {
+      "path": "apps/frontend/src/estimated/RangeContextCard.tsx",
+      "sha256": "268dd700e8aea1d02109790669a17cca9631cdd07a74d8de0d7510a55b10b6bb",
+      "byte_identical_to_development_checkpoint": true
+    }
+  ],
+  "reviewed_at": "2026-10-05T05:39:27.450819+00:00",
+  "conclusion": "No blocking integration regression identified in this scoped static review. Runtime and browser verification remain separate.",
+  "delta_dispositions": {
+    "agent/AgentTable.tsx": "Development shared PlayingCard integration; existing agent attributes, sizes, hidden cards and CSS hooks retained.",
+    "estimated/PostflopTrial.tsx": "Development shared Dialog integration; manual/random flop and later-card handlers unchanged; shared focus trap/restoration retained.",
+    "estimated/RangeWorkspace.tsx": "Development settings-header/reset/display-mode placement; removal of unused limp arguments from rewindActionBlockTransition; equivalent Boolean filter predicate.",
+    "estimated/continuation-copy.ts": "Local errorLike alias points to the same input; error-code/message checks unchanged."
+  }
+}

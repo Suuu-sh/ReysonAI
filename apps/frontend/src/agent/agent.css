@@ -406,6 +406,9 @@
 
 .play-style-map-grid > .style-zone { z-index: 0; }
 
+/* The shared Session dialog is narrower than the desktop dashboard. */
+.game-details-modal .style-dash-top { grid-template-columns: 1fr; }
+
 /* Both Stats modes use this complete map, including labels, legend and method. */
 .shared-style-map { display:flex; flex-direction:column; gap:8px; min-width:0; }
 .shared-style-map-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }

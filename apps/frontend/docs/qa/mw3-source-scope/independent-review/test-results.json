@@ -1,0 +1,92 @@
+{
+  "status": "PASS",
+  "reviewer_task": "/root/review_mw3_scope_change",
+  "source_commit": "0b13156724bcf1f9c468df8cfd545192e9d4159c",
+  "source_tree": "87329a5ca48774811982cb186234d9ce8247f5be",
+  "executions": [
+    {
+      "node": "24.19.0",
+      "command": "node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.mjs apps/frontend/tests/mw3-*.test.mjs",
+      "total": 231,
+      "pass": 230,
+      "fail": 0,
+      "skip": 1
+    },
+    {
+      "node": "22.20.0",
+      "command": "NODE_OPTIONS=--max-old-space-size=256 node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.mjs apps/frontend/tests/mw3-*.test.mjs",
+      "total": 231,
+      "pass": 230,
+      "fail": 0,
+      "skip": 1
+    },
+    {
+      "node": "24.19.0",
+      "command": "node --experimental-strip-types --test apps/backend/tests/mw3-*.test.mjs",
+      "total": 6,
+      "pass": 6,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "command": "npm --prefix apps/frontend run typecheck",
+      "result": "PASS",
+      "coverage": "frontend src/**/*.ts, src/**/*.tsx, backend src/**/*.ts, postflop/runtime scripts in tsconfig.runtime.json"
+    },
+    {
+      "node": "22.20.0",
+      "command": "NODE_OPTIONS=--max-old-space-size=256 node --expose-gc apps/frontend/tests/helpers/mw3-saved-memory-fixture.mjs",
+      "result": "PASS",
+      "metrics": {
+        "status": "synthetic-sixteen-spot-ledger-memory-only",
+        "spots": 16,
+        "synthetic_raw_bytes_per_spot": 24117248,
+        "synthetic_parsed_bytes_per_spot": 16777216,
+        "heap_limit_bytes": 318767104,
+        "peak_post_gc_heap_bytes": 9742328,
+        "peak_post_gc_external_bytes": 32745861,
+        "max_rss_kib": 179664,
+        "compact_ledger_bytes": 53783,
+        "real_snapshot_acceptance": false
+      }
+    }
+  ],
+  "log_records": [
+    {
+      "path": "frontend-tests.log",
+      "bytes": 25722,
+      "sha256": "7f694d7ed8f04a31b294cc30f4a478f688bebddf026d3211005cbf492a1afaca"
+    },
+    {
+      "path": "backend-tests.log",
+      "bytes": 716,
+      "sha256": "4563d281b909080a148528882f0f28dea7f7662b18e39b42d1dad2706c4f83bc"
+    },
+    {
+      "path": "frontend-tests-node22.log",
+      "bytes": 58136,
+      "sha256": "f40647e9283a78eafe8da68a030c971bde4269765343719d2970bb15c1eebf9e"
+    },
+    {
+      "path": "memory-fixture-node22.log",
+      "bytes": 334,
+      "sha256": "00eb044dec9413c8cc10c60ff1fc547ebbb9b130dbda61a370ea470d11e3142c"
+    },
+    {
+      "path": "typecheck.log",
+      "bytes": 192,
+      "sha256": "2fb3185a85c177391da7390eeb06d373fa9221af9acf1db88ade702808ca6796"
+    },
+    {
+      "path": "restore-preflop.log",
+      "bytes": 247,
+      "sha256": "35df06a408440a8db499c54aa88458eb8a39d1a43e9228ed92e1185500c1baa0"
+    }
+  ],
+  "qualifications": [
+    "The sole skipped test is the existing opt-in actual pinned Wrangler startup test. No skip added.",
+    "Initial Node24 memory-fixture launch with --max-old-space-size=256 correctly refused its larger 469762048-byte effective total heap. The exact CI-pinned Node22.20.0 runtime rerun used 318767104-byte total heap and passed. No fixture or limit changed.",
+    "Dependencies were reused from the existing pinned installation; no fresh network install claimed.",
+    "Full browser/live-auth E2E, strict actual-D1 execution and final remote CI are outside these test claims."
+  ]
+}

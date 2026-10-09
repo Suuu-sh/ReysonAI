@@ -39,6 +39,9 @@ test('exact continuation history and unsupported multiway remain fail-closed', (
   const wrong = node.history.map(e => ({ ...e }));
   wrong.find(e => e.action === 'open').to_size_bb += 1;
   assert.equal(continuationDecisionForEvents(wrong), null);
-  assert.equal(postflopSpotFor([{ pos:'UTG', type:'raise', key:'open' }, { pos:'HJ', type:'call', key:'call' }, { pos:'BB', type:'call', key:'call' }]), null);
+  const mw3Events = [{ pos:'UTG', type:'raise', key:'open' }, { pos:'HJ', type:'call', key:'call' }, { pos:'BB', type:'call', key:'call' }];
+  assert.equal(postflopSpotFor(mw3Events)?.kind, 'mw3_srp');
+  assert.equal(postflopSpotFor(mw3Events, () => undefined), null);
+  assert.equal(postflopSpotFor([...mw3Events.slice(0,2), {pos:'CO', type:'call', key:'call'}, mw3Events[2]]), null);
   assert.equal(postflopSpotFor([{pos:'BTN',type:'raise',key:'open'},{pos:'BB',type:'call',key:'call'}])?.id, spotFor('BTN','BB').id);
 });

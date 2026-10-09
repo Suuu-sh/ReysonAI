@@ -44,7 +44,8 @@ import { packEquities, packWeights, unpackWeights } from "./cached-values.ts";
 // Pure and dependency-free (no node:*), so it runs in the browser worker, the edge worker and Node.
 import { evaluate, seedFor, seededRandom } from "../lib/equity.ts";
 import { comboRange } from "./browser-inputs.ts";
-import { flopTextureKeys, handTier, runoutTexture, TIERS } from "./model.ts";
+import { flopTextureKeys, runoutTexture, TIERS } from "./model.ts";
+import { handTier } from "./hu-hand-tier.ts";
 import { NODES, effectiveMix, referenceMix, withRaise } from "./policy.ts";
 import { LATER_NODES } from "./later-tree.ts";
 import { referenceLaterTierMix } from "./later-policy.ts";
@@ -124,30 +125,7 @@ export function splitMix(base: ActionMix, callShare: number): ActionMix {
 // Board level caches (independent of ranges and policies, shared by every Defence instance).
 // ---------------------------------------------------------------------------------------------
 const tableCache = new Map<number, RankTable>();
-export const DEFAULT_RANK_TABLE_CACHE_LIMIT = 3000;
-let tableCacheLimit = DEFAULT_RANK_TABLE_CACHE_LIMIT;
-
-function trimRankTableCache() {
-  while (tableCache.size > tableCacheLimit) tableCache.delete(tableCache.keys().next().value!);
-}
-
-// Runtime adapters may temporarily apply a smaller cache budget around their own
-// bounded request. The browser keeps the historical 3,000-entry default unless
-// an adapter explicitly opts in; cached ranks never affect numerical results.
-export function withRankTableCacheLimit<T>(limit: number, operation: () => T): T {
-  if (!Number.isInteger(limit) || limit < 1 || limit > DEFAULT_RANK_TABLE_CACHE_LIMIT) {
-    throw new RangeError("Rank table cache limit must be between 1 and the default limit.");
-  }
-  if (typeof operation !== "function") throw new TypeError("Rank table cache operation must be a function.");
-  const previous = tableCacheLimit;
-  tableCacheLimit = limit;
-  trimRankTableCache();
-  try { return operation(); }
-  finally { tableCacheLimit = previous; trimRankTableCache(); }
-}
-
-// Small read-only diagnostic surface for regression tests and runtime adapters.
-export function rankTableCacheState() { return { limit: tableCacheLimit, size: tableCache.size }; }
+const TABLE_LIMIT = 3000;
 
 // Ranks of all combos on a 5 card board: score[id] (-1 when the combo touches the board) and the
 // unblocked ids sorted by score.
@@ -155,8 +133,8 @@ export function rankTable(board: readonly number[]): RankTable {
   const key = sortedKey(board);
   const cached = tableCache.get(key);
   if (cached) return cached;
-  if (tableCache.size >= tableCacheLimit) {
-    let drop = Math.max(1, Math.floor(tableCacheLimit / 10));
+  if (tableCache.size >= TABLE_LIMIT) {
+    let drop = Math.floor(TABLE_LIMIT / 10);
     for (const oldest of tableCache.keys()) { tableCache.delete(oldest); if (--drop <= 0) break; }
   }
   const score = new Int32Array(NUM_IDS).fill(-1);

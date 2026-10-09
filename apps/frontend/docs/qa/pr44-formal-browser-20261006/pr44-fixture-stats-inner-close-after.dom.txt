@@ -1,0 +1,242 @@
+- main:
+  - button "Back":
+  - strong: REYSON TABLE 01
+  - generic: "Reyson Agent · 6-max 100BB · #2"
+  - generic: ReysonAI
+  - generic: Total
+  - generic: "150"
+  - generic: "50"
+  - generic: "100"
+  - generic: "4"
+  - generic: ♦
+  - generic: T
+  - generic: ♠
+  - generic: YOU
+  - generic: You
+  - generic: 10,000
+  - generic: CO
+  - 'button "Profile: ORION"'
+  - generic "ORION"
+  - generic: 10,000
+  - generic: BTN
+  - generic "Dealer": D
+  - 'button "Profile: VEGA"'
+  - generic "VEGA"
+  - generic: 9,950
+  - generic: SB
+  - 'button "Profile: NOVA"'
+  - generic "NOVA"
+  - generic: 9,900
+  - generic: BB
+  - 'button "Profile: ATLAS"'
+  - generic "ATLAS"
+  - generic: 10,000
+  - generic: UTG
+  - 'button "Profile: LYRA"'
+  - generic "LYRA"
+  - generic: 10,000
+  - generic: HJ
+  - generic: Fold
+  - generic: Your turn
+  - generic: To call 1BB · pot 1.5BB
+  - button "Fold":
+    - generic: Fold
+  - button "Raise 2.5":
+    - generic: Raise 2.5
+  - generic "Hand history":
+    - button "Current hand and action log":
+      - generic: "4"
+      - generic: ♦
+      - generic: T
+      - generic: ♠
+    - 'button "Hand #1 · -2.5 bb"':
+      - generic: Q
+      - generic: ♠
+      - generic: "9"
+      - generic: ♠
+      - generic: "-2.5 bb"
+    - button "Session, rank and controls": •••
+- dialog "Session, rank and controls":
+  - banner:
+    - heading "Session, rank and controls" [level=2]
+    - button "Close"
+  - generic: "#1"
+  - generic: Q
+  - generic: ♠
+  - generic: "9"
+  - generic: ♠
+  - strong: "-2.5 bb"
+  - banner:
+    - generic: Preflop
+  - list:
+    - generic: ATLASUTG
+    - generic: Fold
+    - generic: LYRAHJ
+    - generic: Fold
+    - generic: YouCO
+    - generic: Raise 2.5
+    - generic: ORIONBTN
+    - generic: Call 2.5
+    - generic: VEGASB
+    - generic: Fold
+    - generic: NOVABB
+    - generic: Call 1.5
+  - banner:
+    - generic: Flop
+    - generic: "4"
+    - generic: T
+    - generic: "6"
+  - list:
+    - generic: NOVABB
+    - generic: Check
+    - generic: YouCO
+    - generic: Check
+    - generic: ORIONBTN
+    - generic: Check
+  - banner:
+    - generic: Turn
+    - generic: "7"
+  - list:
+    - generic: NOVABB
+    - generic: Check
+    - generic: YouCO
+    - generic: Check
+    - generic: ORIONBTN
+    - generic: Check
+  - banner:
+    - generic: River
+    - generic: "6"
+  - list:
+    - generic: NOVABB
+    - generic: Check
+    - generic: YouCO
+    - generic: Check
+    - generic: ORIONBTN
+    - generic: Check
+  - button "Agent read 1/1000 Reading ? VPIP 100% PFR 0% 3bet 0% Open dashboard →":
+    - generic: Agent read
+    - generic: 1/1000
+    - strong: Reading
+    - generic: "?"
+    - generic: VPIP 100%
+    - generic: PFR 0%
+    - generic: 3bet 0%
+    - generic: Open dashboard →
+  - heading "Session 1 hands" [level=3]:
+    - text: Session
+    - generic: 1 hands
+  - list:
+    - 'button "Profile: VEGA"':
+    - generic: VEGA
+    - generic: "+510"
+    - 'button "Profile: NOVA"':
+    - generic: NOVA
+    - generic: "0"
+    - 'button "Profile: ATLAS"':
+    - generic: ATLAS
+    - generic: "0"
+    - 'button "Profile: ORION"':
+    - generic: ORION
+    - generic: "-50"
+    - generic: YOU
+    - generic: You
+    - generic: "-250"
+    - 'button "Profile: LYRA"':
+    - generic: LYRA
+    - generic: "-250"
+  - group "Speed":
+    - button "Normal" [pressed]
+    - button "Fast":
+      - text: Fast
+  - button "Play style":
+    - text: Play style
+  - region "Your play style":
+    - text: AGENT READ
+    - heading "Your play style" [level=2]
+    - generic: Latest 1 of 1000 hands · Collecting
+    - button "Close" [active]:
+    - generic: Style · ?
+    - strong: Reading
+    - paragraph: A style appears after 30 hands.
+    - list "Play styles":
+      - listitem "Plays far fewer hands, mostly strong ones.":
+        - generic: Nit
+      - listitem "Plays few hands and often just calls.":
+        - generic: Tight-passive
+      - listitem "Selective, and raises when it enters.":
+        - generic: TAG
+      - listitem "Normal entry rate, fewer raises.":
+        - generic: Passive-leaning
+      - listitem "Close to the agents' own entry and raise rates.":
+        - generic: Balanced
+      - listitem "Normal entry rate, more raises.":
+        - generic: Aggressive-leaning
+      - listitem "Plays many hands and calls more than it raises.":
+        - generic: Calling station
+      - listitem "Plays many hands and raises them.":
+        - generic: LAG
+    - figure "Style map (collecting hands)":
+      - generic: ↑ Aggressive
+      - generic: Passive ↓
+      - generic "Plays far fewer hands, mostly strong ones.":
+        - generic: Nit
+      - generic "Selective, and raises when it enters.":
+        - generic: TAG
+      - generic "Plays few hands and often just calls.":
+        - generic: Tight-passive
+      - generic "Normal entry rate, more raises.":
+        - generic: Aggressive-leaning
+      - generic "Close to the agents' own entry and raise rates.":
+        - generic: Balanced
+      - generic "Normal entry rate, fewer raises.":
+        - generic: Passive-leaning
+      - generic "Plays many hands and raises them.":
+        - generic: LAG
+      - generic "Plays many hands and calls more than it raises.":
+        - generic: Calling station
+      - generic "Agent baseline"
+      - generic: ← Tight
+      - generic: Loose →
+    - list:
+      - listitem "Hands you put money in voluntarily":
+        - generic: VPIP
+        - strong: 100%
+        - text: Agent 22%
+        - emphasis: +78pt
+      - listitem "Hands you raised preflop":
+        - generic: PFR
+        - strong: 0%
+        - text: Agent 17%
+        - emphasis: "-17pt"
+      - listitem "3bets when facing one raise":
+        - generic: 3bet
+        - strong: 0%
+        - text: Agent 8%
+        - emphasis: "-7pt"
+      - listitem "Folds after your open was 3bet":
+        - generic: Fold to 3bet
+        - strong: —
+        - generic: Agent 49%
+      - listitem "Showdowns among flops seen":
+        - generic: WTSD
+        - strong: 100%
+        - text: Agent 39%
+        - emphasis: +61pt
+      - listitem "Showdowns won":
+        - generic: W$SD
+        - strong: 0%
+        - text: Agent 52%
+        - emphasis: "-52pt"
+      - listitem "Folds when facing a postflop bet":
+        - generic: Fold to bet
+        - strong: —
+        - generic: Agent 36%
+      - listitem "Postflop (bets + raises) / calls":
+        - generic: AF
+        - strong: —
+        - generic: Agent 1.91
+    - generic: What the agents would target
+    - paragraph: The agents start reading you after 30 hands.
+    - paragraph:
+      - text: "Exploiting is coming: once opponent-adjusted range tables exist, the agents will switch their strategy to this read. For now they all play the balanced Reyson solver estimate."
+    - paragraph: Practice tendencies at the Agent table only; not a diagnosis of real-money play. Kept in this browser.

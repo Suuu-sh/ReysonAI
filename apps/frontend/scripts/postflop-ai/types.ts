@@ -43,7 +43,7 @@ export type Inputs = { spot: Spot; opening?: SourceSpot; response?: SourceSpot; 
 export type ReachStep = BettingStep & { canRaise?: boolean };
 export type StrategyCombo = { cards: string; tier: HandTier; weight: number; reachWeight?: number; mix: ActionMix };
 export type StrategyRow = { hand: string; comboCount: number; reachable: boolean; mix: ActionMix; tiers: Record<HandTier, number>; combos: StrategyCombo[]; reachWeight: number; tier?: string };
-export type StrategyNode = { node?: string; seat: string; actions: readonly string[]; rows: StrategyRow[] };
+export type StrategyNode = { unavailable?: boolean; node?: string; seat: string; actions: readonly string[]; rows: StrategyRow[] };
 export type StrategyNodes = Record<string, StrategyNode>;
 export type Candidate<P = FlopPolicy> = { policy: P; metadata: { source_hash: string; policy_hash: string; flop_policy_hash?: string; [key: string]: unknown } };
 export type WeightedRange = WeightedCombo[];

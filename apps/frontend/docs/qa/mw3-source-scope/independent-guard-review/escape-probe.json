@@ -1,0 +1,54 @@
+{
+  "status": "PASS",
+  "probes": [
+    {
+      "name": "repository-escape",
+      "statement": "import '../../../../../outside.ts';",
+      "subjects": 16,
+      "rejected": true
+    },
+    {
+      "name": "symlink",
+      "statement": "import './symlink.ts';",
+      "subjects": 16,
+      "rejected": true
+    },
+    {
+      "name": "local-generated",
+      "statement": "import '../../.local/hidden.ts';",
+      "subjects": 16,
+      "rejected": true
+    },
+    {
+      "name": "node-modules-relative",
+      "statement": "import '../../node_modules/hidden.ts';",
+      "subjects": 16,
+      "rejected": true
+    },
+    {
+      "name": "rooted-ui",
+      "statement": "import '/src/agent/AgentTable.tsx';",
+      "subjects": 16,
+      "rejected": true
+    },
+    {
+      "name": "file-url-ui",
+      "statement": "import 'file:///tmp/ScopeBridge.tsx';",
+      "subjects": 16,
+      "rejected": true
+    },
+    {
+      "name": "typescript-require-import",
+      "statement": "import Ui = require('./AgentTable.tsx');",
+      "subjects": 16,
+      "rejected": true
+    },
+    {
+      "name": "namespace-reexport",
+      "statement": "export * as Ui from './AgentTable.tsx';",
+      "subjects": 16,
+      "rejected": true
+    }
+  ]
+}
+

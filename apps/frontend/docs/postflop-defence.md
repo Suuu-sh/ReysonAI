@@ -50,8 +50,9 @@ A facing node is any node whose actions include `call`: the flop `bb_vs_*`, `ip_
 
 ## Bluff cap (betting side)
 
-The defence is a best response to the bettor range B, so B must not carry more bluffs than the bet
-can support. The cap is applied inside the mix that every consumer uses.
+The defence uses the estimated bettor range B, whose bluff share must fit the bet size.
+The cap is applied inside the mix that every consumer uses. The resulting logistic and
+MDF-adjusted mixes are estimates conditioned on that range, without an optimal-response guarantee.
 
 - **Where.** Every betting decision on the **river** (first / lead nodes, and the raise at a facing
   node), and any **all-in on any street** (an action after which the bettor has no chips behind, also
@@ -134,8 +135,8 @@ using it (monster 0.83, air above medium) made BB defend 9–23% against a 75% b
 
 ## Defence floor
 
-Uncapped bets (flop, turn) can be under-bluffed by the AI policy. The best response then folds far
-below MDF, which only reads this policy and would be exploited by any extra bluffs. When the
+Uncapped bets (flop, turn) can be under-bluffed by the AI policy. The raw equity-based split can fold far
+below MDF because it reads this saved range and may be vulnerable to extra bluffs. When the
 computed defence is more than 10 points under MDF, the strongest folding hands by realized equity
 call until defence reaches MDF − 10 points (`DEFENCE_FLOOR_MARGIN`).
 
@@ -143,6 +144,49 @@ call until defence reaches MDF − 10 points (`DEFENCE_FLOOR_MARGIN`).
 caller's break-even, so its bluff-catchers are indifferent and the logistic split called only about half of
 them: river 33% bets were defended near 54% against an MDF of 75% on almost every one of the 1,755 flops.
 Capped actions are now defended between MDF − 10 points (floor) and MDF (ceiling).
+
+2026-10-04 (new HU-after-multiway model version 8; legacy model remains version 6):
+only canonical history-bearing spots, on the river with a positive call cost and actual
+floor promotion, retain their pre-floor logistic call/fold split when exact integer ranks
+prove nonempty positive-weight bettor support compatible with the hero and board, and every
+compatible opponent beats the hero. Any win or tie preserves normal promotion, even if the
+cached float is zero. Empty support or invalid ranks do not prove zero. This replaces the
+provisional version-7 float-zero test, which missed three TT combinations with a tiny positive
+prefix-subtraction residue despite no winning/tied outcome. No epsilon or equity-kernel change
+is used. Authored/capped legal raises remain intact. The floor's
+allocation is unchanged, so removed promotion is not redistributed to positive-equity
+hands; achieved defence may honestly remain below MDF − 10 points. This is not an epsilon
+cutoff or a change to pre-floor calls, ceilings, bluff caps, flop/turn behaviour or the
+45 legacy spots. `defenceVersionFor(inputs)` binds the scoped model to reports, flop bases
+and offline hand-EV freshness; version-6/7 new-HU outputs require fresh execution.
+
+2026-10-04 (formal implementation candidate: new-HU model version 9; legacy remains 6):
+for these same canonical history-bearing spots, river facing decisions with a positive call
+cost retain the pre-floor mix when an actual floor promotion has strictly negative call EV
+against the current positive-weight bettor support compatible with hero and board. EV0,
+positive EV and empty/unknown/invalid compatible support retain ordinary behaviour. This
+supersedes the narrower version-8 zero-support condition; genuine positive equity can still
+have negative call EV at the price faced. The historical version-8 evidence remains historical.
+
+`exact-river-call-ev.mjs` converts the saved Float64 weights, the **Number result of
+`context.finalPot - context.rake`**, and the actual `context.call` to exact binary rationals.
+Its integer comparison is `(2 × winning weight + tied weight) × net pot < 2 × total weight × call`.
+It does not compare rounded equity, use an epsilon, subtract chips in a new arithmetic model,
+round payout to cents or change simulation settlement. Exact support/sign caches exist only
+inside a separate per-Defence LRU of at most128 contexts. Eviction deletes that context's
+compiled BigInt support and hero-sign map; board release, river trimming and ordinary context
+eviction also remove exact data. Revisited contexts reconstruct identical calculations.
+The frozen version9 checkpoint retains label-specific conditioning. The model10
+implementation candidate below separately replaces that hidden-label conditioning
+with the observable public action class.
+
+Only the added floor call is returned to fold. Raw logistic calls, legal/capped raises,
+floor allocation, ceilings, bluff caps, flop/turn and all45 legacy spots retain their behaviour.
+Removed calls are not redistributed. This avoids additional losses against the assumed saved
+ranges, but defence may fall below MDF and become less robust to unmodeled bluffs. Fixed opponent
+profiles use different ranges; this estimate is not GTO. Formal adoption still requires independent
+code review plus fresh simulation/replay/all1,755-board and raise-response regressions.
+New-HU report, flop-base and offline hand-EV versions6/7/8 fail freshness under version9.
 
 The three candidate hashes are unchanged (`defence_realization` is excluded from the flop
 fingerprint and from `later_sizing_hash`); simulation reports carry `defence_version`.
@@ -208,10 +252,11 @@ results. Performance changes never author or publish a policy or modify the save
 
 ## Reading the numbers
 
-The defence is a best response to B, so it is only as sensible as the policy's betting ranges. A
-shove range with more air than the bet size can support makes wide calls correct, and a value
-hand that deviates to a shove then wins a lot; a value-heavy range folds bluff-catchers. The
-`bluff-ratio` balance check is what tells you the betting policy needs regenerating.
+The defended mixes depend on B and combine logistic call splitting, authored/capped raises and
+MDF floor/ceiling adjustments. They are estimates conditioned on the saved ranges, with no
+GTO or optimal-response guarantee. A shove range carrying excessive air may give wide calls
+positive model EV; a value-heavy range may favour folding bluff-catchers. The `bluff-ratio`
+balance check diagnoses the assumed betting policy rather than proving equilibrium.
 
 ## River all-in sized by SPR
 
@@ -226,4 +271,24 @@ about 9x the pot with a wide range. The effective mix (`defence.mjs`, `buildBett
   the medium tier (river draws count as medium) moves to bet125, so there are no thin shoves.
 - A null limit switches the rule off (used only by tests of the plain bluff cap).
 
-`DEFENCE_VERSION` is 4. The stored flop base is flop-only and its contents do not change.
+This SPR-dependent river sizing rule was introduced in historical defence version4; its
+introduction did not change flop-only base contents. Current legacy spots use version6,
+and the new HU-after-multiway implementation candidate uses version10: the scoped
+version9 call-EV floor rule plus observable-action conditioning described below. These versions identify the estimated model, not a GTO or optimal-response certificate.
+
+
+## New-HU observable-action implementation candidate (version10)
+
+The contract and gates are in
+[`hu-postflop-after-multiway-preflop.observable-actions.md`](specs/hu-postflop-after-multiway-preflop.observable-actions.md).
+The final per-label played probabilities are pooled after the unchanged label-specific
+reroute and bluff caps. Every history entry, consumer and response context uses the same
+physical class. Public cap facts retain actual reduction provenance; they do not assert
+that a pool containing capped and under-bluffed labels is at break-even. Exact EV groups
+before pruning. Raw/profile paths retain their existing uncapped source behavior.
+
+The model9 floor exception remains unchanged within the new conditioning model.
+Legacy45 remain model6. New-HU raw reports also require the scoped action-model identity10,
+so old reports cannot become current just because they omit a defence version. Unknown
+non-all-in collisions with legal raises fail closed. This is a nonproduction implementation
+candidate; exact-diff independent review and fresh full numerical gates remain pending.

@@ -1,0 +1,50 @@
+✔ only approved dedicated SRPs unlock third calls; fourth and 3bet/squeeze callers remain blocked (6.272042ms)
+✔ real deal retains all six legal hole pairs while the dedicated runtime sees exactly its three original keys (9.562417ms)
+✔ human actions pause and replay through all streets; a preflop-folded human outside the original three never reaches a postflop prompt (2.746833ms)
+✔ a human folding from the original three leaves a dedicated two-live-player path with unchanged roles (58.533167ms)
+✔ uncalled wagers refund exactly before six-seat pot/rake settlement (54.7775ms)
+✔ all-in aliases run out the board without invented river decisions and conserve all six seats (59.109959ms)
+✔ nonblind three-player origins retain both folded blinds and all six settlement keys (108.148458ms)
+✔ missing, unapproved, malformed or unsupported multiway hands stop before settlement and history writes (4.508667ms)
+✔ Agent consumer retains at most two recent kits and never invalidates an active hand reference (0.57875ms)
+▲ [WARNING] Duplicate key "A 6-max table where every Agent plays the Reyson solver estimate." in object literal [duplicate-object-key]
+
+    src/locales/product-direct.json:1206:2:
+      1206 │   "A 6-max table where every Agent plays the Reyson solver estim...
+           ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  The original key "A 6-max table where every Agent plays the Reyson solver estimate." is here:
+
+    src/locales/product-direct.json:906:2:
+      906 │   "A 6-max table where every Agent plays the Reyson solver estima...
+          ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+▲ [WARNING] Duplicate key "A 6-max table where every Agent plays the Reyson solver estimate." in object literal [duplicate-object-key]
+
+    src/locales/product-direct.json:1206:2:
+      1206 │   "A 6-max table where every Agent plays the Reyson solver estim...
+           ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  The original key "A 6-max table where every Agent plays the Reyson solver estimate." is here:
+
+    src/locales/product-direct.json:906:2:
+      906 │   "A 6-max table where every Agent plays the Reyson solver estima...
+          ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+✔ dedicated renderer shows three initial matrices, localized roles and exact combo controls without EV (396.282583ms)
+✔ empty registry renders each participant unavailable; no query can activate the delivery client (3.141167ms)
+✔ late source success/failure cannot replace a newer spot or a reset even if an injected reader ignores cancellation (193.910875ms)
+✔ rewind and board replacement render only the newest numerical view and keep all original roles (95.564875ms)
+✔ waiting Agent completes a verified MW3 hand once after real human actions without reading or writing saved history (6584.361084ms)
+✔ superseded Agent loading cannot settle a remounted new hand or write points/history (126.510375ms)
+✔ an injected interface cannot render an unverified copied policy kit (15.082291ms)
+✔ shared chronological strip clicks all three seats, rewinds and reaches turn/river without a separate MW3 action row (32.983208ms)
+✔ actual Agent A/B/A/C hand reuse touches Table and delivery LRU without replay loops (288.811292ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9762.149667

@@ -1,0 +1,126 @@
+{
+  "testedHead": "08a10746ada57a199e8f28b18f22cfed33305446",
+  "originalRequestedHead": "bff95882389d75b58a490fe5cd881fbcc0467a7f",
+  "scope": "Explicit isolated component fixture; NOT real-auth browser E2E",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "port": 18444,
+  "hooks": [
+    "Original AuthPanel verified-test-account replacement",
+    "Original deterministic createSession seed mw3-browser-balanced-22"
+  ],
+  "productAuthBypassAdded": false,
+  "positiveRegistryOrReaderOverride": false,
+  "fixtureIntegrity": {
+    "files": 3473,
+    "bytes": 104875897,
+    "verified": true
+  },
+  "sourceBuild": {
+    "sourceHead": "08a10746ada57a199e8f28b18f22cfed33305446",
+    "sourceTree": "023a25a64522e90188124771fc70310114bfcc90",
+    "sourceCheckout": "/Users/yota/Documents/Codex/2026-10-06/task-4/pr44-qa",
+    "builtAt": "2026-10-06T14:19:22.160Z",
+    "nodeVersion": "v24.19.0",
+    "esbuildVersion": "0.25.12",
+    "files": [
+      {
+        "name": "qa.js",
+        "bytes": 4378979,
+        "sha256": "dcf8c79913966e140e6da6e92d3fe49220382134f8d1adf36611a69e393363d8"
+      },
+      {
+        "name": "qa.css",
+        "bytes": 323624,
+        "sha256": "ab11e4a8c6804d173c869c7d5e87af956ba9ed6ef7b0c7a794bbb7383a44e37b"
+      }
+    ],
+    "fixtureVerification": {
+      "status": "PASS",
+      "files": 3473,
+      "bytes": 104875897,
+      "datasets": 1888,
+      "mw3Headers": 32,
+      "mw3Parts": 1552,
+      "hu": 1
+    },
+    "seed": "mw3-browser-balanced-22",
+    "accountHooks": 1,
+    "seedHooks": 1,
+    "actualCompiledRegistry": true,
+    "registrySourceSha256": "7e1ac4ba059b4a34d8fdc7f6c6891be9929eafec470dc577c0d8702cf632fe81",
+    "positiveRegistryOverride": false,
+    "positiveReaderOverride": false,
+    "positiveRoutes": [
+      "/v1/mw3/manifest",
+      "/v1/mw3/part"
+    ],
+    "environmentDefines": {
+      "import.meta.env.VITE_API_BASE": ""
+    },
+    "productionSourceEdited": false,
+    "liveAuthVerified": false,
+    "productionBinaryParity": false,
+    "browserAcceptance": "NOT RUN",
+    "warnings": [
+      {
+        "text": "Duplicate key \"A 6-max table where every Agent plays the Reyson solver estimate.\" in object literal",
+        "location": {
+          "column": 2,
+          "file": "../pr44-qa/apps/frontend/src/locales/product-direct.json",
+          "length": 67,
+          "line": 1206,
+          "lineText": "  \"A 6-max table where every Agent plays the Reyson solver estimate.\": [",
+          "namespace": "",
+          "suggestion": ""
+        },
+        "notes": [
+          {
+            "location": {
+              "column": 2,
+              "file": "../pr44-qa/apps/frontend/src/locales/product-direct.json",
+              "length": 67,
+              "line": 906,
+              "lineText": "  \"A 6-max table where every Agent plays the Reyson solver estimate.\": [",
+              "namespace": "",
+              "suggestion": ""
+            },
+            "text": "The original key \"A 6-max table where every Agent plays the Reyson solver estimate.\" is here:"
+          }
+        ]
+      }
+    ]
+  },
+  "results": {
+    "sessionOpenOuterCloseReopen": "PASS",
+    "agentBackToRange": "PASS",
+    "savedMw3HandProgression": "PASS: call preflop, check flop/turn/river, next hand and Session1 hands observed",
+    "postSettlementStats": "PASS: 1/1000, VPIP100%, PFR0%, WTSD100%, W$SD0%; no style identity inferred below30 hands",
+    "mobileStyleMap": "FAIL: visible right-side clipping",
+    "statsInnerClose": "FAIL: clicking Your play style region Close leaves the region present"
+  },
+  "measurements": {
+    "dialogWidth": 366,
+    "dialogClientWidth": 364,
+    "dialogScrollWidth": 454,
+    "figureClientWidth": 300,
+    "figureScrollWidth": 422,
+    "gridWidth": 357,
+    "gridHeight": 210,
+    "gridMinHeight": "210px",
+    "gridAspectRatio": "1.7 / 1",
+    "gridMinWidth": "auto"
+  },
+  "likelyLayoutCause": "agent.css .play-style-map-grid min-height210px and aspect-ratio1.7 force357px grid inside narrower mobile figure. Axis width then expands figure scrollWidth to422px. No source fix applied.",
+  "minimalFixToReview": "Constrain mobile map grid to available column width; revise min-height/aspect-ratio only in narrow Session/dashboard context. Wire inner Close to actual panel closure or remove it if the always-mounted tools dashboard has no close action. Preserve estimates and classification.",
+  "additionalObservation": "After hand2 begins, hand1 log labels positions using current seat positions (YouCO raise) although actual hand1 was YouBTN call; stored Stats PFR remains0%. Record for separate investigation, not certified correct replay.",
+  "remaining": [
+    "PR44 real-auth E2E",
+    "390px clipped map remediation/rerun",
+    "Stats inner-close remediation/rerun",
+    "PR50 authenticated unsupported Stage3 screen/no-HU request verification",
+    "Existing case17 unchanged"
+  ]
+}

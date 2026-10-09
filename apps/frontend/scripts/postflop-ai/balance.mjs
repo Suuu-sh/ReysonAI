@@ -2,7 +2,8 @@
 // These checks describe balance heuristics, not solver targets or GTO requirements.
 import { seedFor, seededRandom } from "../lib/equity.ts";
 import { boards, comboRange, config, seatRange } from "./inputs.mjs";
-import { flopTextureKeys, handTier, runoutTexture } from "./model.ts";
+import { flopTextureKeys, runoutTexture } from "./model.ts";
+import { handTier } from "./hu-hand-tier.ts";
 import { LATER_NODES, betFraction, laterNodeRole, streetHistories, streetState } from "./later-tree.ts";
 import { referenceLaterTierMix, validateLaterPolicy } from "./later-policy.ts";
 import { NODES, nodeRole, policyMix, treeNodes, validatePolicy } from "./policy.ts";

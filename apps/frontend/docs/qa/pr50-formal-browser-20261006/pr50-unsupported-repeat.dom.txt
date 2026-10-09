@@ -1,0 +1,166 @@
+- complementary "ReysonAI サイドバー":
+  - generic: ReysonAI
+  - button "サイドバーを折りたたむ" [expanded]:
+  - navigation "メインナビゲーション":
+    - generic: 解析
+    - button "Range":
+      - generic: Range
+    - generic: 学習
+    - button "トレーナー":
+      - generic: トレーナー
+    - button "セッション":
+      - generic: セッション
+    - generic: スタッツ
+    - button "Stats":
+      - generic: Stats
+  - strong: Range Explorer
+  - generic: READ-ONLY / v0.1
+- main:
+  - generic "アクション履歴":
+    - group "Board / Settings":
+      - button "Board" [pressed]:
+        - text: Board
+      - button "Settings":
+        - text: Settings
+    - group "Board":
+      - button "Change flop cards":
+        - generic: A♠
+        - generic: 7♦
+        - generic: 2♣
+    - button "Reset actions":
+    - generic "ブロック全体をクリックしてこのアクションに戻る":
+      - button "UTGのアクションに戻り、レンジ表を表示": UTG
+      - generic: "100"
+      - button "Fold"
+      - button "Raise 2.5" [pressed]
+    - generic "ブロック全体をクリックしてこのアクションに戻る":
+      - button "HJのアクションに戻り、レンジ表を表示": HJ
+      - generic: "100"
+      - button "Fold"
+      - button "Call 2.5"
+      - button "Raise 8" [pressed]
+    - generic "ブロック全体をクリックしてこのアクションに戻る":
+      - button "COのアクションに戻り、レンジ表を表示": CO
+      - generic: "100"
+      - button "Fold"
+      - button "Call 8"
+      - button "Raise 26" [pressed]
+    - generic "ブロック全体をクリックしてこのアクションに戻る":
+      - button "BTNのアクションに戻り、レンジ表を表示": BTN
+      - generic: "100"
+      - button "Fold"
+      - button "Call 26" [pressed]
+      - button "Allin 100"
+    - generic "ブロック全体をクリックしてこのアクションに戻る":
+      - button "SBのアクションに戻り、レンジ表を表示": SB
+      - generic: "99.5"
+      - button "Fold" [disabled] [pressed]
+    - generic "ブロック全体をクリックしてこのアクションに戻る":
+      - button "BBのアクションに戻り、レンジ表を表示": BB
+      - generic: "99"
+      - button "Fold" [disabled] [pressed]
+    - generic "ブロック全体をクリックしてこのアクションに戻る":
+      - button "UTGのアクションに戻り、レンジ表を表示": UTG
+      - generic: "97.5"
+      - button "Fold" [pressed]
+      - button "Call 26"
+      - button "Allin 100"
+    - generic "ブロック全体をクリックしてこのアクションに戻る":
+      - button "HJのアクションに戻り、レンジ表を表示": HJ
+      - generic: "92"
+      - button "Fold" [pressed]
+      - button "Call 26"
+      - button "Allin 100"
+    - button "Flop card change":
+      - strong: Flop
+      - generic: Edit
+      - text: A
+      - generic: ♠
+      - text: "7"
+      - generic: ♦
+      - text: "2"
+      - generic: ♣
+      - generic "Pot at the start of the street 64BB": Pot 64BB
+  - generic "Postflop estimate":
+    - status:
+      - heading "この局面のポストフロップ方針は未収録" [level=2]
+      - generic: This exact history has no saved postflop policy for the selected settings. Return through the preflop action blocks or choose another history.
+  - dialog "Select flop" [active]:
+    - heading "Select flop" [level=2]
+    - button "Random flop"
+    - button "Close":
+    - generic: Selected
+    - group "Selected flop cards; click a card to remove it":
+      - button "Remove A♠ from flop":
+        - text: A♠
+        - generic: ×
+      - button "Remove 7♦ from flop":
+        - text: 7♦
+        - generic: ×
+      - button "Remove 2♣ from flop":
+        - text: 2♣
+        - generic: ×
+    - generic: 3 / 3
+    - button "Use flop"
+    - paragraph: Choose any three distinct cards. The flop AI estimate is computed for every board.
+    - group "Available flop cards by suit":
+      - group "Spades":
+        - generic: ♠
+        - button "2♠" [disabled]: "2"
+        - button "3♠" [disabled]: "3"
+        - button "4♠" [disabled]: "4"
+        - button "5♠" [disabled]: "5"
+        - button "6♠" [disabled]: "6"
+        - button "7♠" [disabled]: "7"
+        - button "8♠" [disabled]: "8"
+        - button "9♠" [disabled]: "9"
+        - button "T♠" [disabled]: T
+        - button "J♠" [disabled]: J
+        - button "Q♠" [disabled]: Q
+        - button "K♠" [disabled]: K
+        - button "A♠" [pressed]: A
+      - group "Hearts":
+        - generic: ♥
+        - button "2♥" [disabled]: "2"
+        - button "3♥" [disabled]: "3"
+        - button "4♥" [disabled]: "4"
+        - button "5♥" [disabled]: "5"
+        - button "6♥" [disabled]: "6"
+        - button "7♥" [disabled]: "7"
+        - button "8♥" [disabled]: "8"
+        - button "9♥" [disabled]: "9"
+        - button "T♥" [disabled]: T
+        - button "J♥" [disabled]: J
+        - button "Q♥" [disabled]: Q
+        - button "K♥" [disabled]: K
+        - button "A♥" [disabled]: A
+      - group "Diamonds":
+        - generic: ♦
+        - button "2♦" [disabled]: "2"
+        - button "3♦" [disabled]: "3"
+        - button "4♦" [disabled]: "4"
+        - button "5♦" [disabled]: "5"
+        - button "6♦" [disabled]: "6"
+        - button "7♦" [pressed]: "7"
+        - button "8♦" [disabled]: "8"
+        - button "9♦" [disabled]: "9"
+        - button "T♦" [disabled]: T
+        - button "J♦" [disabled]: J
+        - button "Q♦" [disabled]: Q
+        - button "K♦" [disabled]: K
+        - button "A♦" [disabled]: A
+      - group "Clubs":
+        - generic: ♣
+        - button "2♣" [pressed]: "2"
+        - button "3♣" [disabled]: "3"
+        - button "4♣" [disabled]: "4"
+        - button "5♣" [disabled]: "5"
+        - button "6♣" [disabled]: "6"
+        - button "7♣" [disabled]: "7"
+        - button "8♣" [disabled]: "8"
+        - button "9♣" [disabled]: "9"
+        - button "T♣" [disabled]: T
+        - button "J♣" [disabled]: J
+        - button "Q♣" [disabled]: Q
+        - button "K♣" [disabled]: K
+        - button "A♣" [disabled]: A

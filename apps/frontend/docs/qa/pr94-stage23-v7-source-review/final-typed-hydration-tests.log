@@ -1,0 +1,30 @@
+✔ direct river URL and reload survive delayed continuation-source hydration in StrictMode (7127.673378ms)
+✔ a temporarily missing source preserves valid board intent and retry restores the same river (2369.530894ms)
+✔ Back and Forward restore the query atomically without stale street-reset effects (1843.025281ms)
+✔ late source resolution cannot resurrect the river after navigating to a different history (2072.73041ms)
+✔ invalid cards and illegal street tails still canonicalize to the legal prefix (4852.176302ms)
+✔ the exact Mac Showdown URL survives delayed load, source failure, retry and a fresh reload (3349.672782ms)
+✔ real postflop component policy errors leave restored cards and URL intact (4184.599808ms)
+✔ full ProductApp hydrates an account-only profile before routing the exact Mac river URL (2987.231787ms)
+✔ genuine account onboarding restores the deep URL before the range child mounts (2598.394772ms)
+✔ guest onboarding and logout retain their own profile lifecycle (4718.375403ms)
+✔ an asynchronously proved-unreachable terminal clears board intent while malformed sources fail closed (4398.505471ms)
+✔ failed account-session hydration recovers the deep URL with batched retry (2811.235193ms)
+✔ failed account-session hydration recovers the deep URL with delayed retry (4049.731843ms)
+✔ failed account-data hydration recovers the deep URL with batched retry (5783.736072ms)
+✔ failed account-data hydration recovers the deep URL with delayed retry (4578.399649ms)
+✔ authenticated identity A to B hides the previous profile until B data is ready (6971.932789ms)
+✔ a different saved guest profile never replaces the authenticated account profile (3667.851593ms)
+✔ an imported adopted-v7 size label survives delayed sources, retry and Back/Forward (4913.934753ms)
+✔ Stage3 preserves every historical fingerprint source name and its order (1.339318ms)
+✔ every reviewed compatibility pair binds exact current and historical bytes (9.372001ms)
+✔ no compatibility pair hides a changed current source or corrupted historical snapshot (21.412563ms)
+✔ receipt source graphs bind adjacent declarations and the exact compatibility receipt (39.453027ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 77262.879913

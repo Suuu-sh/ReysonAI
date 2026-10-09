@@ -1,0 +1,90 @@
+{
+  "status": "PASS",
+  "reviewer_task": "/root/verify_mw3_guard_revision",
+  "source_commit": "eeb9a9d8228009abf0dbfeb30343ef2b1025b31a",
+  "source_tree": "f39c0b8db644fbf55f4e84283cd3286d125f3f76",
+  "completed_at": "2026-10-07T04:25:26.572757+00:00",
+  "executions": [
+    {
+      "node": "22.20.0",
+      "command": "NODE_OPTIONS=--max-old-space-size=256 node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.mjs apps/frontend/tests/mw3-*.test.mjs",
+      "total": 236,
+      "pass": 235,
+      "skip": 1,
+      "fail": 0
+    },
+    {
+      "node": "22.20.0",
+      "command": "node --experimental-strip-types --test apps/backend/tests/mw3-*.test.mjs",
+      "total": 6,
+      "pass": 6,
+      "skip": 0,
+      "fail": 0
+    },
+    {
+      "node": "22.20.0",
+      "command": "npm --prefix apps/frontend run typecheck",
+      "result": "PASS",
+      "coverage": "frontend/backend and runtime tsconfig"
+    },
+    {
+      "node": "22.20.0",
+      "command": "NODE_OPTIONS=--max-old-space-size=256 node --expose-gc apps/frontend/tests/helpers/mw3-saved-memory-fixture.mjs",
+      "result": "PASS",
+      "metrics": {
+        "status": "synthetic-sixteen-spot-ledger-memory-only",
+        "spots": 16,
+        "synthetic_raw_bytes_per_spot": 24117248,
+        "synthetic_parsed_bytes_per_spot": 16777216,
+        "heap_limit_bytes": 318767104,
+        "peak_post_gc_heap_bytes": 10812984,
+        "peak_post_gc_external_bytes": 32743539,
+        "max_rss_kib": 181736,
+        "compact_ledger_bytes": 53783,
+        "real_snapshot_acceptance": false
+      }
+    }
+  ],
+  "log_records": [
+    {
+      "path": "frontend-tests-node22.log",
+      "bytes": 59436,
+      "sha256": "262a305dd262919e8e41c8a1cf1cffb7d154be045a5dde407efeb4fbdf7b311a"
+    },
+    {
+      "path": "backend-tests-node22.log",
+      "bytes": 1531,
+      "sha256": "8442ed72a0c2327b44a7fe2492d51a0e2e3694ceb98cccad64f6854f4b56c853"
+    },
+    {
+      "path": "typecheck.log",
+      "bytes": 192,
+      "sha256": "2fb3185a85c177391da7390eeb06d373fa9221af9acf1db88ade702808ca6796"
+    },
+    {
+      "path": "memory-fixture-node22.log",
+      "bytes": 335,
+      "sha256": "cf0851d0d5724abe2f56f5a5561d72214d54e1488c7c84eee1ae84cf3f6ef3be"
+    },
+    {
+      "path": "restore-preflop.log",
+      "bytes": 247,
+      "sha256": "35df06a408440a8db499c54aa88458eb8a39d1a43e9228ed92e1185500c1baa0"
+    },
+    {
+      "path": "escape-probe.json",
+      "bytes": 1235,
+      "sha256": "bce71faf478200339d562138af0a9993be422ab54b448f344b884512c3a60989"
+    },
+    {
+      "path": "edge-probe-final.json",
+      "bytes": 1644,
+      "sha256": "e6b1a091bb77817532afeb8f424533cb8606a8389efe78940c88d735431bc80a"
+    }
+  ],
+  "qualifications": [
+    "Existing opt-in real Wrangler startup skip remains; no new skip.",
+    "Dependencies were copied from existing pinned installation, with independent upstream parser and license equality checks.",
+    "No new actual-D1 or live-auth/browser E2E execution; final remote CI remains an installation gate."
+  ]
+}

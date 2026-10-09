@@ -1,0 +1,78 @@
+{
+  "kind": "pr44-fastfold-ci-reviewed-fixture-restore-fix",
+  "previous_checkpoint": "b314c822f1a2f9feccdedb4f2f1f3fd8fdefacd7",
+  "frozen_base": "5bd354392cbc288b2b9565f827ffcafe8ea5641b",
+  "failed_ci": {
+    "head": "0e118db8c475dd3764dec2fc922f3e92889c1d8d",
+    "job_url": "https://github.com/Suuu-sh/ReysonAI/actions/runs/37416950428/job/112117547053",
+    "node": "22.20.0",
+    "platform": "linux",
+    "pass": 43,
+    "fail": 4,
+    "backend_replay": "SKIPPED",
+    "log_sha256": "9a4c5a99d11f96bf21a73171eac00de822cbd92ed46e9616364f0d396fb86964"
+  },
+  "cause": "Agent bootstrap requires ignored continuation-responses.json from the independently reviewed Stage2 LFS archive. FastFold CI checkout did not fetch LFS and did not run the official restore. The Agent load error prevents seats/actions and causes the original four UI failures.",
+  "local_causal_reproduction": {
+    "source_head": "0e118db8c475dd3764dec2fc922f3e92889c1d8d",
+    "method": "Isolated exact Git archive; tracked sources/tests unchanged; ignored Stage2 data absent. Export contained locally materialized approved LFS archive, so this reproduction isolates missing restore; actual CI separately confirms lfs:false.",
+    "node": "24.19.0",
+    "platform": "darwin",
+    "unrestored": {
+      "tests": 9,
+      "pass": 5,
+      "fail": 4,
+      "log_sha256": "a5db09fe6ad0bedcf06ca2bb7a4f1fa23cfce8408059b10f22a5445e7dea1f22",
+      "agent_seats": 0,
+      "agent_error": "ENOENT continuation-responses.json",
+      "diagnostic_sha256": "0ad1a2f872da56a111ae55e58e384b25e8f41470b1635be1340320e7206a9db3"
+    },
+    "official_restore": {
+      "status": "restored-reviewed-lfs-bytes",
+      "files": 1614,
+      "bytes": 43276102,
+      "archive": {
+        "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+        "bytes": 1747857,
+        "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+        "format": "ustar+gzip"
+      }
+    },
+    "restore_log_sha256": "35df06a408440a8db499c54aa88458eb8a39d1a43e9228ed92e1185500c1baa0",
+    "restored_exact_workflow_ui_command": {
+      "command": "node --experimental-strip-types --test tests/human-ranked-ui.test.mjs tests/poker-table-ui.test.mjs tests/fastfold-ui.test.mjs tests/fastfold-app-integration.test.mjs tests/ranked-ui.test.mjs tests/trainer-release-status.test.mjs tests/ranked-workflow.test.mjs",
+      "tests": 47,
+      "pass": 47,
+      "fail": 0,
+      "skipped": 0,
+      "log_sha256": "4e7dffbf1e2c25f5ccf910ee649ad63a1cecfaa38ea85708057f292826ac13a7"
+    }
+  },
+  "change": {
+    "file": ".github/workflows/verify-fastfold.yml",
+    "fetch_lfs": true,
+    "restore_command": "node scripts/restore-reviewed-preflop.mjs",
+    "restore_before_ui": true,
+    "additional_trigger_paths": [
+      "apps/frontend/scripts/restore-reviewed-preflop.mjs",
+      "artifacts/preflop/stage2-reviewed.tar.gz"
+    ],
+    "node_pin_changed": false,
+    "test_commands_changed": false,
+    "assertions_changed": false,
+    "thresholds_timeouts_changed": false,
+    "backend_command_changed": false,
+    "product_source_changed": false,
+    "strategy_receipt_registry_changed": false,
+    "all_16_manifests_source_or_input_path_affected": false,
+    "workflow_sha256": "b77dce67459e905731e570a54ce4e6d7d923ddbd1977b5175d859ce02539368f"
+  },
+  "remaining": {
+    "new_head_remote_ci": "PENDING; local Mac Node24 does not certify Linux Node22 CI or backend replay",
+    "final_base_stats_390px": "BLOCKED formal browser tool unavailable",
+    "case17": "Historical base and integration both one current-node HU table; original two-table acceptance still BLOCKED; no feature expansion",
+    "strict_d1": "BLOCKED darwin platform guard and missing pinned Wrangler; canonical SQL packaging-only16PASS",
+    "platform_cases": 31
+  },
+  "no_merge_or_production": true
+}

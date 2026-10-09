@@ -38,6 +38,8 @@ export function isFreshFlopBase(data: Partial<BalancedFlopBase> | null | undefin
       !data.histories || !data.metadata) return false;
   const identity: Record<string, unknown> = flopBaseIdentity(inputs, candidate, laterCandidate);
   if (data.ev !== undefined) return false;
+  // Validation-only: a contradictory experimental marker cannot reuse a v7 base.
+  if (Object.hasOwn(data.metadata, "action_model_version")) return false;
   return Object.keys(identity).every(key => JSON.stringify(data.metadata![key]) === JSON.stringify(identity[key]));
 }
 

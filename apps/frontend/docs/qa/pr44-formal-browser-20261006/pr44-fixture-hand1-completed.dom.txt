@@ -1,0 +1,120 @@
+- main:
+  - button "Back":
+  - strong: REYSON TABLE 01
+  - generic: "Reyson Agent · 6-max 100BB · #2"
+  - generic: ReysonAI
+  - generic: Total
+  - generic: "150"
+  - generic: "50"
+  - generic: "100"
+  - generic: "4"
+  - generic: ♦
+  - generic: T
+  - generic: ♠
+  - generic: YOU
+  - generic: You
+  - generic: 10,000
+  - generic: CO
+  - 'button "Profile: ORION"'
+  - generic "ORION"
+  - generic: 10,000
+  - generic: BTN
+  - generic "Dealer": D
+  - 'button "Profile: VEGA"'
+  - generic "VEGA"
+  - generic: 9,950
+  - generic: SB
+  - 'button "Profile: NOVA"'
+  - generic "NOVA"
+  - generic: 9,900
+  - generic: BB
+  - 'button "Profile: ATLAS"'
+  - generic "ATLAS"
+  - generic: 10,000
+  - generic: UTG
+  - 'button "Profile: LYRA"'
+  - generic "LYRA"
+  - generic: 10,000
+  - generic: HJ
+  - generic: Fold
+  - generic: Your turn
+  - generic: To call 1BB · pot 1.5BB
+  - button "Fold":
+    - generic: Fold
+  - button "Raise 2.5":
+    - generic: Raise 2.5
+  - generic "Hand history":
+    - button "Current hand and action log":
+      - generic: "4"
+      - generic: ♦
+      - generic: T
+      - generic: ♠
+    - 'button "Hand #1 · -2.5 bb"':
+      - generic: Q
+      - generic: ♠
+      - generic: "9"
+      - generic: ♠
+      - generic: "-2.5 bb"
+    - button "Session, rank and controls": •••
+- dialog "Hand history" [active]:
+  - banner:
+    - heading "Hand history" [level=2]
+    - button "Close"
+  - generic: "#1"
+  - generic: Q
+  - generic: ♠
+  - generic: "9"
+  - generic: ♠
+  - strong: "-2.5 bb"
+  - banner:
+    - generic: Preflop
+  - list:
+    - generic: ATLASUTG
+    - generic: Fold
+    - generic: LYRAHJ
+    - generic: Fold
+    - generic: YouCO
+    - generic: Raise 2.5
+    - generic: ORIONBTN
+    - generic: Call 2.5
+    - generic: VEGASB
+    - generic: Fold
+    - generic: NOVABB
+    - generic: Call 1.5
+  - banner:
+    - generic: Flop
+    - generic: "4"
+    - generic: T
+    - generic: "6"
+  - list:
+    - generic: NOVABB
+    - generic: Check
+    - generic: YouCO
+    - generic: Check
+    - generic: ORIONBTN
+    - generic: Check
+  - banner:
+    - generic: Turn
+    - generic: "7"
+  - list:
+    - generic: NOVABB
+    - generic: Check
+    - generic: YouCO
+    - generic: Check
+    - generic: ORIONBTN
+    - generic: Check
+  - banner:
+    - generic: River
+    - generic: "6"
+  - list:
+    - generic: NOVABB
+    - generic: Check
+    - generic: YouCO
+    - generic: Check
+    - generic: ORIONBTN
+    - generic: Check
+  - heading "Recent hands" [level=3]
+  - list:
+    - generic: "#1"
+    - generic: VEGA
+    - generic: "-250"

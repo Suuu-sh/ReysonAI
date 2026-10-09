@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "tested_local_commit": "c44283fd0dd0232e40ff1198730ae6bc9e269d73",
+  "tested_source_tree": "d3782e2736eeeb3b6b0bf35afdf1681e0bdb54b9",
+  "tests": 93,
+  "pass": 93,
+  "fail": 0,
+  "skipped": 0,
+  "typechecks": [
+    "frontend",
+    "runtime"
+  ],
+  "node": "v24.19.0",
+  "records": [
+    {
+      "file": "affected-contracts.log",
+      "bytes": 10013,
+      "sha256": "d33a029234f6cca6e01b5d32b1e4c675c0d9ae41475bcce9e2d7fef95e03aad1"
+    },
+    {
+      "file": "typecheck.log",
+      "bytes": 192,
+      "sha256": "2fb3185a85c177391da7390eeb06d373fa9221af9acf1db88ade702808ca6796"
+    },
+    {
+      "file": "collection.log",
+      "bytes": 1088,
+      "sha256": "6b026fd846996d20777445771f7f83501adc0e43c9a74ca84aa47b810137a6b6"
+    },
+    {
+      "file": "stale-receipt-rejection.log",
+      "bytes": 389,
+      "sha256": "55a385221e9983dbb5fd4a8f6d2a0ebf8751fa7a1ef798ed4522c47e7f1a2899"
+    }
+  ],
+  "scope": "Affected MW3 consumer/Agent UI, delivery/range, exact source identity, protected source-scope/capture and ordinary-Agent/FastFold contracts. All16 official snapshot collectors validated the corrected full local source tree. Final tree changes only three tests outside all protected closures; final source recollection and Git-tree verification are separately bound. No full numerical gate, strategy generation, actual D1 or live-auth browser claim."
+}

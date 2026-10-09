@@ -1,0 +1,1162 @@
+{
+  "kind": "independent-mw3-final-ui-source-context-renewal",
+  "reviewer_model": "gpt-6-astra",
+  "reviewer_task": "/root/review_mw3_source_context",
+  "reviewed_at": "2026-10-06T15:11:32.514Z",
+  "source_commit": "92b0da4c7ff4ae420b53d89cf164000c78b9990f",
+  "source_tree": "5146a5295fc6f9e10b622ab2446d4c06cb6d4e26",
+  "proofs": [
+    {
+      "path": "apps/frontend/docs/qa/pr44-independent-source-context-92b0da4/source-impact.json",
+      "bytes": 9308,
+      "sha256": "3c0b3f9b28cf5cf8cb93196933a4a797272eabbd1b535776cbe3736bbd9545f0"
+    },
+    {
+      "path": "apps/frontend/docs/qa/pr44-independent-source-context-92b0da4/independent-preservation.json",
+      "bytes": 7794,
+      "sha256": "fbecfd7396a72a1718c45df6ce4b7b0f9b5c3e3e10b8b6c4921aba12aee01bd4"
+    },
+    {
+      "path": "apps/frontend/docs/qa/pr44-independent-source-context-92b0da4/remote-source-identity.json",
+      "bytes": 334,
+      "sha256": "a6a15a515d9d7d6d7021e10273bec448cd14bda23307796ed86e3be906bbec89"
+    },
+    {
+      "path": "apps/frontend/docs/qa/pr44-independent-source-context-92b0da4/reproduce-execution.json",
+      "bytes": 497,
+      "sha256": "14b7bf3f7a8700292e94351ac897bf6825bbee4c32a15196dbe52111e1c1c426"
+    }
+  ],
+  "subjects": [
+    {
+      "spot": "CO_open_BTN_call_BB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.manifest.json",
+        "bytes": 46203,
+        "sha256": "6838c47311372b140afe01392e08af4cb5c47eb93786304f3938937cab892b39"
+      },
+      "receipt": {
+        "path": "configs/mw3-co-btn-bb-mw3-srp-v1.review.json",
+        "bytes": 13462,
+        "sha256": "3c3301ff9f892d2a0fa4d07ca21f4de3a3f40ae46b63c8e3adca2b9bda0d3a58"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.sql",
+        "bytes": 1591059,
+        "sha256": "3753228b4e3bc50718c507b3fd8d645fe35964f3cd06cb4f742a3d02d99b0788"
+      },
+      "sql_statements_sha256": "eb304345a3c02180357ed53a375a6a5a858c126af98faaabf8e64e125ee28797",
+      "sql_body_identical_to_c6": true,
+      "prior_receipt": {
+        "path": "configs/mw3-co-btn-bb-mw3-srp-v1.review.json",
+        "bytes": 9728,
+        "sha256": "8c58da3f8fc38d297d00ce79219ef71f41a8ce01e84dfa463439f82a30c42f98"
+      },
+      "prior_sql": {
+        "path": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.sql",
+        "bytes": 1591059,
+        "sha256": "d05dd85bd73292488c9b41c8bf5205b59950dd3f32448d7b3cd3a2105fe8730d"
+      },
+      "assertMw3IndependentReceipt": "PASS",
+      "verifyMw3Snapshot": "PASS",
+      "pins": [
+        {
+          "spotId": "CO_open_BTN_call_BB_call",
+          "stage": "flop",
+          "deliveryHash": "4c8d43795b1d11d85d938c877431a72be30bc68269d10f7e4bc26de1cdeed8ad",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "3682c70f1cd131a825d67dc564bb45706d5b8885c0de4ef6bfe8493fe13fef06",
+          "sourceHash": "9826ec09f4b8420f866c8ac656e6f755966423c2d843bcb604eff97dbd6a89c3"
+        },
+        {
+          "spotId": "CO_open_BTN_call_BB_call",
+          "stage": "later",
+          "deliveryHash": "bcdeb4ca96a84c211ef508bc422436a40a355c1e343218cd0fee509a422d8148",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "d840d8174ff3ad1fe983e5fbd0696b9c28296f5e4d8af394b12d76e070b18582",
+          "sourceHash": "9826ec09f4b8420f866c8ac656e6f755966423c2d843bcb604eff97dbd6a89c3"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 39,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      }
+    },
+    {
+      "spot": "CO_open_BTN_call_SB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.manifest.json",
+        "bytes": 46592,
+        "sha256": "5cbfef2f7b3c87df0dfdd9ad5011623804747e15d085885aeb0c9b6f913e4f29"
+      },
+      "receipt": {
+        "path": "configs/mw3-co-btn-sb-mw3-srp-v1.review.json",
+        "bytes": 13622,
+        "sha256": "729d30c7c253e9a96a3703faa61a0ab078d6d716c8ac00f89c932059e0ce2d38"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.sql",
+        "bytes": 1589911,
+        "sha256": "d487cae955ae7e510af4b98ac3feca56697ae27eb080b2e1f46dd0b6bf97f095"
+      },
+      "sql_statements_sha256": "35b2f6e2790bb8f598ad73e851d61036fa24eba2f5b6fe630728e14972843b8c",
+      "sql_body_identical_to_c6": true,
+      "prior_receipt": {
+        "path": "configs/mw3-co-btn-sb-mw3-srp-v1.review.json",
+        "bytes": 9888,
+        "sha256": "4fedce28c3dd92ee57651d854a9e16a88b2c60cdd76991351842ea3ca185d164"
+      },
+      "prior_sql": {
+        "path": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.sql",
+        "bytes": 1589911,
+        "sha256": "752c14ca3e49a08cb54d5d2efc8f78541275a91f7d7f0b0608d4aba7c88ab9cc"
+      },
+      "assertMw3IndependentReceipt": "PASS",
+      "verifyMw3Snapshot": "PASS",
+      "pins": [
+        {
+          "spotId": "CO_open_BTN_call_SB_call",
+          "stage": "flop",
+          "deliveryHash": "5d30c32819503b35eb4776cbb6ff3ccd65b83a30b4df48fa9ee57ad5b676735f",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "20fb64ba62887d36b0280c0b9c49b87d735713ec70f8797de22d0530654ee2bb",
+          "sourceHash": "3573dde6357353f3d848b0370205de4cc99ee11ced39267b35e65927bc235e0d"
+        },
+        {
+          "spotId": "CO_open_BTN_call_SB_call",
+          "stage": "later",
+          "deliveryHash": "300deabfd54fff4225a00ba8ff84d3aeef0f6c48517d592d446125b2fb2b6d23",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "214f4e53cea61b08d0941f6eaf083950eb24eeee95a7cab36f5dd6ba28bc7211",
+          "sourceHash": "3573dde6357353f3d848b0370205de4cc99ee11ced39267b35e65927bc235e0d"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 27,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      }
+    },
+    {
+      "spot": "HJ_open_BTN_call_BB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.manifest.json",
+        "bytes": 46592,
+        "sha256": "b58b38349d1d1f31212e3a87add245f8c33bb9f3983e89f121794fd0f896991e"
+      },
+      "receipt": {
+        "path": "configs/mw3-hj-btn-bb-mw3-srp-v1.review.json",
+        "bytes": 13625,
+        "sha256": "9e898c4cc8a57ca563b9045efdfdd7f7459586173c1d73da3563b574962ac421"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.sql",
+        "bytes": 1614488,
+        "sha256": "ddcb923ff052fd6d60a9280d3e5927018e0d6338441b6191a9d9f84b7c8f4eec"
+      },
+      "sql_statements_sha256": "7d46cf5846fff838c76d98579f6f5f76986e866dc674afe4a340e109d34a3dbc",
+      "sql_body_identical_to_c6": true,
+      "prior_receipt": {
+        "path": "configs/mw3-hj-btn-bb-mw3-srp-v1.review.json",
+        "bytes": 9891,
+        "sha256": "7621804164e0df26518f9562cd5173f174353dfbf870bee499caf4b1f0fade58"
+      },
+      "prior_sql": {
+        "path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.sql",
+        "bytes": 1614488,
+        "sha256": "e9cfa1b8e47be5a3b8091effff7abb0de920e4eba2407067b4d468b580c503f6"
+      },
+      "assertMw3IndependentReceipt": "PASS",
+      "verifyMw3Snapshot": "PASS",
+      "pins": [
+        {
+          "spotId": "HJ_open_BTN_call_BB_call",
+          "stage": "flop",
+          "deliveryHash": "da4cba6972420b5ff615d6392d47dc963b0638a29c747b9314f2cf871d95e7cc",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "6f6a824c47368119bfe3ac6761e0ac5993f9eec3a352d505ce949e5c0b76b593",
+          "sourceHash": "6762971b2c93bc1d26aec6a2e82cc9292a03fb22e6cc497c9b0e346ae3f9df45"
+        },
+        {
+          "spotId": "HJ_open_BTN_call_BB_call",
+          "stage": "later",
+          "deliveryHash": "c53b9061809b04c62af049e0a9eec8c37f4295e977384a5c3497f6132737b6ba",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "764e2765a604e30c5e981b481946918de916004e135d7b98619aa9670185b33c",
+          "sourceHash": "6762971b2c93bc1d26aec6a2e82cc9292a03fb22e6cc497c9b0e346ae3f9df45"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 37,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      }
+    },
+    {
+      "spot": "HJ_open_BTN_call_SB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.manifest.json",
+        "bytes": 46592,
+        "sha256": "f84e94d101957ca984374f49676309c7d8ef6854e158e2d856842f401d0fea19"
+      },
+      "receipt": {
+        "path": "configs/mw3-hj-btn-sb-mw3-srp-v1.review.json",
+        "bytes": 13620,
+        "sha256": "256e57be48c495b41f81998e8e83418c8036e9907778010507aedce13bc9b7d2"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.sql",
+        "bytes": 1576072,
+        "sha256": "7e0431289283d05d3c59ec850216bfdb8ceba3e24f94c567c38ae82586b86e12"
+      },
+      "sql_statements_sha256": "a53d3772148bbe7acb87a26845cdaed73bc4f6c52e4159e1064e60cba13b2822",
+      "sql_body_identical_to_c6": true,
+      "prior_receipt": {
+        "path": "configs/mw3-hj-btn-sb-mw3-srp-v1.review.json",
+        "bytes": 9886,
+        "sha256": "dc5645a1db58dabdef4efb01dfc88f7f2a642f1fb521c0d362a7953fa6283543"
+      },
+      "prior_sql": {
+        "path": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.sql",
+        "bytes": 1576072,
+        "sha256": "1d118e9456d5fcc808fbbfd0cc035eca1ce419d8a92a7f47616ecab760fed653"
+      },
+      "assertMw3IndependentReceipt": "PASS",
+      "verifyMw3Snapshot": "PASS",
+      "pins": [
+        {
+          "spotId": "HJ_open_BTN_call_SB_call",
+          "stage": "flop",
+          "deliveryHash": "cee641a36e91368a41b1f7e79622dd90b464d425c4f5b127956ff4c90b9323c2",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "2b74e501f33fb5713bca56c692ff5834ace14ac146dbbe8dc73fbdc4cf3156e5",
+          "sourceHash": "380bee458c9d5e112d268dab4e0d4ef201a45a58babe78234c5e6af0c91f6235"
+        },
+        {
+          "spotId": "HJ_open_BTN_call_SB_call",
+          "stage": "later",
+          "deliveryHash": "2e6ce4d41eb9857465199f2774e702590b738530df09429c6b3523761b441cfc",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "2bcb06e852bc7de9a4dcf47b37016be0fea2d413e925971a921d0131d22b3234",
+          "sourceHash": "380bee458c9d5e112d268dab4e0d4ef201a45a58babe78234c5e6af0c91f6235"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 32,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      }
+    },
+    {
+      "spot": "HJ_open_CO_call_BB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.manifest.json",
+        "bytes": 46573,
+        "sha256": "9875e68970bc17f9332518170b73d4a86b8cbc9cf103983532e9af8e24421fec"
+      },
+      "receipt": {
+        "path": "configs/mw3-hj-co-bb-mw3-srp-v1.review.json",
+        "bytes": 13611,
+        "sha256": "1d83fd6cc776d774e7675e23f6fd97ec2388cbd91befd61f2fe1d409223a86d4"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.sql",
+        "bytes": 1606790,
+        "sha256": "b31ec65c7a80376200840ec93ce2db03e4a140fcc4bd833ca247b1c3098af520"
+      },
+      "sql_statements_sha256": "6181a1192966003fab28cf4f5ce398df180388a8a34be83227c4918bddba0c07",
+      "sql_body_identical_to_c6": true,
+      "prior_receipt": {
+        "path": "configs/mw3-hj-co-bb-mw3-srp-v1.review.json",
+        "bytes": 9879,
+        "sha256": "60e8917c118848bbdfc969ded36ba47695a195af1a82ebc1572f2794ab482cd7"
+      },
+      "prior_sql": {
+        "path": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.sql",
+        "bytes": 1606790,
+        "sha256": "4357e109279c7658649096fb4d68d86f6cebf321831a4f9386f77e8aa6562623"
+      },
+      "assertMw3IndependentReceipt": "PASS",
+      "verifyMw3Snapshot": "PASS",
+      "pins": [
+        {
+          "spotId": "HJ_open_CO_call_BB_call",
+          "stage": "flop",
+          "deliveryHash": "75fffa9b7c5af63da62d254fc23b06dfe85d79313bbde5e72ff2536556ed12e1",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "ddee6d15195c7b205e52b0c2d8da2dc32258ac1a1cdaeb61f3213877a65e4b0f",
+          "sourceHash": "23bc49a7a78a03506d6f0d73dfd541dc5cc81397b26a7338f47810f7326843c2"
+        },
+        {
+          "spotId": "HJ_open_CO_call_BB_call",
+          "stage": "later",
+          "deliveryHash": "7df78fdad444be2866905f02df9a05dd6d3e3b3de76103f5ba83cacf82da2607",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "c97fae4f58b39daaab0497253ae27e84b48527b492ccb687dffccd70c87d7403",
+          "sourceHash": "23bc49a7a78a03506d6f0d73dfd541dc5cc81397b26a7338f47810f7326843c2"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 39,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      }
+    },
+    {
+      "spot": "HJ_open_CO_call_BTN_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.manifest.json",
+        "bytes": 46592,
+        "sha256": "c957b26d10c85e6516f67c7c2acedea0297a93f3e7989278acbe7661dd8138a9"
+      },
+      "receipt": {
+        "path": "configs/mw3-hj-co-btn-mw3-srp-v1.review.json",
+        "bytes": 13619,
+        "sha256": "37212a07065c940c0a50e60d0218dde01069be531c31210220e37edac4f8e0d6"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.sql",
+        "bytes": 1526887,
+        "sha256": "2d969a4a44211278ac2f85f930e4d05493cf721e376bfa85ad0c765ca424669b"
+      },
+      "sql_statements_sha256": "45d0dddf3b0a5d80e597dbf6980a51a017d44294c1562c2123316192eafda6e0",
+      "sql_body_identical_to_c6": true,
+      "prior_receipt": {
+        "path": "configs/mw3-hj-co-btn-mw3-srp-v1.review.json",
+        "bytes": 9885,
+        "sha256": "5d1b15e1dc744ceb8e9c9fa4457ff9a476ffc3590487174a09b56f8107774483"
+      },
+      "prior_sql": {
+        "path": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.sql",
+        "bytes": 1526887,
+        "sha256": "f2eec8eefcb7acc41610890ee1754c194bfc2c312089f1f1c09d4af60051ade2"
+      },
+      "assertMw3IndependentReceipt": "PASS",
+      "verifyMw3Snapshot": "PASS",
+      "pins": [
+        {
+          "spotId": "HJ_open_CO_call_BTN_call",
+          "stage": "flop",
+          "deliveryHash": "e7773c69bd680c1271612c3ebfc15c899872aa1655737b146d70497a673a323e",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "4d70d9c413145446820b4c528c98dad9f3b87f7968230bc4e7ac5b29c98645de",
+          "sourceHash": "278b706399c3efc7907abdc072b0060e2f40e188cb6b4fa05a633544ef86080d"
+        },
+        {
+          "spotId": "HJ_open_CO_call_BTN_call",
+          "stage": "later",
+          "deliveryHash": "7e499cb944dd020b96ac35b55cdfd26f2699e55acf251b123d4c18a0ef5ac216",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "c6c3a9dbba07d11d6ae3534f6c580fc7c5aa0c7ebc6094a3bd5eab80794e590c",
+          "sourceHash": "278b706399c3efc7907abdc072b0060e2f40e188cb6b4fa05a633544ef86080d"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 99,
+        "zeroSupportEvents": 9,
+        "jointWarningCount": 39,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      }
+    },
+    {
+      "spot": "HJ_open_CO_call_SB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.manifest.json",
+        "bytes": 46573,
+        "sha256": "9fba152897a6db1fa97ef3b1ad3dc3925136bb6af3ca23c4b086dc47540dc910"
+      },
+      "receipt": {
+        "path": "configs/mw3-hj-co-sb-mw3-srp-v1.review.json",
+        "bytes": 13613,
+        "sha256": "c61d12648e90ac4404b32ba5340565443429a275f3e4ddd9e72a629510caabff"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.sql",
+        "bytes": 1575504,
+        "sha256": "0ff017e977393ef327c3a6e80938b0b31b4514ea888600cc0f585b2b92b5d86b"
+      },
+      "sql_statements_sha256": "8f580a48cfe4816a792396ba3bd20a1f35ec209301111f23ac59928f45f1f44b",
+      "sql_body_identical_to_c6": true,
+      "prior_receipt": {
+        "path": "configs/mw3-hj-co-sb-mw3-srp-v1.review.json",
+        "bytes": 9881,
+        "sha256": "d75bf911e75f1c99b1f973eeb6f2c5711aea150d002693dbfc84afdea28dc701"
+      },
+      "prior_sql": {
+        "path": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.sql",
+        "bytes": 1575504,
+        "sha256": "1c4b757677f27f7bfedf3d9f4df5ccdc9a8426320e72429c32f4764e88a567d7"
+      },
+      "assertMw3IndependentReceipt": "PASS",
+      "verifyMw3Snapshot": "PASS",
+      "pins": [
+        {
+          "spotId": "HJ_open_CO_call_SB_call",
+          "stage": "flop",
+          "deliveryHash": "ce8132397a2eccb7c3b2c41dbb3d1058f4292d2c22100eb5292869cb16155704",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "78a92f687a5a4fcc623ae4b91608d12eead3592c8ab9b07244e1b2858a8a33fa",
+          "sourceHash": "d9d3209ec4900d28ca2d8259c813c5bd48d4019528f2123cc6ed168e22c8cbb1"
+        },
+        {
+          "spotId": "HJ_open_CO_call_SB_call",
+          "stage": "later",
+          "deliveryHash": "9029fab129d6d3dfc9b5cfb057343e4cac14500da275708cd40b7c0421e9ed94",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "1382306ac507d03a34e8222e9543e809c6fdd164470df7eaafafe76f69fb2586",
+          "sourceHash": "d9d3209ec4900d28ca2d8259c813c5bd48d4019528f2123cc6ed168e22c8cbb1"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 30,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      }
+    },
+    {
+      "spot": "UTG_open_BTN_call_BB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.manifest.json",
+        "bytes": 46611,
+        "sha256": "83010b17462eeca9fdb196316385284666ab44a766514ed5e24b71f50cd0986d"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-btn-bb-mw3-srp-v1.review.json",
+        "bytes": 13633,
+        "sha256": "6f752a7ec0df6a594cb4dbadb606a47946eda25954010ef43ff940880c29b818"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.sql",
+        "bytes": 1609439,
+        "sha256": "6912d823f9b1b92d4c4b2e020cc5d21fc5659773ce79c8fb45c7f51e5fdb104e"
+      },
+      "sql_statements_sha256": "729fd2fd574e5efaec43df1d3a9b8b6fec519ccc541d62d976e20515d19be9d2",
+      "sql_body_identical_to_c6": true,
+      "prior_receipt": {
+        "path": "configs/mw3-utg-btn-bb-mw3-srp-v1.review.json",
+        "bytes": 9897,
+        "sha256": "dd5466f80e902a363ee769663091abc4c7ae8c4a4735610b6cbfe59452a84ee6"
+      },
+      "prior_sql": {
+        "path": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.sql",
+        "bytes": 1609439,
+        "sha256": "d4cadb40abf2d238c4c5776f661fd2e78cea886591a46ea9a05f8edae033c9d1"
+      },
+      "assertMw3IndependentReceipt": "PASS",
+      "verifyMw3Snapshot": "PASS",
+      "pins": [
+        {
+          "spotId": "UTG_open_BTN_call_BB_call",
+          "stage": "flop",
+          "deliveryHash": "4aa2ec01bfe9d59f86193b3a170390084cfed23513f3236353f34364b78517d5",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "5405d51426d387f652d4447e0afc54186c2a6ed22637083d9aed3e628824be70",
+          "sourceHash": "3effc9977afa66aa817c2e1c697f6789a593bdf3418741ab33fe34236dd5b7f2"
+        },
+        {
+          "spotId": "UTG_open_BTN_call_BB_call",
+          "stage": "later",
+          "deliveryHash": "d7c52388810b7944b23e242862e9e112b6a08fa26d73ca5a61ee373bd9c6df15",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "282afaf9fa0cecc7ae680a18707a1aa71a16bb4fc7dd15463031d7fddfe898aa",
+          "sourceHash": "3effc9977afa66aa817c2e1c697f6789a593bdf3418741ab33fe34236dd5b7f2"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 36,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      }
+    },
+    {
+      "spot": "UTG_open_BTN_call_SB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.manifest.json",
+        "bytes": 46611,
+        "sha256": "cd2de6f125567901e787e515c0ab93c0019b4c19e88bd451e55041e17867c9a0"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-btn-sb-mw3-srp-v1.review.json",
+        "bytes": 13641,
+        "sha256": "490a5fbb5a01cdafe6d939ad7c75e8bd35627a3b1ab9f1b95de9acaddcf14b76"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.sql",
+        "bytes": 1574637,
+        "sha256": "602cecab1d31a7e0552b84d3843b355a019d4d2f305422a4c0e04d60219b3d84"
+      },
+      "sql_statements_sha256": "c45d44133a262915a7f55a16a788b1cc7809e25c250954c166bef12938fdf71d",
+      "sql_body_identical_to_c6": true,
+      "prior_receipt": {
+        "path": "configs/mw3-utg-btn-sb-mw3-srp-v1.review.json",
+        "bytes": 9905,
+        "sha256": "9426bcf2b1c262a827c4b7a40f61262066e68e0e5b17f61f741738f1e76ecb03"
+      },
+      "prior_sql": {
+        "path": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.sql",
+        "bytes": 1574637,
+        "sha256": "96e4ceece3a5f004dd81117639707ee23f5ea057b5cff11a7701faadc5ba7219"
+      },
+      "assertMw3IndependentReceipt": "PASS",
+      "verifyMw3Snapshot": "PASS",
+      "pins": [
+        {
+          "spotId": "UTG_open_BTN_call_SB_call",
+          "stage": "flop",
+          "deliveryHash": "029d0402b784532ad46b5e2ecce71c3a1540ea0a30539d64150bcf9d4811310e",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "c608d2b4eeaf2c9419f27fb7fa9ed818ee07ecb370e704db92268fcb806612d7",
+          "sourceHash": "2aa18f5793aa280d843bd3f175f391cc3409186c21e08bcc7b63570aab558858"
+        },
+        {
+          "spotId": "UTG_open_BTN_call_SB_call",
+          "stage": "later",
+          "deliveryHash": "08f2e05bd9745f5ad5d476b96930592bcf889325d984ca686acb61a287d7bfd3",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "2616b7536253785714314be66ae6084d7ae8004dbf8773cf5e183b22bc7396f7",
+          "sourceHash": "2aa18f5793aa280d843bd3f175f391cc3409186c21e08bcc7b63570aab558858"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 29,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      }
+    },
+    {
+      "spot": "UTG_open_CO_call_BB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.manifest.json",
+        "bytes": 46592,
+        "sha256": "aa7bf143d3e6f5b85204b422ac7d993f9f22fa6ac382987c6937acbc4e5ffd21"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-co-bb-mw3-srp-v1.review.json",
+        "bytes": 13619,
+        "sha256": "a954933145907a8bf76f676d32ee04b6b745795c526eed3a37680827f366c13e"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.sql",
+        "bytes": 1605208,
+        "sha256": "a60e2d82a4219b96ead48ef8c8290427e596dcaef50076799c5c19fcebdcccfc"
+      },
+      "sql_statements_sha256": "ea891c33decf677f93496875fe4618858e937c89dea0a69f1cb4abe91fa7de43",
+      "sql_body_identical_to_c6": true,
+      "prior_receipt": {
+        "path": "configs/mw3-utg-co-bb-mw3-srp-v1.review.json",
+        "bytes": 9885,
+        "sha256": "869a4a6da558519a3108dfdcc4f1dfa4cbfa6b2481124e048f3d2262a27de53d"
+      },
+      "prior_sql": {
+        "path": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.sql",
+        "bytes": 1605208,
+        "sha256": "a27f24644ff7a74cc0f3b06b516fdce89a662bd9dcf7d063354349864a34bbde"
+      },
+      "assertMw3IndependentReceipt": "PASS",
+      "verifyMw3Snapshot": "PASS",
+      "pins": [
+        {
+          "spotId": "UTG_open_CO_call_BB_call",
+          "stage": "flop",
+          "deliveryHash": "bd91d467dbaf60b1ae5bb4e265d81ede9173befd88ac613eabdec459d16dafee",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "e8ad7a1aa002559e51f485ef68f4163ce9ba5955be5d0bcc7b83f4250bda48ef",
+          "sourceHash": "4ca502b9b4c22ca9d67058d9be52c52539549f2442cfb08983296d09afacd95d"
+        },
+        {
+          "spotId": "UTG_open_CO_call_BB_call",
+          "stage": "later",
+          "deliveryHash": "f669db4d3263a3049fcf3ccaa1bf898670dad7214cad87cbf41e8ff464f01fa8",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "a9aea007ce66ddaae4d08843e6280f777d10f38aa4c353aa737e8a22e21bb772",
+          "sourceHash": "4ca502b9b4c22ca9d67058d9be52c52539549f2442cfb08983296d09afacd95d"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 36,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      }
+    },
+    {
+      "spot": "UTG_open_CO_call_BTN_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.manifest.json",
+        "bytes": 46611,
+        "sha256": "1750cb39bf963ffaaa159a719cde92fa55d9ef177d4119d8d6cbf8fb57d7a037"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-co-btn-mw3-srp-v1.review.json",
+        "bytes": 13642,
+        "sha256": "6557d1ec6975def5f978c2b6964b1adee7f001258164cbe77f4259ebf6e3add0"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.sql",
+        "bytes": 1525883,
+        "sha256": "50f667898b2477e15f3da98564cf0d52defdce30d32b45eff6e01cac5af9e7ff"
+      },
+      "sql_statements_sha256": "3d11a0029c03f313f94d97417ba455ba2393adae39864894e65a7dd7385093cf",
+      "sql_body_identical_to_c6": true,
+      "prior_receipt": {
+        "path": "configs/mw3-utg-co-btn-mw3-srp-v1.review.json",
+        "bytes": 9906,
+        "sha256": "ebb01b7c9e3e47b94f2b8ba48eafcb8573622021bea062e4189ac353ac779792"
+      },
+      "prior_sql": {
+        "path": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.sql",
+        "bytes": 1525883,
+        "sha256": "684ccb1af402fa678c6cfc3356192e3258b8fe16ec26acff919b26d2e64e9ab9"
+      },
+      "assertMw3IndependentReceipt": "PASS",
+      "verifyMw3Snapshot": "PASS",
+      "pins": [
+        {
+          "spotId": "UTG_open_CO_call_BTN_call",
+          "stage": "flop",
+          "deliveryHash": "76bb1356d12a275d0351fd48e9b7c5d8bd2ea42f646552197d35a217be56d8f8",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "5b7868e198248e206b68b42934d11ae51a250695f3e80da609192bfce5fc4527",
+          "sourceHash": "e1328f1fc8ad265f473579189abf32246e4b7bf5bdd2cdc108bea1b2b59f15ed"
+        },
+        {
+          "spotId": "UTG_open_CO_call_BTN_call",
+          "stage": "later",
+          "deliveryHash": "c196c22dd82a699ceeb828a43edfb53cbc72db52ee5a6166bbe10a31ef367a27",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "20925575ef96ecf8af3bc94e84bf390a1a8a411acd8d0699f1a685233db05297",
+          "sourceHash": "e1328f1fc8ad265f473579189abf32246e4b7bf5bdd2cdc108bea1b2b59f15ed"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 97,
+        "zeroSupportEvents": 11,
+        "jointWarningCount": 32,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      }
+    },
+    {
+      "spot": "UTG_open_CO_call_SB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.manifest.json",
+        "bytes": 46592,
+        "sha256": "7dba85d08a4f46c46e216771c3c9f510a686dad6f8755916b7a5c8884529461f"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-co-sb-mw3-srp-v1.review.json",
+        "bytes": 13625,
+        "sha256": "4c863299cc0f1663937acdb47b4f884e9b253531d276a3b59ea2cf73ec4f9db6"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.sql",
+        "bytes": 1568069,
+        "sha256": "26fc9fa5430535eaa54bd59506ef06acc2972d96a9ea761b239064a470907e52"
+      },
+      "sql_statements_sha256": "15d60b9436082dbaee082c150d99226c1219fb2d54a93226c9fcdca1bd99c704",
+      "sql_body_identical_to_c6": true,
+      "prior_receipt": {
+        "path": "configs/mw3-utg-co-sb-mw3-srp-v1.review.json",
+        "bytes": 9891,
+        "sha256": "0eaa0f503b8995b8392e602d91d4fb89bc7660af01a1827e028ad4f9d15b5ff2"
+      },
+      "prior_sql": {
+        "path": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.sql",
+        "bytes": 1568069,
+        "sha256": "dcc65a72d7643c4dd5384b3cde939d82dd885a080d9b026b325ee692eec27aff"
+      },
+      "assertMw3IndependentReceipt": "PASS",
+      "verifyMw3Snapshot": "PASS",
+      "pins": [
+        {
+          "spotId": "UTG_open_CO_call_SB_call",
+          "stage": "flop",
+          "deliveryHash": "0bb86ee2d5cb471d9954a7d7f3cc11a9629744f9934329662f2d1c55d6697a31",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "8c86933a924941071673fb70a6767b5c99a8db402fd5348a7c9a915d7b2574d0",
+          "sourceHash": "552657bcc5e1dd53785ecd44d152a9367e1296ec7e7263ef90d5b5b47394af60"
+        },
+        {
+          "spotId": "UTG_open_CO_call_SB_call",
+          "stage": "later",
+          "deliveryHash": "4141a16a5845c07afea24a466df27d0499e7ba4ff479561ede64e9800ed497fd",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "1968323969e89f53b7c792bccbf81ef7ea10555e19392b63d38a3e1b5b26b46d",
+          "sourceHash": "552657bcc5e1dd53785ecd44d152a9367e1296ec7e7263ef90d5b5b47394af60"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 37,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      }
+    },
+    {
+      "spot": "UTG_open_HJ_call_BB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.manifest.json",
+        "bytes": 46592,
+        "sha256": "a351c9532ea58ac1eb57bcefda86dc92e6b85cbb9b29821add0ef3df45bbf4ab"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-hj-bb-mw3-srp-v1.review.json",
+        "bytes": 13622,
+        "sha256": "e2e7f844d52a0898df9d02ab08fdb9f083838ea4901598e1374b5c3304c912ee"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.sql",
+        "bytes": 1602292,
+        "sha256": "9a7bb84acf1b801a685a7760ee4a7a3a1c15422070198ccca0b19a1d6bfd87ac"
+      },
+      "sql_statements_sha256": "fefbea4ba81a18d61626b746926b5973ae5c93c95adad192e06b88913d9d4450",
+      "sql_body_identical_to_c6": true,
+      "prior_receipt": {
+        "path": "configs/mw3-utg-hj-bb-mw3-srp-v1.review.json",
+        "bytes": 9888,
+        "sha256": "ce6208415121f617c920d9832f3812e3582a1ba71bee519aefa2cc89837e5e4a"
+      },
+      "prior_sql": {
+        "path": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.sql",
+        "bytes": 1602292,
+        "sha256": "f14ef91bad0371cbc877c7ad3ee43897d27ffc84fbcc93e0fe99fee062865b00"
+      },
+      "assertMw3IndependentReceipt": "PASS",
+      "verifyMw3Snapshot": "PASS",
+      "pins": [
+        {
+          "spotId": "UTG_open_HJ_call_BB_call",
+          "stage": "flop",
+          "deliveryHash": "281abf5777b51568dc98ae2a7b7fbc37727062e99a882431b49a5807c73cbdde",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "92cdeb04b45c836e4f6e266bc3b985ef463386544423140ed8a661a60f30c2fc",
+          "sourceHash": "3d53be2b1a7c90f5950be69b82850ef81fa535e3442d836368e914fdf55b2862"
+        },
+        {
+          "spotId": "UTG_open_HJ_call_BB_call",
+          "stage": "later",
+          "deliveryHash": "742daf0c4e7d7a4a3c4a9b7012e1adbdab5ea6ed08dac28414412d190d9bb8d3",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "c7039fc8732099fa9d5e2d34eb938fc7e9342baa2c0a3ec789050abe2b3f0840",
+          "sourceHash": "3d53be2b1a7c90f5950be69b82850ef81fa535e3442d836368e914fdf55b2862"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 40,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      }
+    },
+    {
+      "spot": "UTG_open_HJ_call_BTN_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.manifest.json",
+        "bytes": 46611,
+        "sha256": "4ef7f1f9c47e4ab20cbf435c88f5ebaf46eac5223ad678a30b3924697cd917d8"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-hj-btn-mw3-srp-v1.review.json",
+        "bytes": 13642,
+        "sha256": "b60bb34a01a97106f7bf1da58f228038de75272953390fa401bf891d832dadf8"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.sql",
+        "bytes": 1524093,
+        "sha256": "c6e2503da0265bb45fdf65b4a0d6ca68738474969e56328b0125334c471da2d4"
+      },
+      "sql_statements_sha256": "37102ffd0118a56f88de0ab91a2f4779ac545d6e5ccc5c62d0de38b467df6a7d",
+      "sql_body_identical_to_c6": true,
+      "prior_receipt": {
+        "path": "configs/mw3-utg-hj-btn-mw3-srp-v1.review.json",
+        "bytes": 9906,
+        "sha256": "508c85e3a7af379c8f37d2c10a6426941f4a2db8ed3cf1be98f7c4f418c8cccd"
+      },
+      "prior_sql": {
+        "path": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.sql",
+        "bytes": 1524093,
+        "sha256": "15330d693d26f4d1f76df5ce281861c3016753da3924046ffd08caf65994dd94"
+      },
+      "assertMw3IndependentReceipt": "PASS",
+      "verifyMw3Snapshot": "PASS",
+      "pins": [
+        {
+          "spotId": "UTG_open_HJ_call_BTN_call",
+          "stage": "flop",
+          "deliveryHash": "5439f957cdcbbc13d5d8ad23ec5b685e5b03a726e6111c96c1527134ac43cb9a",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "89473138898d53835332a3777235f611216427e2d653adc8808dfaafb3bc11d8",
+          "sourceHash": "bf2cc8a36a97c8b77c2ee525d9bebfb774814f3e21b1aea53cb46c1b21c45e8e"
+        },
+        {
+          "spotId": "UTG_open_HJ_call_BTN_call",
+          "stage": "later",
+          "deliveryHash": "234b4b1dde7a12b0d47fbbb508d7ee41c3616c369bb7eb3dc2f7acd3b9496068",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "8bdb93150f6528eb7613fae8a91a61a2f443a34ca6848526f63fb89063c0a287",
+          "sourceHash": "bf2cc8a36a97c8b77c2ee525d9bebfb774814f3e21b1aea53cb46c1b21c45e8e"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 97,
+        "zeroSupportEvents": 11,
+        "jointWarningCount": 39,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      }
+    },
+    {
+      "spot": "UTG_open_HJ_call_CO_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.manifest.json",
+        "bytes": 46592,
+        "sha256": "926c8547d3ffe4e85ed227cf03a84cafb927b47988786d68ef95e7f8eb24380e"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-hj-co-mw3-srp-v1.review.json",
+        "bytes": 13625,
+        "sha256": "f2e41e77cfde8bab05d9764674bf7c5500eaabcf654c3d433a781de132d46c13"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.sql",
+        "bytes": 1519315,
+        "sha256": "501e6a5e981f343034b3d5ba3bf20762471d84dfb8e44f363d5e3fa971753c06"
+      },
+      "sql_statements_sha256": "22bd1af1be7bbd83782b0c5573d808b68f841c86ead795509a808c9adbbd6676",
+      "sql_body_identical_to_c6": true,
+      "prior_receipt": {
+        "path": "configs/mw3-utg-hj-co-mw3-srp-v1.review.json",
+        "bytes": 9891,
+        "sha256": "08591189202c8af78a79f19672953e9383fe8729bcd49e5a4e8ef070559c0bbd"
+      },
+      "prior_sql": {
+        "path": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.sql",
+        "bytes": 1519315,
+        "sha256": "cf3da5769d6f9416faf183a61c2fdbe3083a1b185c7bf09d49708cc6166ce051"
+      },
+      "assertMw3IndependentReceipt": "PASS",
+      "verifyMw3Snapshot": "PASS",
+      "pins": [
+        {
+          "spotId": "UTG_open_HJ_call_CO_call",
+          "stage": "flop",
+          "deliveryHash": "f957d312947d1eec25b3341bbf3f6e8d757265688cbf939cf6e781ac2f272cbb",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "d6ee35e17d0287de2150fade7b14a1eb32dd047a866d67e33510240fe83a9205",
+          "sourceHash": "f8d9dc162bd8bb8e401972747dba8e8ce8b8d244d7419af718376ad368d08734"
+        },
+        {
+          "spotId": "UTG_open_HJ_call_CO_call",
+          "stage": "later",
+          "deliveryHash": "adc75543803c6dceae64be212bf0a2fd63869babbcd2f8a8fbf3523b119f5af7",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "e67aaaf82ed04e6c290675cc2f6dc68c33bb9ef751d84ada53ebc171eb9e3f0e",
+          "sourceHash": "f8d9dc162bd8bb8e401972747dba8e8ce8b8d244d7419af718376ad368d08734"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 96,
+        "zeroSupportEvents": 12,
+        "jointWarningCount": 32,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      }
+    },
+    {
+      "spot": "UTG_open_HJ_call_SB_call",
+      "manifest": {
+        "path": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.manifest.json",
+        "bytes": 46592,
+        "sha256": "45a10f338c553e7231db9cb21759890bf7e27074e54d05bd6227895a17f66120"
+      },
+      "receipt": {
+        "path": "configs/mw3-utg-hj-sb-mw3-srp-v1.review.json",
+        "bytes": 13625,
+        "sha256": "a38ab4c933dc03efd223d3adce96889d3edef098a739faf885defee4d6a174e2"
+      },
+      "sql": {
+        "path": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.sql",
+        "bytes": 1562974,
+        "sha256": "8cc9e0c1e6f017e8ad789321a6dc607fb9de3ba6517feecd73d9587ab497ee99"
+      },
+      "sql_statements_sha256": "c2850ecbf6f0c73cbf21ad2196606b10241db2e5bfd154032d3d6c2212804757",
+      "sql_body_identical_to_c6": true,
+      "prior_receipt": {
+        "path": "configs/mw3-utg-hj-sb-mw3-srp-v1.review.json",
+        "bytes": 9891,
+        "sha256": "ab0d81da14f7260ccb03a89365bee4550533676d9e5a7decfaca01c75807d979"
+      },
+      "prior_sql": {
+        "path": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.sql",
+        "bytes": 1562974,
+        "sha256": "be60f27b8ee3b0cfc1cd3a3634b451cdf4d812a873dd91f09d354c7b1a7aecd6"
+      },
+      "assertMw3IndependentReceipt": "PASS",
+      "verifyMw3Snapshot": "PASS",
+      "pins": [
+        {
+          "spotId": "UTG_open_HJ_call_SB_call",
+          "stage": "flop",
+          "deliveryHash": "70131b3742203fad717c5d2a418e270476ebd0f4906d9a99e55c21d7714ae9c8",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "a1e92759270e9fd3f0911b080cd42b46898bf0e3749ea7c403f0f6768dd688c1",
+          "sourceHash": "ced4f58d35c1636ee9b4197eef7c636823e8dd0a2f4718f39a3d0b84f5f267c9"
+        },
+        {
+          "spotId": "UTG_open_HJ_call_SB_call",
+          "stage": "later",
+          "deliveryHash": "af5e72db20253f928399c0fbba2413c232a323b5c0b8be005ccacfc28862b68b",
+          "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+          "policyHash": "5c7413b2881aa52304ff3ebe7d2911dace4bb9a2deda13a7a838bc0fd03ac5d9",
+          "sourceHash": "ced4f58d35c1636ee9b4197eef7c636823e8dd0a2f4718f39a3d0b84f5f267c9"
+        }
+      ],
+      "evidence": {
+        "status": "complete_evidence_not_acceptance",
+        "flopBoards": 1755,
+        "laterBoards": 236,
+        "jointEvents": 90,
+        "zeroSupportEvents": 18,
+        "jointWarningCount": 37,
+        "structuralWarningCount": 0,
+        "simulationHands": 120000,
+        "replayHands": 120000,
+        "limitations": [
+          "AI estimate, not equilibrium/GTO proof",
+          "Joint MDF deviations are advisory",
+          "Zero-support reasons require independent source/policy review",
+          "Replay uses the same engine, not an independent solver",
+          "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+          "Fold conditions of seats outside the active three are unmodeled",
+          "After 3-to-2, context buckets can merge different surviving opponent identities"
+        ]
+      }
+    }
+  ],
+  "source_context_status": "PASS",
+  "numerical_quality": "Inherited prior bounded AI-estimate acceptance, not renewed",
+  "remaining_gates": [
+    "Parent installation/commit of these exact manifests and independent receipts, preserving prior versions; official committed-inventory restore and delivery verification.",
+    "Applicable CI on final installed commit.",
+    "Live authenticated application E2E remains unverified; original case17 ordinary-HU two-table requirement remains unchanged."
+  ],
+  "d1_qualification": "c6c49fa strict LOCAL D1 all16 evidence remains bound to c6 and prior receipts. Exact backend/transport/schema/oracle/runtime/registry and SQL statement bodies are unchanged. No fresh final-head D1 execution is claimed or required by this narrow source-context receipt; any claim of final-head strict D1 PASS needs a real final-head run.",
+  "browser_qualification": "Inspected supplied final390/normal/history screenshot pixels and verified all158 recorded application build inputs against exact frozen Git objects. Did not run a new browser or live-auth E2E.",
+  "production_authorization": false
+}

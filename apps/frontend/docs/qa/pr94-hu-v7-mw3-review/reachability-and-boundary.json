@@ -1,0 +1,288 @@
+{
+  "status": "PASS",
+  "local_source_commit": "c44283fd0dd0232e40ff1198730ae6bc9e269d73",
+  "source_tree": "d3782e2736eeeb3b6b0bf35afdf1681e0bdb54b9",
+  "baseline": "ffe7c657da5e8492673e3e06e7c3355966f596ed",
+  "unchanged_dedicated_agent_prefix_and_preflop_picker": true,
+  "collector_roots_parser_and_guards_unchanged": true,
+  "removed_unreachable_hu_experiment_dependencies": [
+    "apps/frontend/scripts/postflop-ai/exact-river-call-ev.d.mts",
+    "apps/frontend/scripts/postflop-ai/exact-river-call-ev.mjs",
+    "apps/frontend/scripts/postflop-ai/observable-actions.d.mts",
+    "apps/frontend/scripts/postflop-ai/observable-actions.mjs"
+  ],
+  "import_edges": [
+    {
+      "path": "apps/frontend/scripts/postflop-ai/defence.ts",
+      "before": [
+        {
+          "specifier": "../data/postflop-ai-pilot.json"
+        },
+        {
+          "specifier": "./engine.ts"
+        },
+        {
+          "specifier": "./tree.ts"
+        },
+        {
+          "specifier": "./later-tree.ts"
+        },
+        {
+          "specifier": "./later-policy.ts"
+        },
+        {
+          "specifier": "./later-tree.ts"
+        },
+        {
+          "specifier": "./policy.ts"
+        },
+        {
+          "specifier": "./hu-hand-tier.ts"
+        },
+        {
+          "specifier": "./model.ts"
+        },
+        {
+          "specifier": "./browser-inputs.ts"
+        },
+        {
+          "specifier": "../lib/equity.ts"
+        },
+        {
+          "specifier": "./observable-actions.mjs"
+        },
+        {
+          "specifier": "./exact-river-call-ev.mjs"
+        },
+        {
+          "specifier": "./cached-values.ts"
+        },
+        {
+          "specifier": "./range-equity.ts"
+        },
+        {
+          "specifier": "./cached-values.ts"
+        },
+        {
+          "specifier": "./engine.ts"
+        },
+        {
+          "specifier": "./tree.ts"
+        },
+        {
+          "specifier": "./later-tree.ts"
+        },
+        {
+          "specifier": "./types.ts"
+        }
+      ],
+      "after": [
+        {
+          "specifier": "../data/postflop-ai-pilot.json"
+        },
+        {
+          "specifier": "./engine.ts"
+        },
+        {
+          "specifier": "./tree.ts"
+        },
+        {
+          "specifier": "./later-tree.ts"
+        },
+        {
+          "specifier": "./later-policy.ts"
+        },
+        {
+          "specifier": "./later-tree.ts"
+        },
+        {
+          "specifier": "./policy.ts"
+        },
+        {
+          "specifier": "./hu-hand-tier.ts"
+        },
+        {
+          "specifier": "./model.ts"
+        },
+        {
+          "specifier": "./browser-inputs.ts"
+        },
+        {
+          "specifier": "../lib/equity.ts"
+        },
+        {
+          "specifier": "./cached-values.ts"
+        },
+        {
+          "specifier": "./range-equity.ts"
+        },
+        {
+          "specifier": "./cached-values.ts"
+        },
+        {
+          "specifier": "./engine.ts"
+        },
+        {
+          "specifier": "./tree.ts"
+        },
+        {
+          "specifier": "./later-tree.ts"
+        },
+        {
+          "specifier": "./types.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/engine.ts",
+      "before": [
+        {
+          "specifier": "./observable-actions.mjs"
+        },
+        {
+          "specifier": "./tree.ts"
+        },
+        {
+          "specifier": "./later-tree.ts"
+        },
+        {
+          "specifier": "../../src/estimated/sizing.ts"
+        },
+        {
+          "specifier": "../lib/equity.ts"
+        },
+        {
+          "specifier": "./observable-actions.mjs"
+        },
+        {
+          "specifier": "./spots.ts"
+        },
+        {
+          "specifier": "./types.ts"
+        }
+      ],
+      "after": [
+        {
+          "specifier": "./tree.ts"
+        },
+        {
+          "specifier": "./later-tree.ts"
+        },
+        {
+          "specifier": "../../src/estimated/sizing.ts"
+        },
+        {
+          "specifier": "../lib/equity.ts"
+        },
+        {
+          "specifier": "./spots.ts"
+        },
+        {
+          "specifier": "./types.ts"
+        }
+      ]
+    },
+    {
+      "path": "apps/frontend/src/agent/policy.ts",
+      "before": [
+        {
+          "specifier": "../../scripts/postflop-ai/engine.ts"
+        },
+        {
+          "specifier": "./preflop.ts"
+        },
+        {
+          "specifier": "../../scripts/postflop-ai/defence.ts"
+        },
+        {
+          "specifier": "../../scripts/postflop-ai/observable-actions.mjs"
+        },
+        {
+          "specifier": "../../scripts/postflop-ai/later-policy.ts"
+        },
+        {
+          "specifier": "../../scripts/postflop-ai/policy.ts"
+        },
+        {
+          "specifier": "../../scripts/postflop-ai/browser-inputs.ts"
+        },
+        {
+          "specifier": "../../scripts/postflop-ai/types.ts"
+        }
+      ],
+      "after": [
+        {
+          "specifier": "../../scripts/postflop-ai/engine.ts"
+        },
+        {
+          "specifier": "./preflop.ts"
+        },
+        {
+          "specifier": "../../scripts/postflop-ai/defence.ts"
+        },
+        {
+          "specifier": "../../scripts/postflop-ai/later-policy.ts"
+        },
+        {
+          "specifier": "../../scripts/postflop-ai/policy.ts"
+        },
+        {
+          "specifier": "../../scripts/postflop-ai/browser-inputs.ts"
+        },
+        {
+          "specifier": "../../scripts/postflop-ai/types.ts"
+        }
+      ]
+    }
+  ],
+  "compatibility_identities": {
+    "semantic": {
+      "historicalHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+      "currentRawHash": "1686a96550a09cd8af233990341d2d840e5c714320050f5274ff45bbcfee448e",
+      "currentSourcesSha256": "c28a1e4fe4b2bd2d055cb2ff129ef35ef39e737bc7fa91a7ae471f16617c17c6",
+      "inventorySha256": "dab5917d7315cfd0a99472c01be0fe752102efb74e4329deeab484a6097f7fa2",
+      "reviewSha256": "bd8e0ec1dade99adb73565416eee00b6395728c879ee910642c59b8af8b3cde2"
+    },
+    "pilot": {
+      "historicalHash": "0f35a9371c0220d1a41587c51f6d90698f9294d3f0706c841b58b31bed4d19d6",
+      "currentRawHash": "3a4ef9e08754cca78c32d6cd191f8eb0d18d538f78be608899c0d8923116c1b2",
+      "currentSourcesSha256": "c28a1e4fe4b2bd2d055cb2ff129ef35ef39e737bc7fa91a7ae471f16617c17c6",
+      "inventorySha256": "dab5917d7315cfd0a99472c01be0fe752102efb74e4329deeab484a6097f7fa2",
+      "reviewSha256": "bd8e0ec1dade99adb73565416eee00b6395728c879ee910642c59b8af8b3cde2"
+    },
+    "authored": {
+      "historicalHash": "92b946dfc5c87359dcb3e610e832e262c2d3ac366110f295968eca2f7392c088",
+      "currentRawHash": "80f5cd2d013d295a5aacf1b7217911696c6e5f5b8922273cb9315c2a181ae057",
+      "currentSourcesSha256": "c28a1e4fe4b2bd2d055cb2ff129ef35ef39e737bc7fa91a7ae471f16617c17c6",
+      "inventorySha256": "dab5917d7315cfd0a99472c01be0fe752102efb74e4329deeab484a6097f7fa2",
+      "reviewSha256": "bd8e0ec1dade99adb73565416eee00b6395728c879ee910642c59b8af8b3cde2"
+    }
+  },
+  "changed_records": [
+    {
+      "path": "apps/frontend/scripts/postflop-ai/defence.ts",
+      "bytes": 55632,
+      "sha256": "47aba428f9c798079411014d638b7d80c25efaf15d4770fb1f144b19c0462a1d"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/engine.ts",
+      "bytes": 11304,
+      "sha256": "82af24b14a2f4c5b61283958e49fbc8b2414597d213f823c4d6656668b408e7c"
+    },
+    {
+      "path": "apps/frontend/src/agent/hand.ts",
+      "bytes": 19906,
+      "sha256": "8583855475b56c324bf199c37be41a3c51bff087ecf667d64b0237e37bd02b4e"
+    },
+    {
+      "path": "apps/frontend/src/agent/policy.ts",
+      "bytes": 4659,
+      "sha256": "021a25138aee68ad71c5cf1f260598c7e2a9683c4432e03d792947a26d141ae1"
+    },
+    {
+      "path": "apps/frontend/src/locales/reasons-secondary.json",
+      "bytes": 53169,
+      "sha256": "9372741925f4b3aed1b9b09e19127aae6259ec62c5d2d1903e0c89d3bed14419"
+    }
+  ]
+}

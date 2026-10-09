@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 import { fileURLToPath } from "node:url";
@@ -6,12 +6,15 @@ import { createServer } from "vite";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { loadFourBetDataset } from "../src/estimated/four-bet-responses.ts";
+import { expandContinuationReasons, CONTINUATION_FACT_LABELS } from "../src/estimated/continuation-reason-format.ts";
+import { englishFactLabels } from "../src/estimated/english-reasons.ts";
+import { translateExplanationCopy } from "../src/locales/reason-copy.ts";
 import { limpActionTransition, responseActionTransition, rewindActionBlockTransition } from "../src/estimated/action-path.ts";
 
-let server, EstimatedRanges, ActionPath, Sidebar, StrategyMatrix, PreflopCallEvBars, buildActionBlocks, prioritizeParticipantRanges, selectedHandForRangeEntry;
+let server, EstimatedRanges, AiReason, ActionPath, Sidebar, StrategyMatrix, PreflopCallEvBars, buildActionBlocks, prioritizeParticipantRanges, selectedHandForRangeEntry;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
-  ({ EstimatedRanges, ActionPath, buildActionBlocks, prioritizeParticipantRanges, selectedHandForRangeEntry } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.tsx"));
+  ({ EstimatedRanges, AiReason, ActionPath, buildActionBlocks, prioritizeParticipantRanges, selectedHandForRangeEntry } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.tsx"));
   ({ Sidebar } = await server.ssrLoadModule("/src/components/layout.tsx"));
   ({ StrategyMatrix } = await server.ssrLoadModule("/src/components/StrategyMatrix.tsx"));
   ({ PreflopCallEvBars } = await server.ssrLoadModule("/src/estimated/PreflopCallEvBars.tsx"));
@@ -228,7 +231,7 @@ test("SB limp action path loads both persisted participant ranges", () => {
   assert.match(html, />Raise 3\.5</);
 });
 
-test("action block selection points to saved ranges and keeps unsupported continuations pending", () => {
+test("action block selection points to saved ranges and uses the bounded catalog for saved continuations", () => {
   const response = buildActionBlocks({ rangeType: "response", opener: "UTG", hero: "BB", callers: [], foldedHero: false });
   assert.equal(response.find(block => block.position === "BB").rangeRef.kind, "response");
   assert.equal(response.find(block => block.position === "SB").rangeRef.kind, "response");
@@ -242,19 +245,19 @@ test("action block selection points to saved ranges and keeps unsupported contin
   assert.deepEqual(savedMultiway.find(block => block.position === "SB").rangeRef, { kind: "multiway", position: "SB", caller: "HJ" });
   assert.deepEqual(savedMultiway.find(block => block.position === "BB").rangeRef, { kind: "multiway", position: "BB", caller: "HJ" });
   const twoCallers = buildActionBlocks({ rangeType: "response", opener: "UTG", hero: "BB", callers: ["HJ", "CO"], foldedHero: false });
-  assert.equal(twoCallers.find(block => block.position === "BB").rangeRef.kind, "pending"); // only one caller is saved
+  assert.equal(twoCallers.find(block => block.position === "BB").rangeRef.kind, "saved-source"); // exact two-caller dataset
 
   const squeezed = { rangeType: "response", opener: "UTG", hero: "SB", callers: ["HJ"], foldedHero: false, pendingRaise: "squeeze" };
   const squeezePath = buildActionBlocks(squeezed);
   assert.deepEqual(squeezePath.find(block => block.position === "SB").rangeRef, { kind: "saved-source", position: "SB", dataset: "multiway-responses", id: "SB_vs_UTG_HJcall" });
-  assert.equal(squeezePath.find(block => block.position === "BB").kind, "forced");
+  assert.equal(squeezePath.find(block => block.position === "BB").kind, "stage3-entry");
+  assert.equal(squeezePath.find(block => block.position === "BB").chosen, "fold");
   const openerBlock = squeezePath.at(-1);
   assert.deepEqual([openerBlock.kind, openerBlock.role, openerBlock.position, openerBlock.active], ["squeeze-response", "opener", "UTG", true]);
   assert.deepEqual(openerBlock.options.map(option => option.label), ["Fold", "Call 13", "Raise 26"]);
-  assert.equal(openerBlock.rangeRef.kind, "bounded");
-  assert.equal(openerBlock.continuationNode.hero, "UTG");
+  assert.deepEqual(openerBlock.rangeRef, { kind: "bounded", position: "UTG", id: "UTG_vs_SB_squeeze_HJcall" });
   const afterFold = buildActionBlocks({ ...squeezed, squeezeResponse: ["fold"] }).at(-1);
-  assert.deepEqual([afterFold.position, afterFold.role, afterFold.continuationNode.history.at(-1).action], ["HJ", "caller", "fold"]);
+  assert.deepEqual([afterFold.position, afterFold.role, afterFold.rangeRef.id], ["HJ", "caller", "HJ_vs_SB_squeeze_UTGfold"]);
   const threeWay = buildActionBlocks({ ...squeezed, squeezeResponse: ["call", "call"] }).at(-1);
   assert.deepEqual([threeWay.result, threeWay.pot], ["3人でフロップへ", "ポット 40bb"]);
   assert.equal(buildActionBlocks({ ...squeezed, squeezeResponse: ["fold", "fold"] }).at(-1).result, "SBの勝ち");
@@ -262,7 +265,7 @@ test("action block selection points to saved ranges and keeps unsupported contin
   const backToCaller = rewindActionBlockTransition({ ...squeezed, squeezeResponse: ["call", "fold"], block: { kind: "squeeze-response", role: "caller", position: "HJ" } });
   assert.deepEqual([backToCaller.pendingRaise, backToCaller.squeezeResponse], ["squeeze", ["call"]]);
   const unsupportedSqueeze = buildActionBlocks({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["SB"], foldedHero: false, pendingRaise: "squeeze" });
-  assert.ok(unsupportedSqueeze.some(block => block.continuationNode)); // Stage 2 records this exact root
+  assert.ok(unsupportedSqueeze.at(-1).continuationNode); // saved zero-support SB-call histories remain cataloged, then runtime proves unreachable
 
   const threeBet = buildActionBlocks({ rangeType: "three_bet", opener: "UTG", hero: "HJ", spot: { three_bet_size_bb: 8, four_bet_size_bb: 22 } });
   assert.deepEqual(threeBet.find(block => block.key === "continuation-UTG").rangeRef, { kind: "three_bet", position: "UTG", opponent: "HJ" });
@@ -274,6 +277,7 @@ test("action block selection points to saved ranges and keeps unsupported contin
   assert.deepEqual(coldCall.slice(0, 6).map(block => block.key), ["UTG", "HJ", "CO", "BTN", "SB", "BB"]);
   assert.equal(coldCall.find(block => block.position === "CO").chosen, "fold");
   assert.equal(coldCall.at(-1).kind, "bounded-continuation");
+  assert.equal(coldCall.at(-1).position, "UTG");
 
   const fourBet = buildActionBlocks({ rangeType: "four_bet", opener: "UTG", hero: "HJ", spot: { three_bet_size_bb: 8, four_bet_size_bb: 22 } });
   assert.deepEqual(fourBet.find(block => block.key === "continuation-HJ").rangeRef, { kind: "four_bet", position: "HJ", opponent: "UTG" });
@@ -377,9 +381,8 @@ test("the first caller keeps its regular response range while later multiway res
     assert.doesNotMatch(allIn, /5betオールイン後の応答レンジは未収録/);
 
     const squeeze = renderPath({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["SB"], pendingRaise: "squeeze" });
-    assert.match(squeeze, /BTN · 保存済み応答/);
-    assert.match(squeeze, /レンジ未収録/);
-    assert.doesNotMatch(squeeze, /Codexでレンジを生成/);
+    for (const position of ["BTN", "SB", "BB"]) assert.match(squeeze, new RegExp(`aria-label="${position}のレンジ"`));
+    assert.match(squeeze, /Loading saved ranges\.|保存済みレンジを読み込んでいます。/);
     assert.doesNotMatch(squeeze, /スクイーズ後の応答レンジは未収録/);
 
     const sbCalled = renderPath({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["SB"] });
@@ -417,10 +420,11 @@ test("local generation controls are embedded in the missing range slot", () => {
     assert.doesNotMatch(allIn, /class="local-estimate-control"/);
     assert.doesNotMatch(allIn, /5betオールイン後の応答レンジは未収録/);
 
-    const multiway = renderPath({ rangeType: "response", opener: "UTG", hero: "BB", callers: ["HJ", "CO", "BTN"] });
-    const heroPanel = multiway.match(/<section class="panel multiway-range-panel missing-range-panel" aria-label="BBのレンジ">[\s\S]*?<\/section>/)?.[0];
+    const multiway = renderPath({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["SB"] });
+    const heroPanel = multiway.match(/<section class="panel matrix-panel matrix-skeleton multiway-range-panel missing-range-panel" aria-label="BBのレンジ" aria-busy="true">[\s\S]*?<\/section>/)?.[0];
     assert.ok(heroPanel, "multiway Hero has a pending range slot");
-    assert.match(heroPanel, /Codexでレンジを生成|保存状態を確認中…/);
+    assert.match(heroPanel, /保存済みレンジを読み込んでいます。/);
+    assert.doesNotMatch(heroPanel, /Codexでレンジを生成/); // saved zero-support source never generates a HU substitute
     assert.doesNotMatch(multiway, /class="local-estimate-control"/);
   } finally {
     if (originalWindow === undefined) delete globalThis.window;
@@ -483,4 +487,30 @@ test("selected-hand details omit redundant open-size and total-frequency rows", 
   assert.doesNotMatch(details, /オープンサイズ（合計）|頻度合計|totalFrequency/);
   assert.match(details, /PreflopCallEvBars/);
   assert.match(details, /受ける4bet（合計）/);
+});
+
+
+test("continuation hand-detail fact labels render in all four languages without raw keys", () => {
+  const reasonsDirectory = new URL('../src/estimated/reasons/', import.meta.url);
+  const file = readdirSync(reasonsDirectory).find(name => name.startsWith('sq_') && name.endsWith('.json'));
+  assert.ok(file, 'a reviewed continuation explanation is present');
+  const explanation = expandContinuationReasons(JSON.parse(readFileSync(new URL(file, reasonsDirectory), 'utf8')));
+  const [handName, detail] = Object.entries(explanation.hands).find(([, detail]) => detail.facts.reach_pct > 0);
+  const hand = { hand: handName, ...Object.fromEntries(['fold', 'call', 'four_bet', 'all_in'].map(action => [action, detail.facts[`${action}_pct`]])) };
+  const originalWindow = globalThis.window;
+  try {
+    for (const locale of ['en', 'ja', 'zh-CN', 'es']) {
+      globalThis.window = { localStorage: { getItem: key => key === 'reysonai:locale:v1' ? locale : null } };
+      const html = renderToStaticMarkup(createElement(AiReason, { hand, reasonState: { data: explanation, loading: false, error: null } }));
+      const labels = [...html.matchAll(/<dt>(.*?)<\/dt>/g)].map(match => match[1].replaceAll('&#x27;', "'").replaceAll('&amp;', '&'));
+      assert.equal(labels.length, CONTINUATION_FACT_LABELS.length, locale);
+      for (const fact of CONTINUATION_FACT_LABELS) {
+        assert.ok(englishFactLabels[fact.key], `English label missing: ${fact.key}`);
+        const expected = locale === 'ja' ? fact.label : translateExplanationCopy(englishFactLabels[fact.key], locale);
+        assert.ok(labels.includes(expected), `${locale}: ${fact.key} -> ${expected}`);
+        assert.ok(!labels.includes(fact.key), `${locale}: raw key ${fact.key}`);
+        if (['zh-CN', 'es'].includes(locale)) assert.notEqual(expected, englishFactLabels[fact.key], `${locale}: untranslated ${fact.key}`);
+      }
+    }
+  } finally { if (originalWindow === undefined) delete globalThis.window; else globalThis.window = originalWindow; }
 });
