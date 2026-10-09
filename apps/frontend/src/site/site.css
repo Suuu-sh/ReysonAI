@@ -137,21 +137,15 @@
 .site-matrix-scroll { max-width: 100%; padding: 3px; margin: -3px; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
 .site .site-matrix { display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: 2px; min-width: 316px; aspect-ratio: 1; }
 .site .site-cell { position: relative; display: grid; place-items: center; min-width: 0; overflow: hidden; border-radius: var(--control-radius); background: var(--fold); color: #9c9ca8; font-size: clamp(10px, .9vw, 13px); font-weight: 600; letter-spacing: -.02em; line-height: 1; transition: background-color .5s ease calc(var(--wave) * 22ms), color .5s ease calc(var(--wave) * 22ms), transform .18s var(--ease), box-shadow .18s ease; }
-.site .site-cell.is-raise { background: var(--raise); color: #fff; }
+.site .site-cell.is-raise { color: #fff; }
 .site .site-cell.is-unreachable { background: repeating-linear-gradient(135deg, #141418, #141418 4px, #1b1b20 4px, #1b1b20 6px); color: var(--subtle); }
-.site .site-cell.is-limp { background: var(--hero-action-color); color: #fff; }
-.site .site-cell.is-all_in { background: var(--hero-action-color); color: #fff; }
-.site .site-cell.is-call { background: var(--call); color: #fff; }
-.site .site-cell.is-postflop { background: var(--hero-action-color); color: #fff; }
+.site .site-cell.is-limp, .site .site-cell.is-all_in, .site .site-cell.is-call, .site .site-cell.is-postflop { color: #fff; }
 .site .site-cell:hover { z-index: 2; box-shadow: 0 6px 16px #000a; transform: scale(1.06); }
 .site .site-cell.is-selected { z-index: 3; outline: 2px solid var(--ink); outline-offset: 1px; }
 .has-motion .site-cell { animation: site-cell-in .6s var(--ease) both; animation-delay: calc(var(--wave) * 24ms + .45s); }
-.site-cell-mix { position: absolute; right: 2px; bottom: 2px; left: 2px; display: flex; height: 3px; overflow: hidden; border-radius: var(--control-radius); box-shadow: 0 0 0 1px #09090b99; }
-.site-cell-mix span { display: block; height: 100%; flex: 0 0 auto; }
-.site-cell-mix .is-limp { background: #4fa865; }
-.site-cell-mix .is-raise { background: #ff9ac4; }
-.site-cell-mix .is-call { background: #8edbe8; }
-.site-cell-mix .is-fold { background: #3a3a43; }
+.site-cell-fill { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.site-cell-fill span { position: absolute; bottom: 0; display: block; }
+.site-cell-label { position: relative; z-index: 1; text-shadow: 0 1px 2px #09090bcc; }
 .site-legend { display: flex; gap: 16px; margin-top: 12px; color: var(--muted); font-size: 12px; }
 .site-legend span, .site-mini-legend span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .site-legend i, .site-mini-legend i { width: 9px; height: 9px; border-radius: var(--control-radius); }
