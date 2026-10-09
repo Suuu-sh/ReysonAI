@@ -1,34 +1,32 @@
 # PR #123 source-only review packet
 
-This directory records source-impact and saved-byte evidence for the frozen PR state. It is an engineering inventory for independent review; it is not an independent review, a renewed receipt, or an acceptance decision.
+This directory records the source-impact and saved-byte evidence collected for PR #123, plus the supplied independent source-context report and the narrowly scoped receipt installation it authorized. The reviewer report is [independent-source-context-review.json](./independent-source-context-review.json); this packet does not broaden its scope.
 
 - PR: [Suuu-sh/ReysonAI#123](https://github.com/Suuu-sh/ReysonAI/pull/123)
-- Base commit: `f789178886bf020b143051eca3c56aa77e499303` (tree `a114d7816fa49c41a66d6fa514cdf64ad7b4ab74`)
-- Frozen PR head: `599a3734a3aa0fe881b8955a4e98d469eddb9fb9` (tree `3c188f233803cbe947cf31876bfd337856808ab3`)
-- Local evidence checkout: `7ff2dff7861ec4d2d291dcedda7ec3a6d31396e9`; its tree exactly matches the frozen PR tree.
-- The frozen code diff has 1037 changed paths. These files contain path, byte-count and hash metadata only; no numerical policy artifacts.
+- Base: `f789178886bf020b143051eca3c56aa77e499303` (tree `a114d7816fa49c41a66d6fa514cdf64ad7b4ab74`)
+- Code-source checkpoint: `599a3734a3aa0fe881b8955a4e98d469eddb9fb9` (tree `3c188f233803cbe947cf31876bfd337856808ab3`)
+- Reviewed PR head before receipt installation: `ed437f5039e74e48d28d53a8371038bb03a230e0` (tree `c670c9b53cb3f4f0a2a674701c5e065837158579`)
+- The independent report is 11,712 UTF-8 bytes with SHA-256 `750a1521423b014b05e8ad7d788438b921c3b6509ee270d48f194c4258e6bef3`.
 
-## Source closure results
+## Source closures
 
-- **Stage2:** official collector reports 188 sources in its existing receipt and 195 in the frozen PR tree: 7 added, 15 changed, 0 removed. See [stage2-source-closure.json](./stage2-source-closure.json).
-- **Stage3:** 98 sources in its existing receipt and 99 in the frozen PR tree: 1 added, 3 changed, 0 removed. See [stage3-source-closure.json](./stage3-source-closure.json).
-- **MW3:** all 16 saved spots have source-closure impact. Each has 2 newly reachable sources and 8 modified existing sources (no removals); see [mw3-source-impact.json](./mw3-source-impact.json) for per-spot closure digests and paths.
-- The exact-pair MW3 compatibility identity receipt remains unchanged and its official compatibility checks completed. No changed PR path overlaps its identity source set. This is a negative control, not renewal of affected MW3 acceptance receipts.
+- **Stage2:** 188 existing source records and 195 at the reviewed head: 7 added, 15 modified, 0 removed. The official closure digest is `0777db0470fd01d804c46f02deb366ceafa0159c5e61be358341ac3dc599583b`. See [stage2-source-closure.json](./stage2-source-closure.json).
+- **Stage3:** 98 existing records and 99 at the reviewed head: 1 added, 3 modified, 0 removed. It was recollected after the final Stage2 receipt so it binds the exact installed Stage2 bytes; the final closure digest is recorded in that receipt. The initial inventory is [stage3-source-closure.json](./stage3-source-closure.json).
+- **MW3:** all 16 saved spots are affected. Each official source closure has 2 added paths and 8 modified paths (no removals). See [mw3-source-impact.json](./mw3-source-impact.json).
+- The exact-pair MW3 compatibility identity receipt remains unchanged and is an unaffected negative control.
 
-## Saved bytes and fail-closed gates
+## Installed source-only amendments
 
-The official Stage2/Stage3 decoders verified their archived files against existing manifests. Existing archive hashes remain unchanged. The local checkout has one matching Stage2 decoded artifact and none of the Stage3 decoded artifacts; I did not write or restore data. Details are in [stage23-saved-byte-preservation.json](./stage23-saved-byte-preservation.json).
+The source-context amendments retain the original numerical authorship, evidence, limitations, fingerprints, counts and archive identities. Stage2 and Stage3 were rebound with their unchanged official hash/restore helpers. All 16 MW3 manifests now bind to the reviewed tree; their receipts retain the historical acceptance and quality fields and record the new reviewer only in a separate source-context renewal. For each spot, the receipt-derived SQL builder changed the receipt comment only; the SQL body and all 32 registry pins remain unchanged.
 
-The historical MW3 preservation ledger matches all 84 of 84 protected files. Official decoding matched all 112 of 112 raw records. All 32 delivery pins match the static registry and existing receipts. All 18 historical receipt-file hashes match the prior ledgers (Stage2/Stage3 renewal ledger and MW3 preservation ledger). Report hashes and accepted limitations remain bound by unchanged archived manifests and receipt bytes; see [mw3-saved-byte-preservation.json](./mw3-saved-byte-preservation.json).
+Exact prior Stage2, Stage3 and 16 MW3 receipt bytes are preserved under [prior-receipts](./prior-receipts/), with their byte counts and SHA-256 hashes linked from the renewed records. The existing historical preservation inventories remain as pre-renewal evidence in [stage23-saved-byte-preservation.json](./stage23-saved-byte-preservation.json) and [mw3-saved-byte-preservation.json](./mw3-saved-byte-preservation.json).
 
-Official restore/verification gates ran read-only and refused the stale source bindings:
+The clean official Stage2 and Stage3 restores materialize 1,614 and 1,805 archive records respectively, then verify the full 1,888 and 1,805 artifact sets. The MW3 checks decode and verify all 16 saved snapshots, source trees, manifest-to-receipt bindings, delivery pins, SQL bodies and registry equivalence. No policy generation or numerical regeneration is involved.
 
-- Stage2: “Review source/configuration identity changed.”
-- Stage3: “Stage 3 review source/configuration identity changed.”
-- MW3: “Mw3 source/input dependency inventory differs.”
+## Scope and remaining gates
 
-Those failures are preserved as blockers. This packet does not modify historical receipts, insert reviewer identity, or represent old numerical approval as approval of PR #123. A fresh independent source-only review is needed before affected source-bound receipts can be renewed. The repository’s receipt contract requires a reviewer model of **gpt-6-astra**, with reviewer task identity separate from the author.
+This renewal is limited to current source context. It does not approve new strategy quality, new numerical policy, GTO/solver claims, production deployment, D1 execution, live browser/auth acceptance, or full-suite/CI results. No accepted HU archive receipt exists here; none was created or renewed. Historical/candidate HU manifests and the 255 standard HU policy/report files keep their separate acceptance status.
 
-## Migration boundary
+The documentation count is corrected: the exact generated inventory is **60 spot slugs × 4 profiles × 2 roles × 2 stages = 960 policy files**, including some HU-after-multiway histories. The StageD result and PR description should not describe these as 35 spots.
 
-Migration 0012 and its main-branch deployment workflow were inspected statically. No production preflight, remote D1 request, migration execution, deployment, or merge was performed. The migration hash and workflow checks are in mw3-saved-byte-preservation.json.
+Final exact-head required CI and the parent's independent final artifact review remain separate merge gates. Production preflight, remote D1 access, migration execution, deployment and merge were not performed.

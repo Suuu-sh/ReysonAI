@@ -649,6 +649,103 @@
         "exact_source_tree_equality": true
       },
       "provenance_rebound_at_utc": "2026-10-07T20:09:37.401Z"
+    },
+    "pr123_source_context_renewal": {
+      "status": "source-context-pass",
+      "reviewer_model": "gpt-6-astra",
+      "reviewer_task": "/root/review_pr123_source_evidence",
+      "reviewed_at_utc": "2026-10-09T20:04:41Z",
+      "implementation_author": {
+        "task": "cloud-thread:01a121ea-40ad-76ff-863b-615dbdb920a9",
+        "code_fix_turn": "01a1220d-2afd-72d5-90b7-9a4ea19091ae",
+        "evidence_turn": "01a1222b-eace-7541-8169-5b63c599c3ab",
+        "model": null,
+        "provenance": "Exact task/turn identifiers supplied by coordinating parent; model not independently verified. Original feature task is unknown and existing numerical-author metadata is retained."
+      },
+      "source_context_decision": "PASS",
+      "source_context_scope": "Independent source-context and preserved historical evidence review. Approval is restricted to installation of accurately attributed, source-only amendments and corresponding exact manifests/receipt-derived SQL comments. No renewed strategy quality, new numerical policy approval, solver/GTO claim, production authorization, D1 execution, browser acceptance or full-suite pass.",
+      "reviewed_source_commit": "ed437f5039e74e48d28d53a8371038bb03a230e0",
+      "reviewed_source_tree": "c670c9b53cb3f4f0a2a674701c5e065837158579",
+      "code_source_commit": "599a3734a3aa0fe881b8955a4e98d469eddb9fb9",
+      "code_source_tree": "3c188f233803cbe947cf31876bfd337856808ab3",
+      "report": {
+        "path": "apps/frontend/docs/qa/pr123-source-only-review/independent-source-context-review.json",
+        "bytes": 11712,
+        "sha256": "750a1521423b014b05e8ad7d788438b921c3b6509ee270d48f194c4258e6bef3"
+      },
+      "proofs": [
+        {
+          "path": "apps/frontend/docs/qa/pr123-source-only-review/independent-source-context-review.json",
+          "bytes": 11712,
+          "sha256": "750a1521423b014b05e8ad7d788438b921c3b6509ee270d48f194c4258e6bef3"
+        },
+        {
+          "path": "apps/frontend/docs/qa/pr123-source-only-review/stage2-source-closure.json",
+          "bytes": 42121,
+          "sha256": "be45fb50830401cb2f21757ea90e055a62c6f07d73b55f04d4bad02eda32e89a"
+        },
+        {
+          "path": "apps/frontend/docs/qa/pr123-source-only-review/stage3-source-closure.json",
+          "bytes": 19160,
+          "sha256": "0d6f164aa575566f06e5b6bec682ad55ae1afc72bb3c6f396294f80285541c6f"
+        },
+        {
+          "path": "apps/frontend/docs/qa/pr123-source-only-review/mw3-source-impact.json",
+          "bytes": 33721,
+          "sha256": "32026b385e9bbd99c737e41bc6ea92f982cd6f90641a49945adf199fdd5c51fa"
+        },
+        {
+          "path": "apps/frontend/docs/qa/pr123-source-only-review/stage23-saved-byte-preservation.json",
+          "bytes": 3278,
+          "sha256": "25c0b3c3607d294c4033d06ee27d25d26280d89d4fb7aef92012bdc019fbea8e"
+        },
+        {
+          "path": "apps/frontend/docs/qa/pr123-source-only-review/mw3-saved-byte-preservation.json",
+          "bytes": 30539,
+          "sha256": "5e3407dda3be3ad86eca34591fd3976540bb66167172a342559b069cf0ae2fb0"
+        }
+      ],
+      "prior_receipt": {
+        "path": "configs/multiway-preflop-stage2.review.json",
+        "bytes": 531140,
+        "sha256": "f482e81841a18b548841d3b9f4e5db9638e4bee2be0b0a562f6b36eba381c6b5",
+        "preserved_copy": "apps/frontend/docs/qa/pr123-source-only-review/prior-receipts/configs/multiway-preflop-stage2.review.json",
+        "commit": "ed437f5039e74e48d28d53a8371038bb03a230e0",
+        "source_tree": "c670c9b53cb3f4f0a2a674701c5e065837158579"
+      },
+      "source_identity": {
+        "source_records_before": 188,
+        "source_records_after": 195,
+        "added": 7,
+        "modified": 15,
+        "removed": 0,
+        "closure_sha256": "0777db0470fd01d804c46f02deb366ceafa0159c5e61be358341ac3dc599583b"
+      },
+      "preserved": {
+        "artifact_records": 1888,
+        "artifact_records_unchanged": true,
+        "archive": {
+          "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+          "bytes": 1747857,
+          "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+          "format": "ustar+gzip"
+        },
+        "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+        "source_fingerprint_unchanged": true,
+        "counts": {
+          "catalog": 3115,
+          "saved": 1611,
+          "unreachable": 1504,
+          "hands": 272259
+        },
+        "counts_unchanged": true
+      },
+      "scope_limits": [
+        "Source-context only; no renewed numerical or strategy-quality approval.",
+        "No GTO/solver claim, browser acceptance, production authorization, D1 execution, or full-suite approval.",
+        "Existing review history, warnings, advisories, limitations, authorship, and all previous amendments are retained."
+      ],
+      "merge_decision": "BLOCK until controlled source-bound receipt renewal, exact committed source re-verification, clean official restore/full publication verification, and required exact-head CI pass"
     }
   },
   "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
@@ -10108,8 +10205,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 17095,
-      "sha256": "365103ce69fbeedf281a532b5f83e3361f5b5577f52f3b55befe6937c8397fda"
+      "bytes": 17820,
+      "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -10143,8 +10240,8 @@
     },
     {
       "path": "apps/backend/src/postflop.ts",
-      "bytes": 4488,
-      "sha256": "267a592f4f6719d45ebe9a8c39f105e9dbbcf789ff5dcb7fe58b93c5ed1e6dd1"
+      "bytes": 6379,
+      "sha256": "e8f282efa1133d4f589e14ca56fe030354c5fcc30fd5a4de2a3cd208308b432a"
     },
     {
       "path": "apps/backend/tests/fastfold-release.test.mjs",
@@ -10338,8 +10435,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
-      "bytes": 13322,
-      "sha256": "9bd17ab71c5009af828aec9b4260bc8cdb89c7da1cc55334aeeec70276f3219d"
+      "bytes": 14269,
+      "sha256": "1d1ad3609d8cdb7f0e74ef1d399e72970963d716eff6652af1b2a07affc92aec"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/cached-values.ts",
@@ -10347,9 +10444,14 @@
       "sha256": "329995771ce7b439ebdc1cf82fe0fa12e01302a94afd500e9c9bfa28cad0db88"
     },
     {
+      "path": "apps/frontend/scripts/postflop-ai/candidate-source.ts",
+      "bytes": 7986,
+      "sha256": "3382266a731f4c0ad8f68ee0281ab0a70748e148ac8be1e39108909fbaca6ba4"
+    },
+    {
       "path": "apps/frontend/scripts/postflop-ai/defence.ts",
-      "bytes": 55632,
-      "sha256": "47aba428f9c798079411014d638b7d80c25efaf15d4770fb1f144b19c0462a1d"
+      "bytes": 56594,
+      "sha256": "6b76dbbfb541c1de35d3355aad313db83623a81b9bcc33a8d37b637611f14ad0"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/engine.ts",
@@ -10393,13 +10495,23 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
-      "bytes": 12010,
-      "sha256": "124f5faca5c63e3c0d382b0a2ecef8db547b1c2e7dc47d7b859d2b1552a3a9d6"
+      "bytes": 13013,
+      "sha256": "e8c40c3ae4788831d100955aa5f12b0d76efe89d79091e367a5d677bc567a44b"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/generate-profiles.mjs",
+      "bytes": 10356,
+      "sha256": "eee090f7c629b373f7bc6537757b10361a00a6e12f1f27b5078c2e32f5503fdf"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
-      "bytes": 23996,
-      "sha256": "46ec36d6c23aaa2d0ae86b8926f2f1fab5cb2b18688c617ba5a8152d1cf2c74e"
+      "bytes": 34692,
+      "sha256": "85b554f82fd7dce2fa4430d0bf187279a0f10228ecc5894801ad18d9af7e5b11"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/generation-options.mjs",
+      "bytes": 1932,
+      "sha256": "2c67872688e0a8525668642368d0fd52ebeda6c2908070fd6bc42c14edefd6fb"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/hu-hand-tier.ts",
@@ -10407,14 +10519,19 @@
       "sha256": "ab830cfa6a3488e4dc9cbdc0f6aa3c9d0b7299b77c7458269404cd067c4d173b"
     },
     {
+      "path": "apps/frontend/scripts/postflop-ai/input-options.ts",
+      "bytes": 11258,
+      "sha256": "d39b90dbc961724718ce5180482dec0cd8da88748a2fb018b651db8a7f60436e"
+    },
+    {
       "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
-      "bytes": 13598,
-      "sha256": "1191d34c5849e88d6e2502948d12796a8135fd33d71f8b366151aa2953e85564"
+      "bytes": 15625,
+      "sha256": "599f07d0c2c0be1cbb6391043dc28c31d3b3c84221ccb4789e6161fbeec243c2"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/later-policy.ts",
-      "bytes": 8281,
-      "sha256": "654bfd24a665f27c5c0d4a8e0aa97e9c7107ac064b97f6e5421235d02232fb33"
+      "bytes": 8523,
+      "sha256": "2a1c7b06c56ca88eac3d4e0642f2f13fb15f29d7a75b238abc3b3b91f0da1c10"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/later-tree.ts",
@@ -10538,13 +10655,18 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/policy.ts",
-      "bytes": 10545,
-      "sha256": "7697491739c8dc9a73bc65110f6a6059272c0690886e41d0378b124e6e4c0d36"
+      "bytes": 10874,
+      "sha256": "f9cf0c4cac35520699fa427c7e46cb106c15667b8a2ea0b190002f1cf79507e9"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/profile-reference.ts",
+      "bytes": 2246,
+      "sha256": "ac122a565b23f345e5351629df2d7d4bc4911e662f6abf9b615a77b1782205cc"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/publish-d1.mjs",
-      "bytes": 9655,
-      "sha256": "5c9a216f9489728dee1c97d70a81e576293763c020ad0be0fb376e74a8a46fd6"
+      "bytes": 18904,
+      "sha256": "36731c2a7ff9593215d6cc3fc4d63abd7f8c13b945febdde3eeaa47d991bf6e3"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/range-equity.ts",
@@ -10583,18 +10705,18 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/types.ts",
-      "bytes": 4439,
-      "sha256": "fca9397238fdda34ae4848225cb85dd9fe5a8fefcf493a9c188ea18a761229b2"
+      "bytes": 5213,
+      "sha256": "d30d1fb50ad2ec0095fd040e05074d75b0c40cf5b48e013cc182aeee057f18ea"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/views.ts",
-      "bytes": 8965,
-      "sha256": "0b7324bf521165d7b657d6f8d5de867f3aa409b9b7d662f8d9dc772643f58248"
+      "bytes": 9792,
+      "sha256": "251117e6151407f0fc9915b005cf5295173bd2ea03b7df6aa502460179e88c74"
     },
     {
       "path": "apps/frontend/scripts/publish-d1.mjs",
-      "bytes": 3824,
-      "sha256": "56444b4ad44e3314d869552849643c3276cfaecf23c0b98eee38bf8c0b9bb10c"
+      "bytes": 4026,
+      "sha256": "6fc316986d1e8396f765189769f9ce3583bdbe85cfcac3e82c005e5e88cefe2e"
     },
     {
       "path": "apps/frontend/scripts/range.mjs",
@@ -10842,6 +10964,11 @@
       "sha256": "39f6b040887a94ddd048c920e4596e6e0d90cd516fdcbe550c7d335c7786b44e"
     },
     {
+      "path": "apps/frontend/src/estimated/postflop-profile-state.ts",
+      "bytes": 1741,
+      "sha256": "f33c757aa29762af7630e4bef81907278bf64600b8d3531ec842600b569216ff"
+    },
+    {
       "path": "apps/frontend/src/estimated/preflop-ranges.json",
       "bytes": 391641,
       "sha256": "fdc83f2ed78e0690e148b39fa23b8edc0bf204fe1a3f1ca4c4e6ea9377da2b55"
@@ -10983,8 +11110,13 @@
     },
     {
       "path": "apps/frontend/src/locales/copy.ts",
-      "bytes": 1811,
-      "sha256": "288a0071b14fe803456f5a6966f5577d799a91fb4e8d81fdee6d5e582e667ecc"
+      "bytes": 1921,
+      "sha256": "6be5a33c6a7e926eeaad9ac86885c5e4efd7ba93ecda51edd2783a545f8d953c"
+    },
+    {
+      "path": "apps/frontend/src/locales/opponent-profile-copy.json",
+      "bytes": 4396,
+      "sha256": "1c3c0b768dd6d8fdacb89e15fb8cb9f64332575b63fd5f130c8e87176b1904e7"
     },
     {
       "path": "apps/frontend/src/locales/product-dictionary.json",
@@ -10993,8 +11125,8 @@
     },
     {
       "path": "apps/frontend/src/locales/product-direct.json",
-      "bytes": 44794,
-      "sha256": "1108ed95ac1a899850c910e9aaa9332d2b2ed99a61be837b4666a2a97b99d27f"
+      "bytes": 45331,
+      "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
     },
     {
       "path": "apps/frontend/src/locales/reason-copy.ts",
@@ -11042,7 +11174,7 @@
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
     }
   ],
-  "content_sha256": "551e5c0479c833f1c4cbfbaa899b7cf0593195929604961711495b40a4f47e7d",
+  "content_sha256": "30dc42c7ca18652e32d519c71da904ad8e79c4e6883f9b0006da9f29ad97945b",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
