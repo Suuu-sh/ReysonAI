@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 14149)
-Total output lines: 939
-
 import type { ActionMix, FlopPolicy, Inputs, LaterPolicy, PilotConfig, Street } from "./types.ts";
 import type { LaterStreet } from "./later-tree.ts";
 import type { PlayerRole } from "./tree.ts";
@@ -416,7 +413,136 @@ class Defence {
     for (const entry of entries) {
       const stageBoard = board.slice(0, entry.boardLen);
       key += `|${stageBoard.join(",")}:${entry.node}:${entry.line}:${entry.action}`;
-      // A bluff-capped decision (bluff cap) depends on the whole line, so it…2149 tokens truncated…> 0)) return null;
+      // A bluff-capped decision (bluff cap) depends on the whole line, so its stage is not cached.
+      const cap = table ? this.entryBetting(table, board, entry) : null;
+      const cacheable = entry.street !== "river" && !cap;
+      const saved = cacheable ? this.stages.get(key) : null;
+      let next = saved ? unpackWeights(saved) : null;
+      if (!next) {
+        const tiers = tierArray(stageBoard), texture = textureOf(entry.street, stageBoard);
+        const factors = new Float64Array(TIERS.length * 3);
+        for (let tier = 0; tier < TIERS.length; tier++) {
+          const base = this.policyRule(entry, texture, tier);
+          for (let kind = 0; kind < 3; kind++) factors[tier * 3 + kind] = (cap ? cap.apply(base, kind, tier) : base)[entry.action!] / 100;
+        }
+        const kinds = cap ? cap.kind : null;
+        next = new Float64Array(NUM_IDS);
+        for (let id = 0; id < NUM_IDS; id++) {
+          const weight = weights[id];
+          if (weight > 0) { const tier = tiers[id]; next[id] = tier === NONE ? 0 : weight * factors[tier * 3 + (kinds ? kinds[id] : 0)]; }
+        }
+        if (cacheable) {
+          if (this.stages.size >= 8000) { let drop = 800; for (const oldest of this.stages.keys()) { this.stages.delete(oldest); if (--drop <= 0) break; } }
+          this.stages.set(key, this.largeRun ? packWeights(next) : next);
+        }
+      }
+      weights = next;
+    }
+    // The last stage already removed the cards of its own board; cards of later streets remove
+    // combos that earlier stages could not know about.
+    const last = entries.at(-1);
+    if (last && last.boardLen === board.length) return weights;
+    const tiers = tierArray(board), out = new Float64Array(NUM_IDS);
+    for (let id = 0; id < NUM_IDS; id++) if (weights[id] > 0 && tiers[id] !== NONE) out[id] = weights[id];
+    return out;
+  }
+
+  // The defence context of the pending decision of `table` at `node` (null when it is not a facing
+  // decision or the bettor range is empty). Cached per (node, board, actions taken).
+  context(table: Table, board: readonly number[], node: string): DefenceContext | null {
+    if (!isFacingNode(node)) return null;
+    const street = streetOf(node), cache = this.contexts[street];
+    const key = `${node}#${board.join(",")}#${table.path.flop}#${table.path.turn}#${table.path.river}`;
+    if (cache.has(key)) { const hit = cache.get(key)!; cache.delete(key); cache.set(key, hit); return hit; }
+    const context = this.build(table, board, node, street, key);
+    if (cache.size >= LIMITS[street]) cache.delete(cache.keys().next().value!);
+    cache.set(key, context);
+    if (street === "river" && cache.size >= COMPACT_CACHE_AFTER) this.largeRun = true;
+    return context;
+  }
+
+  build(table: Table, board: readonly number[], node: string, street: Street, key: string): DefenceContext | null {
+    const { log } = table, target = log.at(-1), prior = log.at(-2);
+    if (!target || target.node !== node || target.action !== null) throw new Error("Defence needs the pending decision of the node");
+    if (!prior || prior.seat === target.seat || prior.street !== target.street) return null;
+    const spot = this.inputs.spot, defender = target.seat, bettor = prior.seat;
+    const role = defender === spot.ip ? "ip" : "oop";
+    const wager = Math.round((table.pot - prior.pot) * 100) / 100;
+    const call = Math.min(table.stacks[defender], Math.round((table.invested[bettor] - table.invested[defender]) * 100) / 100);
+    const chips = requiredEquity({ potBefore: prior.pot, wager, call });
+    const bettorWeights = this.reach(bettor, log.filter(entry => entry.seat === bettor), board, table);
+    const bettorRange = makeRange(bettorWeights);
+    if (!(bettorRange.total > 0)) return null;
+    const priorBetting = this.entryBetting(table, board, prior);
+    const facedCap = priorBetting?.caps.find(item => item.action === prior.action) ?? null;
+    return { key, node, street, board, role, bettor, defender, target, ...chips,
+      potBefore: prior.pot, wager, call,
+      bettorRange, defenderEntries: log.filter(entry => entry.seat === defender && entry !== target),
+      table, cap: this.betting(table, board, node), tables: null, ceiling: undefined, floor: undefined,
+      // The faced action was under the bluff cap: its range is at or below break-even in bluffs.
+      capped: Boolean(facedCap && facedCap.factor < 1), facedCap,
+      equities: new Map(), summary: null };
+  }
+
+  // The bluff cap of the pending betting decision (null when nothing is capped). See docs/postflop-defence.md.
+  betting(table: Table, board: readonly number[], node: string): BettingCap | null {
+    if (!this.bluffCap || !isBettingNode(node)) return null;
+    const street = streetOf(node), cache = this.bets[street];
+    const key = `${node}#${board.join(",")}#${table.path.flop}#${table.path.turn}#${table.path.river}`;
+    if (cache.has(key)) { const hit = cache.get(key)!; cache.delete(key); cache.set(key, hit); return hit; }
+    const info = this.buildBetting(table, board, node, street);
+    if (cache.size >= LIMITS[street]) cache.delete(cache.keys().next().value!);
+    cache.set(key, info);
+    return info;
+  }
+
+  // The betting decision of `entry` (an earlier decision of the table's hand), rebuilt from the actions before it.
+  entryBetting(table: Table, board: readonly number[], entry: DecisionLog): BettingCap | null {
+    if (!this.bluffCap || !isBettingNode(entry.node)) return null;
+    if (entry === table.log.at(-1)) return this.betting(table, board, entry.node);
+    const order: Street[] = ["flop", "turn", "river"], at = order.indexOf(entry.street), prefix: Partial<ActionPaths> = {};
+    order.forEach((name, i) => { prefix[name] = i < at ? table.path[name] : i === at ? table.path[name].slice(0, entry.index) : []; });
+    const stageBoard = board.slice(0, entry.boardLen);
+    const cache = this.bets[entry.street];
+    const key = `${entry.node}#${stageBoard.join(",")}#${prefix.flop}#${prefix.turn}#${prefix.river}`;
+    if (cache.has(key)) {
+      const hit = cache.get(key)!; cache.delete(key); cache.set(key, hit); return hit;
+    }
+    const before = replayOrNull(this.inputs, stageBoard, prefix);
+    return before ? this.betting(before, stageBoard, entry.node) : null;
+  }
+
+  buildBetting(table: Table, board: readonly number[], node: string, street: Street): BettingCap | null {
+    const { log } = table, target = log.at(-1);
+    if (!target || target.node !== node || target.action !== null) throw new Error("Bluff cap needs the pending decision of the node");
+    const bettor = target.seat, defender = table.other(bettor);
+    // A first decision below the all-in merge cannot be capped on flop/turn. This is
+    // just the engine's wager test; it avoids replaying all three non-all-in bet sizes.
+    if (street !== "river" && node.endsWith("_first")) {
+      const own = table.stacks[bettor];
+      const limit = Math.min(own, table.stacks[defender] + table.invested[defender] - table.invested[bettor]);
+      if (limit < own - 1e-9 && r2(own - r2(limit)) > 1e-9) return null;
+      const amounts = (NODES[node] ?? LATER_NODES[node]).filter(isAggressive).map(action =>
+        street === "flop" ? table.pot * flopBetFraction(action) : r2(table.pot * betFraction(street, action)));
+      if (limit > 0 && amounts.every(amount => amount < limit * pilotConfig.later_all_in_merge_ratio &&
+          r2(own - r2(Math.min(own, amount))) > 1e-9)) return null;
+    }
+    const caps: BetCap[] = [];
+    for (const action of (NODES[node] ?? LATER_NODES[node]).filter(isAggressive)) {
+      const after = replayOrNull(this.inputs, board, { flop: table.path.flop, turn: table.path.turn, river: table.path.river,
+        [street]: [...table.path[street], action] });
+      if (!after) continue;
+      // River bets and raises, and any all-in on an earlier street; other sized bets keep semi-bluffs.
+      if (street !== "river" && after.stacks[bettor] > 1e-9) continue;
+      const wager = r2(after.pot - target.pot);
+      const call = Math.min(after.stacks[defender], r2(after.invested[bettor] - after.invested[defender]));
+      caps.push({ action, alpha: requiredEquity({ potBefore: target.pot, wager, call }).required, ratio: wager / target.pot } as BetCap);
+    }
+    if (!caps.length) return null;
+    const bettorWeights = this.reach(bettor, log.filter(entry => entry.seat === bettor && entry !== target), board, table);
+    const defenderWeights = this.reach(defender, log.filter(entry => entry.seat === defender), board, table);
+    const defenderRange = makeRange(defenderWeights), bettorRange = makeRange(bettorWeights);
+    if (!(defenderRange.total > 0) || !(bettorRange.total > 0)) return null;
     const tables = finalTables(board), tiers = tierArray(board), texture = textureOf(target.street, board.slice(0, target.boardLen));
     // value = equity against the defender's whole range >= VALUE_EQUITY (the classification of the defence facts).
     const kind = new Uint8Array(NUM_IDS);

@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 13908)
-Total output lines: 687
-
 import { Dialog } from "../components/Dialog.tsx";
 import type { StrategyNode, StrategyCombo, ActionMix, PostflopDatasets, InputOptions, InputOpponentProfile } from "../../scripts/postflop-ai/types.ts";
 import type { PlayerRole } from "../../scripts/postflop-ai/tree.ts";
@@ -339,7 +336,103 @@ function OpponentSettingsDialog({ profile, seat, positions, onApply, onClose }: 
     <div className="flop-opponent-settings">
       <OpponentProfileField profile={draftProfile} onChange={setDraftProfile} />
       {draftSeat && positions && draftProfile !== "standard" && <OpponentSeatField seat={draftSeat} positions={positions} onChange={setDraftSeat} />}
- …1908 tokens truncated… spotState.error
+    </div>
+    <div className="opponent-settings-actions">
+      <button type="button" className="mode-secondary" onClick={onClose}>{english ? "Cancel" : "キャンセル"}</button>
+      <button type="button" className="mode-primary" onClick={() => onApply(draftProfile, draftSeat)}>{english ? "Apply" : "適用"}</button>
+    </div>
+  </Dialog>;
+}
+
+export function StreetCardDialog({ usedCards = [], street, currentCard = "", onApply, onClose }: { usedCards?: string[]; street: string; currentCard?: string; onApply: (card: string) => void; onClose: () => void }) {
+  const english = productLocale() !== "ja";
+  const title = street === "turn" ? (english ? "Select turn" : "ターンを選択") : (english ? "Select river" : "リバーを選択");
+  const unavailable = new Set(usedCards);
+  return <Dialog labelledBy="street-card-title" onClose={onClose} className="postflop-card-dialog street-card-dialog">
+      <div className="modal-heading"><h2 id="street-card-title">{title}</h2>
+        <button type="button" className="modal-close" aria-label={english ? "Close" : "閉じる"} onClick={onClose}><X size={16} /></button>
+      </div>
+      <div className="street-card-board">
+        <span>{english ? "Board" : "ボード"}</span>
+        <BoardCards cards={usedCards} />
+      </div>
+      <p className="modal-description">{english ? "Choose one card. Cards on the board are unavailable." : "1枚選んでください。盤面のカードは選べません。"}</p>
+      <SuitCardPicker selectedCards={currentCard ? new Set([currentCard]) : undefined} disabledCards={unavailable}
+        ariaLabel={english ? "Available cards by suit" : "スート別のカード一覧"} onSelect={onApply} />
+  </Dialog>;
+}
+
+export function PostflopTrial({ context, cards, actions = [], turnCard = "", turnActions = [], riverCard = "", riverActions = [], displayMode = "standard", tableProfile, opponentProfile = "standard", opponentSeat = "ip", onOpponentProfileChange }: { tableProfile?: InputOptions["tableProfile"]; opponentProfile?: InputOpponentProfile; opponentSeat?: PlayerRole; onOpponentProfileChange?: (profile: InputOpponentProfile) => void; context: NonNullable<ReturnType<typeof completedFlopContext>>; cards: string[]; actions?: string[]; turnCard?: string; turnActions?: string[]; riverCard?: string; riverActions?: string[]; displayMode?: string }) {
+  const options = useMemo<InputOptions>(() => ({ tableProfile, opponentProfile, opponentSeat }), [tableProfile?.call, tableProfile?.three_bet, opponentProfile, opponentSeat]);
+  const requestKey = JSON.stringify(options);
+  const board = recognizedFlop(cards);
+  const [selectedHand, setSelectedHand] = useState("AKo");
+  const [data, setData] = useState<(ReturnType<typeof computeBoard> & { requestKey: string }) | null>(null);
+  const [status, setStatus] = useState("idle");
+  const [statusKey, setStatusKey] = useState(requestKey);
+  const [error, setError] = useState("");
+  const [spotState, setSpotState] = useState<{ spotId: string | null; data: PostflopSource | null; error: string | null; errorCode?: string; requestKey?: string; loading: boolean }>({ spotId: null, data: null, error: null, loading: false });
+  const [datasetState, setDatasetState] = useState<{ spotId: string | null; datasets: PostflopDatasets | null; error: string | null; errorCode?: string; requestKey?: string; loading: boolean }>({ spotId: null, datasets: null, error: null, loading: false });
+  const [laterData, setLaterData] = useState<(ReturnType<typeof computeLaterView> & { requestKey: string }) | null>(null);
+  const [laterStatus, setLaterStatus] = useState("idle");
+  const [laterStatusKey, setLaterStatusKey] = useState(requestKey);
+  const [laterError, setLaterError] = useState("");
+  const [laterExplainState, setLaterExplainState] = useState<ExplanationState | null>(null);
+  const [explainState, setExplainState] = useState<ExplanationState | null>(null);
+  const [flopBaseState, setFlopBaseState] = useState<{ spot: string; board: string; base: BalancedFlopBase | null } | null>(null);
+  const decision = flopDecision(actions, context);
+  const labels = labelsFor(decision.node, decisionLabelsOf(decision));
+  const spotId = context.spotId;
+  const flopPath = actions.join(",");
+  const turnPath = turnActions.join(",");
+  const riverPath = riverActions.join(",");
+  const start = board && !decision.node ? laterStart(actions, context) : null;
+  const turnReplay = start && turnCard ? replayLater("turn", turnActions, start!, context) : null;
+  let later: ReturnType<typeof laterDecision> | null = null, riverReplay: ReturnType<typeof replayLater> | null = null;
+  if (turnReplay?.state.node) later = laterDecision("turn", turnActions, start!, context);
+  else if (turnReplay?.state.end && !["fold", "raise-fold"].includes(turnReplay.state.end.type) &&
+      turnReplay.stacks.ip > 0 && turnReplay.stacks.oop > 0 && riverCard) {
+    const riverStart = { pot: turnReplay.pot, stacks: turnReplay.stacks, lastAggressor: turnReplay.lastAggressor };
+    riverReplay = replayLater("river", riverActions, riverStart, context);
+    if (riverReplay.state.node) later = laterDecision("river", riverActions, riverStart, context);
+  }
+
+  useEffect(() => {
+    setSpotState({ spotId: null, data: null, error: null, loading: false });
+    if (!context.pilotAvailable || !spotId) return undefined;
+    const controller = new AbortController();
+    setSpotState({ spotId, requestKey, data: null, error: null, loading: true });
+    loadPostflopSpot(spotId, controller.signal, options)
+      .then(result => {
+        if (controller.signal.aborted) return;
+        if (context.tree && result!.spot.tree !== context.tree) throw new Error("候補の局面が選択中のポットと一致しません。");
+        setSpotState({ spotId, requestKey, data: result, error: null, loading: false });
+      })
+      .catch(reason => {
+        if (!controller.signal.aborted && !isAbortError(reason)) setSpotState({ spotId, requestKey, data: null, error: reason.message, errorCode: reason.code, loading: false });
+      });
+    return () => controller.abort();
+  }, [context.pilotAvailable, context.tree, spotId, options]);
+
+  useEffect(() => {
+    setDatasetState({ spotId: null, datasets: null, error: null, loading: false });
+    if (!context.pilotAvailable || spotState.spotId !== spotId || spotState.requestKey !== requestKey || !spotState.data) return undefined;
+    const controller = new AbortController();
+    setDatasetState({ spotId, requestKey, datasets: null, error: null, loading: true });
+    loadPostflopDatasets(spotState.data.spot, controller.signal, options)
+      .then(datasets => {
+        if (!controller.signal.aborted) setDatasetState({ spotId, requestKey, datasets, error: null, loading: false });
+      })
+      .catch(reason => {
+        if (!controller.signal.aborted && !isAbortError(reason)) setDatasetState({ spotId, requestKey, datasets: null, error: reason.message, errorCode: reason.code, loading: false });
+      });
+    return () => controller.abort();
+  }, [context.pilotAvailable, spotId, spotState.data, spotState.spotId, spotState.requestKey, options, requestKey]);
+
+  const postflopSource = spotState.spotId === spotId && spotState.requestKey === requestKey ? spotState.data : null;
+  const postflopDatasets = datasetState.spotId === spotId && datasetState.requestKey === requestKey ? datasetState.datasets : null;
+  const flopBase = flopBaseState && flopBaseState.spot === spotId && flopBaseState.board === board ? flopBaseState.base : null;
+  const sourceError = spotState.spotId === spotId && spotState.requestKey === requestKey && spotState.error ? spotState.error
     : datasetState.spotId === spotId && datasetState.requestKey === requestKey ? datasetState.error : null;
   const sourcePreparing = Boolean(sourceError && (spotState.requestKey === requestKey && spotState.errorCode === "PROFILE_POLICY_MISSING" || datasetState.requestKey === requestKey && datasetState.errorCode === "PROFILE_POLICY_MISSING"));
   useEffect(() => {
