@@ -4,6 +4,7 @@
 // strategy data or a database and emits only hashes, spans, and source identifiers.
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
+import { describeSourcePart } from "./multiway-source-index-utils.mjs";
 
 const PART_CHARS = 30_000;
 const DESCRIPTOR_PATH = "apps/frontend/scripts/data/hu-after-multiway-spots.json";
@@ -65,11 +66,7 @@ for (const [name, pinned] of Object.entries(PINNED_DATASETS)) {
     const slices = [];
     for (let part = Math.floor(start / PART_CHARS); part <= Math.floor((end - 1) / PART_CHARS); part++) {
       const partStart = part * PART_CHARS;
-      const body = text.slice(partStart, Math.min(text.length, partStart + PART_CHARS));
-      const last = body.charCodeAt(body.length - 1);
-      const next = text.charCodeAt(partStart + body.length);
-      const splitSurrogateAtEnd = partStart + body.length < text.length && last >= 0xd800 && last <= 0xdbff && next >= 0xdc00 && next <= 0xdfff;
-      const meta = { codeUnits: body.length, bytes: Buffer.byteLength(body, "utf8"), sha256: sha256(Buffer.from(body, "utf8")), splitSurrogateAtEnd };
+      const { metadata: meta } = describeSourcePart(text, partStart, PART_CHARS);
       const previous = chunkMeta[String(part)];
       if (previous && JSON.stringify(previous) !== JSON.stringify(meta)) throw new Error(`${name}/${part}: inconsistent part metadata.`);
       chunkMeta[String(part)] = meta;

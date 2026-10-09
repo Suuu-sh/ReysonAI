@@ -11,8 +11,8 @@ type SourceDatasetIndex = { contentHash: string; bytes: number; parts: number;
   rows: Record<string, SourceRowIndex> };
 type SnapshotRow = { name: string; expected_hash: string; expected_bytes: number; expected_parts: number;
   actual_hash: string | null; actual_dataset_bytes: number | null; actual_dataset_parts: number | null;
-  stored_parts: number | null; stored_bytes: number | null; requested_part: number;
-  actual_part: number | null; body: string | null };
+  stored_parts: number | null; stored_bytes: number | null; requested_part: number; expected_part_bytes: number;
+  actual_part: number | null; actual_part_bytes: number | null; body: string | null };
 type SavedSourceDataset = { contentHash: string; spots: Record<string, unknown>[] };
 
 const PART_CHARS = 30_000;
@@ -90,29 +90,35 @@ export async function loadPublishedMultiwayPostflopSourceDatasets(db: ReadOnlyDa
   }
   const parts = [...requestedParts.values()].sort((a, b) => a.name.localeCompare(b.name) || a.part - b.part);
   if (requestedRows.length > MAX_SPOT_SOURCE_ROWS || !parts.length || parts.length > MAX_SPOT_PARTS
-    || datasetNames.length * 4 + parts.length * 2 > MAX_SQL_BINDINGS) {
+    || datasetNames.length * 4 + parts.length * 3 > MAX_SQL_BINDINGS) {
     throw new McpDataError("data_unavailable", "This exact postflop source selection exceeds the bounded read limit.");
   }
   let expectedSelectedBytes = 0;
+  const expectedPartBytes = new Map<string, number>();
   for (const { name, part } of parts) {
     const chunk = indexedDataset(name)?.chunks[String(part)];
     if (!chunk || !Number.isInteger(chunk.codeUnits) || chunk.codeUnits < 1 || chunk.codeUnits > PART_CHARS
       || !Number.isInteger(chunk.bytes) || chunk.bytes < 1 || !SHA256.test(chunk.sha256) || chunk.splitSurrogateAtEnd) invalid();
     expectedSelectedBytes += chunk.bytes;
+    expectedPartBytes.set(`${name}\u0000${part}`, chunk.bytes);
   }
   if (expectedSelectedBytes > MAX_SOURCE_BYTES) {
     throw new McpDataError("data_unavailable", `This exact postflop source selection exceeds the ${MAX_SOURCE_BYTES}-byte read limit.`);
   }
 
   const expectedValues = datasetNames.map(() => "(?, ?, ?, ?)").join(",");
-  const requestedValues = parts.map(() => "(?, ?)").join(",");
+  const requestedValues = parts.map(() => "(?, ?, ?)").join(",");
   const sql = `WITH expected(name, content_hash, bytes, parts) AS (VALUES ${expectedValues}),\n`+
-    `requested(name, part) AS (VALUES ${requestedValues}),\n`+
+    `requested(name, part, expected_bytes) AS (VALUES ${requestedValues}),\n`+
     `stored_stats AS (SELECT name, COUNT(*) AS stored_parts, SUM(length(CAST(body AS BLOB))) AS stored_bytes `+
     `FROM preflop_dataset_parts WHERE name IN (SELECT name FROM expected) GROUP BY name)\n`+
     `SELECT e.name, e.content_hash AS expected_hash, e.bytes AS expected_bytes, e.parts AS expected_parts, `+
     `d.content_hash AS actual_hash, d.bytes AS actual_dataset_bytes, d.parts AS actual_dataset_parts, `+
-    `s.stored_parts, s.stored_bytes, r.part AS requested_part, p.part AS actual_part, p.body `+
+    `s.stored_parts, s.stored_bytes, r.part AS requested_part, r.expected_bytes AS expected_part_bytes, `+
+    `p.part AS actual_part, length(CAST(p.body AS BLOB)) AS actual_part_bytes, `+
+    `CASE WHEN d.content_hash = e.content_hash AND d.bytes = e.bytes AND d.parts = e.parts `+
+    `AND s.stored_parts = e.parts AND s.stored_bytes = e.bytes AND p.part = r.part `+
+    `AND length(CAST(p.body AS BLOB)) = r.expected_bytes THEN p.body ELSE NULL END AS body `+
     `FROM expected e JOIN requested r ON r.name = e.name `+
     `LEFT JOIN preflop_datasets d ON d.name = e.name `+
     `LEFT JOIN stored_stats s ON s.name = e.name `+
@@ -123,7 +129,7 @@ export async function loadPublishedMultiwayPostflopSourceDatasets(db: ReadOnlyDa
     const dataset = indexedDataset(name)!;
     args.push(name, dataset.contentHash, dataset.bytes, dataset.parts);
   }
-  for (const part of parts) args.push(part.name, part.part);
+  for (const part of parts) args.push(part.name, part.part, expectedPartBytes.get(`${part.name}\u0000${part.part}`));
   const rows = await query<SnapshotRow>(db, sql, ...args);
   if (rows.length !== parts.length) invalid();
   if (rows.every(row => row.actual_hash === null)) {
@@ -143,11 +149,12 @@ export async function loadPublishedMultiwayPostflopSourceDatasets(db: ReadOnlyDa
     if (row.stored_parts !== expected.parts || row.stored_bytes !== expected.bytes) {
       throw new McpDataError("data_unavailable", "A published postflop source dataset is incomplete; no estimate was substituted.");
     }
-    if (!Number.isInteger(row.requested_part) || row.actual_part !== row.requested_part || typeof row.body !== "string") invalid();
+    if (!Number.isInteger(row.requested_part) || row.actual_part !== row.requested_part) invalid();
+    const chunk = expected.chunks[String(row.requested_part)];
+    if (!chunk || row.expected_part_bytes !== chunk.bytes || row.actual_part_bytes !== chunk.bytes || typeof row.body !== "string") invalid();
     const key = `${row.name}\u0000${row.requested_part}`;
     if (seenParts.has(key)) invalid();
     seenParts.add(key);
-    const chunk = expected.chunks[String(row.requested_part)];
     if (!chunk || row.body.length !== chunk.codeUnits || row.body.length > PART_CHARS || encoder.encode(row.body).length !== chunk.bytes
       || await sha256(row.body) !== chunk.sha256) invalid();
     actualSelectedBytes += chunk.bytes;
