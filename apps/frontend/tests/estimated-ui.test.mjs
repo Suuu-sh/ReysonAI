@@ -54,7 +54,7 @@ test("preflop call EV uses the flop-style right column without inventing other a
   assert.equal(renderToStaticMarkup(createElement(PreflopCallEvBars, { items, facts: { eqr: 0.9, equityPct: 45.5 } })), "");
 });
 
-test("standard matrix shows aggregate frequencies as a full-height horizontal fill", () => {
+test("standard matrix shows aggregate frequencies full-height when no postflop reach data is supplied", () => {
   const aggregates = new Map([
     ["AA", { actions: { raise: 1, fold: 0 }, comboCount: 6 }],
     ["K6s", { actions: { raise: 0.75, fold: 0.25 }, comboCount: 4 }],
@@ -64,12 +64,13 @@ test("standard matrix shows aggregate frequencies as a full-height horizontal fi
   const cell = (html, hand) => [...html.matchAll(/<button\b[^>]*>[\s\S]*?<\/button>/g)].find(([markup]) => markup.includes(`<strong>${hand}</strong>`))?.[0] ?? "";
   const standard = renderToStaticMarkup(createElement(StrategyMatrix, props));
   const mixed = cell(standard, "K6s");
-  assert.match(mixed, /class="cell-fill"/);
+  assert.match(mixed, /class="cell-fill" style="height:100%"/);
   assert.match(mixed, /width:75\.0%;background:#d9477f/);
   assert.match(mixed, /width:25\.0%;background:#26262c/);
   assert.match(cell(standard, "AA"), /width:100\.0%;background:#d9477f/);
   assert.match(cell(standard, "K5s"), /unreachable-hand/);
   assert.doesNotMatch(cell(standard, "K5s"), /cell-fill/);
+  assert.doesNotMatch(mixed, /cell-mix/);
 
   const simple = renderToStaticMarkup(createElement(StrategyMatrix, { ...props, simplified: true }));
   assert.match(cell(simple, "K6s"), /width:100%;background:#d9477f/);
