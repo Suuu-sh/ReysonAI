@@ -39,3 +39,22 @@ test('the explanation gives the blocker reason for a bluff raise and for a skipp
     assert.ok(text.includes(phrase), text);
   }
 });
+
+test('turn semi-bluff raises go to the drawing hands first and medium hands never raise', () => {
+  const turnLine = { flop: '8d5h4s', flopActions: 'bet33,call', turn: 'Js', turnActions: 'check,bet33' };
+  const turn = buildLaterView(turnLine, inputs, candidate, laterCandidate);
+  assert.equal(turn.node, 'turn_oop_vs_33');
+  const items = turn.rows.flatMap(row => row.combos);
+  for (const item of items.filter(item => item.tier === 'medium')) assert.equal(item.mix.raise, 0, item.cards);
+  // Draws with a pair (equity above half) stay value raises at the tier share; air hands are all bluffs.
+  const pool = items.filter(item => item.tier === 'air');
+  assert.ok(pool.filter(item => item.mix.raise > 0 && item.mix.raise < 0.999).length <= 1);
+  // A pair with an open-ended straight draw raises; a low-equity air hand without a draw does not.
+  assert.equal(items.find(item => item.cards === '8c7d').mix.raise, 1);
+  assert.equal(items.find(item => item.cards === 'Kc9d').mix.raise, 0);
+  const policies = { flopPolicy: candidate.policy, laterPolicy: laterCandidate.policy };
+  const facts = explainLaterCombo({ ...turnLine, cards: '8c7d', inputs, ...policies });
+  const text = buildPostflopExplanation({ locale: 'ja', node: facts.node, hand: '8c7d', actionMix: { fold: 0, call: 0, raise: 1 },
+    explain: facts, board: '8d5h4sJs', cards: '8c7d' }).headline;
+  assert.ok(text.includes('セミブラフ候補なので、レイズします'), text);
+});

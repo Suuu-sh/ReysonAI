@@ -318,7 +318,16 @@ export function buildPostflopExplanation(input: ExplanationInput): StructuredPos
       const blocks = english
         ? `Your cards remove ${pct(bluffRaise.block_value!)} of the opponent's strong hands and ${pct(bluffRaise.block_fold!)} of their folding hands.`
         : `あなたのカードは相手の強い手（レイズに続ける手）を${pct(bluffRaise.block_value!)}、降りる手を${pct(bluffRaise.block_fold!)}減らします。`;
-      mixRationale = (bluffRaise.share ?? 0) > 0
+      const raises = (bluffRaise.share ?? 0) > 0;
+      // Turn: semi-bluffs are ranked by equity, so the reason is the draw, not the blockers.
+      if (bluffRaise.street === "turn") mixRationale = raises
+        ? english
+          ? `With ${pct(rawEquity)} equity this hand can still improve when called, so it is one of the best semi-bluff raises.`
+          : `勝率${pct(rawEquity)}があり、コールされても改善できるセミブラフ候補なので、レイズします。`
+        : english
+          ? "Draws with more equity take the semi-bluff raises, so this hand does not raise."
+          : "より勝率の高いドローがセミブラフレイズを担うため、この手はレイズしません。";
+      else mixRationale = raises
         ? english
           ? `${blocks} With almost no showdown value, this is one of the best bluff-raise candidates, so it raises instead of folding.`
           : `${blocks}ショーダウンではほぼ勝てず、ブロッカーの効きが良いブラフレイズ候補なので、降りずにレイズします。`

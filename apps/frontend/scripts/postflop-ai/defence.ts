@@ -133,13 +133,16 @@ function withRaiseShare(mix: ActionMix, raise: number): ActionMix {
   return { fold, call: round6(rest - fold), raise };
 }
 
-// River bluff raises. A tier-wide raise share would raise every air hand equally (a thin, unexplainable
-// mix). Instead the same raise weight (the air tier's capped share times the air bluffs' reach) goes to
-// the air bluffs that block the most of the bettor's continuing (monster / strong) range and the least
-// of its folding (medium / air) range, minus some showdown value; those raise 100% and the rest never do.
-const BLUFF_SHOWDOWN_WEIGHT = 0.5;
+// Bluff raises facing a turn or river bet. A tier-wide raise share would raise every air / draw hand
+// equally (a thin, unexplainable mix). Instead the same raise weight (each pool tier's capped share times
+// its bluffs' reach) goes to the best candidates, which raise 100% while the rest never do:
+// - river: the air bluffs that block the most of the bettor's continuing (monster / strong) range and the
+//   least of its folding (medium / air) range, minus some showdown value;
+// - turn: semi-bluffs first, by equity against the bettor's range (draws keep equity when called), with
+//   the same blocker difference as a tie-breaker.
+export const BLUFF_EQUITY_WEIGHT = { river: -0.5, turn: 1 } as const;
 function selectBluffRaises(ids: ArrayLike<number>, weights: Float64Array, opponent: Float64Array, kind: Uint8Array,
-  tiers: Uint8Array, equities: ArrayLike<number | null>, airRaise: number, air: number): BluffRaiseSelection {
+  tiers: Uint8Array, equities: ArrayLike<number | null>, raises: ReadonlyMap<number, number>, equityWeight: number): BluffRaiseSelection {
   const strongTiers = new Set([TIERS.indexOf("monster"), TIERS.indexOf("strong")]);
   const valueByCard = new Float64Array(52), foldByCard = new Float64Array(52);
   let valueTotal = 0, foldTotal = 0;
@@ -156,20 +159,21 @@ function selectBluffRaises(ids: ArrayLike<number>, weights: Float64Array, oppone
   let budget = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    if (kind[id] !== 2 || tiers[id] !== air || !(weights[id] > 0)) continue;
+    if (kind[id] !== 2 || !raises.has(tiers[id]) || !(weights[id] > 0)) continue;
     const a = Math.floor(id / 52), b = id % 52, own = opponent[id] > 0 ? opponent[id] : 0;
     const value = valueTotal > 0 ? (valueByCard[a] + valueByCard[b] - (strongTiers.has(tiers[id]) ? own : 0)) / valueTotal : 0;
     const fold = foldTotal > 0 ? (foldByCard[a] + foldByCard[b] - (strongTiers.has(tiers[id]) ? 0 : own)) / foldTotal : 0;
     pool[id] = 1; blockValue[id] = value; blockFold[id] = fold;
-    score[id] = value - fold - BLUFF_SHOWDOWN_WEIGHT * (equities[i] ?? 0);
+    score[id] = value - fold + equityWeight * (equities[i] ?? 0);
     items.push({ id, weight: weights[id], score: score[id] });
-    budget += weights[id] * airRaise / 100;
+    budget += weights[id] * raises.get(tiers[id])! / 100;
   }
   items.sort((x, y) => y.score - x.score || x.id - y.id);
   let threshold = Infinity;
   for (const item of items) {
-    if (!(budget > 1e-12)) break;
     const full = item.weight;
+    // A leftover under half a percent of the next combo is rounding, not a raise branch.
+    if (!(budget > full * 0.005)) break;
     share[item.id] = full <= budget ? 100 : Math.round(budget / full * 10000) / 100;
     budget -= full * share[item.id] / 100; threshold = item.score;
   }
@@ -589,7 +593,10 @@ class Defence {
       const call = Math.min(after.stacks[defender], r2(after.invested[bettor] - after.invested[defender]));
       caps.push({ action, alpha: requiredEquity({ potBefore: target.pot, wager, call }).required, ratio: wager / target.pot } as BetCap);
     }
-    if (!caps.length) return null;
+    // Bluff raises facing a bet are selected on the turn too, where sized raises have no bluff cap.
+    const MEDIUM = TIERS.indexOf("medium"), AIR = TIERS.indexOf("air"), DRAW = TIERS.indexOf("draw");
+    const bluffRaise = (street === "river" || street === "turn") && isFacingNode(node) && (NODES[node] ?? LATER_NODES[node]).includes("raise");
+    if (!caps.length && !bluffRaise) return null;
     const bettorWeights = this.reach(bettor, log.filter(entry => entry.seat === bettor && entry !== target), board, table);
     const defenderWeights = this.reach(defender, log.filter(entry => entry.seat === defender), board, table);
     const defenderRange = makeRange(defenderWeights), bettorRange = makeRange(bettorWeights);
@@ -608,11 +615,9 @@ class Defence {
     const maxRatio = this.config.river_allin_max_pot_ratio;
     // A null limit switches the rule off (tests of the plain bluff cap and defence).
     const shoveCap = bigBet && maxRatio != null ? caps.find(item => item.action === "allin") : null;
-    // River bluff raises: a medium hand has showdown value, so it never raises a bet (it calls instead).
-    const MEDIUM = TIERS.indexOf("medium"), AIR = TIERS.indexOf("air");
-    const riverRaise = street === "river" && isFacingNode(node) && caps.some(item => item.action === "raise");
+    // A medium hand has showdown value, so it never raises a bet (it calls instead).
     const reroute = (base: ActionMix, tier: number): ActionMix => {
-      if (riverRaise && tier === MEDIUM && base.raise > 0) return { ...base, raise: 0, call: round6(base.call + base.raise) };
+      if (bluffRaise && tier === MEDIUM && base.raise > 0) return { ...base, raise: 0, call: round6(base.call + base.raise) };
       if (!shoveCap || !(base.allin > 0)) return base;
       if (!(shoveCap.ratio > maxRatio) && !["medium", "draw"].includes(TIERS[tier])) return base;
       return { ...base, allin: 0, [bigBet!]: round6((base[bigBet!] ?? 0) + base.allin) };
@@ -644,8 +649,10 @@ class Defence {
       }
       return out ?? base;
     };
-    const bluffRaises = riverRaise ? selectBluffRaises(bettorRange.ids, bettorWeights, defenderWeights, kind, tiers, values,
-      baseMixes[AIR].raise * caps.find(item => item.action === "raise")!.factor, AIR) : null;
+    const raiseFactor = caps.find(item => item.action === "raise")?.factor ?? 1;
+    const pool = new Map((street === "river" ? [AIR] : [AIR, DRAW]).map(tier => [tier, (baseMixes[tier].raise ?? 0) * raiseFactor]));
+    const bluffRaises = bluffRaise ? selectBluffRaises(bettorRange.ids, bettorWeights, defenderWeights, kind, tiers, values,
+      pool, BLUFF_EQUITY_WEIGHT[street as "river" | "turn"]) : null;
     const applyId = (base: ActionMix, id: number): ActionMix => {
       const out = apply(base, kind[id], tiers[id]);
       return bluffRaises?.pool[id] && "raise" in out ? withRaiseShare(out, bluffRaises.share[id]) : out;
@@ -696,7 +703,7 @@ class Defence {
     });
     const raises = info?.bluffRaises, inPool = Boolean(raises?.pool[id]);
     const bluffRaise = raises && inPool ? { selected: raises.share[id] > 0, share: round4(raises.share[id] / 100),
-      block_value: round4(raises.blockValue[id]), block_fold: round4(raises.blockFold[id]) } : null;
+      block_value: round4(raises.blockValue[id]), block_fold: round4(raises.blockFold[id]), street } : null;
     return { node, combo_class: type === 1 ? "value" : type === 2 ? "bluff" : "unranked", ...(bluffRaise ? { bluff_raise: bluffRaise } : {}),
       equity_vs_defender: Number.isFinite(equityVsDefender) ? round4(equityVsDefender!) : null,
       passive: info?.passive ?? ((NODES[node] ?? LATER_NODES[node]).includes("check") ? "check" : "call"), actions };
