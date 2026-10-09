@@ -309,8 +309,6 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, r
       <p>{localized(PRACTICE_EXPLANATIONS[analysis.style.key], analysis.style.explanation)}</p>
     </section>
 
-    {history.length > 0 && <Breakdown history={history} />}
-
     <div className="analysis-main">
       <DrillStyleMap analysis={analysis} />
       {analysis.samples ? <ActionComparison analysis={analysis} /> : <section className="analysis-card analysis-welcome">
@@ -320,6 +318,8 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, r
         <button type="button" className="analysis-start" onClick={onStart}>ドリルを選ぶ<ArrowRight size={15} /></button>
       </section>}
     </div>
+
+    {history.length > 0 && <Breakdown history={history} />}
     {analysis.samples > 0 && <>
       {progress.answered > 0 && <ScoreChart progress={progress} />}
       <div className="analysis-bottom" aria-label="練習結果の強みと弱点">
