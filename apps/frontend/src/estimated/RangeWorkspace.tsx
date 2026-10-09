@@ -282,6 +282,12 @@ export function prioritizeParticipantRanges<T extends { position: string }>(rang
   return [...selectedActionEntries, ...rangeEntries.filter(entry => !prioritizedPositions.has(entry.position))];
 }
 
+export function prioritizeActingBBRange<T extends { position: string }>(rangeEntries: T[], actingPosition: string | undefined) {
+  if (actingPosition !== "BB") return rangeEntries;
+  const bbIndex = rangeEntries.findIndex(entry => entry.position === "BB");
+  return bbIndex > 0 ? [rangeEntries[bbIndex], ...rangeEntries.slice(0, bbIndex), ...rangeEntries.slice(bbIndex + 1)] : rangeEntries;
+}
+
 function ActionDropdown({ position, options, onSelect }: { position: string; options: ActionOption[]; onSelect: (action: string) => void }) {
   const [menu, setMenu] = useState<{ top: number; right: number } | null>(null);
   const toggle = (event: MouseEvent<HTMLButtonElement>) => {
@@ -966,7 +972,10 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
     actionRangeEntry(actionBlocks[selectedBlockIndex], "selected"),
   ].filter((entry): entry is RangeEntry => Boolean(entry && (!liveContinuationSeats || liveContinuationSeats.includes(entry.position))));
   // Keep the focused action pair first, but never hide other active participants' ranges.
-  const visibleRangeEntries = prioritizeParticipantRanges(rangeEntries, selectedActionEntries);
+  const visibleRangeEntries = prioritizeActingBBRange(
+    prioritizeParticipantRanges(rangeEntries, selectedActionEntries),
+    actionBlocks.find(block => block.active)?.position,
+  );
   const focusedEntry = visibleRangeEntries.find(entry => entry.position === focusedRange && entry.model);
   const displayedEntries = focusedEntry ? [focusedEntry] : visibleRangeEntries;
 
