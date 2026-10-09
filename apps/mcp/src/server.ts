@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { HISTORY_SCOPE, RANGE_SCOPE, entitlementAdapter, validIdentity, type Identity } from './access.ts';
 import type { McpConfiguration, McpEnv } from './config.ts';
 import { getOwnLearningHistory, getSavedRange, listSavedRangeCoverage, McpDataError } from './data.ts';
+import { getSavedPostflopRange, listPostflopCoverage } from './postflop-data.ts';
 import { grantRevoked } from './revocation.ts';
 import { accountExists } from './session.ts';
 
@@ -35,6 +36,16 @@ export function createServer(env: McpEnv, config: McpConfiguration, identity: Id
     description: 'Read one exact dataset and spot returned by list_range_coverage, optionally one canonical hand such as AKs. Returns saved educational AI-estimate frequencies and available saved reasons, never invents a missing strategy. No live poker assistance or solver execution.',
     inputSchema: z.strictObject({ dataset: z.string().min(1).max(100), spotId: z.string().min(1).max(100), hand: z.string().min(2).max(3).optional() }), annotations,
   }, args => run(RANGE_SCOPE, () => getSavedRange(env.DB, args)));
+  server.registerTool('list_postflop_coverage', {
+    title: 'List saved ReysonAI postflop coverage',
+    description: 'Discover only postflop spots and canonical flop boards present in the published D1 data. With an exact spotId and flop, list the decision histories stored for that flop. Turn/river policy publication does not imply an exact saved turn/river range. Missing and unreachable paths have no substitute.',
+    inputSchema: z.strictObject({ spotId: z.string().min(1).max(100).optional(), flop: z.string().length(6).optional(), offset: z.number().int().min(0).max(2_048).optional(), limit: z.number().int().min(1).max(50).optional() }), annotations,
+  }, args => run(RANGE_SCOPE, () => listPostflopCoverage(env.DB, args)));
+  server.registerTool('get_saved_postflop_range', {
+    title: 'Read an exact saved postflop flop range',
+    description: 'Read the exact saved range for one published spot, flop board, and action history returned by list_postflop_coverage; optionally select one canonical hand such as AKs. Frequencies are aggregated from stored combo mixes using stored reach weights. Only published saved flop bases are supported; no policy evaluation, new generation, missing-board substitution, turn/river range, live decision support, or solver output.',
+    inputSchema: z.strictObject({ spotId: z.string().min(1).max(100), flop: z.string().length(6), history: z.array(z.string().max(10)).max(20).optional(), hand: z.string().min(2).max(3).optional() }), annotations,
+  }, args => run(RANGE_SCOPE, () => getSavedPostflopRange(env.DB, args)));
   if (identity.scopes.includes(HISTORY_SCOPE)) server.registerTool('get_my_learning_history', {
     title: 'Read my synced learning summary',
     description: 'Read only the signed-in account’s bounded synced practice summary and recent answer facts. Local-only browser history is unavailable. Scores compare saved AI estimates; they do not measure real-game skill or profit. Never accepts another account identifier.',
