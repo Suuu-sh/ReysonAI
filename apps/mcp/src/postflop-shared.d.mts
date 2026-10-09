@@ -24,7 +24,7 @@ export const NODES: Readonly<Record<string, readonly string[]>>;
 export function referenceLaterPolicy(): unknown;
 export function parseFlopBoard(value: unknown): { id: string; cards: number[]; split?: string };
 export function buildInputs(spotId: string, datasets: Record<string, unknown>): PostflopInputs;
-export function flopNodeCanonical(inputs: PostflopInputs, policy: FlopPolicy, boardCards: readonly number[], node: string, history?: string[] | null,
-  options?: { includeCombos?: boolean; requireSavedRules?: boolean }): EvaluatedFlopNode;
+export function evaluateFlopNodeCanonical(inputs: PostflopInputs, policy: FlopPolicy, boardCards: readonly number[], node: string,
+  history?: string[] | null): EvaluatedFlopNode;
 export function assertPolicyNodeComplete(policy: FlopPolicy, node: string): void;
 export function validatePolicy(policy: unknown, tree?: string): FlopPolicy;

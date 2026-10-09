@@ -7,5 +7,5 @@ export { flopState, NODES } from "../../frontend/scripts/postflop-ai/tree.ts";
 export { referenceLaterPolicy } from "../../frontend/scripts/postflop-ai/later-policy.ts";
 export { parseFlopBoard } from "../../frontend/scripts/postflop-ai/model.ts";
 export { buildInputs } from "../../frontend/scripts/postflop-ai/browser-inputs.ts";
-export { flopNodeCanonical } from "../../frontend/scripts/postflop-ai/views.ts";
-export { assertPolicyNodeComplete, validatePolicy } from "../../frontend/scripts/postflop-ai/policy.ts";
+export { assertPolicyNodeComplete, evaluateFlopNodeCanonical } from "./postflop-eval.mjs";
+export { validatePolicy } from "../../frontend/scripts/postflop-ai/policy.ts";

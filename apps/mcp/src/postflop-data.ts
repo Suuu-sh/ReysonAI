@@ -4,7 +4,7 @@
 // node; it never generates a policy or fills a missing board/history.
 import { loadPublishedPostflopSourceDatasets, McpDataError, type ReadOnlyDatabase } from "./data.ts";
 import { canonicalFlop, remapFlopNode, hydrateFrame, unpackView, flopState, NODES, referenceLaterPolicy,
-  assertPolicyNodeComplete, buildInputs, flopNodeCanonical, parseFlopBoard, validatePolicy,
+  assertPolicyNodeComplete, buildInputs, evaluateFlopNodeCanonical, parseFlopBoard, validatePolicy,
   type FlopBase, type PackedView, type CodecView, type EvaluatedFlopNode, type FlopPolicy, type PostflopInputs } from "./postflop-shared.mjs";
 
 const KIND = "ai_estimate_not_gto" as const;
@@ -597,8 +597,7 @@ export async function evaluatePublishedPostflopPolicy(db: ReadOnlyDatabase | und
 
   let evaluated: EvaluatedFlopNode;
   try {
-    evaluated = flopNodeCanonical(inputs, policy, canonical.cards, state.node, history,
-      { includeCombos: false, requireSavedRules: true });
+    evaluated = evaluateFlopNodeCanonical(inputs, policy, canonical.cards, state.node, history);
   } catch (error) {
     if (error instanceof Error && error.message.startsWith("Unreachable flop history")) {
       throw new McpDataError("not_found", "The saved ranges do not reach this exact flop decision; no substitute node was evaluated.");

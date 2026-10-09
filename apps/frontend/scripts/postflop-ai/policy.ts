@@ -42,50 +42,16 @@ export function validatePolicy(policy: unknown, tree: string = DEFAULT_TREE): Fl
   return (policy as FlopPolicy);
 }
 
-const savedRuleIndexes = new WeakMap<FlopPolicy, Map<string, FlopPolicy["rules"][number]>>();
-function savedRuleIndex(policy: FlopPolicy) {
-  let index = savedRuleIndexes.get(policy);
-  if (!index) {
-    index = new Map(policy.rules.map(rule => [`${rule.node}|${rule.tier}|${rule.texture}`, rule]));
-    savedRuleIndexes.set(policy, index);
-  }
-  return index;
-}
-function savedRule(policy: FlopPolicy, node: string, tier: HandTier, flop: readonly number[]) {
-  const index = savedRuleIndex(policy);
-  for (const texture of flopTextureKeys(flop)) {
-    const rule = index.get(`${node}|${tier}|${texture}`);
-    if (rule) return rule;
-  }
-  return undefined;
-}
-
-export function policyMixTierExact(policy: FlopPolicy, node: string, tier: HandTier, flop: readonly number[]): ActionMix {
-  const rule = savedRule(policy, node, tier, flop);
-  if (!rule) throw new Error(`Uncovered policy node: ${node}/${flopTextureKeys(flop)[0]}/${tier}`);
-  return withRaise(node, rule.mix);
-}
-
-export function policyMixExact(policy: FlopPolicy, node: string, hole: readonly number[], flop: readonly number[]): ActionMix {
-  return policyMixTierExact(policy, node, handTier(hole, flop), flop);
-}
-
-// MCP's deterministic evaluator requires a complete saved fallback for every class at
-// the requested node. The web view keeps its historical reference fallback below.
-export function assertPolicyNodeComplete(policy: FlopPolicy, node: string): void {
-  if (!Object.hasOwn(NODES, node)) throw new Error(`Unknown policy node: ${node}`);
-  for (const tier of TIERS) if (!policy.rules.some(rule => rule.node === node && rule.tier === tier && rule.texture === "any")) {
-    throw new Error(`Incomplete published policy node: ${node}/${tier}`);
-  }
-}
-
 export function policyMix(policy: FlopPolicy, node: string, hole: readonly number[], flop: readonly number[]): ActionMix {
-  const tier = handTier(hole, flop), rule = savedRule(policy, node, tier, flop);
-  if (rule) return withRaise(node, rule.mix);
-  // Nodes added after a policy was saved (re-raises) use the reference mixes in the
-  // existing web experience. MCP callers use policyMixExact and never take this path.
-  if (raiseDepth(node) < 2 || policy === referenceAll) throw new Error(`Uncovered policy node: ${node}/${flopTextureKeys(flop)[0]}/${tier}`);
-  return referenceMix(node, tier);
+  const tier = handTier(hole, flop), keys = flopTextureKeys(flop), texture = keys[0];
+  let rule;
+  for (const key of keys) if ((rule = policy.rules.find(item => item.node === node && item.tier === tier && item.texture === key))) break;
+  if (!rule) {
+    // Nodes added after a policy was saved (re-raises) use the reference mixes.
+    if (raiseDepth(node) < 2 || policy === referenceAll) throw new Error(`Uncovered policy node: ${node}/${texture}/${tier}`);
+    return referenceMix(node, tier);
+  }
+  return withRaise(node, rule.mix);
 }
 
 // A saved *_vs_raise rule has no raise key; read it as raise 0 without touching the rule.
