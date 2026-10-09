@@ -3,6 +3,7 @@
 // The optional policy evaluator is a bounded deterministic view of one saved flop
 // node; it never generates a policy or fills a missing board/history.
 import { loadPublishedPostflopSourceDatasets, McpDataError, type ReadOnlyDatabase } from "./data.ts";
+import { loadPublishedMultiwayPostflopSourceDatasets, publishedMultiwaySourceSelections } from "./postflop-multiway-data.ts";
 import { canonicalFlop, remapFlopNode, hydrateFrame, unpackView, flopState, NODES, referenceLaterPolicy,
   assertPolicyNodeComplete, buildInputs, evaluateFlopNodeCanonical, projectPolicyRows, parseFlopBoard, validatePolicy,
   DEFENCE_VERSION, EVALUATOR_VERSION, MCP_DEFENCE_ADAPTER_VERSION, MCP_DEFENCE_BASE_SOURCE_SHA256,
@@ -308,7 +309,11 @@ function selectedSpot(catalog: PublishedCatalog, spotId: unknown) {
 }
 
 function evaluationSourceSelections(spot: Value): Record<string, string[]> {
-  if ("history" in spot) throw new McpDataError("unsupported_dataset", "This published multiway source family is not supported by the bounded head-up policy evaluator.");
+  if ("history" in spot) {
+    const selections = publishedMultiwaySourceSelections(String(spot.id ?? ""));
+    if (!selections) throw new McpDataError("unsupported_dataset", "This published postflop source family is not indexed for exact MCP reads.");
+    return selections;
+  }
   const selected: Record<string, string[]> = {};
   const add = (dataset: string, id: unknown) => {
     if (!IDENTIFIER.test(String(id ?? ""))) invalid();
@@ -339,7 +344,7 @@ function evaluationSourceNames(spot: Value): string[] {
 function policyEvaluationAvailability(spot: Value) {
   try {
     evaluationSourceNames(spot);
-    return { status: "head_up_sources_supported", street: "flop", maxHandClasses: 169,
+    return { status: "history" in spot ? "multiway_sources_supported" : "head_up_sources_supported", street: "flop", maxHandClasses: 169,
       requirement: "exact published spot, three-card flop, legal action history, and complete saved policy rules for the path" };
   } catch {
     return { status: "source_family_not_supported", street: "flop", maxHandClasses: 169 };
@@ -637,7 +642,9 @@ async function evaluatePublishedPostflopPolicyCore(db: ReadOnlyDatabase | undefi
   const { release, spot } = published;
   const sourceRequirements = evaluationSourceSelections(spot.data);
   const sourceNames = Object.keys(sourceRequirements);
-  const sourceDatasets = await loadPublishedPostflopSourceDatasets(db, sourceRequirements);
+  const sourceDatasets = "history" in spot.data
+    ? await loadPublishedMultiwayPostflopSourceDatasets(db, spot.context.id)
+    : await loadPublishedPostflopSourceDatasets(db, sourceRequirements);
   let inputs: PostflopInputs;
   try { inputs = buildInputs(input.spotId, sourceDatasets); } catch { return invalid(); }
   // The published spot is the authority. A changed local descriptor or source geometry
