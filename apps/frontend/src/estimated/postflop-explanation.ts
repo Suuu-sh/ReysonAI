@@ -312,7 +312,20 @@ export function buildPostflopExplanation(input: ExplanationInput): StructuredPos
         ? `${className} has ${pct(rawEquity)} equity (${pct(realized)} realized) against ${faced}, ${above ? "above" : "below"} the ${pct(required)} needed.`
         : `${className}は${faced}に対して勝率${pct(rawEquity)}（実現勝率${pct(realized)}）で、必要な${pct(required)}を${above ? "上回ります" : "下回ります"}。`;
     const call = (actionMix.call ?? 0), fold = (actionMix.fold ?? 0);
-    if (call >= MATERIAL_MIX && fold >= MATERIAL_MIX) {
+    const bluffRaise = explain?.betting?.bluff_raise;
+    if (bluffRaise && Number.isFinite(bluffRaise.block_value) && Number.isFinite(bluffRaise.block_fold)) {
+      // River bluff raises go to the air hands that block the opponent's continuing hands most.
+      const blocks = english
+        ? `Your cards remove ${pct(bluffRaise.block_value!)} of the opponent's strong hands and ${pct(bluffRaise.block_fold!)} of their folding hands.`
+        : `あなたのカードは相手の強い手（レイズに続ける手）を${pct(bluffRaise.block_value!)}、降りる手を${pct(bluffRaise.block_fold!)}減らします。`;
+      mixRationale = (bluffRaise.share ?? 0) > 0
+        ? english
+          ? `${blocks} With almost no showdown value, this is one of the best bluff-raise candidates, so it raises instead of folding.`
+          : `${blocks}ショーダウンではほぼ勝てず、ブロッカーの効きが良いブラフレイズ候補なので、降りずにレイズします。`
+        : english
+          ? `${blocks} Hands with better blockers take the bluff raises, so this one folds.`
+          : `${blocks}よりブロッカーの効きが良い手がブラフレイズを担うため、この手はレイズせず降ります。`;
+    } else if (call >= MATERIAL_MIX && fold >= MATERIAL_MIX) {
       const gap = Math.abs(realized - required);
       mixRationale = gap <= 0.05
         ? english ? `Call and fold mix because realized equity is within ${pct(gap)} of break-even.` : `実現勝率が損益分岐から${pct(gap)}以内のため、コールとフォールドを混ぜます。`
