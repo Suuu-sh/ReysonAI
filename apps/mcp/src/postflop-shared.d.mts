@@ -1,0 +1,18 @@
+export type StrategyCombo = { cards: string; tier: string; weight: number; reachWeight?: number; mix: Record<string, number> };
+export type StrategyRow = { hand: string; comboCount: number; reachable: boolean; mix: Record<string, number>;
+  tiers: Record<string, number>; combos: StrategyCombo[]; reachWeight: number; tier?: string };
+export type PackedFrame<T = unknown, C = number> = { count: number; schema: unknown; columns: C[] };
+export type PackedView<C = number> = { node: string; seat: string; actions: readonly string[]; lengths: number[];
+  rows: PackedFrame<Omit<StrategyRow, "combos">, C>; combos: PackedFrame<StrategyCombo, C> };
+export type FlopBase = { kind: string; mode: string; spot: string; flop: string; metadata: Record<string, unknown>;
+  histories: Record<string, { view: PackedView<number>; combo_facts: PackedFrame<unknown, number>; class_facts: PackedFrame<unknown, number> }>;
+  columns?: unknown[]; ev?: unknown };
+export type CodecView = { node: string; seat: string; actions: readonly string[]; rows: StrategyRow[] };
+export type FlopState = { end: unknown; steps: unknown[] } | { node: string; role: "ip" | "oop"; steps: unknown[] };
+export function canonicalFlop(value: unknown): { key: string; cards: number[]; fromCanonical: number[] };
+export function remapFlopNode<T extends CodecView>(view: T, permutation: readonly number[]): T;
+export function hydrateFrame<T>(base: FlopBase, frame: PackedFrame<T, number>): PackedFrame<T, unknown[]>;
+export function unpackView(view: PackedView<unknown[]>): CodecView;
+export function flopState(tree: string, actions: readonly string[]): FlopState;
+export const NODES: Readonly<Record<string, readonly string[]>>;
+export function referenceLaterPolicy(): unknown;
