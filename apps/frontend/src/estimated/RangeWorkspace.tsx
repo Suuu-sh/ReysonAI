@@ -361,7 +361,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
               return <button type="button" key={option.action} className={selected ? "chosen" : ""} aria-pressed={selected} disabled={disabled} title={selected && onRewindActionBlock ? "クリックしてこのアクション前に戻る" : undefined} onClick={event => { event.stopPropagation(); selected && onRewindActionBlock ? onRewindActionBlock(block) : select(block, option.action); }}><OptionLabel label={option.label} /></button>;
             })}
             {block.kind === "pending" && <small className="action-path-pending">推定レンジ準備中</small>}
-            {block.active && !block.chosen && block.kind !== "forced" && block.kind !== "pending" && block.options!.some(option => !option.disabled) && <ActionDropdown position={block.position!} options={block.options!.filter(option => !option.disabled)} onSelect={action => select(block, action)} />}
+            {(!block.chosen && (block.active || block.kind === "cold") && block.kind !== "forced" && block.kind !== "pending" && block.options!.some(option => !option.disabled)) && <ActionDropdown position={block.position!} options={block.options!.filter(option => !option.disabled)} onSelect={action => select(block, action)} />}
           </div> : <span className={`action-seat-summary${block.kind === "pending" ? " action-path-pending" : ""}`}>{chosenOption?.label ?? (block.kind === "pending" ? "推定レンジ準備中" : "—")}</span>}
         </div>;
       })}
