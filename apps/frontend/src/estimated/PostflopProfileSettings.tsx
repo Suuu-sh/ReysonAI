@@ -18,24 +18,32 @@ export function opponentProfileCopy(profile: InputOpponentProfile) {
   return { name: localized(meta.name.en, meta.name.ja), description: localized(meta.description.en, meta.description.ja) };
 }
 
-export function PostflopProfileSettings({ profile, seat, positions, onProfileChange, onSeatChange }: {
-  profile: InputOpponentProfile; seat: PlayerRole; positions: { ip: string | null; oop: string | null };
-  onProfileChange?: (profile: InputOpponentProfile) => void; onSeatChange?: (seat: PlayerRole) => void;
+// The opponent seat is fixed together with the flop, so it lives in the flop dialog
+// rather than beside each decision.
+export function OpponentSeatField({ seat, positions, onChange }: {
+  seat: PlayerRole; positions: { ip: string | null; oop: string | null }; onChange?: (seat: PlayerRole) => void;
 }) {
+  return <div className="postflop-profile-field opponent-seat-field">
+    <span className="postflop-profile-label">{localized("Opponent seat", "相手の席")}</span>
+    <div className="display-mode-toggle" role="group" aria-label={localized("Opponent seat", "相手の席")}>
+      {(["oop", "ip"] as const).map(value => <button type="button" key={value} aria-pressed={value === seat}
+        disabled={!positions[value] || !onChange} onClick={() => onChange?.(value)}>{positions[value] ?? "—"} · {value.toUpperCase()}</button>)}
+    </div>
+  </div>;
+}
+
+export function PostflopProfileSettings({ profile, seat, positions, onProfileChange }: {
+  profile: InputOpponentProfile; seat?: PlayerRole; positions?: { ip: string | null; oop: string | null };
+  onProfileChange?: (profile: InputOpponentProfile) => void;
+}) {
+  const opponent = seat && positions?.[seat];
   return <Panel className="postflop-profile-settings">
     <div className="postflop-profile-controls">
       <div className="postflop-profile-field">
-        <span className="postflop-profile-label">{localized("Opponent tendencies", "相手の傾向")}</span>
+        <span className="postflop-profile-label">{localized("Opponent tendencies", "相手の傾向")}{opponent && <small className="postflop-profile-seat"> · {localized("Opponent", "相手")} {opponent}</small>}</span>
         <div className="display-mode-toggle" role="group" aria-label={localized("Opponent tendencies", "相手の傾向")}>
           {POSTFLOP_OPPONENT_PROFILES.map(value => <button type="button" key={value} aria-pressed={value === profile}
             disabled={!onProfileChange} onClick={() => onProfileChange?.(value)} title={opponentProfileCopy(value).description}>{opponentProfileCopy(value).name}</button>)}
-        </div>
-      </div>
-      <div className="postflop-profile-field">
-        <span className="postflop-profile-label">{localized("Opponent seat", "相手の席")}</span>
-        <div className="display-mode-toggle" role="group" aria-label={localized("Opponent seat", "相手の席")}>
-          {(["oop", "ip"] as const).map(value => <button type="button" key={value} aria-pressed={value === seat}
-            disabled={!positions[value] || !onSeatChange} onClick={() => onSeatChange?.(value)}>{positions[value] ?? "—"} · {value.toUpperCase()}</button>)}
         </div>
       </div>
     </div>

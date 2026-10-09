@@ -84,10 +84,12 @@ test("profile and seat controls use all metadata names and native locales", () =
   for (const [locale, labels] of Object.entries(expected)) {
     window.localStorage.setItem("reysonai:locale:v1", locale);
     const html = renderToStaticMarkup(createElement(module.PostflopProfileSettings, { profile: "nit", seat: "ip", positions: context,
-      onProfileChange() {}, onSeatChange() {} }));
+      onProfileChange() {} }));
     for (const label of labels) assert.ok(html.includes(label), `${locale}: ${label}`);
-    assert.equal((html.match(/aria-pressed="true"/g) ?? []).length, 2);
-    assert.match(html, /BTN · IP/); assert.match(html, /BB · OOP/);
+    assert.equal((html.match(/aria-pressed="true"/g) ?? []).length, 1);
+    assert.doesNotMatch(html, /BB · OOP/);
+    const dialog = renderToStaticMarkup(createElement(module.FlopCardDialog, { cards: ["Ah", "7c", "2d"], seat: "ip", positions: context, onApply() {}, onClose() {} }));
+    assert.match(dialog, /BTN · IP/); assert.match(dialog, /BB · OOP/);
     assert.doesNotMatch(html, /linear-gradient|style=/);
   }
   window.localStorage.setItem("reysonai:locale:v1", "en");
@@ -97,8 +99,9 @@ test("switching to a missing profile removes standard rows/details, retains cont
   calls.length = 0; missingLater = false;
   function Harness() {
     const [profile, setProfile] = useState("standard"), [seat, setSeat] = useState("ip");
+    globalThis.__setSeat = setSeat;
     return createElement(module.PostflopTrial, { context, cards: ["Ah", "7c", "2d"], opponentProfile: profile, opponentSeat: seat,
-      tableProfile: { call: "normal", three_bet: "normal" }, onOpponentProfileChange: setProfile, onOpponentSeatChange: setSeat });
+      tableProfile: { call: "normal", three_bet: "normal" }, onOpponentProfileChange: setProfile });
   }
   const root = createRoot(document.getElementById("root"));
   try {
@@ -109,10 +112,10 @@ test("switching to a missing profile removes standard rows/details, retains cont
     assert.equal(document.querySelector("[data-testid=saved-profile-range]"), null);
     assert.equal(document.querySelector(".postflop-hand-detail"), null);
     assert.match(document.body.textContent, /policy is being prepared/);
-    assert.ok(button("Return to Standard")); assert.ok(button("BB · OOP"));
+    assert.ok(button("Return to Standard")); assert.equal(button("BB · OOP"), undefined);
     assert.equal(calls.filter(item => item.kind === "board").length, 1, "must not compute standard fallback");
     assert.equal(document.querySelector(".state-error"), null);
-    await act(async () => button("BB · OOP").click()); await settle();
+    await act(async () => globalThis.__setSeat("oop")); await settle();
     assert.equal(calls.at(-1).options.opponentSeat, "oop");
     assert.equal(document.querySelector("[data-testid=saved-profile-range]"), null);
     await act(async () => button("Return to Standard").click()); await settle();
@@ -125,7 +128,7 @@ test("switching to a missing profile removes standard rows/details, retains cont
 test("table-only changes invalidate the visible calculation and skip the standard base cache", async () => {
   calls.length = 0; missingLater = false;
   const root = createRoot(document.getElementById("root"));
-  const props = { context, cards: ["Ah", "7c", "2d"], opponentProfile: "standard", opponentSeat: "ip", onOpponentProfileChange() {}, onOpponentSeatChange() {} };
+  const props = { context, cards: ["Ah", "7c", "2d"], opponentProfile: "standard", opponentSeat: "ip", onOpponentProfileChange() {} };
   try {
     await act(async () => root.render(createElement(module.PostflopTrial, { ...props, tableProfile: { call: "normal", three_bet: "normal" } })));
     await settle();
@@ -149,11 +152,11 @@ test("later-only missing profile policy remains a non-error preparing state with
   const root = createRoot(document.getElementById("root"));
   try {
     await act(async () => root.render(createElement(module.PostflopTrial, { context, cards: ["Ah", "7c", "2d"], actions: ["check"], turnCard: "Ts",
-      opponentProfile: "station", opponentSeat: "oop", tableProfile: { call: "high", three_bet: "low" }, onOpponentProfileChange() {}, onOpponentSeatChange() {} })));
+      opponentProfile: "station", opponentSeat: "oop", tableProfile: { call: "high", three_bet: "low" }, onOpponentProfileChange() {} })));
     await settle();
     assert.match(document.body.textContent, /policy is being prepared/);
     assert.equal(document.querySelector("[data-testid=saved-profile-range]"), null);
-    assert.ok(button("Return to Standard")); assert.ok(button("BB · OOP"));
+    assert.ok(button("Return to Standard")); assert.equal(button("BB · OOP"), undefined);
     const call = calls.find(item => item.kind === "later");
     assert.equal(call.options.opponentProfile, "station"); assert.equal(call.options.opponentSeat, "oop");
     assert.deepEqual(call.options.tableProfile, { call: "high", three_bet: "low" });
@@ -196,7 +199,7 @@ test("unsupported postflop context explicitly localizes its message in all four 
     window.localStorage.setItem("reysonai:locale:v1", locale);
     const html = renderToStaticMarkup(createElement(module.PostflopTrial, {
       context: { ...context, pilotAvailable: false }, cards: ["Ah", "7c", "2d"],
-      opponentProfile: "standard", opponentSeat: "ip", onOpponentProfileChange() {}, onOpponentSeatChange() {},
+      opponentProfile: "standard", opponentSeat: "ip", onOpponentProfileChange() {},
     }));
     assert.ok(html.includes(copy), `${locale}: unavailable paragraph must be localized without a DOM observer`);
     const unavailable = new JSDOM(html).window.document.querySelector(".postflop-unavailable").textContent;

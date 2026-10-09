@@ -1,7 +1,7 @@
 import { Dialog } from "../components/Dialog.tsx";
 import type { StrategyNode, StrategyCombo, ActionMix, PostflopDatasets, InputOptions, InputOpponentProfile } from "../../scripts/postflop-ai/types.ts";
 import type { PlayerRole } from "../../scripts/postflop-ai/tree.ts";
-import { PostflopProfileSettings, ProfilePolicyPreparing, PostflopProfileNote } from "./PostflopProfileSettings.tsx";
+import { OpponentSeatField, PostflopProfileSettings, ProfilePolicyPreparing, PostflopProfileNote } from "./PostflopProfileSettings.tsx";
 import { adjustedInputOptions } from "../../scripts/postflop-ai/input-options.ts";
 import type { BalancedFlopBase } from "../../scripts/postflop-ai/flop-base-core.ts";
 import type { PostflopSource } from "./postflop-browser.ts";
@@ -251,10 +251,11 @@ export function randomFlop(random = Math.random) {
   return shuffled.slice(0, 3);
 }
 
-export function FlopCardDialog({ cards, onApply, onClose }: { cards: string[]; onApply: (cards: string[]) => void; onClose: () => void }) {
+export function FlopCardDialog({ cards, seat, positions, onApply, onClose }: { cards: string[]; seat?: PlayerRole; positions?: { ip: string | null; oop: string | null }; onApply: (cards: string[], seat?: PlayerRole) => void; onClose: () => void }) {
   const current = recognizedFlop(cards);
   const english = productLocale() !== "ja";
   const [draft, setDraft] = useState(() => [...cards]);
+  const [draftSeat, setDraftSeat] = useState(seat);
   const selected = new Set(draft.filter(Boolean));
   const count = selected.size;
   const chooseCard = (card: string) => {
@@ -268,7 +269,7 @@ export function FlopCardDialog({ cards, onApply, onClose }: { cards: string[]; o
     }
     setDraft(next);
   };
-  const apply = (chosen: string[]) => onApply(chosen);
+  const apply = (chosen: string[]) => onApply(chosen, draftSeat);
   return <Dialog labelledBy="flop-card-title" onClose={onClose} className="postflop-card-dialog">
       <div className="modal-heading"><h2 id="flop-card-title">{english ? "Select flop" : "フロップを選択"}</h2>
         <div className="flop-dialog-heading-actions">
@@ -296,6 +297,7 @@ export function FlopCardDialog({ cards, onApply, onClose }: { cards: string[]; o
           {english ? "Use flop" : "このフロップを使う"}
         </button>
       </div>
+      {draftSeat && positions && <OpponentSeatField seat={draftSeat} positions={positions} onChange={setDraftSeat} />}
       <p className="modal-description">{english ? "Choose any three distinct cards. The flop AI estimate is computed for every board." : "好きなカードを3枚選べます。すべてのフロップでAI推定レンジを計算します。"}</p>
       <div className="flop-card-options">
         <SuitCardPicker selectedCards={selected} disabledCards={count === 3
@@ -323,7 +325,7 @@ export function StreetCardDialog({ usedCards = [], street, currentCard = "", onA
   </Dialog>;
 }
 
-export function PostflopTrial({ context, cards, actions = [], turnCard = "", turnActions = [], riverCard = "", riverActions = [], displayMode = "standard", tableProfile, opponentProfile = "standard", opponentSeat = "ip", onOpponentProfileChange, onOpponentSeatChange }: { tableProfile?: InputOptions["tableProfile"]; opponentProfile?: InputOpponentProfile; opponentSeat?: PlayerRole; onOpponentProfileChange?: (profile: InputOpponentProfile) => void; onOpponentSeatChange?: (seat: PlayerRole) => void; context: NonNullable<ReturnType<typeof completedFlopContext>>; cards: string[]; actions?: string[]; turnCard?: string; turnActions?: string[]; riverCard?: string; riverActions?: string[]; displayMode?: string }) {
+export function PostflopTrial({ context, cards, actions = [], turnCard = "", turnActions = [], riverCard = "", riverActions = [], displayMode = "standard", tableProfile, opponentProfile = "standard", opponentSeat = "ip", onOpponentProfileChange }: { tableProfile?: InputOptions["tableProfile"]; opponentProfile?: InputOpponentProfile; opponentSeat?: PlayerRole; onOpponentProfileChange?: (profile: InputOpponentProfile) => void; context: NonNullable<ReturnType<typeof completedFlopContext>>; cards: string[]; actions?: string[]; turnCard?: string; turnActions?: string[]; riverCard?: string; riverActions?: string[]; displayMode?: string }) {
   const options = useMemo<InputOptions>(() => ({ tableProfile, opponentProfile, opponentSeat }), [tableProfile?.call, tableProfile?.three_bet, opponentProfile, opponentSeat]);
   const requestKey = JSON.stringify(options);
   const board = recognizedFlop(cards);
@@ -549,7 +551,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const view: HandView | null | undefined = selectedCombo === "all" ? chosen : combo ? { ...chosen, actions: combo.mix, tiers: { [combo.tier]: 1 }, combo } : null;
   const english = productLocale() !== "ja";
   return <div className="postflop-trial" aria-label={english ? "Postflop estimate" : "ポストフロップ試作"}>
-    <PostflopProfileSettings profile={opponentProfile} seat={opponentSeat} positions={{ ip: context.ip ?? null, oop: context.oop ?? null }} onProfileChange={onOpponentProfileChange} onSeatChange={onOpponentSeatChange} />
+    <PostflopProfileSettings profile={opponentProfile} seat={opponentSeat} positions={{ ip: context.ip ?? null, oop: context.oop ?? null }} onProfileChange={onOpponentProfileChange} />
     {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title={localized("No postflop policy recorded for this spot", "この局面のポストフロップ方針は未収録")}>{continuationCopy("noPolicyDetail")}</StatusState></Panel>
       : !cards.every(Boolean) ? <Panel className="postflop-unavailable"><StatusState title={english ? "Select a flop" : "フロップを選択してください"}>{english ? "Open the flop cards in the action path and choose any three cards." : "上のアクション列にあるフロップカードを押して、任意の3枚を選んでください。"}</StatusState></Panel>
       : !board ? <Panel className="postflop-unavailable"><StatusState title={english ? "Invalid flop cards" : "フロップのカードが正しくありません"}>{english ? "Choose three distinct cards from the deck." : "重複しないカードを3枚選んでください。"}</StatusState></Panel>
