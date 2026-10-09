@@ -972,6 +972,13 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const displayedEntries = focusedEntry ? [focusedEntry] : visibleRangeEntries;
 
   // Guests who reach the flop see only the sign-in card, centred on one screen (no action strip).
+  // Opponent assumptions change every later policy, so any change restarts from the flop decision.
+  const applyOpponent = (profile: OpponentProfile | undefined, seat: OpponentSeat | undefined, cards: string[]) => {
+    const profileChanged = !!profile && profile !== opponentProfile; if (profileChanged) setOpponentProfile(profile);
+    const seatChanged = !!seat && seat !== effectiveOpponentSeat; if (seatChanged) setOpponentSeat(seat);
+    if (profileChanged || seatChanged) { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); }
+    return profileChanged || seatChanged;
+  };
   if (flopActive && !postflopAllowed) return <div className="shell">
     <Sidebar activeSection={RANGE_SECTION}
       onSectionChange={onSectionChange ?? (() => {})}
@@ -1049,11 +1056,9 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
       {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
       {flopActive && flopDialogOpen && <FlopCardDialog cards={flopCards} profile={opponentProfile} seat={flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? undefined : effectiveOpponentSeat}
         positions={{ ip: flopContext!.ip ?? null, oop: flopContext!.oop ?? null }} onClose={() => setFlopDialogOpen(false)}
+        onApplyOpponent={(profile, seat) => { applyOpponent(profile, seat, flopCards); setFlopDialogOpen(false); }}
         onApply={(cards, seat, profile) => {
-          // Opponent assumptions change every later policy, so any change restarts from the flop decision.
-          const profileChanged = !!profile && profile !== opponentProfile; if (profileChanged) setOpponentProfile(profile);
-          const seatChanged = !!seat && seat !== effectiveOpponentSeat; if (seatChanged) setOpponentSeat(seat);
-          if (profileChanged || seatChanged || cards.join("") !== flopCards.join("")) { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); } setFlopDialogOpen(false); }} />}
+          if (applyOpponent(profile, seat, cards) || cards.join("") !== flopCards.join("")) { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); } setFlopDialogOpen(false); }} />}
       {flopActive && streetCardDialog && <StreetCardDialog street={streetCardDialog}
         currentCard={streetCardDialog === "turn" ? turnCard : riverCard}
         usedCards={[...flopCards, ...(streetCardDialog === "river" ? [turnCard] : [])].filter(Boolean)}

@@ -251,7 +251,7 @@ export function randomFlop(random = Math.random) {
   return shuffled.slice(0, 3);
 }
 
-export function FlopCardDialog({ cards, profile, seat, positions, onApply, onClose }: { cards: string[]; profile?: InputOpponentProfile; seat?: PlayerRole; positions?: { ip: string | null; oop: string | null }; onApply: (cards: string[], seat?: PlayerRole, profile?: InputOpponentProfile) => void; onClose: () => void }) {
+export function FlopCardDialog({ cards, profile, seat, positions, onApply, onApplyOpponent, onClose }: { cards: string[]; onApplyOpponent?: (profile: InputOpponentProfile, seat?: PlayerRole) => void; profile?: InputOpponentProfile; seat?: PlayerRole; positions?: { ip: string | null; oop: string | null }; onApply: (cards: string[], seat?: PlayerRole, profile?: InputOpponentProfile) => void; onClose: () => void }) {
   const current = recognizedFlop(cards);
   const english = productLocale() !== "ja";
   const [draft, setDraft] = useState(() => [...cards]);
@@ -310,7 +310,11 @@ export function FlopCardDialog({ cards, profile, seat, positions, onApply, onClo
       </div>}
       {advancedOpen && draftProfile && <OpponentSettingsDialog profile={draftProfile} seat={draftSeat} positions={positions}
         onClose={() => setAdvancedOpen(false)}
-        onApply={(nextProfile, nextSeat) => { setDraftProfile(nextProfile); if (nextSeat) setDraftSeat(nextSeat); setAdvancedOpen(false); }} />}
+        onApply={(nextProfile, nextSeat) => {
+          // Opponent assumptions take effect immediately and restart from the flop decision.
+          if (onApplyOpponent) { onApplyOpponent(nextProfile, nextSeat); return; }
+          setDraftProfile(nextProfile); if (nextSeat) setDraftSeat(nextSeat); setAdvancedOpen(false);
+        }} />}
       <p className="modal-description">{english ? "Choose any three distinct cards. The flop AI estimate is computed for every board." : "好きなカードを3枚選べます。すべてのフロップでAI推定レンジを計算します。"}</p>
       <div className="flop-card-options">
         <SuitCardPicker selectedCards={selected} disabledCards={count === 3
