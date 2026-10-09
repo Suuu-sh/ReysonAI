@@ -8,6 +8,7 @@ import { sha } from "./postflop-ai/browser-inputs.ts";
 import { parseFlopBoard } from "./postflop-ai/model.ts";
 import { flopNodes } from "./postflop-ai/views.ts";
 import { historyFor } from "./postflop-ai/tree.ts";
+import { combosOf } from "./lib/equity.ts";
 const directory = process.argv[2];
 if (!directory) throw new Error("Pass the directory of existing saved postflop policy artifacts");
 const inputs = loadInputs("BTN_open_BB_call");
@@ -25,8 +26,14 @@ for (const board of ["As7d2c", "Th9h8c", "Js8s5d"]) {
       if (Object.values(row.mix).some(value => !Number.isFinite(value) || value < 0 || value > 1)) throw new Error(`Invalid ${board}/${node}/${row.hand}`);
       return [row.hand, row.mix];
     }));
+    const blocked = new Set(parsed.cards);
+    const reach = Object.fromEntries(view.rows.map(row => {
+      const legalComboCount = combosOf(row.hand).filter(combo => !blocked.has(combo[0]) && !blocked.has(combo[1])).length;
+      const reachedWeight = row.combos.reduce((sum, combo) => sum + (combo.reachWeight ?? combo.weight), 0);
+      return [row.hand, legalComboCount ? reachedWeight / legalComboCount : 0];
+    }));
     ranges.push({ id: `${inputs.spot.id}:${board}:${node}`, stage: "postflop", board, street: "Flop", seat: view.seat,
-      history: historyFor(inputs.spot.tree, node, "bet33"), actions: view.actions, hands,
+      history: historyFor(inputs.spot.tree, node, "bet33"), actions: view.actions, hands, reach,
       unreachable: view.rows.filter(row => !row.reachable).map(row => row.hand) });
   }
 }
