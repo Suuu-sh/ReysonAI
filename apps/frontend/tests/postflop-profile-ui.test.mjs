@@ -83,7 +83,10 @@ test("profile and seat controls use all metadata names and native locales", () =
     es: ["Tendencias del rival", "Tight-pasivo (NIT)", "Calling station", "Loose-agresivo (LAG)", "Maníaco"] };
   for (const [locale, labels] of Object.entries(expected)) {
     window.localStorage.setItem("reysonai:locale:v1", locale);
-    const html = renderToStaticMarkup(createElement(module.FlopCardDialog, { cards: ["Ah", "7c", "2d"], profile: "nit", seat: "ip", positions: context, onApply() {}, onClose() {} }));
+    const html = renderToStaticMarkup(createElement("div", null, createElement(module.OpponentProfileField, { profile: "nit", onChange() {} }),
+      createElement(module.OpponentSeatField, { seat: "ip", positions: context, onChange() {} })));
+    const dialog = renderToStaticMarkup(createElement(module.FlopCardDialog, { cards: ["Ah", "7c", "2d"], profile: "nit", seat: "ip", positions: context, onApply() {}, onClose() {} }));
+    assert.match(dialog, /flop-advanced-button/); assert.doesNotMatch(dialog, /opponent-profile-option/);
     for (const label of labels) assert.ok(html.includes(label), `${locale}: ${label}`);
     assert.match(html, /aria-pressed="true"[^>]*>(?:<[^>]*>)*(?:<\/span>)?<span class="opponent-profile-text"><strong>[^<]*NIT/); assert.match(html, /aria-pressed="true"[^>]*><span class="opponent-seat-position">BTN/);
     assert.match(html, /opponent-seat-position">BB/);

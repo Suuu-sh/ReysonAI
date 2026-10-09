@@ -446,6 +446,16 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 
 /* Opponent assumptions in the flop dialog: type first, then which player it applies to. */
 .flop-opponent-settings { display: grid; gap: 14px; margin-top: 14px; }
+.flop-opponent-summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; padding: 8px 8px 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-raised); }
+.flop-opponent-summary-text { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.flop-opponent-summary-text span { color: var(--text-muted); font-size: 12px; }
+.flop-opponent-summary-text strong { overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.flop-advanced-button { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border: 0; border-radius: 8px; background: var(--surface-hover); color: var(--text); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.flop-advanced-button:hover { background: var(--line-strong); }
+.flop-advanced-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.opponent-settings-dialog { width: min(560px, calc(100vw - 32px)); }
+.opponent-settings-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+.opponent-settings-actions > button { min-width: 112px; }
 .postflop-profile-field { min-width: 0; display: grid; gap: 8px; }
 .postflop-profile-label { color: var(--text-muted); font-size: 12px; font-weight: 600; }
 .opponent-profile-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }

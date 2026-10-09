@@ -1,7 +1,7 @@
 import { Dialog } from "../components/Dialog.tsx";
 import type { StrategyNode, StrategyCombo, ActionMix, PostflopDatasets, InputOptions, InputOpponentProfile } from "../../scripts/postflop-ai/types.ts";
 import type { PlayerRole } from "../../scripts/postflop-ai/tree.ts";
-import { OpponentProfileField, OpponentSeatField, ProfilePolicyPreparing, PostflopProfileNote } from "./PostflopProfileSettings.tsx";
+import { OpponentProfileField, OpponentSeatField, opponentProfileCopy, ProfilePolicyPreparing, PostflopProfileNote } from "./PostflopProfileSettings.tsx";
 import { adjustedInputOptions } from "../../scripts/postflop-ai/input-options.ts";
 import type { BalancedFlopBase } from "../../scripts/postflop-ai/flop-base-core.ts";
 import type { PostflopSource } from "./postflop-browser.ts";
@@ -13,7 +13,7 @@ type DecisionLabels = { labels?: Record<string, string>; labelsJa?: Record<strin
 type HandView = { hand?: string; actions: ActionMix; tiers?: Record<string, number>; combos?: StrategyCombo[]; combo?: StrategyCombo };
 type ExplanationState = { errorCode?: string; key: string; data: ExplanationFacts | null; error: string | null; loading: boolean };
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
-import { X } from "@phosphor-icons/react";
+import { SlidersHorizontal, X } from "@phosphor-icons/react";
 import { ActionBars, barColor, Panel, SectionHeading, StatusState } from "../components/primitives.tsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
 import { RangeMatrixSkeleton, Skeleton, SkeletonText } from "../components/Loading.tsx";
@@ -257,6 +257,7 @@ export function FlopCardDialog({ cards, profile, seat, positions, onApply, onClo
   const [draft, setDraft] = useState(() => [...cards]);
   const [draftSeat, setDraftSeat] = useState(seat);
   const [draftProfile, setDraftProfile] = useState(profile);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
   const selected = new Set(draft.filter(Boolean));
   const count = selected.size;
   const chooseCard = (card: string) => {
@@ -298,16 +299,44 @@ export function FlopCardDialog({ cards, profile, seat, positions, onApply, onClo
           {english ? "Use flop" : "このフロップを使う"}
         </button>
       </div>
-      {(draftProfile || draftSeat) && <div className="flop-opponent-settings">
-        {draftProfile && <OpponentProfileField profile={draftProfile} onChange={setDraftProfile} />}
-        {draftSeat && positions && draftProfile !== "standard" && <OpponentSeatField seat={draftSeat} positions={positions} onChange={setDraftSeat} />}
+      {draftProfile && <div className="flop-opponent-summary">
+        <div className="flop-opponent-summary-text">
+          <span>{english ? "Opponent" : "相手"}</span>
+          <strong>{opponentProfileCopy(draftProfile).name}{draftProfile !== "standard" && draftSeat && positions?.[draftSeat] ? ` · ${positions[draftSeat]}` : ""}</strong>
+        </div>
+        <button type="button" className="flop-advanced-button" onClick={() => setAdvancedOpen(true)}>
+          <SlidersHorizontal size={14} aria-hidden="true" />{english ? "Advanced settings" : "詳細設定"}
+        </button>
       </div>}
+      {advancedOpen && draftProfile && <OpponentSettingsDialog profile={draftProfile} seat={draftSeat} positions={positions}
+        onClose={() => setAdvancedOpen(false)}
+        onApply={(nextProfile, nextSeat) => { setDraftProfile(nextProfile); if (nextSeat) setDraftSeat(nextSeat); setAdvancedOpen(false); }} />}
       <p className="modal-description">{english ? "Choose any three distinct cards. The flop AI estimate is computed for every board." : "好きなカードを3枚選べます。すべてのフロップでAI推定レンジを計算します。"}</p>
       <div className="flop-card-options">
         <SuitCardPicker selectedCards={selected} disabledCards={count === 3
           ? new Set(deck.filter(card => !selected.has(card))) : undefined}
           ariaLabel={english ? "Available flop cards by suit" : "スート別のフロップカード一覧"} onSelect={chooseCard} />
       </div>
+  </Dialog>;
+}
+
+function OpponentSettingsDialog({ profile, seat, positions, onApply, onClose }: { profile: InputOpponentProfile; seat?: PlayerRole; positions?: { ip: string | null; oop: string | null }; onApply: (profile: InputOpponentProfile, seat?: PlayerRole) => void; onClose: () => void }) {
+  const english = productLocale() !== "ja";
+  const [draftProfile, setDraftProfile] = useState(profile);
+  const [draftSeat, setDraftSeat] = useState(seat);
+  return <Dialog labelledBy="opponent-settings-title" onClose={onClose} className="opponent-settings-dialog">
+    <div className="modal-heading"><h2 id="opponent-settings-title">{english ? "Advanced settings" : "詳細設定"}</h2>
+      <button type="button" className="modal-close" aria-label={english ? "Close" : "閉じる"} onClick={onClose}><X size={16} /></button>
+    </div>
+    <p className="modal-description">{english ? "Assume a type for your opponent. The AI adjusts its decisions to exploit it." : "相手のタイプを仮定すると、AIがその相手に合わせた判断を出します。"}</p>
+    <div className="flop-opponent-settings">
+      <OpponentProfileField profile={draftProfile} onChange={setDraftProfile} />
+      {draftSeat && positions && draftProfile !== "standard" && <OpponentSeatField seat={draftSeat} positions={positions} onChange={setDraftSeat} />}
+    </div>
+    <div className="opponent-settings-actions">
+      <button type="button" className="mode-secondary" onClick={onClose}>{english ? "Cancel" : "キャンセル"}</button>
+      <button type="button" className="mode-primary" onClick={() => onApply(draftProfile, draftSeat)}>{english ? "Apply" : "適用"}</button>
+    </div>
   </Dialog>;
 }
 
