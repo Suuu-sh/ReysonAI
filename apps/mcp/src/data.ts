@@ -24,6 +24,9 @@ const RANKS = "AKQJT98765432";
 const HANDS = RANKS.split("").flatMap((a, i) => RANKS.split("").map((b, j) => i === j ? a + b : i < j ? a + b + "s" : b + a + "o"));
 const HAND_SET = new Set(HANDS);
 const MAX_DATASET_BYTES = 4_000_000;
+// Full source documents are needed to verify publication hashes, but one policy
+// evaluation should not retain an unbounded combination of otherwise-valid files.
+export const MAX_POSTFLOP_SOURCE_BYTES = 2_000_000;
 const MAX_PARTS = 160;
 const MAX_ACCOUNT_BYTES = 500_000;
 type RecordValue = Record<string, unknown>;
@@ -65,7 +68,7 @@ function parseJson(value: unknown, maxBytes: number): unknown {
 function validMeta(row: MetaRow, max = MAX_DATASET_BYTES) {
   if (!object(row) || typeof row.content_hash !== "string" || !/^[a-f0-9]{64}$/.test(row.content_hash) || !integer(row.bytes, 1, max) || !integer(row.parts, 1, MAX_PARTS)) invalid();
 }
-async function readPublishedJson(db: ReadOnlyDatabase | undefined, name: string, optional = false): Promise<{ data: unknown; hash: string } | null> {
+async function readPublishedMeta(db: ReadOnlyDatabase | undefined, name: string, optional = false): Promise<MetaRow | null> {
   const meta = await query<MetaRow>(db, "SELECT name, content_hash, bytes, parts FROM preflop_datasets WHERE name = ? LIMIT 2", name);
   if (!meta.length) {
     if (optional) return null;
@@ -74,6 +77,14 @@ async function readPublishedJson(db: ReadOnlyDatabase | undefined, name: string,
   if (meta.length !== 1) invalid();
   const row = meta[0]; validMeta(row);
   if (row.name !== name) invalid();
+  return row;
+}
+async function readPublishedJson(db: ReadOnlyDatabase | undefined, name: string, optional = false, knownMeta?: MetaRow | null): Promise<{ data: unknown; hash: string } | null> {
+  const row = knownMeta === undefined ? await readPublishedMeta(db, name, optional) : knownMeta;
+  if (!row) {
+    if (optional) return null;
+    throw new McpDataError("not_found", "This saved dataset is not published.");
+  }
   const parts = await query<{ part: number; body: string }>(db, "SELECT part, body FROM preflop_dataset_parts WHERE name = ? ORDER BY part LIMIT 161", name);
   if (parts.length !== row.parts || parts.some((part, index) => part.part !== index || typeof part.body !== "string" || part.body.length > 30_000)) invalid();
   const text = parts.map(part => part.body).join("");
@@ -176,10 +187,40 @@ export async function loadPublishedPostflopSourceDatasets(db: ReadOnlyDatabase |
     }
     return [supported, ids] as const;
   });
+  // Check every selected dataset's trusted metadata before reading any dataset parts.
+  // A caller can select only the sources implied by a published spot, and their
+  // combined declared byte count is capped before the larger D1 rows are loaded.
+  const metadataEntries = await Promise.all(selected.map(async ([name]) => {
+    const row = await readPublishedMeta(db, name);
+    if (!row) invalid();
+    return [name, row] as const;
+  }));
+  const metadata = new Map(metadataEntries);
+  const totalBytes = metadataEntries.reduce((sum, [, row]) => sum + row.bytes, 0);
+  if (totalBytes > MAX_POSTFLOP_SOURCE_BYTES) {
+    throw new McpDataError("data_unavailable", `This postflop evaluation is unavailable because its published source datasets exceed the ${MAX_POSTFLOP_SOURCE_BYTES}-byte combined input limit.`);
+  }
+  const names = selected.map(([name]) => name);
+  const summaries = await query<{ name: string; parts: number; bytes: number }>(db,
+    `SELECT name, COUNT(*) AS parts, SUM(length(CAST(body AS BLOB))) AS bytes FROM preflop_dataset_parts WHERE name IN (${names.map(() => "?").join(",")}) GROUP BY name`, ...names);
+  if (summaries.length !== names.length || new Set(summaries.map(row => row.name)).size !== names.length) invalid();
+  const summaryByName = new Map(summaries.map(row => [row.name, row]));
+  const storedBytes = summaries.reduce((sum, row) => sum + row.bytes, 0);
+  if (storedBytes > MAX_POSTFLOP_SOURCE_BYTES) {
+    throw new McpDataError("data_unavailable", `This postflop evaluation is unavailable because its stored source rows exceed the ${MAX_POSTFLOP_SOURCE_BYTES}-byte combined input limit.`);
+  }
+  for (const [name] of selected) {
+    const meta = metadata.get(name), summary = summaryByName.get(name);
+    if (!meta || !summary) invalid();
+    if (summary.name !== name || !integer(summary.parts, 1, MAX_PARTS) || !integer(summary.bytes, 1, MAX_DATASET_BYTES)
+      || summary.parts !== meta.parts || summary.bytes !== meta.bytes) invalid();
+  }
   const entries = await Promise.all(selected.map(async ([name, ids]) => {
     // The byte/hash and publication envelope cover the complete source file, while the
     // costlier row validation stays limited to the exact source spots needed by this policy.
-    const saved = await readPublishedJson(db, name);
+    const sourceMeta = metadata.get(name);
+    if (!sourceMeta) invalid();
+    const saved = await readPublishedJson(db, name, false, sourceMeta);
     const raw = saved?.data;
     if (!object(raw) || !object(raw.metadata) || raw.metadata.schema_version !== "1.0" || raw.metadata.strategy_type !== KIND
       || raw.metadata.game !== "6max Cash / No-Limit Texas Holdem" || raw.metadata.effective_stack_bb !== 100 || raw.metadata.ante_bb !== 0

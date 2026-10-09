@@ -5,7 +5,7 @@ import { comboRange } from "../../frontend/scripts/postflop-ai/browser-inputs.ts
 import { flopTextureKeys, handTier, TIERS } from "../../frontend/scripts/postflop-ai/model.ts";
 import { NODES, nodeRole, treeNodes, withRaise } from "../../frontend/scripts/postflop-ai/policy.ts";
 import { FLOP_BETS, flopState, historyFor } from "../../frontend/scripts/postflop-ai/tree.ts";
-import { comboId, defenceFor, flopRunouts, replayOrNull, DEFENCE_VERSION } from "../../frontend/scripts/postflop-ai/defence.ts";
+import { comboId, defenceFor, flopRunouts, replayOrNull, DEFENCE_VERSION, withRankTableCacheLimit } from "../../frontend/scripts/postflop-ai/defence.ts";
 import { EVALUATOR_VERSION } from "../../frontend/scripts/lib/equity.ts";
 
 export function assertPolicyNodeComplete(policy, node) {
@@ -20,6 +20,8 @@ export function projectPolicyRows(rows) {
     nodeReachable: row.reachWeight > 0, comboCount: row.comboCount,
     frequencies: row.mix, tierWeights: row.tiers, reachWeight: row.reachWeight }));
 }
+
+export { withRankTableCacheLimit };
 
 export function evaluateFlopNodeCanonical(inputs, policy, boardCards, node, history = null) {
   const { spot } = inputs;

@@ -4,7 +4,7 @@
 // node; it never generates a policy or fills a missing board/history.
 import { loadPublishedPostflopSourceDatasets, McpDataError, type ReadOnlyDatabase } from "./data.ts";
 import { canonicalFlop, remapFlopNode, hydrateFrame, unpackView, flopState, NODES, referenceLaterPolicy,
-  assertPolicyNodeComplete, buildInputs, evaluateFlopNodeCanonical, projectPolicyRows, parseFlopBoard, validatePolicy,
+  assertPolicyNodeComplete, buildInputs, evaluateFlopNodeCanonical, projectPolicyRows, parseFlopBoard, validatePolicy, withRankTableCacheLimit,
   DEFENCE_VERSION, EVALUATOR_VERSION,
   type FlopBase, type PackedView, type CodecView, type EvaluatedFlopNode, type FlopPolicy, type PostflopInputs } from "./postflop-shared.mjs";
 
@@ -34,6 +34,9 @@ const MAX_HISTORIES = 2_000;
 const MAX_FLOP_COLUMNS = 4_096;
 const MAX_RESPONSE_BYTES = 80_000;
 const CANONICAL_FLOPS = 1_755;
+const MAX_POLICY_EVALUATIONS_IN_FLIGHT = 1;
+const MCP_RANK_TABLE_CACHE_LIMIT = 600;
+let activePolicyEvaluations = 0;
 
 type Value = Record<string, unknown>;
 type VersionRow = { name: string; content_hash: string; published_at: string; detail_json: string };
@@ -558,6 +561,22 @@ export async function evaluatePublishedPostflopPolicy(db: ReadOnlyDatabase | und
     throw new McpDataError("invalid_argument", "Use an exact published spot ID and a three-card flop.");
   }
   const history = historyKey(input.history);
+  const canonical = canonicalBoard(input.flop);
+  let parsed: ReturnType<typeof parseFlopBoard>;
+  try { parsed = parseFlopBoard(input.flop); } catch { throw new McpDataError("invalid_argument", "Enter exactly three distinct cards, such as As7d2c."); }
+  // Reserve the bounded evaluation slot before the first D1 read. Concurrent callers
+  // receive an explicit transient unavailable response instead of accumulating source
+  // documents and runout tables in this isolate.
+  if (activePolicyEvaluations >= MAX_POLICY_EVALUATIONS_IN_FLIGHT) {
+    throw new McpDataError("data_unavailable", "The saved postflop evaluator is busy; retry this exact request shortly.");
+  }
+  activePolicyEvaluations++;
+  try { return await evaluatePublishedPostflopPolicyCore(db, input, history, canonical, parsed); }
+  finally { activePolicyEvaluations--; }
+}
+
+async function evaluatePublishedPostflopPolicyCore(db: ReadOnlyDatabase | undefined, input: EvaluatePostflopPolicyInput,
+  history: string[], canonical: ReturnType<typeof canonicalBoard>, parsed: ReturnType<typeof parseFlopBoard>) {
   const published = await loadPublishedSpot(db, input.spotId);
   const { release, spot } = published;
   const sourceRequirements = evaluationSourceSelections(spot.data);
@@ -577,9 +596,6 @@ export async function evaluatePublishedPostflopPolicy(db: ReadOnlyDatabase | und
   try { policy = validatePolicy(saved.policy, inputs.spot.tree); } catch { return invalid(); }
   if (saved.sourceHash !== inputs.fingerprint) invalid();
 
-  const canonical = canonicalBoard(input.flop);
-  let parsed: ReturnType<typeof parseFlopBoard>;
-  try { parsed = parseFlopBoard(input.flop); } catch { throw new McpDataError("invalid_argument", "Enter exactly three distinct cards, such as As7d2c."); }
   let state;
   try { state = flopState(inputs.spot.tree, history); } catch { throw new McpDataError("not_found", "This exact flop action history does not reach a published decision."); }
   if ("end" in state) throw new McpDataError("not_found", "This flop action history has ended; no later node was substituted.");
@@ -598,7 +614,8 @@ export async function evaluatePublishedPostflopPolicy(db: ReadOnlyDatabase | und
 
   let evaluated: EvaluatedFlopNode;
   try {
-    evaluated = evaluateFlopNodeCanonical(inputs, policy, canonical.cards, state.node, history);
+    evaluated = withRankTableCacheLimit(MCP_RANK_TABLE_CACHE_LIMIT,
+      () => evaluateFlopNodeCanonical(inputs, policy, canonical.cards, state.node, history));
   } catch (error) {
     if (error instanceof Error && error.message.startsWith("Unreachable flop history")) {
       throw new McpDataError("not_found", "The saved ranges do not reach this exact flop decision; no substitute node was evaluated.");

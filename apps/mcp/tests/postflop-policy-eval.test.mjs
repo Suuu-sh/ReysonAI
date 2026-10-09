@@ -5,7 +5,7 @@ import { loadInputs } from "../../frontend/scripts/postflop-ai/inputs.mjs";
 import { loadCandidate } from "../../frontend/scripts/postflop-ai/generate.mjs";
 import { canonicalFlop } from "../../frontend/scripts/postflop-ai/flop-isomorphism.ts";
 import { computeBoard } from "../../frontend/src/estimated/postflop-compute.ts";
-import { flopRunouts } from "../../frontend/scripts/postflop-ai/defence.ts";
+import { flopRunouts, rankTable, rankTableCacheState, withRankTableCacheLimit } from "../../frontend/scripts/postflop-ai/defence.ts";
 import opening from "../../frontend/src/estimated/opening-ranges.json" with { type: "json" };
 import responses from "../../frontend/src/estimated/preflop-ranges.json" with { type: "json" };
 import threeBets from "../../frontend/src/estimated/three-bet-responses.json" with { type: "json" };
@@ -14,7 +14,7 @@ import limpResponses from "../../frontend/src/estimated/limp-responses.json" wit
 import limpDeepResponses from "../../frontend/src/estimated/limp-deep-responses.json" with { type: "json" };
 import { evaluatePublishedPostflopPolicy, listPostflopCoverage } from "../src/postflop-data.ts";
 import { projectPolicyRows } from "../src/postflop-shared.mjs";
-import { McpDataError } from "../src/data.ts";
+import { MAX_POSTFLOP_SOURCE_BYTES, McpDataError } from "../src/data.ts";
 
 const digest = value => createHash("sha256").update(value).digest("hex");
 const spotId = "BTN_open_BB_call";
@@ -32,7 +32,8 @@ const projectRows = rows => rows.map(row => ({ hand: row.hand, preflopSupport: r
   tierWeights: row.tiers, reachWeight: row.reachWeight }));
 
 function makeFixture({ candidate = publishedCandidate, missingSource = null, corruptSourceHash = false,
-  spotData = inputs.spot, fixtureSpotId = spotId, sourceFiles: fixtureSources = sourceFiles } = {}) {
+  spotData = inputs.spot, fixtureSpotId = spotId, sourceFiles: fixtureSources = sourceFiles,
+  sourceByteOverrides = {}, sourcePaddingChars = {}, beforeQuery = null } = {}) {
   const releaseIndex = { [fixtureSpotId]: { flop: candidate.metadata.policy_hash, later: null } };
   const release = { name: "postflop", content_hash: digest(JSON.stringify(releaseIndex)), published_at: timestamp,
     detail_json: JSON.stringify({ spots: releaseIndex }) };
@@ -47,18 +48,19 @@ function makeFixture({ candidate = publishedCandidate, missingSource = null, cor
   const datasets = new Map();
   for (const [name, value] of Object.entries(fixtureSources)) {
     if (name === missingSource) continue;
-    const text = JSON.stringify(value), hash = digest(text), body = corruptSourceHash && name === "preflop-ranges" ? "0".repeat(64) : hash;
+    const text = JSON.stringify(value) + " ".repeat(sourcePaddingChars[name] ?? 0), hash = digest(text), body = corruptSourceHash && name === "preflop-ranges" ? "0".repeat(64) : hash;
     const parts = [];
     for (let offset = 0, part = 0; offset < text.length; offset += 28_000, part++) {
       parts.push({ name, part, body: text.slice(offset, offset + 28_000) });
     }
-    datasets.set(name, { metadata: { name, content_hash: body, bytes: new TextEncoder().encode(text).length, parts: parts.length }, parts });
+    datasets.set(name, { metadata: { name, content_hash: body, bytes: sourceByteOverrides[name] ?? new TextEncoder().encode(text).length, parts: parts.length }, parts });
   }
   const calls = [];
   const db = { prepare(sql) {
     assert.match(sql, /^SELECT /, "policy evaluation must remain read-only");
     return { bind(...args) { return { async all() {
       calls.push({ sql, args });
+      await beforeQuery?.(sql, args);
       if (sql.includes("FROM dataset_versions")) return { results: versions.filter(row => args.includes(row.name)) };
       if (sql.includes("FROM postflop_spots")) {
         const rows = sql.includes("WHERE spot_id = ?") ? spots.filter(row => row.spot_id === args[0])
@@ -76,6 +78,10 @@ function makeFixture({ candidate = publishedCandidate, missingSource = null, cor
       if (sql.includes("FROM preflop_datasets")) {
         const rows = [...datasets.values()].map(item => item.metadata).filter(row => args.includes(row.name));
         return { results: rows.slice(0, args.length) };
+      }
+      if (sql.includes("SUM(length(CAST(body AS BLOB)))")) {
+        return { results: [...datasets].filter(([name]) => args.includes(name)).map(([name, item]) => ({ name,
+          parts: item.parts.length, bytes: item.parts.reduce((sum, part) => sum + new TextEncoder().encode(part.body).length, 0) })) };
       }
       if (sql.includes("FROM preflop_dataset_parts")) {
         const selected = datasets.get(args[0]);
@@ -101,6 +107,7 @@ test("policy coverage discloses bounded head-up node evaluation separately from 
 
 test("one-node evaluation matches the frontend projection and is deterministic without exposing combos", async () => {
   const { db, calls } = makeFixture();
+  assert.equal(rankTableCacheState().limit, 3000, "Web-facing rank table cache keeps its default limit");
   const first = await evaluatePublishedPostflopPolicy(db, { spotId, flop: "As7d2c" });
   const repeated = await evaluatePublishedPostflopPolicy(db, { spotId, flop: "As7d2c" });
   assert.deepEqual(first, repeated);
@@ -116,6 +123,8 @@ test("one-node evaluation matches the frontend projection and is deterministic w
   assert.equal(first.frequencyBasis, "preflop_range_weighted_projection");
   assert.equal(first.handClassCount, 169);
   assert.equal(first.hands.length, 169);
+  assert.equal(rankTableCacheState().limit, 3000, "MCP restores the shared default after a bounded evaluation");
+  assert.ok(rankTableCacheState().size <= 600, "MCP leaves no more than its per-request rank cache budget");
   assert.ok(first.hands.every(row => !("combos" in row)));
   assert.equal(flopRunouts(canonicalFlop("As7d2c").cards).tables, null,
     "MCP evaluation releases large shared runout tables after completing the projection");
@@ -147,6 +156,60 @@ test("zero-path-reach rows are not represented as reachable-node recommendations
   assert.equal(row.reachWeight, 0);
   assert.ok(!("reachable" in row));
   assert.deepEqual(row.frequencies, { fold: 0.97, call: 0.03, raise: 0 });
+});
+
+test("rank-table cache management bounds entries and restores the unchanged Web default", async () => {
+  const defaultState = rankTableCacheState();
+  assert.equal(defaultState.limit, 3000);
+  const boards = [canonicalFlop("As7d2c").cards, canonicalFlop("KsJh3d").cards];
+  withRankTableCacheLimit(1, () => {
+    assert.equal(rankTableCacheState().limit, 1);
+    rankTable(boards[0]);
+    rankTable(boards[1]);
+    assert.ok(rankTableCacheState().size <= 1);
+  });
+  assert.equal(rankTableCacheState().limit, 3000);
+  assert.ok(rankTableCacheState().size <= 1);
+  assert.throws(() => withRankTableCacheLimit(1, () => { throw new Error("fixture failure"); }), /fixture failure/);
+  assert.equal(rankTableCacheState().limit, 3000, "cache limit restores even when the operation fails");
+  assert.throws(() => withRankTableCacheLimit(0, () => undefined), RangeError);
+  assert.throws(() => withRankTableCacheLimit(3001, () => undefined), RangeError);
+});
+
+test("policy source bytes are aggregated and capped before any large source rows are read", async () => {
+  const { db, calls } = makeFixture({ sourceByteOverrides: {
+    "opening-ranges": 1_100_000,
+    "preflop-ranges": 1_100_000,
+  } });
+  await assert.rejects(evaluatePublishedPostflopPolicy(db, { spotId, flop: "As7d2c" }), hasCode("data_unavailable"));
+  assert.ok(calls.some(call => call.sql.includes("FROM preflop_datasets")));
+  assert.ok(!calls.some(call => call.sql.includes("FROM preflop_dataset_parts")), "budget rejects before source body reads");
+  assert.ok(MAX_POSTFLOP_SOURCE_BYTES < 2_200_000);
+
+  const underreported = makeFixture({ sourceByteOverrides: { "opening-ranges": 1, "preflop-ranges": 1 },
+    sourcePaddingChars: { "opening-ranges": 1_000_000, "preflop-ranges": 1_000_000 } });
+  await assert.rejects(evaluatePublishedPostflopPolicy(underreported.db, { spotId, flop: "As7d2c" }), hasCode("data_unavailable"));
+  assert.ok(underreported.calls.some(call => call.sql.includes("SUM(length(CAST(body AS BLOB)))")), "stored part byte counts are checked without selecting bodies");
+  assert.ok(!underreported.calls.some(call => call.sql.includes("FROM preflop_dataset_parts") && call.sql.includes("SELECT part, body")));
+});
+
+test("in-flight policy evaluation is capped before the first D1 read and the slot is released", async () => {
+  let announceFirstRead;
+  const firstRead = new Promise(resolve => { announceFirstRead = resolve; });
+  let releaseRead;
+  const blockedRead = new Promise(resolve => { releaseRead = resolve; });
+  let blocked = false;
+  const fixture = makeFixture({ beforeQuery: async () => {
+    if (!blocked) { blocked = true; announceFirstRead(); await blockedRead; }
+  } });
+  const first = evaluatePublishedPostflopPolicy(fixture.db, { spotId, flop: "As7d2c" });
+  await firstRead;
+  const callsBeforeRejected = fixture.calls.length;
+  await assert.rejects(evaluatePublishedPostflopPolicy(fixture.db, { spotId, flop: "KsJh3d" }), hasCode("data_unavailable"));
+  assert.equal(fixture.calls.length, callsBeforeRejected, "busy request performs no D1 reads");
+  releaseRead();
+  assert.equal((await first).node, "btn_first");
+  assert.equal((await evaluatePublishedPostflopPolicy(fixture.db, { spotId, flop: "KsJh3d" })).node, "btn_first");
 });
 
 test("a published action path marks base-supported zero-reach classes as unreachable", async () => {
@@ -185,6 +248,9 @@ test("invalid, missing, ended, and unreachable policy contexts fail closed", asy
   const fixture = makeFixture();
   await assert.rejects(evaluatePublishedPostflopPolicy(fixture.db, { spotId: "not_published", flop: "As7d2c" }), hasCode("not_found"));
   await assert.rejects(evaluatePublishedPostflopPolicy(fixture.db, { spotId, flop: "AsAs2h" }), hasCode("invalid_argument"));
+  const invalidBoard = makeFixture();
+  await assert.rejects(evaluatePublishedPostflopPolicy(invalidBoard.db, { spotId, flop: "AsAs2h" }), hasCode("invalid_argument"));
+  assert.equal(invalidBoard.calls.length, 0, "invalid board input is rejected before reading published data");
   await assert.rejects(evaluatePublishedPostflopPolicy(fixture.db, { spotId, flop: "As7d2c", history: ["all_in"] }), hasCode("invalid_argument"));
   await assert.rejects(evaluatePublishedPostflopPolicy(fixture.db, { spotId, flop: "As7d2c", history: Array(21).fill("check") }), hasCode("invalid_argument"));
   await assert.rejects(evaluatePublishedPostflopPolicy(fixture.db, { spotId, flop: "As7d2c", history: ["bet33", "fold"] }), hasCode("not_found"));

@@ -32,5 +32,6 @@ export function projectPolicyRows(rows: EvaluatedFlopNode["rows"]): {
   hand: string; preflopSupport: boolean; nodeReachable: boolean; comboCount: number;
   frequencies: Record<string, number>; tierWeights: Record<string, number>; reachWeight: number;
 }[];
+export function withRankTableCacheLimit<T>(limit: number, operation: () => T): T;
 export const DEFENCE_VERSION: number;
 export const EVALUATOR_VERSION: number;

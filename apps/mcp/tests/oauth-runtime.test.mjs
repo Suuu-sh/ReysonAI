@@ -4,6 +4,8 @@ import { build } from 'esbuild';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { readFile, mkdir } from 'node:fs/promises';
 import { createHash, randomBytes } from 'node:crypto';
+import { loadInputs } from '../../frontend/scripts/postflop-ai/inputs.mjs';
+import { loadCandidate } from '../../frontend/scripts/postflop-ai/generate.mjs';
 const origin='https://api.example.invalid';
 const range='reysonai:ranges:read', history='reysonai:history:read';
 const app='https://app.example.invalid';
@@ -22,6 +24,28 @@ async function consentCallback(response,denied=false){
 }
 const bindings={MCP_ENABLED:'true',MCP_ACCESS_MODE:'authenticated_free',MCP_ORIGIN:origin,MCP_ALLOWED_ORIGINS:app,AUTH_ENABLED:'true',AUTH_APP_URL:app};
 
+async function seedPublishedPolicyFixture(db){
+ const migration=async path=>db.exec((await readFile(path,'utf8')).replace(/^--.*$/mg,'').split('\n').filter(Boolean).join(' '));
+ await migration('../backend/migrations/0001_postflop.sql');
+ await migration('../backend/migrations/0003_preflop.sql');
+ const inputs=loadInputs('BTN_open_BB_call'),candidate=loadCandidate(inputs),spot=inputs.spot;
+ const releaseIndex={[spot.id]:{flop:candidate.metadata.policy_hash,later:null}};
+ await db.prepare('INSERT INTO dataset_versions(name,content_hash,published_at,detail_json) VALUES (?,?,?,?)')
+  .bind('postflop',digest(JSON.stringify(releaseIndex)),'2026-10-09T00:00:00.000Z',JSON.stringify({spots:releaseIndex})).run();
+ await db.prepare('INSERT INTO postflop_spots(spot_id,slug,kind,tree,ip,oop,pot_bb,stack_bb,spot_json) VALUES (?,?,?,?,?,?,?,?,?)')
+  .bind(spot.id,spot.slug,spot.kind,spot.tree,spot.ip,spot.oop,spot.potBb,spot.stackBb,JSON.stringify(spot)).run();
+ await db.prepare('INSERT INTO postflop_policies(spot_id,stage,policy_hash,metadata_json,policy_json) VALUES (?,?,?,?,?)')
+  .bind(spot.id,'flop',candidate.metadata.policy_hash,JSON.stringify(candidate.metadata),JSON.stringify(candidate)).run();
+ for(const name of ['opening-ranges','preflop-ranges']){
+  const body=await readFile(`../frontend/src/estimated/${name}.json`,'utf8');
+  const chunks=[];
+  for(let offset=0;offset<body.length;){let end=Math.min(offset+28_000,body.length);if(end<body.length&&/[\uD800-\uDBFF]/.test(body[end-1]))end--;chunks.push(body.slice(offset,end));offset=end;}
+  await db.prepare('INSERT INTO preflop_datasets(name,content_hash,bytes,parts) VALUES (?,?,?,?)')
+   .bind(name,digest(body),Buffer.byteLength(body),chunks.length).run();
+  for(let part=0;part<chunks.length;part++)await db.prepare('INSERT INTO preflop_dataset_parts(name,part,body) VALUES (?,?,?)').bind(name,part,chunks[part]).run();
+ }
+}
+
 // Real pinned OAuth provider + MCP SDK in workerd. Only D1/KV/user sessions/clients are local fixtures.
 test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolation and revocation', async t=>{
  await mkdir('.local/tests',{recursive:true});
@@ -31,6 +55,7 @@ test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolat
  const db=await mf.getD1Database('DB');
  await db.exec((await readFile('../backend/migrations/0007_accounts.sql','utf8')).replace(/^--.*$/mg,'').split('\n').filter(Boolean).join(' '));
  await db.exec((await readFile('migrations/0001_mcp_revocations.sql','utf8')).replace(/^--.*$/mg,'').split('\n').filter(Boolean).join(' '));
+ await seedPublishedPolicyFixture(db);
  for(const user of ['alice','bob']){
   await db.prepare('INSERT INTO account_users(id,google_sub,email,created_at) VALUES (?,?,?,?)').bind(user,user,`${user}@example.invalid`,1).run();
   await db.prepare('INSERT INTO account_sessions(token_hash,user_id,expires_at) VALUES (?,?,?)').bind(digest(sessions[user]),user,Math.floor(Date.now()/1000)+3600).run();
@@ -104,9 +129,23 @@ test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolat
   const ranged=await connect({scopes:range});assert.ok(ranged.tokens.refresh_token);const list=await readRpc(await rpc(ranged.tokens.access_token,'tools/list'));assert.ok(!list.result.tools.some(tool=>tool.name==='get_my_learning_history'));
   assert.equal(ranged.tokens.scope,`${range} offline_access`);
   const denied=await readRpc(await rpc(ranged.tokens.access_token,'tools/call',{name:'get_my_learning_history',arguments:{}}));assert.ok(denied.error||denied.result?.isError);
-  for(const name of ['list_postflop_coverage','get_saved_postflop_range','evaluate_postflop_policy']){
+  for(const name of ['list_postflop_coverage','get_saved_postflop_range']){
    const result=await readRpc(await rpc(ranged.tokens.access_token,'tools/call',{name,arguments:{spotId:'BTN_open_BB_call',flop:'Kc7d2h'}}));
    assert.doesNotMatch(JSON.stringify(result),/Access denied/,name);
+  }
+  for(const item of [
+   {flop:'As7d2c',history:[],node:'btn_first'},
+   {flop:'As7d2c',history:['bet33'],node:'bb_vs_33'},
+   {flop:'As7d2c',history:['bet33','raise','raise','raise'],node:'btn_vs_raise3'},
+   {flop:'KsJh3d',history:[],node:'btn_first'},
+  ]){
+   const response=await rpc(ranged.tokens.access_token,'tools/call',{name:'evaluate_postflop_policy',arguments:{spotId:'BTN_open_BB_call',flop:item.flop,history:item.history}});
+   assert.equal(response.status,200,await response.clone().text());
+   const result=await readRpc(response);assert.ok(!result.result?.isError,JSON.stringify(result));
+   const payload=JSON.parse(result.result.content[0].text);
+   assert.equal(payload.lookupMode,'published_flop_policy_evaluation');assert.equal(payload.node,item.node);
+   assert.equal(payload.handClassCount,169);assert.equal(payload.frequencyBasis,'preflop_range_weighted_projection');
+   assert.equal(payload.source.policy.contentHash.length,64);assert.equal(payload.source.inputDatasets['opening-ranges'].length,64);
   }
   const tokenId=ranged.tokens.access_token.split(':')[1];const tokenKey=(await (await mf.getKVNamespace('OAUTH_KV')).list({prefix:`token:alice:${tokenId}:`})).keys[0].name;
   const kv=await mf.getKVNamespace('OAUTH_KV');const stored=await kv.get(tokenKey);const record=JSON.parse(stored);

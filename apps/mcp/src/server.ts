@@ -3,7 +3,7 @@ import { createMcpHandler } from 'agents/mcp/server';
 import { z } from 'zod';
 import { HISTORY_SCOPE, RANGE_SCOPE, entitlementAdapter, validIdentity, type Identity } from './access.ts';
 import type { McpConfiguration, McpEnv } from './config.ts';
-import { getOwnLearningHistory, getSavedRange, listSavedRangeCoverage, McpDataError } from './data.ts';
+import { getOwnLearningHistory, getSavedRange, listSavedRangeCoverage, McpDataError, MAX_POSTFLOP_SOURCE_BYTES } from './data.ts';
 import { evaluatePublishedPostflopPolicy, getSavedPostflopRange, listPostflopCoverage } from './postflop-data.ts';
 import { grantRevoked } from './revocation.ts';
 import { accountExists } from './session.ts';
@@ -48,7 +48,7 @@ export function createServer(env: McpEnv, config: McpConfiguration, identity: Id
   }, args => run(RANGE_SCOPE, () => getSavedPostflopRange(env.DB, args)));
   server.registerTool('evaluate_postflop_policy', {
     title: 'Evaluate one published postflop policy node',
-    description: 'Read one published head-up flop policy node for a published spot, three-card flop, and legal action history. Use list_postflop_coverage for IDs and availability. Returns at most 169 hand classes and exact release, policy, and input dataset hashes. Frequencies are the Web-compatible preflop-range-weighted projection, not path-conditioned frequencies; preflopSupport means combos remain in the input range, while nodeReachable means the saved action path has positive reach. Rows with nodeReachable=false are not reached-node recommendations. The response includes evaluator and defense versions. Uses the deterministic saved AI estimate; get_saved_postflop_range still reads only exact saved bases. Missing/unreachable paths, unsupported families, and incomplete policies have no substitute. Educational estimates only: no solver/GTO, live-game help, policy generation, new strategy, all-board generation, or turn/river range.',
+    description: `Read one published head-up flop policy node for a published spot, three-card flop, and legal action history. Use list_postflop_coverage for IDs and availability. Returns at most 169 hand classes and exact release, policy, and input dataset hashes. Frequencies are the Web-compatible preflop-range-weighted projection, not path-conditioned frequencies; preflopSupport means combos remain in the input range, while nodeReachable means the saved action path has positive reach. Rows with nodeReachable=false are not reached-node recommendations. The response includes evaluator and defense versions. Combined source input is limited to ${MAX_POSTFLOP_SOURCE_BYTES} bytes, with one active evaluation per worker isolate; over-budget or busy calls return data_unavailable. Uses the deterministic saved AI estimate; get_saved_postflop_range still reads only exact saved bases. Missing/unreachable paths, unsupported families, and incomplete policies have no substitute. Educational estimates only: no solver/GTO, live-game help, policy generation, new strategy, all-board generation, or turn/river range.`,
     inputSchema: z.strictObject({ spotId: z.string().min(1).max(100), flop: z.string().length(6), history: z.array(z.string().max(10)).max(20).optional() }), annotations,
   }, args => run(RANGE_SCOPE, () => evaluatePublishedPostflopPolicy(env.DB, args)));
   if (identity.scopes.includes(HISTORY_SCOPE)) server.registerTool('get_my_learning_history', {
