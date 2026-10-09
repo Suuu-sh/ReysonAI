@@ -458,15 +458,20 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .opponent-settings-actions > button { min-width: 112px; }
 .postflop-profile-field { min-width: 0; display: grid; gap: 8px; }
 .postflop-profile-label { color: var(--text-muted); font-size: 12px; font-weight: 600; }
-.opponent-profile-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }
-.opponent-profile-option { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-raised); color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: border-color .15s ease, background-color .15s ease; }
-.opponent-profile-option:hover:not(:disabled) { border-color: var(--line-strong); background: var(--surface-hover); }
-.opponent-profile-option[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--surface-raised)); }
-.opponent-profile-check { flex: 0 0 16px; height: 16px; margin-top: 1px; border: 1.5px solid var(--line-strong); border-radius: 50%; transition: border-color .15s ease, box-shadow .15s ease; }
-.opponent-profile-option[aria-pressed="true"] .opponent-profile-check { border-color: var(--accent); box-shadow: inset 0 0 0 3px var(--surface-raised), inset 0 0 0 8px var(--accent); }
-.opponent-profile-text { display: grid; gap: 2px; min-width: 0; }
-.opponent-profile-text strong { font-size: 13px; font-weight: 700; }
-.opponent-profile-text small { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: var(--text-muted); font-size: 11px; line-height: 1.45; }
+.opponent-style-map { position: relative; aspect-ratio: 1.6; min-height: 220px; overflow: hidden; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface-raised); }
+.opponent-style-map::before, .opponent-style-map::after { content: ""; position: absolute; background: var(--line-strong); pointer-events: none; }
+.opponent-style-map::before { top: 0; bottom: 0; left: 50%; width: 1px; }
+.opponent-style-map::after { left: 0; right: 0; top: 50%; height: 1px; }
+.style-map-axis { position: absolute; color: var(--text-subtle); font-size: 10px; font-weight: 700; letter-spacing: .04em; pointer-events: none; }
+.style-map-axis.is-top { top: 6px; left: 50%; transform: translateX(-50%); }
+.style-map-axis.is-bottom { bottom: 6px; left: 50%; transform: translateX(-50%); }
+.style-map-axis.is-left { top: 50%; left: 8px; transform: translateY(-50%); }
+.style-map-axis.is-right { top: 50%; right: 8px; transform: translateY(-50%); }
+.style-map-point { position: absolute; z-index: 1; display: grid; justify-items: center; gap: 2px; min-width: 44px; min-height: 44px; padding: 4px 6px; border: 1px solid transparent; border-radius: 10px; background: transparent; color: var(--text-subtle); font: inherit; font-size: 10px; font-weight: 700; white-space: nowrap; cursor: pointer; transform: translate(-50%, -50%); transition: border-color .15s ease, color .15s ease, background-color .15s ease; }
+.style-map-point:hover:not(:disabled) { color: var(--text); background: color-mix(in srgb, var(--style) 8%, transparent); }
+.style-map-point[aria-pressed="true"] { z-index: 2; border-color: color-mix(in srgb, var(--style) 70%, transparent); background: color-mix(in srgb, var(--style) 16%, var(--surface)); color: var(--style); }
+.postflop-profile-description { margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.55; }
+.postflop-profile-description strong { margin-right: 6px; color: var(--text); }
 .opponent-seat-options { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .opponent-seat-option { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 52px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-raised); color: var(--text); font: inherit; cursor: pointer; transition: border-color .15s ease, background-color .15s ease; }
 .opponent-seat-option:hover:not(:disabled) { border-color: var(--line-strong); }
