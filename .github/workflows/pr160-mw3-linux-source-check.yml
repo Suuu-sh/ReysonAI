@@ -1,0 +1,65 @@
+name: PR160 Linux MW3 source check (review/CI only)
+
+# Review/CI diagnostic only. A pass is not a receipt, release approval, or gate change.
+# Only PR160 runs it. The PR-controlled harness gets contents:read, no secrets,
+# no persisted checkout credentials, and no user-authored values as shell code.
+on:
+  pull_request:
+    branches: [development]
+    paths:
+      - '.github/workflows/pr160-mw3-linux-source-check.yml'
+      - 'tools/pr160-linux-mw3-check.mjs'
+      - 'tools/pr160-linux-reproduce.sh'
+
+permissions:
+  contents: read
+
+jobs:
+  linux-source-diagnostic:
+    if: github.event.pull_request.number == 160
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      NODE_OPTIONS: --max-old-space-size=2048
+    steps:
+      - name: Check out proposed test harness
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6, same pin as repository
+        with:
+          repository: Suuu-sh/ReysonAI
+          ref: ${{ github.sha }}
+          path: harness
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Check out exact PR160 v3 source and LFS archives
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: Suuu-sh/ReysonAI
+          ref: 339b97a3f2fc4740fb621d098e74ee4f458957c7
+          path: reviewed-source
+          fetch-depth: 1
+          persist-credentials: false
+          lfs: true
+
+      - name: Set up pinned Linux Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6, same pin as repository
+        with:
+          node-version: '22.20.0'
+
+      - name: Run strict diagnostic without changing gates or archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/pr160-mw3-linux"
+          bash "$GITHUB_WORKSPACE/harness/tools/pr160-linux-reproduce.sh" \
+            "$GITHUB_WORKSPACE/reviewed-source" "$RUNNER_TEMP/pr160-mw3-linux" \
+            2>&1 | tee "$RUNNER_TEMP/pr160-mw3-linux/run.log"
+
+      - name: Retain diagnostics even when comparison fails
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4, same pin as repository
+        with:
+          name: pr160-linux-diagnostic-339b97a-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pr160-mw3-linux/
+          if-no-files-found: warn
+          retention-days: 14
