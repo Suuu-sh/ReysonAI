@@ -1049,7 +1049,11 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
       {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
       {flopActive && flopDialogOpen && <FlopCardDialog cards={flopCards} profile={opponentProfile} seat={flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? undefined : effectiveOpponentSeat}
         positions={{ ip: flopContext!.ip ?? null, oop: flopContext!.oop ?? null }} onClose={() => setFlopDialogOpen(false)}
-        onApply={(cards, seat, profile) => { if (profile) setOpponentProfile(profile); const seatChanged = !!seat && seat !== effectiveOpponentSeat; if (seatChanged) setOpponentSeat(seat); if (seatChanged || cards.join("") !== flopCards.join("")) { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); } setFlopDialogOpen(false); }} />}
+        onApply={(cards, seat, profile) => {
+          // Opponent assumptions change every later policy, so any change restarts from the flop decision.
+          const profileChanged = !!profile && profile !== opponentProfile; if (profileChanged) setOpponentProfile(profile);
+          const seatChanged = !!seat && seat !== effectiveOpponentSeat; if (seatChanged) setOpponentSeat(seat);
+          if (profileChanged || seatChanged || cards.join("") !== flopCards.join("")) { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); } setFlopDialogOpen(false); }} />}
       {flopActive && streetCardDialog && <StreetCardDialog street={streetCardDialog}
         currentCard={streetCardDialog === "turn" ? turnCard : riverCard}
         usedCards={[...flopCards, ...(streetCardDialog === "river" ? [turnCard] : [])].filter(Boolean)}
