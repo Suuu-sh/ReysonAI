@@ -16,7 +16,7 @@ function field(html,name){const escaped=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&
 async function consentCallback(response,denied=false){
  assert.equal(response.status,200);assert.equal(response.headers.get('location'),null);
  const body=await response.text();const label=denied?'Return to the app':'Continue to the app';
- const match=body.match(new RegExp(`<a href="([^"]+)" rel="noreferrer">${label}</a>`));
+ const match=body.match(new RegExp(`<a class="completion-link" href="([^"]+)" rel="noreferrer">${label}</a>`));
  assert.ok(match,'consent completion link missing');
  return new URL(match[1].replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(+n)));
 }
@@ -63,6 +63,8 @@ test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolat
   assert.equal((await requestAuth({user:null})).res.status,401);
   for(const changes of [{redirect_uri:'https://attacker.example/callback'},{resource:'https://attacker.example/mcp'},{code_challenge_method:'plain'},{code_challenge:''},{scope:'admin'}])assert.equal((await requestAuth({changes})).res.status,400);
   const a=await requestAuth();assert.ok(!a.page.includes('<script>'));assert.match(a.page,/Fixture &#60;script&#62;/);assert.match(a.page,/client\.example/);
+  assert.match(a.page,/class="consent-flow" aria-labelledby="consent-title"/);assert.match(a.page,/class="client-details"/);assert.match(a.page,/class="permissions"/);
+  assert.match(a.page,/name="decision" value="approve">Allow access/);assert.match(a.page,/name="decision" value="deny">Deny/);
   assert.match(a.page,/Access tokens expire after five minutes/);assert.match(a.page,/value="offline_access" checked/);assert.equal(field(a.page,'requested'),undefined);
   const badOrigin=await call('/oauth/mcp/authorize',{method:'POST',headers:{origin:'https://evil.test','content-type':'application/x-www-form-urlencoded',cookie:a.browserCookie},body:a.form});assert.equal(badOrigin.status,403);
   const switched=await approve({...a,browserCookie:a.browserCookie.replace(sessions.alice,sessions.bob)});assert.equal(switched.status,403);

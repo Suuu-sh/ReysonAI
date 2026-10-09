@@ -21,6 +21,19 @@ test('ordinary HTML and JSON error responses retain no-referrer', () => {
   })).headers.get('referrer-policy'), 'no-referrer');
 });
 
+test('account pages include responsive, keyboard-visible styling without external assets', async () => {
+  const response = privateResponse(html('<p>Sign in</p>'));
+  const body = await response.text();
+
+  assert.match(body, /<html lang="en">/);
+  assert.match(body, /name="viewport" content="width=device-width, initial-scale=1"/);
+  assert.match(body, /<style>[\s\S]*@media\(max-width:520px\)/);
+  assert.match(body, /a:focus-visible,button:focus-visible,input:focus-visible/);
+  assert.match(body, /prefers-reduced-motion:reduce/);
+  assert.doesNotMatch(body, /<(?:script|link|img|iframe|source)\b|@import|url\s*\(/i);
+  assert.equal(response.headers.get('content-security-policy'), SECURITY_HEADERS['content-security-policy']);
+});
+
 test('approved consent completion uses the supplied callback as an escaped ordinary link', async () => {
   const providerHeaders = new Headers();
   providerHeaders.append('set-cookie', 'fixture-consent=; Max-Age=0; Path=/; Secure; HttpOnly; SameSite=Lax');
@@ -35,7 +48,8 @@ test('approved consent completion uses the supplied callback as an escaped ordin
   assert.equal(response.headers.get('content-security-policy'), SECURITY_HEADERS['content-security-policy']);
   assert.equal(response.headers.get('x-frame-options'), SECURITY_HEADERS['x-frame-options']);
   assert.equal(response.headers.getSetCookie().length, 1);
-  assert.match(body, /href="https:\/\/client\.example\/callback\?step=approved&#38;source=fixture" rel="noreferrer">Continue to the app/);
+  assert.match(body, /class="completion-link" href="https:\/\/client\.example\/callback\?step=approved&#38;source=fixture" rel="noreferrer">Continue to the app/);
+  assert.match(body, /class="completion completion-approved"/);
   assert.doesNotMatch(body, /<(?:form|script|iframe|img|source|link)\b|\bsrc=/i);
   assert.doesNotMatch(body, /<meta\b[^>]*http-equiv\s*=\s*["']?refresh/i);
 });
@@ -52,7 +66,8 @@ test('declined consent completion uses only the provider Location and retains it
   assert.equal(response.headers.getSetCookie().length, 1);
   assert.match(body, /Connection declined/);
   assert.match(body, /No access was granted/);
-  assert.match(body, /href="https:\/\/client\.example\/callback\?error=access_denied&#38;source=fixture" rel="noreferrer">Return to the app/);
+  assert.match(body, /class="completion-link" href="https:\/\/client\.example\/callback\?error=access_denied&#38;source=fixture" rel="noreferrer">Return to the app/);
+  assert.match(body, /class="completion completion-denied"/);
   assert.doesNotMatch(body, /<(?:form|script|iframe|img|source|link)\b|\bsrc=/i);
   assert.doesNotMatch(body, /<meta\b[^>]*http-equiv\s*=\s*["']?refresh/i);
 });

@@ -117,18 +117,22 @@ export async function authorizationPage(request: Request, env: McpEnv, config: M
       await env.OAUTH_KV.put(offerKey, JSON.stringify(offer), { expirationTtl: CONSENT_OFFER_TTL_SECONDS });
       const proof = await sessionProof(session, `consent:${consent.handle}:${JSON.stringify([requestedScopes, offeredScopes])}`);
       const scopes = details.scope.filter(scope => scope !== 'offline_access')
-        .map(scope => `<label><input type="checkbox" name="scope" value="${escapeHtml(scope)}" checked> ${escapeHtml(LABELS[scope] ?? scope)}</label><br>`).join('');
+        .map(scope => `<label class="permission"><input type="checkbox" name="scope" value="${escapeHtml(scope)}" checked><span class="permission-copy"><span>${escapeHtml(LABELS[scope] ?? scope)}</span></span></label>`).join('');
       const offlineChecked = requestedScopes.includes('offline_access') ? ' checked' : '';
       const offlineDescription = requestedScopes.includes('offline_access')
         ? 'The client requested this optional permission.'
         : 'The client did not request this permission; select it only if you want this connection to support refresh.';
-      const offlineScope = `<label><input type="checkbox" name="scope" value="offline_access"${offlineChecked}> ${escapeHtml(LABELS.offline_access)}</label><br><small>${offlineDescription}</small>`;
-      return oauthFormHtml(`<h1>Connect ${escapeHtml(details.clientName)} to ReysonAI?</h1>
-<p>This app will receive permission to act for your signed-in ReysonAI account: ${escapeHtml(session.email)}. Review the client and destination before continuing.</p>
-<p>Client ID: ${escapeHtml(details.clientId)}<br>Access returns to: <strong>${escapeHtml(details.redirectHost)}</strong>.</p>
-${details.redirectIsLoopback ? '<p><strong>This grants access to an app on your computer. Continue only if you just started this connection.</strong></p>' : ''}
-<p>Access tokens expire after five minutes. Optional refresh access lets this client keep the connection until you revoke it or 30 days pass. Login is required; use is currently free, with no payment or subscription.</p>
-<form method="post" action="${AUTHORIZE_PATH}"><input type="hidden" name="handle" value="${escapeHtml(consent.handle)}"><input type="hidden" name="session_proof" value="${proof}">${scopes}${offlineScope}<p><button name="decision" value="approve">Allow access</button> <button name="decision" value="deny">Deny</button></p></form><p><a href="${CONNECTIONS_PATH}">Manage and revoke connections</a></p>`, 200, consent.headers);
+      const offlineScope = `<label class="permission permission-optional"><input type="checkbox" name="scope" value="offline_access"${offlineChecked}><span class="permission-copy"><span>${escapeHtml(LABELS.offline_access)}</span><small>${escapeHtml(offlineDescription)}</small></span></label>`;
+      return oauthFormHtml(`<section class="consent-flow" aria-labelledby="consent-title">
+<p class="eyebrow">Secure connection request</p>
+<h1 id="consent-title">Connect ${escapeHtml(details.clientName)} to ReysonAI?</h1>
+<p class="account-context">Signed in as <strong>${escapeHtml(session.email)}</strong>. Review the app and its requested access before continuing.</p>
+<div class="client-details"><div class="client-detail"><span>Client ID</span><code>${escapeHtml(details.clientId)}</code></div><div class="client-detail"><span>Access returns to</span><strong>${escapeHtml(details.redirectHost)}</strong></div></div>
+${details.redirectIsLoopback ? '<p class="loopback-warning"><strong>This grants access to an app on your computer.</strong> Continue only if you just started this connection.</p>' : ''}
+<p class="security-note"><strong>How access works.</strong> Access tokens expire after five minutes. Optional refresh access lets this client keep the connection until you revoke it or 30 days pass. Login is required; use is currently free, with no payment or subscription.</p>
+<form class="consent-form" method="post" action="${AUTHORIZE_PATH}"><input type="hidden" name="handle" value="${escapeHtml(consent.handle)}"><input type="hidden" name="session_proof" value="${proof}"><fieldset class="permissions"><legend>Permissions</legend><div class="permission-list">${scopes}${offlineScope}</div></fieldset><div class="consent-actions"><button name="decision" value="approve">Allow access</button><button name="decision" value="deny">Deny</button></div></form>
+<p class="manage-link"><a href="${CONNECTIONS_PATH}">Manage or revoke connections</a></p>
+</section>`, 200, consent.headers);
     }
     if (request.method !== 'POST') return errorResponse('method_not_allowed', 405);
     if (request.headers.get('origin') !== config.origin || !/^application\/x-www-form-urlencoded(?:;|$)/i.test(request.headers.get('content-type') ?? '')) return errorResponse('invalid_origin_or_content_type', 403);
