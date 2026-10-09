@@ -1,6 +1,11 @@
 import { accountApiBase } from "./config.ts";
+import { decodeAgentHistory, encodeAgentHistoryForAccount } from "../agent/agent-history-codec.ts";
 // Guest records stay local; account records live in memory and use an HttpOnly cookie.
-export const accountKeys = ["reysonai:profile:v1", "reysonai:appearance:v1", "reysonai:display-mode:v1", "reysonai:locale:v1", "reysonai.trainer.history.v1", "reysonai.trainer.drills.v1", "reysonai.trainer.drafts.v1", "reysonai.trainer.review-sessions.v1"];
+export const AGENT_HANDS_KEY = "reysonai:agent-hands:v1";
+export const LEGACY_AGENT_HANDS_KEY = "evionai:agent-hands:v1";
+// Keep imports inside the Worker endpoint's existing request-body limit.
+const MAX_ACCOUNT_SNAPSHOT_BYTES = 500_000;
+export const accountKeys = ["reysonai:profile:v1", "reysonai:appearance:v1", "reysonai:display-mode:v1", "reysonai:locale:v1", "reysonai.trainer.history.v1", "reysonai.trainer.drills.v1", "reysonai.trainer.drafts.v1", "reysonai.trainer.review-sessions.v1", AGENT_HANDS_KEY];
 export interface AccountUser { id: string; email: string; verified: boolean; name?: string; picture?: string }
 export interface AccountState { user: AccountUser | null; ready: boolean; available: boolean; error: string }
 interface AccountResponses { session: { user: AccountUser | null }; data: { data?: Record<string, unknown>; version: number }; "google/start": { url: string }; logout: { ok?: boolean } }
@@ -23,7 +28,7 @@ export async function accountRequest<P extends keyof AccountResponses>(path: P, 
   const base = accountApiBase((import.meta as ImportMeta & { env?: Parameters<typeof accountApiBase>[0] }).env ?? {});
   const response = await fetch(`${base}/v1/account/${path}`, { credentials: "include", ...(body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }) });
   const result = await response.json();
-  if (!response.ok) throw new Error(response.status === 503 ? "disabled" : response.status === 409 ? "conflict" : response.status === 401 ? "session" : response.status === 403 ? "verification" : "request");
+  if (!response.ok) throw new Error(response.status === 503 ? "disabled" : response.status === 409 ? "conflict" : response.status === 401 ? "session" : response.status === 403 ? "verification" : response.status === 413 ? "payload_too_large" : "request");
   return result;
 }
 // Leaves the app for Google; the callback lands back on the front page.
@@ -80,7 +85,7 @@ export function accountStorage() {
     get length() { return Object.keys(data).length; },
     key: (index: number) => Object.keys(data)[index] ?? null,
     getItem: (key: string): string | null => accountKeys.includes(key) && key in data ? (typeof data[key] === "string" ? data[key] as string : JSON.stringify(data[key])) : null,
-    setItem: (key: string, value: string) => { if (!accountKeys.includes(key) || transitioning) return; try { data[key] = JSON.parse(value); } catch { data[key] = value; } dirty = true; queueSave(); },
+    setItem: (key: string, value: string) => { if (!accountKeys.includes(key) || transitioning) return; try { const parsed = JSON.parse(value); data[key] = key === AGENT_HANDS_KEY ? encodeAgentHistoryForAccount(parsed) : parsed; } catch { data[key] = value; } dirty = true; queueSave(); },
     removeItem: (key: string) => { if (accountKeys.includes(key) && !transitioning) { delete data[key]; dirty = true; queueSave(); } },
   };
 }
@@ -107,9 +112,14 @@ export async function importGuestData(consent = false) {
   if (error) throw new Error(error);
   const imported: Record<string, unknown> = {};
   for (const key of accountKeys) {
-    const value = window.localStorage.getItem(key);
-    if (value !== null) { try { imported[key] = JSON.parse(value); } catch { imported[key] = value; } }
+    const value = window.localStorage.getItem(key) ?? (key === AGENT_HANDS_KEY ? window.localStorage.getItem(LEGACY_AGENT_HANDS_KEY) : null);
+    if (value !== null) {
+      try { const parsed = JSON.parse(value); imported[key] = key === AGENT_HANDS_KEY ? encodeAgentHistoryForAccount(parsed) : parsed; }
+      catch { imported[key] = value; }
+    }
   }
+  const importBody = { data: imported, version, importLocal: true, consent: true };
+  if (new TextEncoder().encode(JSON.stringify(importBody)).byteLength > MAX_ACCOUNT_SNAPSHOT_BYTES) throw new Error("payload_too_large");
   // Explicit replacement, never an ambiguous history merge.
   data = imported; dirty = true;
   await saveAccountData({ importLocal: true, consent: true });
@@ -127,5 +137,7 @@ export async function logoutAccount() {
   } finally { transitioning = false; }
 }
 export function exportAccountData() {
-  return { app: "ReysonAI", exportedAt: new Date().toISOString(), data: JSON.parse(JSON.stringify(data)), rankedAuthoritative: false };
+  const exported = JSON.parse(JSON.stringify(data));
+  if (AGENT_HANDS_KEY in exported) exported[AGENT_HANDS_KEY] = decodeAgentHistory(exported[AGENT_HANDS_KEY]);
+  return { app: "ReysonAI", exportedAt: new Date().toISOString(), data: exported, rankedAuthoritative: false };
 }

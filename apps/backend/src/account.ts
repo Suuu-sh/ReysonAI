@@ -46,7 +46,7 @@ export async function verifyGoogleToken(token:string,clientId:string,nonceHash:s
   return claims;
 }
 export function allowedData(data:unknown):data is Record<string,unknown> {
-  const keys=['reysonai:profile:v1','reysonai:appearance:v1','reysonai:display-mode:v1','reysonai:locale:v1','reysonai.trainer.history.v1','reysonai.trainer.drills.v1','reysonai.trainer.drafts.v1','reysonai.trainer.review-sessions.v1'];
+  const keys=['reysonai:profile:v1','reysonai:appearance:v1','reysonai:display-mode:v1','reysonai:locale:v1','reysonai.trainer.history.v1','reysonai.trainer.drills.v1','reysonai.trainer.drafts.v1','reysonai.trainer.review-sessions.v1','reysonai:agent-hands:v1'];
   return !!data && typeof data==='object' && !Array.isArray(data) && Object.keys(data).every(k=>keys.includes(k));
 }
 export async function routeAccount(request:Request,env:AccountEnv):Promise<Response> {

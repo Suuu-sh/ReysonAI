@@ -16,8 +16,8 @@ test('disabled/origin/method gates and exact credentialed CORS',async()=>{
  const wildcard=await worker.fetch(new Request('https://api.reysonai.com/v1/account/google/start',{method:'OPTIONS',headers:{origin:'https://evil.invalid'}}),{...env,ALLOWED_ORIGIN:'*'});
  assert.equal(wildcard.headers.get('access-control-allow-origin'),null);
 });
-test('snapshot allowlist excludes arbitrary/rank keys and includes review sessions',()=>{
- assert.ok(allowedData({'reysonai.trainer.review-sessions.v1':[],'reysonai:locale:v1':'en'}));
+test('snapshot allowlist includes Agent stats and excludes arbitrary/rank keys',()=>{
+ assert.ok(allowedData({'reysonai.trainer.review-sessions.v1':[],'reysonai:locale:v1':'en','reysonai:agent-hands:v1':[]}));
  for(const data of [null,[],{'reysonai.trainer.rank.v1':{}},{other:1}]) assert.equal(allowedData(data),false);
 });
 test('Google signed identity, PKCE/state replay, owned snapshots and logout',async()=>{

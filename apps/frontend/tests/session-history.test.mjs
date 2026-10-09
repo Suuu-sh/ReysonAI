@@ -13,13 +13,22 @@ const hand={at,tableId:'saved-table',pos:'BTN',returnBb:2,vpip:true,pfr:false,th
 const answer={spotId:'UTG_open',hand:'AA',cards:['As','Ah'],action:'open',result:'best',score:1};
 const practice={at:at-100,answered:1,score:1,durationMs:1000,hands:[answer]};
 const props={drills:[{id:'one',name:'Exact saved drill',sessions:[practice]}],reviews:[{...practice,id:'review-one'}],drafts:{one:{drillName:'Saved draft',reviewOnly:false,savedAt:at+100,elapsedMs:3000,session:{answered:1,score:1,log:[answer]}}},onResume(){}};
-async function harness(run,fetcher=async()=>{throw Error('unexpected network')},extra={},saved=[hand]) {
- const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/learn/sessions'});dom.window.localStorage.setItem('reysonai:agent-hands:v1',JSON.stringify(saved));dom.window.localStorage.setItem('reysonai:locale:v1','en');
+async function harness(run,fetcher=async()=>{throw Error('unexpected network')},extra={},saved=[hand],locale='en') {
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/learn/sessions'});dom.window.localStorage.setItem('reysonai:agent-hands:v1',JSON.stringify(saved));dom.window.localStorage.setItem('reysonai:locale:v1',locale);
  const previous={window:globalThis.window,document:globalThis.document,HTMLElement:globalThis.HTMLElement,fetch:globalThis.fetch};Object.assign(globalThis,{window:dom.window,document:dom.window.document,HTMLElement:dom.window.HTMLElement,fetch:fetcher,IS_REACT_ACT_ENVIRONMENT:true});
  const root=createRoot(dom.window.document.querySelector('#root'));
  const click=async text=>{const b=[...dom.window.document.querySelectorAll('button')].find(b=>b.textContent===text);assert.ok(b,`missing ${text}`);await act(async()=>b.click());};
  try{await act(async()=>root.render(React.createElement(SessionPage,{...props,...extra})));await run({dom,root,click});}finally{await act(async()=>root.unmount());dom.window.close();Object.assign(globalThis,previous);delete globalThis.IS_REACT_ACT_ENVIRONMENT;}
 }
+test('Sessions explains Agent account sync and guest browser storage in every locale',async()=>{
+ const copy={
+  en:/Agent history syncs to your account when signed in; as a guest, it is saved in this browser/,
+  ja:/Agent履歴はログイン中はアカウントに同期され、ゲスト時はこのブラウザに保存されます/,
+  'zh-CN':/登录后，Agent 历史会同步到帐户；访客模式下保存在此浏览器/,
+  es:/El historial de Agent se sincroniza con tu cuenta al iniciar sesión; como invitado, se guarda en este navegador/,
+ };
+ for(const [locale,pattern] of Object.entries(copy)) await harness(({dom})=>assert.match(dom.window.document.querySelector('.sessions-source-note').textContent,pattern),undefined,{},[hand],locale);
+});
 test('legacy Agent summaries remain separate hands, never gain invented sessions/accuracy or rewrite storage',async()=>{
  const records=[hand,{...hand,returnBb:-3},{at:'invalid'}];const before=JSON.stringify(records),rows=sessionHistoryRows([],records,{});assert.equal(rows.length,2);assert.ok(rows.every(row=>!('sessionId' in row.record)&&!('score' in row.record)));assert.equal(JSON.stringify(records),before);
  await harness(async({dom,click})=>{const stored=dom.window.localStorage.getItem('reysonai:agent-hands:v1');await click('Agent matches');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,2);assert.ok([...dom.window.document.querySelectorAll('tbody tr')].every(r=>r.children[5].textContent==='—'));await click('Saved hand · saved-table');assert.match(dom.window.document.body.textContent,/without session IDs, cards or action logs/);await click('Sessions');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,2);assert.equal(dom.window.localStorage.getItem('reysonai:agent-hands:v1'),stored);},undefined,{},records);
