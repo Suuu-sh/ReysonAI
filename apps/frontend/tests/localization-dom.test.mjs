@@ -71,6 +71,26 @@ test("legacy trainer JSX fragments still translate without a kana-based guess", 
   }
 });
 
+test("an unselected cold seat dropdown can choose its saved cold 4bet action", async () => {
+  const container = document.getElementById("root");
+  container.replaceChildren();
+  const root = createRoot(container);
+  useLocale("ja");
+  const choices = [];
+  const blocks = [{ key: "CO", kind: "cold", position: "CO", stack: "92", active: false, chosen: null,
+    options: [{ action: "fold", label: "Fold" }, { action: "call", label: "Call 8" }, { action: "raise", label: "Raise 26" }] }];
+  await act(async () => root.render(createElement(ActionPath, { expanded: true, blocks, onColdAction: value => choices.push(value) })));
+  const trigger = container.querySelector('[aria-label="COのアクションを選択"]');
+  assert.ok(trigger);
+  await click(trigger);
+  const menu = document.body.querySelector('[role="menu"]');
+  assert.ok(menu);
+  await click([...menu.querySelectorAll('[role="menuitem"]')].find(item => item.textContent?.includes("Raise 26")));
+  assert.deepEqual(choices, [{ position: "CO", action: "raise" }]);
+  assert.equal(document.body.querySelector('[role="menu"]'), null);
+  await act(async () => root.unmount());
+});
+
 test("real DOM scans and MutationObserver replays keep localized Chinese and private text intact", async () => {
   const root = document.getElementById("root");
   root.replaceChildren();

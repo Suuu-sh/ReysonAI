@@ -171,6 +171,27 @@ test("the flop CTA stays in the compact End card without driving the action row 
   assert.doesNotMatch(css, /\.action-seat-end[^{}]*\{[^}]*(?:overflow:\s*hidden|max-height:)/);
 });
 
+test("unselected cold seats expose a mobile dropdown without becoming the active actor", () => {
+  const blocks = buildActionBlocks({ rangeType: "three_bet", opener: "UTG", hero: "HJ",
+    spot: { three_bet_size_bb: 8, four_bet_size_bb: 22 } });
+  const coldSeat = blocks.find(block => block.kind === "cold" && block.position === "CO");
+  assert.deepEqual({ active: coldSeat.active, chosen: coldSeat.chosen, options: coldSeat.options.map(option => option.label) },
+    { active: false, chosen: null, options: ["Fold", "Call 8", "Raise 26"] });
+  assert.equal(blocks.find(block => block.active)?.position, "UTG", "the history's current decision stays on UTG");
+  const html = renderToStaticMarkup(createElement(ActionPath, { expanded: true, blocks }));
+  assert.match(html, /action-seat-cold[\s\S]*?<button type="button" class="action-seat-position"[^>]*>CO<\/button>[\s\S]*?class="action-seat-select"[\s\S]*?aria-label="COのアクションを選択"/);
+
+  const unavailable = renderToStaticMarkup(createElement(ActionPath, { expanded: true,
+    blocks: [{ ...coldSeat, options: coldSeat.options.map(option => ({ ...option, disabled: true })) }] }));
+  assert.doesNotMatch(unavailable, /class="action-seat-select"/);
+  const alreadyChosen = renderToStaticMarkup(createElement(ActionPath, { expanded: true,
+    blocks: [{ ...coldSeat, chosen: "raise" }] }));
+  assert.doesNotMatch(alreadyChosen, /class="action-seat-select"/);
+
+  const css = readFileSync(new URL("../src/estimated/ranges.css", import.meta.url), "utf8");
+  assert.match(css, /\.action-seat:not\(\.active\) \.action-seat-options > button:not\(\.chosen\) \{ display: none; \}/);
+});
+
 test("SB can limp and BB can check or iso-raise from the saved limp response", () => {
   const open = buildActionBlocks({ rangeType: "open", opener: "SB", hero: "BB" });
   const sbOpen = open.find(block => block.position === "SB");
