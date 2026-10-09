@@ -207,6 +207,7 @@ INSERT INTO postflop_reasons VALUES ('local-sentinel', 'flop', '{"keep":true}');
 INSERT INTO dataset_versions VALUES ('local-sentinel', 'local-hash', '2000-01-01T00:00:00Z', '{"keep":true}');
 INSERT INTO postflop_reports VALUES ('local-sentinel', '{"keep":true}');
 INSERT INTO postflop_flop_base_br VALUES ('local-sentinel', 'AsKh2d', 0, 1, 'local-hash', X'0001FF');
+INSERT INTO postflop_profile_policies VALUES ('nit', 'local-sentinel', 'ip', 'villain', 'flop', '{"keep":true}', '{"keep":true}', '2000-01-01T00:00:00Z');
 INSERT INTO account_users VALUES ('local-user', 'local-subject', 'local@example.invalid', 0);
 INSERT INTO account_sessions VALUES ('local-session', 'local-user', 1);
 INSERT INTO account_oauth_states VALUES ('local-state', 'local-verifier', 'local-nonce', 1);
