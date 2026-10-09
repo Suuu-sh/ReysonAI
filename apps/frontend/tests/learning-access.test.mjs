@@ -49,7 +49,7 @@ test("save 401 blocks learning and preserves unsaved account records for export"
   globalThis.fetch = async (url, options) => {
     if (url.endsWith("/session")) return Response.json({ user: { id: "real-google", verified: true } });
     if (options?.method === "POST") return Response.json({ error: "unauthorized" }, { status: 401 });
-    return Response.json({ data: {}, version: 0 });
+    return Response.json({ ownerId: "real-google", data: {}, version: 0 });
   };
   try {
     const refresh = session.refreshAccount();
@@ -91,7 +91,7 @@ test("focus session validation preserves dirty records without data reload or le
     paths.push(url);
     if (url.endsWith("/session")) return Response.json({ user: { id: "focus-user", verified: true } });
     if (options?.method === "POST") return Response.json({ version: 1 });
-    return Response.json({ data: {}, version: 0 });
+    return Response.json({ ownerId: "focus-user", data: {}, version: 0 });
   };
   try {
     await session.refreshAccount();
