@@ -118,11 +118,9 @@ test("drift gate rejects mutations to formulas, hand classification, and the MCP
       await writeFile(targetFile, original.replace(mutation.before, mutation.after));
 
       const copiedTest = path.join(fixtureRoot, testPath);
-      const env = { ...process.env };
-      delete env.NODE_TEST_CONTEXT;
       const result = spawnSync(process.execPath, ["--test", copiedTest], {
         cwd: fixtureRoot,
-        env,
+        env: {},
         encoding: "utf8",
         timeout: 10_000,
       });
