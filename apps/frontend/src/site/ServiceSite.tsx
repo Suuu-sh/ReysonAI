@@ -291,10 +291,17 @@ function Header() {
   </header>;
 }
 
+function emphasizeHeadlineReason(title: string): ReactNode {
+  const match = /\breason\b/i.exec(title);
+  if (!match) return title;
+  const start = match.index;
+  return <>{title.slice(0, start)}<span className="site-hero-accent">{match[0]}</span>{title.slice(start + match[0].length)}</>;
+}
+
 function HeroCopy({ children, showEstimate = true }: { children?: ReactNode; showEstimate?: boolean }) {
   const { copy: c, appHref } = useSite();
   return <div className="site-hero-copy">
-    <h1 id="site-hero-title" lang="en"><span className="site-line site-hero-opening"><span>{c.hero.title1}</span></span><span className="site-line"><span className="site-hero-mark">{c.hero.title2}</span></span></h1>
+    <h1 id="site-hero-title" lang="en"><span className="site-line site-hero-opening"><span>{c.hero.title1}</span></span><span className="site-line"><span className="site-hero-mark">{emphasizeHeadlineReason(c.hero.title2)}</span></span></h1>
     <p className="site-hero-lead">{c.hero.lead}</p>
     <div className="site-hero-actions">
       <a className="site-button" href={appHref}>{c.hero.primary}<ArrowRight size={17} weight="bold" aria-hidden="true" /></a>
@@ -706,8 +713,8 @@ const TRAIN_PAGES = 3;
 function TrainingTrack() {
   const { motion } = useSite();
   const ref = useRef<HTMLDivElement>(null);
+  const railRef = useRef<HTMLDivElement>(null);
   const [scrolly, setScrolly] = useState(false);
-  const [shift, setShift] = useState(0);
   useEffect(() => {
     if (!motion) { setScrolly(false); return; }
     const query = window.matchMedia("(min-width: 961px) and (min-height: 600px)");
@@ -718,16 +725,19 @@ function TrainingTrack() {
   }, [motion]);
   useEffect(() => {
     const node = ref.current;
-    if (!scrolly || !node) { setShift(0); return; }
+    const rail = railRef.current;
+    if (!scrolly || !node || !rail) {
+      if (rail) rail.style.transform = "";
+      return;
+    }
     let frame = 0;
     const update = () => {
       frame = 0;
       const rect = node.getBoundingClientRect();
       const span = rect.height - window.innerHeight;
-      if (span <= 0) return;
-      const progress = Math.min(Math.max(-rect.top / span, 0), 1);
-      // Switch whole pages at each third; CSS animates the slide so it never rests halfway.
-      setShift(Math.min(TRAIN_PAGES - 1, Math.floor(progress * TRAIN_PAGES)));
+      const progress = span > 0 ? Math.min(Math.max(-rect.top / span, 0), 1) : 0;
+      // The rail is three viewports wide, so its full scroll range is two thirds of its width.
+      rail.style.transform = `translate3d(${-progress * (TRAIN_PAGES - 1) * 100 / TRAIN_PAGES}%, 0, 0)`;
     };
     const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
     update();
@@ -742,7 +752,7 @@ function TrainingTrack() {
   // Anchor the scroll track, not its sticky child: #drill must rewind the slide to Training.
   return <div className={`site-train${scrolly ? " is-scrolly" : ""}`} id="drill" ref={ref}>
     <div className="site-train-stage">
-      <div className="site-train-rail" style={scrolly ? { transform: `translateX(${-shift * 100 / TRAIN_PAGES}%)` } : undefined}><Drill /><Ranked /><AgentFeature /></div>
+      <div className="site-train-rail" ref={railRef}><Drill /><Ranked /><AgentFeature /></div>
     </div>
   </div>;
 }
@@ -837,14 +847,6 @@ function Analysis() {
           <div><span>{c.analysis.style}</span><strong>{c.analysis.styleValue}</strong><small>{c.analysis.map}</small></div>
         </div>
         <div className="site-dash-body">
-          <div className="site-dash-map">
-            <span>{c.analysis.map}</span>
-            <div className="site-style-map">
-              {c.analysis.quadrants.map(name => <b key={name}>{name}</b>)}
-              <i className="site-style-marker" />
-            </div>
-            <div className="site-style-axis"><small>← {c.analysis.tight}</small><small>{c.analysis.loose} →</small></div>
-          </div>
           <div className="site-dash-tend">
             <span>{c.analysis.tendencies}</span>
             {c.analysis.actions.map((action, index) => {

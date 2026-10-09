@@ -177,6 +177,17 @@ test("phones hide only the illustrative analysis dashboard, retaining explanator
   assert.match(analysis, /site-mock site-dash/);
 });
 
+test("analysis sample omits the play-style map and keeps the tendency summary", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const analysis = source.slice(source.indexOf("function Analysis()"), source.indexOf("function Compare()"));
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.doesNotMatch(analysis, /site-dash-map|site-style-map|site-style-marker/);
+  assert.match(analysis, /className="site-dash-tend"/);
+  assert.match(analysis, /c\.analysis\.tendencies/);
+  assert.match(css, /\.site-dash-body \{ display: grid; grid-template-columns: minmax\(0, 1fr\);/);
+  assert.doesNotMatch(css, /site-dash-map|site-style-map|site-style-marker/);
+});
+
 test("ranked preview mirrors human hand metrics, not legacy quiz scoring", () => {
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
   const ranked = source.slice(source.indexOf("function Ranked()"), source.indexOf("function AgentFeature()"));
@@ -382,6 +393,19 @@ test("pinned training slides stay visible and the hero matrix remains square", (
   assert.doesNotMatch(css, /site-tour-progress|@keyframes site-tour/);
 });
 
+test("pinned training rail follows native scroll continuously without easing between pages", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const railRule = css.match(/\.site-train\.is-scrolly \.site-train-rail\s*\{([^}]*)\}/)?.[1] ?? "";
+  assert.match(source, /const progress = span > 0 \? Math\.min\(Math\.max\(-rect\.top \/ span, 0\), 1\) : 0;/);
+  assert.match(source, /rail\.style\.transform = `translate3d\(\$\{-progress \* \(TRAIN_PAGES - 1\) \* 100 \/ TRAIN_PAGES\}%, 0, 0\)`;/);
+  assert.doesNotMatch(source, /Math\.floor\(progress \* TRAIN_PAGES\)/);
+  assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 600px\)"\)/);
+  assert.match(source, /if \(!motion\) \{ setScrolly\(false\); return; \}/);
+  assert.match(railRule, /display: flex; width: 300%; height: 100%;/);
+  assert.doesNotMatch(railRule, /transition:/);
+});
+
 test("the hero range fills its column without a separate action legend", () => {
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
   assert.match(css, /\.site-hero\s*\{ padding: 0; \}/);
@@ -497,7 +521,8 @@ for (const locale of ["en", "ja"]) {
     assert.ok(heading);
     assert.match(heading, /id="site-hero-title"/);
     assert.match(heading, /lang="en"/);
-    for (const title of ["Don't just play.", "Understand the reason."]) assert.ok(heading.includes(escapeText(title)));
+    const headingText = heading.replace(/<[^>]+>/g, "");
+    for (const title of ["Don't just play.", "Understand the reason."]) assert.ok(headingText.includes(escapeText(title)));
     assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
     const main = html.indexOf('class="site-wrap site-hero-main"');
     const range = html.indexOf('class="site-hero-range"');
