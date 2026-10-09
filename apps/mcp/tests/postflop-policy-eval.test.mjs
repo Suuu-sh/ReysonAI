@@ -3,6 +3,7 @@ import test from "node:test";
 import { createHash } from "node:crypto";
 import { loadInputs } from "../../frontend/scripts/postflop-ai/inputs.mjs";
 import { loadCandidate } from "../../frontend/scripts/postflop-ai/generate.mjs";
+import { buildSql as buildPostflopPublicationSql } from "../../frontend/scripts/postflop-ai/publish-d1.mjs";
 import { canonicalFlop } from "../../frontend/scripts/postflop-ai/flop-isomorphism.ts";
 import { computeBoard } from "../../frontend/src/estimated/postflop-compute.ts";
 import { flopRunouts, rankTable, rankTableCacheState } from "../src/postflop-defence.mts";
@@ -34,11 +35,11 @@ const projectRows = rows => rows.map(row => ({ hand: row.hand, preflopSupport: r
 
 function makeFixture({ candidate = publishedCandidate, missingSource = null, corruptSourceHash = false,
   spotData = inputs.spot, fixtureSpotId = spotId, sourceFiles: fixtureSources = sourceFiles,
-  sourceByteOverrides = {}, sourcePaddingChars = {}, beforeQuery = null } = {}) {
+  sourceByteOverrides = {}, sourcePaddingChars = {}, beforeQuery = null, postflopRelease = null, extraPublishedSpots = [] } = {}) {
   const releaseIndex = { [fixtureSpotId]: { flop: candidate.metadata.policy_hash, later: null } };
   const release = { name: "postflop", content_hash: digest(JSON.stringify(releaseIndex)), published_at: timestamp,
     detail_json: JSON.stringify({ spots: releaseIndex }) };
-  const versions = [release];
+  const versions = [postflopRelease ?? release];
   const spots = [{ spot_id: fixtureSpotId, slug: spotData.slug, kind: spotData.kind, tree: spotData.tree,
     ip: spotData.ip, oop: spotData.oop, pot_bb: spotData.potBb, stack_bb: spotData.stackBb,
     spot_json: JSON.stringify(spotData) }];
@@ -46,6 +47,14 @@ function makeFixture({ candidate = publishedCandidate, missingSource = null, cor
     metadata_json: JSON.stringify(candidate.metadata), policy_json: JSON.stringify(candidate.policy ? candidate : { ...candidate, policy: publishedCandidate.policy }) }];
   // `candidate` is an artifact envelope; retain its exact policy object in the serialized D1 row.
   policyRows[0].policy_json = JSON.stringify(candidate);
+  for (const extra of extraPublishedSpots) {
+    const extraSpot = extra.inputs.spot, extraCandidate = extra.candidate;
+    spots.push({ spot_id: extraSpot.id, slug: extraSpot.slug, kind: extraSpot.kind, tree: extraSpot.tree,
+      ip: extraSpot.ip, oop: extraSpot.oop, pot_bb: extraSpot.potBb, stack_bb: extraSpot.stackBb,
+      spot_json: JSON.stringify(extraSpot) });
+    policyRows.push({ spot_id: extraSpot.id, stage: "flop", policy_hash: extraCandidate.metadata.policy_hash,
+      metadata_json: JSON.stringify(extraCandidate.metadata), policy_json: JSON.stringify(extraCandidate) });
+  }
   const datasets = new Map();
   for (const [name, value] of Object.entries(fixtureSources)) {
     if (name === missingSource) continue;
@@ -91,7 +100,14 @@ function makeFixture({ candidate = publishedCandidate, missingSource = null, cor
       throw new Error(`Unexpected query: ${sql}`);
     } }; } };
   } };
-  return { db, calls };
+  return { db, calls, versions, spots, policyRows };
+}
+
+function versionFromPublisherSql(sql) {
+  const statement = sql.split("\n").find(line => line.startsWith("INSERT INTO dataset_versions "));
+  const match = statement?.match(/VALUES \('postflop', '([0-9a-f]{64})', '([^']+)', '((?:''|[^'])*)'\);/);
+  assert.ok(match, "publisher emits one parseable postflop version row");
+  return { name: "postflop", content_hash: match[1], published_at: match[2], detail_json: match[3].replaceAll("''", "'") };
 }
 
 const hasCode = expected => error => error instanceof McpDataError && error.code === expected;
@@ -104,6 +120,72 @@ test("policy coverage discloses bounded head-up node evaluation separately from 
     requirement: "exact published spot, three-card flop, legal action history, and complete saved policy rules for the path",
   });
   assert.equal(coverage.spots[0].savedFlopCoverage.status, "no_saved_boards");
+});
+
+test("current publisher spot-upsert metadata reads a complete catalog and rejects partial or inconsistent revisions", async () => {
+  const publicationRevision = "local-new-hu-verification";
+  const touchedSpotId = "UTG_open_SB_3bet_call";
+  const touchedInputs = loadInputs(touchedSpotId);
+  const touchedCandidate = loadCandidate(touchedInputs);
+  const extraPublishedSpots = [{ inputs: touchedInputs, candidate: touchedCandidate }];
+  const published = [
+    { spot: inputs.spot, candidate: publishedCandidate, laterCandidate: null, report: {} },
+    { spot: touchedInputs.spot, candidate: touchedCandidate, laterCandidate: null, report: {} },
+  ];
+  const fullRelease = versionFromPublisherSql(buildPostflopPublicationSql(published, timestamp, publicationRevision));
+  const detail = JSON.parse(fullRelease.detail_json);
+  assert.deepEqual(Object.keys(detail).sort(), ["mode", "publication_revision", "touched_spots"]);
+  assert.equal(detail.mode, "spot-upsert");
+  assert.equal(detail.publication_revision, publicationRevision);
+  assert.deepEqual(Object.keys(detail.touched_spots).sort(), [spotId, touchedSpotId].sort());
+  assert.equal(fullRelease.content_hash, digest(JSON.stringify({ publicationRevision, publishedAt: timestamp,
+    hashes: detail.touched_spots })), "content hash uses the current publisher's revision + timestamp + touched hashes formula");
+  assert.notEqual(fullRelease.content_hash, digest(JSON.stringify(detail.touched_spots)),
+    "new-format releases are not mistaken for the legacy hash formula");
+
+  const current = makeFixture({ postflopRelease: fullRelease, extraPublishedSpots });
+  current.policyRows.splice(0, current.policyRows.length, ...current.policyRows.filter(row => row.stage === "flop"));
+  const coverage = await listPostflopCoverage(current.db, { limit: 50 });
+  assert.equal(coverage.total, 2);
+  assert.deepEqual(coverage.spots.map(row => row.id).sort(), [spotId, touchedSpotId].sort());
+  const untouchedSpot = await evaluatePublishedPostflopPolicy(current.db, { spotId, flop: "As7d2c" });
+  assert.equal(untouchedSpot.node, "btn_first", "the complete touched set includes every current catalog row");
+
+  const legacyHashTampered = makeFixture();
+  legacyHashTampered.versions[0].content_hash = "0".repeat(64);
+  await assert.rejects(listPostflopCoverage(legacyHashTampered.db), hasCode("invalid_saved_data"),
+    "the legacy complete-index hash formula remains verified");
+
+  const partialRelease = versionFromPublisherSql(buildPostflopPublicationSql([
+    { spot: touchedInputs.spot, candidate: touchedCandidate, laterCandidate: null, report: {} },
+  ], timestamp, publicationRevision));
+  const partial = makeFixture({ postflopRelease: partialRelease, extraPublishedSpots });
+  partial.policyRows.splice(0, partial.policyRows.length, ...partial.policyRows.filter(row => row.stage === "flop"));
+  await assert.rejects(listPostflopCoverage(partial.db), hasCode("invalid_saved_data"),
+    "spot-upsert deltas are rejected until partial-catalog preservation is explicitly supported");
+  await assert.rejects(evaluatePublishedPostflopPolicy(partial.db, { spotId, flop: "As7d2c" }), hasCode("invalid_saved_data"),
+    "one touched spot cannot bypass the full-catalog guard");
+
+  const tamperedHash = makeFixture({ postflopRelease: { ...fullRelease, content_hash: "0".repeat(64) }, extraPublishedSpots });
+  await assert.rejects(listPostflopCoverage(tamperedHash.db), hasCode("invalid_saved_data"));
+
+  const missingTouchedRow = makeFixture({ postflopRelease: fullRelease });
+  await assert.rejects(listPostflopCoverage(missingTouchedRow.db), hasCode("invalid_saved_data"),
+    "metadata cannot name a touched spot missing from the current D1 tables");
+
+  const extraDetail = JSON.parse(fullRelease.detail_json);
+  extraDetail.touched_spots.unpublished_spot = { flop: "a".repeat(64), later: null };
+  const extraHash = digest(JSON.stringify({ publicationRevision, publishedAt: timestamp, hashes: extraDetail.touched_spots }));
+  const extraMetadata = makeFixture({ postflopRelease: { ...fullRelease, content_hash: extraHash,
+    detail_json: JSON.stringify(extraDetail) }, extraPublishedSpots });
+  await assert.rejects(listPostflopCoverage(extraMetadata.db), hasCode("invalid_saved_data"),
+    "a correctly rehashed but unpublished metadata entry still fails catalog comparison");
+
+  const intermediate = makeFixture({ postflopRelease: fullRelease, extraPublishedSpots });
+  intermediate.policyRows.splice(0, intermediate.policyRows.length, ...intermediate.policyRows.filter(row => row.stage === "flop"));
+  intermediate.policyRows.find(row => row.spot_id === touchedSpotId).policy_hash = "f".repeat(64);
+  await assert.rejects(listPostflopCoverage(intermediate.db), hasCode("invalid_saved_data"),
+    "a publication revision that lands before matching policy rows is rejected");
 });
 
 test("one-node evaluation matches the frontend projection and is deterministic without exposing combos", async () => {

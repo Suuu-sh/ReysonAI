@@ -47,10 +47,12 @@ type PublishedSpot = {
   opener?: string; caller?: string; aggressor?: string; threeBettor?: string;
   history?: { seat: string; action: string; toSizeBb: number | null }[];
 };
+type PolicyHashes = Record<string, { flop: string; later: string | null }>;
+type PostflopPublication = { format: "legacy" | "spot-upsert"; hashes: PolicyHashes };
 type PolicyEntry = { policyHash: string; sourceHash: string; flopPolicyHash: string | null; policy: Value };
 type PublishedCatalog = {
   release: VersionRow | null; baseRelease: VersionRow | null;
-  policyHashes: Record<string, { flop: string; later: string | null }>;
+  policyHashes: PolicyHashes;
   baseCounts: Record<string, number>;
   spots: Map<string, { data: Value; context: PublishedSpot; hashes: { flop: string; later: string | null } }>;
 };
@@ -101,16 +103,74 @@ function versionRow(value: unknown, expected: string): VersionRow {
     || typeof value.detail_json !== "string" || value.detail_json.length > MAX_RELEASE_BYTES) invalid();
   return value as VersionRow;
 }
-function parsePolicyHashes(version: VersionRow): Record<string, { flop: string; later: string | null }> {
-  const detail = parseJson(version.detail_json, MAX_RELEASE_BYTES);
-  if (!object(detail) || !object(detail.spots) || Object.keys(detail.spots).length > MAX_SPOTS) invalid();
-  const entries: Record<string, { flop: string; later: string | null }> = {};
-  for (const [id, value] of Object.entries(detail.spots)) {
-    if (!IDENTIFIER.test(id) || !object(value) || !requiredString(value.flop, 64) || !SHA256.test(value.flop)
-      || value.later !== null && (!requiredString(value.later, 64) || !SHA256.test(value.later))) invalid();
-    entries[id] = { flop: value.flop as string, later: value.later as string | null };
+function parsePolicyHashMap(value: unknown, { allowEmpty = true } = {}): PolicyHashes {
+  if (!object(value) || Object.keys(value).length > MAX_SPOTS || !allowEmpty && Object.keys(value).length === 0) invalid();
+  const entries = Object.create(null) as PolicyHashes;
+  for (const [id, valueEntry] of Object.entries(value)) {
+    if (!IDENTIFIER.test(id) || !object(valueEntry) || Object.keys(valueEntry).length !== 2
+      || !Object.hasOwn(valueEntry, "flop") || !Object.hasOwn(valueEntry, "later")
+      || !requiredString(valueEntry.flop, 64) || !SHA256.test(valueEntry.flop)
+      || valueEntry.later !== null && (!requiredString(valueEntry.later, 64) || !SHA256.test(valueEntry.later))) invalid();
+    entries[id] = { flop: valueEntry.flop as string, later: valueEntry.later as string | null };
   }
   return entries;
+}
+
+async function parsePostflopPublication(version: VersionRow): Promise<PostflopPublication> {
+  const detail = parseJson(version.detail_json, MAX_RELEASE_BYTES);
+  if (!object(detail)) invalid();
+  if (detail.mode === "spot-upsert") {
+    const keys = Object.keys(detail).sort();
+    if (keys.length !== 3 || keys[0] !== "mode" || keys[1] !== "publication_revision" || keys[2] !== "touched_spots"
+      || !requiredString(detail.publication_revision, 128)) invalid();
+    const hashes = parsePolicyHashMap(detail.touched_spots, { allowEmpty: false });
+    // publish-d1.mjs binds a metadata revision to the timestamp and the spot hashes
+    // changed by that SQL batch. This reader accepts the new format only when that
+    // touched set is the complete current catalog; partial-upsert catalogs stay closed.
+    const expectedHash = await digestText(JSON.stringify({ publicationRevision: detail.publication_revision,
+      publishedAt: version.published_at, hashes }));
+    if (expectedHash !== version.content_hash) invalid();
+    return { format: "spot-upsert", hashes };
+  }
+  const keys = Object.keys(detail);
+  if (keys.length !== 1 || keys[0] !== "spots") invalid();
+  const hashes = parsePolicyHashMap(detail.spots);
+  if (await digestText(JSON.stringify(hashes)) !== version.content_hash) invalid();
+  return { format: "legacy", hashes };
+}
+
+function samePolicyHashes(left: PolicyHashes, right: PolicyHashes): boolean {
+  const leftIds = Object.keys(left), rightIds = Object.keys(right);
+  return leftIds.length === rightIds.length && leftIds.every(id => Object.hasOwn(right, id)
+    && left[id].flop === right[id].flop && left[id].later === right[id].later);
+}
+
+function policyHashesFromRows(spotIds: Iterable<string>, rows: PolicyRow[]): PolicyHashes {
+  const ids = new Set(spotIds);
+  const policyRowsBySpot = new Map<string, Map<string, string>>();
+  for (const row of rows) {
+    if (!object(row) || !IDENTIFIER.test(row.spot_id) || !ids.has(row.spot_id)
+      || !["flop", "later"].includes(row.stage) || !requiredString(row.policy_hash, 64) || !SHA256.test(row.policy_hash)) invalid();
+    const stages = policyRowsBySpot.get(row.spot_id) ?? new Map<string, string>();
+    if (stages.has(row.stage)) invalid();
+    stages.set(row.stage, row.policy_hash);
+    policyRowsBySpot.set(row.spot_id, stages);
+  }
+  const hashes = Object.create(null) as PolicyHashes;
+  for (const id of ids) {
+    const stages = policyRowsBySpot.get(id);
+    if (!stages || !stages.has("flop")) invalid();
+    hashes[id] = { flop: stages.get("flop")!, later: stages.get("later") ?? null };
+  }
+  if (policyRowsBySpot.size !== ids.size) invalid();
+  return hashes;
+}
+
+function validatePublicationCatalog(publication: PostflopPublication, catalog: PolicyHashes): void {
+  // New publisher metadata is a delta by design. MCP currently supports only a
+  // complete publication where touched_spots equals the same D1 catalog snapshot.
+  // A partial upsert is rejected until its preservation semantics are reviewed.
+  if (!samePolicyHashes(publication.hashes, catalog)) invalid();
 }
 
 // SHA-256 over canonical JSON text. Kept async for Web Crypto on Workers.
@@ -166,32 +226,21 @@ async function loadCatalog(db: ReadOnlyDatabase | undefined): Promise<PublishedC
   if (!release) return { release: null, baseRelease, policyHashes: {}, baseCounts: {}, spots: new Map() };
   if (!baseRelease && (await query<unknown>(db, "SELECT spot_id FROM postflop_flop_base_br LIMIT 1")).length) invalid();
 
-  const policyHashes = parsePolicyHashes(release);
-  if (await digestText(JSON.stringify(policyHashes)) !== release.content_hash) invalid();
+  const publication = await parsePostflopPublication(release);
   const [spotRows, policyRows] = await Promise.all([
     query<SpotRow>(db, "SELECT spot_id, slug, kind, tree, ip, oop, pot_bb, stack_bb, spot_json FROM postflop_spots ORDER BY spot_id LIMIT ?", MAX_SPOT_ROWS),
     query<PolicyRow>(db, "SELECT spot_id, stage, policy_hash FROM postflop_policies ORDER BY spot_id, stage LIMIT ?", MAX_POLICIES),
   ]);
-  if (spotRows.length > MAX_SPOTS || spotRows.length !== Object.keys(policyHashes).length || policyRows.length > MAX_POLICIES) invalid();
+  if (spotRows.length > MAX_SPOTS || policyRows.length > MAX_POLICIES) invalid();
   const contexts = new Map<string, { data: Value; context: PublishedSpot }>();
   for (const row of spotRows) {
     const projected = projectSpot(row);
-    if (contexts.has(projected.context.id) || !Object.hasOwn(policyHashes, projected.context.id)) invalid();
+    if (contexts.has(projected.context.id)) invalid();
     contexts.set(projected.context.id, projected);
   }
-  const policyRowsBySpot = new Map<string, Map<string, string>>();
-  for (const row of policyRows) {
-    if (!IDENTIFIER.test(row.spot_id) || !Object.hasOwn(policyHashes, row.spot_id) || !["flop", "later"].includes(row.stage)
-      || !requiredString(row.policy_hash, 64) || !SHA256.test(row.policy_hash)) invalid();
-    const stages = policyRowsBySpot.get(row.spot_id) ?? new Map<string, string>();
-    if (stages.has(row.stage)) invalid();
-    stages.set(row.stage, row.policy_hash); policyRowsBySpot.set(row.spot_id, stages);
-  }
-  for (const [id, hashes] of Object.entries(policyHashes)) {
-    const stages = policyRowsBySpot.get(id);
-    if (!contexts.has(id) || !stages || stages.get("flop") !== hashes.flop
-      || (hashes.later === null ? stages.has("later") : stages.get("later") !== hashes.later)) invalid();
-  }
+  const policyHashes = policyHashesFromRows(contexts.keys(), policyRows);
+  validatePublicationCatalog(publication, policyHashes);
+  if (spotRows.length !== Object.keys(policyHashes).length) invalid();
 
   const baseCounts = parseBaseCounts(baseRelease, policyHashes);
   if (baseRelease) {
@@ -210,17 +259,25 @@ async function loadCatalog(db: ReadOnlyDatabase | undefined): Promise<PublishedC
   return { release, baseRelease, policyHashes, baseCounts, spots };
 }
 
-// One-node evaluation validates only its exact published spot and policy rows. The
-// catalog reader remains responsible for full coverage and saved-base consistency.
+// Legacy metadata carries a full spot index, so one-node evaluation keeps its scoped
+// read. Spot-upsert metadata is accepted only when its touched set is the full catalog;
+// run the catalog validator before reading that exact spot. Partial upserts fail closed.
 async function loadPublishedSpot(db: ReadOnlyDatabase | undefined, spotId: string) {
   const releases = await query<VersionRow>(db,
     "SELECT name, content_hash, published_at, detail_json FROM dataset_versions WHERE name = ? LIMIT 2", "postflop");
   if (releases.length > 1) invalid();
   if (!releases.length) spotNotFound();
   const release = versionRow(releases[0], "postflop");
-  const policyHashes = parsePolicyHashes(release);
-  if (await digestText(JSON.stringify(policyHashes)) !== release.content_hash) invalid();
-  const hashes = policyHashes[spotId];
+  const publication = await parsePostflopPublication(release);
+  if (publication.format === "spot-upsert") {
+    const catalog = await loadCatalog(db);
+    if (!catalog.release || catalog.release.content_hash !== release.content_hash
+      || catalog.release.published_at !== release.published_at || catalog.release.detail_json !== release.detail_json) invalid();
+    const spot = catalog.spots.get(spotId);
+    if (!spot) spotNotFound();
+    return { release: catalog.release, spot };
+  }
+  const hashes = publication.hashes[spotId];
   if (!hashes) spotNotFound();
 
   const rows = await query<SpotRow>(db,
