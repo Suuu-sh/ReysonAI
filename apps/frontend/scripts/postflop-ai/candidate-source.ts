@@ -44,7 +44,7 @@ export function validateLaterCandidate(inputs: Inputs, candidate: Candidate<Late
 
 function profileError(inputs: Inputs, stage: string, role?: ProfileRole): Error & { code: string } {
   return Object.assign(new Error(`${inputs.opponentProfile}/${inputs.spot.slug}: ${role ? `${role} ` : ""}${stage} profile policy is not generated`),
-    { code: "PROFILE_POLICY_MISSING" });
+    { code: "PROFILE_POLICY_MISSING", state: "not_generated" });
 }
 
 function profilePair<P>(inputs: Inputs, candidate: CandidateSource<P> | null | undefined, stage: string): ProfileCandidates<P> {
@@ -53,6 +53,11 @@ function profilePair<P>(inputs: Inputs, candidate: CandidateSource<P> | null | u
   for (const role of ["villain", "exploit"] as const) {
     if (!pair[role]) throw profileError(inputs, stage, role);
     const metadata = pair[role].metadata;
+    if (metadata?.source_hash !== inputs.profileSourceHash ||
+        metadata?.opponent_seat !== undefined && metadata.opponent_seat !== inputs.opponentSeat ||
+        metadata?.opponentSeat !== undefined && metadata.opponentSeat !== inputs.opponentSeat) {
+      throw profileError(inputs, stage, role);
+    }
     if (metadata?.profile !== undefined && metadata.profile !== inputs.opponentProfile ||
         metadata?.role !== undefined && metadata.role !== role) throw new Error(`Profile policy identity mismatch: ${stage}/${role}`);
   }

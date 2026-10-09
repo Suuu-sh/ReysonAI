@@ -116,7 +116,9 @@ export function finalizeInputs(base: BaseInputs, options: InputOptions, read: Re
   const opponent = normalized.opponentSeat ? spot[normalized.opponentSeat] : undefined;
   const factors = rangeFactors(spot);
   const usedSources: { seat: string; dataset: string; spot: SourceSpot }[] = [];
+  const profileSources: { seat: string; dataset: string; spot: SourceSpot }[] = [];
   const seatRows: Record<string, FrequencyRow[]> = {};
+  const profileSeatRows: Record<string, FrequencyRow[]> = {};
   for (const seat of [spot.oop, spot.ip]) {
     const maps = factors[seat].map(([file, id, action]) => {
       const baseline = read(file)?.spots.find(item => item.id === id);
@@ -131,19 +133,28 @@ export function finalizeInputs(base: BaseInputs, options: InputOptions, read: Re
         if (!selected) throw profileUnsupported(`${spot.id}/${seat}/${dataset}/${id}: missing profile source (profile preflop source is not generated)`);
       }
       validateSource(selected, baseline, `${spot.id}/${seat}/${dataset}/${id}`);
+      const profileSelected = selected;
       if (!villain && !isDefaultProfile(normalized.tableProfile)) {
         selected = file === "opening-ranges"
           ? adjustOpeningSpot(selected as unknown as OpeningSpot, openingAdjustments as unknown as TableAdjustments, normalized.tableProfile) as unknown as SourceSpot
           : applyTableProfile({ spots: [selected] } as unknown as ResponseDataset, normalized.tableProfile).spots[0] as unknown as SourceSpot;
       }
       usedSources.push({ seat, dataset, spot: selected! });
+      profileSources.push({ seat, dataset: villain ? dataset : file, spot: profileSelected! });
       const rows = new Map(selected!.hands.map(row => [row.hand, row]));
-      return { action, rows, hands: baseline.hands, baseline };
+      const profileRows = new Map(profileSelected!.hands.map(row => [row.hand, row]));
+      return { action, rows, profileRows, hands: baseline.hands, baseline };
     });
     seatRows[seat] = maps[0].hands.map(({ hand }) => ({ hand, freq: maps.reduce((reach, { action, rows, baseline }) => {
       const row = rows.get(hand), frequency = row?.[action];
       if (!Number.isFinite(frequency) || frequency! < 0 || frequency! > 100) throw new Error(`${spot.id}: invalid saved action ${hand}/${action}`);
       // Missing sizing is invalid too, including profile-only positive hands.
+      validateActionSize(row!, action, baseline, spot.id);
+      return reach * frequency! / 100;
+    }, 100) }));
+    profileSeatRows[seat] = maps[0].hands.map(({ hand }) => ({ hand, freq: maps.reduce((reach, { action, profileRows, baseline }) => {
+      const row = profileRows.get(hand), frequency = row?.[action];
+      if (!Number.isFinite(frequency) || frequency! < 0 || frequency! > 100) throw new Error(`${spot.id}: invalid saved profile action ${hand}/${action}`);
       validateActionSize(row!, action, baseline, spot.id);
       return reach * frequency! / 100;
     }, 100) }));
@@ -153,7 +164,9 @@ export function finalizeInputs(base: BaseInputs, options: InputOptions, read: Re
     }
   }
   const adjusted = { tableProfile: normalized.tableProfile, opponentProfile: normalized.opponentProfile };
-  return { ...base, structure_hash, seatRows, adjusted, ...normalized,
+  const profileSourceHash = sha({ baseline: base.fingerprint,
+    options: { ...normalized, tableProfile: normalizeProfile() }, sources: profileSources, seatRows: profileSeatRows });
+  return { ...base, structure_hash, profileSourceHash, seatRows, adjusted, ...normalized,
     ...(spot.reachable && Object.values(base.seatRows).every(rows => rows.some(row => row.freq > 0)) ? { baselineFingerprint: base.fingerprint } : {}),
     fingerprint: sha({ baseline: base.fingerprint, options: normalized, sources: usedSources, seatRows }) };
 }

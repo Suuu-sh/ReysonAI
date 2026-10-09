@@ -604,6 +604,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
         {current && aggregates && <div className="postflop-range-layout">
           <StrategyMatrix node={matrixNode} title={`${nodeTitle(decision.node, context)} · ${english ? "range" : "レンジ"}`} ariaLabel={english ? `${current.seat} flop range` : `${current.seat}のフロップレンジ`}
             aggregates={aggregates} actions={current.actions as string[]} actionLabels={labels} simplified={displayMode === "simple"}
+            boardCards={board ?? undefined}
             selected={selectedHand} onSelect={setSelectedHand} unreachableReason="元のプリフロップ頻度0%またはボードで到達不能、推奨なし" />
           <div className="postflop-side">
           <details className="panel postflop-range-summary">
@@ -634,6 +635,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
           <StrategyMatrix node={{ actingPosition: laterCurrent.actor }} title={`${laterHeading} · ${english ? "range" : "レンジ"}`}
             ariaLabel={english ? `${laterCurrent.actor} ${laterCurrent.street} range` : `${laterCurrent.actor} ${laterCurrent.street}のレンジ`}
             aggregates={laterAggregates} actions={laterActions} actionLabels={laterLabels} simplified={displayMode === "simple"}
+            boardCards={`${board ?? ""}${turnCard}${laterCurrent.street === "river" ? riverCard : ""}`}
             selected={selectedHand} onSelect={setSelectedHand}
             unreachableReason={english ? "No combo reaches this node; no recommendation" : "この判断に到達するコンボがありません。推奨なし"} />
           <div className="postflop-side">

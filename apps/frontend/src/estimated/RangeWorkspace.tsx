@@ -61,6 +61,7 @@ import { ArrowCounterClockwise, CaretDown, DotsThreeVertical, GearSix } from "@p
 import { RangeContextCard } from "./RangeContextCard.tsx";
 import { GameFormatDialog } from "./GameFormatDialog.tsx";
 import { Mw3PostflopTrial, useMw3RangeSession } from "./Mw3PostflopTrial.tsx";
+import { currentMw3PotBb } from "./mw3-range-state.ts";
 import { mw3DeliveryClient } from "./mw3-browser.ts";
 import { FlopCardDialog, PostflopTrial, StreetCardDialog, suitLabels } from "./PostflopTrial.tsx";
 import { ProfilePolicyPreparing } from "./PostflopProfileSettings.tsx";
@@ -73,7 +74,7 @@ export { buildActionBlocks } from "./range-url.ts";
 import { PreflopCallEvBars } from "./PreflopCallEvBars.tsx";
 import { defaultOpponentSeat, normalizePostflopProfileState } from "./postflop-profile-state.ts";
 import type { OpponentProfile, OpponentSeat, PostflopProfileState } from "./postflop-profile-state.ts";
-import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, laterStart, recognizedFlop } from "./postflop-trial.ts";
+import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, currentPostflopPotBb, laterStart, recognizedFlop } from "./postflop-trial.ts";
 import { defaultFormat, formatLabel, isBuilt } from "./game-formats.ts";
 import { DEFAULT_PROFILE, adjustOpeningSpot, adjustmentReason, describeProfile, isDefaultProfile, markAdjustedModel, normalizeProfile } from "./table-profile.ts";
 import "./ranges.css";
@@ -284,6 +285,12 @@ export function prioritizeParticipantRanges<T extends { position: string }>(rang
   return [...selectedActionEntries, ...rangeEntries.filter(entry => !prioritizedPositions.has(entry.position))];
 }
 
+export function prioritizeActingBBRange<T extends { position: string }>(rangeEntries: T[], actingPosition: string | undefined) {
+  if (actingPosition !== "BB") return rangeEntries;
+  const bbIndex = rangeEntries.findIndex(entry => entry.position === "BB");
+  return bbIndex > 0 ? [rangeEntries[bbIndex], ...rangeEntries.slice(0, bbIndex), ...rangeEntries.slice(bbIndex + 1)] : rangeEntries;
+}
+
 function ActionDropdown({ position, options, onSelect }: { position: string; options: ActionOption[]; onSelect: (action: string) => void }) {
   const [menu, setMenu] = useState<{ top: number; right: number } | null>(null);
   const toggle = (event: MouseEvent<HTMLButtonElement>) => {
@@ -363,7 +370,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
               return <button type="button" key={option.action} className={selected ? "chosen" : ""} aria-pressed={selected} disabled={disabled} title={selected && onRewindActionBlock ? "クリックしてこのアクション前に戻る" : undefined} onClick={event => { event.stopPropagation(); selected && onRewindActionBlock ? onRewindActionBlock(block) : select(block, option.action); }}><OptionLabel label={option.label} /></button>;
             })}
             {block.kind === "pending" && <small className="action-path-pending">推定レンジ準備中</small>}
-            {block.active && !block.chosen && block.kind !== "forced" && block.kind !== "pending" && block.options!.some(option => !option.disabled) && <ActionDropdown position={block.position!} options={block.options!.filter(option => !option.disabled)} onSelect={action => select(block, action)} />}
+            {(!block.chosen && (block.active || block.kind === "cold") && block.kind !== "forced" && block.kind !== "pending" && block.options!.some(option => !option.disabled)) && <ActionDropdown position={block.position!} options={block.options!.filter(option => !option.disabled)} onSelect={action => select(block, action)} />}
           </div> : <span className={`action-seat-summary${block.kind === "pending" ? " action-path-pending" : ""}`}>{chosenOption?.label ?? (block.kind === "pending" ? "推定レンジ準備中" : "—")}</span>}
         </div>;
       })}
@@ -759,6 +766,13 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const laterBlocks = canEnterLaterStreets
     ? buildLaterActionBlocks({ flopActions, turnCard, turnActions, riverCard, riverActions }, flopContext)
     : [];
+  const mw3PotBb = currentMw3PotBb(mw3Session.navigation);
+  const hasPostflopProgress = Boolean(flopActions.length || turnCard || turnActions.length || riverCard || riverActions.length);
+  const currentBoardPotBb = !flopActive || !flopContext ? null
+    : flopContext.kind === "mw3_srp"
+      ? Number.isFinite(mw3PotBb) ? mw3PotBb : hasPostflopProgress ? null : flopContext.potBb
+      : !flopContext.pilotAvailable ? flopContext.potBb
+        : currentPostflopPotBb({ flopActions, turnCard, turnActions, riverCard, riverActions }, flopContext);
   const pendingStreetCard: StreetCardDialogName | null = flopActive ? (flopContext?.kind === "mw3_srp" ? mw3Session.navigation?.pendingStreet : (laterBlocks.find(block => block.kind === "board" && block.pending) as { street: StreetCardDialogName } | undefined)?.street) ?? null : null;
   const previousPendingStreetCard = useRef<StreetCardDialogName | null>(null);
   useEffect(() => {
@@ -967,7 +981,10 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
     actionRangeEntry(actionBlocks[selectedBlockIndex], "selected"),
   ].filter((entry): entry is RangeEntry => Boolean(entry && (!liveContinuationSeats || liveContinuationSeats.includes(entry.position))));
   // Keep the focused action pair first, but never hide other active participants' ranges.
-  const visibleRangeEntries = prioritizeParticipantRanges(rangeEntries, selectedActionEntries);
+  const visibleRangeEntries = prioritizeActingBBRange(
+    prioritizeParticipantRanges(rangeEntries, selectedActionEntries),
+    actionBlocks.find(block => block.active)?.position,
+  );
   const focusedEntry = visibleRangeEntries.find(entry => entry.position === focusedRange && entry.model);
   const displayedEntries = focusedEntry ? [focusedEntry] : visibleRangeEntries;
 
@@ -997,6 +1014,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
         <ActionPath
           leading={<RangeContextCard postflop={flopActive} settingsOpen={settingsOpen}
             boards={combinedBlocks.filter(block => block.kind === "board") as { key: string; street?: "flop" | "turn" | "river"; cards: string[] }[]}
+            currentPotBb={currentBoardPotBb}
             onEditBoard={street => street === "flop" ? setFlopDialogOpen(postflopAllowed) : setStreetCardDialog(postflopAllowed ? street as StreetCardDialogName : null)}
             onReset={resetPath}>
             <div className="settings-header">

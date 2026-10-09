@@ -1,0 +1,16 @@
+✔ first publication is additive, complete, idempotent and retains unrelated history (187.818594ms)
+✔ a conflict in the final spot prevents ALL schema/import writes (7.4074ms)
+✔ partial same-byte rows resume and an interrupted import is verified before retry (8.098047ms)
+✔ postflight rejects a silent incomplete import (5.101738ms)
+✔ remote mutation context rejects PRs, wrong HEAD, alternate refs and local runs (9.193128ms)
+✔ row boundary rejects missing complete rows, wrong stage, duplicate parts and changed bytes (1.912217ms)
+✔ live acceptance rejects incompatible actual source data before policy requests (3018.459786ms)
+✔ workflow verifies before writes, imports before activation, and accepts after source publication (1.198033ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5654.750299

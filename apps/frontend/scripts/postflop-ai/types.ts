@@ -45,7 +45,7 @@ export type InputOptions = { tableProfile?: Partial<TableProfile>; opponentProfi
 export type InputAdjustment = { tableProfile: TableProfile; opponentProfile: InputOpponentProfile };
 export type RangeFactor = readonly [file: string, spotId: string, action: SourceAction];
 export type Inputs = { spot: Spot; opening?: SourceSpot; response?: SourceSpot; sources?: { dataset: string; spot: SourceSpot }[]; threeBet?: SourceSpot; threeBetResponse?: SourceSpot;
-  config: PilotConfig; fingerprint: string; structure_hash: string; baselineFingerprint?: string; adjusted?: InputAdjustment;
+  config: PilotConfig; fingerprint: string; structure_hash: string; profileSourceHash?: string; baselineFingerprint?: string; adjusted?: InputAdjustment;
   tableProfile?: TableProfile; opponentProfile?: InputOpponentProfile; opponentSeat?: PlayerRole; seatRows: Record<string, FrequencyRow[]> };
 export type ReachStep = BettingStep & { canRaise?: boolean };
 export type StrategyCombo = { cards: string; tier: HandTier; weight: number; reachWeight?: number; mix: ActionMix };

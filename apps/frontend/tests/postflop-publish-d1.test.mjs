@@ -52,7 +52,7 @@ const unit = (profile = "nit", selected = registered) => {
     flop[role] = { metadata: { ...metadata, policy_hash: policySha(policy) }, policy };
     later[role] = { metadata: { ...metadata, policy_hash: policySha(laterPolicy), flop_policy_hash: flop[role].metadata.policy_hash }, policy: laterPolicy };
   }
-  return { profile, spot: selected, flop, later };
+  return { profile, spot: selected, flop, later, opponentSeat: inputs.opponentSeat };
 };
 const artifactsFor = entries => (spot, kind, { profile, role }) => {
   const entry = entries.find(item => item.profile === profile && item.spot.id === spot.id);
@@ -64,15 +64,16 @@ const datasetHash = (sql, name) => sql.match(new RegExp(`VALUES \\('${name}', '(
 test("profile SQL stores role-specific policy only, upserts supplied units, and rotates both versions", () => {
   const item = unit(), at = "2026-10-08T00:00:00Z";
   const sql = buildSql([entry], at, "profile-publication-id", [item]);
-  assert.match(sql, /DELETE FROM postflop_profile_policies WHERE profile = 'nit' AND spot_id = 'BTN_open_BB_call';/);
+  assert.match(sql, /DELETE FROM postflop_profile_policies WHERE profile = 'nit' AND spot_id = 'BTN_open_BB_call' AND opponent_seat = 'ip';/);
   assert.doesNotMatch(sql, /DELETE FROM postflop_\w+;/);
   const inserts = sql.split("\n").filter(line => line.startsWith("INSERT INTO postflop_profile_policies"));
   assert.equal(inserts.length, 4);
   for (const role of ["villain", "exploit"]) for (const stage of ["flop", "later"]) {
     const candidate = item[stage === "flop" ? "flop" : "later"][role];
-    assert.ok(inserts.some(line => line.includes(`'nit', 'BTN_open_BB_call', '${role}', '${stage}'`) &&
+    assert.ok(inserts.some(line => line.includes(`'nit', 'BTN_open_BB_call', 'ip', '${role}', '${stage}'`) &&
       line.endsWith(`'${JSON.stringify(candidate.policy)}', '${at}');`)));
   }
+  assert.match(inserts[0], /"opponent_seat":"ip"/);
   const changed = structuredClone(item); changed.flop.villain.metadata.policy_hash = "changed";
   for (const name of ["postflop", "postflop-profiles"]) {
     assert.notEqual(datasetHash(sql, name), datasetHash(buildSql([entry], at, "profile-publication-id", [changed]), name));
@@ -199,19 +200,19 @@ test("SQLite partial imports preserve other profile units and standard histories
     const third = { ...unit("nit"), spot: otherSpot };
     db.exec(buildSql([entry], undefined, undefined, [first, other, third]));
     const standardBefore = db.prepare("SELECT * FROM postflop_policies").all();
-    const untouchedBefore = db.prepare("SELECT * FROM postflop_profile_policies WHERE profile = 'station' OR spot_id = 'preserved_profile_spot' ORDER BY profile, spot_id, role, stage").all();
+    const untouchedBefore = db.prepare("SELECT * FROM postflop_profile_policies WHERE profile = 'station' OR spot_id = 'preserved_profile_spot' ORDER BY profile, spot_id, opponent_seat, role, stage").all();
     const changed = structuredClone(first);
     changed.flop.villain.metadata.model = "new-authoring-model";
     const patch = buildSql([], undefined, undefined, [changed]);
     db.exec(patch); db.exec(patch); db.exec(buildSql([]));
     assert.deepEqual(db.prepare("SELECT * FROM postflop_policies").all(), standardBefore);
-    assert.deepEqual(db.prepare("SELECT * FROM postflop_profile_policies WHERE profile = 'station' OR spot_id = 'preserved_profile_spot' ORDER BY profile, spot_id, role, stage").all(), untouchedBefore);
+    assert.deepEqual(db.prepare("SELECT * FROM postflop_profile_policies WHERE profile = 'station' OR spot_id = 'preserved_profile_spot' ORDER BY profile, spot_id, opponent_seat, role, stage").all(), untouchedBefore);
     assert.equal(db.prepare("SELECT COUNT(*) AS n FROM postflop_profile_policies").get().n, 12);
     assert.equal(JSON.parse(db.prepare("SELECT metadata_json FROM postflop_profile_policies WHERE profile = 'nit' AND spot_id = 'BTN_open_BB_call' AND role = 'villain' AND stage = 'flop'").get().metadata_json).model, "new-authoring-model");
-    const profileBefore = db.prepare("SELECT * FROM postflop_profile_policies ORDER BY profile, spot_id, role, stage").all();
+    const profileBefore = db.prepare("SELECT * FROM postflop_profile_policies ORDER BY profile, spot_id, opponent_seat, role, stage").all();
     const versionBefore = db.prepare("SELECT * FROM dataset_versions WHERE name = 'postflop-profiles'").get();
     db.exec(buildSql([entry]));
-    assert.deepEqual(db.prepare("SELECT * FROM postflop_profile_policies ORDER BY profile, spot_id, role, stage").all(), profileBefore);
+    assert.deepEqual(db.prepare("SELECT * FROM postflop_profile_policies ORDER BY profile, spot_id, opponent_seat, role, stage").all(), profileBefore);
     assert.deepEqual(db.prepare("SELECT * FROM dataset_versions WHERE name = 'postflop-profiles'").get(), versionBefore);
   } finally { db.close(); }
 });
@@ -228,7 +229,7 @@ test("a profile pair generated for a non-default (SB) opponent seat publishes wi
     flop[role] = { metadata: { ...metadata, policy_hash: policySha(policy) }, policy };
     later[role] = { metadata: { ...metadata, policy_hash: policySha(laterPolicy), flop_policy_hash: flop[role].metadata.policy_hash }, policy: laterPolicy };
   }
-  const item = { profile: "nit", spot: selected, flop, later };
+  const item = { profile: "nit", spot: selected, flop, later, opponentSeat: "oop" };
   const published = publishableProfiles(() => {}, { spots: [selected], read: artifactsFor([item]) });
   assert.equal(published.length, 1);
   const mixed = structuredClone(item); mixed.later.exploit.metadata.opponent_seat = "ip";

@@ -21,7 +21,7 @@ function mockDb(tables, onQuery = () => {}) {
           const table = sql.match(/FROM (\w+)/)[1];
           let rows = tables[table] ?? [];
           if (sql.includes("WHERE spot_id")) rows = rows.filter(row => row.spot_id === args[0]);
-          if (table === "postflop_profile_policies") rows = rows.filter(row => row.profile === args[0] && row.spot_id === args[1] && row.role === args[2] && row.stage === args[3]);
+          if (table === "postflop_profile_policies") rows = rows.filter(row => row.profile === args[0] && row.spot_id === args[1] && row.opponent_seat === args[2] && row.role === args[3] && row.stage === args[4]);
           if (table === "dataset_versions") rows = rows.filter(row => row.name === args[0]);
           if (table === "postflop_flop_base_br") rows = rows.filter(row => row.flop_key === args[1]).sort((a, b) => a.part - b.part);
           return { results: rows };
@@ -56,14 +56,14 @@ test("postflop routes validate the spot and serve no computed views", async () =
 });
 
 const spot = spotById("BTN_open_BB_call");
-const profileParams = overrides => new URLSearchParams({ profile: "nit", spot: spot.id, role: "villain", stage: "flop", ...overrides });
+const profileParams = overrides => new URLSearchParams({ profile: "nit", spot: spot.id, opponentSeat: "ip", role: "villain", stage: "flop", ...overrides });
 const profilePath = params => `/v1/postflop/profile-policy?${params}`;
 
 test("profile policies validate every required selector before reading policies", async () => {
   const db = mockDb({}, () => assert.fail("invalid selectors must not query D1"));
   const env = { DB: db };
   const invalid = [];
-  for (const key of ["profile", "spot", "role", "stage"]) {
+  for (const key of ["profile", "spot", "opponentSeat", "role", "stage"]) {
     const missing = profileParams(); missing.delete(key); invalid.push(missing);
     const empty = profileParams({ [key]: "" }); invalid.push(empty);
     const duplicate = profileParams(); duplicate.append(key, duplicate.get(key)); invalid.push(duplicate);
@@ -83,8 +83,8 @@ test("profile route returns the exact saved metadata and policy for every profil
   const rows = [];
   for (const profile of ["nit", "station", "lag", "maniac"]) {
     for (const role of ["villain", "exploit"]) for (const stage of ["flop", "later"]) {
-      rows.push({ profile, spot_id: spot.id, role, stage,
-        metadata_json: JSON.stringify({ policy_hash: `${profile}-${role}-${stage}`, note: "AI estimate, not GTO" }),
+      rows.push({ profile, spot_id: spot.id, opponent_seat: "ip", role, stage,
+        metadata_json: JSON.stringify({ opponent_seat: "ip", policy_hash: `${profile}-${role}-${stage}`, note: "AI estimate, not GTO" }),
         policy_json: JSON.stringify({ saved: [profile, role, stage], mixes: { check: 0.375, bet: 0.625 } }),
         published_at: "2026-10-08T00:00:00.000Z" });
     }
@@ -97,7 +97,7 @@ test("profile route returns the exact saved metadata and policy for every profil
     const response = await worker.fetch(new Request(`https://edge.test${profilePath(params)}`, { headers: { origin: "https://app.example.test" } }), env);
     assert.equal(response.status, 200);
     assert.deepEqual(await response.json(), {
-      kind: "ai_estimate_not_gto", profile: row.profile, spot: spot.id, role: row.role, stage: row.stage,
+      kind: "ai_estimate_not_gto", profile: row.profile, spot: spot.id, opponentSeat: "ip", role: row.role, stage: row.stage,
       metadata: JSON.parse(row.metadata_json), policy: JSON.parse(row.policy_json), publishedAt: row.published_at,
     });
     assert.equal(response.headers.get("cache-control"), "public, max-age=300, s-maxage=86400");
@@ -110,28 +110,28 @@ test("profile misses stay structured and never fall back to another stored polic
   const queries = [];
   const env = { DB: mockDb({
     postflop_policies: [{ spot_id: spot.id, stage: "flop", policy_json: '{"balanced":true}' }],
-    postflop_profile_policies: [{ profile: "nit", spot_id: spot.id, role: "villain", stage: "flop", metadata_json: "{}", policy_json: "{}", published_at: "now" }],
+    postflop_profile_policies: [{ profile: "nit", spot_id: spot.id, opponent_seat: "ip", role: "villain", stage: "flop", metadata_json: "{}", policy_json: "{}", published_at: "now" }],
   }, (sql, args) => queries.push({ sql, args })) };
-  for (const change of [{ profile: "maniac" }, { role: "exploit" }, { stage: "later" }, { spot: "unpublished_spot" }]) {
+  for (const change of [{ profile: "maniac" }, { opponentSeat: "oop" }, { role: "exploit" }, { stage: "later" }, { spot: "unpublished_spot" }]) {
     const response = await worker.fetch(new Request(`https://edge.test${profilePath(profileParams(change))}`), env);
     assert.equal(response.status, 404);
     assert.deepEqual(await response.json(), { error: "No stored profile policy", code: "PROFILE_POLICY_MISSING", state: "not_generated" });
     assert.equal(response.headers.get("cache-control"), null);
     assert.equal(response.headers.get("access-control-allow-origin"), "*");
   }
-  assert.equal(queries.length, 4);
-  assert.ok(queries.every(({ sql }) => sql.includes("FROM postflop_profile_policies WHERE profile = ? AND spot_id = ? AND role = ? AND stage = ?")));
+  assert.equal(queries.length, 5);
+  assert.ok(queries.every(({ sql }) => sql.includes("FROM postflop_profile_policies WHERE profile = ? AND spot_id = ? AND opponent_seat = ? AND role = ? AND stage = ?")));
 });
 
 test("profile JSON payloads pass through as stored text without runtime parsing", async () => {
   // Invalid JSON is intentional: this unit test proves the handler never parses a policy.
   const metadata = "opaque metadata: not parsed";
   const policy = "opaque policy: not parsed";
-  const db = mockDb({ postflop_profile_policies: [{ profile: "nit", spot_id: spot.id, role: "villain", stage: "flop",
+  const db = mockDb({ postflop_profile_policies: [{ profile: "nit", spot_id: spot.id, opponent_seat: "ip", role: "villain", stage: "flop",
     metadata_json: metadata, policy_json: policy, published_at: 'timestamp"with\\escapes' }] });
   const response = await routePostflop(db, "/v1/postflop/profile-policy", profileParams());
   assert.equal(response.status, 200);
-  assert.equal(response.text, `{"kind":"ai_estimate_not_gto","profile":"nit","spot":"${spot.id}","role":"villain","stage":"flop","metadata":${metadata},"policy":${policy},"publishedAt":${JSON.stringify('timestamp"with\\escapes')}}`);
+  assert.equal(response.text, `{"kind":"ai_estimate_not_gto","profile":"nit","spot":"${spot.id}","opponentSeat":"ip","role":"villain","stage":"flop","metadata":${metadata},"policy":${policy},"publishedAt":${JSON.stringify('timestamp"with\\escapes')}}`);
 });
 
 test("only profile-policy uses the profile dataset version and caches successful rows", async t => {
@@ -149,7 +149,7 @@ test("only profile-policy uses the profile dataset version and caches successful
     { name: "postflop-profiles", content_hash: "profiles-hash" },
     { name: "postflop", content_hash: "balanced-hash" },
     { name: "flop-base", content_hash: "flop-hash" },
-  ], postflop_profile_policies: [{ profile: "nit", spot_id: spot.id, role: "villain", stage: "flop", metadata_json: "{}", policy_json: "{}", published_at: "now" }]
+  ], postflop_profile_policies: [{ profile: "nit", spot_id: spot.id, opponent_seat: "ip", role: "villain", stage: "flop", metadata_json: "{}", policy_json: "{}", published_at: "now" }]
   }, (sql, args) => queries.push({ sql, args }));
   const env = { DB: db, ALLOWED_ORIGIN: "https://one.test,https://two.test" };
   const get = (path, origin) => worker.fetch(new Request(`https://edge.test${path}`, { headers: { origin } }), env);

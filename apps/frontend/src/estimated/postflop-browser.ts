@@ -59,8 +59,8 @@ type ProfileStage = "flop" | "later";
 type ProfileRole = "villain" | "exploit";
 
 async function publishedProfileCandidate<P>(spot: Spot, profile: string, role: ProfileRole, stage: ProfileStage,
-  base: string, signal: AbortSignal): Promise<Candidate<P>> {
-  const response = await fetch(postflopUrl("profile-policy", { profile, spot: spot.id, role, stage }, base), { signal });
+  opponentSeat: "ip" | "oop", base: string, signal: AbortSignal): Promise<Candidate<P>> {
+  const response = await fetch(postflopUrl("profile-policy", { profile, spot: spot.id, opponentSeat, role, stage }, base), { signal });
   const body = await response.json();
   if (!response.ok) {
     const missing = response.status === 404;
@@ -68,9 +68,15 @@ async function publishedProfileCandidate<P>(spot: Spot, profile: string, role: P
       { code: missing ? "PROFILE_POLICY_MISSING" : body.code, state: missing ? "not_generated" : body.state });
   }
   const metadata = body.metadata;
-  if (body.kind !== "ai_estimate_not_gto" || body.profile !== profile || body.spot !== spot.id ||
+  if (body.opponentSeat !== undefined && body.opponentSeat !== opponentSeat ||
+      metadata?.opponent_seat !== undefined && metadata.opponent_seat !== opponentSeat) {
+    throw Object.assign(new Error(`Profile policy for ${profile}/${spot.id} is not generated for the selected opponent seat.`),
+      { code: "PROFILE_POLICY_MISSING", state: "not_generated" });
+  }
+  if (body.kind !== "ai_estimate_not_gto" || body.profile !== profile || body.spot !== spot.id || body.opponentSeat !== opponentSeat ||
       body.role !== role || body.stage !== stage || !metadata ||
       metadata.profile !== profile || metadata.role !== role || metadata.spot !== spot.id ||
+      metadata.opponent_seat !== opponentSeat ||
       metadata.tree !== undefined && metadata.tree !== spot.tree ||
       metadata.stage !== undefined && metadata.stage !== stage ||
       typeof metadata.source_hash !== "string" || !metadata.source_hash ||
@@ -83,13 +89,13 @@ async function publishedProfileCandidate<P>(spot: Spot, profile: string, role: P
   return { metadata, policy: body.policy };
 }
 
-async function loadPublishedProfileSpot(spotId: string, profile: string, base: string): Promise<PostflopSource> {
+async function loadPublishedProfileSpot(spotId: string, profile: string, opponentSeat: "ip" | "oop", base: string): Promise<PostflopSource> {
   // Geometry comes from the bundled registry, not from a standard-policy request.
   // Profile publication can therefore stand alone and never substitute standard data.
   const spot = spotById(spotId), signal = new AbortController().signal;
   const pair = async <P>(stage: ProfileStage) => {
     const [villain, exploit] = await Promise.all((["villain", "exploit"] as const)
-      .map(role => publishedProfileCandidate<P>(spot, profile, role, stage, base, signal)));
+      .map(role => publishedProfileCandidate<P>(spot, profile, role, stage, opponentSeat, base, signal)));
     return { villain, exploit };
   };
   const candidate = await pair<Candidate["policy"]>("flop");
@@ -147,7 +153,7 @@ export function loadPostflopSpot(spotId: string, signal?: AbortSignal, options: 
         return body;
       });
     current.promise = Promise.resolve().then(() => publishedProfile
-      ? loadPublishedProfileSpot(spotId, normalized.opponentProfile, apiBase!) : loadLocalOrStandard())
+      ? loadPublishedProfileSpot(spotId, normalized.opponentProfile, normalized.opponentSeat!, apiBase!) : loadLocalOrStandard())
       .then(body => {
         current.settled = true;
         // A missing later pair may become available after authoring/publication.

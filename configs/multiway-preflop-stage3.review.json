@@ -9035,8 +9035,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 15224,
-      "sha256": "548b6d8f18ddec60be52c413c6e134c6b95434783048303a61113e8eeaa60072"
+      "bytes": 17095,
+      "sha256": "365103ce69fbeedf281a532b5f83e3361f5b5577f52f3b55befe6937c8397fda"
     },
     {
       "path": ".gitignore",
@@ -9505,8 +9505,8 @@
     },
     {
       "path": "configs/multiway-preflop-stage2.review.json",
-      "bytes": 527647,
-      "sha256": "9303299b12c65d9498626200a8de877bca06169923d275bf309a95c624210e54"
+      "bytes": 531140,
+      "sha256": "f482e81841a18b548841d3b9f4e5db9638e4bee2be0b0a562f6b36eba381c6b5"
     },
     {
       "path": "configs/multiway-preflop-stage3.json",
@@ -9525,7 +9525,7 @@
     "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
     "format": "ustar+gzip-stage3-content-v1"
   },
-  "content_sha256": "3c70ba453a0f8472b9cacbd2f47a14c03a752cb9e251828306e267ac9071e21e",
+  "content_sha256": "357a94187939d3d1ee171139afd6b66e273dffb56d756b02694de1c4a70c10c2",
   "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
   "counts": {
     "catalog": 16132,
@@ -10205,6 +10205,76 @@
         "rare": 8710,
         "hands": 304369
       }
+    },
+    "production_mw3_delivery_source_renewal": {
+      "status": "independently-reviewed",
+      "reviewer": "Independent gpt-6-astra/xhigh production-delivery source reviewer",
+      "reviewer_task": "/root/review_mw3_production_delivery",
+      "reviewed_at_utc": "2026-10-07T19:51:42.751Z",
+      "report": "apps/frontend/docs/qa/pr94-mw3-production-source-review/review-summary.json",
+      "reviewed_source_commit": "5d0e42c9f5e2c95895388db11b7bf09c3712a8d2",
+      "reviewed_source_tree": "5b44a56edfa979fec1b1604b95a9d0271c0b3874",
+      "scope": "Source-only renewal for the exact production workflow addition. Existing saved data, archive, fingerprints, counts and historical review fields are preserved. This does not renew numerical or strategy-quality approval and does not assert live production success.",
+      "changed_source_records": [
+        ".github/workflows/deploy-worker.yml",
+        "configs/multiway-preflop-stage2.review.json"
+      ],
+      "source_records_before": 98,
+      "source_records_after": 98,
+      "previous_independent_receipt": {
+        "path": "configs/multiway-preflop-stage3.review.json",
+        "bytes": 536389,
+        "sha256": "72a5503c530611a3517e5ae5998d9ca4918afc075eb12ebcdcebf6ca19b0ce93"
+      },
+      "original_artifact_records_preserved": 1805,
+      "production_delivery_delta": [
+        {
+          "path": ".github/workflows/deploy-worker.yml",
+          "bytes": 17095,
+          "sha256": "365103ce69fbeedf281a532b5f83e3361f5b5577f52f3b55befe6937c8397fda"
+        },
+        {
+          "path": "apps/frontend/scripts/mw3-production-delivery.mjs",
+          "bytes": 13480,
+          "sha256": "6f15095b5c31d15df9fedd153bba9d923c36fd5b62eb3086a9336c4e6f7e30c9"
+        },
+        {
+          "path": "apps/frontend/tests/mw3-production-delivery.test.mjs",
+          "bytes": 7612,
+          "sha256": "22be097b88fb8bfda76a98ef0795bef0494ad33d2668875b94a1e4647245052b"
+        }
+      ],
+      "limitations": "Delivery script and tests are separately exact-commit reviewed outside the established preflop numerical-source scope. Exact-head CI, remote D1 import/readback, production HTTP acceptance and normal product browser acceptance remain release-owner responsibilities. No auth, secret, permission or numerical changes are approved by this source receipt.",
+      "final_stage2_receipt": {
+        "path": "configs/multiway-preflop-stage2.review.json",
+        "bytes": 531140,
+        "sha256": "f482e81841a18b548841d3b9f4e5db9638e4bee2be0b0a562f6b36eba381c6b5"
+      },
+      "local_execution_source_commit": "776da9bfb563372e454b20bffcad343ca561370f",
+      "remote_provenance": {
+        "verified_via": "GitHub connector independent read-only Git commit endpoints",
+        "verified_at_utc": "2026-10-07T20:09:34.222Z",
+        "source": {
+          "commit": "5d0e42c9f5e2c95895388db11b7bf09c3712a8d2",
+          "tree": "5b44a56edfa979fec1b1604b95a9d0271c0b3874",
+          "parents": [
+            "3cba758716de8092e877f11d4fbb940bcfc47888"
+          ],
+          "url": "https://github.com/Suuu-sh/ReysonAI/commit/5d0e42c9f5e2c95895388db11b7bf09c3712a8d2"
+        },
+        "merge": {
+          "commit": "3cba758716de8092e877f11d4fbb940bcfc47888",
+          "tree": "bfbd8537f4e8c8807227ce78b158737668def489",
+          "parents": [
+            "1d09a146efb0d5fb8b4f288b13837629bf74cb35",
+            "ee7e5c245977356d453e0d7f21cb95a40d11c98d"
+          ],
+          "url": "https://github.com/Suuu-sh/ReysonAI/commit/3cba758716de8092e877f11d4fbb940bcfc47888"
+        },
+        "local_equivalent_source_commit": "776da9bfb563372e454b20bffcad343ca561370f",
+        "exact_source_tree_equality": true
+      },
+      "provenance_rebound_at_utc": "2026-10-07T20:09:37.522Z"
     }
   }
 }

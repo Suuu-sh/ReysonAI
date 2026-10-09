@@ -104,8 +104,8 @@ test("stale later role remains an error rather than an optional missing policy",
 test("published profile URL uses its dedicated API and never the standard policy route", () => {
   assert.throws(() => postflopUrl("spot", { spot: spotId, ...options }, "https://api.test"),
     error => error.code === "PROFILE_POLICY_MISSING" && error.state === "not_generated");
-  assert.equal(postflopUrl("profile-policy", { profile, spot: spotId, role: "villain", stage: "later" }, "https://api.test/"),
-    `https://api.test/v1/postflop/profile-policy?profile=${profile}&spot=${spotId}&role=villain&stage=later`);
+  assert.equal(postflopUrl("profile-policy", { profile, spot: spotId, opponentSeat: "oop", role: "villain", stage: "later" }, "https://api.test/"),
+    `https://api.test/v1/postflop/profile-policy?profile=${profile}&spot=${spotId}&opponentSeat=oop&role=villain&stage=later`);
   assert.throws(() => postflopUrl("profile-policy", { profile, spot: spotId }, ""), /requires a published API base/);
   assert.equal(postflopUrl("spot", { spot: spotId }, "https://api.test"), `https://api.test/v1/postflop/spot?spot=${spotId}`);
 });
@@ -192,13 +192,38 @@ test("browser loads only the selected opponent's real preflop factor files", asy
   await assert.rejects(loadPostflopDatasets(spot, controller.signal, options), { name: "AbortError" });
 });
 
+test("profile source identity binds the selected seat and survives table-only adjustments", async () => {
+  const spot = spotById(spotId);
+  const oopRanges = await loadPostflopDatasets(spot, undefined, { opponentProfile: profile, opponentSeat: "oop" });
+  const ipRanges = await loadPostflopDatasets(spot, undefined, { opponentProfile: profile, opponentSeat: "ip" });
+  const oopInputs = buildInputs(spotId, oopRanges, { opponentProfile: profile, opponentSeat: "oop" });
+  const ipInputs = buildInputs(spotId, ipRanges, { opponentProfile: profile, opponentSeat: "ip" });
+  assert.equal(oopInputs.profileSourceHash, oopInputs.fingerprint);
+  assert.equal(ipInputs.profileSourceHash, ipInputs.fingerprint);
+  assert.notEqual(oopInputs.profileSourceHash, ipInputs.profileSourceHash);
+  assert.equal(buildInputs(spotId, oopRanges, { ...options, tableProfile: { call: "high" } }).profileSourceHash,
+    oopInputs.profileSourceHash, "table adjustments do not change which opponent range the policy describes");
+
+  const policy = referencePolicyFor(spot.tree), pair = {};
+  for (const role of ["villain", "exploit"]) pair[role] = { policy, metadata: {
+    source_hash: oopInputs.profileSourceHash, structure_hash: oopInputs.structure_hash,
+    policy_hash: sha(policy), profile, role, spot: spotId, tree: spot.tree,
+  } };
+  assert.throws(() => resolveFlopCandidate(ipInputs, pair), error =>
+    error.code === "PROFILE_POLICY_MISSING" && error.state === "not_generated");
+  const wrongSeat = structuredClone(pair);
+  wrongSeat.villain.metadata.opponent_seat = "ip";
+  assert.throws(() => resolveFlopCandidate(oopInputs, wrongSeat), error =>
+    error.code === "PROFILE_POLICY_MISSING" && error.state === "not_generated");
+});
+
 // Production fixtures are Candidate metadata plus raw policy. No artifacts are authored.
 function publishedEnvelope(url) {
   const query = new URL(String(url)).searchParams;
-  const selectedProfile = query.get("profile"), role = query.get("role"), stage = query.get("stage");
+  const selectedProfile = query.get("profile"), opponentSeat = query.get("opponentSeat"), role = query.get("role"), stage = query.get("stage");
   const candidate = artifacts()[profileArtifactKey(inputs.spot, stage === "flop" ? "candidate" : "laterCandidate", profile, role)];
-  return { kind: "ai_estimate_not_gto", profile: selectedProfile, spot: query.get("spot"), role, stage,
-    metadata: { ...candidate.metadata, profile: selectedProfile }, policy: candidate.policy, publishedAt: "2026-10-08T00:00:00Z" };
+  return { kind: "ai_estimate_not_gto", profile: selectedProfile, spot: query.get("spot"), opponentSeat, role, stage,
+    metadata: { ...candidate.metadata, profile: selectedProfile, opponent_seat: opponentSeat }, policy: candidate.policy, publishedAt: "2026-10-08T00:00:00Z" };
 }
 const productionResponse = url => ({ ok: true, status: 200, json: async () => publishedEnvelope(url) });
 const missingResponse = () => ({ ok: false, status: 404,
@@ -222,7 +247,7 @@ test("production loads four role/stage policies for every profile without standa
       assert.equal(source.laterPolicyError, undefined);
       assert.deepEqual(calls.map(({ role, stage }) => `${stage}/${role}`).sort(),
         ["flop/exploit", "flop/villain", "later/exploit", "later/villain"]);
-      for (const query of calls) assert.deepEqual(Object.keys(query).sort(), ["profile", "role", "spot", "stage"]);
+      for (const query of calls) assert.deepEqual(Object.keys(query).sort(), ["opponentSeat", "profile", "role", "spot", "stage"]);
       for (const pair of [source.candidate, source.laterCandidate]) for (const role of ["villain", "exploit"]) {
         assert.equal(pair[role].metadata.profile, opponentProfile);
         assert.equal(pair[role].metadata.role, role);
@@ -314,6 +339,21 @@ test("production rejects standard, wrong identity and conflicting metadata respo
       await assert.rejects(loadPostflopSpot(spotId, undefined, options, base), /identity or format mismatch/);
       globalThis.fetch = async url => productionResponse(url);
       assert.ok(await loadPostflopSpot(spotId, undefined, options, base), "rejected identity must not be cached");
+    }
+  } finally { globalThis.fetch = original; }
+});
+
+test("production seat mismatches stay in preparing state instead of accepting another seat's policy", async () => {
+  const original = globalThis.fetch;
+  try {
+    for (const alter of [
+      body => ({ ...body, opponentSeat: body.opponentSeat === "ip" ? "oop" : "ip" }),
+      body => ({ ...body, metadata: { ...body.metadata, opponent_seat: body.metadata.opponent_seat === "ip" ? "oop" : "ip" } }),
+    ]) {
+      const base = `https://seat-identity-${Math.random()}.test`;
+      globalThis.fetch = async url => ({ ok: true, status: 200, json: async () => alter(publishedEnvelope(url)) });
+      await assert.rejects(loadPostflopSpot(spotId, undefined, options, base), error =>
+        error.code === "PROFILE_POLICY_MISSING" && error.state === "not_generated");
     }
   } finally { globalThis.fetch = original; }
 });

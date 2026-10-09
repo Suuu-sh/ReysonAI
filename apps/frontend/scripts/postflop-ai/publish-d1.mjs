@@ -116,16 +116,18 @@ export function buildSql(published, publishedAt = new Date().toISOString(), publ
   const hashes = Object.fromEntries(published.map(({ spot, candidate, laterCandidate }) =>
     [spot.id, { flop: candidate.metadata.policy_hash, later: laterCandidate?.metadata.policy_hash ?? null }]));
   const profileHashes = {};
-  for (const { profile, spot, flop, later } of profiles) {
-    lines.push(`DELETE FROM postflop_profile_policies WHERE profile = ${quote(profile)} AND spot_id = ${quote(spot.id)};`);
+  for (const { profile, spot, flop, later, opponentSeat: declaredOpponentSeat } of profiles) {
+    const opponentSeat = itemOpponentSeat({ flop, later, opponentSeat: declaredOpponentSeat });
+    lines.push(`DELETE FROM postflop_profile_policies WHERE profile = ${quote(profile)} AND spot_id = ${quote(spot.id)} AND opponent_seat = ${quote(opponentSeat)};`);
     profileHashes[profile] ??= {};
     const roles = profileHashes[profile][spot.id] = {};
     for (const role of POLICY_ROLES) {
       roles[role] = {};
       for (const [stage, candidate] of [["flop", flop[role]], ["later", later[role]]]) {
         const label = `${profile}/${spot.id}/${role}/${stage}`;
-        roles[role][stage] = { policy: candidate.metadata.policy_hash, metadata: sha(JSON.stringify(candidate.metadata)) };
-        lines.push(`INSERT INTO postflop_profile_policies (profile, spot_id, role, stage, metadata_json, policy_json, published_at) VALUES (${quote(profile)}, ${quote(spot.id)}, ${quote(role)}, ${quote(stage)}, ${jsonValue(candidate.metadata, `${label} metadata`)}, ${jsonValue(candidate.policy, `${label} policy`)}, ${quote(publishedAt)});`);
+        const metadata = { ...candidate.metadata, opponent_seat: opponentSeat };
+        roles[role][stage] = { policy: candidate.metadata.policy_hash, metadata: sha(JSON.stringify(metadata)) };
+        lines.push(`INSERT INTO postflop_profile_policies (profile, spot_id, opponent_seat, role, stage, metadata_json, policy_json, published_at) VALUES (${quote(profile)}, ${quote(spot.id)}, ${quote(opponentSeat)}, ${quote(role)}, ${quote(stage)}, ${jsonValue(metadata, `${label} metadata`)}, ${jsonValue(candidate.policy, `${label} policy`)}, ${quote(publishedAt)});`);
       }
     }
   }
@@ -194,16 +196,45 @@ export function publishableProfiles(log = console.log, { requireAll = false, spo
       }
       if (!present && "history" in spot) { log(`skip ${profile}/${spot.id}: profile policy is not generated`); continue; }
       if (present && present !== 4) throw new Error(`Incomplete generated profile policy: ${present}/4 files`);
-      let inputs;
-      // A pair generated for a non-default seat (e.g. SB) records it; earlier pairs use the default.
-      const seats = new Set(POLICY_ROLES.flatMap(role => [flop[role], later[role]]).map(item => item?.metadata?.opponent_seat).filter(Boolean));
-      if (seats.size > 1) throw new Error("Profile policy pair mixes opponent seats");
-      try { inputs = inputsFor(spot.id, generationInputOptions(spot.id, profile, [...seats][0])); }
-      catch (error) {
-        if (!present && /unreachable after range adjustment/.test(error.message)) {
-          log(`skip ${profile}/${spot.id}: unreachable adjusted history`); continue;
+      let inputs, opponentSeat;
+      if (present) {
+        const candidates = POLICY_ROLES.flatMap(role => [flop[role], later[role]]);
+        const declaredSeats = new Set(candidates.flatMap(item => {
+          const metadata = item?.metadata ?? {};
+          const values = [metadata.opponent_seat, metadata.opponentSeat].filter(value => value !== undefined);
+          if (values.some(value => value !== "ip" && value !== "oop") || new Set(values).size > 1) {
+            throw new Error("Invalid or conflicting opponent-seat metadata");
+          }
+          return values;
+        }));
+        if (declaredSeats.size > 1) throw new Error("Profile policy pair mixes opponent seats");
+        const seats = declaredSeats.size ? [...declaredSeats] : ["ip", "oop"];
+        const matches = [];
+        for (const seat of seats) {
+          try {
+            const candidateInputs = inputsFor(spot.id, generationInputOptions(spot.id, profile, seat));
+            const sourceHashesMatch = candidates.every(item => item?.metadata?.source_hash === candidateInputs.fingerprint);
+            const seatMetadataMatches = candidates.every(item => {
+              const metadata = item?.metadata ?? {};
+              return (metadata.opponent_seat === undefined || metadata.opponent_seat === seat) &&
+                (metadata.opponentSeat === undefined || metadata.opponentSeat === seat);
+            });
+            if (sourceHashesMatch && seatMetadataMatches) matches.push({ seat, inputs: candidateInputs });
+          } catch { /* A seat without usable profile source data cannot match a saved source hash. */ }
         }
-        throw error;
+        if (matches.length !== 1) throw new Error("Profile source hashes do not identify exactly one opponent seat");
+        ({ seat: opponentSeat, inputs } = matches[0]);
+      } else {
+        // Preserve the existing preparing/unreachable behavior for absent units.
+        try {
+          opponentSeat = generationInputOptions(spot.id, profile).opponentSeat;
+          inputs = inputsFor(spot.id, generationInputOptions(spot.id, profile));
+        } catch (error) {
+          if (/unreachable after range adjustment/.test(error.message)) {
+            log(`skip ${profile}/${spot.id}: unreachable adjusted history`); continue;
+          }
+          throw error;
+        }
       }
       if (!present && !requireAll) { log(`skip ${profile}/${spot.id}: profile policy is not generated`); continue; }
       if (present !== 4) throw new Error(`Incomplete generated profile policy: ${present}/4 files`);
@@ -218,9 +249,19 @@ export function publishableProfiles(log = console.log, { requireAll = false, spo
       }
       const resolved = resolveFlopCandidate(inputs, flop);
       resolveLaterCandidate(inputs, later, resolved);
-      published.push({ profile, spot, flop, later });
+      published.push({ profile, spot, flop, later, opponentSeat });
       log(`publish ${profile}/${spot.id}: villain+exploit flop+later`);
     } catch (error) { throw new Error(`${profile}/${spot.id} is not publishable: ${error.message}`, { cause: error }); }
   }
   return published;
+}
+
+function itemOpponentSeat({ flop, later, opponentSeat }) {
+  const values = POLICY_ROLES.flatMap(role => [flop[role], later[role]]).map(item =>
+    item?.metadata?.opponent_seat ?? item?.metadata?.opponentSeat).filter(value => value !== undefined);
+  const selected = opponentSeat ?? values[0];
+  if (!selected || !["ip", "oop"].includes(selected) || values.some(value => value !== selected) || new Set(values).size > 1) {
+    throw new Error("Profile publication requires one verified opponent seat per unit");
+  }
+  return selected;
 }
