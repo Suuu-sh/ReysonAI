@@ -38,6 +38,8 @@ Signed-out users open the existing ReysonAI sign-in page in another tab, sign in
 - Signing out of the website does not revoke an independently authorized MCP connection. The connection page makes that distinction explicit.
 - Request bodies, tool schemas, data sizes, SQL projections and pagination are bounded. Invalid origins are rejected by exact scheme/host/port, not just by CORS.
 
+The MCP postflop catalog reader accepts the legacy complete `detail_json.spots` release and the current publisher's `spot-upsert` metadata when `touched_spots` exactly matches every current D1 spot and policy hash. The publisher can emit a partial touched set while preserving older rows; that partial publication remains unsupported by MCP and fails closed until its catalog-preservation semantics are reviewed.
+
 ## Client compatibility and setup (not executed)
 
 Both current OpenAI and Claude documentation support predefined OAuth clients:

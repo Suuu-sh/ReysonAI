@@ -129,16 +129,34 @@ function remoteIO(plan) {
   };
 }
 
-const assertCors = response => {
+// Public dataset/MW3 routes are anonymous reads: the browser sends no cookies,
+// so they require the exact allowed Origin but must not grant credentialed CORS.
+export const assertPublicCors = response => {
+  assert.equal(response.headers.get('access-control-allow-origin'), origin);
+  assert.equal(response.headers.get('access-control-allow-credentials'), null);
+};
+// Account/ranked/FastFold routes use the HttpOnly account cookie and retain the
+// exact-origin credential requirement, including anonymous rejection responses.
+export const assertCredentialedCors = response => {
   assert.equal(response.headers.get('access-control-allow-origin'), origin);
   assert.equal(response.headers.get('access-control-allow-credentials'), 'true');
 };
+export function assertMw3DeliveryEtag(response, deliveryHash) {
+  assert.match(deliveryHash, /^[a-f0-9]{64}$/);
+  const strong = `"${deliveryHash}"`;
+  const etag = response.headers.get('etag');
+  assert.ok(etag === strong || etag === `W/${strong}`, 'Missing or mismatched MW3 delivery ETag');
+  return etag;
+}
+export function mw3IfNoneMatchHeaders(response, deliveryHash) {
+  return { 'If-None-Match': assertMw3DeliveryEtag(response, deliveryHash) };
+}
 export async function verifyMw3Live(plan, fetcher = fetch) {
   const request = (path, options = {}) => fetcher(`${api}${path}`, { ...options,
     headers: { Accept: 'application/json', Origin: origin, ...options.headers }, signal: AbortSignal.timeout(15000) });
   const datasets = {};
   for (const name of ['opening-ranges', 'preflop-ranges', 'multiway-responses']) {
-    const response = await request(`/v1/preflop/datasets/${name}`); assertCors(response); assert.equal(response.status, 200);
+    const response = await request(`/v1/preflop/datasets/${name}`); assertPublicCors(response); assert.equal(response.status, 200);
     datasets[name] = await response.json();
     assert.deepEqual(datasets[name], JSON.parse(readFileSync(join(ROOT, `apps/frontend/src/estimated/${name}.json`), 'utf8')), 'Live preflop source differs');
   }
@@ -148,15 +166,15 @@ export async function verifyMw3Live(plan, fetcher = fetch) {
     const inputs = await buildMw3BrowserInputs(pin.spotId, datasets);
     assert.equal(inputs.fingerprint, pin.sourceHash, 'Actual live consumer preflop fingerprint differs');
     const path = `/v1/mw3/manifest?delivery=${delivery.deliveryHash}`;
-    const response = await request(path); assertCors(response); assert.equal(response.status, 200);
+    const response = await request(path); assertPublicCors(response); assert.equal(response.status, 200);
     const text = await response.text(); assert.equal(text, delivery.headerText); assert.equal(sha256(text), delivery.deliveryHash);
-    assert.equal(response.headers.get('etag'), `"${delivery.deliveryHash}"`);
-    const cached = await request(path, { headers: { 'If-None-Match': `"${delivery.deliveryHash}"` } }); assertCors(cached); assert.equal(cached.status, 304);
+    const cached = await request(path, { headers: mw3IfNoneMatchHeaders(response, delivery.deliveryHash) }); assertPublicCors(cached); assert.equal(cached.status, 304);
+    assertMw3DeliveryEtag(cached, delivery.deliveryHash); assert.equal(await cached.text(), '');
     const parts = [];
     for (let offset = 0; offset < delivery.parts.length; offset += 8) {
       const batch = await Promise.all(delivery.parts.slice(offset, offset + 8).map(async part => {
         const fetched = await request(`/v1/mw3/part?delivery=${delivery.deliveryHash}&part=${part.part}`);
-        assertCors(fetched); assert.equal(fetched.status, 200);
+        assertPublicCors(fetched); assert.equal(fetched.status, 200);
         const body = await fetched.json(); assert.deepEqual(body, { part: part.part, body: part.body });
         assert.equal(sha256(body.body), delivery.header.partHashes[part.part]); return body;
       }));
@@ -176,11 +194,13 @@ export async function verifyMw3Live(plan, fetcher = fetch) {
     [`/v1/mw3/manifest?delivery=${pin}`,405,'method_not_allowed','POST'],
     ['/v1/fastfold/human/history',401,'sign_in_required'],
   ]) {
-    const response = await request(path, { method: method ?? 'GET' }); assertCors(response);
+    const response = await request(path, { method: method ?? 'GET' });
+    if (path === '/v1/fastfold/human/history') assertCredentialedCors(response);
+    else assertPublicCors(response);
     assert.equal(response.status, status); assert.equal((await response.json()).error, error);
   }
   const preflight = await request(`/v1/mw3/manifest?delivery=${pin}`, { method: 'OPTIONS', headers: { 'Access-Control-Request-Method': 'GET' } });
-  assertCors(preflight); assert.equal(preflight.status, 204);
+  assertPublicCors(preflight); assert.equal(preflight.status, 204);
   return { verified_deliveries: plan.summary.deliveries, verified_parts: count, live_preflop_source_fingerprints: 'all-16-passed',
     browser_candidate_contract: 'all-32-passed', public_cors: 'passed', anonymous_history: 'rejected', real_authenticated_browser: 'not-run' };
 }

@@ -8,6 +8,10 @@ const cardsToInt = (cards: string[]) => cardIds(cards.join(""), cards.length);
 const validCards = (cards: string[], count: number) => cards.length === count && cards.every(card => /^[2-9TJQKA][shdc]$/.test(card)) && new Set(cards).size === count;
 export type Mw3RangeSelection = { flopCards: string[]; flopActions: string[]; turnCard: string; turnActions: string[]; riverCard: string; riverActions: string[] };
 
+export function currentMw3PotBb(navigation: { settledPotBb?: number | null; table?: { pot?: number | null } | null } | null | undefined) {
+  return navigation?.settledPotBb ?? navigation?.table?.pot ?? null;
+}
+
 // Chronological chip/action presentation uses the dedicated state machine even
 // after 3→2. It never creates a strategy; the view needs a verified delivery kit.
 export function buildMw3RangeNavigation(spot: any, selection: Mw3RangeSelection, locale = "en") {
