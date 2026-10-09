@@ -187,12 +187,12 @@ export async function connectionsPage(request: Request, env: McpEnv, config: Mcp
     // User identity is taken only from the existing authenticated browser session.
     await revokeGrantAuthoritatively(env, { userId: session.userId, grantId: grant });
     await oauth.revokeGrant(grant, session.userId);
-    return html('<h1>Connection revoked</h1><p>New MCP requests and refreshes are now blocked. A request already executing may finish. No new access token is issued here.</p><p><a href="./connections">Back to connections</a></p>');
+    return html('<h1>Connection revoked</h1><p>New MCP requests and refreshes are now blocked. A request already executing may finish. No new access token is issued here.</p><p class="manage-link"><a href="./connections">Back to connections</a></p>');
   }
   if (request.method !== 'GET') return errorResponse('method_not_allowed', 405);
   const cursor = new URL(request.url).searchParams.get('cursor') ?? undefined;
   if (cursor && cursor.length > 2048) return errorResponse('invalid_cursor', 400);
   const grants = await oauth.listUserGrants(session.userId, { limit: 20, cursor });
-  const entries = await Promise.all(grants.items.filter(grant => grant.userId === session.userId && grant.resource === config.resource).map(async grant => `<li>Client: ${escapeHtml(grant.clientId)}<br>Permissions: ${escapeHtml(grant.scope.join(', '))}<form method="post"><input type="hidden" name="grant" value="${escapeHtml(grant.id)}"><input type="hidden" name="session_proof" value="${await sessionProof(session, `revoke:${grant.id}`)}"><button>Revoke this connection</button></form></li>`));
-  return oauthFormHtml(`<h1>Your ReysonAI MCP connections</h1><p>Signing out of the website does not revoke these separate connections. Revoke each one here when you no longer want it to read your data.</p><ul>${entries.join('')}</ul>${grants.cursor ? `<a href="?cursor=${encodeURIComponent(grants.cursor)}">Next page</a>` : ''}`);
+  const entries = await Promise.all(grants.items.filter(grant => grant.userId === session.userId && grant.resource === config.resource).map(async grant => `<li><div>${escapeHtml(grant.clientId)}<span>${escapeHtml(grant.scope.join(', '))}</span></div><form method="post"><input type="hidden" name="grant" value="${escapeHtml(grant.id)}"><input type="hidden" name="session_proof" value="${await sessionProof(session, `revoke:${grant.id}`)}"><button>Revoke</button></form></li>`));
+  return oauthFormHtml(`<h1>Your ReysonAI MCP connections</h1><p>Signing out of the website does not revoke these separate connections. Revoke each one here when you no longer want it to read your data.</p>${entries.length ? `<ul class="connection-list">${entries.join('')}</ul>` : '<p class="empty-state">No connections yet.</p>'}${grants.cursor ? `<p class="manage-link"><a href="?cursor=${encodeURIComponent(grants.cursor)}">Next page</a></p>` : ''}`);
 }
