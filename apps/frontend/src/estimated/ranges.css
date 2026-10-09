@@ -466,7 +466,7 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .opponent-profile-option[aria-pressed="true"] .opponent-profile-check { border-color: var(--accent); box-shadow: inset 0 0 0 3px var(--surface-raised), inset 0 0 0 8px var(--accent); }
 .opponent-profile-text { display: grid; gap: 2px; min-width: 0; }
 .opponent-profile-text strong { font-size: 13px; font-weight: 700; }
-.opponent-profile-text small { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: var(--text-muted); font-size: 11px; line-height: 1.45; }
+.opponent-profile-text small { color: var(--text-muted); font-size: 12px; line-height: 1.55; }
 .opponent-seat-options { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .opponent-seat-option { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 52px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-raised); color: var(--text); font: inherit; cursor: pointer; transition: border-color .15s ease, background-color .15s ease; }
 .opponent-seat-option:hover:not(:disabled) { border-color: var(--line-strong); }
