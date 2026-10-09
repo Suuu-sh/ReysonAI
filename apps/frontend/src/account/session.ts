@@ -48,22 +48,21 @@ export function refreshAccount() {
     transitioning = true; ready = false; emit();
     clearTimeout(timer);
     await pending;
+    let nextUser: AccountUser | null = user;
+    let identityChanged = false;
+    let ownerMismatch = false;
     try {
       const result = await accountRequest("session");
-      const nextUser = result.user;
-      if (user?.id !== nextUser?.id) {
-        // Never leave one account's snapshot readable while a different
-        // authenticated identity is being loaded.
-        user = nextUser;
-        data = {}; version = 0; snapshotOwnerId = null; dirty = false;
-      }
+      nextUser = result.user;
+      identityChanged = user?.id !== nextUser?.id;
       let saved: AccountResponses["data"] | undefined;
       if (nextUser?.verified) {
         saved = await accountRequest("data");
-        if (saved.ownerId !== nextUser.id) throw new Error("session");
+        if (saved.ownerId !== nextUser.id) { ownerMismatch = true; throw new Error("session"); }
       }
       // Install the snapshot only after /data proves it belongs to the
       // authenticated owner returned by /session.
+      if (identityChanged) { data = {}; version = 0; snapshotOwnerId = null; dirty = false; }
       user = nextUser;
       available = true;
       if (user?.verified && saved) {
@@ -72,7 +71,11 @@ export function refreshAccount() {
         snapshotOwnerId = user.id;
       } else { data = {}; snapshotOwnerId = null; }
       dirty = false; error = "";
-    } catch (cause) { available = ["session", "verification"].includes((cause as Error).message); error = (cause as Error).message === "disabled" ? "" : available ? (cause as Error).message : "request"; }
+    } catch (cause) {
+      if (identityChanged && !ownerMismatch) { user = nextUser; data = {}; version = 0; snapshotOwnerId = null; dirty = false; }
+      available = ["session", "verification"].includes((cause as Error).message);
+      error = (cause as Error).message === "disabled" ? "" : available ? (cause as Error).message : "request";
+    }
     ready = true; transitioning = false; emit();
   })().finally(() => { refreshing = null; });
   return refreshing;
