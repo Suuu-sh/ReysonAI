@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import test from "node:test";
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -67,4 +69,77 @@ test("the MCP defence fork pins main numerical logic, seeded runouts, imports an
     "only the MCP rank-table cache budget differs from the shared source");
   assert.match(source.text, /const TIER_LIMIT = 3000;/);
   assert.match(adapter.text, /const TIER_LIMIT = 3000;/);
+});
+
+test("drift gate rejects mutations to formulas, hand classification, and the MCP fork copy", async () => {
+  const testPath = path.relative(root, fileURLToPath(import.meta.url)).split(path.sep).join("/");
+  const copiedPaths = [...new Set([sourcePath, adapterPath, ...Object.keys(importedSourceSha256), testPath])];
+  const mutations = [
+    {
+      name: "main defence formula",
+      file: sourcePath,
+      before: "const DEFENCE_FLOOR_MARGIN = 0.1;",
+      after: "const DEFENCE_FLOOR_MARGIN = 0.11;",
+      diagnostic: /the main defence\.ts base changed/,
+    },
+    {
+      name: "hand-tier classification dependency",
+      file: "apps/frontend/scripts/postflop-ai/hu-hand-tier.ts",
+      before: 'if (category > 3) return "monster";',
+      after: 'if (category > 2) return "monster";',
+      diagnostic: /hu-hand-tier\.ts changed/,
+    },
+    {
+      name: "unexpected MCP fork formula difference",
+      file: adapterPath,
+      before: "const LOGISTIC_SCALE = 0.02;",
+      after: "const LOGISTIC_SCALE = 0.03;",
+      diagnostic: /the static MCP fork changed/,
+    },
+  ];
+
+  const fixtureRoot = await mkdtemp(path.join(tmpdir(), "mcp-postflop-defence-drift-"));
+  try {
+    const originals = new Map();
+    for (const relativePath of copiedPaths) {
+      const sourceFile = path.join(root, relativePath);
+      const targetFile = path.join(fixtureRoot, relativePath);
+      await mkdir(path.dirname(targetFile), { recursive: true });
+      const original = await readFile(sourceFile);
+      originals.set(relativePath, original);
+      await copyFile(sourceFile, targetFile);
+    }
+
+    for (const mutation of mutations) {
+      const targetFile = path.join(fixtureRoot, mutation.file);
+      const original = originals.get(mutation.file).toString("utf8");
+      assert.equal(original.split(mutation.before).length - 1, 1,
+        `${mutation.name} fixture must match one exact expression`);
+      await writeFile(targetFile, original.replace(mutation.before, mutation.after));
+
+      const copiedTest = path.join(fixtureRoot, testPath);
+      const env = { ...process.env };
+      delete env.NODE_TEST_CONTEXT;
+      const result = spawnSync(process.execPath, ["--test", copiedTest], {
+        cwd: fixtureRoot,
+        env,
+        encoding: "utf8",
+        timeout: 10_000,
+      });
+      assert.ifError(result.error);
+      assert.equal(result.status, 1,
+        `${mutation.name} unexpectedly passed the copied drift gate\n${result.stdout}\n${result.stderr}`);
+      assert.match(`${result.stdout}\n${result.stderr}`, mutation.diagnostic,
+        `${mutation.name} was rejected for the expected pinned source/fork mismatch`);
+
+      await writeFile(targetFile, originals.get(mutation.file));
+    }
+
+    for (const [relativePath, original] of originals) {
+      assert.deepEqual(await readFile(path.join(root, relativePath)), original,
+        `${relativePath} in the real worktree must remain untouched`);
+    }
+  } finally {
+    await rm(fixtureRoot, { recursive: true, force: true });
+  }
 });
