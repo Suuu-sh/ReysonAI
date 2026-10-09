@@ -299,17 +299,15 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, r
     </div>
 
     <section className="analysis-card practice-animals" aria-label={localized("Drill play styles", "ドリルのプレイスタイル")}>
-      <p>{localized("Animals describe deviations from the estimate for the same drill questions, not Agent-table VPIP/PFR or real-money play.", "動物は同じドリル問題の推定方針との差を表します。Agent卓のVPIP・PFRや実戦の打ち方の判定ではありません。")}</p>
+      <p>{localized("Types describe deviations from the estimate for the same drill questions, not Agent-table VPIP/PFR or real-money play.", "タイプは同じドリル問題の推定方針との差を表します。Agent卓のVPIP・PFRや実戦の打ち方の判定ではありません。")}</p>
       <ol className="style-roster">{(["nit", "tight_passive", "tag", "passive", "balanced", "aggressive", "station", "lag"] as const).map(id => {
         const style = STYLES[id], current = animal.id === id;
         return <li key={id} className={current ? "is-current" : ""} aria-current={current ? "true" : undefined} style={{ "--style": style.color } as CSSProperties}>
-          <StyleAvatar id={id} color={style.color} size={40} dim={!current} /><span>{localized(style.mascot.en, style.mascot.ja)}</span>
+          <StyleAvatar id={id} color={style.color} size={40} dim={!current} /><span>{localized(style.name.en, style.name.ja)}</span>
         </li>;
       })}</ol>
       <p>{localized(PRACTICE_EXPLANATIONS[analysis.style.key], analysis.style.explanation)}</p>
     </section>
-
-    {history.length > 0 && <Breakdown history={history} />}
 
     <div className="analysis-main">
       <DrillStyleMap analysis={analysis} />
@@ -320,6 +318,8 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, r
         <button type="button" className="analysis-start" onClick={onStart}>ドリルを選ぶ<ArrowRight size={15} /></button>
       </section>}
     </div>
+
+    {history.length > 0 && <Breakdown history={history} />}
     {analysis.samples > 0 && <>
       {progress.answered > 0 && <ScoreChart progress={progress} />}
       <div className="analysis-bottom" aria-label="練習結果の強みと弱点">
