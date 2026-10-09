@@ -18,7 +18,9 @@ export function AuthPanel({ onChanged = () => {}, onGuest }: { onChanged?: () =>
   const perform = async (action: () => void | Promise<void>) => {
     setBusy(true); setMessage("");
     try { await action(); }
-    catch { setMessage(t("Unable to complete this request. Check your connection. No automatic retry was made.", "処理できませんでした。接続を確認してください。自動再試行はしていません。")); }
+    catch (cause) { setMessage((cause as Error)?.message === "payload_too_large"
+      ? t("This data exceeds the 500 KB account-sync limit. It was not uploaded and the account snapshot was not replaced. No automatic retry was made; keep this page open and export before reloading or signing out.", "このデータはアカウント同期の上限（500 KB）を超えています。アップロードされず、アカウントの記録も置き換わっていません。自動再試行はありません。再読込やログアウトの前に、この画面を開いたままデータを書き出してください。")
+      : t("Unable to complete this request. Check your connection. No automatic retry was made.", "処理できませんでした。接続を確認してください。自動再試行はしていません。")); }
     finally { setBusy(false); }
   };
   return <section className="account-card account-auth">
@@ -38,7 +40,7 @@ export function AuthPanel({ onChanged = () => {}, onGuest }: { onChanged?: () =>
       <div className="account-auth-actions"><button type="button" className="account-primary" disabled={busy || !available} onClick={() => perform(startGoogleSignIn)}>{t("Sign in with Google", "Googleでログイン")}</button></div>
     </>}
     {message && <p className="account-notice" role="status"><WarningCircle size={16} weight="fill" aria-hidden="true" /><span>{message}</span></p>}
-    {error && sessionUser && <p className="account-notice" role="alert"><WarningCircle size={16} weight="fill" aria-hidden="true" /><span>{error === "conflict" ? t("Another device changed this account. Saving is paused; reload to load the latest account data. Unsaved edits are not uploaded.", "別の端末で更新されました。保存を停止しました。再読込で最新データを取得できます。未保存の変更はアップロードされません。") : t("Account saving is unavailable. No automatic retry was made. Export your records before reloading or signing out.", "アカウント保存が利用できません。自動再試行はしていません。再読込やログアウト前に記録を書き出してください。")}</span></p>}
+    {error && sessionUser && <p className="account-notice" role="alert"><WarningCircle size={16} weight="fill" aria-hidden="true" /><span>{error === "conflict" ? t("Another device changed this account. Saving is paused; reload to load the latest account data. Unsaved edits are not uploaded.", "別の端末で更新されました。保存を停止しました。再読込で最新データを取得できます。未保存の変更はアップロードされません。") : error === "payload_too_large" ? t("This account snapshot exceeds the 500 KB sync limit. Saving is paused; the account snapshot was not replaced. Keep this page open and export your records before reloading or signing out.", "アカウントの記録が同期上限（500 KB）を超えています。保存を停止し、アカウントの記録は置き換えていません。再読込やログアウトの前に、この画面を開いたままデータを書き出してください。") : t("Account saving is unavailable. No automatic retry was made. Export your records before reloading or signing out.", "アカウント保存が利用できません。自動再試行はしていません。再読込やログアウト前に記録を書き出してください。")}</span></p>}
     {onGuest && <button className="account-secondary" disabled={busy} onClick={onGuest}>{t("Continue to range analysis as guest", "ゲストとしてレンジ分析へ")}</button>}
   </section>;
 }
