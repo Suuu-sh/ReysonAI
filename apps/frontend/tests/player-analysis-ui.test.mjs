@@ -77,14 +77,32 @@ test("drill styles keep animal avatars with type labels after the existing diver
   for (const [key, id] of [["nit", "nit"], ["tag", "tag"], ["lag", "lag"], ["calling", "station"], ["tight", "tight_passive"], ["balanced", "balanced"]]) {
     assert.equal(practiceAnimal({ ready: true, style: { key } }).id, id);
   }
-  const html = renderToStaticMarkup(createElement(PlayerAnalysis, { history: [], onStart() {} }));
-  assert.match(html, /ドリルのプレイスタイル/);
-  assert.match(html, /タイプは同じドリル問題の推定方針との差を表します。Agent卓のVPIP・PFR/);
-  const document = new JSDOM(html).window.document;
+  const previousWindow = globalThis.window;
+  let locale = "ja";
+  globalThis.window = { localStorage: { getItem: key => key === "reysonai:locale:v1" ? locale : null } };
   const ids = ["nit", "tight_passive", "tag", "passive", "balanced", "aggressive", "station", "lag"];
-  const roster = [...document.querySelectorAll(".style-roster li")];
-  assert.deepEqual(roster.map(item => item.querySelector("span")?.textContent), ids.map(id => STYLES[id].name.ja));
-  assert.equal(document.querySelectorAll(".style-roster svg.style-unit[aria-hidden=\"true\"]").length, ids.length);
+  const locales = [
+    ["en", "Types describe deviations from the estimate for the same drill questions, not Agent-table VPIP/PFR or real-money play.", ["Nit", "Tight-passive", "TAG", "Passive-leaning", "Balanced", "Aggressive-leaning", "Calling station", "LAG"]],
+    ["ja", "タイプは同じドリル問題の推定方針との差を表します。Agent卓のVPIP・PFRや実戦の打ち方の判定ではありません。", ["NIT", "タイト・パッシブ", "TAG", "パッシブ寄り", "バランス型", "アグレッシブ寄り", "コーリングステーション", "LAG"]],
+    ["zh-CN", "类型表示在相同训练题目中与估计策略的偏差，并不代表Agent牌桌的VPIP/PFR或真钱游戏表现。", ["极紧型", "紧弱型", "TAG", "偏被动", "平衡型", "偏激进", "跟注站", "LAG"]],
+    ["es", "Los tipos describen las desviaciones respecto a la estimación de las mismas preguntas de práctica; no representan el VPIP/PFR en mesas Agent ni el juego con dinero real.", ["Nit", "Conservador pasivo", "TAG", "Tendencia pasiva", "Equilibrado", "Tendencia agresiva", "Pagador habitual", "LAG"]],
+  ];
+  try {
+    assert.equal(ids.length, Object.keys(STYLES).length - 1);
+    assert.match(renderToStaticMarkup(createElement(PlayerAnalysis, { history: [], onStart() {} })), /ドリルのプレイスタイル/);
+    for (const [selectedLocale, explanation, expectedNames] of locales) {
+      locale = selectedLocale;
+      const html = renderToStaticMarkup(createElement(PlayerAnalysis, { history: [], onStart() {} }));
+      const document = new JSDOM(html).window.document;
+      assert.equal(document.querySelector(".practice-animals > p")?.textContent, explanation, selectedLocale);
+      const roster = [...document.querySelectorAll(".style-roster li")];
+      assert.deepEqual(roster.map(item => item.querySelector("span")?.textContent), expectedNames, selectedLocale);
+      assert.equal(document.querySelectorAll(".style-roster svg.style-unit[aria-hidden=\"true\"]").length, ids.length, selectedLocale);
+    }
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window;
+    else globalThis.window = previousWindow;
+  }
 });
 
 test("ranked stats require live FastFold access and never substitute legacy quiz or drill records", async () => {

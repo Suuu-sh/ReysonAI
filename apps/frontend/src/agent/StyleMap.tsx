@@ -12,7 +12,7 @@ type Props = {
   waiting: string; explanation: string; baselineRadius?: number;
 };
 
-function zoneName(id: StyleId) {
+export function styleTypeName(id: StyleId) {
   const names: Record<StyleId, [string, string, string, string]> = {
     collecting: ["Collecting", "集計中", "收集中", "Recopilando"],
     nit: ["Nit", "NIT", "极紧型", "Nit"],
@@ -46,7 +46,7 @@ export function StyleMap(props: Props) {
       <div className="play-style-map-grid">
         {props.zones.map((zone, index) => {
           const style = STYLES[zone.id], on = props.current === zone.id;
-          const name = zoneName(zone.id);
+          const name = styleTypeName(zone.id);
           const description = `${name} · ${props.source === "agent"
             ? t("Region based on VPIP and PFR/VPIP differences from the Agent baseline.", "Agent基準に対するVPIPとPFR/VPIPの差で分けた領域です。", "按VPIP及PFR/VPIP相对Agent基准的差异划分的区域。", "Región según diferencias de VPIP y PFR/VPIP respecto a la referencia de Agent.")
             : t("Region based on participation and 3bet differences from the same-question estimate.", "同じ問題の推定値に対する参加率と3bet率の差で分けた領域です。", "按参与率及3bet率相对同题估计的差异划分的区域。", "Región según diferencias de participación y 3bet respecto a la estimación de las mismas preguntas.")}`;
