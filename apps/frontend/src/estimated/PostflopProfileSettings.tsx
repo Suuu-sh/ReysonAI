@@ -32,23 +32,15 @@ export function OpponentSeatField({ seat, positions, onChange }: {
   </div>;
 }
 
-export function PostflopProfileSettings({ profile, seat, positions, onProfileChange }: {
-  profile: InputOpponentProfile; seat?: PlayerRole; positions?: { ip: string | null; oop: string | null };
-  onProfileChange?: (profile: InputOpponentProfile) => void;
-}) {
-  const opponent = seat && positions?.[seat];
-  return <Panel className="postflop-profile-settings">
-    <div className="postflop-profile-controls">
-      <div className="postflop-profile-field">
-        <span className="postflop-profile-label">{localized("Opponent tendencies", "相手の傾向")}{opponent && <small className="postflop-profile-seat"> · {localized("Opponent", "相手")} {opponent}</small>}</span>
-        <div className="display-mode-toggle" role="group" aria-label={localized("Opponent tendencies", "相手の傾向")}>
-          {POSTFLOP_OPPONENT_PROFILES.map(value => <button type="button" key={value} aria-pressed={value === profile}
-            disabled={!onProfileChange} onClick={() => onProfileChange?.(value)} title={opponentProfileCopy(value).description}>{opponentProfileCopy(value).name}</button>)}
-        </div>
-      </div>
+export function OpponentProfileField({ profile, onChange }: { profile: InputOpponentProfile; onChange?: (profile: InputOpponentProfile) => void }) {
+  return <div className="postflop-profile-field">
+    <span className="postflop-profile-label">{localized("Opponent tendencies", "相手の傾向")}</span>
+    <div className="display-mode-toggle" role="group" aria-label={localized("Opponent tendencies", "相手の傾向")}>
+      {POSTFLOP_OPPONENT_PROFILES.map(value => <button type="button" key={value} aria-pressed={value === profile}
+        disabled={!onChange} onClick={() => onChange?.(value)} title={opponentProfileCopy(value).description}>{opponentProfileCopy(value).name}</button>)}
     </div>
     <p className="postflop-profile-description">{opponentProfileCopy(profile).description}</p>
-  </Panel>;
+  </div>;
 }
 
 export function ProfilePolicyPreparing({ onRestoreStandard }: { onRestoreStandard?: () => void }) {

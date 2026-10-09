@@ -1047,9 +1047,9 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
         </div>
       </>}
       {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
-      {flopActive && flopDialogOpen && <FlopCardDialog cards={flopCards} seat={flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? undefined : effectiveOpponentSeat}
+      {flopActive && flopDialogOpen && <FlopCardDialog cards={flopCards} profile={opponentProfile} seat={flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? undefined : effectiveOpponentSeat}
         positions={{ ip: flopContext!.ip ?? null, oop: flopContext!.oop ?? null }} onClose={() => setFlopDialogOpen(false)}
-        onApply={(cards, seat) => { const seatChanged = !!seat && seat !== effectiveOpponentSeat; if (seatChanged) setOpponentSeat(seat); if (seatChanged || cards.join("") !== flopCards.join("")) { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); } setFlopDialogOpen(false); }} />}
+        onApply={(cards, seat, profile) => { if (profile) setOpponentProfile(profile); const seatChanged = !!seat && seat !== effectiveOpponentSeat; if (seatChanged) setOpponentSeat(seat); if (seatChanged || cards.join("") !== flopCards.join("")) { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); } setFlopDialogOpen(false); }} />}
       {flopActive && streetCardDialog && <StreetCardDialog street={streetCardDialog}
         currentCard={streetCardDialog === "turn" ? turnCard : riverCard}
         usedCards={[...flopCards, ...(streetCardDialog === "river" ? [turnCard] : [])].filter(Boolean)}

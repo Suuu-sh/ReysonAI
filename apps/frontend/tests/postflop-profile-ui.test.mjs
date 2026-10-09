@@ -83,13 +83,10 @@ test("profile and seat controls use all metadata names and native locales", () =
     es: ["Tendencias del rival", "Tight-pasivo (NIT)", "Calling station", "Loose-agresivo (LAG)", "Maníaco"] };
   for (const [locale, labels] of Object.entries(expected)) {
     window.localStorage.setItem("reysonai:locale:v1", locale);
-    const html = renderToStaticMarkup(createElement(module.PostflopProfileSettings, { profile: "nit", seat: "ip", positions: context,
-      onProfileChange() {} }));
+    const html = renderToStaticMarkup(createElement(module.FlopCardDialog, { cards: ["Ah", "7c", "2d"], profile: "nit", seat: "ip", positions: context, onApply() {}, onClose() {} }));
     for (const label of labels) assert.ok(html.includes(label), `${locale}: ${label}`);
-    assert.equal((html.match(/aria-pressed="true"/g) ?? []).length, 1);
-    assert.doesNotMatch(html, /BB · OOP/);
-    const dialog = renderToStaticMarkup(createElement(module.FlopCardDialog, { cards: ["Ah", "7c", "2d"], seat: "ip", positions: context, onApply() {}, onClose() {} }));
-    assert.match(dialog, /BTN · IP/); assert.match(dialog, /BB · OOP/);
+    assert.match(html, /aria-pressed="true"[^>]*>[^<]*NIT/); assert.match(html, /aria-pressed="true"[^>]*>BTN · IP/);
+    assert.match(html, /BTN · IP/); assert.match(html, /BB · OOP/);
     assert.doesNotMatch(html, /linear-gradient|style=/);
   }
   window.localStorage.setItem("reysonai:locale:v1", "en");
@@ -99,7 +96,7 @@ test("switching to a missing profile removes standard rows/details, retains cont
   calls.length = 0; missingLater = false;
   function Harness() {
     const [profile, setProfile] = useState("standard"), [seat, setSeat] = useState("ip");
-    globalThis.__setSeat = setSeat;
+    globalThis.__setSeat = setSeat; globalThis.__setProfile = setProfile;
     return createElement(module.PostflopTrial, { context, cards: ["Ah", "7c", "2d"], opponentProfile: profile, opponentSeat: seat,
       tableProfile: { call: "normal", three_bet: "normal" }, onOpponentProfileChange: setProfile });
   }
@@ -108,7 +105,7 @@ test("switching to a missing profile removes standard rows/details, retains cont
     await act(async () => root.render(createElement(Harness))); await settle();
     assert.ok(document.querySelector("[data-testid=saved-profile-range]"));
     assert.ok(document.querySelector(".postflop-hand-detail"));
-    await act(async () => button("Tight-passive (NIT)").click()); await settle();
+    await act(async () => globalThis.__setProfile("nit")); await settle();
     assert.equal(document.querySelector("[data-testid=saved-profile-range]"), null);
     assert.equal(document.querySelector(".postflop-hand-detail"), null);
     assert.match(document.body.textContent, /policy is being prepared/);

@@ -434,22 +434,29 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
   .has-context-switch .settings-header { flex: 1 1 auto; }
   .action-seat-info.has-context-switch.is-open .settings-body { position: static; width: auto; padding: 0; border: 0; box-shadow: none; }
   .action-seat-info.has-context-switch.is-open .settings-backdrop { display: none; }
+  /* Postflop settings stay as compact as the board view; table details live in the format dialog. */
+  .action-seat-info.has-context-switch.is-open .settings-body ul { display: none; }
+  .action-seat-info.has-context-switch.is-open { display: grid; grid-template-columns: auto auto; column-gap: 6px; row-gap: 3px; align-items: center; }
+  .action-seat-info.has-context-switch.is-open .range-context-switch { grid-row: 1 / span 2; }
+  .action-seat-info.has-context-switch.is-open .settings-body { flex: 0 0 auto; }
+  .action-seat-info.has-context-switch.is-open .display-mode-toggle button { flex: 0 0 auto; padding: 4px 8px; font-size: 11px; }
+  .has-context-switch.is-open .settings-header { flex: 0 1 auto; gap: 4px; }
+  .has-context-switch.is-open .settings-toggle { font-size: 12px; }
 }
 
 /* Opponent profile controls share the existing segmented settings surface. */
-.postflop-profile-settings { margin-bottom: 10px; padding: 10px 12px; }
-.postflop-profile-controls { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: flex-start; }
+.flop-opponent-settings { display: grid; gap: 12px; margin-top: 14px; padding: 12px; border-radius: 10px; background: var(--surface-raised); }
 .postflop-profile-field { min-width: 0; display: grid; gap: 5px; }
 .postflop-profile-label { color: var(--text-muted); font-size: 12px; }
-.postflop-profile-settings .display-mode-toggle { flex-wrap: wrap; gap: 2px; }
-.postflop-profile-settings .display-mode-toggle button { min-height: 32px; white-space: normal; }
-.postflop-profile-settings button:focus-visible, .postflop-profile-preparing button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.postflop-profile-description, .postflop-profile-note p { margin: 7px 0 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+.flop-opponent-settings .display-mode-toggle { flex-wrap: wrap; gap: 2px; }
+.flop-opponent-settings .display-mode-toggle button { min-height: 32px; white-space: normal; }
+.flop-opponent-settings button:focus-visible, .postflop-profile-preparing button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.postflop-profile-description, .postflop-profile-note p { margin: 2px 0 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
 .postflop-profile-preparing > button { margin-top: 12px; min-height: 44px; }
 .postflop-adjusted-marker { display: inline-block; color: var(--text-muted); font-size: 11px; }
 .postflop-profile-note { margin-bottom: 10px; }
 @media (max-width: 650px) {
-  .postflop-profile-settings .display-mode-toggle button { min-height: 44px; }
+  .flop-opponent-settings .display-mode-toggle button { min-height: 44px; }
   .postflop-profile-field { width: 100%; }
-  .postflop-profile-settings .display-mode-toggle { width: 100%; }
+  .flop-opponent-settings .display-mode-toggle { width: 100%; }
 }
