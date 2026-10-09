@@ -4,7 +4,8 @@
 // node; it never generates a policy or fills a missing board/history.
 import { loadPublishedPostflopSourceDatasets, McpDataError, type ReadOnlyDatabase } from "./data.ts";
 import { canonicalFlop, remapFlopNode, hydrateFrame, unpackView, flopState, NODES, referenceLaterPolicy,
-  assertPolicyNodeComplete, buildInputs, evaluateFlopNodeCanonical, parseFlopBoard, validatePolicy,
+  assertPolicyNodeComplete, buildInputs, evaluateFlopNodeCanonical, projectPolicyRows, parseFlopBoard, validatePolicy,
+  DEFENCE_VERSION, EVALUATOR_VERSION,
   type FlopBase, type PackedView, type CodecView, type EvaluatedFlopNode, type FlopPolicy, type PostflopInputs } from "./postflop-shared.mjs";
 
 const KIND = "ai_estimate_not_gto" as const;
@@ -610,14 +611,15 @@ export async function evaluatePublishedPostflopPolicy(db: ReadOnlyDatabase | und
   const expectedSeat = state.role === "ip" ? inputs.spot.ip : inputs.spot.oop;
   if (evaluated.seat !== expectedSeat || JSON.stringify(evaluated.actions) !== JSON.stringify(NODES[state.node])) invalid();
   const datasets = sourceDatasets as Record<string, { contentHash: string }>;
-  const handClasses = evaluated.rows.map(row => ({ hand: row.hand, reachable: row.reachable, comboCount: row.comboCount,
-    frequencies: row.mix, tierWeights: row.tiers, reachWeight: row.reachWeight }));
+  const handClasses = projectPolicyRows(evaluated.rows);
   const result = {
     kind: KIND, notice: NOTICE, lookupMode: "published_flop_policy_evaluation", street: "flop",
     spot: spot.context, flop: parsed.id, canonicalFlop: canonical.key, history, node: state.node,
     actingSeat: evaluated.seat, actions: [...evaluated.actions], rangeStatus: "available", frequencyUnit: "fraction",
+    frequencyBasis: "preflop_range_weighted_projection",
     handClassCount: handClasses.length, hands: handClasses,
-    calculation: { method: "deterministic_shared_flop_estimate", savedBaseUsed: false, referenceFallbackUsed: false,
+    calculation: { method: "deterministic_shared_flop_estimate", evaluatorVersion: EVALUATOR_VERSION,
+      defenceVersion: DEFENCE_VERSION, savedBaseUsed: false, referenceFallbackUsed: false,
       defenceAdjustmentApplied: true, completeSavedRulesRequired: true, maxHandClasses: 169 },
     source: { postflop: { dataset: "postflop", contentHash: release.content_hash, publishedAt: release.published_at },
       policy: { contentHash: saved.policyHash, inputHash: saved.sourceHash },

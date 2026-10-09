@@ -28,3 +28,9 @@ export function evaluateFlopNodeCanonical(inputs: PostflopInputs, policy: FlopPo
   history?: string[] | null): EvaluatedFlopNode;
 export function assertPolicyNodeComplete(policy: FlopPolicy, node: string): void;
 export function validatePolicy(policy: unknown, tree?: string): FlopPolicy;
+export function projectPolicyRows(rows: EvaluatedFlopNode["rows"]): {
+  hand: string; preflopSupport: boolean; nodeReachable: boolean; comboCount: number;
+  frequencies: Record<string, number>; tierWeights: Record<string, number>; reachWeight: number;
+}[];
+export const DEFENCE_VERSION: number;
+export const EVALUATOR_VERSION: number;
