@@ -67,6 +67,20 @@ function makeFixture({ corruptHash = false, missingPart = false, oversizedPart =
       body: oversizedPart ? new Uint8Array(45_001) : [...zipped.subarray(0, cut)] },
     { spot_id: spotId, flop_key: boardKey, part: 1, parts: 2, content_hash: corruptHash ? "0".repeat(64) : baseHash, body: [...zipped.subarray(cut)] },
   ].slice(0, missingPart ? 1 : 2);
+  if (count > 1) {
+    const boardKeys = new Set([boardKey]), deckRanks = "KQJT98765432";
+    outer: for (let a = 0; a < deckRanks.length; a++) for (let b = a + 1; b < deckRanks.length; b++) for (let c = b + 1; c < deckRanks.length; c++) {
+      boardKeys.add(canonicalFlop(`${deckRanks[a]}c${deckRanks[b]}d${deckRanks[c]}h`).key);
+      if (boardKeys.size >= count) break outer;
+    }
+    if (boardKeys.size !== count) throw new Error("Not enough unique test boards");
+    for (const flopKey of boardKeys) {
+      if (flopKey === boardKey) continue;
+      const text = JSON.stringify({ ...rawBase, flop: flopKey });
+      const body = brotliCompressSync(text);
+      flopRows.push({ spot_id: spotId, flop_key: flopKey, part: 0, parts: 1, content_hash: digest(text), body: [...body] });
+    }
+  }
   const policyHashes = { [spotId]: { flop: flopHash, later: laterHash } };
   const versions = [
     { name: "postflop", content_hash: digest(JSON.stringify(policyHashes)), published_at: timestamp, detail_json: JSON.stringify({ spots: policyHashes }) },
@@ -128,6 +142,24 @@ test("coverage discovers only released spots, saved boards, and histories from a
   assert.equal(histories.canonicalFlop, boardKey);
   assert.deepEqual(histories.histories.map(item => [item.history, item.node, item.seat]), [[[], "btn_first", "BTN"], [["bet33"], "bb_vs_33", "BB"]]);
   assert.equal(histories.histories[0].actions[0], "check");
+});
+
+test("saved flop-board pagination handles first, middle and final pages", async () => {
+  const { db, tables } = makeFixture({ count: 41 });
+  const keys = tables.flopRows.filter(row => row.part === 0).map(row => row.flop_key).sort();
+  const first = await listPostflopCoverage(db, { spotId });
+  assert.equal(first.total, 41);
+  assert.deepEqual(first.boards.map(row => row.flop), keys.slice(0, 20));
+  assert.equal(first.nextOffset, 20);
+
+  const middle = await listPostflopCoverage(db, { spotId, offset: first.nextOffset });
+  assert.deepEqual(middle.boards.map(row => row.flop), keys.slice(20, 40));
+  assert.equal(middle.nextOffset, 40);
+
+  const last = await listPostflopCoverage(db, { spotId, offset: middle.nextOffset });
+  assert.deepEqual(last.boards.map(row => row.flop), keys.slice(40));
+  assert.equal(last.boards.length, 1);
+  assert.equal(last.nextOffset, null);
 });
 
 test("range retrieval returns exact saved combo mixes with path weights and does not leak all combos by default", async () => {

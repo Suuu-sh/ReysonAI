@@ -446,17 +446,19 @@ export async function listPostflopCoverage(db: ReadOnlyDatabase | undefined, inp
   const offset = bounded(input.offset, 0, 0, offsetMax);
   if (input.flop === undefined) {
     if (!total || !catalog.baseRelease) return { kind: KIND, notice: NOTICE, spotId: spot.context.id, publicationStatus: "no_saved_flop_bases", total: 0, boards: [], nextOffset: null };
-    const requested = Math.min(limit + 1, Math.max(1, total - offset + 1));
+    const remaining = Math.max(0, total - offset);
+    const requested = Math.min(limit + 1, Math.max(1, remaining));
     const rows = await query<{ flop_key: string; content_hash: string }>(db,
       "SELECT flop_key, content_hash FROM postflop_flop_base_br WHERE spot_id = ? AND part = 0 ORDER BY flop_key LIMIT ? OFFSET ?",
       spot.context.id, requested, offset);
-    const expected = Math.min(limit, Math.max(0, total - offset));
-    if (rows.length !== expected || rows.some(row => !requiredString(row.flop_key, 6) || !/^(?:[2-9TJQKA][cdhs]){3}$/.test(row.flop_key)
+    const expectedRows = Math.min(limit + 1, remaining);
+    if (rows.length !== expectedRows || rows.some(row => !requiredString(row.flop_key, 6) || !/^(?:[2-9TJQKA][cdhs]){3}$/.test(row.flop_key)
       || canonicalBoard(row.flop_key).key !== row.flop_key || !SHA256.test(row.content_hash))) invalid();
-    const boards = rows.map(row => ({ flop: row.flop_key, status: "saved", contentHash: row.content_hash }));
+    const pageRows = rows.slice(0, limit);
+    const boards = pageRows.map(row => ({ flop: row.flop_key, status: "saved", contentHash: row.content_hash }));
     const result = { kind: KIND, notice: NOTICE, spotId: spot.context.id, source: { dataset: "postflop_flop_base_br",
       publishedContentHash: catalog.baseRelease!.content_hash, publishedAt: catalog.baseRelease!.published_at }, total, boards,
-      nextOffset: offset + rows.length < total ? offset + rows.length : null };
+      nextOffset: rows.length > limit ? offset + limit : null };
     outputSize(result); return result;
   }
 
