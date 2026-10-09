@@ -86,10 +86,15 @@ export function flopUiComboFactsCanonical({ boardCards, node, cards, history, pr
     for (const item of range) if (compatible(item.combo)) { total += item.weight; folded += item.weight * item.fold; }
     actions[action] = { foldShare: rounded(total ? folded / total : 0) };
   }
-  const base = policyMix(policy, node, hero, boardCards, { requireSavedPolicy: Boolean(inputs.opponentProfile && inputs.opponentProfile !== "standard") });
+  const requireSavedPolicy = Boolean(inputs.opponentProfile && inputs.opponentProfile !== "standard");
+  const base = table || requireSavedPolicy
+    ? policyMix(policy, node, hero, boardCards, { requireSavedPolicy })
+    : null;
   const facing = table ? defence.facts(table, boardCards, node, hero, base) : null;
   const betting = table ? defence.bettingFacts(table, boardCards, node, hero) : null;
-  const profileReference = profileReferenceFacts(inputs, policy, null, table, boardCards, node, hero, base);
+  const profileReference = requireSavedPolicy
+    ? profileReferenceFacts(inputs, policy, null, table, boardCards, node, hero, base!)
+    : null;
   return { kind: "ai_estimate_not_gto", cards: comboKey(cards), node,
     ...(profileReference ? { profile_reference: profileReference } : {}),
     ...(Object.keys(unsupportedResponses).length ? { unsupported_actions: unsupportedResponses } : {}),

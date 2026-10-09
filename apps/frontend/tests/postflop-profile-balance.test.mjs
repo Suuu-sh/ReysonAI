@@ -5,6 +5,7 @@ import { checkFlopBalance, checkLaterBalance, checkProfileBalance } from "../scr
 import { referencePolicyFor, NODES } from "../scripts/postflop-ai/policy.ts";
 import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
 import { LATER_NODES } from "../scripts/postflop-ai/later-tree.ts";
+import { raiseDepth } from "../scripts/postflop-ai/tree.ts";
 import { parseCards } from "../scripts/postflop-ai/model.ts";
 
 const base = loadInputs("BTN_open_BB_call");
@@ -107,6 +108,47 @@ test("engine legalization cannot create an explicitly requested extra raise bran
   const result = checkProfileBalance(shortStack, flop, null, request(board, { flop: ["bet33", "raise"] }));
   assert.equal(errors(result)[0].check, "unreachable-branch");
   assert.match(errors(result)[0].detail, /terminal|all-in|legalized/);
+});
+
+test("requested nonstandard paths fail closed when saved flop or later re-raise policies are missing", () => {
+  const missingFlopReraises = clone(flop);
+  missingFlopReraises.rules = missingFlopReraises.rules.filter(rule => raiseDepth(rule.node) < 2);
+  const flopResult = checkProfileBalance(inputs, missingFlopReraises, null,
+    request(board, { flop: ["bet33", "raise", "raise", "raise"] }));
+  assert.equal(errors(flopResult)[0].check, "unreachable-branch");
+  assert.match(errors(flopResult)[0].detail, /No saved profile policy for bb_vs_raise2/);
+
+  const missingLaterReraises = clone(later);
+  for (const street of ["turn", "river"]) {
+    missingLaterReraises.streets[street].rules = missingLaterReraises.streets[street].rules
+      .filter(rule => raiseDepth(rule.node) < 2);
+  }
+  const turnBoard = parseCards("As7h2d3c", 4);
+  const laterRequest = { requestedPaths: [{ board: turnBoard,
+    path: { flop: ["bet33", "call"], turn: ["bet75", "raise", "raise", "raise"] } }] };
+  const laterResult = checkProfileBalance(inputs, missingFlopReraises, missingLaterReraises, laterRequest);
+  assert.equal(errors(laterResult)[0].check, "unreachable-branch");
+  assert.match(errors(laterResult)[0].detail, /No saved profile policy for turn_ip_vs_raise2/);
+});
+
+test("standard paths retain reference re-raise fallback and omitted paths are not inspected", () => {
+  assert.deepEqual(errors(checkProfileBalance(inputs, flop)), []);
+  assert.deepEqual(errors(checkProfileBalance(inputs, flop, later)), []);
+
+  const standard = { ...base, opponentProfile: "standard" };
+  const missingFlopReraises = clone(flop);
+  missingFlopReraises.rules = missingFlopReraises.rules.filter(rule => raiseDepth(rule.node) < 2);
+  const missingLaterReraises = clone(later);
+  for (const street of ["turn", "river"]) {
+    missingLaterReraises.streets[street].rules = missingLaterReraises.streets[street].rules
+      .filter(rule => raiseDepth(rule.node) < 2);
+  }
+  const flopRequest = request(board, { flop: ["bet33", "raise", "raise", "raise"] });
+  assert.deepEqual(errors(checkProfileBalance(standard, missingFlopReraises, null, flopRequest)), []);
+  const turnBoard = parseCards("As7h2d3c", 4);
+  const laterRequest = { requestedPaths: [{ board: turnBoard,
+    path: { flop: ["bet33", "call"], turn: ["bet75", "raise", "raise", "raise"] } }] };
+  assert.deepEqual(errors(checkProfileBalance(standard, missingFlopReraises, missingLaterReraises, laterRequest)), []);
 });
 
 test("explicit reach requires compatible holecards, not just two nonempty ranges", () => {

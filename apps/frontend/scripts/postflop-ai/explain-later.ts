@@ -285,8 +285,10 @@ export function explainLaterCombo({ flop, flopActions = "", turn, turnActions = 
     ...boardContext.decision, street, previousAggressor: boardContext.previousAggressor,
   }, inputs.spot, boardContext.decision.potBb, street === "turn" ? boardContext.turnReplay.stacks : boardContext.riverReplay!.stacks,
   heroDefence, defenceOf, requireSavedPolicy);
-  const profileReference = profileReferenceFacts(inputs, flopRules, laterRules, heroTable, board, boardContext.decision.node, hero,
-    laterPolicyMix(laterRules, boardContext.decision.node, hero, board, boardContext.decision.line, { requireSavedPolicy }));
+  const profileReference = requireSavedPolicy
+    ? profileReferenceFacts(inputs, flopRules, laterRules, heroTable, board, boardContext.decision.node, hero,
+      laterPolicyMix(laterRules, boardContext.decision.node, hero, board, boardContext.decision.line, { requireSavedPolicy }))
+    : null;
   return { kind: "ai_estimate_not_gto", node: boardContext.decision.node, street,
     ...(profileReference ? { profile_reference: profileReference } : {}),
     ...(Object.keys(result.unsupportedActions).length ? { unsupported_actions: result.unsupportedActions } : {}),

@@ -23,6 +23,41 @@ test("non-default table conditions keep the recorded HU pilot and restore its le
   assert.deepEqual(decoded.flopActions, ["check"]);
 });
 
+test("completed HU context preserves the default projection, permits adjusted HU and keeps MW3 standard-only", () => {
+  const value = state(), actionBlocks = buildRangeUrlActionBlocks(value);
+  const expectedDefault = { players: ["BTN", "BB"], potBb: 5.5, pilotAvailable: true,
+    spotId: "BTN_open_BB_call", ip: "BTN", oop: "BB", stackBb: 97.5, tree: "oop_checks" };
+  assert.deepEqual(completedFlopContext({ ...value, actionBlocks, isDefaultTable: true }), expectedDefault);
+  assert.deepEqual(completedFlopContext({ ...value, actionBlocks, isDefaultTable: false }), expectedDefault);
+  assert.deepEqual(completedFlopContext({ ...value, actionBlocks }), expectedDefault);
+
+  const mw3 = { rangeType: "response", opener: "CO", hero: "BB", callers: ["BTN", "BB"], foldedHero: true };
+  const mw3Blocks = buildRangeUrlActionBlocks(mw3);
+  const standard = completedFlopContext({ ...mw3, actionBlocks: mw3Blocks, isDefaultTable: true });
+  assert.equal(standard.kind, "mw3_srp");
+  assert.equal(standard.spotId, "CO_open_BTN_call_BB_call");
+  assert.equal(standard.mw3Available, true);
+  assert.equal(completedFlopContext({ ...mw3, actionBlocks: mw3Blocks, isDefaultTable: false }).mw3Available, false);
+  assert.equal(completedFlopContext({ ...mw3, actionBlocks: mw3Blocks }).mw3Available, false);
+});
+
+test("completed contexts reject malformed or pot-mismatched flop endings", () => {
+  const value = state(), actionBlocks = buildRangeUrlActionBlocks(value);
+  assert.equal(completedFlopContext({ ...value, actionBlocks: [] }), null);
+  assert.equal(completedFlopContext({ ...value, actionBlocks: [{ kind: "end", result: "not a flop", pot: "ポット 5.5bb" }] }), null);
+  assert.equal(completedFlopContext({ ...value, actionBlocks: [{ ...actionBlocks.at(-1), pot: "ポット unknown" }] }), null);
+  const mismatch = completedFlopContext({ ...value, actionBlocks: [{ ...actionBlocks.at(-1), pot: "ポット 6.5bb" }], isDefaultTable: false });
+  assert.equal(mismatch.pilotAvailable, false);
+  assert.equal(mismatch.spotId, null);
+
+  const mw3 = { rangeType: "response", opener: "CO", hero: "BB", callers: ["BTN", "BB"], foldedHero: true };
+  const mw3Blocks = buildRangeUrlActionBlocks(mw3);
+  const unavailable = completedFlopContext({ ...mw3, actionBlocks: [{ ...mw3Blocks.at(-1), pot: "ポット 9bb" }], isDefaultTable: true });
+  assert.equal(unavailable.kind, "multiway_unavailable");
+  assert.equal(unavailable.spotId, null);
+  assert.equal(unavailable.mw3Available, false);
+});
+
 test("default opponent follows the last SRP, 3bet, 4bet and history aggressor", () => {
   for (const [spotId, expected] of [
     ["BTN_open_BB_call", "ip"], ["SB_open_BB_call", "oop"],

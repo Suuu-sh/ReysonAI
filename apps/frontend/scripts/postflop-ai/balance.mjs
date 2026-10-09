@@ -385,13 +385,14 @@ function checkRequestedProfilePath(inputs, flop, later, request) {
     JSON.stringify(table.path[street]) !== JSON.stringify(path[street] ?? []))) {
     throw new Error("Requested path does not reach the pending decision (terminal, all-in, or legalized continuation)");
   }
+  const requireSavedPolicy = profileMode(inputs);
   const reached = seat => comboRange(inputs.seatRows[seat], "freq", board).map(item => {
     let weight = item.weight;
     for (const entry of table.log) {
       if (entry.seat !== seat || entry.action === null || !(weight > 0)) continue;
       const cards = board.slice(0, entry.boardLen);
-      const raw = entry.street === "flop" ? policyMix(flop, entry.node, item.combo, cards)
-        : laterPolicyMix(later, entry.node, item.combo, cards, entry.line);
+      const raw = entry.street === "flop" ? policyMix(flop, entry.node, item.combo, cards, { requireSavedPolicy })
+        : laterPolicyMix(later, entry.node, item.combo, cards, entry.line, { requireSavedPolicy });
       const mix = effectiveMix(withRaise(entry.node, raw), entry.canRaise);
       weight *= mix[entry.action] / 100;
     }

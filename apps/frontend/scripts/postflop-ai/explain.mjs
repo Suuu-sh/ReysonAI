@@ -170,7 +170,9 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
       bettingFacts = defence.bettingFacts(table, flop, node, hero);
     }
   }
-  const profileReference = profileReferenceFacts(inputs, policy, null, table, flop, node, hero, policyMix(policy, node, hero, flop, { requireSavedPolicy }));
+  const profileReference = requireSavedPolicy
+    ? profileReferenceFacts(inputs, policy, null, table, flop, node, hero, policyMix(policy, node, hero, flop, { requireSavedPolicy }))
+    : null;
   return { kind: "ai_estimate_not_gto", cards, node, ...(profileReference ? { profile_reference: profileReference } : {}),
     ...(Object.keys(unsupportedActions).length ? { unsupported_actions: unsupportedActions } : {}), equity: defenceFacts?.equity ?? equity, combos: villains.length, actions,
     ...(defenceFacts ? { defence: defenceFacts } : {}), ...(bettingFacts ? { betting: bettingFacts } : {}) };
