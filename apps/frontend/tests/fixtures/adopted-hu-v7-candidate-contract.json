@@ -1,0 +1,676 @@
+{
+  "schema_version": 1,
+  "status": "proposed_candidate_pending_independent_review",
+  "historical_contract": "apps/frontend/tests/fixtures/adopted-hu-v7-contract.json",
+  "baseline_commit": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+  "description": "Candidate HU-v7 compatibility proposal. This fixture supplements but does not replace historical pins and is not an accepted numerical receipt. Only explicit executable changes are allowed; default-standard behavior is compared with direct output digests captured from the historical baseline.",
+  "changed_modules": {
+    "apps/frontend/scripts/postflop-ai/defence.ts": {
+      "baseline_executable_ast_sha256": "5d4ff296e443e704e90b2639448d83408189962537f49c27fd833b3ec540dd60",
+      "candidate_executable_ast_sha256": "fd309e564372d832247e4d6a22d8db330a041cd676c3abbe4532c2289bcfff79",
+      "baseline_declarations": {
+        "DEFENCE_VERSION": "3654220dc76f6880da042cb60f19fcf935b9cd75e16601e3d17ee62ede660733",
+        "FLOP_RUNOUTS": "d9eb455217a86fa9cc4dddd30a5d6bceb4f690aee4a9d93d85c759ca9ac188aa",
+        "DEFENCE_FLOOR_MARGIN": "6b163caa72b84a4c23acbbff0f324ca6ca15a4bc1ef25c763aac300a422e2c79",
+        "LOGISTIC_SCALE": "8c4713004e8aa28f76e69589c2cf20d7e76b3019177947162c7ba3626534c7f7",
+        "VALUE_EQUITY": "78f321f549c1636e780f095c915dfb0a064c4c9081afa0e670fde3339ac54438",
+        "NUM_IDS": "2bcf1278f78ae08d99a608ae298bcc96a807886b15d8a9ae836ab76018b6d0a6",
+        "NONE": "b72d3a794aaa721a1001398a1d746201651144bcfd8348f974f7fdc7fc1d813c",
+        "TIER_INDEX": "d4de75eb2feb439ef36d68d31f464d00f6975209c032c8497ecf0886c4e2c62a",
+        "comboId": "04856b03cab5acf7ee8f202bf5359d2d435a1e91cb3eca1a7a00ad1fdec3fb0a",
+        "sortedKey": "f214f9f692e5f43bdc75af2c428b7ba5ee741bd5018dfe4845490f086451bcf5",
+        "round6": "e9f7a620c641113cebea38305b3ad178f034057fbfaddbd735a24f6c653d8629",
+        "round4": "66def9933568207c78931020ca3391d19057d80f665263055435d729203a6d38",
+        "textures": "4f25afdeba1379a3e1c14eef17126f796fe741e12e2db3edb22cdf86caecd268",
+        "textureOf": "47c4460887fb94afe65aba262d67edc30ccedaeaf9d6252c0b033e8729274bc8",
+        "isAggressive": "a0bd02de2247dba99622b493e407c87a5f7085a304b74a0553ca1f3fc7576f7a",
+        "r2": "5cb40ef0938caff22efae284c72ef11de499546d5b5864e9168db3811ee347bc",
+        "isBettingNode": "94a49af7b64cca605f99cda35195a851c955777ecffdf057a720978376192e2b",
+        "isFacingNode": "d64840a8690f8a11f95e90393886e75e44b04803feab695936b02c9e32cd21ce",
+        "streetOf": "9eb9cceddd06d3aceda4432cbfc6846ea41061e8e0a9920a76129108cd80fe0f",
+        "requiredEquity": "bfe07b9f9a2da8dfe644cf936d3bae993010285823d46e82a8b4665ffdacc928",
+        "logistic": "2cc27a1e30089337ca7b84d4b13145901d08ef74e8430eae549f3a2051c800a6",
+        "splitMix": "d61f4471e210a3728fe13295c37461612f7d079dbb7531329c200d3d67340228",
+        "tableCache": "68f59978babbf213ab4f6dfb9faa727c3d7b62c66f400cb2dee893f8918f0039",
+        "TABLE_LIMIT": "a4dd9c871e5cd23e721c3a8d645b04bb7f9888594017a27e1b5f76495c3c43a2",
+        "rankTable": "7e17965d088d53b5e9b06d29ae794139da1eed7cb47c7a75a8105dcd74a7db7d",
+        "tierCache": "9a9cef84f3a47538330e136c7e1c0ffbdcb0efbf12a1f6aaf47867acc9154fc8",
+        "TIER_LIMIT": "641e058bc226003bae1a0ff9c73df877058268565c2cbd5290b114b3bc810ebd",
+        "tierArray": "065e7e197600df027d89a441c5a1e7543ac3159c73b1a4b863db2bec9959f745",
+        "runoutCache": "2137c5ba12cc746309c7b2076ef38b849e7ffbc83900c9ac110f3b13a319c697",
+        "flopRunouts": "f2f7c7118118195f3987412bb0f5499e8e53a54db63c45a09416a9b4c30f7aa4",
+        "finalTables": "80d98ca76eec53085f87d620b59422a8eaae23229764dec807f57b2bef3a69ee",
+        "STOP": "6d6e29e1ae0b2e740b9fd332aa319aed53d9efcc20e89da1a6932d388db22b49",
+        "DefencePathError": "056c29289830923f2cf256a1c06fd601a8582e04eef4d6199594c0ae67e44258",
+        "pathError": "96fac1179d43508563c7186d6ca975d38f000945b8e710c9e6d0a0e3d20bb544",
+        "replayDecision": "57e1de921a4ef6a162f263c6fc3542e31f2f6d972d8a4ee5e5dca98895b139e1",
+        "replayOrNull": "905ecc5908500c71d101b19e88004a8fbb0bfe12f1e8053b1e84c20412fd3ed6",
+        "instances": "0a9bde55f7bf460da1ed7d357b699dbeaa31759f0e63783f2d6373760b04be65",
+        "NO_LATER": "f817e60afde5593ed0ead64aec30664476bb7cb5bb28194df28b32ea7beca9f1",
+        "defenceFor": "1944773a1e2b7438e3bcac625ee2a0573eabd9aa94be80fc2aa854c774c66ab5",
+        "LIMITS": "3c781c8ee1a581f775d2387812cc8e2fafdfda90510168b0e8373ca40407d058",
+        "FACT_RANGE_LIMITS": "908815b22ca2c607a4a6ddd44bdfd78f53b72392276685b00809fd40adc1dca8",
+        "COMPACT_CACHE_AFTER": "e10cc94b3fe69c83a45874175c442a5e22ac5d8ba71a1e43b9a87eb57b744985",
+        "Defence": "0e7c1a3c881365169d2b9c78182d396076e29e7939beeed369a1db8e96c37f62"
+      },
+      "candidate_declaration_names": [
+        "COMPACT_CACHE_AFTER",
+        "DEFENCE_FLOOR_MARGIN",
+        "DEFENCE_VERSION",
+        "Defence",
+        "DefencePathError",
+        "FACT_RANGE_LIMITS",
+        "FLOP_RUNOUTS",
+        "LIMITS",
+        "LOGISTIC_SCALE",
+        "NONE",
+        "NO_LATER",
+        "NUM_IDS",
+        "STOP",
+        "TABLE_LIMIT",
+        "TIER_INDEX",
+        "TIER_LIMIT",
+        "VALUE_EQUITY",
+        "comboId",
+        "defenceFor",
+        "finalTables",
+        "flopRunouts",
+        "instances",
+        "isAggressive",
+        "isBettingNode",
+        "isFacingNode",
+        "logistic",
+        "pathError",
+        "r2",
+        "rankTable",
+        "replayDecision",
+        "replayOrNull",
+        "requiredEquity",
+        "round4",
+        "round6",
+        "runoutCache",
+        "sortedKey",
+        "splitMix",
+        "streetOf",
+        "tableCache",
+        "textureOf",
+        "textures",
+        "tierArray",
+        "tierCache"
+      ],
+      "changed_declarations": {
+        "Defence": {
+          "baseline_sha256": "0e7c1a3c881365169d2b9c78182d396076e29e7939beeed369a1db8e96c37f62",
+          "candidate_sha256": "40e72a6ce2255a97be087b5c6e5a4d3b404a4dbc5dc6d269686b52820c12997b"
+        },
+        "defenceFor": {
+          "baseline_sha256": "1944773a1e2b7438e3bcac625ee2a0573eabd9aa94be80fc2aa854c774c66ab5",
+          "candidate_sha256": "29df300e5a39e656280679cdf635b96409d643a61b55480f381c240928226532"
+        },
+        "instances": {
+          "baseline_sha256": "0a9bde55f7bf460da1ed7d357b699dbeaa31759f0e63783f2d6373760b04be65",
+          "candidate_sha256": "14f1c5e83fc24110e52636838a289ed14023b48ac0060991249307fb05b9c03c"
+        }
+      }
+    },
+    "apps/frontend/scripts/postflop-ai/views.ts": {
+      "baseline_executable_ast_sha256": "5c866564158c9ec0fcb3545b021a1d584f5b83a97a038d077a4916dbb9cad24d",
+      "candidate_executable_ast_sha256": "e90a912a6d10ec1f026ad5dc6a453733a467fe8092cd6f3180c6774c32f28a11",
+      "baseline_declarations": {
+        "cardText": "dd78040354548748a9ed23441edeb459280f0822607b7542b6fdaa4cc4fadb70",
+        "lineFor": "52e0c81cde36b5987ce48238a1a58407f7554d43753c2d558c7a3f4bc567f611",
+        "scaleLaterPath": "ee7a19d152e1a5f80c3bba279384b9a13ee8db39e89b9f899b4f9c3b1312b8ae",
+        "flopNodes": "8e2080df62db4097ad8b62b7b12beacd81ed32f63776f6929dd2d6b549c2e216",
+        "flopNodesCanonical": "1bf7193d6e0b7ef5094551cae9b4a51f6e03623101d78b40127112f0efe01317",
+        "flopHistoryViews": "41be6bb84bfdc3df3b4b1ebe915c34a8f6fbdb8f38e465db1e5a8e85405c92e2",
+        "laterMixRows": "952a7f590426fe0264922bbcb178c58a4f1df5eab60c2fddfb802992896e96d5"
+      },
+      "candidate_declaration_names": [
+        "cardText",
+        "flopHistoryViews",
+        "flopNodes",
+        "flopNodesCanonical",
+        "laterMixRows",
+        "lineFor",
+        "scaleLaterPath"
+      ],
+      "changed_declarations": {
+        "flopNodesCanonical": {
+          "baseline_sha256": "1bf7193d6e0b7ef5094551cae9b4a51f6e03623101d78b40127112f0efe01317",
+          "candidate_sha256": "b3ad447f1dee4081d1ad9e039cbc2948c272d189ab9c7e7f28a4dcf6b437b946"
+        },
+        "laterMixRows": {
+          "baseline_sha256": "952a7f590426fe0264922bbcb178c58a4f1df5eab60c2fddfb802992896e96d5",
+          "candidate_sha256": "3eb2310db4cd1d44b0a82a2fca2096e11b4ae10c5f1d92772d25ee13685a451b"
+        },
+        "scaleLaterPath": {
+          "baseline_sha256": "ee7a19d152e1a5f80c3bba279384b9a13ee8db39e89b9f899b4f9c3b1312b8ae",
+          "candidate_sha256": "1b41e81fda90cb785fab788e071cd5f12e29b702fca48768d9abcf205ea2b6f8"
+        }
+      }
+    },
+    "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts": {
+      "baseline_executable_ast_sha256": "be35f43e232e0e76b0a7313a74f4db54f6c6603bb50afec959ba887feb4632ed",
+      "candidate_executable_ast_sha256": "ae2cee40256d91abcaebed3db485d3ac0febfc89c0b8f6437f2ab35d0dbadd26",
+      "baseline_declarations": {
+        "caches": "8f4c70510cbd70b4fd43c32282adca6c924722e1a95152ac6347860d79c533d4",
+        "rounded": "066626a87ba39b277221933347b863280699efcfbdcb29fe4011843738cc2311",
+        "roundFacts": "249e706df0914dd7e879c6b0728a8d7d31c4b558e057699812aea6c51897ef58",
+        "averageFlopUiFacts": "c7e3093381667fa9e482af202808f227505570b8d2a860ce95dde926c7fb5acf",
+        "pick": "b87b81421061b2d8cd27f41314072137849f53dae8ae7cd7ab14d0109abd5436",
+        "contextFor": "80c718e66071aa7050dc57524a4d9fa997f25991a7c11f92dd0ef779a1dd54e7",
+        "flopUiComboFactsCanonical": "d336a5cf4e6569f21107d4f7b10433db35312af0a24e4d0c4386a1da390dc541",
+        "finalTables": "51102f0adbc3e10882a4215aecc321c48fdee1ecbcfa768eab0d0ace3c7d6973",
+        "flopBetTableCanonical": "546be6fe517e63f92609fab20c5a7d54b2a3be82d0e84a1fffe58d8b3d503ccd",
+        "flopBetTable": "634e3081f0c13c450bc9411a123294aa90464600baab00c5bf67309b7fa3acbf",
+        "flopUiComboFacts": "4bb7d38d40c23b5c41ea5eb2aaaedd428aabdcce6a376c1e3447e39f46f18d17",
+        "flopUiFacts": "8eca381b1064aef640d6661343eaea6fdf1a409f14ea5e8e42163ee94cc44b62",
+        "releaseFlopUiFacts": "80a1e275db0d6b1bc940a477a5c052d28bb85b4a47db4e8fa1a87e11f1401b28",
+        "flopBlockerPredictors": "426c465b2f258b44a722c69b78d976b9be1af204cfd07d6e89ba6ececed8abaa"
+      },
+      "candidate_declaration_names": [
+        "averageFlopUiFacts",
+        "caches",
+        "contextFor",
+        "finalTables",
+        "flopBetTable",
+        "flopBetTableCanonical",
+        "flopBlockerPredictors",
+        "flopUiComboFacts",
+        "flopUiComboFactsCanonical",
+        "flopUiFacts",
+        "pick",
+        "releaseFlopUiFacts",
+        "roundFacts",
+        "rounded"
+      ],
+      "changed_declarations": {
+        "contextFor": {
+          "baseline_sha256": "80c718e66071aa7050dc57524a4d9fa997f25991a7c11f92dd0ef779a1dd54e7",
+          "candidate_sha256": "7655134e874e262671618d7f96818da96a5d5352c84c965c9ed147ff8e8e36f6"
+        },
+        "flopUiComboFactsCanonical": {
+          "baseline_sha256": "d336a5cf4e6569f21107d4f7b10433db35312af0a24e4d0c4386a1da390dc541",
+          "candidate_sha256": "fbc4691a717fe838a5d9aeadae3add4a2cf3dcb9e716a37ed9dfcf7897ee13ea"
+        }
+      }
+    },
+    "apps/frontend/scripts/postflop-ai/explain.mjs": {
+      "baseline_executable_ast_sha256": "11d17b738222b1037b5f52bbbb596f6aeceb73138aacc1e0b0f232df0913456f",
+      "candidate_executable_ast_sha256": "af36e421d12de4cf6cc30f391d8364c1f46cc2fe928c4e6f937f2cda37b656ae",
+      "baseline_declarations": {
+        "RANKS": "157db7abb7cf38967d546a4f80615130b5e28a525ebd2cf707ef513937b09ea5",
+        "RUNOUTS": "109d405cdca32d9147130fdde09a2d929dee44640d117f4e38176b773fb96895",
+        "handClass": "0a34153093f582e2887c3abe9b2b2e6bac852a1086a59fecc2e71d70440d94b3",
+        "runouts": "cb2c9fe2656ad52e0e6029b93377ac39b80c77350cd62e7323c0b673053d240a",
+        "equityAgainst": "1298bfa18dac3a217674cd49e0d17bfb8ede63a95da78614baaaf4a47014da8a",
+        "opponentRange": "6845337c2999a95a4b2435039b91b93d5ab0b8d23b6aba447f95e23c25775114",
+        "FIRST_NODES": "8d5df2932a6a5d9b42cedd747c4dad80a0c984032f7f250d81f9caa0569055a7",
+        "facing": "d25a795c7ac7b8d38f732c467ab9f985ef53673afdc970b7ccdf89ed4528389e",
+        "facedTotals": "75d405fb8c095d5136b59f9a1ee09d34d33cdb3e45568c06af6bfffa2837e52b",
+        "summarize": "146e9885b7979385814071545e4d0f298a030cacfc6dd8664731094a6f55cc4e",
+        "group": "6f6350b6645119e6d21cc9366fff181caf5130de061e4c26a1073b88956a2b48",
+        "explainCombo": "e9097bcdca11d640ceb4c884583f699aa3fd974ec026fae8825479aa99edfbd1",
+        "explainCombos": "3172d822caaceada6d7df6ec0b679a5a220472e190e0218767eb1bc7ddb0b4b6"
+      },
+      "candidate_declaration_names": [
+        "FIRST_NODES",
+        "RANKS",
+        "RUNOUTS",
+        "equityAgainst",
+        "explainCombo",
+        "explainCombos",
+        "facedTotals",
+        "facing",
+        "group",
+        "handClass",
+        "opponentRange",
+        "runouts",
+        "summarize"
+      ],
+      "changed_declarations": {
+        "explainCombo": {
+          "baseline_sha256": "e9097bcdca11d640ceb4c884583f699aa3fd974ec026fae8825479aa99edfbd1",
+          "candidate_sha256": "5fa253fabbe0aefe493ad4a79014313b045c18d1b6c42122913316b2214c8416"
+        },
+        "opponentRange": {
+          "baseline_sha256": "6845337c2999a95a4b2435039b91b93d5ab0b8d23b6aba447f95e23c25775114",
+          "candidate_sha256": "5ed9c6f15252cb11e351719b9bc73cdf5a06616918beefab43115ca5bc651114"
+        }
+      }
+    },
+    "apps/frontend/scripts/postflop-ai/explain-later.ts": {
+      "baseline_executable_ast_sha256": "6ea2f63c0e454ebbc32092cfa275a646e1952efe09215e51ec5be7c37c8d727e",
+      "candidate_executable_ast_sha256": "8340910c612992e892954bebbf546d48eff565d04e6096addcb00e201ac4e357",
+      "baseline_declarations": {
+        "RANKS": "157db7abb7cf38967d546a4f80615130b5e28a525ebd2cf707ef513937b09ea5",
+        "MAX_TURN_COMBOS": "8699aec30d8eb7f505384e0ff8519e988761c66b2931335be3b0e05fdf06fb57",
+        "cardText": "e9367d0aeb84901d9f7a9baeab43d4ed9f8702c4fe7473249ce1fc53fa3ca784",
+        "otherRole": "6d4ac2657760139b2bbb4ca352bd33e0bd117196323527f46f2c33f5b8291598",
+        "lineFor": "52e0c81cde36b5987ce48238a1a58407f7554d43753c2d558c7a3f4bc567f611",
+        "parsePath": "316c0824077daf3826fba282952ed66c467b76519948cfafffb99c2b4008580a",
+        "singleCard": "bc0a4871e02eb8a06b3d4c4b6991374d1ee092fe1433df0c4ab492b5b7d69f00",
+        "laterExplainContext": "08ef144ea67daab94b804a1bf93702101f71bf82c555c91f01fb9a5668620cf3",
+        "scaleLaterPath": "7e702d8f4bfa9ba124ea01079a343a64ee8368ee86235fe3c88a9edb5a907995",
+        "laterOpponentRange": "25a5e6d51dd14414c35e910546d669a34551ee5ba69b02c9d9bcbb35318eaedd",
+        "handClass": "0a34153093f582e2887c3abe9b2b2e6bac852a1086a59fecc2e71d70440d94b3",
+        "equityFor": "087b55832677849b30c9cda0942ac41285897344b7e05ff8fd483a3d7a319c26",
+        "summarize": "146e9885b7979385814071545e4d0f298a030cacfc6dd8664731094a6f55cc4e",
+        "group": "6f6350b6645119e6d21cc9366fff181caf5130de061e4c26a1073b88956a2b48",
+        "detailsFor": "a7aa341a88c0826443120923f9243574b8f73f6717ce6a6c4a938affd4303b21",
+        "explainLaterCombo": "c3f1b044d7ef0d515b5c395517c0ab8b49c5039f7f3375fc0739cf99ca18aab7",
+        "explainLaterCombos": "848f68549e6163423f0b0416e9c1a0586ad8af89f77a2c1585e9e2714b70934f"
+      },
+      "candidate_declaration_names": [
+        "MAX_TURN_COMBOS",
+        "RANKS",
+        "cardText",
+        "detailsFor",
+        "equityFor",
+        "explainLaterCombo",
+        "explainLaterCombos",
+        "group",
+        "handClass",
+        "laterExplainContext",
+        "laterOpponentRange",
+        "lineFor",
+        "otherRole",
+        "parsePath",
+        "scaleLaterPath",
+        "singleCard",
+        "summarize"
+      ],
+      "changed_declarations": {
+        "detailsFor": {
+          "baseline_sha256": "a7aa341a88c0826443120923f9243574b8f73f6717ce6a6c4a938affd4303b21",
+          "candidate_sha256": "93f384c0e3cdd30e58e01d8d95cfc34dde3dc8974a0c558d798e54fdd6662816"
+        },
+        "explainLaterCombo": {
+          "baseline_sha256": "c3f1b044d7ef0d515b5c395517c0ab8b49c5039f7f3375fc0739cf99ca18aab7",
+          "candidate_sha256": "2b410358b846507f42bcfd54fca560a187c5cd05c816eb8809bcfe7f875edd15"
+        },
+        "laterOpponentRange": {
+          "baseline_sha256": "25a5e6d51dd14414c35e910546d669a34551ee5ba69b02c9d9bcbb35318eaedd",
+          "candidate_sha256": "a0934a67902979e3abacf5f2e28aa1cd07ed36ba35a6de222eb4c88d4edcbf91"
+        },
+        "scaleLaterPath": {
+          "baseline_sha256": "7e702d8f4bfa9ba124ea01079a343a64ee8368ee86235fe3c88a9edb5a907995",
+          "candidate_sha256": "a8ba8df10329154a19234d6bfc4252b75d1cc18e0ee7cdbc4f89d646764ce4f3"
+        }
+      }
+    },
+    "apps/frontend/scripts/postflop-ai/range-facts.ts": {
+      "baseline_executable_ast_sha256": "49412642d1cba462593d095d0a1b3201218b93404063d21625dd0ee6a875efb1",
+      "candidate_executable_ast_sha256": "fef1eea40f1932a6f247abfdf8d835c24557b57e6fa2f5bf203f646ba1310377",
+      "baseline_declarations": {
+        "round4": "ebfaa3db0ba521ff6f5c941262c13504668ffe8e987e0934ef87aa7f087bfb82",
+        "aggressive": "7ecbb50b9622e482eac6ebd0239cbaa2123ae52630ce7f1b23199ccda5545d95",
+        "emptyTiers": "ab71ebcf0345f6672ce3f3127cf265fe18dc415e68a6ced29945cba2804f4e95",
+        "normalize": "616d356fd0b57fd195b6a6aa6308c6efd6a5269bbabef4b91dbf5e781524ab80",
+        "tierOf": "243a93f693f8adfbc05be312967a5e066d726876a0747f7daf14389fc4cebdf0",
+        "tiersOf": "f6b94afa3895d8e9aadf2c963f7221523815812a46ae8df2ec70d259df55d252",
+        "strongOf": "39d0bd592149de296d341b30d0e75be6dd069fa0e2113a487f3bcf32d1d41dcc",
+        "rangeFactsFor": "eb6f9824aef1ed3639b8ccb249e75fefd7abee6c0d92f1ac7877852b9ab4b573",
+        "flopRangeFacts": "59df3727473ca35fe0e08b1358c9cb9c09fe62c905b12d549d6428d8286837b8",
+        "laterRangeFacts": "7afe18e10bc85cb6c35d4b1f63ab77b6c27ff328a9aaf739a3ae7e8b6c4c6f18"
+      },
+      "candidate_declaration_names": [
+        "aggressive",
+        "emptyTiers",
+        "flopRangeFacts",
+        "laterRangeFacts",
+        "normalize",
+        "rangeFactsFor",
+        "round4",
+        "strongOf",
+        "tierOf",
+        "tiersOf"
+      ],
+      "changed_declarations": {
+        "rangeFactsFor": {
+          "baseline_sha256": "eb6f9824aef1ed3639b8ccb249e75fefd7abee6c0d92f1ac7877852b9ab4b573",
+          "candidate_sha256": "6c667bb57fc574598fbb9d0774e9f41e2fe8a65c2f040b547ba215858dbdbe11"
+        }
+      }
+    },
+    "apps/frontend/scripts/postflop-ai/balance.mjs": {
+      "baseline_executable_ast_sha256": "2ee370847cddd83aef3b67fd685d710be9cb7306e361e89bd9be2a3de3554ba0",
+      "candidate_executable_ast_sha256": "f9f915431043c42c900d33e3107c94dd13e18600cfc98fd13ce67998299caedb",
+      "baseline_declarations": {
+        "pct": "585d8d65ff028da580b788c0a6cfd933b9e225b53c4ce72f374610486fa6d47a",
+        "mean": "932b713ee936e156809dd1d1cf81cfe0f1066062aeaaf939c3ee844f594fd134",
+        "lineFor": "52e0c81cde36b5987ce48238a1a58407f7554d43753c2d558c7a3f4bc567f611",
+        "firstHistoryByNode": "5f3b8de8581ffa119bdd31eefdaf1af70a9036f833af570bbef591862cb737e2",
+        "flopPathSamples": "34789323974db33e9ed1ec1340f2f237ba394a580a1ae3fd4ab1f2d17e5dab36",
+        "laterPathSamples": "d668f813b373aaf7de59341eff37d37a96150edfaa1b9d8ff9831dbfce06a05a",
+        "makeTierReader": "1bf0bf648d307a2725101f226de6c1d3c7c160db6e235515994329d0d6567d1f",
+        "makeFlopMixReader": "d66d09923b5264ee3787b35cd8c2cfe9028f53acd8753f4374e4bf4394133e49",
+        "makeLaterMixReader": "30c36b2733898d4ba078e6c6659a40ddabd7233d80d2eeb1dc2b3eca70509ef7",
+        "scaleFlopPath": "979c8cb2622fba851a1bb54a989670e8355fd91e4da67d94fbe1e1413e96b3f9",
+        "scaleLaterPath": "9f213f582f7ac7221dc50df5eb4ffeda3725919e54bccc8ce768be45f2551b4b",
+        "summarize": "e9932f6001899be1f47b94d2f95b6b1124d597804f9b551a0323a8b0dc938797",
+        "nodeBoardBucket": "486e64ee93adf5eaf9e76f2aef51bc7b9101a786844e981f9d480f3969f3384a",
+        "addSummary": "6adedc99f892c1242134bf70ff07f7940976fc744ac42670f0461f2f2dacb933",
+        "averaged": "48bbf797992d01b97cac77b0e4a7ca8609ff665db59f813c99e0e0a59b81b7bf",
+        "cappedCheckFindings": "54368f9d7f0469685a225fb8141c2f6b7301fb337270130e631ca6eb2f872552",
+        "raiseFindings": "b62a9e5d042e6eefa9fd1dbf52b857ba8ba590e7402902fbcb165422122d0535",
+        "bluffFindings": "7d09b3d750f1944fca1631152df04f9d36683e2abac631f718bdf7344831bd09",
+        "isFlopFacingNode": "10474f599d3eeef10b5c04fdc659570e1389483b1b4ce84c1f3647ae44571470",
+        "isLaterFacingNode": "bdccf2e306eea526bbab2ac4b004879aaf130c4e85f739dc93d13b56090adf8a",
+        "flopMinimumDefense": "62af46a97f61dec920bb1c708da45dc09350468c4b5758e33acaf156de37a7c6",
+        "laterMinimumDefense": "a816821e3e464429804cf31f2c77c20afceed18303033c23c736bf3c3bc810c0",
+        "overfoldFindings": "b6d7647a01bb8d8ffb23cd644649d3e146d36c9ffc343569a16f70c5115bafdd",
+        "overcallFindings": "91df3e0fe1ba884c4b13b41a6dcb3deb1ea7b85ccd5a8b27d6f47d7be995f371",
+        "representativeRunouts": "cfa35c3376a746869c8e38b99a117f08183b678031cb7d6e0d9806e5776ad1e3",
+        "cachedBaseRange": "a0c52cc928115db046d46e242663094189b2d1056f8ef62defd571c26c0d0215",
+        "replayFlopPath": "e78ec86627ce7b7b8f71f3be6ca1507cc053e89768b79091847ab818224b047f",
+        "cloneTable": "0ecef76c65f4d0399a2a90397f764512f05c133aff75411b6566fdab122b5461",
+        "replayLaterPath": "2cc099142bfeec3d9bbf72d93a0633a95eeee3317e59976bfdc84d540649e709",
+        "checkFlopBalance": "06ee41f1ce29e8eab0d0964defe3647eb63b0951ee5944cf64d011999ebd8a7c",
+        "checkLaterBalance": "f4fd8e700d9f8fcb66e40681909ddf7be8e0e882457ba7f155cc6bcecbee30f4"
+      },
+      "candidate_declaration_names": [
+        "PROFILE_IDS",
+        "addSummary",
+        "averaged",
+        "bluffFindings",
+        "cachedBaseRange",
+        "cappedCheckFindings",
+        "checkFlopBalance",
+        "checkLaterBalance",
+        "checkProfileBalance",
+        "checkRequestedProfilePath",
+        "cloneTable",
+        "firstHistoryByNode",
+        "flopMinimumDefense",
+        "flopPathSamples",
+        "isFlopFacingNode",
+        "isLaterFacingNode",
+        "laterMinimumDefense",
+        "laterPathSamples",
+        "lineFor",
+        "makeFlopMixReader",
+        "makeLaterMixReader",
+        "makeTierReader",
+        "mean",
+        "nodeBoardBucket",
+        "overcallFindings",
+        "overfoldFindings",
+        "pct",
+        "profileMode",
+        "profileRuleFindings",
+        "raiseFindings",
+        "replayFlopPath",
+        "replayLaterPath",
+        "representativeRunouts",
+        "scaleFlopPath",
+        "scaleLaterPath",
+        "summarize"
+      ],
+      "changed_declarations": {
+        "PROFILE_IDS": {
+          "baseline_sha256": null,
+          "candidate_sha256": "481b845d0fea15a8a2bf165ec405955de01c4d1e38c522c59c38b681930a2231"
+        },
+        "checkFlopBalance": {
+          "baseline_sha256": "06ee41f1ce29e8eab0d0964defe3647eb63b0951ee5944cf64d011999ebd8a7c",
+          "candidate_sha256": "086cf8d00c5b820e07d0e6b717522b0a0f3560d3799ea8037b9dba3725af50ee"
+        },
+        "checkLaterBalance": {
+          "baseline_sha256": "f4fd8e700d9f8fcb66e40681909ddf7be8e0e882457ba7f155cc6bcecbee30f4",
+          "candidate_sha256": "c6f697e8545f4681e8e013f9056c02571f17163aed93b1ddce4c606258388aec"
+        },
+        "checkProfileBalance": {
+          "baseline_sha256": null,
+          "candidate_sha256": "3f4f42e0979e1dc6c85f65eeddbc93ed0110bd2c797e79decf37021b7e9f1a4b"
+        },
+        "checkRequestedProfilePath": {
+          "baseline_sha256": null,
+          "candidate_sha256": "45db21550c5c4f648447d6b98ea6138f40652ed2445203afc4550a80345250d0"
+        },
+        "profileMode": {
+          "baseline_sha256": null,
+          "candidate_sha256": "f71ee449222bd301c652fe4dd8ffed1508b8a6fa7520900d3edfa6be7ca3b05f"
+        },
+        "profileRuleFindings": {
+          "baseline_sha256": null,
+          "candidate_sha256": "811a14913b47ddb87b063856ea2b34bd2bc354596797858daa499490cf253c03"
+        }
+      }
+    },
+    "apps/frontend/scripts/postflop-ai/generate.mjs": {
+      "baseline_executable_ast_sha256": "9a507d0c736a4c8d00a4abe091948e16588ba1a4ca1eabbca24f550fe6d9a98a",
+      "candidate_executable_ast_sha256": "0d010564aa5b0d2d926424130efdfe56fe87d65c1b3bf001b7a6976feff2f65e",
+      "baseline_declarations": {
+        "DEFAULT_MODEL": "9f88bb581a5bf6a0d30e59a80a1d6bd78587c71e83e7894e34366f28d07160e3",
+        "resolveModel": "ab0f57f1bb858ed9324946287edfb0a3dbd271f114e665cb2893fa86f440b73f",
+        "DEFAULT_EFFORT": "b2414c2331c94f20798c4c5c31792736e1a902ad61934d6327e5d5276b62b784",
+        "resolveEffort": "41948f9097d1705bac84d114eb675befdf01909787137f1ec1b01949d07d82ac",
+        "sha": "a917e26937f53e63bd4271c00342c78b69f6bda59d7225428d239e62bbe21c37",
+        "loadCandidate": "9a53c1a781bdc6e99f0cdf89c766ff64f13b197e8ef1484aec04f8f501565567",
+        "loadLaterCandidate": "4f6a753ebb623573cdafed82cd023a7196be97027f626ad9ff847efcb26b426e",
+        "spotContext": "fb023925f0420d9e1c94e14462b4377ed5e20d7b3c7ca467a5c2157cfedcfa52",
+        "promptFor": "54ce0f9183e7bf1bd0715bb2fd55501303dbbcc0e387eb5c720cae82b711b132",
+        "runCodex": "86cab60682166a226b86e566d6d9a1b75beb425e004d22a6ee58ae50287ba10a",
+        "runClaude": "a2b66fe51dbf94c2e4e3ebdbd28d363d0e466a3a8c18086623df1200d4bc92db",
+        "generatorFor": "57f15f20b4203ab690ec9368191fb03810ba59d2b153f44aa2ed908d0f94798c",
+        "generate": "ac261c4da0be1007f002a31973cf40d09f24d2d105e2054a5f325deaa12a515e",
+        "promptForLater": "6161aaefdfb60f18fc88ac5a2e0ca1e34ee1c7bbdba66e9d93442539f8da8292",
+        "generateLater": "1fe75e6aaf3a4a53f2a80d8bbee2a43e2a6d22cdfd98e9a689bcaff6849af378"
+      },
+      "candidate_declaration_names": [
+        "DEFAULT_EFFORT",
+        "DEFAULT_MODEL",
+        "PROFILE_GUIDANCE",
+        "assertProfileIdentity",
+        "authoringOptions",
+        "generate",
+        "generateLater",
+        "generatorFor",
+        "loadCandidate",
+        "loadLaterCandidate",
+        "profilePrompt",
+        "promptFor",
+        "promptForLater",
+        "providerOptions",
+        "resolveEffort",
+        "resolveModel",
+        "reuseProfileArtifact",
+        "runClaude",
+        "runCodex",
+        "sha",
+        "spotContext",
+        "standardPromptFor",
+        "standardPromptForLater"
+      ],
+      "changed_declarations": {
+        "PROFILE_GUIDANCE": {
+          "baseline_sha256": null,
+          "candidate_sha256": "da974314b2e884519fe6155cc70cfe7d46d1d82f2025022ca306745401136c86"
+        },
+        "assertProfileIdentity": {
+          "baseline_sha256": null,
+          "candidate_sha256": "ab2b4ecb9a8a7e967d1a2ac616709b72450a2094c4419d3e3163dd5998d4008d"
+        },
+        "authoringOptions": {
+          "baseline_sha256": null,
+          "candidate_sha256": "fed8ac2a8f8725c8df3e66e1ec7ee617ef4df98a8d3947ca87c288403e43a633"
+        },
+        "generate": {
+          "baseline_sha256": "ac261c4da0be1007f002a31973cf40d09f24d2d105e2054a5f325deaa12a515e",
+          "candidate_sha256": "90b32409087bdaaf6233dd4c9b1950af6f320f7d2e8f10e3964c1cf80191351c"
+        },
+        "generateLater": {
+          "baseline_sha256": "1fe75e6aaf3a4a53f2a80d8bbee2a43e2a6d22cdfd98e9a689bcaff6849af378",
+          "candidate_sha256": "41458c6a930534690d1951798a4de396e8f2bb8bec897c0a79ffa43ed4417c33"
+        },
+        "loadCandidate": {
+          "baseline_sha256": "9a53c1a781bdc6e99f0cdf89c766ff64f13b197e8ef1484aec04f8f501565567",
+          "candidate_sha256": "8bb127ae321f43e9e2d715de46901c5f9ed2c5d388f742721a6bf76997085966"
+        },
+        "loadLaterCandidate": {
+          "baseline_sha256": "4f6a753ebb623573cdafed82cd023a7196be97027f626ad9ff847efcb26b426e",
+          "candidate_sha256": "f17c49f485f6812789fb51b2412661f97ed2476ce4bf162db698aa6d2c67954d"
+        },
+        "profilePrompt": {
+          "baseline_sha256": null,
+          "candidate_sha256": "767e4821a129b305bbf1f6b132a3abecadd33304604c688b2be72c2579d89198"
+        },
+        "promptFor": {
+          "baseline_sha256": "54ce0f9183e7bf1bd0715bb2fd55501303dbbcc0e387eb5c720cae82b711b132",
+          "candidate_sha256": "47aae7bae21efa3b069f9d8b7d1ad139f159f5988661254d522b439fd596b354"
+        },
+        "promptForLater": {
+          "baseline_sha256": "6161aaefdfb60f18fc88ac5a2e0ca1e34ee1c7bbdba66e9d93442539f8da8292",
+          "candidate_sha256": "912b7d1fd78f8cbd0139f6c35b107fe857e33741f784d3fdad922755b5c996ff"
+        },
+        "providerOptions": {
+          "baseline_sha256": null,
+          "candidate_sha256": "f37edae1211699b6c6c197b9af8b61ca99f7d4d33cc506245f7ac9e7ad6fb034"
+        },
+        "reuseProfileArtifact": {
+          "baseline_sha256": null,
+          "candidate_sha256": "4804f5ac0df630e9325c1fcf0616b2d7ca5946de7ed7fb1edd2966ca4aca27fa"
+        },
+        "standardPromptFor": {
+          "baseline_sha256": null,
+          "candidate_sha256": "0860b64b103ef121cbfc60143e6400fd03c6b293d79017b23cfb5e28b26fd57f"
+        },
+        "standardPromptForLater": {
+          "baseline_sha256": null,
+          "candidate_sha256": "f198786f7d161fcb570010a0707b151e7dfcd63ef473c13197a97203494f7183"
+        }
+      }
+    },
+    "apps/frontend/scripts/postflop-ai/policy.ts": {
+      "baseline_executable_ast_sha256": "98d44446ed0e0bda11830a6e909537dfb88dc770e230c124452d89a432721fdc",
+      "candidate_executable_ast_sha256": "da558fb63da3cb78c6eb864be5dc99727d0439afe0e80c1e7ffc13425acac318",
+      "baseline_declarations": {
+        "validatePolicy": "48dbb629787d479357bb6a580d076240ab04afbdbb1085c0887eb06fcbf04cdb",
+        "policyMix": "bd458e2cda988b9eec605e44156269110028ba34514f4197746d12bf964f5c62",
+        "withRaise": "ffe2bce105e5e2350fc650a90c559a0e0f8ece5c695dd52a9969d6ae7a1f8bd1",
+        "effectiveMix": "8bd11857f8d22f2206d828d26be0a338702c16ef2b0174ad4263ddaa03f9c547",
+        "choose": "8b680f4666f4ab2feb287afa229957d49bd11f02ffeb67d19542b2862fedc86a",
+        "FIRST": "0290843633f1cecd31e20c1ba56dc120618c1e5b8e662e621e60f6a2ed33592c",
+        "SIZE_WEIGHTS": "b5ab3ced5755b9b489728766393a8a96e6bcc35c1db0d0e09eec3c67c9297014",
+        "FACING": "a8025e9d59143d0b09401a7d03a0621f77a0664adaf61810a105e919404194af",
+        "RAISE_REFERENCE": "74e745296413766782b543ec6832a82ebd85b537df13fd1141068409b15fd30c",
+        "RAISE_LAST": "9bc6aca3afaabd6876f798984c2992ef270425967bfd4a89232a30b1ac5cd7d1",
+        "raiseReferenceRow": "4ed6169b81f4bbe020082ff8a744daee9b26d9001f1d12fe964fa9a75efc297e",
+        "referenceMix": "cdc51cca96d3732296a96246d988d0b3459a72b8c69c70a04202cf2a5a0802cb",
+        "referencePolicyFor": "63ed87baaa42d6d1df5821d4f17c18a807c17f4b758788ec5ac15d555e2cc100",
+        "referencePolicy": "f11ebf48d52543eedf32edecdf66478e6a41a1e7dcb7d777d471c410304fbd8c",
+        "referenceAll": "0921a7a496f17fb163dc5226184b6d73ce1739912fd3fa63047726037e008c24",
+        "roundMix": "1de87e17ceed77367c184f1e1433086fa1db6f62c5ca80029028854b9717f435",
+        "opponentMix": "c6618d4a1f2b2c6dff9f836dff4d907edaebfa98378411df89fb62cfa5085f4f",
+        "scaleByPath": "e2a09a06f2a0eb3490e8b2a0733f29f3f30039cc159a6bb04de35158548ca716"
+      },
+      "candidate_declaration_names": [
+        "FACING",
+        "FIRST",
+        "RAISE_LAST",
+        "RAISE_REFERENCE",
+        "SIZE_WEIGHTS",
+        "choose",
+        "effectiveMix",
+        "opponentMix",
+        "policyMix",
+        "raiseReferenceRow",
+        "referenceAll",
+        "referenceMix",
+        "referencePolicy",
+        "referencePolicyFor",
+        "roundMix",
+        "scaleByPath",
+        "validatePolicy",
+        "withRaise"
+      ],
+      "changed_declarations": {
+        "policyMix": {
+          "baseline_sha256": "bd458e2cda988b9eec605e44156269110028ba34514f4197746d12bf964f5c62",
+          "candidate_sha256": "2dc2301c82d7624189db97234dbfef700c9d76c7528ae4b9927c3bc13f96e3dc"
+        },
+        "scaleByPath": {
+          "baseline_sha256": "e2a09a06f2a0eb3490e8b2a0733f29f3f30039cc159a6bb04de35158548ca716",
+          "candidate_sha256": "70b5c4658c45a6e0cf8df95b89b2e79239c1d8aee3f3f47d81c12682bc72dacb"
+        }
+      }
+    },
+    "apps/frontend/scripts/postflop-ai/later-policy.ts": {
+      "baseline_executable_ast_sha256": "3d03249ea981b9da18f51dfbcd12c2f90e5988dfd9181a23d234121cdd2dcff4",
+      "candidate_executable_ast_sha256": "9aa4f31f5d57d3f580e63ff7580fc7074bbee487b66ced03cf8b43b019520a81",
+      "baseline_declarations": {
+        "tiersFor": "4ab733873c53051dafc7cd13573359a02d74a4da646337a476153612a926ce4a",
+        "legacyActions": "c8f89fb5cc44ce406cb2d60543ce04b5a5120a7aadf6ab721c819b433b1ea914",
+        "hasKeys": "2bd8eb1d9d8ae1d04c103e8b17fbc374dce23b553762af361e8eda934f583e2f",
+        "validateLaterPolicy": "5e8549163582608e89a45f24a2c7d0c82fe602711116a3b58a075c36741ab220",
+        "laterPolicyMix": "ba92f7ee99ec08665c0af2861adee1c42aaa1d21d7a266e096be1415bf04a219",
+        "SIZE_WEIGHTS": "6f63afe2a0a3003a75fd3ffa9666e61a75b0ded6a57074ded83dde7dec53be2c",
+        "sizeKey": "8cc3ca5e1eb0f3883a03a671f4890fc5d3a0951634d86f2cbe47fa708d02d35a",
+        "roundMix": "ff45a1d5c082da021939ef3e9454bcbbdd012b837fb6035a6f3d1bbd43e54279",
+        "spreadBets": "1765f45d3103d99835494f5702fd56d05682caf8c7e99435238be6886a43536e",
+        "referenceLaterTierMix": "16c30add7e46250bad117202b50a8a3057d2530f6b54c01ec8aef7bcb9bd5362",
+        "referenceLaterPolicy": "117b6263f0f35f3954f2448261db591d42ca73de56ce721e5bfd3e5988aab0c0",
+        "reference": "0c0e7e3df5f29fc63ba8c3de0b1784cbab73f65d2683a8cb6514ea62d0e7807e",
+        "referenceLaterMix": "2327fc681c56c636fa906219edf5f268b63dcd632f604322bbcd64fcd5edc37f"
+      },
+      "candidate_declaration_names": [
+        "SIZE_WEIGHTS",
+        "hasKeys",
+        "laterPolicyMix",
+        "legacyActions",
+        "reference",
+        "referenceLaterMix",
+        "referenceLaterPolicy",
+        "referenceLaterTierMix",
+        "roundMix",
+        "sizeKey",
+        "spreadBets",
+        "tiersFor",
+        "validateLaterPolicy"
+      ],
+      "changed_declarations": {
+        "laterPolicyMix": {
+          "baseline_sha256": "ba92f7ee99ec08665c0af2861adee1c42aaa1d21d7a266e096be1415bf04a219",
+          "candidate_sha256": "80863cb7e6f8bd1d0a6eac841cb72146ef577c271e01948bdbb0a8173c84626c"
+        }
+      }
+    }
+  },
+  "completion_extension": {
+    "baseline_commit": "6566786a5ab7dcf03fac41db93901b96bbc84837",
+    "baseline_declaration_sha256": "84bbeb55f66decc4bdb5f72e6d40f6f1182d084f098234d4cd33546387060023",
+    "candidate_declaration_sha256": "cf83ad65989991b37526c95d28f5a48a45ad157394e52b10babe54e9668cfdae",
+    "candidate_expression": "const pilotAvailable = Boolean(spot?.reachable) && potBb === spot!.potBb;",
+    "historical_expression": "const pilotAvailable = Boolean(spot?.reachable) && potBb === spot!.potBb && Boolean(isDefaultTable);",
+    "scope": "Enable recorded HU geometry on adjusted tables while retaining separate MW3 default-table gating. Inverse substitution must restore the immutable historical declaration digest."
+  },
+  "standard_path_output_baseline": {
+    "source_commit": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+    "spot": "BTN_open_BB_call",
+    "board": "Js8s5d",
+    "turn": "3c",
+    "river": "2h",
+    "input_fingerprint": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
+    "seat_rows_sha256": "a115b43c5fa038493620a4bf45751f09e5a0b6d76d1d8c6f8289342ac36b5e0d",
+    "sha256": {
+      "standard_flop_prompt": "25a5f161120c6e540eddd477430a96772774e98bbed9d0b63c3d07df20f68053",
+      "standard_later_prompt": "45b5622bf587de13d78f68870678566408c10b4888c5f8219501ca4de5b406da",
+      "standard_4bp_flop_prompt": "63c0355283de269f16753f3efbb52467c36adf46a42b00017d46ba65f3dbc626",
+      "standard_limp_later_prompt": "c89e74e43bb7b4c6aea49d0fb355e747515e7a9729c511423d926319045c6b27",
+      "flop_nodes_all": "38d682d864ab12983df1c1a54927e8a2a19037bc31952a0b9d1ea7259960c3f2",
+      "flop_explain_first": "2bf81c7d164255d0ff703255304464c9bf465195d5acc182ca1f739d231f787c",
+      "flop_explain_facing": "fa373bf9683099352692b9d13ea3d30f289079d792dbc5603bb1ed05c486ee21",
+      "flop_ui_facts": "9e7d156d52683aa1ff0bef51730dbd2177f5de5fce9e04e593edb3db9e234e38",
+      "flop_range_facts": "48d75e2770d4c90f279b47e9c600309819280ab858824afd944eb47f8f0a19fd",
+      "turn_explanation": "dbb0db91b3c339fc53f1a3a3f6d3dc0dfd20366d5a182b586d513ffe54bd00cc",
+      "river_explanation": "23c566134795a75e18573463fc8bdfabf84dfbc90c87fb008ad8c52d5007db92",
+      "standard_flop_balance": "823796ba6d0fab056edcfd55902b5a6508ce1aa2c42388c7ac0fdb9d45587ee5",
+      "standard_later_balance": "2577c30bdbbb0fedd5d4cd3ea35d9d8c88aaea9b67e0d15870d7654762fe3d93"
+    },
+    "digest_method": "SHA-256 of raw prompt strings and JSON.stringify output objects, using the repository hu-v7-parity digest helper."
+  },
+  "candidate_source_commit": "91109e156c17c7fdb9e2eb0dbc8d0704c7ee3e46",
+  "candidate_source_tree": "9d4bf2f8ae341d38507f209ccd8bcc9f437bbd2d",
+  "candidate_scope": "The candidate executable bindings were collected from the proposed source tree above. Their values document review scope; they do not replace, approve, or renew historical receipt hashes."
+}
