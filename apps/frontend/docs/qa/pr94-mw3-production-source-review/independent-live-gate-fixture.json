@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "positive": {
+    "verified_deliveries": 32,
+    "verified_parts": 1552,
+    "live_preflop_source_fingerprints": "all-16-passed",
+    "browser_candidate_contract": "all-32-passed",
+    "public_cors": "passed",
+    "anonymous_history": "rejected",
+    "real_authenticated_browser": "not-run"
+  },
+  "positive_requests": 1626,
+  "late_final_part_corruption_rejected": true,
+  "source": "Exact locally restored production datasets and all canonical SQL payloads",
+  "limit": "Isolated simulated HTTP only; no live network requests or production availability claim."
+}

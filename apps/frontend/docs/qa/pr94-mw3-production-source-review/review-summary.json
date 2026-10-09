@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "decision": "PASS_EXACT_SOURCE_REVIEW_AND_COUPLED_RECEIPT_INSTALLATION",
+  "source_commit": "5d0e42c9f5e2c95895388db11b7bf09c3712a8d2",
+  "source_tree": "5b44a56edfa979fec1b1604b95a9d0271c0b3874",
+  "reviewer": "gpt-6-astra",
+  "reasoning_effort": "xhigh",
+  "reviewer_task": "/root/review_mw3_production_delivery",
+  "scope": "Independent review of exact additive MW3 production orchestration and narrowly coupled Stage2/Stage3 source-context renewal. No new numerical approval, no numerical generation, no production write, and no claim of completed live release.",
+  "execution_delta": [
+    {
+      "path": ".github/workflows/deploy-worker.yml",
+      "bytes": 17095,
+      "sha256": "365103ce69fbeedf281a532b5f83e3361f5b5577f52f3b55befe6937c8397fda"
+    },
+    {
+      "path": "apps/frontend/scripts/mw3-production-delivery.mjs",
+      "bytes": 13480,
+      "sha256": "6f15095b5c31d15df9fedd153bba9d923c36fd5b62eb3086a9336c4e6f7e30c9"
+    },
+    {
+      "path": "apps/frontend/tests/mw3-production-delivery.test.mjs",
+      "bytes": 7612,
+      "sha256": "22be097b88fb8bfda76a98ef0795bef0494ad33d2668875b94a1e4647245052b"
+    }
+  ],
+  "preflop_scope": "Existing Stage2/Stage3 collectors remain unmodified. The standalone MW3 importer does not feed preflop data or validation and is separately bound by this execution-delta ledger, not silently counted as preflop numerical-source closure.",
+  "receipts": [
+    {
+      "name": "stage2",
+      "before": {
+        "path": "configs/multiway-preflop-stage2.review.json",
+        "bytes": 527647,
+        "sha256": "9303299b12c65d9498626200a8de877bca06169923d275bf309a95c624210e54"
+      },
+      "after": {
+        "path": "configs/multiway-preflop-stage2.review.json",
+        "bytes": 531140,
+        "sha256": "f482e81841a18b548841d3b9f4e5db9638e4bee2be0b0a562f6b36eba381c6b5"
+      },
+      "changed_source_records": [
+        ".github/workflows/deploy-worker.yml"
+      ],
+      "source_records": 188,
+      "artifact_records": 1888,
+      "content_sha256": "551e5c0479c833f1c4cbfbaa899b7cf0593195929604961711495b40a4f47e7d"
+    },
+    {
+      "name": "stage3",
+      "before": {
+        "path": "configs/multiway-preflop-stage3.review.json",
+        "bytes": 536389,
+        "sha256": "72a5503c530611a3517e5ae5998d9ca4918afc075eb12ebcdcebf6ca19b0ce93"
+      },
+      "after": {
+        "path": "configs/multiway-preflop-stage3.review.json",
+        "bytes": 540149,
+        "sha256": "35e9853c7a3b38ae215fa167f9b288761f39d38ffdf80fddcc138cd00c6d1a95"
+      },
+      "changed_source_records": [
+        ".github/workflows/deploy-worker.yml",
+        "configs/multiway-preflop-stage2.review.json"
+      ],
+      "source_records": 98,
+      "artifact_records": 1805,
+      "content_sha256": "357a94187939d3d1ee171139afd6b66e273dffb56d756b02694de1c4a70c10c2"
+    }
+  ],
+  "blocking_findings": [],
+  "independent_verification": {
+    "unit_contract_tests": {
+      "passed": 8,
+      "failed": 0,
+      "runtime": "Node.js 24.19.0; exact-head CI remains responsible for pinned Node.js 22.20.0"
+    },
+    "canonical_plan": {
+      "spots": 16,
+      "delivery_pins": 32,
+      "parts": 1552,
+      "result": "All saved SQL bytes exactly match fresh serialization of unchanged independently accepted archives/receipts; existing official inventory verifier passed."
+    },
+    "actual_sqlite": {
+      "status": "PASS",
+      "first": {
+        "imported_spots": 16,
+        "verified_deliveries": 32,
+        "verified_parts": 1552
+      },
+      "retry": {
+        "imported_spots": 0,
+        "verified_deliveries": 32,
+        "verified_parts": 1552
+      },
+      "late_conflict_before_all_writes": true,
+      "history_preserved": true,
+      "ledger_sha256": "142afdce84f8a38cfbf922ad1dc6a27522358dd7453fa7c2725fa65358dd0e90",
+      "limit": "Isolated Node SQLite and actual canonical SQL, not remote D1."
+    },
+    "renewed_preflop_receipts": {
+      "status": "PASS_REMOTE_PROVENANCE_REBOUND",
+      "stage2": {
+        "sources": 188,
+        "artifacts": 1888,
+        "counts": {
+          "catalog": 3115,
+          "saved": 1611,
+          "unreachable": 1504,
+          "hands": 272259
+        },
+        "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53"
+      },
+      "stage3": {
+        "sources": 98,
+        "artifacts": 1805,
+        "counts": {
+          "catalog": 16132,
+          "saved": 1801,
+          "unreachable": 5621,
+          "rare": 8710,
+          "hands": 304369
+        },
+        "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6"
+      },
+      "remote_source": {
+        "commit": "5d0e42c9f5e2c95895388db11b7bf09c3712a8d2",
+        "tree": "5b44a56edfa979fec1b1604b95a9d0271c0b3874",
+        "parents": [
+          "3cba758716de8092e877f11d4fbb940bcfc47888"
+        ],
+        "url": "https://github.com/Suuu-sh/ReysonAI/commit/5d0e42c9f5e2c95895388db11b7bf09c3712a8d2"
+      },
+      "local_execution_source_commit": "776da9bfb563372e454b20bffcad343ca561370f"
+    },
+    "protected_preservation": {
+      "status": "PASS",
+      "baseline_development": "ee7e5c245977356d453e0d7f21cb95a40d11c98d",
+      "mw3_archives": 16,
+      "mw3_raw_files": 112,
+      "mw3_raw_bytes": 235515283,
+      "recipe_profile_files": 19,
+      "registered_deliveries": 32,
+      "mw3_distinct_bound_source_input_records": 152,
+      "stage2_stage3_artifacts_unchanged_and_rehashed": 3693,
+      "historical_review_fields_preserved": true
+    },
+    "simulated_http_consumer": {
+      "status": "PASS",
+      "positive": {
+        "verified_deliveries": 32,
+        "verified_parts": 1552,
+        "live_preflop_source_fingerprints": "all-16-passed",
+        "browser_candidate_contract": "all-32-passed",
+        "public_cors": "passed",
+        "anonymous_history": "rejected",
+        "real_authenticated_browser": "not-run"
+      },
+      "positive_requests": 1626,
+      "late_final_part_corruption_rejected": true,
+      "source": "Exact locally restored production datasets and all canonical SQL payloads",
+      "limit": "Isolated simulated HTTP only; no live network requests or production availability claim."
+    }
+  },
+  "expected_mw3_d1_effect": {
+    "schema": "Only the exact two CREATE TABLE IF NOT EXISTS statements in apps/backend/scripts/sql/mw3-schema.sql. No migration sweep.",
+    "first_publication_rows": {
+      "mw3_policy_deliveries": 32,
+      "mw3_policy_parts": 1552
+    },
+    "retries": "Existing identical rows are preserved; complete spots are skipped. Partial matching rows may resume. Any conflicting approved header/part found anywhere stops before schema/import writes. Each complete canonical spot file is imported sequentially; all rows are read back before runtime activation.",
+    "preservation": "No DELETE, REPLACE, publication flag, unrelated-table write or whole-database recovery occurs in MW3 orchestration. Existing preflop/HU delivery retains its separately reviewed scope.",
+    "bookmark": "Recovery reference is informational only; no automatic time travel restore."
+  },
+  "workflow_acceptance": {
+    "full_history": true,
+    "verify_before_production_mutation": true,
+    "exact_commit_main_only_context": true,
+    "mw3_import_before_api_and_client_activation": true,
+    "final_live_gate_after_preflop_and_hu_publication": true,
+    "concurrency": "Existing deployment serialization retained; production timeout grows from 15 to 30 minutes; part HTTP reads are bounded at eight while imports remain sequential.",
+    "auth_permissions_secrets": "No auth, credential, secret, permission, API authority or registry changes."
+  },
+  "minimum_live_acceptance": [
+    "Successful final exact-head workflow and positive API/client deployment version confirmations.",
+    "All 32 actual D1 headers and 1552 actual parts match the accepted immutable payload before API/client activation.",
+    "After reviewed preflop publication, actual production opening/preflop/multiway datasets match expected bytes and all 16 source fingerprints.",
+    "All 32 public HTTP manifest and complete-part payloads match pins; full payload reconstruction and browser candidate contracts pass with app-origin CORS, ETags/304 and negative-query/method checks.",
+    "A representative normal product MW3 load/navigation check and Classic/Stats preservation, if browser access permits; otherwise explicitly disclose that browser acceptance was not performed."
+  ],
+  "limitations": [
+    "This review made no production query or write, auth change, credential handling or public network probe.",
+    "Isolated SQLite and simulated HTTP are not live D1 or actual-browser proof.",
+    "No numerical generation, new strategy-quality/GTO approval, unrelated OAuth/case-17 gate, or complete broad-suite claim.",
+    "Actual execution evidence was captured at local commit 776da9bfb563372e454b20bffcad343ca561370f. Its complete source tree is identical to independently verified remote commit 5d0e42c9f5e2c95895388db11b7bf09c3712a8d2. Immutable historical execution logs keep their original local SHA; remote-source-identity.json provides the verified mapping."
+  ],
+  "local_execution_source_commit": "776da9bfb563372e454b20bffcad343ca561370f",
+  "remote_provenance": {
+    "verified_via": "GitHub connector independent read-only Git commit endpoints",
+    "verified_at_utc": "2026-10-07T20:09:34.222Z",
+    "source": {
+      "commit": "5d0e42c9f5e2c95895388db11b7bf09c3712a8d2",
+      "tree": "5b44a56edfa979fec1b1604b95a9d0271c0b3874",
+      "parents": [
+        "3cba758716de8092e877f11d4fbb940bcfc47888"
+      ],
+      "url": "https://github.com/Suuu-sh/ReysonAI/commit/5d0e42c9f5e2c95895388db11b7bf09c3712a8d2"
+    },
+    "merge": {
+      "commit": "3cba758716de8092e877f11d4fbb940bcfc47888",
+      "tree": "bfbd8537f4e8c8807227ce78b158737668def489",
+      "parents": [
+        "1d09a146efb0d5fb8b4f288b13837629bf74cb35",
+        "ee7e5c245977356d453e0d7f21cb95a40d11c98d"
+      ],
+      "url": "https://github.com/Suuu-sh/ReysonAI/commit/3cba758716de8092e877f11d4fbb940bcfc47888"
+    },
+    "local_equivalent_source_commit": "776da9bfb563372e454b20bffcad343ca561370f",
+    "exact_source_tree_equality": true
+  }
+}

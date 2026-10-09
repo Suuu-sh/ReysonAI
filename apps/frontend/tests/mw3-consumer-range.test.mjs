@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { completedFlopContext } from '../src/estimated/postflop-trial.ts';
 import { mw3OriginForEvents, mw3OriginForSelection } from '../src/estimated/mw3-context.ts';
-import { buildMw3RangeNavigation, canonicalMw3RangeSelection } from '../src/estimated/mw3-range-state.ts';
+import { buildMw3RangeNavigation, canonicalMw3RangeSelection, currentMw3PotBb } from '../src/estimated/mw3-range-state.ts';
 import { mw3ActionLabel, mw3Copy } from '../src/estimated/mw3-copy.ts';
 import { buildActionBlocks, decodeRangeUrl, encodeRangeUrl, defaultRangeSelection } from '../src/estimated/range-url.ts';
 import { defaultFormat } from '../src/estimated/game-formats.ts';
@@ -16,6 +16,12 @@ const fixture = await deliveryFixture(), kit = await fixture.client.load(fixture
 const selection = extra => ({ flopCards: ['As', '7d', '2c'], flopActions: [], turnCard: '', turnActions: [], riverCard: '', riverActions: [], ...extra });
 const origin = (opener = 'CO', callers = ['BTN', 'BB']) => mw3OriginForSelection({ rangeType: 'response', opener, callers });
 const source = name => readFileSync(new URL(`../src/${name}`, import.meta.url), 'utf8');
+
+test('MW3 board pot display prefers a settled pot and falls back to the live table pot', () => {
+  assert.equal(currentMw3PotBb({ settledPotBb: 7.5, table: { pot: 9.98 } }), 7.5);
+  assert.equal(currentMw3PotBb({ settledPotBb: null, table: { pot: 9.98 } }), 9.98);
+  assert.equal(currentMw3PotBb(null), null);
+});
 
 test('three-origin dispatch is explicit and distinct from HU-origin multiway catalog', () => {
   assert.equal(origin().id, fixture.id); assert.deepEqual(origin().seats, ['BB', 'CO', 'BTN']);

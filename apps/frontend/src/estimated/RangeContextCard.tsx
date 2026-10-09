@@ -3,17 +3,18 @@ export type ContextBoard = { key: string; street?: "flop" | "turn" | "river"; ca
 import { useEffect, useState } from "react";
 import { GearSix, Cards, ArrowCounterClockwise } from "@phosphor-icons/react";
 import { productLocale } from "../locale.ts";
+import { formatBb } from "./postflop-trial.ts";
 
 const suits = { s: "♠", h: "♥", d: "♦", c: "♣" };
 const copy = {
-  en: { board: "Board", settings: "Settings", reset: "Reset actions", flop: "Change flop cards", turn: "Change turn card", river: "Change river card" },
-  ja: { board: "ボード", settings: "設定", reset: "アクションをリセット", flop: "フロップカードを変更", turn: "ターンカードを変更", river: "リバーカードを変更" },
-  "zh-CN": { board: "公共牌", settings: "设置", reset: "重置行动", flop: "更改翻牌", turn: "更改转牌", river: "更改河牌" },
-  es: { board: "Mesa", settings: "Ajustes", reset: "Reiniciar acciones", flop: "Cambiar flop", turn: "Cambiar turn", river: "Cambiar river" },
+  en: { board: "Board", settings: "Settings", reset: "Reset actions", flop: "Change flop cards", turn: "Change turn card", river: "Change river card", pot: "Pot", currentPot: "Current pot" },
+  ja: { board: "ボード", settings: "設定", reset: "アクションをリセット", flop: "フロップカードを変更", turn: "ターンカードを変更", river: "リバーカードを変更", pot: "ポット", currentPot: "現在のポット" },
+  "zh-CN": { board: "公共牌", settings: "设置", reset: "重置行动", flop: "更改翻牌", turn: "更改转牌", river: "更改河牌", pot: "底池", currentPot: "当前底池" },
+  es: { board: "Mesa", settings: "Ajustes", reset: "Reiniciar acciones", flop: "Cambiar flop", turn: "Cambiar turn", river: "Cambiar river", pot: "Bote", currentPot: "Bote actual" },
 };
 
 /** Follow visible street blocks instead of stale downstream cards. */
-export function RangeContextCard({ postflop, settingsOpen, boards, onEditBoard, onReset, children }: { postflop: boolean; settingsOpen: boolean; boards: ContextBoard[]; onEditBoard: (street: "flop" | "turn" | "river") => void; onReset: () => void; children?: ReactNode }) {
+export function RangeContextCard({ postflop, settingsOpen, boards, currentPotBb = null, onEditBoard, onReset, children }: { postflop: boolean; settingsOpen: boolean; boards: ContextBoard[]; currentPotBb?: number | null; onEditBoard: (street: "flop" | "turn" | "river") => void; onReset: () => void; children?: ReactNode }) {
   const [view, setView] = useState("board");
   useEffect(() => { if (!postflop) setView("board"); }, [postflop]);
   const boardVisible = postflop && view === "board";
@@ -29,7 +30,12 @@ export function RangeContextCard({ postflop, settingsOpen, boards, onEditBoard, 
           {(block.street === "turn" || block.street === "river" ? [block.cards[0]] : [0, 1, 2].map(index => block.cards[index])).map((card, index) => <span key={index} className={`postflop-card${card ? ` suit-${card[1]}` : " empty"}`}>{card ? `${card[0]}${suits[card[1] as keyof typeof suits]}` : "?"}</span>)}
         </button>)}
       </div>
-      <div className="range-context-board-footer"><button type="button" className="settings-icon-button" aria-label={text.reset} title={text.reset} onClick={onReset}><ArrowCounterClockwise size={14} aria-hidden="true" /></button></div>
+      <div className="range-context-board-footer">
+        <button type="button" className="settings-icon-button" aria-label={text.reset} title={text.reset} onClick={onReset}><ArrowCounterClockwise size={14} aria-hidden="true" /></button>
+        {Number.isFinite(currentPotBb) && <span className="range-context-pot" aria-label={`${text.currentPot} ${formatBb(currentPotBb!)}BB`}>
+          <span>{text.pot}</span><strong>{formatBb(currentPotBb!)}BB</strong>
+        </span>}
+      </div>
     </> : children}
   </div>;
 }

@@ -19,7 +19,7 @@ const render = (aggregates, actions, extra = {}) => renderToStaticMarkup(createE
 }));
 const segments = markup => [...markup.matchAll(/width:([\d.]+%);background:/g)].map((match) => match[1]);
 
-test("postflop matrix renders one aggregate horizontal fill with exact combo summaries intact", () => {
+test("postflop matrix keeps combo summaries with dominant fills and exact mix strips", () => {
   const combos = [
     { cards: "AsKh", weight: 0.9, reachWeight: 0.2, mix: { raise: 0.25, fold: 0.75 } },
     { cards: "AcKd", weight: 0.6, mix: { raise: 0.5, fold: 0.5 } },
@@ -30,7 +30,8 @@ test("postflop matrix renders one aggregate horizontal fill with exact combo sum
   const markup = render(new Map([["K6s", { actions, comboCount: 4, combos }]]), ["raise", "fold"]);
   const hand = cell(markup, "K6s");
   assert.equal((hand.match(/class="cell-fill"/g) ?? []).length, 1);
-  assert.deepEqual(segments(hand), ["37.5%", "62.5%"]);
+  assert.deepEqual(segments(hand), ["37.5%", "62.5%", "37.5%", "62.5%"]);
+  assert.match(hand, /cell-mix/);
   assert.doesNotMatch(hand, /cell-combo-(?:fill|strip)|data-combo/);
   assert.match(hand, /AsKh · 到達重み 20\.0%: レイズ 25\.0% \/ フォールド 75\.0%/);
   assert.match(hand, /AcKd · 到達重み 60\.0%: レイズ 50\.0% \/ フォールド 50\.0%/);
@@ -48,9 +49,11 @@ test("aggregate fills preserve exact 100%, 50/50, 70/30, 50/30/20 and four-way f
   ];
   for (const [hand, frequencies, actions, expected] of cases) {
     const markup = cell(render(new Map([[hand, { actions: frequencies, comboCount: 6 }]]), actions), hand);
-    assert.deepEqual(segments(markup), expected, hand);
+    assert.deepEqual(segments(markup), expected.length > 1 ? [...expected, ...expected] : expected, hand);
     assert.equal((markup.match(/class="cell-fill"/g) ?? []).length, 1, hand);
-    assert.doesNotMatch(markup, /cell-mix|cell-combo-/);
+    if (expected.length > 1) assert.match(markup, /cell-mix/);
+    else assert.doesNotMatch(markup, /cell-mix/);
+    assert.doesNotMatch(markup, /cell-combo-/);
   }
 });
 
@@ -62,7 +65,7 @@ test("preflop and simple matrices retain their rendering and unreachable cells k
   ]);
   const standard = render(aggregates, ["raise", "fold"]);
   assert.deepEqual(segments(cell(standard, "AA")), ["100.0%"]);
-  assert.deepEqual(segments(cell(standard, "K6s")), ["75.0%", "25.0%"]);
+  assert.deepEqual(segments(cell(standard, "K6s")), ["75.0%", "25.0%", "75.0%", "25.0%"]);
   assert.match(cell(standard, "K5s"), /unreachable-hand/);
   assert.doesNotMatch(cell(standard, "K5s"), /cell-fill/);
   const simple = render(aggregates, ["raise", "fold"], { simplified: true });
