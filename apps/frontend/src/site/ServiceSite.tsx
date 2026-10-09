@@ -106,7 +106,7 @@ function ActionRows({ mode, values }: { mode: RangeMode; values: Record<Action, 
 }
 
 const heroActions = ["all_in", "raise", "call", "limp", "fold"] as const;
-type HeroRange = { id: string; stage: string; hands: Record<string, Partial<Record<string, number>>>; unreachable: string[]; actions: readonly string[]; board?: string; seat?: string; history?: string[] };
+type HeroRange = { id: string; stage: string; hands: Record<string, Partial<Record<string, number>>>; reach?: Record<string, number>; unreachable: string[]; actions: readonly string[]; board?: string; seat?: string; history?: string[] };
 const heroRanges: HeroRange[] = [...previewRanges.tour.map(range => ({ ...range, actions: heroActions })), ...postflopRanges.ranges];
 const stripAggression = ["all_in", "allin", "raise", "bet125", "bet75", "bet33", "limp", "call", "check", "fold"];
 
@@ -136,11 +136,19 @@ export function RangeMatrix({ range, selected, onSelect }: { range: HeroRange; s
         const unreachable = range.unreachable.includes(hand);
         const action = range.actions.reduce((best, candidate) => values[candidate] > values[best] ? candidate : best, postflop ? range.actions[0] : "fold");
         const mixed = range.actions.filter(option => values[option] > 0).sort((a, b) => stripAggression.indexOf(a) - stripAggression.indexOf(b));
+        const reach = postflop ? range.reach?.[hand] ?? 0 : 1;
+        let left = 0;
+        const fills = mixed.map(option => {
+          const width = values[option];
+          const fill = <span key={option} style={{ left: `${left}%`, width: `${width}%`, height: `${reach * 100}%`, background: actionColor(option) }} />;
+          left += width;
+          return fill;
+        });
         const breakdown = unreachable ? copy.preview.unreachable : mixed.map(option => `${actionLabels[option]} ${values[option]}%`).join(" / ");
         return <button type="button" key={hand} className={`site-cell ${unreachable ? "is-unreachable" : `is-${action}${postflop ? " is-postflop" : ""}`}${selected === hand ? " is-selected" : ""}`}
           style={{ "--wave": wave, "--hero-action-color": actionColor(action) } as CSSProperties}
           aria-label={`${hand}: ${breakdown}`} aria-pressed={selected === hand} title={`${range.id} · ${hand} · ${breakdown}`} onClick={() => onSelect(hand)}>
-          {hand}{!unreachable && mixed.length > 1 && <span className="site-cell-mix" aria-hidden="true">{mixed.map(option => <span key={option} className={`is-${option}`} style={{ width: `${values[option]}%`, ...(postflop || option === "all_in" ? { background: actionColor(option) } : {}) }} />)}</span>}
+          <span className="site-cell-label">{hand}</span>{!unreachable && reach > 0 && <span className="site-cell-fill" aria-hidden="true">{fills}</span>}
         </button>;
       })}
     </fieldset>
@@ -152,7 +160,7 @@ export function HeroActionLegend({ range }: { range: HeroRange }) {
   const labels = heroActionLabels(copy, range);
   const used = range.actions.filter(action => Object.entries(range.hands).some(([hand, mix]) => !range.unreachable.includes(hand) && (mix[action] ?? 0) > 0))
     .sort((a, b) => stripAggression.indexOf(a) - stripAggression.indexOf(b));
-  return <div className="site-range-legend">{used.map(action => <span key={action}><i aria-hidden="true" style={{ background: range.stage !== "postflop" && action === "fold" ? "var(--fold)" : actionColor(action) }} />{labels[action] ?? action}</span>)}</div>;
+  return <div className="site-range-legend">{used.map(action => <span key={action}><i aria-hidden="true" style={{ background: actionColor(action) }} />{labels[action] ?? action}</span>)}</div>;
 }
 
 function Explorer() {
