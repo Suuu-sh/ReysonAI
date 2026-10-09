@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
-import { assertExistingDelivery, assertProductionContext, assertPublicCors, assertCredentialedCors, ensureMw3Published, verifyMw3Live } from '../scripts/mw3-production-delivery.mjs';
+import { assertExistingDelivery, assertProductionContext, assertPublicCors, assertCredentialedCors, assertMw3DeliveryEtag, mw3IfNoneMatchHeaders, ensureMw3Published, verifyMw3Live } from '../scripts/mw3-production-delivery.mjs';
 
 // Synthetic rows only: these never enter the canonical saved-inventory gate.
 function fixture() {
@@ -106,6 +106,26 @@ test('live CORS contract distinguishes public reads from cookie-authenticated re
   assert.throws(() => assertCredentialedCors(new Response('{}', { headers: {
     'access-control-allow-origin': 'https://evil.invalid', 'access-control-allow-credentials': 'true',
   } })));
+});
+test('live MW3 ETags preserve strict strong/weak validators across 200 and 304', async () => {
+  const hash = 'a'.repeat(64), strong = `"${hash}"`, weak = `W/${strong}`;
+  for (const responseEtag of [strong, weak]) {
+    const initial = new Response('{}', { status: 200, headers: { etag: responseEtag } });
+    assert.equal(assertMw3DeliveryEtag(initial, hash), responseEtag);
+    assert.deepEqual(mw3IfNoneMatchHeaders(initial, hash), { 'If-None-Match': responseEtag });
+    for (const cachedEtag of [strong, weak]) {
+      const cached = new Response(null, { status: 304, headers: { etag: cachedEtag, 'access-control-allow-origin': 'https://app.reysonai.com' } });
+      assertPublicCors(cached); assert.equal(cached.status, 304);
+      assert.equal(assertMw3DeliveryEtag(cached, hash), cachedEtag);
+      assert.equal(await cached.text(), '');
+    }
+  }
+  const wrong = [null, `"${'b'.repeat(64)}"`, `W/"${'b'.repeat(64)}"`, `w/${strong}`, `W/${hash}`, `${strong}x`, `W/${strong}x`, '*'];
+  for (const status of [200, 304]) for (const etag of wrong) {
+    const response = new Response(status === 304 ? null : '{}', { status, headers: etag === null ? {} : { etag } });
+    assert.throws(() => assertMw3DeliveryEtag(response, hash), `status ${status}, etag ${etag}`);
+    assert.throws(() => mw3IfNoneMatchHeaders(response, hash), `request status ${status}, etag ${etag}`);
+  }
 });
 test('live acceptance rejects incompatible actual source data before policy requests',async()=>{
   const calls=[];

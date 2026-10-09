@@ -141,6 +141,16 @@ export const assertCredentialedCors = response => {
   assert.equal(response.headers.get('access-control-allow-origin'), origin);
   assert.equal(response.headers.get('access-control-allow-credentials'), 'true');
 };
+export function assertMw3DeliveryEtag(response, deliveryHash) {
+  assert.match(deliveryHash, /^[a-f0-9]{64}$/);
+  const strong = `"${deliveryHash}"`;
+  const etag = response.headers.get('etag');
+  assert.ok(etag === strong || etag === `W/${strong}`, 'Missing or mismatched MW3 delivery ETag');
+  return etag;
+}
+export function mw3IfNoneMatchHeaders(response, deliveryHash) {
+  return { 'If-None-Match': assertMw3DeliveryEtag(response, deliveryHash) };
+}
 export async function verifyMw3Live(plan, fetcher = fetch) {
   const request = (path, options = {}) => fetcher(`${api}${path}`, { ...options,
     headers: { Accept: 'application/json', Origin: origin, ...options.headers }, signal: AbortSignal.timeout(15000) });
@@ -158,8 +168,8 @@ export async function verifyMw3Live(plan, fetcher = fetch) {
     const path = `/v1/mw3/manifest?delivery=${delivery.deliveryHash}`;
     const response = await request(path); assertPublicCors(response); assert.equal(response.status, 200);
     const text = await response.text(); assert.equal(text, delivery.headerText); assert.equal(sha256(text), delivery.deliveryHash);
-    assert.equal(response.headers.get('etag'), `"${delivery.deliveryHash}"`);
-    const cached = await request(path, { headers: { 'If-None-Match': `"${delivery.deliveryHash}"` } }); assertPublicCors(cached); assert.equal(cached.status, 304);
+    const cached = await request(path, { headers: mw3IfNoneMatchHeaders(response, delivery.deliveryHash) }); assertPublicCors(cached); assert.equal(cached.status, 304);
+    assertMw3DeliveryEtag(cached, delivery.deliveryHash); assert.equal(await cached.text(), '');
     const parts = [];
     for (let offset = 0; offset < delivery.parts.length; offset += 8) {
       const batch = await Promise.all(delivery.parts.slice(offset, offset + 8).map(async part => {
