@@ -7,7 +7,7 @@ interface BreakdownRow extends BreakdownCounts { key: string; label: string }
 import { ArrowRight, Barbell, CalendarBlank, ChartLineUp, Cards, Crosshair, Info, Robot, Trophy, Target, TrendDown, TrendUp } from "@phosphor-icons/react";
 import { AgentAnalysis } from "../agent/AgentAnalysis.tsx";
 import { PlayStyleDashboard } from "../agent/PlayStyleDashboard.tsx";
-import { StyleMap, type StyleZone } from "../agent/StyleMap.tsx";
+import { StyleMap, styleTypeName, type StyleZone } from "../agent/StyleMap.tsx";
 import { ffCopy as t } from "./fastfold-api.ts";
 import { StyleAvatar } from "../agent/StyleAvatar.tsx";
 import { STYLES } from "../agent/player-read.ts";
@@ -299,11 +299,11 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, r
     </div>
 
     <section className="analysis-card practice-animals" aria-label={localized("Drill play styles", "ドリルのプレイスタイル")}>
-      <p>{localized("Animals describe deviations from the estimate for the same drill questions, not Agent-table VPIP/PFR or real-money play.", "動物は同じドリル問題の推定方針との差を表します。Agent卓のVPIP・PFRや実戦の打ち方の判定ではありません。")}</p>
+      <p>{t("Types describe deviations from the estimate for the same drill questions, not Agent-table VPIP/PFR or real-money play.", "タイプは同じドリル問題の推定方針との差を表します。Agent卓のVPIP・PFRや実戦の打ち方の判定ではありません。", "类型表示在相同训练题目中与估计策略的偏差，并不代表Agent牌桌的VPIP/PFR或真钱游戏表现。", "Los tipos describen las desviaciones respecto a la estimación de las mismas preguntas de práctica; no representan el VPIP/PFR en mesas Agent ni el juego con dinero real.")}</p>
       <ol className="style-roster">{(["nit", "tight_passive", "tag", "passive", "balanced", "aggressive", "station", "lag"] as const).map(id => {
         const style = STYLES[id], current = animal.id === id;
         return <li key={id} className={current ? "is-current" : ""} aria-current={current ? "true" : undefined} style={{ "--style": style.color } as CSSProperties}>
-          <StyleAvatar id={id} color={style.color} size={40} dim={!current} /><span>{localized(style.mascot.en, style.mascot.ja)}</span>
+          <StyleAvatar id={id} color={style.color} size={40} dim={!current} /><span>{styleTypeName(id)}</span>
         </li>;
       })}</ol>
       <p>{localized(PRACTICE_EXPLANATIONS[analysis.style.key], analysis.style.explanation)}</p>

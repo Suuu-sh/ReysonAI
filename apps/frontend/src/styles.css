@@ -183,9 +183,8 @@ main { display: flex; flex: 1; flex-direction: column; min-width: 0; padding: 12
 .matrix button strong { position: relative; z-index: 1; font-weight: 600; color: #fff; text-shadow: 0 1px 2px rgb(0 0 0 / 45%); }
 .matrix button.picked { z-index: 2; outline: 2px solid #fff; outline-offset: -1px; }
 .matrix small { margin-bottom: 4px; color: #eee; font-size: 9px; }
-.cell-mix { position: absolute; right: 3px; bottom: 3px; left: 3px; z-index: 2; display: flex; gap: 1px; height: 6px; overflow: hidden; border-radius: 2px; box-shadow: 0 0 0 1px rgb(0 0 0 / 35%); background: rgb(0 0 0 / 35%); }
-.cell-mix span { height: 100%; flex: 0 0 auto; min-width: 2px; }
-.matrix button:has(.cell-mix) strong { transform: translateY(-3px); }
+.cell-fill { position: absolute; inset: 0; z-index: 0; display: flex; }
+.cell-fill span { height: 100%; flex: 0 0 auto; }
 .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; color: var(--text-muted); font-size: 11px; }
 .legend span, .bar-row > span { display: flex; align-items: center; gap: 8px; }
 i { display: inline-block; width: 8px; height: 8px; flex-shrink: 0; border-radius: 2px; box-shadow: inset 0 0 0 1px #ffffff1f; }
@@ -402,7 +401,6 @@ main > *:nth-child(4) { animation-delay: .15s; }
 .matrix button { animation: cell-in .38s var(--ease-out) both; animation-delay: calc(var(--wave, 0) * 14ms); transition: filter .12s ease, transform .15s var(--ease-out); }
 .matrix button:hover:not(:disabled) { transform: scale(1.06); z-index: 3; }
 .matrix button.picked { animation: pop .3s var(--ease-out); outline-color: #fff; }
-.cell-mix span { transition: width .35s var(--ease-out), background-color .25s ease; }
 
 .detail-column > * { animation: fade-up .3s var(--ease-out) both; }
 .detail-column > *:nth-child(2) { animation-delay: .06s; }
@@ -433,6 +431,11 @@ tbody tr:hover { background: var(--surface-hover); }
 }
 
 .onboarding-language select { max-width: 150px; min-height: 34px; font-size: 12px; }
+
+/* The standard matrix keeps the dominant action as the cell fill and shows the exact mix in a thin strip. */
+.cell-mix { position: absolute; right: 3px; bottom: 3px; left: 3px; z-index: 2; display: flex; gap: 1px; height: 6px; overflow: hidden; border-radius: 2px; box-shadow: 0 0 0 1px rgb(0 0 0 / 35%); background: rgb(0 0 0 / 35%); }
+.cell-mix span { height: 100%; flex: 0 0 auto; min-width: 2px; }
+.matrix button:has(.cell-mix) strong { transform: translateY(-3px); }
 
 /* Range grid style: "classic" fills each cell left→right by action frequency. */
 .cell-fill { display: none; }

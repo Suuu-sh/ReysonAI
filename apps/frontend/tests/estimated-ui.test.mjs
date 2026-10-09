@@ -54,26 +54,25 @@ test("preflop call EV uses the flop-style right column without inventing other a
   assert.equal(renderToStaticMarkup(createElement(PreflopCallEvBars, { items, facts: { eqr: 0.9, equityPct: 45.5 } })), "");
 });
 
-test("standard matrix keeps a dominant solid cell and puts only mixed frequencies in a bottom strip", () => {
+test("standard matrix shows aggregate frequencies as a full-height horizontal fill", () => {
   const aggregates = new Map([
     ["AA", { actions: { raise: 1, fold: 0 }, comboCount: 6 }],
     ["K6s", { actions: { raise: 0.75, fold: 0.25 }, comboCount: 4 }],
     ["K5s", { actions: { raise: 0.4, fold: 0.6 }, comboCount: 4, unreachable: true }],
   ]);
   const props = { node: { actingPosition: "BTN" }, aggregates, actions: ["raise", "fold"], onSelect() {} };
-  const cell = (html, hand) => html.match(new RegExp(`<button[^>]*><strong>${hand}</strong>[\\s\\S]*?</button>`))?.[0] ?? "";
+  const cell = (html, hand) => [...html.matchAll(/<button\b[^>]*>[\s\S]*?<\/button>/g)].find(([markup]) => markup.includes(`<strong>${hand}</strong>`))?.[0] ?? "";
   const standard = renderToStaticMarkup(createElement(StrategyMatrix, props));
   const mixed = cell(standard, "K6s");
-  assert.match(mixed, /background:#d9477f/);
-  assert.match(mixed, /class="cell-mix"/);
+  assert.match(mixed, /class="cell-fill"/);
   assert.match(mixed, /width:75\.0%;background:#d9477f/);
   assert.match(mixed, /width:25\.0%;background:#26262c/);
-  assert.doesNotMatch(cell(standard, "AA"), /cell-mix/);
+  assert.match(cell(standard, "AA"), /width:100\.0%;background:#d9477f/);
   assert.match(cell(standard, "K5s"), /unreachable-hand/);
-  assert.doesNotMatch(cell(standard, "K5s"), /cell-mix/);
+  assert.doesNotMatch(cell(standard, "K5s"), /cell-fill/);
 
   const simple = renderToStaticMarkup(createElement(StrategyMatrix, { ...props, simplified: true }));
-  assert.match(cell(simple, "K6s"), /background:#d9477f/);
+  assert.match(cell(simple, "K6s"), /width:100%;background:#d9477f/);
   assert.doesNotMatch(cell(simple, "K6s"), /cell-mix/);
 });
 
@@ -175,6 +174,27 @@ test("the flop CTA stays in the compact End card without driving the action row 
   assert.match(css, /@media \(max-width: 760px\) \{[\s\S]*?\.action-path-seats \{ align-items: stretch; min-height: 44px;/);
   assert.match(css, /\.enter-postflop \{ min-height: 34px; margin: 0;[^}]*white-space: nowrap;/);
   assert.doesNotMatch(css, /\.action-seat-end[^{}]*\{[^}]*(?:overflow:\s*hidden|max-height:)/);
+});
+
+test("unselected cold seats expose a mobile dropdown without becoming the active actor", () => {
+  const blocks = buildActionBlocks({ rangeType: "three_bet", opener: "UTG", hero: "HJ",
+    spot: { three_bet_size_bb: 8, four_bet_size_bb: 22 } });
+  const coldSeat = blocks.find(block => block.kind === "cold" && block.position === "CO");
+  assert.deepEqual({ active: coldSeat.active, chosen: coldSeat.chosen, options: coldSeat.options.map(option => option.label) },
+    { active: false, chosen: null, options: ["Fold", "Call 8", "Raise 26"] });
+  assert.equal(blocks.find(block => block.active)?.position, "UTG", "the history's current decision stays on UTG");
+  const html = renderToStaticMarkup(createElement(ActionPath, { expanded: true, blocks }));
+  assert.match(html, /action-seat-cold[\s\S]*?<button type="button" class="action-seat-position"[^>]*>CO<\/button>[\s\S]*?class="action-seat-select"[\s\S]*?aria-label="COのアクションを選択"/);
+
+  const unavailable = renderToStaticMarkup(createElement(ActionPath, { expanded: true,
+    blocks: [{ ...coldSeat, options: coldSeat.options.map(option => ({ ...option, disabled: true })) }] }));
+  assert.doesNotMatch(unavailable, /class="action-seat-select"/);
+  const alreadyChosen = renderToStaticMarkup(createElement(ActionPath, { expanded: true,
+    blocks: [{ ...coldSeat, chosen: "raise" }] }));
+  assert.doesNotMatch(alreadyChosen, /class="action-seat-select"/);
+
+  const css = readFileSync(new URL("../src/estimated/ranges.css", import.meta.url), "utf8");
+  assert.match(css, /\.action-seat:not\(\.active\) \.action-seat-options > button:not\(\.chosen\) \{ display: none; \}/);
 });
 
 test("SB can limp and BB can check or iso-raise from the saved limp response", () => {
