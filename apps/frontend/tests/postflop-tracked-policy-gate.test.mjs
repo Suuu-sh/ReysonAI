@@ -72,13 +72,13 @@ test('strict publication accepts all 85 unchanged adopted-v7 tuples with honest 
 
 test('the 255 adopted development policy/report files retain their exact raw bytes', () => {
   // Filename + NUL + raw bytes + NUL, sorted by filename. Independently computed
-  // from 7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5; no numerical regeneration.
+  // after the turn/river bluff raise selection regenerated every simulation report.
   const directory=new URL('../scripts/data/postflop-ai/policies/',import.meta.url);
   const files=readdirSync(directory).filter(file=>file.endsWith('.json')).sort();
   assert.equal(files.length,255);
   const digest=createHash('sha256');
   for(const file of files)digest.update(file).update('\0').update(readFileSync(new URL(file,directory))).update('\0');
-  assert.equal(digest.digest('hex'),'3ad11c7cdc1771722ce7d5d7c3cc32d3030795c58fef71dce3846411b07630ad');
+  assert.equal(digest.digest('hex'),'2bfd7ae9d1bed70758cc65ca62c93cef0ad59f889441b4dc8b251af8e7047126');
 });
 
 test('a missing artifact from either end of the required 85 tuples fails strict publication', () => {
