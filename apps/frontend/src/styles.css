@@ -183,7 +183,7 @@ main { display: flex; flex: 1; flex-direction: column; min-width: 0; padding: 12
 .matrix button strong { position: relative; z-index: 1; font-weight: 600; color: #fff; text-shadow: 0 1px 2px rgb(0 0 0 / 45%); }
 .matrix button.picked { z-index: 2; outline: 2px solid #fff; outline-offset: -1px; }
 .matrix small { margin-bottom: 4px; color: #eee; font-size: 9px; }
-.cell-fill { position: absolute; inset: 0; z-index: 0; display: flex; }
+.cell-fill { position: absolute; right: 0; bottom: 0; left: 0; z-index: 0; display: flex; }
 .cell-fill span { height: 100%; flex: 0 0 auto; }
 .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; color: var(--text-muted); font-size: 11px; }
 .legend span, .bar-row > span { display: flex; align-items: center; gap: 8px; }
@@ -432,15 +432,9 @@ tbody tr:hover { background: var(--surface-hover); }
 
 .onboarding-language select { max-width: 150px; min-height: 34px; font-size: 12px; }
 
-/* The standard matrix keeps the dominant action as the cell fill and shows the exact mix in a thin strip. */
-.cell-mix { position: absolute; right: 3px; bottom: 3px; left: 3px; z-index: 2; display: flex; gap: 1px; height: 6px; overflow: hidden; border-radius: 2px; box-shadow: 0 0 0 1px rgb(0 0 0 / 35%); background: rgb(0 0 0 / 35%); }
-.cell-mix span { height: 100%; flex: 0 0 auto; min-width: 2px; }
-.matrix button:has(.cell-mix) strong { transform: translateY(-3px); }
 
-/* Range grid style: "classic" fills each cell left→right by action frequency. */
-.cell-fill { display: none; }
+/* Range cells use a bottom-anchored band whose height represents actual node reach. */
+.cell-fill { display: flex; }
 [data-matrix="classic"] .matrix button { background: #1c1c21 !important; }
-[data-matrix="classic"] .cell-fill { position: absolute; inset: 0; z-index: 0; display: flex; }
+[data-matrix="classic"] .cell-fill { position: absolute; top: auto; right: 0; bottom: 0; left: 0; z-index: 0; display: flex; }
 [data-matrix="classic"] .cell-fill span { height: 100%; flex: 0 0 auto; }
-[data-matrix="classic"] .cell-mix { display: none; }
-[data-matrix="classic"] .matrix button:has(.cell-mix) strong { transform: none; }
