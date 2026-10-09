@@ -19,7 +19,7 @@ import threeBetResponses from "../src/estimated/three-bet-responses.json" with {
 import { buildLaterView, buildLocalBoard } from "../scripts/postflop-ai/local-view.mjs";
 import { referencePolicy, referencePolicyFor, validatePolicy } from "../scripts/postflop-ai/policy.ts";
 import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
-import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, deck, flopDecision, laterStart, replayLater, recognizedFlop, representativeFlops } from "../src/estimated/postflop-trial.ts";
+import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, currentPostflopPotBb, deck, flopDecision, laterDecision, laterStart, replayLater, recognizedFlop, representativeFlops } from "../src/estimated/postflop-trial.ts";
 import { nextPendingStreetCardDialog } from "../src/estimated/street-card-dialog-state.ts";
 
 test("turn and river card dialogs open on each newly pending street, but not after a manual close", () => {
@@ -457,15 +457,69 @@ test("later decision projections return 169 normalized rows without weighting op
   assert.throws(() => buildLaterView({ flop: "As7d2c", flopActions: "bet33,call", turn: "Kh" }, inputs, flopCandidate, null), /ターン・リバーのAI方針がありません/);
 });
 
-let server, ActionPath, Sidebar, PostflopTrial, FlopCardDialog, StreetCardDialog, buildActionBlocks, labelsFor, nodeTitle, laterNodeTitle, randomFlop;
+let server, ActionPath, Sidebar, PostflopTrial, FlopCardDialog, StreetCardDialog, RangeContextCard, buildActionBlocks, labelsFor, nodeTitle, laterNodeTitle, randomFlop;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)),
     server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
   ({ ActionPath, buildActionBlocks } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.tsx"));
   ({ Sidebar } = await server.ssrLoadModule("/src/components/layout.tsx"));
+  ({ RangeContextCard } = await server.ssrLoadModule("/src/estimated/RangeContextCard.tsx"));
   ({ PostflopTrial, FlopCardDialog, StreetCardDialog, labelsFor, nodeTitle, laterNodeTitle, randomFlop } = await server.ssrLoadModule("/src/estimated/PostflopTrial.tsx"));
 });
 after(async () => { await server?.close(); });
+
+test("board context shows the current pot in BB beside the reset control", () => {
+  const boards = [
+    { key: "flop", street: "flop", cards: ["As", "7d", "2c"] },
+    { key: "turn", street: "turn", cards: ["Kh"] },
+    { key: "river", street: "river", cards: ["Td"] },
+  ];
+  const previousWindow = globalThis.window;
+  globalThis.window = { localStorage: { getItem: () => "en" } };
+  try {
+    const english = renderToStaticMarkup(createElement(RangeContextCard, { postflop: true, settingsOpen: false, boards,
+      currentPotBb: 19.75, onEditBoard() {}, onReset() {} }));
+    assert.match(english, /aria-label="Current pot 19\.75BB"/);
+    assert.match(english, /<strong>19\.75BB<\/strong>/);
+    assert.match(english, /aria-label="Reset actions"/);
+    assert.match(english, /A♠[\s\S]*7♦[\s\S]*2♣[\s\S]*K♥[\s\S]*T♦/);
+
+    globalThis.window = { localStorage: { getItem: () => "ja" } };
+    const japanese = renderToStaticMarkup(createElement(RangeContextCard, { postflop: true, settingsOpen: false, boards,
+      currentPotBb: 19.75, onEditBoard() {}, onReset() {} }));
+    assert.match(japanese, /aria-label="現在のポット 19\.75BB"/);
+    assert.match(japanese, /アクションをリセット/);
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window;
+    else globalThis.window = previousWindow;
+  }
+});
+
+test("current pot follows flop, turn and river replays and ignores cleared downstream streets", () => {
+  const context = completedFlopContext({ actionBlocks: end("2人でフロップへ", 5.5), rangeType: "response",
+    opener: "BTN", hero: "BB", callers: ["BB"], foldedHero: true, isDefaultTable: true });
+  assert.equal(currentPostflopPotBb({}, context), context.potBb);
+
+  const flopActions = ["bet33", "raise", "call"];
+  assert.equal(currentPostflopPotBb({ flopActions }, context), flopDecision(flopActions, context).potBb);
+  const turnlessPot = currentPostflopPotBb({ flopActions: ["check"], turnActions: ["check", "check"], riverActions: ["bet75"] }, context);
+  assert.equal(turnlessPot, flopDecision(["check"], context).potBb, "cleared turn/river cards cannot retain stale action amounts");
+
+  const settledFlop = ["check"];
+  const turnStart = laterStart(settledFlop, context);
+  const turnActions = ["bet33", "call"];
+  const turn = replayLater("turn", turnActions, turnStart, context);
+  assert.equal(currentPostflopPotBb({ flopActions: settledFlop, turnCard: "Kh", turnActions }, context), turn.pot);
+
+  const riverStart = { pot: turn.pot, stacks: turn.stacks, lastAggressor: turn.lastAggressor };
+  const riverAction = laterDecision("river", [], riverStart, context).options[0].action;
+  const riverActions = [riverAction];
+  const river = replayLater("river", riverActions, riverStart, context);
+  assert.equal(currentPostflopPotBb({ flopActions: settledFlop, turnCard: "Kh", turnActions,
+    riverCard: "As", riverActions }, context), river.pot);
+
+  assert.equal(currentPostflopPotBb({}, context), 5.5, "rewinding to the preflop board restores the starting pot");
+});
 
 test("completed preflop end block extends the same action path", () => {
   const blocks = buildActionBlocks({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["BB"], foldedHero: true });

@@ -70,7 +70,7 @@ import { nextPendingStreetCardDialog } from "./street-card-dialog-state.ts";
 import { buildActionBlocks, encodeRangeUrl, multiwayContext, readRangeUrl, replaceRangeUrl } from "./range-url.ts";
 export { buildActionBlocks } from "./range-url.ts";
 import { PreflopCallEvBars } from "./PreflopCallEvBars.tsx";
-import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, laterStart, recognizedFlop } from "./postflop-trial.ts";
+import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, currentPostflopPotBb, laterStart, recognizedFlop } from "./postflop-trial.ts";
 import { defaultFormat, formatLabel, isBuilt } from "./game-formats.ts";
 import { DEFAULT_PROFILE, adjustOpeningSpot, adjustmentReason, describeProfile, isDefaultProfile, markAdjustedModel, normalizeProfile } from "./table-profile.ts";
 import "./ranges.css";
@@ -750,6 +750,13 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const laterBlocks = canEnterLaterStreets
     ? buildLaterActionBlocks({ flopActions, turnCard, turnActions, riverCard, riverActions }, flopContext)
     : [];
+  const mw3PotBb = mw3Session.navigation?.table?.pot;
+  const hasPostflopProgress = Boolean(flopActions.length || turnCard || turnActions.length || riverCard || riverActions.length);
+  const currentBoardPotBb = !flopActive || !flopContext ? null
+    : flopContext.kind === "mw3_srp"
+      ? Number.isFinite(mw3PotBb) ? mw3PotBb : hasPostflopProgress ? null : flopContext.potBb
+      : !flopContext.pilotAvailable ? flopContext.potBb
+        : currentPostflopPotBb({ flopActions, turnCard, turnActions, riverCard, riverActions }, flopContext);
   const pendingStreetCard: StreetCardDialogName | null = flopActive ? (flopContext?.kind === "mw3_srp" ? mw3Session.navigation?.pendingStreet : (laterBlocks.find(block => block.kind === "board" && block.pending) as { street: StreetCardDialogName } | undefined)?.street) ?? null : null;
   const previousPendingStreetCard = useRef<StreetCardDialogName | null>(null);
   useEffect(() => {
@@ -981,6 +988,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
         <ActionPath
           leading={<RangeContextCard postflop={flopActive} settingsOpen={settingsOpen}
             boards={combinedBlocks.filter(block => block.kind === "board") as { key: string; street?: "flop" | "turn" | "river"; cards: string[] }[]}
+            currentPotBb={currentBoardPotBb}
             onEditBoard={street => street === "flop" ? setFlopDialogOpen(postflopAllowed) : setStreetCardDialog(postflopAllowed ? street as StreetCardDialogName : null)}
             onReset={resetPath}>
             <div className="settings-header">
