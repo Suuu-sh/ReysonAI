@@ -1,7 +1,7 @@
 import { AuthorizationError, OAuthError, OAuthAuthorizationServer, type AuthRequest, type OAuthHelpers } from '@cloudflare/workers-oauth-provider';
 import { HISTORY_SCOPE, RANGE_SCOPE, SCOPES } from './access.ts';
 import type { McpConfiguration, McpEnv } from './config.ts';
-import { consentCompletionHtml, errorResponse, escapeHtml, html, oauthFormHtml, readBoundedBody, SECURITY_HEADERS } from './http.ts';
+import { consentCompletionHtml, errorResponse, escapeHtml, html, oauthConsentFormHtml, oauthFormHtml, readBoundedBody, SECURITY_HEADERS } from './http.ts';
 import { authorizationFailureDetails } from './auth-diagnostics.ts';
 import { accountExists, browserSession, sessionProof, validSessionProof } from './session.ts';
 
@@ -117,22 +117,19 @@ export async function authorizationPage(request: Request, env: McpEnv, config: M
       await env.OAUTH_KV.put(offerKey, JSON.stringify(offer), { expirationTtl: CONSENT_OFFER_TTL_SECONDS });
       const proof = await sessionProof(session, `consent:${consent.handle}:${JSON.stringify([requestedScopes, offeredScopes])}`);
       const scopes = details.scope.filter(scope => scope !== 'offline_access')
-        .map(scope => `<label class="permission"><input type="checkbox" name="scope" value="${escapeHtml(scope)}" checked><span class="permission-copy"><span>${escapeHtml(LABELS[scope] ?? scope)}</span></span></label>`).join('');
-      const offlineChecked = requestedScopes.includes('offline_access') ? ' checked' : '';
-      const offlineDescription = requestedScopes.includes('offline_access')
-        ? 'The client requested this optional permission.'
-        : 'The client did not request this permission; select it only if you want this connection to support refresh.';
-      const offlineScope = `<label class="permission permission-optional"><input type="checkbox" name="scope" value="offline_access"${offlineChecked}><span class="permission-copy"><span>${escapeHtml(LABELS.offline_access)}</span><small>${escapeHtml(offlineDescription)}</small></span></label>`;
-      return oauthFormHtml(`<section class="consent-flow" aria-labelledby="consent-title">
+        .map(scope => `<label class="permission"><input type="checkbox" name="scope" value="${escapeHtml(scope)}"${scope === RANGE_SCOPE ? ' required' : ''} checked><span class="permission-copy"><span>${escapeHtml(LABELS[scope] ?? scope)}</span></span></label>`).join('');
+      const offlineDescription = `Required to allow this connection. It lets the client refresh access for up to 30 days; you can revoke it at any time.${requestedScopes.includes('offline_access') ? ' The client requested this permission.' : ' The client did not request it.'}`;
+      const offlineScope = `<label class="permission permission-optional"><input id="offline-access" type="checkbox" name="scope" value="offline_access" required aria-describedby="offline-access-description"><span class="permission-copy"><span>${escapeHtml(LABELS.offline_access)}</span><small id="offline-access-description">${escapeHtml(offlineDescription)}</small></span></label>`;
+      return oauthConsentFormHtml(nonce => `<section class="consent-flow" aria-labelledby="consent-title">
 <p class="eyebrow">Secure connection request</p>
 <h1 id="consent-title">Connect ${escapeHtml(details.clientName)} to ReysonAI?</h1>
 <p class="account-context">Signed in as <strong>${escapeHtml(session.email)}</strong>. Review the app and its requested access before continuing.</p>
 <div class="client-details"><div class="client-detail"><span>Client ID</span><code>${escapeHtml(details.clientId)}</code></div><div class="client-detail"><span>Access returns to</span><strong>${escapeHtml(details.redirectHost)}</strong></div></div>
 ${details.redirectIsLoopback ? '<p class="loopback-warning"><strong>This grants access to an app on your computer.</strong> Continue only if you just started this connection.</p>' : ''}
-<p class="security-note"><strong>How access works.</strong> Access tokens expire after five minutes. Optional refresh access lets this client keep the connection until you revoke it or 30 days pass. Login is required; use is currently free, with no payment or subscription.</p>
-<form class="consent-form" method="post" action="${AUTHORIZE_PATH}"><input type="hidden" name="handle" value="${escapeHtml(consent.handle)}"><input type="hidden" name="session_proof" value="${proof}"><fieldset class="permissions"><legend>Permissions</legend><div class="permission-list">${scopes}${offlineScope}</div></fieldset><div class="consent-actions"><button name="decision" value="approve">Allow access</button><button name="decision" value="deny">Deny</button></div></form>
+<p class="security-note"><strong>How access works.</strong> Access tokens expire after five minutes. To allow this connection, select the required refresh permission for access lasting up to 30 days; you can revoke it any time. Login is required; use is currently free, with no payment or subscription.</p>
+<form class="consent-form" method="post" action="${AUTHORIZE_PATH}"><input type="hidden" name="handle" value="${escapeHtml(consent.handle)}"><input type="hidden" name="session_proof" value="${proof}"><fieldset class="permissions"><legend>Permissions</legend><div class="permission-list">${scopes}${offlineScope}</div></fieldset><div class="consent-actions"><button id="allow-access" type="submit" name="decision" value="approve" disabled>Allow access</button><button type="submit" name="decision" value="deny" formnovalidate>Deny</button></div></form>
 <p class="manage-link"><a href="${CONNECTIONS_PATH}">Manage or revoke connections</a></p>
-</section>`, 200, consent.headers);
+</section><script nonce="${nonce}">(()=>{const form=document.querySelector('.consent-form');const allow=document.querySelector('#allow-access');const range=form.querySelector('input[name="scope"][value="${RANGE_SCOPE}"]');const refresh=form.querySelector('#offline-access');const update=()=>{allow.disabled=!(range.checked&&refresh.checked)};form.addEventListener('change',update);update()})();</script>`, 200, consent.headers);
     }
     if (request.method !== 'POST') return errorResponse('method_not_allowed', 405);
     if (request.headers.get('origin') !== config.origin || !/^application\/x-www-form-urlencoded(?:;|$)/i.test(request.headers.get('content-type') ?? '')) return errorResponse('invalid_origin_or_content_type', 403);
@@ -161,7 +158,7 @@ ${details.redirectIsLoopback ? '<p class="loopback-warning"><strong>This grants 
     }
     if (decisionValues[0] !== 'approve') return errorResponse('invalid_decision', 400);
     const selected = form.getAll('scope');
-    if (selected.length > offer.offeredScopes.length || !selected.includes(RANGE_SCOPE) || new Set(selected).size !== selected.length
+    if (selected.length > offer.offeredScopes.length || !selected.includes(RANGE_SCOPE) || !selected.includes('offline_access') || new Set(selected).size !== selected.length
       || selected.some(scope => !offer.offeredScopes.includes(scope) || !(SCOPES as readonly string[]).includes(scope))) return errorResponse('invalid_scope', 400);
     const approved = await oauth.approveConsent(request, handle, { scope: selected });
     if (!validAuthRequest(approved.request, config) || JSON.stringify(approved.request.scope) !== JSON.stringify(selected)) return errorResponse('invalid_scope_resource_or_pkce', 400);

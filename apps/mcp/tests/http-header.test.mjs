@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { consentCompletionHtml, errorResponse, html, oauthFormHtml, privateResponse, SECURITY_HEADERS } from '../src/http.ts';
+import { consentCompletionHtml, errorResponse, html, oauthConsentFormHtml, oauthFormHtml, privateResponse, SECURITY_HEADERS } from '../src/http.ts';
 
 test('OAuth form HTML keeps strict-origin through the private response wrapper', async () => {
   const response = privateResponse(oauthFormHtml('<form method="post"></form>'));
@@ -11,6 +11,23 @@ test('OAuth form HTML keeps strict-origin through the private response wrapper',
   assert.equal(response.headers.get('pragma'), SECURITY_HEADERS.pragma);
   assert.equal(response.headers.get('content-security-policy'), SECURITY_HEADERS['content-security-policy']);
   assert.equal(response.headers.get('x-frame-options'), SECURITY_HEADERS['x-frame-options']);
+});
+
+test('consent form script uses a unique nonce preserved by the private response wrapper', async () => {
+  const render = () => privateResponse(oauthConsentFormHtml(nonce => `<form method="post"></form><script nonce="${nonce}">document.querySelector('form')</script>`));
+  const first = render();
+  const second = render();
+  const firstBody = await first.text();
+  const secondBody = await second.text();
+  const nonce = firstBody.match(/<script nonce="([a-f0-9]{32})">/)?.[1];
+
+  assert.ok(nonce);
+  assert.notEqual(nonce, secondBody.match(/<script nonce="([a-f0-9]{32})">/)?.[1]);
+  assert.equal(first.headers.get('referrer-policy'), 'strict-origin');
+  assert.equal(first.headers.get('content-security-policy'), `${SECURITY_HEADERS['content-security-policy']}; script-src 'nonce-${nonce}'`);
+  const scriptPolicy = first.headers.get('content-security-policy').split(';').find(part => part.trim().startsWith('script-src'));
+  assert.ok(scriptPolicy);
+  assert.ok(!scriptPolicy.includes('unsafe-inline'));
 });
 
 test('ordinary HTML and JSON error responses retain no-referrer', () => {

@@ -6,13 +6,27 @@ export const SECURITY_HEADERS = {
   'x-frame-options': 'DENY',
   'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'",
 };
+const consentScriptCspPrefix = `${SECURITY_HEADERS['content-security-policy']}; script-src 'nonce-`;
+
+function randomNonce(): string {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+}
 
 export function privateResponse(response: Response): Response {
   const result = new Response(response.body, response);
   const preserveFormReferrerPolicy = result.headers.get('content-type')?.toLowerCase().startsWith('text/html')
     && result.headers.get('referrer-policy')?.trim().toLowerCase() === 'strict-origin';
+  const contentSecurityPolicy = result.headers.get('content-security-policy')?.trim() ?? '';
+  const consentNonce = contentSecurityPolicy.startsWith(consentScriptCspPrefix)
+    ? contentSecurityPolicy.slice(consentScriptCspPrefix.length, -1)
+    : '';
+  const preserveConsentScriptCsp = result.headers.get('content-type')?.toLowerCase().startsWith('text/html')
+    && /^[a-f0-9]{32}$/.test(consentNonce);
   for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
     if (name === 'referrer-policy' && preserveFormReferrerPolicy) continue;
+    if (name === 'content-security-policy' && preserveConsentScriptCsp) continue;
     result.headers.set(name, value);
   }
   return result;
@@ -37,6 +51,7 @@ a:hover{color:#ffc1d9}
 a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #ff9bc5;outline-offset:4px}
 button{min-height:48px;padding:11px 19px;border:1px solid transparent;border-radius:12px;background:#c52d6c;color:#fff;font:inherit;font-weight:700;line-height:1.2;cursor:pointer}
 button:hover{background:#d53c7d}
+button:disabled{background:#5a283d;color:#c8b6bf;cursor:not-allowed;opacity:.78}
 button[name="decision"][value="deny"]{border-color:#514d57;background:#222127;color:#ededf0}
 button[name="decision"][value="deny"]:hover{border-color:#817b88;background:#2d2b32}
 .consent-flow .eyebrow,.completion .eyebrow{margin:0 0 10px;color:#ff9bc5;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
@@ -84,6 +99,13 @@ export function html(body: string, status = 200, supplied?: Headers): Response {
 export function oauthFormHtml(body: string, status = 200, supplied?: Headers): Response {
   const response = html(body, status, supplied);
   response.headers.set('referrer-policy', 'strict-origin');
+  return response;
+}
+/** A nonce-scoped inline script may be used only by the consent form's submit guard. */
+export function oauthConsentFormHtml(renderBody: (nonce: string) => string, status = 200, supplied?: Headers): Response {
+  const nonce = randomNonce();
+  const response = oauthFormHtml(renderBody(nonce), status, supplied);
+  response.headers.set('content-security-policy', `${consentScriptCspPrefix}${nonce}'`);
   return response;
 }
 /**
