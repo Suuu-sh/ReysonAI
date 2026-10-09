@@ -122,6 +122,33 @@ test("policy coverage discloses bounded head-up node evaluation separately from 
   assert.equal(coverage.spots[0].savedFlopCoverage.status, "no_saved_boards");
 });
 
+test("natural-language flop example evaluates a published policy with no saved base and exact action history", async () => {
+  const { db } = makeFixture();
+  const coverage = await listPostflopCoverage(db, { limit: 50 });
+  const match = coverage.spots.find(item => item.id === spotId);
+  assert.ok(match, "coverage discovery resolves the actual published spot");
+  assert.equal(match.policyNodeEvaluation.status, "head_up_sources_supported");
+  assert.equal(match.savedFlopCoverage.status, "no_saved_boards");
+  assert.equal(match.savedFlopCoverage.lookupSupported, false);
+
+  const firstDecision = await evaluatePublishedPostflopPolicy(db, { spotId, flop: "2c9s5h", history: [] });
+  assert.equal(firstDecision.node, "btn_first", "oop_checks already accounts for BB's opening check");
+  assert.equal(firstDecision.actingSeat, "BTN");
+  assert.equal(firstDecision.calculation.savedBaseUsed, false);
+  assert.equal(firstDecision.calculation.referenceFallbackUsed, false);
+  const aa = firstDecision.hands.find(row => row.hand === "AA");
+  assert.ok(aa?.nodeReachable);
+  assert.deepEqual(aa.frequencies, { check: 0.3, bet33: 0.35, bet75: 0.3, bet125: 0.05 });
+
+  const bbFacing = await evaluatePublishedPostflopPolicy(db, { spotId, flop: "2c9s5h", history: ["bet33"] });
+  assert.equal(bbFacing.node, "bb_vs_33");
+  assert.equal(bbFacing.actingSeat, "BB");
+  await assert.rejects(evaluatePublishedPostflopPolicy(db, { spotId, flop: "2c9s5h", history: ["check"] }), hasCode("not_found"),
+    "adding a second check ends the oop_checks line instead of reaching BTN's first decision");
+  await assert.rejects(evaluatePublishedPostflopPolicy(db, { spotId, flop: "2c9s5h", history: ["bet40"] }), hasCode("invalid_argument"),
+    "an unsupported bet size is rejected rather than rounded to bet33");
+});
+
 test("current publisher spot-upsert metadata reads a complete catalog and rejects partial or inconsistent revisions", async () => {
   const publicationRevision = "local-new-hu-verification";
   const touchedSpotId = "UTG_open_SB_3bet_call";
