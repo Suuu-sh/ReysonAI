@@ -11,10 +11,10 @@ import { englishFactLabels } from "../src/estimated/english-reasons.ts";
 import { translateExplanationCopy } from "../src/locales/reason-copy.ts";
 import { limpActionTransition, responseActionTransition, rewindActionBlockTransition } from "../src/estimated/action-path.ts";
 
-let server, EstimatedRanges, AiReason, ActionPath, Sidebar, StrategyMatrix, PreflopCallEvBars, buildActionBlocks, prioritizeParticipantRanges, selectedHandForRangeEntry;
+let server, EstimatedRanges, AiReason, ActionPath, Sidebar, StrategyMatrix, PreflopCallEvBars, buildActionBlocks, prioritizeParticipantRanges, prioritizeActingBBRange, selectedHandForRangeEntry;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
-  ({ EstimatedRanges, AiReason, ActionPath, buildActionBlocks, prioritizeParticipantRanges, selectedHandForRangeEntry } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.tsx"));
+  ({ EstimatedRanges, AiReason, ActionPath, buildActionBlocks, prioritizeParticipantRanges, prioritizeActingBBRange, selectedHandForRangeEntry } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.tsx"));
   ({ Sidebar } = await server.ssrLoadModule("/src/components/layout.tsx"));
   ({ StrategyMatrix } = await server.ssrLoadModule("/src/components/StrategyMatrix.tsx"));
   ({ PreflopCallEvBars } = await server.ssrLoadModule("/src/estimated/PreflopCallEvBars.tsx"));
@@ -26,6 +26,12 @@ test("a rewound action block resolves the selected hand before opening its detai
   assert.equal(selectedHandForRangeEntry(entry, "J9s"), hands[1]);
   assert.equal(selectedHandForRangeEntry(entry, "AKo"), hands[0]);
   assert.equal(selectedHandForRangeEntry({ hand: hands[0] }, "J9s"), hands[0]);
+});
+
+test("BB range is first only while BB is choosing an action", () => {
+  const entries = [{ position: "BTN" }, { position: "BB" }];
+  assert.deepEqual(prioritizeActingBBRange(entries, "BB").map(entry => entry.position), ["BB", "BTN"]);
+  assert.equal(prioritizeActingBBRange(entries, "BTN"), entries);
 });
 
 test("preflop call EV uses the flop-style right column without inventing other action EVs", () => {
