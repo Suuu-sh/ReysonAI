@@ -4,6 +4,8 @@ import {DatabaseSync} from 'node:sqlite';
 import {readFileSync} from 'node:fs';
 import worker from '../src/index.ts';
 import {allowedData,digest,routeAccount,verifyGoogleToken} from '../src/account.ts';
+import * as accountSession from '../../frontend/src/account/session.ts';
+import {saveAgentHand} from '../../frontend/src/agent/agent-stats.ts';
 const env={AUTH_ENABLED:'true',DB:{},GOOGLE_CLIENT_ID:'test-client',GOOGLE_CLIENT_SECRET:'test-only',GOOGLE_REDIRECT_URI:'https://api.reysonai.com/v1/account/google/callback',AUTH_APP_URL:'https://app.reysonai.com',AUTH_RATE_LIMIT_KEY:'test-only',ALLOWED_ORIGIN:'https://app.reysonai.com'};
 test('disabled/origin/method gates and exact credentialed CORS',async()=>{
  assert.equal((await routeAccount(new Request('https://api.reysonai.com/v1/account/session'),{})).status,503);
@@ -52,16 +54,75 @@ test('Google signed identity, PKCE/state replay, owned snapshots and logout',asy
   assert.equal(tokenExchange.get('redirect_uri'),env.GOOGLE_REDIRECT_URI);
   assert.ok((await finish(attempt)).headers.get('location').endsWith('#account-error=google'));
   const firstUser=(await (await call('session')).json()).user;assert.equal(firstUser.email,'learner@custom-domain.example');assert.equal(firstUser.verified,true);
-  assert.equal((await call('data',{data:{'reysonai.trainer.history.v1':[]},version:0,importLocal:true})).status,400);
-  assert.equal((await call('data',{data:{'reysonai.trainer.history.v1':[]},version:0,importLocal:true,consent:true})).status,200);
-  assert.equal((await call('data',{data:{},version:0})).status,409);
-  assert.equal((await call('data',{data:{'reysonai.trainer.rank.v1':{}},version:1})).status,400);
+  const missingOwner=await call('data',{data:{},version:0});assert.equal(missingOwner.status,409);assert.deepEqual(await missingOwner.json(),{error:'account_owner_changed'});
+  assert.equal((await call('data',{data:{'reysonai.trainer.history.v1':[]},version:0,expectedOwner:firstUser.id,importLocal:true})).status,400);
+  assert.equal((await call('data',{data:{'reysonai.trainer.history.v1':[]},version:0,expectedOwner:firstUser.id,importLocal:true,consent:true})).status,200);
+  assert.equal((await call('data',{data:{},version:0,expectedOwner:firstUser.id})).status,409);
+  assert.equal((await call('data',{data:{'reysonai.trainer.rank.v1':{}},version:1,expectedOwner:firstUser.id})).status,400);
   const other=await finish(await start('different-google-sub',firstUser.email));sessionCookie=other.headers.getSetCookie().find(c=>c.startsWith('__Host-reysonai=')).split(';')[0];
   const secondUser=(await (await call('session')).json()).user;assert.notEqual(firstUser.id,secondUser.id);assert.deepEqual((await (await call('data')).json()).data,{});
+  const profileA={'reysonai:profile:v1':{nickname:'A'},'reysonai:agent-hands:v1':[]},profileB={'reysonai:profile:v1':{nickname:'B'}};
+  for(const [ownerId,profile] of [[firstUser.id,profileA],[secondUser.id,profileB]]) sqlite.prepare('INSERT INTO account_data(user_id,data_json,version) VALUES (?,?,2) ON CONFLICT(user_id) DO UPDATE SET data_json=excluded.data_json,version=excluded.version').run(ownerId,JSON.stringify(profile));
+  const staleOwnerWrite=await call('data',{data:profileA,version:2,expectedOwner:firstUser.id});
+  assert.equal(staleOwnerWrite.status,409);assert.deepEqual(await staleOwnerWrite.json(),{error:'account_owner_changed'});
+  let ownerB=sqlite.prepare('SELECT data_json,version FROM account_data WHERE user_id=?').get(secondUser.id);
+  assert.equal(ownerB.version,2);assert.deepEqual(JSON.parse(ownerB.data_json),profileB,'a stale tab cannot replace another cookie owner even at the same version');
+  const currentOwnerWrite=await call('data',{data:{...profileB,'reysonai:appearance:v1':{cards:'two'}},version:2,expectedOwner:secondUser.id});
+  assert.equal(currentOwnerWrite.status,200);ownerB=sqlite.prepare('SELECT data_json,version FROM account_data WHERE user_id=?').get(secondUser.id);
+  assert.equal(ownerB.version,3);assert.equal(JSON.parse(ownerB.data_json)['reysonai:profile:v1'].nickname,'B');
   const nonceHash=await digest(currentClaims.nonce);
   for(const patch of [{aud:'another-client'},{iss:'https://evil.invalid'},{email_verified:false},{nonce:'wrong'},{exp:0},{azp:'different-client'},{iat:0}]) await assert.rejects(verifyGoogleToken(await sign({...currentClaims,...patch}),env.GOOGLE_CLIENT_ID,nonceHash,Math.floor(Date.now()/1000)));
   const bad=await sign(currentClaims);await assert.rejects(verifyGoogleToken(bad.slice(0,-4)+'AAAA',env.GOOGLE_CLIENT_ID,nonceHash,Math.floor(Date.now()/1000)));
   assert.equal((await call('logout',{})).status,200);assert.equal((await (await call('session')).json()).user,null);
   googleError=true;assert.ok((await finish(await start())).headers.get('location').endsWith('#account-error=google'));
  } finally {globalThis.fetch=oldFetch;sqlite.close();}
+});
+
+test('cross-tab account owner changes pause the 350ms Agent auto-save and preserve the old export',async()=>{
+ const sqlite=new DatabaseSync(':memory:');sqlite.exec(readFileSync(new URL('../migrations/0007_accounts.sql',import.meta.url),'utf8'));
+ const db={prepare(sql){let args=[];return {bind(...values){args=values;return this;},async all(){return {results:sqlite.prepare(sql).all(...args)};},async run(){return sqlite.prepare(sql).run(...args);}};}};
+ const local={...env,DB:db},tokens={A:'a'.repeat(64),B:'b'.repeat(64)},now=Math.floor(Date.now()/1000);
+ const hand={at:1,tableId:'account-A-private-practice',pos:'BTN',returnBb:1,vpip:true,pfr:true,threeBetOpp:false,threeBet:false,facedThreeBet:false,foldedToThreeBet:false,sawFlop:false,showdown:false,wonShowdown:false};
+ for(const id of ['A','B']){
+  sqlite.prepare('INSERT INTO account_users(id,google_sub,email,created_at) VALUES (?,?,?,?)').run(id,'synthetic-'+id,id+'@example.invalid',now);
+  sqlite.prepare('INSERT INTO account_sessions(token_hash,user_id,expires_at) VALUES (?,?,?)').run(await digest(tokens[id]),id,now+3600);
+  sqlite.prepare('INSERT INTO account_data(user_id,data_json,version) VALUES (?,?,2)').run(id,JSON.stringify({'reysonai:profile:v1':{nickname:id},...(id==='A'?{'reysonai:agent-hands:v1':[hand]}:{})}));
+ }
+ const previousWindow=globalThis.window,previousFetch=globalThis.fetch,guest=new Map();
+ globalThis.window={localStorage:{getItem:key=>guest.get(key)??null,setItem:(key,value)=>guest.set(key,value),removeItem:key=>guest.delete(key)}};
+ let cookieOwner='A',holdSession=false,releaseSession;const writes=[];
+ globalThis.fetch=async(url,options={})=>{
+  assert.ok(url.startsWith('https://api.reysonai.com/v1/account/'));
+  const path=new URL(url).pathname.slice('/v1/account/'.length);
+  if(path==='session'&&holdSession) await new Promise(resolve=>{releaseSession=resolve;});
+  const headers=new Headers(options.headers);headers.set('origin',env.ALLOWED_ORIGIN);headers.set('cookie',`__Host-reysonai=${tokens[cookieOwner]}`);
+  const response=await routeAccount(new Request(url,{...options,headers}),local);
+  if(path==='data'&&options.method==='POST') writes.push({cookieOwner,body:JSON.parse(options.body),status:response.status});
+  return response;
+ };
+ let rechecking;
+ try{
+  await accountSession.refreshAccount();assert.equal(accountSession.accountSnapshot().user.id,'A');
+  cookieOwner='B';holdSession=true;rechecking=accountSession.revalidateAccountSession();
+  await new Promise(resolve=>setImmediate(resolve));assert.equal(typeof releaseSession,'function','the focus identity check is held in flight');
+  await assert.rejects(accountSession.accountRequest('data',{data:{'reysonai:profile:v1':{nickname:'A'}},version:2,expectedOwner:'A'}),/session/);
+  assert.deepEqual(writes.map(write=>({owner:write.cookieOwner,expectedOwner:write.body.expectedOwner,status:write.status})),[{owner:'B',expectedOwner:'A',status:409}],
+    'the backend rejects a stale-owner snapshot before changing B even when both versions match');
+  saveAgentHand({...hand,at:3,tableId:'account-A-new-private-practice'});
+  await new Promise(resolve=>setTimeout(resolve,500));
+  assert.equal(writes.length,1,'the 350ms autosave waits for owner revalidation instead of posting during it');
+  releaseSession();holdSession=false;await rechecking;await accountSession.saveAccountData();
+  assert.equal(accountSession.accountSnapshot().error,'session');
+  assert.equal(accountSession.accountSnapshot().user.id,'A');
+  const exported=accountSession.exportAccountData().data;
+  assert.equal(exported['reysonai:profile:v1'].nickname,'A');
+  assert.deepEqual(exported['reysonai:agent-hands:v1'].map(row=>row.tableId),['account-A-private-practice','account-A-new-private-practice']);
+  const ownerB=sqlite.prepare('SELECT data_json,version FROM account_data WHERE user_id=?').get('B');
+  assert.equal(ownerB.version,2);assert.equal(JSON.parse(ownerB.data_json)['reysonai:profile:v1'].nickname,'B');
+  assert.deepEqual(JSON.parse(ownerB.data_json)['reysonai:agent-hands:v1'],undefined);
+ }finally{
+  releaseSession?.();holdSession=false;
+  if(rechecking) await rechecking.catch(()=>{});
+  globalThis.window=previousWindow;globalThis.fetch=previousFetch;sqlite.close();
+ }
 });

@@ -12,6 +12,7 @@ interface AccountResponses { session: { user: AccountUser | null }; data: { data
 let user: AccountUser | null = null;
 let data: Record<string, unknown> = {};
 let version = 0;
+let snapshotOwnerId: string | null = null;
 let ready = false;
 let available = false;
 let error = "";
@@ -28,7 +29,7 @@ export async function accountRequest<P extends keyof AccountResponses>(path: P, 
   const base = accountApiBase((import.meta as ImportMeta & { env?: Parameters<typeof accountApiBase>[0] }).env ?? {});
   const response = await fetch(`${base}/v1/account/${path}`, { credentials: "include", ...(body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }) });
   const result = await response.json();
-  if (!response.ok) throw new Error(response.status === 503 ? "disabled" : response.status === 409 ? "conflict" : response.status === 401 ? "session" : response.status === 403 ? "verification" : response.status === 413 ? "payload_too_large" : "request");
+  if (!response.ok) throw new Error(response.status === 503 ? "disabled" : response.status === 409 ? (result?.error === "account_owner_changed" ? "session" : "conflict") : response.status === 401 ? "session" : response.status === 403 ? "verification" : response.status === 413 ? "payload_too_large" : "request");
   return result;
 }
 // Leaves the app for Google; the callback lands back on the front page.
@@ -47,14 +48,15 @@ export function refreshAccount() {
     await pending;
     try {
       const result = await accountRequest("session");
-      if (user?.id !== result.user?.id) { data = {}; version = 0; dirty = false; }
+      if (user?.id !== result.user?.id) { data = {}; version = 0; snapshotOwnerId = null; dirty = false; }
       user = result.user;
       available = true;
       if (user?.verified) {
         const saved = await accountRequest("data");
         data = Object.fromEntries(Object.entries(saved.data ?? {}).filter(([key]) => accountKeys.includes(key)));
         version = saved.version;
-      } else data = {};
+        snapshotOwnerId = user.id;
+      } else { data = {}; snapshotOwnerId = null; }
       dirty = false; error = "";
     } catch (cause) { available = ["session", "verification"].includes((cause as Error).message); error = (cause as Error).message === "disabled" ? "" : available ? (cause as Error).message : "request"; }
     ready = true; transitioning = false; emit();
@@ -97,10 +99,16 @@ function queueSave() {
 export function saveAccountData(extra: { importLocal?: boolean; consent?: boolean } = {}) {
   clearTimeout(timer);
   pending = pending.then(async () => {
+    // If focus revalidation is in flight, wait for its result before choosing
+    // the snapshot to write. The server still checks this owner against the
+    // cookie on the same request, closing the cross-tab cookie race.
+    if (rechecking) await rechecking;
     if (!user?.verified || error || !dirty) return;
+    const expectedOwner = snapshotOwnerId;
+    if (!expectedOwner || expectedOwner !== user.id) { error = "session"; available = true; emit(); return; }
     const snapshot = JSON.parse(JSON.stringify(data));
     dirty = false;
-    try { const result = await accountRequest("data", { data: snapshot, version, ...extra }); version = result.version; }
+    try { const result = await accountRequest("data", { data: snapshot, version, ...extra, expectedOwner }); version = result.version; }
     catch (cause) { dirty = true; error = (cause as Error).message; emit(); }
   });
   return pending;
@@ -133,7 +141,7 @@ export async function logoutAccount() {
     // Do not discard unsaved authenticated records after a save failure.
     if (error && user?.verified && dirty) throw new Error(error);
     await accountRequest("logout", {});
-    user = null; data = {}; dirty = false; error = ""; emit();
+    user = null; data = {}; snapshotOwnerId = null; dirty = false; error = ""; emit();
   } finally { transitioning = false; }
 }
 export function exportAccountData() {

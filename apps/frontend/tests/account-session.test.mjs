@@ -47,7 +47,9 @@ test("cookie sessions isolate guests, consent-gate migration, serialize versions
     if (path === "logout") { identity = null; return Response.json({ ok: true }); }
     if (url.endsWith("google/start")) return Response.json({ url: "https://accounts.google.com/o/oauth2/v2/auth" });
     if (path === "data" && options.method !== "POST") return failData ? Response.json({ error: "unavailable" }, { status: 500 }) : Response.json({ data: remote, version: remoteVersion });
-    const body = JSON.parse(options.body); posts.push(body);
+    const body = JSON.parse(options.body);
+    if (body.expectedOwner !== identity?.id) return Response.json({ error: "account_owner_changed" }, { status: 409 });
+    posts.push(body);
     if (conflict) return Response.json({ error: "data_conflict" }, { status: 409 });
     assert.equal(body.version, remoteVersion);
     remote = body.data; remoteVersion++;
@@ -82,6 +84,7 @@ test("cookie sessions isolate guests, consent-gate migration, serialize versions
     await session.importGuestData(true);
     assert.equal(posts[0].consent, true);
     assert.equal(posts[0].importLocal, true);
+    assert.equal(posts[0].expectedOwner, "first", "account writes bind the loaded snapshot to its authenticated owner");
     assert.equal(posts[0].data["reysonai.trainer.rank.v1"], undefined);
     assert.deepEqual(posts[0].data["reysonai.trainer.review-sessions.v1"], []);
     assert.equal(posts[0].data["reysonai:agent-hands:v1"].format, "reysonai-agent-hands:compact-v1", "explicit import maps and compacts the pre-rename key");

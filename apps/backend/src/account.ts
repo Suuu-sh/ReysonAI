@@ -122,6 +122,10 @@ export async function routeAccount(request:Request,env:AccountEnv):Promise<Respo
   if(path==='logout') {if(rawToken) await db.prepare('DELETE FROM account_sessions WHERE token_hash=?').bind(await digest(rawToken)).run();return reply({ok:true},200,[cookie(sessionCookie,'',0),cookie(stateCookie,'',0)]);}
   if(!user) return reply({error:'sign_in_required'},401);
   if(request.method==='GET') {const row=(await query<{data_json:string;version:number}>('SELECT data_json,version FROM account_data WHERE user_id=?',user.id))[0];return reply({data:row?JSON.parse(row.data_json):{},version:row?.version||0});}
+  // Treat the client owner as an assertion only. The cookie remains the sole
+  // authority for selecting the account row; reject stale-tab snapshots before
+  // creating or updating any account data.
+  if(typeof body.expectedOwner!=='string' || body.expectedOwner!==user.id) return reply({error:'account_owner_changed'},409);
   if(!allowedData(body.data) || !Number.isSafeInteger(body.version) || Number(body.version)<0) return reply({error:'invalid_data_or_ranked_data'},400);
   if(body.importLocal && body.consent!==true) return reply({error:'explicit_import_consent_required'},400);
   await db.prepare('INSERT OR IGNORE INTO account_data(user_id) VALUES (?)').bind(user.id).run();
