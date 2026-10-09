@@ -2,10 +2,11 @@
 // lives in the MCP adapter so the frontend evaluator and its reviewed provenance
 // sources remain unchanged. Its output is regression-tested against computeBoard.
 import { comboRange } from "../../frontend/scripts/postflop-ai/browser-inputs.ts";
-import { flopTextureKeys, handTier, TIERS } from "../../frontend/scripts/postflop-ai/model.ts";
+import { flopTextureKeys, TIERS } from "../../frontend/scripts/postflop-ai/model.ts";
+import { handTier } from "../../frontend/scripts/postflop-ai/hu-hand-tier.ts";
 import { NODES, nodeRole, treeNodes, withRaise } from "../../frontend/scripts/postflop-ai/policy.ts";
 import { FLOP_BETS, flopState, historyFor } from "../../frontend/scripts/postflop-ai/tree.ts";
-import { comboId, defenceFor, flopRunouts, replayOrNull, DEFENCE_VERSION, withRankTableCacheLimit } from "../../frontend/scripts/postflop-ai/defence.ts";
+import { comboId, defenceFor, flopRunouts, replayOrNull, DEFENCE_VERSION } from "./postflop-defence.mts";
 import { EVALUATOR_VERSION } from "../../frontend/scripts/lib/equity.ts";
 
 export function assertPolicyNodeComplete(policy, node) {
@@ -21,8 +22,6 @@ export function projectPolicyRows(rows) {
     frequencies: row.mix, tierWeights: row.tiers, reachWeight: row.reachWeight }));
 }
 
-export { withRankTableCacheLimit };
-
 export function evaluateFlopNodeCanonical(inputs, policy, boardCards, node, history = null) {
   const { spot } = inputs;
   if (!treeNodes(spot.tree).includes(node)) throw new Error(`Unknown flop node: ${node}`);
@@ -34,9 +33,8 @@ export function evaluateFlopNodeCanonical(inputs, policy, boardCards, node, hist
   const table = replayOrNull(inputs, boardCards, { flop: path });
   if (!table) throw new Error(`Unreachable flop history for ${node}`);
 
-  // The shared web evaluator caches 300 rank tables for each of up to 16 flops.
-  // MCP requests are independent reads, so release this request's large runout
-  // tables after projecting the node; the bounded rank-table LRU remains shared.
+  // Keep each MCP evaluation within its fork's fixed 600-entry rank-table budget
+  // and release this request's large runout tables when projection completes.
   const runouts = flopRunouts(boardCards);
   try {
     const defence = defenceFor(inputs, policy, null);

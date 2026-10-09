@@ -5,7 +5,7 @@ import { loadInputs } from "../../frontend/scripts/postflop-ai/inputs.mjs";
 import { loadCandidate } from "../../frontend/scripts/postflop-ai/generate.mjs";
 import { canonicalFlop } from "../../frontend/scripts/postflop-ai/flop-isomorphism.ts";
 import { computeBoard } from "../../frontend/src/estimated/postflop-compute.ts";
-import { flopRunouts, rankTable, rankTableCacheState, withRankTableCacheLimit } from "../../frontend/scripts/postflop-ai/defence.ts";
+import { flopRunouts, rankTable, rankTableCacheState } from "../src/postflop-defence.mts";
 import opening from "../../frontend/src/estimated/opening-ranges.json" with { type: "json" };
 import responses from "../../frontend/src/estimated/preflop-ranges.json" with { type: "json" };
 import threeBets from "../../frontend/src/estimated/three-bet-responses.json" with { type: "json" };
@@ -13,7 +13,7 @@ import fourBets from "../../frontend/src/estimated/four-bet-responses.json" with
 import limpResponses from "../../frontend/src/estimated/limp-responses.json" with { type: "json" };
 import limpDeepResponses from "../../frontend/src/estimated/limp-deep-responses.json" with { type: "json" };
 import { evaluatePublishedPostflopPolicy, listPostflopCoverage } from "../src/postflop-data.ts";
-import { projectPolicyRows } from "../src/postflop-shared.mjs";
+import { MCP_DEFENCE_ADAPTER_VERSION, MCP_DEFENCE_BASE_SOURCE_SHA256, projectPolicyRows } from "../src/postflop-shared.mjs";
 import { MAX_POSTFLOP_SOURCE_BYTES, McpDataError } from "../src/data.ts";
 
 const digest = value => createHash("sha256").update(value).digest("hex");
@@ -25,6 +25,7 @@ const sourceFiles = {
 };
 const familySourceFiles = { ...sourceFiles, "three-bet-responses": threeBets,
   "four-bet-responses": fourBets, "limp-responses": limpResponses, "limp-deep-responses": limpDeepResponses };
+const browserDatasets = { opening, responses, threeBets, fourBets, limpResponses, limpDeepResponses };
 const inputs = loadInputs(spotId);
 const publishedCandidate = loadCandidate(inputs);
 const projectRows = rows => rows.map(row => ({ hand: row.hand, preflopSupport: row.reachable,
@@ -107,7 +108,7 @@ test("policy coverage discloses bounded head-up node evaluation separately from 
 
 test("one-node evaluation matches the frontend projection and is deterministic without exposing combos", async () => {
   const { db, calls } = makeFixture();
-  assert.equal(rankTableCacheState().limit, 3000, "Web-facing rank table cache keeps its default limit");
+  assert.equal(rankTableCacheState().limit, 600, "MCP uses its fixed bounded adapter cache");
   const first = await evaluatePublishedPostflopPolicy(db, { spotId, flop: "As7d2c" });
   const repeated = await evaluatePublishedPostflopPolicy(db, { spotId, flop: "As7d2c" });
   assert.deepEqual(first, repeated);
@@ -120,11 +121,15 @@ test("one-node evaluation matches the frontend projection and is deterministic w
   assert.equal(first.calculation.defenceAdjustmentApplied, true);
   assert.equal(first.calculation.evaluatorVersion, 2);
   assert.equal(first.calculation.defenceVersion, 7);
+  assert.equal(first.calculation.adapterVersion, MCP_DEFENCE_ADAPTER_VERSION);
+  assert.equal(first.calculation.adapterVersion, "mcp-postflop-defence-v1");
+  assert.equal(first.calculation.baseSourceSha256, MCP_DEFENCE_BASE_SOURCE_SHA256);
+  assert.equal(first.calculation.baseSourceSha256, "47aba428f9c798079411014d638b7d80c25efaf15d4770fb1f144b19c0462a1d");
   assert.equal(first.frequencyBasis, "preflop_range_weighted_projection");
   assert.equal(first.handClassCount, 169);
   assert.equal(first.hands.length, 169);
-  assert.equal(rankTableCacheState().limit, 3000, "MCP restores the shared default after a bounded evaluation");
-  assert.ok(rankTableCacheState().size <= 600, "MCP leaves no more than its per-request rank cache budget");
+  assert.equal(rankTableCacheState().limit, 600, "MCP cache budget is fixed and request-independent");
+  assert.ok(rankTableCacheState().size <= 600, "MCP leaves no more than its fixed rank cache budget");
   assert.ok(first.hands.every(row => !("combos" in row)));
   assert.equal(flopRunouts(canonicalFlop("As7d2c").cards).tables, null,
     "MCP evaluation releases large shared runout tables after completing the projection");
@@ -146,6 +151,11 @@ test("one-node evaluation matches the frontend projection and is deterministic w
   assert.equal(raised.actingSeat, "BTN");
   assert.deepEqual(raised.hands, projectRows(browser.btn_vs_raise.rows));
 
+  const deep = await evaluatePublishedPostflopPolicy(db, { spotId, flop: "As7d2c",
+    history: ["bet33", "raise", "raise", "raise"] });
+  assert.equal(deep.node, "btn_vs_raise3");
+  assert.deepEqual(deep.hands, projectRows(browser.btn_vs_raise3.rows));
+
 });
 
 test("zero-path-reach rows are not represented as reachable-node recommendations", () => {
@@ -158,22 +168,18 @@ test("zero-path-reach rows are not represented as reachable-node recommendations
   assert.deepEqual(row.frequencies, { fold: 0.97, call: 0.03, raise: 0 });
 });
 
-test("rank-table cache management bounds entries and restores the unchanged Web default", async () => {
-  const defaultState = rankTableCacheState();
-  assert.equal(defaultState.limit, 3000);
-  const boards = [canonicalFlop("As7d2c").cards, canonicalFlop("KsJh3d").cards];
-  withRankTableCacheLimit(1, () => {
-    assert.equal(rankTableCacheState().limit, 1);
-    rankTable(boards[0]);
-    rankTable(boards[1]);
-    assert.ok(rankTableCacheState().size <= 1);
-  });
-  assert.equal(rankTableCacheState().limit, 3000);
-  assert.ok(rankTableCacheState().size <= 1);
-  assert.throws(() => withRankTableCacheLimit(1, () => { throw new Error("fixture failure"); }), /fixture failure/);
-  assert.equal(rankTableCacheState().limit, 3000, "cache limit restores even when the operation fails");
-  assert.throws(() => withRankTableCacheLimit(0, () => undefined), RangeError);
-  assert.throws(() => withRankTableCacheLimit(3001, () => undefined), RangeError);
+test("MCP rank-table cache stays within its fixed adapter budget", () => {
+  assert.equal(rankTableCacheState().limit, 600);
+  const boards = [];
+  for (let a = 0; a < 52 && boards.length < 601; a++) {
+    for (let b = a + 1; b < 52 && boards.length < 601; b++) {
+      for (let c = b + 1; c < 52 && boards.length < 601; c++) boards.push([a, b, c]);
+    }
+  }
+  assert.equal(boards.length, 601);
+  for (const board of boards) rankTable(board);
+  assert.equal(rankTableCacheState().limit, 600);
+  assert.ok(rankTableCacheState().size <= 600);
 });
 
 test("policy source bytes are aggregated and capped before any large source rows are read", async () => {
@@ -223,7 +229,7 @@ test("a published action path marks base-supported zero-reach classes as unreach
   assert.deepEqual(result.hands.find(row => row.hand === "KK").frequencies, { fold: 0.97, call: 0.03, raise: 0 });
 });
 
-test("published-source fixtures cover three-bet, four-bet, limp and OOP-lead nodes", async () => {
+test("three-bet, four-bet, limp and low-SPR OOP-lead fixtures match the Web projection", async () => {
   const cases = [
     { spotId: "UTG_open_SB_3bet_call", kind: "3bp", expectedSources: ["opening-ranges", "preflop-ranges", "three-bet-responses"] },
     { spotId: "HJ_open_BTN_4bp_call", kind: "4bp", expectedSources: ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses"] },
@@ -241,6 +247,23 @@ test("published-source fixtures cover three-bet, four-bet, limp and OOP-lead nod
     assert.deepEqual(Object.keys(result.source.inputDatasets).sort(), item.expectedSources.sort());
     assert.equal(result.hands.length, 169);
     assert.equal(result.frequencyBasis, "preflop_range_weighted_projection");
+    const browser = computeBoard({ spotId: item.spotId, board: "As7d2c", datasets: browserDatasets,
+      flopCandidate: candidate }).nodes;
+    assert.deepEqual(result.hands, projectRows(browser[result.node].rows));
+    if (item.kind === "4bp") assert.ok(familyInputs.spot.stackBb / familyInputs.spot.potBb < 2,
+      "the four-bet fixture exercises a low-SPR published spot");
+  }
+});
+
+test("paired and trips boards use the current Web hand-tier implementation for root and facing nodes", async () => {
+  for (const flop of ["KcKd4h", "AsAdAc"]) {
+    const { db } = makeFixture();
+    const result = await evaluatePublishedPostflopPolicy(db, { spotId, flop });
+    const browser = computeBoard({ spotId, board: flop, datasets: browserDatasets,
+      flopCandidate: publishedCandidate }).nodes;
+    assert.deepEqual(result.hands, projectRows(browser[result.node].rows), `${flop} root parity`);
+    const facing = await evaluatePublishedPostflopPolicy(db, { spotId, flop, history: ["bet33"] });
+    assert.deepEqual(facing.hands, projectRows(browser[facing.node].rows), `${flop} facing parity`);
   }
 });
 

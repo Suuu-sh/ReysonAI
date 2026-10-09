@@ -4,8 +4,8 @@
 // node; it never generates a policy or fills a missing board/history.
 import { loadPublishedPostflopSourceDatasets, McpDataError, type ReadOnlyDatabase } from "./data.ts";
 import { canonicalFlop, remapFlopNode, hydrateFrame, unpackView, flopState, NODES, referenceLaterPolicy,
-  assertPolicyNodeComplete, buildInputs, evaluateFlopNodeCanonical, projectPolicyRows, parseFlopBoard, validatePolicy, withRankTableCacheLimit,
-  DEFENCE_VERSION, EVALUATOR_VERSION,
+  assertPolicyNodeComplete, buildInputs, evaluateFlopNodeCanonical, projectPolicyRows, parseFlopBoard, validatePolicy,
+  DEFENCE_VERSION, EVALUATOR_VERSION, MCP_DEFENCE_ADAPTER_VERSION, MCP_DEFENCE_BASE_SOURCE_SHA256,
   type FlopBase, type PackedView, type CodecView, type EvaluatedFlopNode, type FlopPolicy, type PostflopInputs } from "./postflop-shared.mjs";
 
 const KIND = "ai_estimate_not_gto" as const;
@@ -35,7 +35,6 @@ const MAX_FLOP_COLUMNS = 4_096;
 const MAX_RESPONSE_BYTES = 80_000;
 const CANONICAL_FLOPS = 1_755;
 const MAX_POLICY_EVALUATIONS_IN_FLIGHT = 1;
-const MCP_RANK_TABLE_CACHE_LIMIT = 600;
 let activePolicyEvaluations = 0;
 
 type Value = Record<string, unknown>;
@@ -614,8 +613,7 @@ async function evaluatePublishedPostflopPolicyCore(db: ReadOnlyDatabase | undefi
 
   let evaluated: EvaluatedFlopNode;
   try {
-    evaluated = withRankTableCacheLimit(MCP_RANK_TABLE_CACHE_LIMIT,
-      () => evaluateFlopNodeCanonical(inputs, policy, canonical.cards, state.node, history));
+    evaluated = evaluateFlopNodeCanonical(inputs, policy, canonical.cards, state.node, history);
   } catch (error) {
     if (error instanceof Error && error.message.startsWith("Unreachable flop history")) {
       throw new McpDataError("not_found", "The saved ranges do not reach this exact flop decision; no substitute node was evaluated.");
@@ -636,7 +634,8 @@ async function evaluatePublishedPostflopPolicyCore(db: ReadOnlyDatabase | undefi
     frequencyBasis: "preflop_range_weighted_projection",
     handClassCount: handClasses.length, hands: handClasses,
     calculation: { method: "deterministic_shared_flop_estimate", evaluatorVersion: EVALUATOR_VERSION,
-      defenceVersion: DEFENCE_VERSION, savedBaseUsed: false, referenceFallbackUsed: false,
+      defenceVersion: DEFENCE_VERSION, adapterVersion: MCP_DEFENCE_ADAPTER_VERSION,
+      baseSourceSha256: MCP_DEFENCE_BASE_SOURCE_SHA256, savedBaseUsed: false, referenceFallbackUsed: false,
       defenceAdjustmentApplied: true, completeSavedRulesRequired: true, maxHandClasses: 169 },
     source: { postflop: { dataset: "postflop", contentHash: release.content_hash, publishedAt: release.published_at },
       policy: { contentHash: saved.policyHash, inputHash: saved.sourceHash },
