@@ -1,0 +1,163 @@
+{
+  "purpose": "Compare thirteen saved standard-mode prompt, policy, explanation, range-fact, node and balance outputs between the exact historical baseline and the PR runtime/import closure. The published compressed object contains all thirteen canonical output values; individual baseline/candidate capture envelopes remain summarized by hash.",
+  "captureScript": {
+    "path": "standard-output-capture.mjs",
+    "sha256": "b312ced1e1cd088beb7380cb432ac5ccb66baafdb8aa94f748936cf8a8ddf69f",
+    "sameScriptForBothRuns": true
+  },
+  "reproduction": {
+    "runner": "reproduce-standard-output-parity.sh",
+    "invocation": "bash apps/frontend/docs/qa/pr123-baseline-evidence/reproduce-standard-output-parity.sh <clean-repository-root> <output-directory>",
+    "runtime": "Node.js v25.8.1 with --experimental-strip-types; observed host darwin",
+    "candidateMethod": "A clean worktree at the historical baseline with only the 70 verified runtime/import/data closure files overlaid from source commit 91109e156c17c7fdb9e2eb0dbc8d0704c7ee3e46. It is not represented as a full candidate checkout.",
+    "exactObservedCommands": [
+      "PR123_SOURCE_COMMIT=7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5 PR123_SOURCE_TREE=04486039e4394a2238b71de24434623c255bfb87 node --experimental-strip-types /tmp/pr123-standard-output-capture.mjs /tmp/pr123-capture-work baseline-7c2 /tmp/pr123-baseline-standard-outputs.json",
+      "PR123_SOURCE_COMMIT=91109e156c17c7fdb9e2eb0dbc8d0704c7ee3e46 PR123_SOURCE_TREE=9d4bf2f8ae341d38507f209ccd8bcc9f437bbd2d node --experimental-strip-types /tmp/pr123-standard-output-capture.mjs /tmp/pr123-candidate-work candidate-91109 /tmp/pr123-candidate-standard-outputs.json"
+    ]
+  },
+  "baseline": {
+    "commit": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+    "tree": "04486039e4394a2238b71de24434623c255bfb87",
+    "checkoutWasClean": true,
+    "runtimeMs": 11751.717791
+  },
+  "candidate": {
+    "sourceCommit": "91109e156c17c7fdb9e2eb0dbc8d0704c7ee3e46",
+    "sourceTree": "9d4bf2f8ae341d38507f209ccd8bcc9f437bbd2d",
+    "prHeadCommit": "6b5291089c15304c25af7433e87cd1bcaac38428",
+    "prHeadTree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5",
+    "checkoutCommit": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+    "checkoutTree": "04486039e4394a2238b71de24434623c255bfb87",
+    "closureVerification": {
+      "files": 70,
+      "allSourceAndPrHeadBlobsMatch": true,
+      "sourceTreeRecursiveEntries": 2964,
+      "sourceTreeTruncated": false,
+      "prHeadTreeRecursiveEntries": 2965,
+      "prHeadTreeTruncated": false,
+      "manifestPath": "runtime-import-closure.json",
+      "manifestSha256": "c28d77a70470845f89c37e1659c8b9a9b4b84ad6f6bca669f2e1df5e32a70d1c",
+      "canonicalSha256": "7599580f60f998f83fe65eac1dc45b7d17632ae9790e352170e0fbb5f4864053"
+    },
+    "runtimeMs": 11828.55575
+  },
+  "environment": {
+    "node": "v25.8.1",
+    "platform": "darwin",
+    "sameForBothRuns": true
+  },
+  "inputs": {
+    "spot": "BTN_open_BB_call",
+    "board": "Js8s5d",
+    "turn": "3c",
+    "river": "2h",
+    "fingerprintSha256": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
+    "seatRowsSha256": "a115b43c5fa038493620a4bf45751f09e5a0b6d76d1d8c6f8289342ac36b5e0d",
+    "equalBetweenRuns": true
+  },
+  "digestMethod": "SHA-256 of raw prompt strings and JSON.stringify(output objects), matching hu-v7-parity digest helper.",
+  "rawCaptureEnvelopes": {
+    "baseline": {
+      "sha256": "ad3fdc80e75e693387f8c299c58ddfb132cf74009f39ec52635574f6bb8d2a84",
+      "bytes": 2390646,
+      "published": false
+    },
+    "candidate": {
+      "sha256": "1b2b31b40d2657fb004355be55ad12186f43c11f633ed6b30e6339dfe38d1049",
+      "bytes": 2390648,
+      "published": false
+    }
+  },
+  "canonicalOutputArtifact": {
+    "path": "raw-standard-output-objects.json.gz",
+    "gzipSha256": "db2eac5468111dffd02f4bb6475876506825fbcc59ed13993dc8e339b206fba6",
+    "compressedBytes": 48968,
+    "uncompressedCanonicalObjectSha256": "13e2e209855c33995d3cfceb04ee1d0de1faad0aa7f953c72657618cc8450185",
+    "outputCount": 13,
+    "extraction": "gzip -dc raw-standard-output-objects.json.gz > canonical-outputs.json"
+  },
+  "result": {
+    "outputCount": 13,
+    "allEqual": true,
+    "perOutputSha256": [
+      {
+        "output": "standard_flop_prompt",
+        "baselineSha256": "25a5f161120c6e540eddd477430a96772774e98bbed9d0b63c3d07df20f68053",
+        "candidateSha256": "25a5f161120c6e540eddd477430a96772774e98bbed9d0b63c3d07df20f68053",
+        "equal": true
+      },
+      {
+        "output": "standard_later_prompt",
+        "baselineSha256": "45b5622bf587de13d78f68870678566408c10b4888c5f8219501ca4de5b406da",
+        "candidateSha256": "45b5622bf587de13d78f68870678566408c10b4888c5f8219501ca4de5b406da",
+        "equal": true
+      },
+      {
+        "output": "standard_4bp_flop_prompt",
+        "baselineSha256": "63c0355283de269f16753f3efbb52467c36adf46a42b00017d46ba65f3dbc626",
+        "candidateSha256": "63c0355283de269f16753f3efbb52467c36adf46a42b00017d46ba65f3dbc626",
+        "equal": true
+      },
+      {
+        "output": "standard_limp_later_prompt",
+        "baselineSha256": "c89e74e43bb7b4c6aea49d0fb355e747515e7a9729c511423d926319045c6b27",
+        "candidateSha256": "c89e74e43bb7b4c6aea49d0fb355e747515e7a9729c511423d926319045c6b27",
+        "equal": true
+      },
+      {
+        "output": "flop_nodes_all",
+        "baselineSha256": "38d682d864ab12983df1c1a54927e8a2a19037bc31952a0b9d1ea7259960c3f2",
+        "candidateSha256": "38d682d864ab12983df1c1a54927e8a2a19037bc31952a0b9d1ea7259960c3f2",
+        "equal": true
+      },
+      {
+        "output": "flop_explain_first",
+        "baselineSha256": "2bf81c7d164255d0ff703255304464c9bf465195d5acc182ca1f739d231f787c",
+        "candidateSha256": "2bf81c7d164255d0ff703255304464c9bf465195d5acc182ca1f739d231f787c",
+        "equal": true
+      },
+      {
+        "output": "flop_explain_facing",
+        "baselineSha256": "fa373bf9683099352692b9d13ea3d30f289079d792dbc5603bb1ed05c486ee21",
+        "candidateSha256": "fa373bf9683099352692b9d13ea3d30f289079d792dbc5603bb1ed05c486ee21",
+        "equal": true
+      },
+      {
+        "output": "flop_ui_facts",
+        "baselineSha256": "9e7d156d52683aa1ff0bef51730dbd2177f5de5fce9e04e593edb3db9e234e38",
+        "candidateSha256": "9e7d156d52683aa1ff0bef51730dbd2177f5de5fce9e04e593edb3db9e234e38",
+        "equal": true
+      },
+      {
+        "output": "flop_range_facts",
+        "baselineSha256": "48d75e2770d4c90f279b47e9c600309819280ab858824afd944eb47f8f0a19fd",
+        "candidateSha256": "48d75e2770d4c90f279b47e9c600309819280ab858824afd944eb47f8f0a19fd",
+        "equal": true
+      },
+      {
+        "output": "turn_explanation",
+        "baselineSha256": "dbb0db91b3c339fc53f1a3a3f6d3dc0dfd20366d5a182b586d513ffe54bd00cc",
+        "candidateSha256": "dbb0db91b3c339fc53f1a3a3f6d3dc0dfd20366d5a182b586d513ffe54bd00cc",
+        "equal": true
+      },
+      {
+        "output": "river_explanation",
+        "baselineSha256": "23c566134795a75e18573463fc8bdfabf84dfbc90c87fb008ad8c52d5007db92",
+        "candidateSha256": "23c566134795a75e18573463fc8bdfabf84dfbc90c87fb008ad8c52d5007db92",
+        "equal": true
+      },
+      {
+        "output": "standard_flop_balance",
+        "baselineSha256": "823796ba6d0fab056edcfd55902b5a6508ce1aa2c42388c7ac0fdb9d45587ee5",
+        "candidateSha256": "823796ba6d0fab056edcfd55902b5a6508ce1aa2c42388c7ac0fdb9d45587ee5",
+        "equal": true
+      },
+      {
+        "output": "standard_later_balance",
+        "baselineSha256": "2577c30bdbbb0fedd5d4cd3ea35d9d8c88aaea9b67e0d15870d7654762fe3d93",
+        "candidateSha256": "2577c30bdbbb0fedd5d4cd3ea35d9d8c88aaea9b67e0d15870d7654762fe3d93",
+        "equal": true
+      }
+    ]
+  }
+}
