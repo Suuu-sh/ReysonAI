@@ -140,6 +140,16 @@ export type PostflopPotHistory = {
   riverActions?: readonly string[];
 };
 
+function displayLaterStreetPot(replay: ReturnType<typeof replayLater>, start: LaterStartState) {
+  const end = replay.state.end;
+  if (!end || !["fold", "raise-fold"].includes(end.type) || !end.winner) return replay.pot;
+  const loser = end.winner === "ip" ? "oop" : "ip";
+  const winnerInvested = start.stacks[end.winner] - replay.stacks[end.winner];
+  const loserInvested = start.stacks[loser] - replay.stacks[loser];
+  const uncalledBb = Math.max(0, winnerInvested - loserInvested);
+  return Math.round(Math.max(0, replay.pot - uncalledBb) * 100) / 100;
+}
+
 /** Read the current pot from the same street replay used to build the action path. */
 export function currentPostflopPotBb(history: PostflopPotHistory, spot: FlopGeometryInput) {
   const flopActions = history.flopActions ?? [];
@@ -150,10 +160,10 @@ export function currentPostflopPotBb(history: PostflopPotHistory, spot: FlopGeom
   if (!turnStart) return flopPot;
   const turn = replayLater("turn", history.turnActions ?? [], turnStart, spot);
   if (!history.riverCard || !turn.state.end || ["fold", "raise-fold"].includes(turn.state.end.type) ||
-      turn.stacks.ip <= 0 || turn.stacks.oop <= 0) return turn.pot;
+      turn.stacks.ip <= 0 || turn.stacks.oop <= 0) return displayLaterStreetPot(turn, turnStart);
 
   const riverStart = { pot: turn.pot, stacks: turn.stacks, lastAggressor: turn.lastAggressor };
-  return replayLater("river", history.riverActions ?? [], riverStart, spot).pot;
+  return displayLaterStreetPot(replayLater("river", history.riverActions ?? [], riverStart, spot), riverStart);
 }
 
 export function buildFlopActionBlocks(actions: readonly string[] = [], spot?: FlopGeometryInput | null): TrialActionBlock[] {

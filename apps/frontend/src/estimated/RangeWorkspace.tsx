@@ -61,6 +61,7 @@ import { ArrowCounterClockwise, CaretDown, DotsThreeVertical, GearSix } from "@p
 import { RangeContextCard } from "./RangeContextCard.tsx";
 import { GameFormatDialog } from "./GameFormatDialog.tsx";
 import { Mw3PostflopTrial, useMw3RangeSession } from "./Mw3PostflopTrial.tsx";
+import { currentMw3PotBb } from "./mw3-range-state.ts";
 import { mw3DeliveryClient } from "./mw3-browser.ts";
 import { FlopCardDialog, PostflopTrial, StreetCardDialog, suitLabels } from "./PostflopTrial.tsx";
 import { useAccount } from "../account/AuthPanel.tsx";
@@ -750,7 +751,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const laterBlocks = canEnterLaterStreets
     ? buildLaterActionBlocks({ flopActions, turnCard, turnActions, riverCard, riverActions }, flopContext)
     : [];
-  const mw3PotBb = mw3Session.navigation?.table?.pot;
+  const mw3PotBb = currentMw3PotBb(mw3Session.navigation);
   const hasPostflopProgress = Boolean(flopActions.length || turnCard || turnActions.length || riverCard || riverActions.length);
   const currentBoardPotBb = !flopActive || !flopContext ? null
     : flopContext.kind === "mw3_srp"

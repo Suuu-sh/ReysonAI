@@ -521,6 +521,21 @@ test("current pot follows flop, turn and river replays and ignores cleared downs
   assert.equal(currentPostflopPotBb({}, context), 5.5, "rewinding to the preflop board restores the starting pot");
 });
 
+test("current pot returns unmatched later-street bets after a fold or raise-fold", () => {
+  const context = completedFlopContext({ actionBlocks: end("2人でフロップへ", 5.5), rangeType: "response",
+    opener: "BTN", hero: "BB", callers: ["BB"], foldedHero: true, isDefaultTable: true });
+  const flopActions = ["check"];
+  const turnStart = laterStart(flopActions, context);
+
+  const betFoldActions = ["bet33", "fold"];
+  assert.equal(replayLater("turn", betFoldActions, turnStart, context).pot, 7.32, "raw replay includes the uncalled bet");
+  assert.equal(currentPostflopPotBb({ flopActions, turnCard: "Kh", turnActions: betFoldActions }, context), 5.5);
+
+  const raiseFoldActions = ["bet33", "raise", "fold"];
+  assert.equal(replayLater("turn", raiseFoldActions, turnStart, context).pot, 12.78, "raw replay includes the uncalled raise increment");
+  assert.equal(currentPostflopPotBb({ flopActions, turnCard: "Kh", turnActions: raiseFoldActions }, context), 9.14);
+});
+
 test("completed preflop end block extends the same action path", () => {
   const blocks = buildActionBlocks({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["BB"], foldedHero: true });
   const html = renderToStaticMarkup(createElement(ActionPath, { blocks, expanded: true, onEnterPostflop() {} }));
