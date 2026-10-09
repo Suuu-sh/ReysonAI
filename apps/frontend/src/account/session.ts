@@ -8,7 +8,9 @@ const MAX_ACCOUNT_SNAPSHOT_BYTES = 500_000;
 export const accountKeys = ["reysonai:profile:v1", "reysonai:appearance:v1", "reysonai:display-mode:v1", "reysonai:locale:v1", "reysonai.trainer.history.v1", "reysonai.trainer.drills.v1", "reysonai.trainer.drafts.v1", "reysonai.trainer.review-sessions.v1", AGENT_HANDS_KEY];
 export interface AccountUser { id: string; email: string; verified: boolean; name?: string; picture?: string }
 export interface AccountState { user: AccountUser | null; ready: boolean; available: boolean; error: string }
-interface AccountResponses { session: { user: AccountUser | null }; data: { data?: Record<string, unknown>; version: number }; "google/start": { url: string }; logout: { ok?: boolean } }
+interface AccountResponses { session: { user: AccountUser | null }; data: { ownerId: string; data?: Record<string, unknown>; version: number }; "google/start": { url: string }; logout: { ok?: boolean } }
+type AccountSaveOptions = { importLocal?: boolean; consent?: boolean };
+const snapshotRequestBody = (snapshot: Record<string, unknown>, version: number, extra: AccountSaveOptions, expectedOwner: string) => ({ data: snapshot, version, ...extra, expectedOwner });
 let user: AccountUser | null = null;
 let data: Record<string, unknown> = {};
 let version = 0;
@@ -48,11 +50,23 @@ export function refreshAccount() {
     await pending;
     try {
       const result = await accountRequest("session");
-      if (user?.id !== result.user?.id) { data = {}; version = 0; snapshotOwnerId = null; dirty = false; }
-      user = result.user;
+      const nextUser = result.user;
+      if (user?.id !== nextUser?.id) {
+        // Never leave one account's snapshot readable while a different
+        // authenticated identity is being loaded.
+        user = nextUser;
+        data = {}; version = 0; snapshotOwnerId = null; dirty = false;
+      }
+      let saved: AccountResponses["data"] | undefined;
+      if (nextUser?.verified) {
+        saved = await accountRequest("data");
+        if (saved.ownerId !== nextUser.id) throw new Error("session");
+      }
+      // Install the snapshot only after /data proves it belongs to the
+      // authenticated owner returned by /session.
+      user = nextUser;
       available = true;
-      if (user?.verified) {
-        const saved = await accountRequest("data");
+      if (user?.verified && saved) {
         data = Object.fromEntries(Object.entries(saved.data ?? {}).filter(([key]) => accountKeys.includes(key)));
         version = saved.version;
         snapshotOwnerId = user.id;
@@ -96,7 +110,7 @@ function queueSave() {
   clearTimeout(timer);
   timer = setTimeout(() => { saveAccountData(); }, 350);
 }
-export function saveAccountData(extra: { importLocal?: boolean; consent?: boolean } = {}) {
+export function saveAccountData(extra: AccountSaveOptions = {}, expectedOwnerAtCall?: string) {
   clearTimeout(timer);
   pending = pending.then(async () => {
     // If focus revalidation is in flight, wait for its result before choosing
@@ -105,10 +119,10 @@ export function saveAccountData(extra: { importLocal?: boolean; consent?: boolea
     if (rechecking) await rechecking;
     if (!user?.verified || error || !dirty) return;
     const expectedOwner = snapshotOwnerId;
-    if (!expectedOwner || expectedOwner !== user.id) { error = "session"; available = true; emit(); return; }
+    if (!expectedOwner || expectedOwner !== user.id || (expectedOwnerAtCall && expectedOwnerAtCall !== expectedOwner)) { error = "session"; available = true; emit(); return; }
     const snapshot = JSON.parse(JSON.stringify(data));
     dirty = false;
-    try { const result = await accountRequest("data", { data: snapshot, version, ...extra, expectedOwner }); version = result.version; }
+    try { const result = await accountRequest("data", snapshotRequestBody(snapshot, version, extra, expectedOwner)); version = result.version; }
     catch (cause) { dirty = true; error = (cause as Error).message; emit(); }
   });
   return pending;
@@ -116,8 +130,11 @@ export function saveAccountData(extra: { importLocal?: boolean; consent?: boolea
 export async function importGuestData(consent = false) {
   if (consent !== true || !user?.verified || error) throw new Error("consent");
   clearTimeout(timer);
+  if (rechecking) await rechecking;
   await pending;
   if (error) throw new Error(error);
+  const expectedOwner = snapshotOwnerId;
+  if (!expectedOwner || expectedOwner !== user.id) throw new Error("session");
   const imported: Record<string, unknown> = {};
   for (const key of accountKeys) {
     const value = window.localStorage.getItem(key) ?? (key === AGENT_HANDS_KEY ? window.localStorage.getItem(LEGACY_AGENT_HANDS_KEY) : null);
@@ -126,11 +143,12 @@ export async function importGuestData(consent = false) {
       catch { imported[key] = value; }
     }
   }
-  const importBody = { data: imported, version, importLocal: true, consent: true };
+  const importOptions = { importLocal: true, consent: true };
+  const importBody = snapshotRequestBody(imported, version, importOptions, expectedOwner);
   if (new TextEncoder().encode(JSON.stringify(importBody)).byteLength > MAX_ACCOUNT_SNAPSHOT_BYTES) throw new Error("payload_too_large");
   // Explicit replacement, never an ambiguous history merge.
   data = imported; dirty = true;
-  await saveAccountData({ importLocal: true, consent: true });
+  await saveAccountData(importOptions, expectedOwner);
   if (error) throw new Error(error);
   emit();
 }

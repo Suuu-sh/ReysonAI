@@ -46,7 +46,7 @@ test("cookie sessions isolate guests, consent-gate migration, serialize versions
     if (path === "session") return Response.json({ user: identity });
     if (path === "logout") { identity = null; return Response.json({ ok: true }); }
     if (url.endsWith("google/start")) return Response.json({ url: "https://accounts.google.com/o/oauth2/v2/auth" });
-    if (path === "data" && options.method !== "POST") return failData ? Response.json({ error: "unavailable" }, { status: 500 }) : Response.json({ data: remote, version: remoteVersion });
+    if (path === "data" && options.method !== "POST") return failData ? Response.json({ error: "unavailable" }, { status: 500 }) : Response.json({ ownerId: identity.id, data: remote, version: remoteVersion });
     const body = JSON.parse(options.body);
     if (body.expectedOwner !== identity?.id) return Response.json({ error: "account_owner_changed" }, { status: 409 });
     posts.push(body);

@@ -121,7 +121,7 @@ export async function routeAccount(request:Request,env:AccountEnv):Promise<Respo
   if(path==='session') return reply({user:user?publicUser(user):null});
   if(path==='logout') {if(rawToken) await db.prepare('DELETE FROM account_sessions WHERE token_hash=?').bind(await digest(rawToken)).run();return reply({ok:true},200,[cookie(sessionCookie,'',0),cookie(stateCookie,'',0)]);}
   if(!user) return reply({error:'sign_in_required'},401);
-  if(request.method==='GET') {const row=(await query<{data_json:string;version:number}>('SELECT data_json,version FROM account_data WHERE user_id=?',user.id))[0];return reply({data:row?JSON.parse(row.data_json):{},version:row?.version||0});}
+  if(request.method==='GET') {const row=(await query<{data_json:string;version:number}>('SELECT data_json,version FROM account_data WHERE user_id=?',user.id))[0];return reply({ownerId:user.id,data:row?JSON.parse(row.data_json):{},version:row?.version||0});}
   // Treat the client owner as an assertion only. The cookie remains the sole
   // authority for selecting the account row; reject stale-tab snapshots before
   // creating or updating any account data.
