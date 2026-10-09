@@ -31,6 +31,8 @@ on:
       - 'apps/shared/**'
       - 'configs/**'
       - 'artifacts/preflop/**'
+      - 'artifacts/postflop/mw3-*'
+      - 'apps/backend/scripts/sql/mw3-schema.sql'
       - '.gitattributes'
       - '.github/workflows/deploy-worker.yml'
   pull_request:
@@ -64,6 +66,7 @@ jobs:
       - name: Check out exact workflow revision
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
+          fetch-depth: 0 # MW3 saved provenance verifies historical source trees.
           persist-credentials: false
           lfs: true
 
@@ -81,6 +84,11 @@ jobs:
         run: |
           node scripts/restore-reviewed-preflop.mjs
           node scripts/restore-reviewed-stage3.mjs
+
+      - name: Verify immutable MW3 production contract and exact accepted SQL
+        run: |
+          node --test tests/mw3-production-delivery.test.mjs
+          node scripts/mw3-production-delivery.mjs verify
 
       # Authoring and independent AI review happen locally, before commit.
       # CI must never generate strategies or update the review receipt.
@@ -130,7 +138,7 @@ jobs:
     needs: verify
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     defaults:
       run:
         shell: bash
@@ -154,6 +162,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
+          fetch-depth: 0 # Same exact saved-source verification as the verify job.
           persist-credentials: false
           lfs: true
 
@@ -182,6 +191,16 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=2048
         run: node scripts/verify-reviewed-preflop.mjs --check-bundle --out .local/reviewed-preflop
+
+      # Add only accepted immutable MW3 hashes. Verify all current rows before
+      # the first write and all headers/parts before either runtime is activated.
+      - name: Import exact reviewed MW3 data and require full D1 readback
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          NODE_OPTIONS: --max-old-space-size=2048
+          WRANGLER_SEND_METRICS: 'false'
+        run: node scripts/mw3-production-delivery.mjs import
 
       # Execute only the reviewed additive ranked schema, never all pending
       # account/postflop migrations. Re-running a main deployment is safe.
@@ -315,6 +334,24 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           WRANGLER_SEND_METRICS: 'false'
         run: node scripts/publish-d1.mjs --only postflop --require-all --out .local/postflop.sql --execute remote
+
+      # Final consumer acceptance uses the newly published preflop inputs, all
+      # 32 pinned HTTP manifests and every part; transport availability alone
+      # does not establish that the browser's source identity is compatible.
+      - name: Require live MW3 payloads and actual consumer source identities
+        env:
+          NODE_OPTIONS: --max-old-space-size=2048
+        run: node scripts/mw3-production-delivery.mjs live
+
+      - name: Retain MW3 delivery plan, recovery reference and exact outcomes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: mw3-delivery-outcome-${{ github.sha }}-${{ github.run_attempt }}
+          path: apps/frontend/.local/mw3-production/
+          if-no-files-found: ignore
+          include-hidden-files: true
+          retention-days: 30
 
       - name: Retain preflop recovery reference and import outcome
         if: always()

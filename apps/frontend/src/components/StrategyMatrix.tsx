@@ -62,7 +62,7 @@ export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, 
                 aria-label={aggregate.unreachable ? `${hand}、${unreachableReason}` : aggregate.adjusted ? `${hand}、${adjustedLabel[aggregate.adjusted]}` : comboSummary ? `${hand}、${comboSummary}` : hand}
                 className={`${selected === hand ? "picked" : ""}${aggregate.unreachable ? " unreachable-hand" : ""}${aggregate.adjusted ? ` adjusted-${aggregate.adjusted}` : ""}`}
                 title={aggregate.unreachable ? `${hand}：${unreachableReason}` : aggregate.adjusted ? `${hand}：${adjustedLabel[aggregate.adjusted]}` : comboSummary || undefined}
-                style={{ "--wave": (index % 13) + Math.floor(index / 13) } as CSSProperties}
+                style={{ "--wave": (index % 13) + Math.floor(index / 13), ...(primaryAction ? { background: color(primaryAction) } : {}) } as CSSProperties}
                 onClick={() => onSelect(hand)}
                 disabled={!aggregate.comboCount}
               >
@@ -71,6 +71,9 @@ export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, 
                     : stripOrder(mixedActions).map(action => <span key={action} style={{ width: pct(aggregate.actions[action]), background: color(action) } as CSSProperties} />)}
                 </span>}
                 <strong>{hand}</strong>
+                {!aggregate.unreachable && !simplified && mixedActions.length > 1 && <span className="cell-mix" aria-hidden="true">
+                  {stripOrder(mixedActions).map(action => <span key={action} style={{ width: pct(aggregate.actions[action]), background: color(action) } as CSSProperties} />)}
+                </span>}
               </button>
             );
           })}
