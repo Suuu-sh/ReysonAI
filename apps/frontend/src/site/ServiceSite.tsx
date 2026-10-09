@@ -847,14 +847,6 @@ function Analysis() {
           <div><span>{c.analysis.style}</span><strong>{c.analysis.styleValue}</strong><small>{c.analysis.map}</small></div>
         </div>
         <div className="site-dash-body">
-          <div className="site-dash-map">
-            <span>{c.analysis.map}</span>
-            <div className="site-style-map">
-              {c.analysis.quadrants.map(name => <b key={name}>{name}</b>)}
-              <i className="site-style-marker" />
-            </div>
-            <div className="site-style-axis"><small>← {c.analysis.tight}</small><small>{c.analysis.loose} →</small></div>
-          </div>
           <div className="site-dash-tend">
             <span>{c.analysis.tendencies}</span>
             {c.analysis.actions.map((action, index) => {

@@ -177,6 +177,17 @@ test("phones hide only the illustrative analysis dashboard, retaining explanator
   assert.match(analysis, /site-mock site-dash/);
 });
 
+test("analysis sample omits the play-style map and keeps the tendency summary", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const analysis = source.slice(source.indexOf("function Analysis()"), source.indexOf("function Compare()"));
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.doesNotMatch(analysis, /site-dash-map|site-style-map|site-style-marker/);
+  assert.match(analysis, /className="site-dash-tend"/);
+  assert.match(analysis, /c\.analysis\.tendencies/);
+  assert.match(css, /\.site-dash-body \{ display: grid; grid-template-columns: minmax\(0, 1fr\);/);
+  assert.doesNotMatch(css, /site-dash-map|site-style-map|site-style-marker/);
+});
+
 test("ranked preview mirrors human hand metrics, not legacy quiz scoring", () => {
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
   const ranked = source.slice(source.indexOf("function Ranked()"), source.indexOf("function AgentFeature()"));
