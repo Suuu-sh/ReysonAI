@@ -307,6 +307,46 @@
           "existing_spots": "Existing 45 HU spot fingerprints and seat rows unchanged (fixture test)"
         },
         "limitations": "Source-only. Postflop policies are AI estimates, not GTO."
+      },
+      {
+        "date": "2026-10-09",
+        "reviewer": "/root/review_postflop_policy_tool",
+        "reviewed_base_commit": "1f14744b503c37b56a6db1a21b6e9363d6c94a55",
+        "reviewed_commit": "fb15cf45f1642c5b10f586aaf547b053d7bb609f",
+        "report": "apps/frontend/docs/specs/mcp-postflop-cache-source-renewal.md",
+        "scope": "Source-only review of the defence.ts rank-table cache management change. It preserves Web defaults and numerical calculation. It does not renew the original Astra strategy-quality review, production performance evidence, or overall PR readiness.",
+        "blocking_findings": 0,
+        "before_content_sha256": "ad7e6f9b75903c0056c6b451eb7a649858dad7f57fb51f54e0c30c7651c758b9",
+        "after_content_sha256": "60fa05571900c8b036e90ca7a674133f6a26db2ca05d0648303b8d9f3ad04508",
+        "source_records_before": 109,
+        "source_records_after": 109,
+        "changes": {
+          "modified": [
+            "apps/frontend/scripts/postflop-ai/defence.ts"
+          ],
+          "removed": [],
+          "added": [],
+          "unchanged": 108
+        },
+        "source_identity": {
+          "previous": {
+            "path": "apps/frontend/scripts/postflop-ai/defence.ts",
+            "bytes": 55596,
+            "sha256": "96c51fecb6c37f88d0c5348ed538168cb72cbe47d2b46c461c5a6b37234eb450"
+          },
+          "current": {
+            "path": "apps/frontend/scripts/postflop-ai/defence.ts",
+            "bytes": 56814,
+            "sha256": "808a9dfe3fd436c217556620c3034f914c312a19f3dfb15b989dd9a9d8053cce"
+          }
+        },
+        "independent_review": "base 1f14744b from candidate fb15cf45: reviewed the defence.ts cache-management delta and approved it as a source-only update that does not change Web default behavior or numerical calculations. Blocking findings in this scope: 0. This does not renew the original Astra strategy-quality review, production performance, or overall PR readiness.",
+        "owner_validation_pre_ci": {
+          "current_source_checkout": "All 109 source records match the candidate receipt; 108 records are unchanged from the prior receipt and the only changed record is defence.ts.",
+          "receipt_preservation": "The original review metadata, artifacts, archive record, source_fingerprint, counts, delivery amendments and prior source renewals are preserved. The recomputed candidate content_sha256 matches the reviewer-provided value.",
+          "lfs_checkout": "The independent reviewer did not re-expand the LFS archive. This checkout contains the 132-byte Git LFS pointer; only 274 of 1888 reviewed artifact JSON files are materialized locally. Strict archive restoration and full artifact verification remain pending the post-push delivery CI."
+        },
+        "limitations": "Narrow source-only approval. The independent reviewer did not re-expand the LFS archive and did not re-approve strategy quality, production CPU/memory, or overall PR readiness. Strict restore/verify and full delivery CI remain separate required evidence."
       }
     ],
     "copy_amendments": [
@@ -10026,8 +10066,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/defence.ts",
-      "bytes": 55596,
-      "sha256": "96c51fecb6c37f88d0c5348ed538168cb72cbe47d2b46c461c5a6b37234eb450"
+      "bytes": 56814,
+      "sha256": "808a9dfe3fd436c217556620c3034f914c312a19f3dfb15b989dd9a9d8053cce"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/engine.ts",
@@ -10400,7 +10440,7 @@
       "sha256": "d828004fd7c382e565e66094e43c8b2917ed5ff3444b0c12c2e691499211ace7"
     }
   ],
-  "content_sha256": "ad7e6f9b75903c0056c6b451eb7a649858dad7f57fb51f54e0c30c7651c758b9",
+  "content_sha256": "60fa05571900c8b036e90ca7a674133f6a26db2ca05d0648303b8d9f3ad04508",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
