@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
-import { assertExistingDelivery, assertProductionContext, ensureMw3Published, verifyMw3Live } from '../scripts/mw3-production-delivery.mjs';
+import { assertExistingDelivery, assertProductionContext, assertPublicCors, assertCredentialedCors, ensureMw3Published, verifyMw3Live } from '../scripts/mw3-production-delivery.mjs';
 
 // Synthetic rows only: these never enter the canonical saved-inventory gate.
 function fixture() {
@@ -89,9 +89,27 @@ test('row boundary rejects missing complete rows, wrong stage, duplicate parts a
     assert.throws(()=>assertExistingDelivery(d,h,[{part:0,body:'changed'}]));
   }finally{f.db.close();}
 });
+test('live CORS contract distinguishes public reads from cookie-authenticated rejection responses', () => {
+  const allowedOrigin = 'https://app.reysonai.com';
+  const publicResponse = new Response('{}', { headers: { 'access-control-allow-origin': allowedOrigin } });
+  assert.doesNotThrow(() => assertPublicCors(publicResponse));
+  assert.throws(() => assertPublicCors(new Response('{}', { headers: { 'access-control-allow-origin': 'https://evil.invalid' } })));
+  assert.throws(() => assertPublicCors(new Response('{}', { headers: {
+    'access-control-allow-origin': allowedOrigin, 'access-control-allow-credentials': 'true',
+  } })));
+
+  const credentialedResponse = new Response('{}', { headers: {
+    'access-control-allow-origin': allowedOrigin, 'access-control-allow-credentials': 'true',
+  } });
+  assert.doesNotThrow(() => assertCredentialedCors(credentialedResponse));
+  assert.throws(() => assertCredentialedCors(new Response('{}', { headers: { 'access-control-allow-origin': allowedOrigin } })));
+  assert.throws(() => assertCredentialedCors(new Response('{}', { headers: {
+    'access-control-allow-origin': 'https://evil.invalid', 'access-control-allow-credentials': 'true',
+  } })));
+});
 test('live acceptance rejects incompatible actual source data before policy requests',async()=>{
   const calls=[];
-  await assert.rejects(verifyMw3Live({entries:[]},async(url)=>{calls.push(url);return Response.json({wrong:true},{headers:{'access-control-allow-origin':'https://app.reysonai.com','access-control-allow-credentials':'true'}});}),/Live preflop source differs/);
+  await assert.rejects(verifyMw3Live({entries:[]},async(url)=>{calls.push(url);return Response.json({wrong:true},{headers:{'access-control-allow-origin':'https://app.reysonai.com'}});}),/Live preflop source differs/);
   assert.equal(calls.length,1);assert.match(calls[0],/datasets\/opening-ranges$/);
 });
 test('workflow verifies before writes, imports before activation, and accepts after source publication',()=>{
