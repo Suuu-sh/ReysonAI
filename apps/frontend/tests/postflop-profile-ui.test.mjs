@@ -85,8 +85,8 @@ test("profile and seat controls use all metadata names and native locales", () =
     window.localStorage.setItem("reysonai:locale:v1", locale);
     const html = renderToStaticMarkup(createElement(module.FlopCardDialog, { cards: ["Ah", "7c", "2d"], profile: "nit", seat: "ip", positions: context, onApply() {}, onClose() {} }));
     for (const label of labels) assert.ok(html.includes(label), `${locale}: ${label}`);
-    assert.match(html, /aria-pressed="true"[^>]*>[^<]*NIT/); assert.match(html, /aria-pressed="true"[^>]*>BTN · IP/);
-    assert.match(html, /BTN · IP/); assert.match(html, /BB · OOP/);
+    assert.match(html, /aria-pressed="true"[^>]*>(?:<[^>]*>)*(?:<\/span>)?<span class="opponent-profile-text"><strong>[^<]*NIT/); assert.match(html, /aria-pressed="true"[^>]*><span class="opponent-seat-position">BTN/);
+    assert.match(html, /opponent-seat-position">BB/);
     assert.doesNotMatch(html, /linear-gradient|style=/);
   }
   window.localStorage.setItem("reysonai:locale:v1", "en");
@@ -176,11 +176,11 @@ test("profile note localizes assumptions and adjustment without postflop EV supp
   assert.doesNotMatch(renderToStaticMarkup(createElement(module.PostflopProfileNote, { profile: "standard" })), /postflop-profile-supplement|assuming the opponent/);
 });
 
-test("mobile segments retain 44px targets and wrapping without decorative stripes", async () => {
+test("opponent options keep 44px targets and wrap without decorative stripes", async () => {
   const css = await readFile(new URL("../src/estimated/ranges.css", import.meta.url), "utf8");
-  const scoped = css.slice(css.indexOf("/* Opponent profile controls"));
-  assert.match(scoped, /max-width: 650px[\s\S]*min-height: 44px/);
-  assert.match(scoped, /flex-wrap: wrap/); assert.match(scoped, /focus-visible/);
+  const scoped = css.slice(css.indexOf("/* Opponent assumptions in the flop dialog"), css.indexOf(".postflop-profile-preparing > button"));
+  assert.match(scoped, /\.opponent-profile-option \{[^}]*min-height: 44px/);
+  assert.match(scoped, /auto-fill/); assert.match(scoped, /focus-visible/);
   assert.doesNotMatch(scoped, /gradient|border-left|linear-gradient/);
 });
 

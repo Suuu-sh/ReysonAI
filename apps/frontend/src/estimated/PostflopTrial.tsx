@@ -300,7 +300,7 @@ export function FlopCardDialog({ cards, profile, seat, positions, onApply, onClo
       </div>
       {(draftProfile || draftSeat) && <div className="flop-opponent-settings">
         {draftProfile && <OpponentProfileField profile={draftProfile} onChange={setDraftProfile} />}
-        {draftSeat && positions && <OpponentSeatField seat={draftSeat} positions={positions} onChange={setDraftSeat} />}
+        {draftSeat && positions && draftProfile !== "standard" && <OpponentSeatField seat={draftSeat} positions={positions} onChange={setDraftSeat} />}
       </div>}
       <p className="modal-description">{english ? "Choose any three distinct cards. The flop AI estimate is computed for every board." : "好きなカードを3枚選べます。すべてのフロップでAI推定レンジを計算します。"}</p>
       <div className="flop-card-options">

@@ -444,19 +444,31 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
   .has-context-switch.is-open .settings-toggle { font-size: 12px; }
 }
 
-/* Opponent profile controls share the existing segmented settings surface. */
-.flop-opponent-settings { display: grid; gap: 12px; margin-top: 14px; padding: 12px; border-radius: 10px; background: var(--surface-raised); }
-.postflop-profile-field { min-width: 0; display: grid; gap: 5px; }
-.postflop-profile-label { color: var(--text-muted); font-size: 12px; }
-.flop-opponent-settings .display-mode-toggle { flex-wrap: wrap; gap: 2px; }
-.flop-opponent-settings .display-mode-toggle button { min-height: 32px; white-space: normal; }
+/* Opponent assumptions in the flop dialog: type first, then which player it applies to. */
+.flop-opponent-settings { display: grid; gap: 14px; margin-top: 14px; }
+.postflop-profile-field { min-width: 0; display: grid; gap: 8px; }
+.postflop-profile-label { color: var(--text-muted); font-size: 12px; font-weight: 600; }
+.opponent-profile-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }
+.opponent-profile-option { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-raised); color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: border-color .15s ease, background-color .15s ease; }
+.opponent-profile-option:hover:not(:disabled) { border-color: var(--line-strong); background: var(--surface-hover); }
+.opponent-profile-option[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--surface-raised)); }
+.opponent-profile-check { flex: 0 0 16px; height: 16px; margin-top: 1px; border: 1.5px solid var(--line-strong); border-radius: 50%; transition: border-color .15s ease, box-shadow .15s ease; }
+.opponent-profile-option[aria-pressed="true"] .opponent-profile-check { border-color: var(--accent); box-shadow: inset 0 0 0 3px var(--surface-raised), inset 0 0 0 8px var(--accent); }
+.opponent-profile-text { display: grid; gap: 2px; min-width: 0; }
+.opponent-profile-text strong { font-size: 13px; font-weight: 700; }
+.opponent-profile-text small { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: var(--text-muted); font-size: 11px; line-height: 1.45; }
+.opponent-seat-options { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.opponent-seat-option { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 52px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-raised); color: var(--text); font: inherit; cursor: pointer; transition: border-color .15s ease, background-color .15s ease; }
+.opponent-seat-option:hover:not(:disabled) { border-color: var(--line-strong); }
+.opponent-seat-option[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--surface-raised)); }
+.opponent-seat-option:disabled { opacity: .45; cursor: not-allowed; }
+.opponent-seat-position { display: grid; text-align: left; font-size: 16px; font-weight: 800; line-height: 1.1; }
+.opponent-seat-position small { color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: .04em; }
+.opponent-seat-role { padding: 3px 8px; border-radius: 999px; background: var(--surface-hover); color: var(--text-muted); font-size: 11px; font-weight: 700; }
+.opponent-seat-option[aria-pressed="true"] .opponent-seat-role { background: var(--accent); color: #1a0b12; }
 .flop-opponent-settings button:focus-visible, .postflop-profile-preparing button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.postflop-profile-description, .postflop-profile-note p { margin: 2px 0 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+.postflop-profile-note p { margin: 2px 0 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
 .postflop-profile-preparing > button { margin-top: 12px; min-height: 44px; }
 .postflop-adjusted-marker { display: inline-block; color: var(--text-muted); font-size: 11px; }
 .postflop-profile-note { margin-bottom: 10px; }
-@media (max-width: 650px) {
-  .flop-opponent-settings .display-mode-toggle button { min-height: 44px; }
-  .postflop-profile-field { width: 100%; }
-  .flop-opponent-settings .display-mode-toggle { width: 100%; }
-}
+
