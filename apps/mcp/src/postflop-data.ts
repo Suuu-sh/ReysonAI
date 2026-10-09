@@ -1,9 +1,11 @@
-// Read-only projection of exact published postflop flop bases from the same D1
-// rows used by /v1/postflop/spots, /v1/postflop/spot and /v1/postflop/flop.
-// This module never evaluates a policy or fills a missing board/history.
-import { McpDataError, type ReadOnlyDatabase } from "./data.ts";
+// Read-only access to published postflop policies and exact flop bases from the
+// same D1 rows used by /v1/postflop/spots, /v1/postflop/spot and /v1/postflop/flop.
+// The optional policy evaluator is a bounded deterministic view of one saved flop
+// node; it never generates a policy or fills a missing board/history.
+import { loadPublishedPostflopSourceDatasets, McpDataError, type ReadOnlyDatabase } from "./data.ts";
 import { canonicalFlop, remapFlopNode, hydrateFrame, unpackView, flopState, NODES, referenceLaterPolicy,
-  type FlopBase, type PackedView, type CodecView } from "./postflop-shared.mjs";
+  assertPolicyNodeComplete, buildInputs, flopNodeCanonical, parseFlopBoard, validatePolicy,
+  type FlopBase, type PackedView, type CodecView, type EvaluatedFlopNode, type FlopPolicy, type PostflopInputs } from "./postflop-shared.mjs";
 
 const KIND = "ai_estimate_not_gto" as const;
 const NOTICE = "Saved independent AI estimates for study; not solver GTO, live-game assistance, or a guarantee of profit. Missing, unreachable, or unpublished paths have no substitute strategy.";
@@ -205,12 +207,83 @@ async function loadCatalog(db: ReadOnlyDatabase | undefined): Promise<PublishedC
   return { release, baseRelease, policyHashes, baseCounts, spots };
 }
 
+// One-node evaluation validates only its exact published spot and policy rows. The
+// catalog reader remains responsible for full coverage and saved-base consistency.
+async function loadPublishedSpot(db: ReadOnlyDatabase | undefined, spotId: string) {
+  const releases = await query<VersionRow>(db,
+    "SELECT name, content_hash, published_at, detail_json FROM dataset_versions WHERE name = ? LIMIT 2", "postflop");
+  if (releases.length > 1) invalid();
+  if (!releases.length) spotNotFound();
+  const release = versionRow(releases[0], "postflop");
+  const policyHashes = parsePolicyHashes(release);
+  if (await digestText(JSON.stringify(policyHashes)) !== release.content_hash) invalid();
+  const hashes = policyHashes[spotId];
+  if (!hashes) spotNotFound();
+
+  const rows = await query<SpotRow>(db,
+    "SELECT spot_id, slug, kind, tree, ip, oop, pot_bb, stack_bb, spot_json FROM postflop_spots WHERE spot_id = ? LIMIT 2", spotId);
+  if (!rows.length) spotNotFound();
+  if (rows.length !== 1) invalid();
+  const projected = projectSpot(rows[0]);
+  if (projected.context.id !== spotId) invalid();
+
+  const policyRows = await query<{ spot_id: string; stage: string; policy_hash: string }>(db,
+    "SELECT spot_id, stage, policy_hash FROM postflop_policies WHERE spot_id = ? ORDER BY stage LIMIT 3", spotId);
+  const actual = new Map<string, string>();
+  for (const row of policyRows) {
+    if (row.spot_id !== spotId || !["flop", "later"].includes(row.stage) || !SHA256.test(row.policy_hash) || actual.has(row.stage)) invalid();
+    actual.set(row.stage, row.policy_hash);
+  }
+  if (actual.get("flop") !== hashes.flop || (hashes.later === null ? actual.has("later") : actual.get("later") !== hashes.later)
+    || actual.size !== (hashes.later === null ? 1 : 2)) invalid();
+  return { release, spot: { ...projected, hashes } };
+}
+
 function spotNotFound(): never { throw new McpDataError("not_found", "This exact postflop spot is not published; no nearby spot was substituted."); }
 function selectedSpot(catalog: PublishedCatalog, spotId: unknown) {
   if (!IDENTIFIER.test(String(spotId ?? ""))) throw new McpDataError("invalid_argument", "Use an exact postflop spot ID returned by list_postflop_coverage.");
   const spot = catalog.spots.get(spotId as string);
   if (!spot) spotNotFound();
   return spot;
+}
+
+function evaluationSourceSelections(spot: Value): Record<string, string[]> {
+  if ("history" in spot) throw new McpDataError("unsupported_dataset", "This published multiway source family is not supported by the bounded head-up policy evaluator.");
+  const selected: Record<string, string[]> = {};
+  const add = (dataset: string, id: unknown) => {
+    if (!IDENTIFIER.test(String(id ?? ""))) invalid();
+    (selected[dataset] ??= []).push(id as string);
+  };
+  switch (spot.kind) {
+    case "srp":
+      add("opening-ranges", spot.openingId); add("preflop-ranges", spot.responseId); break;
+    case "3bp":
+      add("opening-ranges", spot.openingId); add("preflop-ranges", spot.threeBetId); add("three-bet-responses", spot.responseId); break;
+    case "4bp":
+      add("opening-ranges", spot.openingId); add("preflop-ranges", spot.threeBetId);
+      add("three-bet-responses", spot.fourBetId); add("four-bet-responses", spot.responseId); break;
+    case "limp":
+      add("opening-ranges", "SB_open");
+      for (const id of ["BB_vs_SB_limp", "SB_vs_BB_iso", "BB_vs_SB_limp_reraise"]) add("limp-responses", id);
+      if (spot.responseId === "SB_vs_BB_limp_four_bet") add("limp-deep-responses", spot.responseId);
+      break;
+    default: throw new McpDataError("unsupported_dataset", "This published postflop source family is not supported by the bounded head-up policy evaluator.");
+  }
+  return selected;
+}
+
+function evaluationSourceNames(spot: Value): string[] {
+  return Object.keys(evaluationSourceSelections(spot));
+}
+
+function policyEvaluationAvailability(spot: Value) {
+  try {
+    evaluationSourceNames(spot);
+    return { status: "head_up_sources_supported", street: "flop", maxHandClasses: 169,
+      requirement: "exact published spot, three-card flop, legal action history, and complete saved policy rules for the path" };
+  } catch {
+    return { status: "source_family_not_supported", street: "flop", maxHandClasses: 169 };
+  }
 }
 
 function historyKey(value: unknown): string[] {
@@ -429,6 +502,7 @@ export async function listPostflopCoverage(db: ReadOnlyDatabase | undefined, inp
         policies: { flop: { status: "published", contentHash: entry.hashes.flop }, turnRiver: {
           status: entry.hashes.later ? "policy_published_range_not_materialized" : "not_published", contentHash: entry.hashes.later,
         } },
+        policyNodeEvaluation: policyEvaluationAvailability(entry.data),
         savedFlopCoverage: { status: boardCount ? "saved_boards_available" : "no_saved_boards", boardClasses: boardCount,
           totalCanonicalFlopClasses: CANONICAL_FLOPS, lookupSupported: boardCount > 0 },
       };
@@ -475,6 +549,83 @@ export async function listPostflopCoverage(db: ReadOnlyDatabase | undefined, inp
     source: requested.source, street: "flop", total: totalHistories, histories,
     nextOffset: offset + histories.length < totalHistories ? offset + histories.length : null };
   outputSize(result); return result;
+}
+
+export interface EvaluatePostflopPolicyInput { spotId: string; flop: string; history?: string[] }
+export async function evaluatePublishedPostflopPolicy(db: ReadOnlyDatabase | undefined, input: EvaluatePostflopPolicyInput) {
+  if (!object(input) || !IDENTIFIER.test(input.spotId) || typeof input.flop !== "string") {
+    throw new McpDataError("invalid_argument", "Use an exact published spot ID and a three-card flop.");
+  }
+  const history = historyKey(input.history);
+  const published = await loadPublishedSpot(db, input.spotId);
+  const { release, spot } = published;
+  const sourceRequirements = evaluationSourceSelections(spot.data);
+  const sourceNames = Object.keys(sourceRequirements);
+  const sourceDatasets = await loadPublishedPostflopSourceDatasets(db, sourceRequirements);
+  let inputs: PostflopInputs;
+  try { inputs = buildInputs(input.spotId, sourceDatasets); } catch { return invalid(); }
+  // The published spot is the authority. A changed local descriptor or source geometry
+  // must not be silently substituted just because the same identifier still exists.
+  if (JSON.stringify(inputs.spot) !== JSON.stringify(spot.data) || inputs.spot.reachable !== true) invalid();
+
+  const policyRows = await query<{ metadata_json: string; policy_json: string; policy_hash: string }>(db,
+    "SELECT metadata_json, policy_json, policy_hash FROM postflop_policies WHERE spot_id = ? AND stage = ? LIMIT 2", input.spotId, "flop");
+  if (policyRows.length !== 1) invalid();
+  const saved = await parsePolicy(policyRows[0], spot.hashes.flop);
+  let policy: FlopPolicy;
+  try { policy = validatePolicy(saved.policy, inputs.spot.tree); } catch { return invalid(); }
+  if (saved.sourceHash !== inputs.fingerprint) invalid();
+
+  const canonical = canonicalBoard(input.flop);
+  let parsed: ReturnType<typeof parseFlopBoard>;
+  try { parsed = parseFlopBoard(input.flop); } catch { throw new McpDataError("invalid_argument", "Enter exactly three distinct cards, such as As7d2c."); }
+  let state;
+  try { state = flopState(inputs.spot.tree, history); } catch { throw new McpDataError("not_found", "This exact flop action history does not reach a published decision."); }
+  if ("end" in state) throw new McpDataError("not_found", "This flop action history has ended; no later node was substituted.");
+
+  // Every node on the requested path needs a complete saved `any` rule for each tier.
+  // This prevents the shared defence replay or the target node from falling back to its
+  // fixed reference mix on a re-raise added after the published policy was authored.
+  for (let length = 0; length <= history.length; length++) {
+    let ancestor;
+    try { ancestor = flopState(inputs.spot.tree, history.slice(0, length)); }
+    catch { throw new McpDataError("not_found", "This exact flop action history does not reach a published decision."); }
+    if ("end" in ancestor) throw new McpDataError("not_found", "This flop action history has ended; no later node was substituted.");
+    try { assertPolicyNodeComplete(policy, ancestor.node); }
+    catch { throw new McpDataError("not_found", "The published policy has no complete saved rules for this exact node path; no reference mix was substituted."); }
+  }
+
+  let evaluated: EvaluatedFlopNode;
+  try {
+    evaluated = flopNodeCanonical(inputs, policy, canonical.cards, state.node, history,
+      { includeCombos: false, requireSavedRules: true });
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith("Unreachable flop history")) {
+      throw new McpDataError("not_found", "The saved ranges do not reach this exact flop decision; no substitute node was evaluated.");
+    }
+    return invalid();
+  }
+  if (evaluated.rows.length !== 169 || !evaluated.rows.some(row => row.reachWeight > 0)) {
+    throw new McpDataError("not_found", "The saved ranges do not reach this exact flop decision; no substitute node was evaluated.");
+  }
+  const expectedSeat = state.role === "ip" ? inputs.spot.ip : inputs.spot.oop;
+  if (evaluated.seat !== expectedSeat || JSON.stringify(evaluated.actions) !== JSON.stringify(NODES[state.node])) invalid();
+  const datasets = sourceDatasets as Record<string, { contentHash: string }>;
+  const handClasses = evaluated.rows.map(row => ({ hand: row.hand, reachable: row.reachable, comboCount: row.comboCount,
+    frequencies: row.mix, tierWeights: row.tiers, reachWeight: row.reachWeight }));
+  const result = {
+    kind: KIND, notice: NOTICE, lookupMode: "published_flop_policy_evaluation", street: "flop",
+    spot: spot.context, flop: parsed.id, canonicalFlop: canonical.key, history, node: state.node,
+    actingSeat: evaluated.seat, actions: [...evaluated.actions], rangeStatus: "available", frequencyUnit: "fraction",
+    handClassCount: handClasses.length, hands: handClasses,
+    calculation: { method: "deterministic_shared_flop_estimate", savedBaseUsed: false, referenceFallbackUsed: false,
+      defenceAdjustmentApplied: true, completeSavedRulesRequired: true, maxHandClasses: 169 },
+    source: { postflop: { dataset: "postflop", contentHash: release.content_hash, publishedAt: release.published_at },
+      policy: { contentHash: saved.policyHash, inputHash: saved.sourceHash },
+      inputDatasets: Object.fromEntries(sourceNames.map(name => [name, datasets[name]?.contentHash ?? null])) },
+  };
+  outputSize(result);
+  return result;
 }
 
 export interface SavedPostflopRangeInput { spotId: string; flop: string; history?: string[]; hand?: string }

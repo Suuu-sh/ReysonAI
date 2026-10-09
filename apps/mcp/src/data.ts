@@ -161,6 +161,43 @@ function reader(db: ReadOnlyDatabase | undefined) {
   };
   return { load, spot };
 }
+
+// Read only the existing, validated head-up range datasets needed to reproduce a
+// published postflop fingerprint. Dataset names are selected internally from the
+// published spot; MCP clients cannot choose another table or source family.
+export async function loadPublishedPostflopSourceDatasets(db: ReadOnlyDatabase | undefined, requirements: Record<string, readonly string[]>) {
+  if (!object(requirements) || Object.keys(requirements).length < 1 || Object.keys(requirements).length > SUPPORTED_RANGE_DATASETS.length) {
+    throw new McpDataError("invalid_argument", "Invalid published postflop source selection.");
+  }
+  const selected = Object.entries(requirements).map(([name, ids]) => {
+    const supported = datasetName(name);
+    if (!Array.isArray(ids) || ids.length < 1 || ids.length > 10 || ids.some(id => !identifier(id)) || new Set(ids).size !== ids.length) {
+      throw new McpDataError("invalid_argument", "Invalid published postflop source selection.");
+    }
+    return [supported, ids] as const;
+  });
+  const entries = await Promise.all(selected.map(async ([name, ids]) => {
+    // The byte/hash and publication envelope cover the complete source file, while the
+    // costlier row validation stays limited to the exact source spots needed by this policy.
+    const saved = await readPublishedJson(db, name);
+    const raw = saved?.data;
+    if (!object(raw) || !object(raw.metadata) || raw.metadata.schema_version !== "1.0" || raw.metadata.strategy_type !== KIND
+      || raw.metadata.game !== "6max Cash / No-Limit Texas Holdem" || raw.metadata.effective_stack_bb !== 100 || raw.metadata.ante_bb !== 0
+      || !object(raw.metadata.rake) || raw.metadata.rake.rate !== 0.05 || raw.metadata.rake.cap_bb !== 3 || raw.metadata.rake.no_flop_no_drop !== true
+      || !Array.isArray(raw.spots) || !integer(raw.spot_count, 1, 70) || raw.spots.length !== raw.spot_count
+      || raw.hand_classes_per_spot !== 169 || raw.entry_count !== raw.spot_count * 169) invalid();
+    const rawSpots = raw.spots;
+    const spots = ids.map(id => {
+      const matches = rawSpots.filter((value: unknown) => object(value) && value.id === id);
+      if (!matches.length) throw new McpDataError("not_found", "An exact published source spot is missing; no substitute was used.");
+      if (matches.length !== 1) invalid();
+      return validateSpot(name, matches[0]);
+    });
+    return [name, { metadata: raw.metadata, spots, contentHash: saved!.hash }] as const;
+  }));
+  return Object.fromEntries(entries);
+}
+
 function spotContext(spot: RawSpot) {
   const context: Record<string, string | number> = { id: spot.id, hero: spot.hero, effective_stack_bb: 100 };
   for (const key of ["opener", "opponent", "three_bettor", "five_bettor"]) if (POSITIONS.includes(spot[key] as string)) context[key] = spot[key] as string;

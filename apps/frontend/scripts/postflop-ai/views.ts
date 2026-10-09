@@ -11,7 +11,7 @@ import { comboRange } from "./browser-inputs.ts";
 import { handTier, TIERS } from "./model.ts";
 import { LATER_NODES } from "./later-tree.ts";
 import { laterPolicyMix } from "./later-policy.ts";
-import { NODES, nodeRole, policyMix, scaleByPath, treeNodes } from "./policy.ts";
+import { NODES, nodeRole, policyMix, policyMixExact, scaleByPath, treeNodes } from "./policy.ts";
 import { FLOP_BETS, flopState, historyFor, treeHistories } from "./tree.ts";
 import { comboId, defenceFor, replayOrNull } from "./defence.ts";
 import { canonicalFlop, remapFlopNodes } from "./flop-isomorphism.ts";
@@ -39,39 +39,60 @@ export function flopNodes(inputs: Inputs, policy: FlopPolicy, boardCards: readon
 
 // The raw canonical-coordinate implementation is also used by the offline base generator.
 export function flopNodesCanonical(inputs: Inputs, policy: FlopPolicy, boardCards: readonly number[], history: string[] | null = null): StrategyNodes {
+  return Object.fromEntries(treeNodes(inputs.spot.tree).map(node => [node,
+    flopNodeCanonical(inputs, policy, boardCards, node, history)]));
+}
+
+// The bounded MCP projection uses the same computation for one exact flop decision,
+// without building the other nodes or retaining combo-level output.
+export function flopNodeCanonical(inputs: Inputs, policy: FlopPolicy, boardCards: readonly number[], node: string,
+  history: string[] | null = null, { includeCombos = true, requireSavedRules = false }:
+    { includeCombos?: boolean; requireSavedRules?: boolean } = {}): StrategyNode {
   const { spot } = inputs;
+  if (!treeNodes(spot.tree).includes(node)) throw new Error(`Unknown flop node: ${node}`);
+  const actions = NODES[node];
+  const seat = spot[nodeRole(node)]; // btn_* / ip_* = IP, bb_* / oop_* = OOP
+  // A line the engine resolves differently (e.g. a wager merged into an all-in) keeps the policy mix.
+  const path = history && flopState(spot.tree, history).node === node ? history : historyFor(spot.tree, node, FLOP_BETS[0]);
+  const table = replayOrNull(inputs, boardCards, { flop: path });
+  if (requireSavedRules && !table) throw new Error(`Unreachable flop history for ${node}`);
   const defence = defenceFor(inputs, policy, null);
-  return Object.fromEntries(treeNodes(spot.tree).map(node => {
-    const actions = NODES[node];
-    const seat = spot[nodeRole(node)]; // btn_* / ip_* = IP, bb_* / oop_* = OOP
-    // A line the engine resolves differently (e.g. a wager merged into an all-in) keeps the policy mix.
-    const path = history && flopState(spot.tree, history).node === node ? history : historyFor(spot.tree, node, FLOP_BETS[0]);
-    const table = replayOrNull(inputs, boardCards, { flop: path });
-    const reach = table ? defence.rangeOf(table, boardCards, seat) : null;
-    const mixOf = (combo: readonly number[]): ActionMix => {
-      const base = policyMix(policy, node, combo, boardCards);
-      return table ? defence.mix(table, boardCards, node, combo, base) : base;
-    };
-    const rows = inputs.seatRows[seat].map(row => {
-      const combos = comboRange([row], "freq", boardCards);
-      const total = combos.reduce((sum, item) => sum + item.weight, 0);
-      const mixes = combos.map(item => mixOf(item.combo));
-      const mix = Object.fromEntries(actions.map(action => [action, total
-        ? combos.reduce((sum, item, index) => sum + item.weight * mixes[index][action], 0) / total / 100
-        : 0]));
-      const tiers = Object.fromEntries(TIERS.map(tier => [tier, 0])) as Record<import("./types.ts").HandTier, number>;
-      const detail = combos.map((item, index) => {
-        const tier = handTier(item.combo, boardCards);
-        if (total) tiers[tier] += item.weight / total;
-        return { cards: item.combo.map(cardText).join(""), tier, weight: item.weight,
-          reachWeight: reach ? reach[comboId(...item.combo as [number, number])] : item.weight,
-          mix: Object.fromEntries(actions.map(action => [action, mixes[index][action] / 100])) };
-      });
-      return { hand: row.hand, comboCount: combos.length, reachable: total > 0, mix, tiers, combos: detail,
-        reachWeight: detail.reduce((sum, combo) => sum + combo.reachWeight, 0) };
+  const reach = table ? defence.rangeOf(table, boardCards, seat) : null;
+  if (requireSavedRules && table) {
+    for (const actor of [spot.ip, spot.oop]) {
+      const hasAction = table.log.some(entry => entry.seat === actor && entry.action !== null);
+      if (hasAction) {
+        const actorReach = actor === seat ? reach : defence.rangeOf(table, boardCards, actor);
+        if (!actorReach?.some(weight => weight > 0)) throw new Error(`Unreachable flop history for ${node}`);
+      }
+    }
+  }
+  const mixOf = (combo: readonly number[]): ActionMix => {
+    const base = requireSavedRules ? policyMixExact(policy, node, combo, boardCards) : policyMix(policy, node, combo, boardCards);
+    return table ? defence.mix(table, boardCards, node, combo, base) : base;
+  };
+  const rows = inputs.seatRows[seat].map(row => {
+    const combos = comboRange([row], "freq", boardCards);
+    const total = combos.reduce((sum, item) => sum + item.weight, 0);
+    const mixes = combos.map(item => mixOf(item.combo));
+    const mix = Object.fromEntries(actions.map(action => [action, total
+      ? combos.reduce((sum, item, index) => sum + item.weight * mixes[index][action], 0) / total / 100
+      : 0]));
+    const tiers = Object.fromEntries(TIERS.map(tier => [tier, 0])) as Record<import("./types.ts").HandTier, number>;
+    let reachWeight = 0;
+    const detail = includeCombos ? [] as StrategyCombo[] : null;
+    combos.forEach((item, index) => {
+      const tier = handTier(item.combo, boardCards);
+      if (total) tiers[tier] += item.weight / total;
+      const comboReach = reach ? reach[comboId(...item.combo as [number, number])] : item.weight;
+      reachWeight += comboReach;
+      detail?.push({ cards: item.combo.map(cardText).join(""), tier, weight: item.weight,
+        reachWeight: comboReach, mix: Object.fromEntries(actions.map(action => [action, mixes[index][action] / 100])) });
     });
-    return [node, { seat, actions, rows }];
-  }));
+    return { hand: row.hand, comboCount: combos.length, reachable: total > 0, mix, tiers,
+      combos: detail ?? [], reachWeight };
+  });
+  return { seat, actions, rows };
 }
 
 export function flopHistoryViews(inputs: Inputs, policy: FlopPolicy, boardCards: readonly number[]): Record<string, FlopHistoryView> {

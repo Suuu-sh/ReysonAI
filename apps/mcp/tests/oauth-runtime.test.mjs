@@ -93,7 +93,7 @@ test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolat
   assert.equal((await exchange(code,pending.verifier,{resource:'https://attacker.example/mcp'})).status,400);
   const initialize=await rpc(full.tokens.access_token,'initialize',{protocolVersion:'2025-06-18',capabilities:{},clientInfo:{name:'test',version:'1'}});assert.equal(initialize.status,200,await initialize.clone().text());
   for(const badOrigin of ['null','http://app.example.invalid',app+':444','https://evil.test'])assert.equal((await rpc(full.tokens.access_token,'tools/list',{}, {headers:{origin:badOrigin,authorization:'Bearer '+full.tokens.access_token}})).status,403);
-  const list=await rpc(full.tokens.access_token,'tools/list');assert.equal(list.status,200,await list.clone().text());const body=await readRpc(list);assert.deepEqual(body.result.tools.map(tool=>tool.name).sort(),['get_my_learning_history','get_saved_postflop_range','get_saved_range','list_postflop_coverage','list_range_coverage']);assert.ok(body.result.tools.every(tool=>tool.annotations.readOnlyHint));
+  const list=await rpc(full.tokens.access_token,'tools/list');assert.equal(list.status,200,await list.clone().text());const body=await readRpc(list);assert.deepEqual(body.result.tools.map(tool=>tool.name).sort(),['evaluate_postflop_policy','get_my_learning_history','get_saved_postflop_range','get_saved_range','list_postflop_coverage','list_range_coverage']);assert.ok(body.result.tools.every(tool=>tool.annotations.readOnlyHint));
   for(const name of ['run_sql','create_solver_job','charge_card','shell']) {const res=await rpc(full.tokens.access_token,'tools/call',{name,arguments:{}});const body=await readRpc(res);assert.ok(body.error||body.result?.isError);}
   const unknown=await rpc(full.tokens.access_token,'tools/call',{name:'get_my_learning_history',arguments:{userId:'bob'}});const rejected=await readRpc(unknown);assert.ok(rejected.error||rejected.result?.isError);
  });
@@ -103,15 +103,21 @@ test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolat
   const ranged=await connect({scopes:range});assert.ok(ranged.tokens.refresh_token);const list=await readRpc(await rpc(ranged.tokens.access_token,'tools/list'));assert.ok(!list.result.tools.some(tool=>tool.name==='get_my_learning_history'));
   assert.equal(ranged.tokens.scope,`${range} offline_access`);
   const denied=await readRpc(await rpc(ranged.tokens.access_token,'tools/call',{name:'get_my_learning_history',arguments:{}}));assert.ok(denied.error||denied.result?.isError);
-  for(const name of ['list_postflop_coverage','get_saved_postflop_range']){
+  for(const name of ['list_postflop_coverage','get_saved_postflop_range','evaluate_postflop_policy']){
    const result=await readRpc(await rpc(ranged.tokens.access_token,'tools/call',{name,arguments:{spotId:'BTN_open_BB_call',flop:'Kc7d2h'}}));
    assert.doesNotMatch(JSON.stringify(result),/Access denied/,name);
   }
+  const tokenId=ranged.tokens.access_token.split(':')[1];const tokenKey=(await (await mf.getKVNamespace('OAUTH_KV')).list({prefix:`token:alice:${tokenId}:`})).keys[0].name;
+  const kv=await mf.getKVNamespace('OAUTH_KV');const stored=await kv.get(tokenKey);const record=JSON.parse(stored);
+  await kv.put(tokenKey,JSON.stringify({...record,scope:[history]}));
+  const noRange=await readRpc(await rpc(ranged.tokens.access_token,'tools/call',{name:'evaluate_postflop_policy',arguments:{spotId:'BTN_open_BB_call',flop:'Kc7d2h'}}));
+  assert.match(JSON.stringify(noRange),/Access denied|insufficient_scope/);
+  await kv.put(tokenKey,stored);
  });
  await t.test('modern 2026 request envelope and token expiry/audience/scope enforcement',async()=>{
   const linked=await connect();
   const modern=await call('/mcp',{method:'POST',headers:{authorization:`Bearer ${linked.tokens.access_token}`,'content-type':'application/json',accept:'application/json, text/event-stream','mcp-protocol-version':'2026-07-28','mcp-method':'tools/list'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'tools/list',params:{_meta:{'io.modelcontextprotocol/protocolVersion':'2026-07-28','io.modelcontextprotocol/clientCapabilities':{},'io.modelcontextprotocol/clientInfo':{name:'fixture',version:'1'}}}})});
-  assert.equal(modern.status,200,await modern.clone().text());assert.equal((await readRpc(modern)).result.tools.length,5);
+  assert.equal(modern.status,200,await modern.clone().text());assert.equal((await readRpc(modern)).result.tools.length,6);
   const kv=await mf.getKVNamespace('OAUTH_KV');const id=linked.tokens.access_token.split(':')[1];const key=(await kv.list({prefix:`token:alice:${id}:`})).keys[0].name;const stored=await kv.get(key);const record=JSON.parse(stored);
   for(const patch of [{expiresAt:1},{audience:'https://other.example/mcp'},{scope:[]}]){
    await kv.put(key,JSON.stringify({...record,...patch}));const response=await rpc(linked.tokens.access_token,'tools/list');assert.equal(response.status,patch.scope?403:401);assert.match(response.headers.get('www-authenticate'),/Bearer/);
