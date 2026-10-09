@@ -2,8 +2,8 @@
 // lives in the MCP adapter so the frontend evaluator and its reviewed provenance
 // sources remain unchanged. Its output is regression-tested against computeBoard.
 import { comboRange } from "../../frontend/scripts/postflop-ai/browser-inputs.ts";
-import { handTier, TIERS } from "../../frontend/scripts/postflop-ai/model.ts";
-import { NODES, nodeRole, policyMix, treeNodes } from "../../frontend/scripts/postflop-ai/policy.ts";
+import { flopTextureKeys, handTier, TIERS } from "../../frontend/scripts/postflop-ai/model.ts";
+import { NODES, nodeRole, treeNodes, withRaise } from "../../frontend/scripts/postflop-ai/policy.ts";
 import { FLOP_BETS, flopState, historyFor } from "../../frontend/scripts/postflop-ai/tree.ts";
 import { comboId, defenceFor, replayOrNull } from "../../frontend/scripts/postflop-ai/defence.ts";
 
@@ -35,23 +35,32 @@ export function evaluateFlopNodeCanonical(inputs, policy, boardCards, node, hist
     }
   }
 
-  const mixOf = combo => {
-    // Complete any-rules are required at this node and every ancestor before this
-    // function is called, so the shared frontend lookup cannot use reference mixes.
-    const base = policyMix(policy, node, combo, boardCards);
-    return defence.mix(table, boardCards, node, combo, base);
+  // Use the same texture fallback order as policyMix, indexed locally so the bounded
+  // projection does not repeat a linear scan of the published rules for every combo.
+  const ruleIndex = new Map(policy.rules.map(rule => [`${rule.node}|${rule.tier}|${rule.texture}`, rule]));
+  const textures = flopTextureKeys(boardCards);
+  const savedMix = (tier) => {
+    for (const texture of textures) {
+      const rule = ruleIndex.get(`${node}|${tier}|${texture}`);
+      if (rule) return withRaise(node, rule.mix);
+    }
+    throw new Error(`Uncovered policy node: ${node}/${textures[0]}/${tier}`);
   };
   const rows = inputs.seatRows[seat].map(row => {
     const combos = comboRange([row], "freq", boardCards);
     const total = combos.reduce((sum, item) => sum + item.weight, 0);
-    const mixes = combos.map(item => mixOf(item.combo));
+    const mixes = combos.map(item => {
+      const tier = handTier(item.combo, boardCards);
+      const base = savedMix(tier);
+      return { tier, mix: defence.mix(table, boardCards, node, item.combo, base) };
+    });
     const mix = Object.fromEntries(actions.map(action => [action, total
-      ? combos.reduce((sum, item, index) => sum + item.weight * mixes[index][action], 0) / total / 100
+      ? combos.reduce((sum, item, index) => sum + item.weight * mixes[index].mix[action], 0) / total / 100
       : 0]));
     const tiers = Object.fromEntries(TIERS.map(tier => [tier, 0]));
     let reachWeight = 0;
     combos.forEach((item, index) => {
-      const tier = handTier(item.combo, boardCards);
+      const { tier } = mixes[index];
       if (total) tiers[tier] += item.weight / total;
       reachWeight += reach[comboId(item.combo[0], item.combo[1])];
     });
