@@ -374,6 +374,243 @@
           }
         },
         "limitations": "No numerical regeneration, new strategy-quality approval, full acceptance, merge or deployment is claimed. Independent review of the final exact head and CI remain pending."
+      },
+      {
+        "date": "2026-10-10",
+        "reviewer": "Independent source-only MCP/API consolidation reviewer",
+        "reviewer_task": "/root/source_only_review",
+        "reviewed_source_commit": "9c69754f46061e5ccc8dea281c6770402cc94f98",
+        "report": "apps/backend/MCP_CONSOLIDATION_SOURCE_REVIEW.md",
+        "report_sha256": "e33fba813b402da01a127b6edbb99598cdd2d8ad594d1db9e475a8a17efc140c",
+        "scope": "Workflow/source configuration only: MCP package trigger coverage and dependency installation in the API Worker verify/deploy jobs. No renewed strategy, numerical, or saved-data approval.",
+        "blocking_findings": 0,
+        "before_content_sha256": "306b6fbe738ccf409c13be9e89c914890b0d33289e0e3613dde870e083004f19",
+        "after_content_sha256": "c413e9d2c057838e30601f0bb26c107ea829de2ac3336799e3e5982966fec021",
+        "source_records_before": 195,
+        "source_records_after": 195,
+        "changes": {
+          "modified": [
+            ".github/workflows/deploy-worker.yml"
+          ],
+          "added": [],
+          "removed": [],
+          "unchanged": 194
+        },
+        "source_identity": {
+          "previous": {
+            "path": ".github/workflows/deploy-worker.yml",
+            "bytes": 17820,
+            "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
+          },
+          "current": {
+            "path": ".github/workflows/deploy-worker.yml",
+            "bytes": 18213,
+            "sha256": "3a9243cb6d964fb0201a5d51c6bd31a65c3d4352dea59e3a6d07345d3dcb7df9"
+          }
+        },
+        "verification": {
+          "reviewed_delta": "Adds apps/mcp/src/**, package.json and package-lock.json paths and runs npm ci --ignore-scripts in verify and deploy before reviewed payload restoration/deployment.",
+          "exact_head_mcp_ci": "Run #83: typecheck and build check passed; 68 tests passed, zero failures or skips; composed API Worker Wrangler dry-run passed.",
+          "exact_head_preflop_gate": "Restore jobs currently fail closed because this workflow source record had not yet been renewed; no downstream verification/deployment ran.",
+          "stage3_dependency": "Stage 3 separately binds this workflow and the Stage 2 receipt; its own source records are renewed in a companion receipt update."
+        },
+        "verified_unchanged": {
+          "artifact_records": 1888,
+          "artifact_bytes": 79002248,
+          "archive": {
+            "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+            "bytes": 1747857,
+            "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+            "format": "ustar+gzip"
+          },
+          "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+          "counts": {
+            "catalog": 3115,
+            "saved": 1611,
+            "unreachable": 1504,
+            "hands": 272259
+          },
+          "prior_review_history_preserved": true
+        },
+        "limitations": "Source-only renewal. No strategy generation, policy/data edit, production configuration change, deployment, merge, or Worker deletion."
+      },
+      {
+        "date": "2026-10-10",
+        "reviewer": "Independent source-only MCP/frontend Worker type-split reviewer",
+        "reviewer_task": "/root/source_only_review",
+        "reviewed_source_commit": "da27207eae11c0d33ca89a8c5f12710b6c3fb37a",
+        "report": "apps/backend/MCP_FRONTEND_TYPECHECK_SOURCE_REVIEW.md",
+        "report_sha256": "4e98908aee33d3ed975ac3b884c25393a9f2a5d7d69bd93cefa2067caa602df8",
+        "scope": "Frontend/Worker TypeScript project boundary and typecheck wiring only. No renewed strategy-quality, numerical, saved-data, production, merge, or deployment approval.",
+        "blocking_findings": 0,
+        "before_content_sha256": "c413e9d2c057838e30601f0bb26c107ea829de2ac3336799e3e5982966fec021",
+        "source_identity": {
+          "source_records_before": 195,
+          "source_records_after": 195,
+          "modified": [
+            "apps/frontend/package.json"
+          ],
+          "added": [],
+          "removed": [],
+          "unchanged": 194,
+          "previous": {
+            "path": "apps/frontend/package.json",
+            "bytes": 2514,
+            "sha256": "7aa07c287011bd5c2f303680bc6f3fa07203ddb7692ed53b38b8de0907222696"
+          },
+          "current": {
+            "path": "apps/frontend/package.json",
+            "bytes": 2585,
+            "sha256": "e758dd947c258287bc5b334e55e733b82f5e61de9a3c5660f16d362aea8ce981"
+          }
+        },
+        "verification": {
+          "browser_project": "tsconfig.json includes only frontend src/**/*.ts(x) and vite/client types.",
+          "worker_project": "tsconfig.worker.json includes backend/MCP source, generated Worker declarations, and pinned @cloudflare/workers-types; lib is explicitly ES2022 with no DOM library.",
+          "package_typecheck": "Runs browser, Worker, and runtime TypeScript projects sequentially.",
+          "deployment_dependency_order": "Reviewed deployment workflow installs apps/mcp dependencies before the frontend typecheck.",
+          "reviewer_compiler_check": "Not run by the independent source-only reviewer; exact-head Actions validation follows receipt renewal."
+        },
+        "verified_unchanged": {
+          "stage2_artifacts": 1888,
+          "stage2_artifact_bytes": 79002248,
+          "archive": {
+            "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+            "bytes": 1747857,
+            "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a"
+          },
+          "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+          "counts": {
+            "catalog": 3115,
+            "saved": 1611,
+            "unreachable": 1504,
+            "hands": 272259
+          },
+          "prior_review_history_preserved": true
+        },
+        "limitations": "Source-only review. No TypeScript compiler run by the reviewer, strategy generation, policy/data edit, D1 operation, production configuration change, deployment, or merge.",
+        "after_content_sha256": "0bf4a3ac6ce0f9ba88651ebe889af19965d5eed3a74c73e961ac292f5d1de75a"
+      },
+      {
+        "date": "2026-10-10",
+        "reviewer": "Independent source-only MCP/frontend Worker type-split reviewer (corrective follow-up)",
+        "reviewer_task": "/root/source_only_review",
+        "reviewed_source_commit": "43742937dd0dc1097e4998dd862488edf4e08de4",
+        "report": "apps/backend/MCP_WORKER_TYPECHECK_WORKFLOW_REVIEW.md",
+        "report_sha256": "81cf034d83ecf5e4650eb25e3080ea6b63d0ad8311c30792ad852383590d43f0",
+        "scope": "Corrective source/workflow update: restore the frontend package's pinned baseline bytes and run the composed Worker typecheck in the MCP workflow. No renewed strategy, numerical, or saved-data approval.",
+        "blocking_findings": 0,
+        "before_content_sha256": "0bf4a3ac6ce0f9ba88651ebe889af19965d5eed3a74c73e961ac292f5d1de75a",
+        "source_identity": {
+          "source_records_before": 195,
+          "source_records_after": 195,
+          "modified": [
+            "apps/frontend/package.json"
+          ],
+          "added": [],
+          "removed": [],
+          "unchanged": 194,
+          "previous": {
+            "path": "apps/frontend/package.json",
+            "bytes": 2585,
+            "sha256": "e758dd947c258287bc5b334e55e733b82f5e61de9a3c5660f16d362aea8ce981"
+          },
+          "current": {
+            "path": "apps/frontend/package.json",
+            "bytes": 2514,
+            "sha256": "7aa07c287011bd5c2f303680bc6f3fa07203ddb7692ed53b38b8de0907222696"
+          }
+        },
+        "verification": {
+          "strict_mw3_gate": "The two exact-head reviewed-data jobs on 43742937 failed closed on the changed package.json source identity.",
+          "correction": "Restore package.json to exact development bytes; run npx tsc --project ../frontend/tsconfig.worker.json --noEmit from apps/mcp after npm ci --ignore-scripts.",
+          "source_graph": "The Stage 2/3 receipt source rows do not include verify-mcp.yml or the frontend tsconfig files; deploy-worker.yml MCP dependency-install renewal is retained.",
+          "exact_head_ci": "Pending on the corrected PR head."
+        },
+        "verified_unchanged": {
+          "artifact_records": 1888,
+          "artifact_bytes": 79002248,
+          "archive": {
+            "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+            "bytes": 1747857,
+            "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a"
+          },
+          "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+          "counts": {
+            "catalog": 3115,
+            "saved": 1611,
+            "unreachable": 1504,
+            "hands": 272259
+          },
+          "prior_review_history_preserved": true
+        },
+        "limitations": "Source-only correction. Exact-head Actions validation is pending; no generation, D1 operation, deployment, merge, or production configuration change."
+      },
+      {
+        "date": "2026-10-10",
+        "reviewer": "MCP composed Worker typecheck integration follow-up",
+        "reviewer_task": "/root/source_only_review",
+        "reviewed_source_commit": "bf087548172176c849958c06202299e39b446483",
+        "report": "apps/backend/MCP_WORKER_TYPECHECK_JSON_BOUNDARY_REVIEW.md",
+        "report_sha256": "56c9da060d0cf0b233b9881bb4b565d4fffab63f67a3088ea5abc7429a62ea49",
+        "scope": "Explicit TypeScript response types at existing account and published-dataset JSON boundaries exposed by the composed Worker project. No renewed strategy, numerical, or saved-data approval.",
+        "blocking_findings": 0,
+        "before_content_sha256": "c413e9d2c057838e30601f0bb26c107ea829de2ac3336799e3e5982966fec021",
+        "source_identity": {
+          "source_records_before": 195,
+          "source_records_after": 195,
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/estimated/datasets.ts"
+          ],
+          "added": [],
+          "removed": [],
+          "unchanged": 193,
+          "modified_sources": [
+            {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7057,
+              "sha256": "09bac73e8342f54c54286626dd2afdebf3522381e4ff52abee6d473dd604b4b5",
+              "previous": {
+                "bytes": 7034,
+                "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+              }
+            },
+            {
+              "path": "apps/frontend/src/estimated/datasets.ts",
+              "bytes": 5438,
+              "sha256": "8f3601317afddead6aeef71364c96cf86c8324d8bba8ca3bd19ba8806e72b453",
+              "previous": {
+                "bytes": 5397,
+                "sha256": "dd3224feae502272ded066a636760bf05b4f62d5d865ff5a802bf6ac68b3a216"
+              }
+            }
+          ]
+        },
+        "verification": {
+          "worker_import_graph": "The composed Worker project reaches browser input modules, so its tsconfig includes DOM declarations alongside Cloudflare Worker types.",
+          "json_boundaries": "The existing account path map and published dataset-index envelope are now explicit; only TypeScript assertions changed.",
+          "previous_head": "On bf087548, MCP-local typecheck passed and the Worker project reported only these two unknown-response type errors.",
+          "exact_head_ci": "Pending on the corrected PR head."
+        },
+        "verified_unchanged": {
+          "artifact_records": 1888,
+          "artifact_bytes": 79002248,
+          "archive": {
+            "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+            "bytes": 1747857,
+            "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a"
+          },
+          "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+          "counts": {
+            "catalog": 3115,
+            "saved": 1611,
+            "unreachable": 1504,
+            "hands": 272259
+          },
+          "prior_review_history_preserved": true
+        },
+        "limitations": "Type-only source correction. Exact-head Actions validation pending; no generation, D1 operation, deployment, merge, or production configuration change."
       }
     ],
     "copy_amendments": [
@@ -10300,8 +10537,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 17820,
-      "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
+      "bytes": 18213,
+      "sha256": "3a9243cb6d964fb0201a5d51c6bd31a65c3d4352dea59e3a6d07345d3dcb7df9"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -10855,8 +11092,8 @@
     },
     {
       "path": "apps/frontend/src/account/session.ts",
-      "bytes": 9937,
-      "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+      "bytes": 9982,
+      "sha256": "ca7bab94b076851ecc34f1b6c33ecbb9d3bdad2b64434c569917e68412709ec1"
     },
     {
       "path": "apps/frontend/src/agent/agent-history-codec.ts",
@@ -10965,8 +11202,8 @@
     },
     {
       "path": "apps/frontend/src/estimated/datasets.ts",
-      "bytes": 5397,
-      "sha256": "dd3224feae502272ded066a636760bf05b4f62d5d865ff5a802bf6ac68b3a216"
+      "bytes": 5438,
+      "sha256": "8f3601317afddead6aeef71364c96cf86c8324d8bba8ca3bd19ba8806e72b453"
     },
     {
       "path": "apps/frontend/src/estimated/english-reasons.ts",
@@ -11274,7 +11511,7 @@
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
     }
   ],
-  "content_sha256": "05d0ef955bf4cce619e9fd7de4377519779458e90bdb080ec99526d7c650e439",
+  "content_sha256": "a69bf492c69771604c82fa38b5284c7560c27f864034cb631683a3d823867c89",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -11367,5 +11604,57 @@
         "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53"
       }
     }
-  ]
+  ],
+  "pr173_source_context_renewal": {
+    "schema_version": 1,
+    "status": "source-context-preparation-pending-independent-final-byte-review",
+    "scope": "Bounded source-only metadata repair for the two independently reviewed TypeScript assertions. Historical numerical acceptance, authorship, reviewer identities, evidence, warnings and limitations remain unchanged. No new numerical or strategy-quality approval is asserted.",
+    "source_commit": "eb5f875a7b25beb95cab461adcfb805fb6a53d06",
+    "source_tree": "95127a20748792b60bb073eea9c58959dbc483e7",
+    "independent_source_review": {
+      "path": "docs/qa/pr173-source-only-review/mcp-type-boundary-review-eb5f875a.json",
+      "bytes": 6361,
+      "sha256": "0be23b91a4c57390d885b7585d1133babd47c8a05b6e674a0939dccf210da244",
+      "reviewer": {
+        "task": "/root/review_mcp_api_integration",
+        "provider": "OpenAI",
+        "model": "Runtime model identifier not exposed; no numerical-reviewer identity claimed",
+        "independence": "Separate read-only reviewer; did not author candidate or modify GitHub, manifests, receipts, SQL or production."
+      }
+    },
+    "independent_inventory": {
+      "path": "docs/qa/pr173-source-only-review/mcp-type-boundary-inventory-eb5f875a.json",
+      "bytes": 59204,
+      "sha256": "5807adf3603eccd7f18d9d8ff4da93d2be0cf2d8979f3d14a7c0fcf4a3d3b0a9"
+    },
+    "prior_receipt": {
+      "commit": "eb5f875a7b25beb95cab461adcfb805fb6a53d06",
+      "path": "configs/multiway-preflop-stage2.review.json",
+      "bytes": 555560,
+      "sha256": "d8cc7679c07f2591bf029af8d6ec710f965583cf8899155da67bfc9cb710b124"
+    },
+    "before_content_sha256": "47d025d526ef60c43aacbb826e4d980fa9fe59e9ddc92d050e8ea60fcc43a434",
+    "after_content_sha256": "a69bf492c69771604c82fa38b5284c7560c27f864034cb631683a3d823867c89",
+    "changed_source_records": [
+      {
+        "previous": {
+          "path": "apps/frontend/src/account/session.ts",
+          "bytes": 9982,
+          "sha256": "e7ca942577c3204bb008f5ead63a05f98b43eb45966edd7747f6f334a839bfc9"
+        },
+        "current": {
+          "path": "apps/frontend/src/account/session.ts",
+          "bytes": 9982,
+          "sha256": "ca7bab94b076851ecc34f1b6c33ecbb9d3bdad2b64434c569917e68412709ec1"
+        }
+      }
+    ],
+    "verification_scope": "Exact current UTF-8 file bytes and official unchanged source collectors; every retained current source/input record is checked against the actual committed source tree. Historical artifact/archive records are conserved, not regenerated or freshly numerically approved.",
+    "limitations": [
+      "Archives retain their exact committed Git/LFS-pointer identities; this cloud work did not download or decode LFS archive payloads.",
+      "No numerical generation, numerical reapproval, database execution, production change or verifier modification.",
+      "Full official restoration and strict delivery verification remain required through exact-head CI."
+    ],
+    "corrected_record_note": "The previous receipt contained an incorrect SHA-256 for apps/frontend/src/account/session.ts. Its current committed 9982-byte body hashes to ca7bab94b076851ecc34f1b6c33ecbb9d3bdad2b64434c569917e68412709ec1. The prior receipt remains retrievable at source_commit; prior review history is retained unchanged."
+  }
 }

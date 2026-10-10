@@ -1,0 +1,287 @@
+{
+  "head": "eb5f875a7b25beb95cab461adcfb805fb6a53d06",
+  "source_tree": "95127a20748792b60bb073eea9c58959dbc483e7",
+  "stage2": {
+    "source_count": 196,
+    "changed": [
+      {
+        "previous": {
+          "path": "apps/frontend/src/account/session.ts",
+          "bytes": 9982,
+          "sha256": "e7ca942577c3204bb008f5ead63a05f98b43eb45966edd7747f6f334a839bfc9"
+        },
+        "current": {
+          "path": "apps/frontend/src/account/session.ts",
+          "bytes": 9982,
+          "sha256": "ca7bab94b076851ecc34f1b6c33ecbb9d3bdad2b64434c569917e68412709ec1"
+        }
+      }
+    ],
+    "content_sha256": "a69bf492c69771604c82fa38b5284c7560c27f864034cb631683a3d823867c89",
+    "artifacts_preserved": 1888,
+    "archive_record_preserved": true
+  },
+  "stage3": {
+    "source_count": 100,
+    "changed": [
+      {
+        "previous": {
+          "path": "apps/frontend/src/account/session.ts",
+          "bytes": 9982,
+          "sha256": "e7ca942577c3204bb008f5ead63a05f98b43eb45966edd7747f6f334a839bfc9"
+        },
+        "current": {
+          "path": "apps/frontend/src/account/session.ts",
+          "bytes": 9982,
+          "sha256": "ca7bab94b076851ecc34f1b6c33ecbb9d3bdad2b64434c569917e68412709ec1"
+        }
+      },
+      {
+        "previous": {
+          "path": "configs/multiway-preflop-stage2.review.json",
+          "bytes": 555560,
+          "sha256": "801d0f810cbbbf96936a66306297d43fc47be46a83ae1e9ae453cac03d52b47b"
+        },
+        "current": {
+          "path": "configs/multiway-preflop-stage2.review.json",
+          "bytes": 558879,
+          "sha256": "6baa73d4a447f11c080f1c4f5af5ec77915c1bde09dc48504b1f86ef2251888d"
+        }
+      }
+    ],
+    "content_sha256": "e2382cb40ebf5f5cc91ee860cca8942bc08e5fc52f1816878abc193e8a84ed43",
+    "artifacts_preserved": 1805,
+    "archive_record_preserved": true
+  },
+  "mw3": [
+    {
+      "spot": "CO_open_BTN_call_BB_call",
+      "source_count": 137,
+      "changed": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/estimated/datasets.ts"
+      ],
+      "manifest_sha256": "92b2ffc3b59b64b7f1c043d7d778ac07b3b6288fc24ced17757e15f7ecb29dc3",
+      "receipt_sha256": "33fd200842da324803ba45526683e0ae3e83436e32fcf53d3defe21383f57fb0",
+      "sql_sha256": "f43dcc4935e67d904e04340b2dbfe37f94a7dfb9b1b324350b63c5b72924f391",
+      "sql_bytes": 1591059,
+      "only_sql_line_2_changed": true,
+      "all_other_manifest_and_receipt_fields_preserved": true
+    },
+    {
+      "spot": "CO_open_BTN_call_SB_call",
+      "source_count": 138,
+      "changed": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/estimated/datasets.ts"
+      ],
+      "manifest_sha256": "be76ddbf925e0fdc888f8d5d5fe4f391d078c312c709915abedbbb11b2170121",
+      "receipt_sha256": "10f005c5a0bd02ffdc492bcf56cfe609ce336038d2eef5344f63f64b8b9902e5",
+      "sql_sha256": "11d7cfa9e757eeb258c2c55df7785f62df19012129324c94c00720f3e3f11cfa",
+      "sql_bytes": 1589911,
+      "only_sql_line_2_changed": true,
+      "all_other_manifest_and_receipt_fields_preserved": true
+    },
+    {
+      "spot": "HJ_open_BTN_call_BB_call",
+      "source_count": 138,
+      "changed": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/estimated/datasets.ts"
+      ],
+      "manifest_sha256": "989d247c83bd6b153291eeaaff3360ea5e948190e42f108fadf8d31e32978f5c",
+      "receipt_sha256": "869a580ea879645c3e952da4f913953e2e5a2435647e2f46cfe37b4b0a402d62",
+      "sql_sha256": "db09517ba7a0ef8dcb728bec92cb8cc9a162e59ace3a1eecd4ddd34b2040f32f",
+      "sql_bytes": 1614488,
+      "only_sql_line_2_changed": true,
+      "all_other_manifest_and_receipt_fields_preserved": true
+    },
+    {
+      "spot": "HJ_open_BTN_call_SB_call",
+      "source_count": 138,
+      "changed": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/estimated/datasets.ts"
+      ],
+      "manifest_sha256": "1a2afa5557c6e2e6f81ebf2318fafc5b37165e1fa5af406189688d7ffaf6666f",
+      "receipt_sha256": "8f0704f7c97ddb9b136978347b440d575d3c13b87f86e08ed64407f0e1ec4092",
+      "sql_sha256": "40ac29c8dd5cdd86a809b8ca5eb265a72b1213e05b0b59c2968f87bfd6bc1a28",
+      "sql_bytes": 1576072,
+      "only_sql_line_2_changed": true,
+      "all_other_manifest_and_receipt_fields_preserved": true
+    },
+    {
+      "spot": "HJ_open_CO_call_BB_call",
+      "source_count": 138,
+      "changed": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/estimated/datasets.ts"
+      ],
+      "manifest_sha256": "b659377c49c0ac70f09d093e7b06cb248c179ad7a029036412e7ca26bd748a13",
+      "receipt_sha256": "f57b74df1254d9e627fc2acd2399311e8422041013034b6372848b55cea5b441",
+      "sql_sha256": "61fc47a544cbdb65633ba2ba24fa8f7e51ba9d004e3fdb17aa1fd500b41cbe77",
+      "sql_bytes": 1606790,
+      "only_sql_line_2_changed": true,
+      "all_other_manifest_and_receipt_fields_preserved": true
+    },
+    {
+      "spot": "HJ_open_CO_call_BTN_call",
+      "source_count": 138,
+      "changed": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/estimated/datasets.ts"
+      ],
+      "manifest_sha256": "f48d33b33a3dd96de305e14bdf4c029fa7f8b773744028304994d987c161db4b",
+      "receipt_sha256": "4004c71fadf41425892ece5a98fa08111804e032c4d25da142dd8d4f08ab3c47",
+      "sql_sha256": "4f2e07b76eaab99d6ac1304a8f3e968628d825e594f199c0fc1b380ca5de2574",
+      "sql_bytes": 1526887,
+      "only_sql_line_2_changed": true,
+      "all_other_manifest_and_receipt_fields_preserved": true
+    },
+    {
+      "spot": "HJ_open_CO_call_SB_call",
+      "source_count": 138,
+      "changed": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/estimated/datasets.ts"
+      ],
+      "manifest_sha256": "c558a6330e79b6ac482821b1f93c3cd8ae21e07387a1203619161528faa4ee38",
+      "receipt_sha256": "4cf74564b3f200af79c84adeee31520649cab09155b0ff7bb064b59c47017752",
+      "sql_sha256": "abf95e26d837a1d010d1f134282c831483c8c39a3d620dce384446d08cde352c",
+      "sql_bytes": 1575504,
+      "only_sql_line_2_changed": true,
+      "all_other_manifest_and_receipt_fields_preserved": true
+    },
+    {
+      "spot": "UTG_open_BTN_call_BB_call",
+      "source_count": 138,
+      "changed": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/estimated/datasets.ts"
+      ],
+      "manifest_sha256": "dcd96f255dbe5c82fda8e2bb5678036986d3d4ffdd9b6f4c11b3b7f2a6fee94c",
+      "receipt_sha256": "5b06f75d769879988c44b17ac3c542efaec7bdc5ad8eee7ccec9c4e97f32afdd",
+      "sql_sha256": "0e5fca27836c1b42c43a34fe3b464bcddcdc78216916a6e3f758932a5af6c03b",
+      "sql_bytes": 1609439,
+      "only_sql_line_2_changed": true,
+      "all_other_manifest_and_receipt_fields_preserved": true
+    },
+    {
+      "spot": "UTG_open_BTN_call_SB_call",
+      "source_count": 138,
+      "changed": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/estimated/datasets.ts"
+      ],
+      "manifest_sha256": "f61b5d9ab82a6dbd0ec61be72efd085a0dfb1162806bb6a034b1855513fa8ae5",
+      "receipt_sha256": "da4ce28cde5c1a17222dc0174b156f0165f799db05c1c7ab88526ff4c0bb48c2",
+      "sql_sha256": "fa31094a0293d7a7b34871fa5bcbb9451e0e23a8e543503077b724adb85c3432",
+      "sql_bytes": 1574637,
+      "only_sql_line_2_changed": true,
+      "all_other_manifest_and_receipt_fields_preserved": true
+    },
+    {
+      "spot": "UTG_open_CO_call_BB_call",
+      "source_count": 138,
+      "changed": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/estimated/datasets.ts"
+      ],
+      "manifest_sha256": "af882995b57030ae238cde7dab5ff587d9f1db3ffb2377a5fb2b7334f9a2531d",
+      "receipt_sha256": "3bdf6beb1a5b776f7f24cfd51a82132588a02b80ee94eb144082295209e1121a",
+      "sql_sha256": "d23a4369d093053096294ef97d4983c694ea7c7cdc95617b6856c40d0622569d",
+      "sql_bytes": 1605208,
+      "only_sql_line_2_changed": true,
+      "all_other_manifest_and_receipt_fields_preserved": true
+    },
+    {
+      "spot": "UTG_open_CO_call_BTN_call",
+      "source_count": 138,
+      "changed": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/estimated/datasets.ts"
+      ],
+      "manifest_sha256": "730c03b4e4e8e7ddea01ef2a97094caadb5bc98f2629ebd1dadd3ab6851a70ce",
+      "receipt_sha256": "c529498a9bf27096148753d3e7a6a81f7209d33d38712a599a2e79f1aebbe087",
+      "sql_sha256": "5937417c7a83acee2bbe1a5075396fbb7550ca1898100a5d7e6184fbcd149e2e",
+      "sql_bytes": 1525883,
+      "only_sql_line_2_changed": true,
+      "all_other_manifest_and_receipt_fields_preserved": true
+    },
+    {
+      "spot": "UTG_open_CO_call_SB_call",
+      "source_count": 138,
+      "changed": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/estimated/datasets.ts"
+      ],
+      "manifest_sha256": "091bcc0aabe5662b750cc0f495a8ed3d7468df4fb5c67c307ad35b5d5358fcd8",
+      "receipt_sha256": "ae6d17940115cc7012ba786a90cc02f23cf0e2c571c09cca6dcdaeb512cd2f4c",
+      "sql_sha256": "2da6bcfb5818ed49f7b6a3339d9e22a3e9410bb69a3a456735b90aa57ea78ed0",
+      "sql_bytes": 1568069,
+      "only_sql_line_2_changed": true,
+      "all_other_manifest_and_receipt_fields_preserved": true
+    },
+    {
+      "spot": "UTG_open_HJ_call_BB_call",
+      "source_count": 138,
+      "changed": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/estimated/datasets.ts"
+      ],
+      "manifest_sha256": "35e98a6f0bedbfbcad368882eca36c570f57c9e88fc0b52bf92c7464cabf9438",
+      "receipt_sha256": "d303bdefc870f628ccca9fff1008f455b0c745a125f8973120237e995728091a",
+      "sql_sha256": "4a166cd9d12d7bedb5348132996ff1d1224e8a326c09305fdb8bc69785ba632e",
+      "sql_bytes": 1602292,
+      "only_sql_line_2_changed": true,
+      "all_other_manifest_and_receipt_fields_preserved": true
+    },
+    {
+      "spot": "UTG_open_HJ_call_BTN_call",
+      "source_count": 138,
+      "changed": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/estimated/datasets.ts"
+      ],
+      "manifest_sha256": "7c315c4d198f1aa246da800b1c0fc1ae057fb503bb6019b71b5bf43fb80d82be",
+      "receipt_sha256": "ff8066b8cfabbd2545058371177207fe34e52720c9f6fa8660c2262bbbf220ba",
+      "sql_sha256": "0904827ee248b986d9aef16572da28377328b131fd02898380517ccefe5e85b1",
+      "sql_bytes": 1524093,
+      "only_sql_line_2_changed": true,
+      "all_other_manifest_and_receipt_fields_preserved": true
+    },
+    {
+      "spot": "UTG_open_HJ_call_CO_call",
+      "source_count": 138,
+      "changed": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/estimated/datasets.ts"
+      ],
+      "manifest_sha256": "8da3f694cb528f1729b8fe79007ec487b877f6481f37f824bb82a058c9771170",
+      "receipt_sha256": "27b4ba862bff03eea3de357326a34cd3a22cb65911f860ccd3e91e4fafb0be9c",
+      "sql_sha256": "93145b1b58c6a876faf01120014345800763ccb4b1bb2e78c18a540dce5d41b0",
+      "sql_bytes": 1519315,
+      "only_sql_line_2_changed": true,
+      "all_other_manifest_and_receipt_fields_preserved": true
+    },
+    {
+      "spot": "UTG_open_HJ_call_SB_call",
+      "source_count": 138,
+      "changed": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/estimated/datasets.ts"
+      ],
+      "manifest_sha256": "903557a2a547d27f58b9e941e5f9337bf175363d24f5e02617af6cf43740d9e1",
+      "receipt_sha256": "0962e2e2ac52c7c27af77b4a05d618614952bf5452feb2f4d41e3ec12ee98657",
+      "sql_sha256": "913395c576b3302f40707b945da4d0cf5d023fe07e19f142ccda7fae68b875f1",
+      "sql_bytes": 1562974,
+      "only_sql_line_2_changed": true,
+      "all_other_manifest_and_receipt_fields_preserved": true
+    }
+  ],
+  "limits": [
+    "Archives retain their exact committed Git/LFS-pointer identities; this cloud work did not download or decode LFS archive payloads.",
+    "No numerical generation, numerical reapproval, database execution, production change or verifier modification.",
+    "Full official restoration and strict delivery verification remain required through exact-head CI."
+  ]
+}

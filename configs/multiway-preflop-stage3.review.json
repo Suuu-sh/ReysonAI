@@ -9035,8 +9035,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 17820,
-      "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
+      "bytes": 18213,
+      "sha256": "3a9243cb6d964fb0201a5d51c6bd31a65c3d4352dea59e3a6d07345d3dcb7df9"
     },
     {
       "path": ".gitignore",
@@ -9195,8 +9195,8 @@
     },
     {
       "path": "apps/frontend/src/account/session.ts",
-      "bytes": 9937,
-      "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+      "bytes": 9982,
+      "sha256": "ca7bab94b076851ecc34f1b6c33ecbb9d3bdad2b64434c569917e68412709ec1"
     },
     {
       "path": "apps/frontend/src/agent/agent-history-codec.ts",
@@ -9280,8 +9280,8 @@
     },
     {
       "path": "apps/frontend/src/estimated/datasets.ts",
-      "bytes": 5397,
-      "sha256": "dd3224feae502272ded066a636760bf05b4f62d5d865ff5a802bf6ac68b3a216"
+      "bytes": 5438,
+      "sha256": "8f3601317afddead6aeef71364c96cf86c8324d8bba8ca3bd19ba8806e72b453"
     },
     {
       "path": "apps/frontend/src/estimated/english-reasons.ts",
@@ -9515,8 +9515,8 @@
     },
     {
       "path": "configs/multiway-preflop-stage2.review.json",
-      "bytes": 543098,
-      "sha256": "22ad5f2a070ff9211dcae84d82cd01e1be9922c235a55843f52e70cc45103ce3"
+      "bytes": 558879,
+      "sha256": "6baa73d4a447f11c080f1c4f5af5ec77915c1bde09dc48504b1f86ef2251888d"
     },
     {
       "path": "configs/multiway-preflop-stage3.json",
@@ -9535,7 +9535,7 @@
     "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
     "format": "ustar+gzip-stage3-content-v1"
   },
-  "content_sha256": "6c5aea1b8fb570108d41fdad8eebd37bb3952a0911d27db6bfff94edf7a76399",
+  "content_sha256": "e2382cb40ebf5f5cc91ee860cca8942bc08e5fc52f1816878abc193e8a84ed43",
   "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
   "counts": {
     "catalog": 16132,
@@ -10489,6 +10489,378 @@
         }
       },
       "limitations": "No numerical regeneration, new strategy-quality approval, full acceptance, merge or deployment is claimed. Independent review of the final exact head and CI remain pending."
+    },
+    "mcp_api_consolidation_source_renewal": {
+      "date": "2026-10-10",
+      "reviewer": "Independent source-only MCP/API consolidation reviewer",
+      "reviewer_task": "/root/source_only_review",
+      "reviewed_source_commit": "9c69754f46061e5ccc8dea281c6770402cc94f98",
+      "renewal_predecessor_head": "e1def93a19dfacd48e774e8c94e02f9b19042ec3",
+      "report": "apps/backend/MCP_CONSOLIDATION_SOURCE_REVIEW.md",
+      "report_sha256": "e33fba813b402da01a127b6edbb99598cdd2d8ad594d1db9e475a8a17efc140c",
+      "scope": "Source-only binding renewal for the MCP/API consolidation workflow and the resulting Stage 2 receipt. No renewed strategy-quality, numerical, saved-data, production, or deployment approval.",
+      "before_content_sha256": "4bb4429ff7e4f5c7c158cfcef93e31b75cee12c2c871e11e53765716992d9ab5",
+      "after_content_sha256": "279b4948b3a5c5059c8d928051a2a25be20b14ed3f77de6ae68997f7762284d3",
+      "source_records_before": 99,
+      "source_records_after": 99,
+      "changes": {
+        "modified": [
+          ".github/workflows/deploy-worker.yml",
+          "configs/multiway-preflop-stage2.review.json"
+        ],
+        "added": [],
+        "removed": [],
+        "unchanged": 97
+      },
+      "source_identity": {
+        "modified": [
+          {
+            "path": ".github/workflows/deploy-worker.yml",
+            "previous": {
+              "bytes": 17820,
+              "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
+            },
+            "current": {
+              "bytes": 18213,
+              "sha256": "3a9243cb6d964fb0201a5d51c6bd31a65c3d4352dea59e3a6d07345d3dcb7df9"
+            }
+          },
+          {
+            "path": "configs/multiway-preflop-stage2.review.json",
+            "previous": {
+              "bytes": 540232,
+              "sha256": "7326c8a23bffca9bdc4c67167691a0f4bdf17d527b519a4b105ada8ce91ffd15"
+            },
+            "current": {
+              "bytes": 543395,
+              "sha256": "f06855ce9b39960d5b86c57d9e4715974c2412a215ba5147484b37b96ea6e6fd"
+            }
+          }
+        ]
+      },
+      "verified_unchanged": {
+        "artifact_records": 1805,
+        "artifact_records_unchanged": true,
+        "archive": {
+          "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+          "bytes": 2436451,
+          "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+          "format": "ustar+gzip-stage3-content-v1"
+        },
+        "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+        "source_fingerprint_unchanged": true,
+        "counts": {
+          "catalog": 16132,
+          "saved": 1801,
+          "unreachable": 5621,
+          "rare": 8710,
+          "hands": 304369
+        },
+        "counts_unchanged": true
+      },
+      "limitations": "Mechanical source-record renewal only. Existing artifact records, archive, counts, fingerprint, review history, and data were preserved; no generation, publication, D1 operation, merge, production configuration change, or deployment."
+    },
+    "frontend_worker_typecheck_source_renewal": {
+      "date": "2026-10-10",
+      "reviewer": "Independent source-only MCP/frontend Worker type-split reviewer",
+      "reviewer_task": "/root/source_only_review",
+      "reviewed_source_commit": "da27207eae11c0d33ca89a8c5f12710b6c3fb37a",
+      "report": "apps/backend/MCP_FRONTEND_TYPECHECK_SOURCE_REVIEW.md",
+      "report_sha256": "4e98908aee33d3ed975ac3b884c25393a9f2a5d7d69bd93cefa2067caa602df8",
+      "scope": "Stage 3 source-binding renewal for frontend/Worker TypeScript typecheck wiring and the dependent Stage 2 review receipt only. No renewed strategy-quality, numerical, saved-data, production, merge, or deployment approval.",
+      "before_content_sha256": "279b4948b3a5c5059c8d928051a2a25be20b14ed3f77de6ae68997f7762284d3",
+      "source_records_before": 99,
+      "source_records_after": 99,
+      "changes": {
+        "modified": [
+          "apps/frontend/package.json",
+          "configs/multiway-preflop-stage2.review.json"
+        ],
+        "added": [],
+        "removed": [],
+        "unchanged": 97
+      },
+      "source_identity": {
+        "modified": [
+          {
+            "path": "apps/frontend/package.json",
+            "previous": {
+              "path": "apps/frontend/package.json",
+              "bytes": 2514,
+              "sha256": "7aa07c287011bd5c2f303680bc6f3fa07203ddb7692ed53b38b8de0907222696"
+            },
+            "current": {
+              "path": "apps/frontend/package.json",
+              "bytes": 2585,
+              "sha256": "e758dd947c258287bc5b334e55e733b82f5e61de9a3c5660f16d362aea8ce981"
+            }
+          },
+          {
+            "path": "configs/multiway-preflop-stage2.review.json",
+            "previous": {
+              "path": "configs/multiway-preflop-stage2.review.json",
+              "bytes": 543395,
+              "sha256": "f06855ce9b39960d5b86c57d9e4715974c2412a215ba5147484b37b96ea6e6fd"
+            },
+            "current": {
+              "path": "configs/multiway-preflop-stage2.review.json",
+              "bytes": 546484,
+              "sha256": "80c71b43e39b875f24844a053dd9a277b6573339c52fcafd889af570df4bd0b9"
+            }
+          }
+        ]
+      },
+      "verification": {
+        "browser_project": "tsconfig.json includes only frontend src/**/*.ts(x) and vite/client types.",
+        "worker_project": "tsconfig.worker.json explicitly sets lib to ES2022 and includes generated Worker and pinned Cloudflare Worker declarations.",
+        "package_typecheck": "Runs browser, Worker, and runtime TypeScript projects sequentially.",
+        "stage2_dependency": "Stage 3 source record now binds the renewed Stage 2 receipt by exact byte count and SHA-256.",
+        "reviewer_compiler_check": "Not run by independent source-only reviewer; exact-head Actions validation follows receipt renewal."
+      },
+      "verified_unchanged": {
+        "stage3_artifacts": 1805,
+        "archive": {
+          "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+          "bytes": 2436451,
+          "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b"
+        },
+        "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+        "counts": {
+          "catalog": 16132,
+          "saved": 1801,
+          "unreachable": 5621,
+          "rare": 8710,
+          "hands": 304369
+        },
+        "prior_review_history_preserved": true
+      },
+      "limitations": "Mechanical source-record renewal only. No strategy generation, policy/data edit, D1 operation, production configuration change, deployment, or merge.",
+      "after_content_sha256": "47dfd3d4bcff3a31cbfbbcdf2782db289099e4a0dc9f314b919dc2672c24cb05"
+    },
+    "mcp_worker_typecheck_workflow_renewal": {
+      "date": "2026-10-10",
+      "reviewer": "Independent source-only MCP/frontend Worker type-split reviewer (corrective follow-up)",
+      "reviewer_task": "/root/source_only_review",
+      "reviewed_source_commit": "43742937dd0dc1097e4998dd862488edf4e08de4",
+      "report": "apps/backend/MCP_WORKER_TYPECHECK_WORKFLOW_REVIEW.md",
+      "report_sha256": "81cf034d83ecf5e4650eb25e3080ea6b63d0ad8311c30792ad852383590d43f0",
+      "scope": "Stage 3 source-binding correction for the frontend Worker typecheck relocation and dependent Stage 2 receipt update only. No renewed strategy, numerical, or saved-data approval.",
+      "before_content_sha256": "47dfd3d4bcff3a31cbfbbcdf2782db289099e4a0dc9f314b919dc2672c24cb05",
+      "source_records_before": 99,
+      "source_records_after": 99,
+      "changes": {
+        "modified": [
+          "apps/frontend/package.json",
+          "configs/multiway-preflop-stage2.review.json"
+        ],
+        "added": [],
+        "removed": [],
+        "unchanged": 97
+      },
+      "source_identity": {
+        "modified": [
+          {
+            "path": "apps/frontend/package.json",
+            "previous": {
+              "bytes": 2585,
+              "sha256": "e758dd947c258287bc5b334e55e733b82f5e61de9a3c5660f16d362aea8ce981"
+            },
+            "current": {
+              "path": "apps/frontend/package.json",
+              "bytes": 2514,
+              "sha256": "7aa07c287011bd5c2f303680bc6f3fa07203ddb7692ed53b38b8de0907222696"
+            }
+          },
+          {
+            "path": "configs/multiway-preflop-stage2.review.json",
+            "previous": {
+              "bytes": 546484,
+              "sha256": "80c71b43e39b875f24844a053dd9a277b6573339c52fcafd889af570df4bd0b9"
+            },
+            "current": {
+              "path": "configs/multiway-preflop-stage2.review.json",
+              "bytes": 549397,
+              "sha256": "36339a65b3adeec6212a8e974d180515fac9e8e645aa51970da6ab1536c3b1ae"
+            }
+          }
+        ]
+      },
+      "verification": {
+        "worker_typecheck": "The MCP workflow runs the Worker tsconfig project from apps/mcp after installing MCP-local TypeScript and Worker types.",
+        "stage2_binding": "The Stage 3 source record binds the corrected Stage 2 receipt by exact byte count and SHA-256.",
+        "exact_head_ci": "Pending on the corrected PR head."
+      },
+      "verified_unchanged": {
+        "stage3_artifacts": 1805,
+        "archive": {
+          "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+          "bytes": 2436451,
+          "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b"
+        },
+        "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+        "counts": {
+          "catalog": 16132,
+          "saved": 1801,
+          "unreachable": 5621,
+          "rare": 8710,
+          "hands": 304369
+        },
+        "prior_review_history_preserved": true
+      },
+      "limitations": "Mechanical Stage 3 source-record correction only. Exact-head CI pending; no generation, D1 operation, deployment, merge, or production configuration change."
+    },
+    "mcp_worker_typecheck_json_boundary_renewal": {
+      "date": "2026-10-10",
+      "reviewer": "MCP composed Worker typecheck integration follow-up",
+      "reviewer_task": "/root/source_only_review",
+      "reviewed_source_commit": "bf087548172176c849958c06202299e39b446483",
+      "report": "apps/backend/MCP_WORKER_TYPECHECK_JSON_BOUNDARY_REVIEW.md",
+      "report_sha256": "56c9da060d0cf0b233b9881bb4b565d4fffab63f67a3088ea5abc7429a62ea49",
+      "scope": "Stage 3 source-binding update for two explicit JSON response types and the dependent Stage 2 receipt. No renewed strategy, numerical, or saved-data approval.",
+      "before_content_sha256": "73c6937adef921c8cf0f0c2383845e1c31add0da6bc230ce14351f20bf54c93e",
+      "source_records_before": 99,
+      "source_records_after": 99,
+      "changes": {
+        "modified": [
+          "apps/frontend/src/account/session.ts",
+          "apps/frontend/src/estimated/datasets.ts",
+          "configs/multiway-preflop-stage2.review.json"
+        ],
+        "added": [],
+        "removed": [],
+        "unchanged": 96
+      },
+      "source_identity": {
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "previous": {
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "current": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7057,
+              "sha256": "09bac73e8342f54c54286626dd2afdebf3522381e4ff52abee6d473dd604b4b5"
+            }
+          },
+          {
+            "path": "apps/frontend/src/estimated/datasets.ts",
+            "previous": {
+              "bytes": 5397,
+              "sha256": "dd3224feae502272ded066a636760bf05b4f62d5d865ff5a802bf6ac68b3a216"
+            },
+            "current": {
+              "path": "apps/frontend/src/estimated/datasets.ts",
+              "bytes": 5438,
+              "sha256": "8f3601317afddead6aeef71364c96cf86c8324d8bba8ca3bd19ba8806e72b453"
+            }
+          },
+          {
+            "path": "configs/multiway-preflop-stage2.review.json",
+            "previous": {
+              "bytes": 549397,
+              "sha256": "36339a65b3adeec6212a8e974d180515fac9e8e645aa51970da6ab1536c3b1ae"
+            },
+            "current": {
+              "path": "configs/multiway-preflop-stage2.review.json",
+              "bytes": 552694,
+              "sha256": "c1ddd7b1769a3d28412ae41757f5fd9821159c8e5a7af249eb39022003f72d51"
+            }
+          }
+        ]
+      },
+      "verification": {
+        "worker_typecheck": "MCP-local TypeScript and Worker tsconfig checks remain separate; response assertions preserve existing API response paths.",
+        "stage2_binding": "Stage 3 binds the updated Stage 2 receipt by exact byte count and SHA-256.",
+        "exact_head_ci": "Pending on the corrected PR head."
+      },
+      "verified_unchanged": {
+        "stage3_artifacts": 1805,
+        "archive": {
+          "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+          "bytes": 2436451,
+          "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b"
+        },
+        "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+        "counts": {
+          "catalog": 16132,
+          "saved": 1801,
+          "unreachable": 5621,
+          "rare": 8710,
+          "hands": 304369
+        },
+        "prior_review_history_preserved": true
+      },
+      "limitations": "Mechanical Stage 3 source-record update for type-only code edits. Exact-head CI pending; no generation, D1 operation, deployment, merge, or production configuration change."
+    }
+  },
+  "pr173_source_context_renewal": {
+    "schema_version": 1,
+    "status": "source-context-preparation-pending-independent-final-byte-review",
+    "scope": "Bounded source-only metadata repair for the two independently reviewed TypeScript assertions. Historical numerical acceptance, authorship, reviewer identities, evidence, warnings and limitations remain unchanged. No new numerical or strategy-quality approval is asserted.",
+    "source_commit": "eb5f875a7b25beb95cab461adcfb805fb6a53d06",
+    "source_tree": "95127a20748792b60bb073eea9c58959dbc483e7",
+    "independent_source_review": {
+      "path": "docs/qa/pr173-source-only-review/mcp-type-boundary-review-eb5f875a.json",
+      "bytes": 6361,
+      "sha256": "0be23b91a4c57390d885b7585d1133babd47c8a05b6e674a0939dccf210da244",
+      "reviewer": {
+        "task": "/root/review_mcp_api_integration",
+        "provider": "OpenAI",
+        "model": "Runtime model identifier not exposed; no numerical-reviewer identity claimed",
+        "independence": "Separate read-only reviewer; did not author candidate or modify GitHub, manifests, receipts, SQL or production."
+      }
+    },
+    "independent_inventory": {
+      "path": "docs/qa/pr173-source-only-review/mcp-type-boundary-inventory-eb5f875a.json",
+      "bytes": 59204,
+      "sha256": "5807adf3603eccd7f18d9d8ff4da93d2be0cf2d8979f3d14a7c0fcf4a3d3b0a9"
+    },
+    "prior_receipt": {
+      "commit": "eb5f875a7b25beb95cab461adcfb805fb6a53d06",
+      "path": "configs/multiway-preflop-stage3.review.json",
+      "bytes": 565407,
+      "sha256": "60a7693bbd3bba2c02da70c8c89aee5b22b46d4ee35d1d4d8e2575cb66e3c474"
+    },
+    "before_content_sha256": "973d192ad6753d95c101ef51e5ea97e27d28d0d4ffa45ecc377ef5fc21441e7f",
+    "after_content_sha256": "e2382cb40ebf5f5cc91ee860cca8942bc08e5fc52f1816878abc193e8a84ed43",
+    "changed_source_records": [
+      {
+        "previous": {
+          "path": "apps/frontend/src/account/session.ts",
+          "bytes": 9982,
+          "sha256": "e7ca942577c3204bb008f5ead63a05f98b43eb45966edd7747f6f334a839bfc9"
+        },
+        "current": {
+          "path": "apps/frontend/src/account/session.ts",
+          "bytes": 9982,
+          "sha256": "ca7bab94b076851ecc34f1b6c33ecbb9d3bdad2b64434c569917e68412709ec1"
+        }
+      },
+      {
+        "previous": {
+          "path": "configs/multiway-preflop-stage2.review.json",
+          "bytes": 555560,
+          "sha256": "801d0f810cbbbf96936a66306297d43fc47be46a83ae1e9ae453cac03d52b47b"
+        },
+        "current": {
+          "path": "configs/multiway-preflop-stage2.review.json",
+          "bytes": 558879,
+          "sha256": "6baa73d4a447f11c080f1c4f5af5ec77915c1bde09dc48504b1f86ef2251888d"
+        }
+      }
+    ],
+    "verification_scope": "Exact current UTF-8 file bytes and official unchanged source collectors; every retained current source/input record is checked against the actual committed source tree. Historical artifact/archive records are conserved, not regenerated or freshly numerically approved.",
+    "limitations": [
+      "Archives retain their exact committed Git/LFS-pointer identities; this cloud work did not download or decode LFS archive payloads.",
+      "No numerical generation, numerical reapproval, database execution, production change or verifier modification.",
+      "Full official restoration and strict delivery verification remain required through exact-head CI."
+    ],
+    "stage2_binding": {
+      "path": "configs/multiway-preflop-stage2.review.json",
+      "bytes": 558879,
+      "sha256": "6baa73d4a447f11c080f1c4f5af5ec77915c1bde09dc48504b1f86ef2251888d"
     }
   }
 }

@@ -1,6 +1,8 @@
-# Production handoff (not deployed)
+# Historical standalone Worker handoff (superseded)
 
-**Status:** prepared only. This file does not create resources, migrate D1, register OAuth clients, change Cloudflare routes, or deploy a Worker. `MCP_ENABLED` remains `false`; access stays `authenticated_free`.
+> This document records the original standalone-Worker design. It is superseded by [the API consolidation record](../backend/MCP_CONSOLIDATION.md): the dedicated `reysonai-mcp` Worker is currently live, and the four MCP routes currently point to it. Do not follow this document's old “not deployed” status or standalone deployment steps. The consolidation draft does not change production settings or routes.
+
+**Historical status:** this standalone Worker plan was prepared before the dedicated MCP Worker was deployed. It is retained as historical context only; the current state is recorded in [MCP_CONSOLIDATION.md](../backend/MCP_CONSOLIDATION.md).
 
 ## Configuration and observed Cloudflare state
 
