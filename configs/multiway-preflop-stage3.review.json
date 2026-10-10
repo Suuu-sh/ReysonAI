@@ -9035,8 +9035,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 17820,
-      "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
+      "bytes": 18213,
+      "sha256": "3a9243cb6d964fb0201a5d51c6bd31a65c3d4352dea59e3a6d07345d3dcb7df9"
     },
     {
       "path": ".gitignore",
@@ -9510,8 +9510,8 @@
     },
     {
       "path": "configs/multiway-preflop-stage2.review.json",
-      "bytes": 540232,
-      "sha256": "7326c8a23bffca9bdc4c67167691a0f4bdf17d527b519a4b105ada8ce91ffd15"
+      "bytes": 543395,
+      "sha256": "f06855ce9b39960d5b86c57d9e4715974c2412a215ba5147484b37b96ea6e6fd"
     },
     {
       "path": "configs/multiway-preflop-stage3.json",
@@ -9530,7 +9530,7 @@
     "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
     "format": "ustar+gzip-stage3-content-v1"
   },
-  "content_sha256": "4bb4429ff7e4f5c7c158cfcef93e31b75cee12c2c871e11e53765716992d9ab5",
+  "content_sha256": "279b4948b3a5c5059c8d928051a2a25be20b14ed3f77de6ae68997f7762284d3",
   "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
   "counts": {
     "catalog": 16132,
@@ -10431,6 +10431,76 @@
         "apps/frontend/tests/postflop-profile-state.test.mjs"
       ],
       "preservation": "Historical numerical authorship and review fields, saved artifacts, archive bytes, counts, fingerprints, inputs, accepted limitations and delivery bodies are preserved."
+    },
+    "mcp_api_consolidation_source_renewal": {
+      "date": "2026-10-10",
+      "reviewer": "Independent source-only MCP/API consolidation reviewer",
+      "reviewer_task": "/root/source_only_review",
+      "reviewed_source_commit": "9c69754f46061e5ccc8dea281c6770402cc94f98",
+      "renewal_predecessor_head": "e1def93a19dfacd48e774e8c94e02f9b19042ec3",
+      "report": "apps/backend/MCP_CONSOLIDATION_SOURCE_REVIEW.md",
+      "report_sha256": "e33fba813b402da01a127b6edbb99598cdd2d8ad594d1db9e475a8a17efc140c",
+      "scope": "Source-only binding renewal for the MCP/API consolidation workflow and the resulting Stage 2 receipt. No renewed strategy-quality, numerical, saved-data, production, or deployment approval.",
+      "before_content_sha256": "4bb4429ff7e4f5c7c158cfcef93e31b75cee12c2c871e11e53765716992d9ab5",
+      "after_content_sha256": "279b4948b3a5c5059c8d928051a2a25be20b14ed3f77de6ae68997f7762284d3",
+      "source_records_before": 99,
+      "source_records_after": 99,
+      "changes": {
+        "modified": [
+          ".github/workflows/deploy-worker.yml",
+          "configs/multiway-preflop-stage2.review.json"
+        ],
+        "added": [],
+        "removed": [],
+        "unchanged": 97
+      },
+      "source_identity": {
+        "modified": [
+          {
+            "path": ".github/workflows/deploy-worker.yml",
+            "previous": {
+              "bytes": 18213,
+              "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
+            },
+            "current": {
+              "bytes": 18213,
+              "sha256": "3a9243cb6d964fb0201a5d51c6bd31a65c3d4352dea59e3a6d07345d3dcb7df9"
+            }
+          },
+          {
+            "path": "configs/multiway-preflop-stage2.review.json",
+            "previous": {
+              "bytes": 540232,
+              "sha256": "7326c8a23bffca9bdc4c67167691a0f4bdf17d527b519a4b105ada8ce91ffd15"
+            },
+            "current": {
+              "bytes": 543395,
+              "sha256": "f06855ce9b39960d5b86c57d9e4715974c2412a215ba5147484b37b96ea6e6fd"
+            }
+          }
+        ]
+      },
+      "verified_unchanged": {
+        "artifact_records": 1805,
+        "artifact_records_unchanged": true,
+        "archive": {
+          "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+          "bytes": 2436451,
+          "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+          "format": "ustar+gzip-stage3-content-v1"
+        },
+        "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+        "source_fingerprint_unchanged": true,
+        "counts": {
+          "catalog": 16132,
+          "saved": 1801,
+          "unreachable": 5621,
+          "rare": 8710,
+          "hands": 304369
+        },
+        "counts_unchanged": true
+      },
+      "limitations": "Mechanical source-record renewal only. Existing artifact records, archive, counts, fingerprint, review history, and data were preserved; no generation, publication, D1 operation, merge, production configuration change, or deployment."
     }
   }
 }
