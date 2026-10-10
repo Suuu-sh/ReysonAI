@@ -2,6 +2,13 @@ import type { AgentHandRecord } from "../agent/agent-stats.ts";
 import { PlayingCard } from "../components/PlayingCard.tsx";
 import { ffCopy as t, ffNumber } from "./fastfold-api.ts";
 
+const handName = (category: number) => [
+  t("High card", "ハイカード", "高牌", "Carta alta"), t("One pair", "ワンペア", "一对", "Pareja"),
+  t("Two pair", "ツーペア", "两对", "Doble pareja"), t("Three of a kind", "スリーカード", "三条", "Trío"),
+  t("Straight", "ストレート", "顺子", "Escalera"), t("Flush", "フラッシュ", "同花", "Color"),
+  t("Full house", "フルハウス", "葫芦", "Full"), t("Four of a kind", "フォーカード", "四条", "Póker"),
+  t("Straight flush", "ストレートフラッシュ", "同花顺", "Escalera de color"),
+][category] ?? "—";
 const streets = ["preflop", "flop", "turn", "river"];
 const labels = () => [t("Preflop", "プリフロップ", "翻牌前", "Preflop"), t("Flop", "フロップ", "翻牌", "Flop"), t("Turn", "ターン", "转牌", "Turn"), t("River", "リバー", "河牌", "River")];
 const cards = (values: string[]) => <span className="sessions-cards">{values.map((card, index) => <PlayingCard variant="text" card={card} key={`${card}-${index}`} />)}</span>;
@@ -20,7 +27,7 @@ export function AgentHandHistory({ record }: { record: AgentHandRecord }) {
   return <section className="sessions-history">
     <h2>{t("Hand history", "ハンド履歴", "手牌历史", "Historial de manos")}{history.handNo ? ` #${history.handNo}` : ""}</h2>
     <p className="sessions-source-note">{t("Only your cards and opponents revealed at showdown are saved. Folded opponents remain hidden.", "自分のカードとショーダウンで公開された相手のカードのみ保存します。フォールドした相手のカードは非公開です。", "仅保存你的牌与摊牌时公开的对手牌。弃牌对手的牌不公开。", "Solo se guardan tus cartas y las reveladas en showdown. Las cartas de rivales retirados siguen ocultas.")}</p>
-    <dl className="sessions-flags">{Object.entries(history.holeCards).map(([seat, hole]) => <div key={seat}><dt translate="no">{name(seat)}</dt><dd>{cards(hole)}</dd></div>)}</dl>
+    <dl className="sessions-flags">{Object.entries(history.holeCards).map(([seat, hole]) => <div key={seat}><dt translate="no">{name(seat)}</dt><dd>{cards(hole)}{history.handRanks?.[seat] != null && <small> · {handName(history.handRanks[seat])}</small>}</dd></div>)}</dl>
     {streets.map((street, index) => {
       const log = history.log.filter(entry => entry.street === street);
       if (!log.length) return null;
