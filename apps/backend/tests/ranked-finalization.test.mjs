@@ -123,3 +123,88 @@ test('D1 Ranked adapter keeps owner reads, one conditional update and trigger se
     sqlite.close();
   }
 });
+
+test('D1 Ranked finalization rolls back match and player changes when the settlement trigger fails', async () => {
+  const sqlite = new DatabaseSync(':memory:');
+  try {
+    sqlite.exec('PRAGMA foreign_keys=ON');
+    for (const name of ['0007_accounts.sql', '0009_ranked.sql']) {
+      sqlite.exec(readFileSync(new URL(`../migrations/${name}`, import.meta.url), 'utf8'));
+    }
+    sqlite.prepare('INSERT INTO account_users VALUES (?,?,?,?)').run('owner', 'google-owner', 'owner@example.invalid', 0);
+    sqlite.prepare('INSERT INTO ranked_players(user_id,public_name) VALUES (?,?)').run('owner', 'Test Player');
+    sqlite.prepare('INSERT INTO ranked_matches(id,user_id,day,slot,started_at,expires_at,questions_json) VALUES (?,?,?,?,?,?,?)')
+      .run('match-id', 'owner', '2026-10-10', 1, now - 100, now + 1, JSON.stringify(questions));
+    sqlite.exec(`CREATE TRIGGER fail_ranked_settlement BEFORE UPDATE OF rating ON ranked_players
+      WHEN NEW.user_id='owner' BEGIN SELECT RAISE(ABORT, 'simulated settlement failure'); END;`);
+
+    const db = {
+      prepare(sql) {
+        let values = [];
+        return {
+          bind(...args) { values = args; return this; },
+          async all() { return { results: sqlite.prepare(sql).all(...values) }; },
+        };
+      },
+    };
+    const repository = new D1RankedFinalizationRepository(db);
+    await assert.rejects(finalizeRankedMatch(repository, 'owner', 'match-id', actions, now), /simulated settlement failure/);
+
+    assert.deepEqual({ ...sqlite.prepare('SELECT status,actions_json,completed_at,before_rating,after_rating,score FROM ranked_matches WHERE id=?').get('match-id') }, {
+      status: 'active', actions_json: null, completed_at: null, before_rating: null, after_rating: null, score: null,
+    });
+    assert.deepEqual({ ...sqlite.prepare('SELECT rating,peak,matches FROM ranked_players WHERE user_id=?').get('owner') }, {
+      rating: 1000, peak: 1000, matches: 0,
+    });
+  } finally {
+    sqlite.close();
+  }
+});
+
+test('active match CAS rejects a player rating changed after the application read', async () => {
+  const sqlite = new DatabaseSync(':memory:');
+  try {
+    sqlite.exec('PRAGMA foreign_keys=ON');
+    for (const name of ['0007_accounts.sql', '0009_ranked.sql']) {
+      sqlite.exec(readFileSync(new URL(`../migrations/${name}`, import.meta.url), 'utf8'));
+    }
+    sqlite.prepare('INSERT INTO account_users VALUES (?,?,?,?)').run('owner', 'google-owner', 'owner@example.invalid', 0);
+    sqlite.prepare('INSERT INTO ranked_players(user_id,public_name) VALUES (?,?)').run('owner', 'Test Player');
+    sqlite.prepare('INSERT INTO ranked_matches(id,user_id,day,slot,started_at,expires_at,questions_json) VALUES (?,?,?,?,?,?,?)')
+      .run('match-id', 'owner', '2026-10-10', 1, now - 100, now + 1, JSON.stringify(questions));
+
+    const sqlCalls = [];
+    const db = {
+      prepare(sql) {
+        let values = [];
+        return {
+          bind(...args) { values = args; return this; },
+          async all() {
+            sqlCalls.push(sql);
+            // Simulate another writer committing after loadPlayer and before this CAS.
+            if (sql.startsWith("UPDATE ranked_matches SET status='complete'")) {
+              sqlite.prepare('UPDATE ranked_players SET rating=? WHERE user_id=?').run(1100, 'owner');
+            }
+            return { results: sqlite.prepare(sql).all(...values) };
+          },
+        };
+      },
+    };
+    const repository = new D1RankedFinalizationRepository(db);
+    assert.deepEqual(await finalizeRankedMatch(repository, 'owner', 'match-id', actions, now), { kind: 'conflict' });
+    assert.deepEqual(sqlCalls, [
+      'SELECT * FROM ranked_matches WHERE id=? AND user_id=?',
+      'SELECT * FROM ranked_players WHERE user_id=?',
+      "UPDATE ranked_matches SET status='complete',actions_json=?,completed_at=?,before_rating=?,after_rating=?,score=? WHERE id=? AND user_id=? AND status='active' AND expires_at>? AND (SELECT rating FROM ranked_players WHERE user_id=?)=? RETURNING id",
+      'SELECT * FROM ranked_matches WHERE id=? AND user_id=?',
+    ]);
+    assert.deepEqual({ ...sqlite.prepare('SELECT status,actions_json,completed_at FROM ranked_matches WHERE id=?').get('match-id') }, {
+      status: 'active', actions_json: null, completed_at: null,
+    });
+    assert.deepEqual({ ...sqlite.prepare('SELECT rating,peak,matches FROM ranked_players WHERE user_id=?').get('owner') }, {
+      rating: 1100, peak: 1000, matches: 0,
+    });
+  } finally {
+    sqlite.close();
+  }
+});
