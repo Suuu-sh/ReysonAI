@@ -1,0 +1,66 @@
+✔ account menu chip shows the profile and keeps the menu closed until opened (3514.066083ms)
+✔ account menu escapes sidebar clipping and keeps portal clicks inside the menu (0.537958ms)
+✔ settings page has account, subscription, appearance and language tabs (11.9895ms)
+✔ subscription shows the ¥580 Plus plan without a live purchase (7.451792ms)
+✖ appearance preferences normalise unknown values and log-out offers keeping practice data (3.642791ms)
+✔ practice export and cleanup preserve profile, appearance and unrelated data (3.125083ms)
+✖ appearance and range mode persist with invalid appearance values normalised (0.3955ms)
+✔ local logout removes only the profile by default (0.319541ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 6
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3985.824542
+
+✖ failing tests:
+
+test at tests/account.test.mjs:52:1
+✖ appearance preferences normalise unknown values and log-out offers keeping practice data (3.642791ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    {
+      cards: 'four',
+  +   matrix: 'original',
+      motion: 'standard'
+    }
+  
+      at TestContext.<anonymous> (file://<workspace>:53:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { cards: 'four', motion: 'standard', matrix: 'original' },
+    expected: { cards: 'four', motion: 'standard' },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/account.test.mjs:94:1
+✖ appearance and range mode persist with invalid appearance values normalised (0.3955ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    {
+      cards: 'two',
+  +   matrix: 'original',
+      motion: 'reduce'
+    }
+  
+      at file://<workspace>:97:12
+      at withLocalStorage (file://<workspace>:70:9)
+      at TestContext.<anonymous> (file://<workspace>:95:3)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1201:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { cards: 'two', motion: 'reduce', matrix: 'original' },
+    expected: { cards: 'two', motion: 'reduce' },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

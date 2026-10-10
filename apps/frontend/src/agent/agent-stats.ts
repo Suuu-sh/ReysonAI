@@ -1,9 +1,10 @@
 // Agent戦 results for プレー分析: one record per hand the human played at an Reyson Agent table,
-// kept only in this browser. Separate from the drill answer history on purpose.
+// synced to the account when signed in, or kept in this browser as a guest. Separate from drill history.
 import type { HandResult } from "./hand.ts";
+import { decodeAgentHistory } from "./agent-history-codec.ts";
+import { accountStorage, AGENT_HANDS_KEY, LEGACY_AGENT_HANDS_KEY } from "../account/session.ts";
 
-const KEY = "reysonai:agent-hands:v1";
-const OLD_KEY = "evionai:agent-hands:v1"; // before the ReysonAI rename: still read when the new key is empty
+const KEY = AGENT_HANDS_KEY;
 const LIMIT = 3000;
 const RAISES = new Set(["open", "raise", "three_bet", "squeeze", "four_bet", "all_in"]);
 
@@ -17,10 +18,10 @@ export type AgentHandRecord = {
   pfBets?: number; pfCalls?: number; pfFacing?: number; pfFolds?: number;
 };
 
-const storage = () => { try { return typeof window === "undefined" ? null : window.localStorage; } catch { return null; } };
+const storage = () => { try { return typeof window === "undefined" ? null : accountStorage(); } catch { return null; } };
 
 export function loadAgentHands(): AgentHandRecord[] {
-  try { const value = JSON.parse(storage()?.getItem(KEY) ?? storage()?.getItem(OLD_KEY) ?? "[]"); return Array.isArray(value) ? value : []; } catch { return []; }
+  try { const store = storage(); const saved = JSON.parse(store?.getItem(KEY) ?? store?.getItem(LEGACY_AGENT_HANDS_KEY) ?? "[]"); const value = decodeAgentHistory(saved); return Array.isArray(value) ? value as AgentHandRecord[] : []; } catch { return []; }
 }
 
 export function saveAgentHand(record: AgentHandRecord) {

@@ -1,0 +1,93 @@
+name: PR160 integrated-source saved-byte diagnostic (CI only)
+
+# Source-context and saved-byte diagnostic only. A pass is not a receipt,
+# installable numerical acceptance, release approval, or gate change.
+# Only PR160 runs it. The PR-controlled harness gets contents:read, no secrets,
+# no persisted checkout credentials, and no user-authored values as shell code.
+on:
+  pull_request:
+    branches: [development]
+    paths:
+      - '.github/workflows/pr160-mw3-linux-source-check.yml'
+      - 'tools/pr160-linux-mw3-check.mjs'
+      - 'tools/pr160-linux-preflop-check.mjs'
+      - 'tools/pr160-linux-reproduce.sh'
+      - 'docs/qa/pr160-integrated-source-renewal-9374d90/**'
+
+permissions:
+  contents: read
+
+jobs:
+  linux-source-diagnostic:
+    if: github.event.pull_request.number == 160
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      NODE_OPTIONS: --max-old-space-size=2048
+    steps:
+      - name: Check out proposed test harness
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6, same pin as repository
+        with:
+          repository: Suuu-sh/ReysonAI
+          ref: ${{ github.sha }}
+          path: harness
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Check out exact current integration source and LFS archives
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: Suuu-sh/ReysonAI
+          ref: 7c979c8b5e60c5443455d8650ff3448733216bfc
+          path: reviewed-source
+          fetch-depth: 1
+          persist-credentials: false
+          lfs: true
+
+      - name: Set up pinned Linux Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6, same pin as repository
+        with:
+          node-version: '22.20.0'
+
+      - name: Run preserved codec test at checkout-root import base
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/pr160-source-7c979c8"
+          printf '%s  %s\n' \
+            '2f8a43cec4daba803f304ac07964f5fba1202d3894ef5e8293fa7c94c1dafe92' \
+            "$GITHUB_WORKSPACE/harness/docs/qa/pr160-integrated-source-renewal-9374d90/pr160-integrated-source-review-9374d90.json" \
+            'd4a90de81ac154224ee5f94bbfa7f6e6eff7bfa00ec8656d00d06d2f4cb94848' \
+            "$GITHUB_WORKSPACE/harness/docs/qa/pr160-integrated-source-renewal-9374d90/independent-codec.test.mjs" \
+            | sha256sum --check --status
+          test ! -e "$GITHUB_WORKSPACE/reviewed-source/.pr160-independent-codec.test.mjs"
+          cp "$GITHUB_WORKSPACE/harness/docs/qa/pr160-integrated-source-renewal-9374d90/independent-codec.test.mjs" \
+            "$GITHUB_WORKSPACE/reviewed-source/.pr160-independent-codec.test.mjs"
+          trap 'rm -f "$GITHUB_WORKSPACE/reviewed-source/.pr160-independent-codec.test.mjs"' EXIT
+          cd "$GITHUB_WORKSPACE/reviewed-source"
+          node --test .pr160-independent-codec.test.mjs \
+            2>&1 | tee "$RUNNER_TEMP/pr160-source-7c979c8/codec.log"
+          rm -f .pr160-independent-codec.test.mjs
+          trap - EXIT
+
+      - name: Run current-head saved-byte diagnostics without changing receipts or gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/pr160-source-7c979c8/mw3" "$RUNNER_TEMP/pr160-source-7c979c8/preflop"
+          bash "$GITHUB_WORKSPACE/harness/tools/pr160-linux-reproduce.sh" \
+            "$GITHUB_WORKSPACE/reviewed-source" "$RUNNER_TEMP/pr160-source-7c979c8/mw3" \
+            2>&1 | tee "$RUNNER_TEMP/pr160-source-7c979c8/mw3/run.log"
+          node --experimental-strip-types --expose-gc \
+            "$GITHUB_WORKSPACE/harness/tools/pr160-linux-preflop-check.mjs" \
+            "$GITHUB_WORKSPACE/reviewed-source" "$RUNNER_TEMP/pr160-source-7c979c8/preflop" \
+            2>&1 | tee "$RUNNER_TEMP/pr160-source-7c979c8/preflop/run.log"
+
+      - name: Retain diagnostics even when comparison fails
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4, same pin as repository
+        with:
+          name: pr160-linux-diagnostic-7c979c8-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pr160-source-7c979c8/
+          if-no-files-found: warn
+          retention-days: 14

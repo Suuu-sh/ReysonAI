@@ -103,7 +103,7 @@ test('native ownership, account switching, shared Web snapshots, conflict/consen
   const webToken = 'd'.repeat(64);
   f.sqlite.prepare('INSERT INTO account_sessions(token_hash,user_id,expires_at) VALUES (?,?,?)').run(await digest(webToken), a.user.id, time + 604800);
   const web = path => routeAccount(new Request(`${ORIGIN}/v1/account/${path}`, { headers: { cookie: `__Host-reysonai=${webToken}` } }), f.env);
-  assert.deepEqual(await (await web('data')).json(), { data: { 'reysonai:locale:v1': 'ja' }, version: 1 });
+  assert.deepEqual(await (await web('data')).json(), { ownerId: a.user.id, data: { 'reysonai:locale:v1': 'ja' }, version: 1 });
   assert.equal((await f.call('session', undefined, auth(webToken))).status, 401);
   assert.equal((await f.call('session', undefined, { cookie: `__Host-reysonai=${webToken}` })).status, 403);
   assert.deepEqual(await (await routeAccount(new Request(`${ORIGIN}/v1/account/session`, { headers: auth(a.token) }), f.env)).json(), { user: null });

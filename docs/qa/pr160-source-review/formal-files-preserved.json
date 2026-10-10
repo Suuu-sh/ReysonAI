@@ -1,0 +1,410 @@
+{
+  "source_commit": "339b97a3f2fc4740fb621d098e74ee4f458957c7",
+  "unchanged_paths_from_pr_base": [
+    "apps/shared/mw3-approved.ts",
+    "configs/multiway-preflop-stage2.review.json",
+    "configs/multiway-preflop-stage3.review.json",
+    "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.manifest.json",
+    "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.sql",
+    "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.tar.gz",
+    "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.manifest.json",
+    "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.sql",
+    "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.tar.gz",
+    "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.manifest.json",
+    "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.sql",
+    "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.tar.gz",
+    "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.manifest.json",
+    "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.sql",
+    "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.tar.gz",
+    "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.manifest.json",
+    "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.sql",
+    "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.tar.gz",
+    "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.manifest.json",
+    "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.sql",
+    "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.tar.gz",
+    "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.manifest.json",
+    "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.sql",
+    "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.tar.gz",
+    "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.manifest.json",
+    "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.sql",
+    "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.tar.gz",
+    "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.manifest.json",
+    "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.sql",
+    "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.tar.gz",
+    "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.manifest.json",
+    "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.sql",
+    "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.tar.gz",
+    "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.manifest.json",
+    "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.sql",
+    "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.tar.gz",
+    "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.manifest.json",
+    "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.sql",
+    "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.tar.gz",
+    "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.manifest.json",
+    "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.sql",
+    "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.tar.gz",
+    "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.manifest.json",
+    "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.sql",
+    "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.tar.gz",
+    "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.manifest.json",
+    "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.sql",
+    "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.tar.gz",
+    "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.manifest.json",
+    "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.sql",
+    "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.tar.gz",
+    "configs/mw3-co-btn-bb-mw3-srp-v1.review.json",
+    "configs/mw3-co-btn-sb-mw3-srp-v1.review.json",
+    "configs/mw3-hj-btn-bb-mw3-srp-v1.review.json",
+    "configs/mw3-hj-btn-sb-mw3-srp-v1.review.json",
+    "configs/mw3-hj-co-bb-mw3-srp-v1.review.json",
+    "configs/mw3-hj-co-btn-mw3-srp-v1.review.json",
+    "configs/mw3-hj-co-sb-mw3-srp-v1.review.json",
+    "configs/mw3-utg-btn-bb-mw3-srp-v1.review.json",
+    "configs/mw3-utg-btn-sb-mw3-srp-v1.review.json",
+    "configs/mw3-utg-co-bb-mw3-srp-v1.review.json",
+    "configs/mw3-utg-co-btn-mw3-srp-v1.review.json",
+    "configs/mw3-utg-co-sb-mw3-srp-v1.review.json",
+    "configs/mw3-utg-hj-bb-mw3-srp-v1.review.json",
+    "configs/mw3-utg-hj-btn-mw3-srp-v1.review.json",
+    "configs/mw3-utg-hj-co-mw3-srp-v1.review.json",
+    "configs/mw3-utg-hj-sb-mw3-srp-v1.review.json"
+  ],
+  "records": [
+    {
+      "path": "apps/shared/mw3-approved.ts",
+      "bytes": 14126,
+      "sha256": "7e1ac4ba059b4a34d8fdc7f6c6891be9929eafec470dc577c0d8702cf632fe81"
+    },
+    {
+      "path": "configs/multiway-preflop-stage2.review.json",
+      "bytes": 531140,
+      "sha256": "f482e81841a18b548841d3b9f4e5db9638e4bee2be0b0a562f6b36eba381c6b5"
+    },
+    {
+      "path": "configs/multiway-preflop-stage3.review.json",
+      "bytes": 540149,
+      "sha256": "35e9853c7a3b38ae215fa167f9b288761f39d38ffdf80fddcc138cd00c6d1a95"
+    },
+    {
+      "path": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.manifest.json",
+      "bytes": 29377,
+      "sha256": "139c90557a5e91ee84ee9f790900857ffa6c3a47ea628cc6adedfdd69df43f0a"
+    },
+    {
+      "path": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.sql",
+      "bytes": 1591059,
+      "sha256": "2d7eddbfeae6f956cf5403231fee4d530a1a7c42c7c0ad325b8103e4c4cc4e5b"
+    },
+    {
+      "path": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.tar.gz",
+      "bytes": 363593,
+      "sha256": "b8adf765d22a128a88ce346ffda9f67615b98ada1e6579d56461da8910db8d9b"
+    },
+    {
+      "path": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.manifest.json",
+      "bytes": 29766,
+      "sha256": "dfc46d43704aac1378d04bc86a0ef0a6af8a33deba494c1d1212526509fbcc5d"
+    },
+    {
+      "path": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.sql",
+      "bytes": 1589911,
+      "sha256": "a3fd0902f261b07ebd007557108d563f739085c1c31eeaf515b3adc76037b54b"
+    },
+    {
+      "path": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.tar.gz",
+      "bytes": 352115,
+      "sha256": "71b7423b1450638f8f2a6077c0d6c87b6715ebc81c9462a0f35cd5d83ddf1e7f"
+    },
+    {
+      "path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.manifest.json",
+      "bytes": 29766,
+      "sha256": "eae8a35ceffcdba30086a8af9f358df4a8187347ade56804671985ed28ec8bca"
+    },
+    {
+      "path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.sql",
+      "bytes": 1614488,
+      "sha256": "d93eaf55c710d840d5da4bda01e7fab2a0cf25e3bb0c6eae5126af19e700e3cf"
+    },
+    {
+      "path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.tar.gz",
+      "bytes": 357921,
+      "sha256": "a1d6d54a8d169260c7bf38cfb062915c2ab9e64f116dfb8101c7b63dad6fbb0a"
+    },
+    {
+      "path": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.manifest.json",
+      "bytes": 29766,
+      "sha256": "ec995c14f7eeb13c5cb475014e8f71071cf364085a959cb277544ef8ac8d7cfb"
+    },
+    {
+      "path": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.sql",
+      "bytes": 1576072,
+      "sha256": "dbd649a1003b0517a0504b546632f454fa80fec9cebf7bdd0971b30577cc1b84"
+    },
+    {
+      "path": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.tar.gz",
+      "bytes": 349739,
+      "sha256": "f3ec418992730e69f548e354508c95e0a42e4963cb7dd6b8d15cacc3d500d45e"
+    },
+    {
+      "path": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.manifest.json",
+      "bytes": 29747,
+      "sha256": "d18f8dc380e3ff0a2a07d5241f08e24feabfba5b714d7173281ea6e7c24aa85b"
+    },
+    {
+      "path": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.sql",
+      "bytes": 1606790,
+      "sha256": "5924d6830c49ffca6e1bc43fbcd2e95167cc1f96a9eaeb34a1df58fd3ea65eab"
+    },
+    {
+      "path": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.tar.gz",
+      "bytes": 355876,
+      "sha256": "9e12080a2e5fbd5d642339a17508e7bd7cdff2aacf7739e3e416df816282ec0c"
+    },
+    {
+      "path": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.manifest.json",
+      "bytes": 29766,
+      "sha256": "7b0f9d3bad4750e1f673ea6b575776c02db568035b3d5cf4ffe243fdeef7e432"
+    },
+    {
+      "path": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.sql",
+      "bytes": 1526887,
+      "sha256": "2a8bf28171b18c1287859c5527f9503c129166787ab1f92cc64ebc8a72e16454"
+    },
+    {
+      "path": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.tar.gz",
+      "bytes": 346320,
+      "sha256": "b0ad2b74cdc937f228aa4cb862502390ba03606dc548218d713da5875e1a4d00"
+    },
+    {
+      "path": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.manifest.json",
+      "bytes": 29747,
+      "sha256": "5398166987ceb9ede69b33e8f507ec1a5937db265d99de9d629de627a103585b"
+    },
+    {
+      "path": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.sql",
+      "bytes": 1575504,
+      "sha256": "53c319921c68fee3d7c621adc99888ff29f792701ef78d319921f53065f5a450"
+    },
+    {
+      "path": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.tar.gz",
+      "bytes": 349456,
+      "sha256": "2c41876d803519c8f05f347ecbf55404d29e17baf6f588089782d727f3ab13d7"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.manifest.json",
+      "bytes": 29785,
+      "sha256": "d6d27ea736de3ecfee9a5b6f6e61a48256414698821f74cdbe990ceca266f875"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.sql",
+      "bytes": 1609439,
+      "sha256": "4bcc23a9c1e534cc1e31300e03339ee174135c1e612a5d2345c490ff322a37a5"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.tar.gz",
+      "bytes": 356007,
+      "sha256": "1a8ca191895c386944c903e6de9b9c7e1d25e77ce1f471a21036ee9321a4b69e"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.manifest.json",
+      "bytes": 29785,
+      "sha256": "bd5552c71c2fd09dc8de27a43e5fc2084a77235193443bd27289605be9a810d2"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.sql",
+      "bytes": 1574637,
+      "sha256": "33172cdac9ae498196b31fc5446e447c63ebe22e2b1316b811fbbee088995a88"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.tar.gz",
+      "bytes": 349201,
+      "sha256": "fb452978edb7aaf29593c6af6c3cf8dbb5352009580606938b485aba5886095d"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.manifest.json",
+      "bytes": 29766,
+      "sha256": "170ce4d3a8dd3bdd8e6deaa08d642d6e6a332c4e56b65c385f98d49c41209385"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.sql",
+      "bytes": 1605208,
+      "sha256": "5ba6cd39781d8d1b440973dfad86f2ecc14100b9ffd8f55acdece6df34e51024"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.tar.gz",
+      "bytes": 353793,
+      "sha256": "fab985466902709975e0e02e39d4eb9f5e41b0eb05f80d4d9f4824fe4d5913df"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.manifest.json",
+      "bytes": 29785,
+      "sha256": "3d81dbb046e6fb2faed383e7d7306319de6cc6c47aac3ab5c641421be9a1446b"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.sql",
+      "bytes": 1525883,
+      "sha256": "e22865059a13ff9bec6b4e8fec110e4a8c5ed8c9f238f39bbc994ae84de318d2"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.tar.gz",
+      "bytes": 343601,
+      "sha256": "3a3d6f4d1cabcfcff881b5b90470ad153748264734fce92f0bd6a816fbe58604"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.manifest.json",
+      "bytes": 29766,
+      "sha256": "a0e4d0ff2ae761a5a908377092d258d140db5e67245876547883cfb01ab61e8d"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.sql",
+      "bytes": 1568069,
+      "sha256": "eb4843a166c31a0d8e52f878f6702bb96e8e95c36ae09180742e1f434a075ffc"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.tar.gz",
+      "bytes": 347918,
+      "sha256": "c859afc13e369cd1cf3ab8ea545d8115a5eaba4d55725de772f222a560f4b7a0"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.manifest.json",
+      "bytes": 29766,
+      "sha256": "2d8179cced593a98bdc07a1f6f2d888abf14133d7dc32485934890c290d2e83a"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.sql",
+      "bytes": 1602292,
+      "sha256": "fccac27d5c469ed94c158259d7a1a0d686bab8c1d1ec1dc45573ccd4c113a859"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.tar.gz",
+      "bytes": 352915,
+      "sha256": "d84390b598755b265f5e5ae5e5601d05fc69e7346971b955c2ab0d4732ab577a"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.manifest.json",
+      "bytes": 29785,
+      "sha256": "3e169c044bbef25a4f5761505a695b2312c87f9a6859457c12bc72c768dea621"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.sql",
+      "bytes": 1524093,
+      "sha256": "188519d42aab80e6d9c4b783a75a49e30edc0a9a3120eaeafb51a41df1fa7570"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.tar.gz",
+      "bytes": 342470,
+      "sha256": "fae0fe5f2ce9fc718f68b9160e4f6e99ed14138b5319008cacb4684b1aca9f3e"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.manifest.json",
+      "bytes": 29766,
+      "sha256": "c4e164cabc5661e92e02bc2582298aa8dbf47ef794a16ecef5cbece85c677a96"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.sql",
+      "bytes": 1519315,
+      "sha256": "8d157d531e80e159477a39ea23bae15a35a577185234b9a68abe1ebc70102918"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.tar.gz",
+      "bytes": 340387,
+      "sha256": "a0531cb661d36f6beee9076196a40e7a8fef414cbe2c60ffb9283ac1037ac19b"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.manifest.json",
+      "bytes": 29766,
+      "sha256": "01b84ecca82ba01290e84743466e77f83d7187f464f20900c8083589e9943d55"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.sql",
+      "bytes": 1562974,
+      "sha256": "1783155556de0ccc74af669b44a447e27bceb8c11b91254a90a0a7d74577efaf"
+    },
+    {
+      "path": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.tar.gz",
+      "bytes": 346992,
+      "sha256": "ed25dd6a611d329ec8f78614320d66c5f84284ee4f3e2cf14129cbd75d5b7afa"
+    },
+    {
+      "path": "configs/mw3-co-btn-bb-mw3-srp-v1.review.json",
+      "bytes": 13285,
+      "sha256": "695ce0cf15ef52e827c6e284f8747eb3b6bb315e53e78bc2fac9a744539291ae"
+    },
+    {
+      "path": "configs/mw3-co-btn-sb-mw3-srp-v1.review.json",
+      "bytes": 13445,
+      "sha256": "e712a64ef08934460e0c1cca8af6a1c1f85b0032164ce149b86ae1276e5ccf96"
+    },
+    {
+      "path": "configs/mw3-hj-btn-bb-mw3-srp-v1.review.json",
+      "bytes": 13448,
+      "sha256": "5899578be2d80bc69d7f84f810f8fd45e17d588873750cf77aa80cd259a6bc30"
+    },
+    {
+      "path": "configs/mw3-hj-btn-sb-mw3-srp-v1.review.json",
+      "bytes": 13443,
+      "sha256": "111fafedd739b3dc6045f5e27adb6ca5e5aa483904bf7a2a816e014a53ed0e94"
+    },
+    {
+      "path": "configs/mw3-hj-co-bb-mw3-srp-v1.review.json",
+      "bytes": 13435,
+      "sha256": "2b3a6de38458cabc866a414234b58b0bc451ff936d591c83931fbde451f25145"
+    },
+    {
+      "path": "configs/mw3-hj-co-btn-mw3-srp-v1.review.json",
+      "bytes": 13442,
+      "sha256": "f8c7188383415d711c5fdef4502b82eac5ea4ebf473127b44cf26ebd06a3fdb1"
+    },
+    {
+      "path": "configs/mw3-hj-co-sb-mw3-srp-v1.review.json",
+      "bytes": 13437,
+      "sha256": "7bfd48414e28880b921079f261729962e940dd1f7ca3151e310e9c263f3639b1"
+    },
+    {
+      "path": "configs/mw3-utg-btn-bb-mw3-srp-v1.review.json",
+      "bytes": 13455,
+      "sha256": "8d5ae184dc030c5c08aae09e0f6e01771365b44bcddf12e0d83c401f6e65a606"
+    },
+    {
+      "path": "configs/mw3-utg-btn-sb-mw3-srp-v1.review.json",
+      "bytes": 13463,
+      "sha256": "49c257897798453e2b5b0506339710ea53984e3eaffea66d58fb8c9ba90628dc"
+    },
+    {
+      "path": "configs/mw3-utg-co-bb-mw3-srp-v1.review.json",
+      "bytes": 13442,
+      "sha256": "cac44fa2494f0c5136313eb37e0d8f0b185e70af2a3b61c0ff9431fc5655ac9d"
+    },
+    {
+      "path": "configs/mw3-utg-co-btn-mw3-srp-v1.review.json",
+      "bytes": 13464,
+      "sha256": "895e35067b083902bde2758b2adbd5e88386aaa5ac0711078e57fba9364e315b"
+    },
+    {
+      "path": "configs/mw3-utg-co-sb-mw3-srp-v1.review.json",
+      "bytes": 13448,
+      "sha256": "91f7ffb9218885ba9fcfe49c9efc070d62f54e2b88dd4198a2da8437ce78a441"
+    },
+    {
+      "path": "configs/mw3-utg-hj-bb-mw3-srp-v1.review.json",
+      "bytes": 13445,
+      "sha256": "7738ced60c9a958028f0cc394fd53bd51058e7c191d745988afb6a560a57ad4b"
+    },
+    {
+      "path": "configs/mw3-utg-hj-btn-mw3-srp-v1.review.json",
+      "bytes": 13464,
+      "sha256": "77769632453f0cc9ce71d96bc340375b7ac2268fb436148c0009a11ba83c33a3"
+    },
+    {
+      "path": "configs/mw3-utg-hj-co-mw3-srp-v1.review.json",
+      "bytes": 13448,
+      "sha256": "604266ca564863a98ace5f64b458941a8dee61f3e412a5750c21fe81ec3d334f"
+    },
+    {
+      "path": "configs/mw3-utg-hj-sb-mw3-srp-v1.review.json",
+      "bytes": 13448,
+      "sha256": "7e2bd13d69072ef692840c3543124b7d160b2f3c5847f7645715eeccdc36b3b5"
+    }
+  ],
+  "formal_receipt_installation": false
+}

@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "status": "PASS_SOURCE_CLOSURE_CONSERVATION_ONLY",
+  "reviewed_at_utc": "2026-10-10T09:48:43.923197+00:00",
+  "repository": "Suuu-sh/ReysonAI",
+  "pull_request": 160,
+  "source_commit": "9374d90f31fe8891ceb924c29eb436edefd76e4c",
+  "source_tree": "49dca15db8b1bdc4ba380a6c8994b6dc78d614a5",
+  "development_base": "4114419a18ac70c1a9093f6bb39e529dee0cafe6",
+  "reviewer": {
+    "model": "gpt-6-astra",
+    "reasoning_effort": "xhigh",
+    "task": "/root/review_pr160_integrated_source/verify_source_closure_conservation",
+    "identity_basis": "Inherited from the parent whose actual spawn metadata was verified as gpt-6-astra/xhigh; parent explicitly reported this identity.",
+    "current_implementation_author_model": "unknown; runtime did not expose it",
+    "historical_numerical_provenance": "Treat existing author_model/author_task and prior reviewer fields as retained historical evidence; this review neither infers nor re-attests the original generating model."
+  },
+  "scope": "Read-only support review of the exact integrated-head source closures and tracked numerical/archive/manifest/receipt/gate/pin/SQL conservation. Application security and behavioral approval belong to the parent review. No external state writes, generation, gate runs, receipt mutations or numerical-quality approval.",
+  "blocking_findings_within_scope": [],
+  "verified": {
+    "complete_tree_delta": {
+      "paths": 67,
+      "modified": 13,
+      "added": 54,
+      "removed": 0
+    },
+    "exact_git_blob_verified_local_files": 615,
+    "base_matches_current_saved_source_ledgers": true,
+    "stage2": {
+      "base_sources": 195,
+      "head_sources": 196,
+      "added": [
+        "apps/frontend/src/agent/agent-history-codec.ts"
+      ],
+      "modified": [
+        "apps/backend/src/account.ts",
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/locales/product-direct.json"
+      ],
+      "removed": []
+    },
+    "stage3": {
+      "base_sources": 99,
+      "head_sources": 100,
+      "added": [
+        "apps/frontend/src/agent/agent-history-codec.ts"
+      ],
+      "modified": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/locales/product-direct.json"
+      ],
+      "removed": []
+    },
+    "mw3": {
+      "subjects": 16,
+      "pilot_base_sources": 136,
+      "pilot_head_sources": 137,
+      "each_of_15_authored_base_sources": 137,
+      "each_of_15_authored_head_sources": 138,
+      "each_added": [
+        "apps/frontend/src/agent/agent-history-codec.ts"
+      ],
+      "each_modified": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/locales/product-direct.json"
+      ],
+      "each_removed": []
+    },
+    "preserved_tracked_scopes": {
+      "artifacts/": 54,
+      "configs/": 23,
+      "apps/frontend/src/estimated/": 359,
+      "apps/frontend/scripts/data/": 1238,
+      "apps/frontend/scripts/postflop-ai/": 150,
+      "apps/shared/": 2,
+      "apps/backend/migrations/": 12,
+      "apps/backend/scripts/sql/": 1
+    },
+    "stage2_artifact_records": 1888,
+    "stage3_artifact_records": 1805,
+    "all18_archive_pointers_and_declared_payload_hashes_match_unchanged_receipts": true,
+    "all16_mw3_manifests_receipts_sqls_conserved": true,
+    "mw3_raw_records": 112,
+    "mw3_declared_raw_bytes": 235515283,
+    "mw3_reserved_pins": 32,
+    "mw3_preserved_joint_warnings": 561,
+    "mw3_preserved_limitations_per_subject": 7
+  },
+  "method": "Unmodified official source-path function bodies executed read-only against independently fetched Git-blob-verified bytes. MW3 uses the exact vendored AST parser and official immutable source constants. No collectMw3Snapshot, archive restoration, generation, gate simulation or receipt issuance is performed. Baseline source bodies were independently traversed as well; all18 baseline closures equal their saved receipt/manifest source records. Every materialized base/head byte stream was validated against its exact Git blob object ID. Shared unchanged blobs were reused only where the complete base/head trees prove equality.",
+  "existing_receipt_status": "The unchanged current receipts/manifests are source-stale for9374d90 because their inventories lack the codec and bind prior source hashes. This is established by fresh exact inventories, not a claim that the full official archive verifier was run here.",
+  "bounded_renewal_surface": [
+    "Stage2: renew only source records, their aggregate content identity, and source-context review metadata. Keep all1888 artifact records, artifact contents, archive identity, counts and source fingerprint identical.",
+    "Stage3: renew Stage2 first, then recollect Stage3. Stage3 explicitly includes the Stage2 receipt as a source, so account for that one mechanical receipt-byte change in addition to the head delta. Keep all1805 artifact records, archive identity, counts and source fingerprint identical.",
+    "All16 MW3 manifests: renew only source_tree, sources, sources_sha256 and dependent content identity. Spot/recipe/model/implementation/verification identities, inputs, artifact records and canonical saved archive bytes remain identical.",
+    "All16 MW3 receipts: bind the new exact source/manifest identities and truthful independent source-review scope/task. Preserve historical numerical author provenance, delivery pins, acceptance evidence, all561 warnings and every one of the seven limitations per subject. Do not invent the current implementation author model.",
+    "All16 MW3 SQL files: only the receipt-derived second-line comment hash may change. Its archive hash and every SQL statement byte remain identical.",
+    "No changes to approval pins, numerical algorithms/recipes/data, gate thresholds, source roots/parser/exclusions, frozen model binding, compatibility receipts or LFS pointers are covered."
+  ],
+  "required_before_installation_or_final_acceptance": [
+    "Run the official Stage2/Stage3 saved-artifact collection/verification and all16 full MW3 snapshot collectors at the exact approved integrated source on Linux, with actual LFS payloads available. Rehash all archive entries and prove all32 pins and SQL statement bytes are unchanged. This review itself did not download LFS payloads or rehash archived-only data.",
+    "Require canonical Linux collector archive bytes to equal the saved archives exactly. A gzipOS-byte difference or other mismatch is a failed equality check; no normalization or gate alteration is authorized.",
+    "The PR160 diagnostic workflow pinned to339b97a3f2fc4740fb621d098e74ee4f458957c7/tree228bde91e060d20f36aee9c53e6eb7a60ac16c6b is historical-byte evidence, not a latest9374d90 collector PASS.",
+    "After the bounded metadata renewal, rerun the official restored-receipt verifiers, committed-inventory/source-tree checks and required CI at the final commit. Reconcile Stage3 with the newly written Stage2 receipt.",
+    "Do not extend this result to fresh numerical quality, HU acceptance, GTO/equilibrium, liveD1/browserE2E, merge or production deployment."
+  ],
+  "evidence": [
+    {
+      "path": "/tmp/pr160-closure-review/current-source-closures.json",
+      "bytes": 564399,
+      "sha256": "b457f4b8f170cb3ed0ddefe9dd1111a836ea392c7a8af61ddc5c605ef25d9926"
+    },
+    {
+      "path": "/tmp/pr160-closure-review/base-source-closures.json",
+      "bytes": 512726,
+      "sha256": "a8a355b76a0b16cb259ffaf8121dd80773ae8013fe723df83d3bd78418452acc"
+    },
+    {
+      "path": "/tmp/pr160-closure-review/conservation.json",
+      "bytes": 572841,
+      "sha256": "f3daa0bcec6fccf6fdef3b06a79c4662ac53d1e52e2787fc1eadbab39785afc0"
+    },
+    {
+      "path": "/tmp/pr160-closure-review/materialized-source-ledger.json",
+      "bytes": 173111,
+      "sha256": "81eccc98a07c584e44ceba206504e8224358001a2ca9f6057adb6a9020ef6832"
+    },
+    {
+      "path": "/tmp/pr160-closure-review/delta.json",
+      "bytes": 31350,
+      "sha256": "f5129b87c8cb1dd85bb61f4942501f1060bcb0b69276c224ff7b6fdb81196bb3"
+    },
+    {
+      "path": "/tmp/pr160-closure-review/commit-head.json",
+      "bytes": 1364,
+      "sha256": "f1363598d34b4b4bddfd5345f4b6179bb4095542b59289539a95e4813298a8d0"
+    },
+    {
+      "path": "/tmp/pr160-closure-review/enumerate-closures.mjs",
+      "bytes": 5635,
+      "sha256": "e5619dbb763fc1adbc4b5e351c1354ca0d06647fc3926ee45a158a2cc73adfe3"
+    },
+    {
+      "path": "/tmp/pr160-closure-review/build-conservation.py",
+      "bytes": 4856,
+      "sha256": "18a5125ba7963fb1eef12bf58f3bc1f7a7e8d44bae271d6c145b8b48ebe8d3f1"
+    },
+    {
+      "path": "/tmp/pr160-closure-review/base-source-enumeration.log",
+      "bytes": 2447,
+      "sha256": "ee8d017f73d860e23408fafbc50f310d2def1a34c948603b3092312a5f9c1712"
+    },
+    {
+      "path": "/tmp/pr160-closure-review/current-source-enumeration.log",
+      "bytes": 8202,
+      "sha256": "c104dd92473574d0f884b7087191397d75d84a7461298ccaf179deb95eadc51e"
+    }
+  ]
+}
