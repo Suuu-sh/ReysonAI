@@ -79,3 +79,14 @@ test("backend lockfile changes are covered by the main deploy workflow trigger",
   const pushPaths = workflow.slice(workflow.indexOf("  push:"), workflow.indexOf("  pull_request:"));
   assert.ok(pushPaths.includes("apps/backend/package-lock.json"));
 });
+
+test("backend verification installs composed API MCP dependencies before FastFold runtime tests", () => {
+  const verification = workflow.slice(workflow.indexOf("  verify:"), workflow.indexOf("  deploy:"));
+  const install = verification.indexOf("      - name: Install MCP runtime dependencies for backend verification");
+  const runtime = verification.indexOf("      - name: Verify continuous FastFold authentication, replay and atomic settlement");
+  assert.ok(install >= 0 && install < runtime);
+  const step = verification.slice(install, verification.indexOf("      - name: ", install + 1));
+  assert.match(step, /if: needs\.scope\.outputs\.verify_backend == 'true'/);
+  assert.match(step, /working-directory: apps\/mcp/);
+  assert.match(step, /npm ci --ignore-scripts/);
+});

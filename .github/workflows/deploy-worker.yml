@@ -189,6 +189,11 @@ jobs:
         if: needs.scope.outputs.needs_frontend_deps == 'true'
         run: npm ci
 
+      - name: Install MCP runtime dependencies for backend verification
+        if: needs.scope.outputs.verify_backend == 'true'
+        working-directory: apps/mcp
+        run: npm ci --ignore-scripts
+
       - name: Restore exact reviewed Git LFS payload
         if: needs.scope.outputs.verify_preflop == 'true' || needs.scope.outputs.verify_postflop == 'true' || needs.scope.outputs.verify_mw3 == 'true'
         env:
