@@ -74,3 +74,8 @@ test("postflop publication waits for reviewed preflop import and the strict rele
   assert.match(check, /--only postflop --require-all/);
   assert.doesNotMatch(check, /--execute|secrets\./);
 });
+
+test("backend lockfile changes are covered by the main deploy workflow trigger", () => {
+  const pushPaths = workflow.slice(workflow.indexOf("  push:"), workflow.indexOf("  pull_request:"));
+  assert.ok(pushPaths.includes("apps/backend/package-lock.json"));
+});

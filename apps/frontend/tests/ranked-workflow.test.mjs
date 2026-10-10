@@ -25,7 +25,7 @@ test("ranked and CI scope inputs trigger the reviewed deploy workflow", () => {
 
 test("reviewed main deploy applies only ranked schema before API and live readiness before client", () => {
   assert.match(deployment, /needs: verify/);
-  assert.match(deployment, /github\.ref == 'refs\/heads\/main' &&\s+github\.event_name != 'pull_request' &&\s+needs\.verify\.outputs\.release_safe == 'true'/);
+  assert.match(deployment, /github\.ref == 'refs\/heads\/main' &&\s+github\.event_name != 'pull_request' &&\s+github\.run_attempt == 1 &&\s+needs\.verify\.outputs\.release_safe == 'true'/);
   assert.match(deployment, /needs\.verify\.outputs\.data_release == 'true'/);
   assert.match(deployment, /working-directory: apps\/backend/);
   assert.match(deployment, /wrangler@4\.147\.0 d1 execute reysonai --remote --config wrangler\.jsonc --file migrations\/0009_ranked\.sql --yes/);
