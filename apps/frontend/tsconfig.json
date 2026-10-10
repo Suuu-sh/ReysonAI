@@ -11,14 +11,14 @@
     "allowImportingTsExtensions": true,
     "esModuleInterop": true,
     "types": [
-      "vite/client",
-      "@cloudflare/workers-types"
+      "vite/client"
     ]
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
     "../backend/src/**/*.ts",
-    "../mcp/worker-configuration.d.ts"
+    "../mcp/worker-configuration.d.ts",
+    "../mcp/node_modules/@cloudflare/workers-types/index.d.ts"
   ]
 }
