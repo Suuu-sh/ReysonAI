@@ -9035,8 +9035,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 17820,
-      "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
+      "bytes": 18213,
+      "sha256": "3a9243cb6d964fb0201a5d51c6bd31a65c3d4352dea59e3a6d07345d3dcb7df9"
     },
     {
       "path": ".gitignore",
@@ -9515,8 +9515,8 @@
     },
     {
       "path": "configs/multiway-preflop-stage2.review.json",
-      "bytes": 543098,
-      "sha256": "22ad5f2a070ff9211dcae84d82cd01e1be9922c235a55843f52e70cc45103ce3"
+      "bytes": 544824,
+      "sha256": "d22bdd13ae6d8104586bcfdb16782a82478518af2edbecb85f14d1be51e04b3c"
     },
     {
       "path": "configs/multiway-preflop-stage3.json",
@@ -9535,7 +9535,7 @@
     "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
     "format": "ustar+gzip-stage3-content-v1"
   },
-  "content_sha256": "6c5aea1b8fb570108d41fdad8eebd37bb3952a0911d27db6bfff94edf7a76399",
+  "content_sha256": "df9d43acfcc85f1f6d88858e1f6e5b624af23fa5fc767906d8bc3811099492f0",
   "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
   "counts": {
     "catalog": 16132,
@@ -10489,6 +10489,46 @@
         }
       },
       "limitations": "No numerical regeneration, new strategy-quality approval, full acceptance, merge or deployment is claimed. Independent review of the final exact head and CI remain pending."
+    }
+  },
+  "mcp_api_main_source_renewal": {
+    "status": "prepared-pending-independent-source-review",
+    "scope": "Mechanical Stage 3 source identity refresh for the MCP API workflow and its updated Stage 2 source receipt. Historical Stage 3 numerical acceptance, source fingerprint, counts, authorship, evidence, warnings, limitations, archived bytes, and generated SQL are unchanged; this records no new numerical or strategy-quality approval.",
+    "changed_sources": [
+      {
+        "path": ".github/workflows/deploy-worker.yml",
+        "before": {
+          "path": ".github/workflows/deploy-worker.yml",
+          "bytes": 17820,
+          "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
+        },
+        "after": {
+          "path": ".github/workflows/deploy-worker.yml",
+          "bytes": 18213,
+          "sha256": "3a9243cb6d964fb0201a5d51c6bd31a65c3d4352dea59e3a6d07345d3dcb7df9"
+        }
+      },
+      {
+        "path": "configs/multiway-preflop-stage2.review.json",
+        "before": {
+          "path": "configs/multiway-preflop-stage2.review.json",
+          "bytes": 543098,
+          "sha256": "22ad5f2a070ff9211dcae84d82cd01e1be9922c235a55843f52e70cc45103ce3"
+        },
+        "after": {
+          "path": "configs/multiway-preflop-stage2.review.json",
+          "bytes": 544824,
+          "sha256": "d22bdd13ae6d8104586bcfdb16782a82478518af2edbecb85f14d1be51e04b3c"
+        }
+      }
+    ],
+    "checks": {
+      "canonical_collector": "apps/frontend/scripts/lib/reviewed-stage3.mjs reviewedStage3SourcePaths/stage3FileRecord",
+      "source_records": 100,
+      "unchanged_source_records": 98,
+      "numerical_artifacts_unchanged": true,
+      "archive_record_unchanged": true,
+      "executable_sql_changed": false
     }
   }
 }

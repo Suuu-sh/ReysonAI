@@ -10300,8 +10300,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 17820,
-      "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
+      "bytes": 18213,
+      "sha256": "3a9243cb6d964fb0201a5d51c6bd31a65c3d4352dea59e3a6d07345d3dcb7df9"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -10345,8 +10345,8 @@
     },
     {
       "path": "apps/backend/wrangler.jsonc",
-      "bytes": 1398,
-      "sha256": "e10534bdc0c073f32a9362706d87fdf0eae4906f40e8f26313602b06b42547bc"
+      "bytes": 1669,
+      "sha256": "7c6895420fedb903b401667f46dc2826b00da388232a0667d49f089b2d379c06"
     },
     {
       "path": "apps/frontend/package-lock.json",
@@ -11274,7 +11274,7 @@
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
     }
   ],
-  "content_sha256": "05d0ef955bf4cce619e9fd7de4377519779458e90bdb080ec99526d7c650e439",
+  "content_sha256": "1d451526d21e88b8df0a940956510ffef960db7c592a251e364117341bc66958",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -11367,5 +11367,45 @@
         "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53"
       }
     }
-  ]
+  ],
+  "mcp_api_main_source_renewal": {
+    "status": "prepared-pending-independent-source-review",
+    "scope": "Mechanical source/configuration identity refresh only for the MCP API composition workflow and durable API Worker config. Preserve historical numerical acceptance, authored content, reviewer records, evidence, warnings, limitations, dataset records, and archived payload bytes; this records no new numerical or strategy-quality approval.",
+    "changed_sources": [
+      {
+        "path": ".github/workflows/deploy-worker.yml",
+        "before": {
+          "path": ".github/workflows/deploy-worker.yml",
+          "bytes": 17820,
+          "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
+        },
+        "after": {
+          "path": ".github/workflows/deploy-worker.yml",
+          "bytes": 18213,
+          "sha256": "3a9243cb6d964fb0201a5d51c6bd31a65c3d4352dea59e3a6d07345d3dcb7df9"
+        }
+      },
+      {
+        "path": "apps/backend/wrangler.jsonc",
+        "before": {
+          "path": "apps/backend/wrangler.jsonc",
+          "bytes": 1398,
+          "sha256": "e10534bdc0c073f32a9362706d87fdf0eae4906f40e8f26313602b06b42547bc"
+        },
+        "after": {
+          "path": "apps/backend/wrangler.jsonc",
+          "bytes": 1669,
+          "sha256": "7c6895420fedb903b401667f46dc2826b00da388232a0667d49f089b2d379c06"
+        }
+      }
+    ],
+    "checks": {
+      "canonical_collector": "apps/frontend/scripts/lib/reviewed-preflop.mjs reviewedSourcePaths/fileRecord",
+      "source_records": 196,
+      "unchanged_source_records": 194,
+      "numerical_artifacts_unchanged": true,
+      "archive_record_unchanged": true,
+      "executable_sql_changed": false
+    }
+  }
 }

@@ -5,6 +5,9 @@ on:
     paths:
       - 'apps/backend/**'
       - 'apps/shared/**'
+      - 'apps/mcp/src/**'
+      - 'apps/mcp/package.json'
+      - 'apps/mcp/package-lock.json'
       - 'apps/frontend/src/agent/**'
       - 'apps/frontend/src/trainer/**'
       - 'apps/frontend/src/account/**'
@@ -47,6 +50,9 @@ jobs:
       - name: Install locked frontend test dependencies
         working-directory: apps/frontend
         run: npm ci
+      - name: Install MCP runtime dependencies for the composed API Worker
+        working-directory: apps/mcp
+        run: npm ci --ignore-scripts
       - name: Restore exact reviewed preflop fixtures for Agent bootstrap
         working-directory: apps/frontend
         run: node scripts/restore-reviewed-preflop.mjs
