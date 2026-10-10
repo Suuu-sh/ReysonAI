@@ -3,19 +3,18 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "jsx": "react-jsx",
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
     "esModuleInterop": true,
-    "types": [
-      "vite/client"
-    ]
+    "types": []
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx"
+    "../backend/src/**/*.ts",
+    "../mcp/src/**/*.ts",
+    "../mcp/worker-configuration.d.ts",
+    "../mcp/node_modules/@cloudflare/workers-types/index.d.ts"
   ]
 }

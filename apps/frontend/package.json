@@ -8,7 +8,7 @@
     "dev:codex": "node scripts/build-site-preview.mjs && vite",
     "build": "node scripts/build-site-preview.mjs && vite build && node scripts/prepare-sites-build.mjs",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit && tsc --project tsconfig.runtime.json",
+    "typecheck": "tsc --project tsconfig.json --noEmit && tsc --project tsconfig.worker.json --noEmit && tsc --project tsconfig.runtime.json",
     "lint": "biome lint src/site/ServiceSite.tsx src/site/content.ts src/site/content-ja.ts src/main.tsx src/ProductApp.tsx",
     "benchmark": "node scripts/benchmark-compare.mjs",
     "benchmark:record": "node scripts/benchmark-record.mjs",
