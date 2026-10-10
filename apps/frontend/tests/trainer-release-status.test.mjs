@@ -52,8 +52,8 @@ for (const locale of ["en", "ja"]) {
     const html = renderToStaticMarkup(tree);
     const ranked = html.match(/<section class="mode-block is-ranked is-coming-soon"[\s\S]*?<\/section>/)?.[0];
     assert.ok(ranked);
-    assert.match(ranked, /<svg class="rank-badge" data-tier="master" width="64" height="64"/);
-    assert.ok(ranked.includes(locale === "en" ? 'aria-label="Master rank"' : 'aria-label="マスターランク"'));
+    assert.match(ranked, /<span class="ranked-locked-icon" aria-hidden="true"><svg/);
+    assert.doesNotMatch(ranked, /data-tier=|Master rank|マスターランク|rank-ladder/);
     assert.ok(ranked.includes(locale === "en" ? "Sign in · server availability required" : "ログイン・サーバー準備が必要"));
     assert.match(ranked, /<button[^>]*disabled=""/);
     assert.doesNotMatch(ranked, /mode-secondary|ranked-stats|rank-ladder/);
