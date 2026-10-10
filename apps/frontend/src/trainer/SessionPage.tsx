@@ -80,10 +80,12 @@ function seasonLabel(season: RankedSeason) {
 }
 const modeLabel = (mode: string) => mode === "agent" ? t("Agent matches", "Agent戦", "Agent对战", "Partidas Agent") : mode === "ranked" ? t("Ranked", "ランク戦", "排位", "Clasificado") : t("Drills", "ドリル", "练习", "Ejercicios");
 const storedHand = () => t("Saved hand", "保存済みハンド", "已保存手牌", "Mano guardada");
-const rowName = (row: HistoryRow) => row.mode === "drills" ? displaySessionName(row.record) : row.mode === "agent" ? `${storedHand()} · ${row.record.tableId}` : seasonLabel(row.season);
-const rowStatus = (row: HistoryRow) => row.mode === "agent" ? storedHand() : row.mode === "ranked" && row.season !== "quiz-v1" ? t("Settled hand", "確定ハンド", "已结算手牌", "Mano liquidada") : row.mode === "drills" && row.record.status === "draft" ? t("In progress", "途中保存", "进行中", "En curso") : t("Completed", "完了", "已完成", "Completado");
+const rowName = (row: HistoryRow) => row.mode === "drills" ? displaySessionName(row.record) : row.mode === "agent" ? `${row.session ? t("Agent session", "Agentセッション", "Agent会话", "Sesión Agent") : storedHand()} · ${row.record.tableId}` : seasonLabel(row.season);
+const rowStatus = (row: HistoryRow) => row.mode === "agent" ? row.session ? row.session.endedAt != null ? t("Completed", "完了", "已完成", "Completado") : t("In progress", "途中保存", "进行中", "En curso") : storedHand() : row.mode === "ranked" && row.season !== "quiz-v1" ? t("Settled hand", "確定ハンド", "已结算手牌", "Mano liquidada") : row.mode === "drills" && row.record.status === "draft" ? t("In progress", "途中保存", "进行中", "En curso") : t("Completed", "完了", "已完成", "Completado");
 const rowAccuracy = (row: HistoryRow) => row.mode === "drills" ? rateLabel(row.record.score, row.record.answered) : row.mode === "ranked" && row.season === "quiz-v1" ? `${Math.round(row.record.accuracy! * 100)}%` : "—";
-const rowNet = (row: HistoryRow) => row.mode === "agent" ? `${ffNumber(row.record.returnBb, true)} bb` : row.mode === "ranked" && row.season !== "quiz-v1" ? `${ffNumber(row.record.netBb, true)} bb` : "—";
+const rowNet = (row: HistoryRow) => row.mode === "agent" ? `${ffNumber(row.session ? row.session.hands.reduce((sum, hand) => sum + hand.returnBb, 0) : row.record.returnBb, true)} bb` : row.mode === "ranked" && row.season !== "quiz-v1" ? `${ffNumber(row.record.netBb, true)} bb` : "—";
+
+const rowInProgress = (row: HistoryRow) => row.mode === "drills" && row.record.status === "draft" || row.mode === "agent" && Boolean(row.session) && row.session?.endedAt == null;
 
 function SavedHandDetail({ row, onBack }: { row: Exclude<HistoryRow, { mode: "drills" }>; onBack: () => void }) {
   const ranked = row.mode === "ranked" ? row.record : null;
@@ -91,13 +93,16 @@ function SavedHandDetail({ row, onBack }: { row: Exclude<HistoryRow, { mode: "dr
     <button type="button" className="config-edit sessions-back" onClick={onBack}><ArrowLeft size={14} />{t("Sessions", "セッション一覧", "记录列表", "Sesiones")}</button>
     <header className="sessions-detail-head"><div><span className="sessions-eyebrow">{modeLabel(row.mode)} · {rowStatus(row)}</span><h1>{rowName(row)}</h1><p>{dateLabel(row.at)}</p></div></header>
     <dl className="trainer-pulse sessions-summary">
-      <div><dt>{t("Seat", "席", "座位", "Posición")}</dt><dd>{row.mode === "agent" ? row.record.pos : ranked?.hero ?? "—"}</dd></div>
+      <div><dt>{t("Seat", "席", "座位", "Posición")}</dt><dd>{row.mode === "agent" ? row.session ? [...new Set(row.session.hands.map(hand => hand.pos))].join(" / ") : row.record.pos : ranked?.hero ?? "—"}</dd></div>
       <div><dt>{t("Net result", "収支", "净收益", "Resultado neto")}</dt><dd>{rowNet(row)}</dd></div>
       {ranked && <div><dt>{t("Rating", "レート", "评分", "Puntuación")}</dt><dd>{ffNumber(ranked.beforeRating)} → {ffNumber(ranked.afterRating)}</dd></div>}
     </dl>
     {row.mode === "agent" ? <>
-      {row.record.history ? <AgentHandHistory record={row.record} /> : <p className="sessions-source-note">{t("These browser records store one hand's result and statistics, without session IDs, cards or action logs. No session grouping or accuracy is reconstructed. Existing data is kept as saved.", "このブラウザの旧記録はハンドごとの収支・指標のみです。セッションID・カード・アクション履歴は保存されていません。セッションや正答率を復元せず、既存データをそのまま保持します。", "浏览器旧记录仅保存每手收益与指标，没有会话ID、牌面或行动日志。不重建会话或正确率，原数据保持不变。", "Estos registros del navegador guardan resultado y estadísticas por mano, sin ID de sesión, cartas ni acciones. No se reconstruyen sesiones ni precisión. Los datos existentes se conservan.")}</p>}
-      <dl className="sessions-flags">{([ ["VPIP", row.record.vpip], ["PFR", row.record.pfr], ["3bet", row.record.threeBet], [t("Showdown", "ショーダウン", "摊牌", "Showdown"), row.record.showdown] ] as [string, boolean][]).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{typeof value !== "boolean" ? "—" : value ? t("Yes", "あり", "是", "Sí") : t("No", "なし", "否", "No")}</dd></div>)}</dl>
+      {row.session ? <>
+        <dl className="trainer-pulse sessions-summary"><div><dt>{t("Hands", "ハンド数", "手牌数", "Manos")}</dt><dd>{row.session.hands.length}</dd></div><div><dt>{t("Session time", "セッション時間", "会话时间", "Duración")}</dt><dd>{durationLabel((row.session.endedAt ?? row.session.hands.at(-1)!.at) - row.session.startedAt)}</dd></div></dl>
+        {row.session.hands.map((hand, index) => <details key={`${hand.at}-${index}`} open={row.session!.hands.length === 1} className="sessions-agent-hand"><summary>{t("Hand", "ハンド", "手牌", "Mano")} #{hand.history?.handNo ?? index + 1} · {dateLabel(hand.at)} · {ffNumber(hand.returnBb, true)} bb</summary>{hand.history ? <AgentHandHistory record={hand} /> : <p className="sessions-source-note">{t("Hand details were not saved.", "このハンドの詳細は保存されていません。", "未保存此手详情。", "No se guardaron los detalles de esta mano.")}</p>}</details>)}
+      </> : row.record.history ? <AgentHandHistory record={row.record} /> : <p className="sessions-source-note">{t("These browser records store one hand's result and statistics, without session IDs, cards or action logs. No session grouping or accuracy is reconstructed. Existing data is kept as saved.", "このブラウザの旧記録はハンドごとの収支・指標のみです。セッションID・カード・アクション履歴は保存されていません。セッションや正答率を復元せず、既存データをそのまま保持します。", "浏览器旧记录仅保存每手收益与指标，没有会话ID、牌面或行动日志。不重建会话或正确率，原数据保持不变。", "Estos registros del navegador guardan resultado y estadísticas por mano, sin ID de sesión, cartas ni acciones. No se reconstruyen sesiones ni precisión. Los datos existentes se conservan.")}</p>}
+      {!row.session && <dl className="sessions-flags">{([ ["VPIP", row.record.vpip], ["PFR", row.record.pfr], ["3bet", row.record.threeBet], [t("Showdown", "ショーダウン", "摊牌", "Showdown"), row.record.showdown] ] as [string, boolean][]).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{typeof value !== "boolean" ? "—" : value ? t("Yes", "あり", "是", "Sí") : t("No", "なし", "否", "No")}</dd></div>)}</dl>}
     </> : row.season === "quiz-v1" ? <p className="sessions-source-note">{t("Saved ranked quiz summary", "保存済みランククイズ集計", "已保存排位答题摘要", "Resumen guardado del cuestionario")} · {row.record.answered} · {rowAccuracy(row)}. {t("Per-question history is not returned by this history API.", "この履歴APIでは問題ごとの履歴を返していません。", "此历史API不返回逐题日志。", "Esta API no devuelve el historial por pregunta.")}</p> : <section className="sessions-history">
       <h2>{t("Recorded hand", "保存されたハンド", "已保存手牌", "Mano registrada")}</h2>
       <div><Cards cards={ranked?.heroCards ?? []} /> · <Cards cards={ranked?.board ?? []} /></div>
@@ -113,7 +118,13 @@ export function SessionPage({ drills, reviews, drafts, onResume, rankedReady = f
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [mode, setMode] = useState("all"), [filter, setFilter] = useState("all"), [limit, setLimit] = useState(50);
   const practice = useMemo(() => practiceSessionRows(drills, reviews, drafts), [drills, reviews, drafts]);
-  const [agent] = useState(loadAgentHands);
+  const [agent, setAgent] = useState(loadAgentHands);
+  useEffect(() => {
+    const refresh = () => setAgent(loadAgentHands());
+    window.addEventListener("reysonai:agent-history-changed", refresh);
+    window.addEventListener("storage", refresh);
+    return () => { window.removeEventListener("reysonai:agent-history-changed", refresh); window.removeEventListener("storage", refresh); };
+  }, []);
   const [state, setState] = useState<PageState>({ owner: "", pages: {}, busy: {}, errors: {} });
   const generation = useRef(0);
   const allowed = rankedReady && Boolean(rankedOwner);
@@ -136,7 +147,7 @@ export function SessionPage({ drills, reviews, drafts, onResume, rankedReady = f
   const rows = useMemo(() => sessionHistoryRows(practice, agent, Object.fromEntries(RANKED_SEASONS.map(season => [season, current?.pages[season]?.items ?? []]))), [practice, agent, current]);
   const selected = rows.find(row => row.key === selectedKey);
   if (selected) return selected.mode === "drills" ? <PracticeDetail session={selected.record} onBack={() => setSelectedKey(null)} onResume={onResume} /> : <SavedHandDetail row={selected} onBack={() => setSelectedKey(null)} />;
-  const filtered = rows.filter(row => (mode === "all" || row.mode === mode) && (filter === "all" || (row.mode === "drills" && row.record.status === "draft" ? "draft" : "completed") === filter));
+  const filtered = rows.filter(row => (mode === "all" || row.mode === mode) && (filter === "all" || (rowInProgress(row) ? "draft" : "completed") === filter));
   const visible = filtered.slice(0, limit);
   const drillAttempts = practice.filter(row => row.drillId !== "ranked");
   const answered = drillAttempts.reduce((sum, row) => sum + row.answered, 0), score = drillAttempts.reduce((sum, row) => sum + row.score, 0);
@@ -157,7 +168,7 @@ export function SessionPage({ drills, reviews, drafts, onResume, rankedReady = f
     </div>}
     {visible.length ? <div className="sessions-table-scroll"><table className="leaderboard-table sessions-table listing-table"><thead><tr>{[t("Date", "日時", "日期", "Fecha"), t("Mode", "モード", "模式", "Modo"), t("Record", "記録", "记录", "Registro"), t("Status", "状態", "状态", "Estado"), t("Hands / questions", "ハンド / 問題数", "手数 / 题数", "Manos / preguntas"), t("Accuracy", "正答率", "正确率", "Precisión"), t("Net result", "収支", "净收益", "Resultado"), t("Practice time", "練習時間", "练习时间", "Tiempo")].map(label => <th key={label}>{label}</th>)}<th><span className="sr-only">{t("Details", "詳細", "详情", "Detalles")}</span></th></tr></thead><tbody>{visible.map(row => <tr key={row.key}>
       <td>{dateLabel(row.at)}</td><td>{modeLabel(row.mode)}</td><td><button type="button" className="sessions-row-link" translate="no" onClick={() => setSelectedKey(row.key)}>{rowName(row)}</button></td><td>{rowStatus(row)}</td>
-      <td>{row.mode === "drills" ? row.record.answered : row.mode === "ranked" && row.season === "quiz-v1" ? row.record.answered : 1}</td><td>{rowAccuracy(row)}</td><td>{rowNet(row)}</td><td>{row.mode === "drills" ? durationLabel(row.record.durationMs) : "—"}</td>
+      <td>{row.mode === "drills" ? row.record.answered : row.mode === "ranked" && row.season === "quiz-v1" ? row.record.answered : row.mode === "agent" ? row.session?.hands.length ?? 1 : 1}</td><td>{rowAccuracy(row)}</td><td>{rowNet(row)}</td><td>{row.mode === "drills" ? durationLabel(row.record.durationMs) : row.mode === "agent" && row.session ? durationLabel((row.session.endedAt ?? row.session.hands.at(-1)!.at) - row.session.startedAt) : "—"}</td>
       <td><button type="button" className="sessions-open" aria-label={localized(`View hand history for ${rowName(row)}`, `${rowName(row)}のハンド履歴を見る`)} translate="no" onClick={() => setSelectedKey(row.key)}><ArrowRight size={16} /></button></td>
     </tr>)}</tbody></table></div> : <div className="sessions-empty-state"><ClockCounterClockwise size={28} /><h2>{t("No saved records", "保存済み記録はありません", "暂无保存记录", "Sin registros guardados")}</h2><p>{t("Completed hands and drill progress appear here when saved.", "ハンドの完了やドリルの途中保存後に記録が並びます。", "已完成手牌及练习进度保存后在此显示。", "Las manos completadas y el progreso aparecen aquí al guardarse.")}</p></div>}
     {filtered.length > visible.length && <button type="button" className="config-edit" onClick={() => setLimit(value => value + 50)}>{t("Show more saved records", "保存済み記録をさらに表示", "显示更多保存记录", "Mostrar más registros")}</button>}

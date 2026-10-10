@@ -1,3 +1,4 @@
+import { useAgentHistorySession } from "./history-session.ts";
 import { POSITIONS } from "./preflop.ts";
 import { GameplayDetails, GamePanel } from "./GameplayDetails.tsx";
 import { StyleAvatar } from "./StyleAvatar.tsx";
@@ -94,6 +95,8 @@ function chipState(revealed: LogEntry[], street: string) {
 type HistoryItem = { no: number; winners: string; mine: number | null; showdown: boolean; cards: string[]; resultBb: number | null; log: LogEntry[]; board: string[]; nameOf: (position: string) => string };
 
 export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = false, exitDisabled = false, handoffKey, onHandBoundary, waitingHeader, waitingSidebar, mw3Client = mw3DeliveryClient }: { tableId: string; watch?: boolean; onExit: () => void; waitingMode?: boolean; exitDisabled?: boolean; handoffKey?: string; onHandBoundary?: () => void; waitingHeader?: ReactNode; waitingSidebar?: ReactNode; mw3Client?: Mw3DeliveryClient }) {
+  const historySession = useAgentHistorySession(!watch && !waitingMode);
+  const exit = () => { historySession.close(); onExit(); };
   const table = agentTableById(tableId)!;
   const [ready, setReady] = useState(false);
   const [session, setSession] = useState<Session>(() => createSession({ tableId, seed: `${tableId}-${Date.now()}`, humanSeat: watch ? null : 0 }));
@@ -210,7 +213,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
   useEffect(() => {
     if (!done || recorded.current === session.handNo) return;
     recorded.current = session.handNo;
-    if (humanPos && !waitingMode) saveAgentHand(handRecord(result!, tableId, humanPos, Date.now(), { handNo: session.handNo + 1, names: Object.fromEntries(POSITIONS.map(pos => [pos, nameOf(pos)])) }));
+    if (humanPos && !waitingMode) saveAgentHand(handRecord(result!, tableId, humanPos, Date.now(), { session: historySession.entry, handNo: session.handNo + 1, names: Object.fromEntries(POSITIONS.map(pos => [pos, nameOf(pos)])) }));
     setHistory(current => [{ no: session.handNo + 1, winners: (result!.winners ?? []).map(nameOf).join(" / "),
       nameOf, log: [...revealed], board: [...boardCards], resultBb: humanPos && Number.isFinite(result!.returns![humanPos]) ? result!.returns![humanPos] : null, cards: humanPos ? [...(result!.holeCards[humanPos] ?? [])] : [], mine: humanPos && Number.isFinite(result!.returns![humanPos]) ? toPoints(result!.returns![humanPos]) : null, showdown: Boolean(result!.showdown) }, ...current].slice(0, 30));
   }, [done, humanPos, session.handNo, result, tableId, nameOf]);
@@ -282,7 +285,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
   </>;
   return <div className="agent-page" style={{ "--table-theme": table.theme } as any}>
     <header className="agent-top">
-      <button type="button" className={`agent-back${waitingMode ? " ff-exit" : ""}`} disabled={exitDisabled} onClick={onExit} aria-label={waitingMode ? localized("Exit", "退出") : localized("Back", "戻る")}><ArrowLeft size={16} weight="bold" />{waitingMode && localized("Exit", "退出")}</button>
+      <button type="button" className={`agent-back${waitingMode ? " ff-exit" : ""}`} disabled={exitDisabled} onClick={exit} aria-label={waitingMode ? localized("Exit", "退出") : localized("Back", "戻る")}><ArrowLeft size={16} weight="bold" />{waitingMode && localized("Exit", "退出")}</button>
       <div className="agent-title">
         <strong>{waitingHeader ?? localized(table.name.en, table.name.ja)}</strong>
         <small>{watch ? localized("Spectating", "観戦") : "Reyson Agent"} · 6-max 100BB · #{session.handNo + 1}</small>
