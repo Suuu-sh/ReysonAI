@@ -1,5 +1,6 @@
 import { accountTransport, digest, type AccountEnv } from './account.ts';
-import { routePreflopDatasets } from './preflop-datasets.ts';
+import { readPublishedDataset } from './application/published-datasets.ts';
+import { D1PublishedDatasetReader } from './infrastructure/d1-published-dataset-repository.ts';
 import type { D1Database } from './postflop.ts';
 import { RANKED_LENGTH, RANKED_DAILY_LIMIT, START_RATING, LEADERBOARD_MIN_MATCHES, rateMatch, displayTier } from '../../shared/ranked-rules.ts';
 
@@ -51,6 +52,7 @@ export async function routeRanked(request:Request,env:RankedEnv):Promise<Respons
   if(request.method==='POST'&&(!origins.includes(request.headers.get('origin')||'')||!/^application\/json(?:;|$)/i.test(request.headers.get('content-type')||''))) return reply({error:'invalid_origin_or_content_type'},403);
   const db=env.DB as D1Database,now=Date.now(),day=new Date(now).toISOString().slice(0,10);
   const query=async<T>(sql:string,...args:unknown[])=>(await db.prepare(sql).bind(...args).all<T>()).results;
+  const publishedDatasets=new D1PublishedDatasetReader(db);
   if(['/v1/ranked/status','/v1/ranked/profile'].includes(url.pathname)&&request.method==='GET') {
     try {
       await query('SELECT id FROM account_users LIMIT 1');
@@ -58,9 +60,9 @@ export async function routeRanked(request:Request,env:RankedEnv):Promise<Respons
       await query('SELECT bucket FROM account_rate_limits LIMIT 1');
       await query('SELECT id,user_id,day,slot,status,expires_at,questions_json,actions_json,completed_at,before_rating,after_rating,score FROM ranked_matches LIMIT 1');
       await query('SELECT user_id,public_name,rating,peak,matches FROM ranked_players LIMIT 1');
-      const inputs=await Promise.all(['opening-ranges','preflop-ranges'].map(name=>routePreflopDatasets(db,`/v1/preflop/datasets/${name}`)));
-      if(inputs.some(input=>input.status!==200||!input.text)) return reply({enabled:false,error:'ranked_dataset_unavailable'},503);
-      inputs.forEach((input,index)=>questionPool(JSON.parse(input.text!),index?'response':'open'));
+      const inputs=await Promise.all(['opening-ranges','preflop-ranges'].map(name=>readPublishedDataset(publishedDatasets,name)));
+      if(inputs.some(input=>input.kind!=='published'||!input.text)) return reply({enabled:false,error:'ranked_dataset_unavailable'},503);
+      inputs.forEach((input,index)=>{if(input.kind==='published')questionPool(JSON.parse(input.text),index?'response':'open');});
       if(url.pathname==='/v1/ranked/status') return reply({enabled:true,dayBoundary:'UTC'});
     }catch{return reply({enabled:false,error:'ranked_service_unavailable'},503);}
   }
@@ -96,9 +98,9 @@ export async function routeRanked(request:Request,env:RankedEnv):Promise<Respons
     if(path==='matches'&&request.method==='POST') {
       const body=await boundedBody(request);if(body?.consent!==true||Object.keys(body).some(k=>k!=='consent')) return reply({error:'public_ranked_consent_required'},400);
       // Read both immutable snapshots before reserving a daily start. Unpublished inputs fail closed.
-      const sources=await Promise.all(['opening-ranges','preflop-ranges'].map(name=>routePreflopDatasets(db,`/v1/preflop/datasets/${name}`)));
-      if(sources.some(s=>s.status!==200||!s.text)) return reply({error:'ranked_dataset_unavailable'},503);
-      const pool=sources.flatMap((source,i)=>questionPool(JSON.parse(source.text!),i?'response':'open')).flat();
+      const sources=await Promise.all(['opening-ranges','preflop-ranges'].map(name=>readPublishedDataset(publishedDatasets,name)));
+      if(sources.some(source=>source.kind!=='published'||!source.text)) return reply({error:'ranked_dataset_unavailable'},503);
+      const pool=sources.flatMap((source,i)=>source.kind==='published'?questionPool(JSON.parse(source.text),i?'response':'open'):[]).flat();
       const questions=Array.from({length:RANKED_LENGTH},()=>{let pick=random()*pool.reduce((sum,q)=>sum+q.weight,0);const q=pool.find(v=>(pick-=v.weight)<0)??pool.at(-1)!;return {spotId:q.spotId,hand:q.hand,mix:q.mix};});
       await query('INSERT OR IGNORE INTO ranked_players(user_id,public_name) VALUES (?,?)',user,`Player ${crypto.randomUUID().slice(0,8)}`);
       await query("UPDATE ranked_matches SET status='expired' WHERE user_id=? AND status='active' AND expires_at<=?",user,now);
