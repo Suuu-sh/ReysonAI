@@ -63,9 +63,24 @@ test('global positions and Legend are assigned before top-100 pagination',withFi
  assert.equal(rows[1].tier,'ダイヤモンド');
 }));
 test('invalid/unpublished datasets fail closed and grading cannot use a client mix',withFixture(async f=>{
- f.sqlite.prepare('DELETE FROM preflop_dataset_parts').run();assert.equal((await f.call('matches',{consent:true})).status,503);assert.equal((await f.call('status')).status,503);
+ f.sqlite.prepare('DELETE FROM preflop_dataset_parts').run();
+ const unavailableStart=await f.call('matches',{consent:true}),unavailableStatus=await f.call('status');
+ assert.equal(unavailableStart.status,503);assert.deepEqual(await unavailableStart.json(),{error:'ranked_dataset_unavailable'});
+ assert.equal(unavailableStatus.status,503);assert.deepEqual(await unavailableStatus.json(),{enabled:false,error:'ranked_dataset_unavailable'});
  assert.throws(()=>questionPool({spots:[{id:'bad',hands:[{hand:'AKs',fold:NaN,open:100}]}]},'open'));
  const questions=Array.from({length:20},()=>({mix:{fold:.8,open:.2}}));assert.equal(gradeRanked(questions,Array(20).fill('open'))[0].score,.5);
+}));
+
+test('ranked preserves missing versus malformed published dataset errors',withFixture(async f=>{
+ const malformed=await f.call('status');assert.equal(malformed.status,200);
+ f.sqlite.prepare('UPDATE preflop_dataset_parts SET body=? WHERE name=? AND part=0').run('{ malformed json', 'opening-ranges');
+ const malformedStatus=await f.call('status'),malformedStart=await f.call('matches',{consent:true});
+ assert.equal(malformedStatus.status,503);assert.deepEqual(await malformedStatus.json(),{enabled:false,error:'ranked_service_unavailable'});
+ assert.equal(malformedStart.status,503);assert.deepEqual(await malformedStart.json(),{error:'ranked_service_unavailable'});
+ f.sqlite.prepare('DELETE FROM preflop_datasets WHERE name=?').run('opening-ranges');
+ const missingStatus=await f.call('status'),missingStart=await f.call('matches',{consent:true});
+ assert.equal(missingStatus.status,503);assert.deepEqual(await missingStatus.json(),{enabled:false,error:'ranked_dataset_unavailable'});
+ assert.equal(missingStart.status,503);assert.deepEqual(await missingStart.json(),{error:'ranked_dataset_unavailable'});
 }));
 
 test('prototype names are not offered ranked actions and never finalize a match',withFixture(async f=>{
