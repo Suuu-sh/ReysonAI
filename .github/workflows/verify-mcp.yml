@@ -2,10 +2,10 @@ name: Verify authenticated free MCP
 on:
   pull_request:
     branches: [development, main]
-    paths: ['apps/mcp/**', 'apps/backend/src/index.ts', 'apps/backend/src/worker.ts', 'apps/backend/src/account.ts', 'apps/backend/migrations/0007_accounts.sql', 'apps/frontend/src/estimated/**', '.github/workflows/verify-mcp.yml']
+    paths: ['apps/mcp/**', 'apps/backend/src/index.ts', 'apps/backend/src/worker.ts', 'apps/backend/src/account.ts', 'apps/backend/migrations/0007_accounts.sql', 'apps/frontend/src/estimated/**', 'apps/frontend/tsconfig.json', 'apps/frontend/tsconfig.worker.json', '.github/workflows/verify-mcp.yml']
   push:
     branches: ['feat/authenticated-free-mcp']
-    paths: ['apps/mcp/**', '.github/workflows/verify-mcp.yml']
+    paths: ['apps/mcp/**', 'apps/frontend/tsconfig.json', 'apps/frontend/tsconfig.worker.json', '.github/workflows/verify-mcp.yml']
 permissions:
   contents: read
 concurrency:
@@ -31,6 +31,8 @@ jobs:
           cache-dependency-path: apps/mcp/package-lock.json
       - run: npm ci --ignore-scripts
       - run: npm run typecheck
+      - name: Typecheck the composed API Worker sources
+        run: npx tsc --project ../frontend/tsconfig.worker.json --noEmit
       - run: npm test
       - run: npm run build:check
       - name: Dry-run the composed API Worker bundle without deploying

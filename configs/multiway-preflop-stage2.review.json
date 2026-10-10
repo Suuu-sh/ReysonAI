@@ -441,6 +441,61 @@
         },
         "limitations": "Source-only review. No TypeScript compiler run by the reviewer, strategy generation, policy/data edit, D1 operation, production configuration change, deployment, or merge.",
         "after_content_sha256": "0bf4a3ac6ce0f9ba88651ebe889af19965d5eed3a74c73e961ac292f5d1de75a"
+      },
+      {
+        "date": "2026-10-10",
+        "reviewer": "Independent source-only MCP/frontend Worker type-split reviewer (corrective follow-up)",
+        "reviewer_task": "/root/source_only_review",
+        "reviewed_source_commit": "43742937dd0dc1097e4998dd862488edf4e08de4",
+        "report": "apps/backend/MCP_WORKER_TYPECHECK_WORKFLOW_REVIEW.md",
+        "report_sha256": "81cf034d83ecf5e4650eb25e3080ea6b63d0ad8311c30792ad852383590d43f0",
+        "scope": "Corrective source/workflow update: restore the frontend package's pinned baseline bytes and run the composed Worker typecheck in the MCP workflow. No renewed strategy, numerical, or saved-data approval.",
+        "blocking_findings": 0,
+        "before_content_sha256": "0bf4a3ac6ce0f9ba88651ebe889af19965d5eed3a74c73e961ac292f5d1de75a",
+        "source_identity": {
+          "source_records_before": 195,
+          "source_records_after": 195,
+          "modified": [
+            "apps/frontend/package.json"
+          ],
+          "added": [],
+          "removed": [],
+          "unchanged": 194,
+          "previous": {
+            "path": "apps/frontend/package.json",
+            "bytes": 2585,
+            "sha256": "e758dd947c258287bc5b334e55e733b82f5e61de9a3c5660f16d362aea8ce981"
+          },
+          "current": {
+            "path": "apps/frontend/package.json",
+            "bytes": 2514,
+            "sha256": "7aa07c287011bd5c2f303680bc6f3fa07203ddb7692ed53b38b8de0907222696"
+          }
+        },
+        "verification": {
+          "strict_mw3_gate": "The two exact-head reviewed-data jobs on 43742937 failed closed on the changed package.json source identity.",
+          "correction": "Restore package.json to exact development bytes; run npx tsc --project ../frontend/tsconfig.worker.json --noEmit from apps/mcp after npm ci --ignore-scripts.",
+          "source_graph": "The Stage 2/3 receipt source rows do not include verify-mcp.yml or the frontend tsconfig files; deploy-worker.yml MCP dependency-install renewal is retained.",
+          "exact_head_ci": "Pending on the corrected PR head."
+        },
+        "verified_unchanged": {
+          "artifact_records": 1888,
+          "artifact_bytes": 79002248,
+          "archive": {
+            "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+            "bytes": 1747857,
+            "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a"
+          },
+          "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+          "counts": {
+            "catalog": 3115,
+            "saved": 1611,
+            "unreachable": 1504,
+            "hands": 272259
+          },
+          "prior_review_history_preserved": true
+        },
+        "limitations": "Source-only correction. Exact-head Actions validation is pending; no generation, D1 operation, deployment, merge, or production configuration change."
       }
     ],
     "copy_amendments": [
@@ -10422,8 +10477,8 @@
     },
     {
       "path": "apps/frontend/package.json",
-      "bytes": 2585,
-      "sha256": "e758dd947c258287bc5b334e55e733b82f5e61de9a3c5660f16d362aea8ce981"
+      "bytes": 2514,
+      "sha256": "7aa07c287011bd5c2f303680bc6f3fa07203ddb7692ed53b38b8de0907222696"
     },
     {
       "path": "apps/frontend/scripts/audit-estimates.mjs",
@@ -11336,7 +11391,7 @@
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
     }
   ],
-  "content_sha256": "0bf4a3ac6ce0f9ba88651ebe889af19965d5eed3a74c73e961ac292f5d1de75a",
+  "content_sha256": "c413e9d2c057838e30601f0bb26c107ea829de2ac3336799e3e5982966fec021",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
