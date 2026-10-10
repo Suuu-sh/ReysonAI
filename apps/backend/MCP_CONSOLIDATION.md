@@ -6,6 +6,8 @@
 
 Snapshot checked 2026-10-10 UTC. The production code paths reviewed are on main `f8282b48a5db08265431071b8c1792046f161d89` (PR #168) and development `a9ee6d735f8174cc55dc135975fa220e94604758`. The API/MCP source paths this change composes are identical on those refs. This PR targets development only and does not include the separate main/development synchronization work.
 
+The deployment/version values below are a historical read-only snapshot, not a cutover rollback target. Immediately before any later production operation, recapture the sanitized settings and routes from the then-current 100% active API version and verify the dedicated MCP Worker is still available. Use that latest active API version as the rollback point; never rely on this earlier version ID.
+
 The following metadata was read without requesting or recording any secret values:
 
 | Resource | Current safe state |
@@ -30,6 +32,8 @@ The integration reuses the MCP handler, OAuth provider, D1 binding, and KV names
 
 No active Wrangler configuration is changed by this draft. Before the route cutover, prepare and independently review these settings on the existing API Worker:
 
+**Durable configuration source:** after separate operation-time approval, record `OAUTH_KV` and the non-secret MCP variables in the tracked `apps/backend/wrangler.jsonc`, using the exact existing namespace and approved values. The normal deployment already uses `wrangler deploy --config wrangler.jsonc`; this tracked config must remain the source of truth for every later deployment. Dashboard-only bindings or vars can be lost or reset by a later config-based deploy, so do not use the Dashboard as the sole configuration record. Keep secret values in Cloudflare Worker Secrets, managed separately from source and configuration; never copy them into this repository. No binding, variable, or secret is changed by this draft.
+
 - Retain its existing `DB`, `AUTH_ENABLED`, and `AUTH_APP_URL` bindings/values. Do not replace the D1 binding or API Custom Domain.
 - Add `OAUTH_KV` using the exact namespace already bound to `reysonai-mcp`; copy the namespace identifier through the approved Cloudflare settings workflow, never through this repository.
 - Add `MCP_ENABLED=true`, `MCP_ACCESS_MODE=authenticated_free`, `MCP_ORIGIN=https://api.reysonai.com`, and `MCP_ALLOWED_ORIGINS=https://app.reysonai.com`. Keep authenticated access free and retain existing client registrations/grants.
@@ -38,10 +42,11 @@ No active Wrangler configuration is changed by this draft. Before the route cuto
 
 ## Staged cutover and rollback
 
-1. Merge/release this code only after the independent review. Keep the current four Worker Routes pointing to `reysonai-mcp` while the API configuration is prepared and tested in isolation.
-2. With a separate operation-time approval, bind the existing OAuth KV namespace to the API Worker and add the approved MCP variables. Keep `MCP_ENABLED` fail-closed until the composed API has passed staging OAuth, account-session, MCP tool, and ordinary API tests.
-3. After the API is ready, remove only the four route records above. The unchanged `api.reysonai.com` Custom Domain on `reysonai-api` then receives those paths. Do not add a broad `api.reysonai.com/*` route or alter `/v1/*`, `/health`, or `FastFoldRuntime`.
-4. Verify OAuth discovery, consent, token exchange/refresh/revocation, authenticated MCP tools, API health, account/session, postflop/preflop reads, ranked, and FastFold on the same external URL. Keep the old Worker and its deployment available through the rollback window.
-5. Roll back by restoring the four route records to `reysonai-mcp`; do not delete or rewrite D1/KV data. The recorded API version above is the pre-integration API rollback point. Deleting `reysonai-mcp` is a separate final operation and must wait until route, OAuth, and API verification are complete and explicit deletion approval is obtained.
+1. Immediately before the approved cutover, refresh the sanitized rollback snapshot from the latest production state: active API version and traffic percentage, binding names/types, non-secret settings, all four MCP route records, and the dedicated MCP Worker version/settings. Do not record secret values or OAuth/KV contents. Keep the dedicated Worker available.
+2. Merge/release this code only after the independent review. Keep the current four Worker Routes pointing to `reysonai-mcp` while the API configuration is prepared and tested in isolation.
+3. With a separate operation-time approval, add the existing OAuth KV binding and approved non-secret MCP variables to `apps/backend/wrangler.jsonc`, then deploy with that tracked config. Keep `MCP_ENABLED` fail-closed until the composed API has passed staging OAuth, account-session, MCP tool, and ordinary API tests.
+4. After the API is ready, remove only the four route records above. The unchanged `api.reysonai.com` Custom Domain on `reysonai-api` then receives those paths. Do not add a broad `api.reysonai.com/*` route or alter `/v1/*`, `/health`, or `FastFoldRuntime`.
+5. Verify OAuth discovery, consent, token exchange/refresh/revocation, authenticated MCP tools, API health, account/session, postflop/preflop reads, ranked, and FastFold on the same external URL. Keep the old Worker and its deployment available through the rollback window and until these checks pass.
+6. Roll back by restoring the four route records to `reysonai-mcp`; do not delete or rewrite D1/KV data. Roll back to the API version captured in the just-in-time snapshot, not the historical version listed above. Deleting `reysonai-mcp` is a separate final operation and must wait until route, OAuth, and API verification are complete, the rollback window has passed, and explicit deletion approval is obtained.
 
 This PR performs none of the production cutover, route changes, configuration changes, or deletion steps above.
