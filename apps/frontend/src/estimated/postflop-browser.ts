@@ -58,10 +58,19 @@ function hasProfilePair(candidate: CandidateSource | CandidateSource<LaterPolicy
 type ProfileStage = "flop" | "later";
 type ProfileRole = "villain" | "exploit";
 
+type PublishedProfilePolicyBody<P> = {
+  error?: string; code?: string; state?: string;
+  metadata?: Candidate<P>["metadata"] & {
+    profile?: string; role?: string; spot?: string; opponent_seat?: string; tree?: string; stage?: string;
+  };
+  opponentSeat?: string; kind?: string; profile?: string; spot?: string; role?: string; stage?: string;
+  policy?: P & { kind?: string; rules?: unknown; streets?: { turn?: unknown; river?: unknown } };
+};
+
 async function publishedProfileCandidate<P>(spot: Spot, profile: string, role: ProfileRole, stage: ProfileStage,
   opponentSeat: "ip" | "oop", base: string, signal: AbortSignal): Promise<Candidate<P>> {
   const response = await fetch(postflopUrl("profile-policy", { profile, spot: spot.id, opponentSeat, role, stage }, base), { signal });
-  const body = await response.json();
+  const body = await response.json() as PublishedProfilePolicyBody<P>;
   if (!response.ok) {
     const missing = response.status === 404;
     throw Object.assign(new Error(body.error || "Opponent-profile policy could not be loaded."),
