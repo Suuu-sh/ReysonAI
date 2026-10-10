@@ -1,0 +1,453 @@
+{
+  "schema_version": 1,
+  "decision": "PASS_INDEPENDENT_SOURCE_CONTEXT_AND_SAVED_PAYLOAD_EVIDENCE_FOR_BOUNDED_RENEWAL",
+  "scope": "Independent source-context addendum for PR160 at b7c7259. The original report remains immutable. Its latest-source saved-payload prerequisite is now satisfied by independently inspected Linux evidence and exact source equivalence. This permits the separate authorized author to prepare bounded mechanical source-only metadata renewal, not final acceptance, merge or production.",
+  "reviewed_at_utc": "2026-10-10T10:38:00Z",
+  "pull_request": "https://github.com/Suuu-sh/ReysonAI/pull/160",
+  "approved_head": "b7c7259f88a4ceb11c55139349d934c507a5302c",
+  "approved_head_tree": "3ac905af7bced2eac917d6db7f07e7a2acf98ae6",
+  "head_last_rechecked_utc": "2026-10-10T10:37:46Z",
+  "integrated_application_commit": "7c979c8b5e60c5443455d8650ff3448733216bfc",
+  "integrated_application_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+  "integrated_development_base": "a9ee6d735f8174cc55dc135975fa220e94604758",
+  "application_parents": [
+    "9374d90f31fe8891ceb924c29eb436edefd76e4c",
+    "a9ee6d735f8174cc55dc135975fa220e94604758"
+  ],
+  "base_drift": {
+    "observed_live_development": "ff17d71fbce0aa70c6137dbcfc8a7f2c38eb6733",
+    "changed_paths_from_integrated_base": [
+      "apps/frontend/src/account/AccountPage.tsx",
+      "apps/frontend/src/route.ts",
+      "apps/frontend/tests/route.test.mjs"
+    ],
+    "all_outside_18_reviewed_source_closures": true,
+    "condition": "The captured PR base a9ee6d7 is not the latest observed development tip. This addendum permits preparation at b7c7259 only. Recheck live tips, integration and exact final diff before any separate merge decision; do not claim latest-base integration or merge readiness."
+  },
+  "reviewer": {
+    "task": "/root/review_pr160_integrated_source",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "xhigh",
+    "identity_evidence": "Parent supplied the actual native collaboration spawn metadata: explicit model=gpt-6-astra, reasoning_effort=xhigh, fork_turns=none at 2026-10-10 09:32 UTC, returning this exact task. This is provenance for the present native review; it does not upgrade the older cloud review's unknown model.",
+    "independent_from_implementation_author": true,
+    "authored_application_patch": false,
+    "private_session_or_credential_files_accessed": false,
+    "support_review_task": "/root/review_pr160_integrated_source/verify_linux_replay_evidence"
+  },
+  "implementation_author": {
+    "task": "01a12141-db67-70c1-a95e-228cae8f5088",
+    "integration_turn": "01a12508-8fb9-7376-aca7-a5f3828d5368",
+    "model": null,
+    "model_status": "Unknown; parent reports actual author model is not exposed.",
+    "numerical_author_provenance": "Historical numerical author/reviewer model and task fields must be retained verbatim. The current integration author is not being represented as a new numerical author.",
+    "integration_turn_note": "The original report integration turn is historical; no new author turn/model has been inferred for b7c7259."
+  },
+  "original_immutable_approval": {
+    "file": "pr160-integrated-source-review-9374d90.json",
+    "bytes": 46480,
+    "sha256": "2f8a43cec4daba803f304ac07964f5fba1202d3894ef5e8293fa7c94c1dafe92"
+  },
+  "source_delta": {
+    "prior_approved_head": "9374d90f31fe8891ceb924c29eb436edefd76e4c",
+    "changes_since_prior_approval": 18,
+    "inherited_development_paths": 7,
+    "post_application_integration_changes": 11,
+    "explanation": "Six Stats implementation/instruction files are exactly equal to integrated development a9ee6d7. The player-analysis test retains existing PR160 account-copy assertions and the inherited Stats observability test. The remaining eleven changes are diagnostic workflow/tools and preserved QA evidence. None changes any of the 18 numerical source inventories.",
+    "already_reviewed_unchanged_application": "AuthPanel 500000-byte recovery copy, Chinese/Spanish translations, session owner/version/consent logic, backend owner authority, codec and their focused tests are the same Git blobs as the independently reviewed 9374d90 source. These are not newly introduced in b7c7259.",
+    "closures": [
+      {
+        "subject": "Stage2",
+        "source_records": 196,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "Stage3",
+        "source_records": 100,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "CO_open_BTN_call_BB_call",
+        "source_records": 137,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "CO_open_BTN_call_SB_call",
+        "source_records": 138,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "HJ_open_BTN_call_BB_call",
+        "source_records": 138,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "HJ_open_BTN_call_SB_call",
+        "source_records": 138,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "HJ_open_CO_call_BB_call",
+        "source_records": 138,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "HJ_open_CO_call_BTN_call",
+        "source_records": 138,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "HJ_open_CO_call_SB_call",
+        "source_records": 138,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "UTG_open_BTN_call_BB_call",
+        "source_records": 138,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "UTG_open_BTN_call_SB_call",
+        "source_records": 138,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "UTG_open_CO_call_BB_call",
+        "source_records": 138,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "UTG_open_CO_call_BTN_call",
+        "source_records": 138,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "UTG_open_CO_call_SB_call",
+        "source_records": 138,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "UTG_open_HJ_call_BB_call",
+        "source_records": 138,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "UTG_open_HJ_call_BTN_call",
+        "source_records": 138,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "UTG_open_HJ_call_CO_call",
+        "source_records": 138,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      },
+      {
+        "subject": "UTG_open_HJ_call_SB_call",
+        "source_records": 138,
+        "changed_or_missing_from_prior": [],
+        "all_source_git_blobs_equal_previous_approval": true
+      }
+    ],
+    "membership_basis": "Exact official source-root/path traversal and vendored parser were previously evaluated for 9374d90 versus development4114419. Those collectors/root declarations/parser and all closure sources are unchanged at7c979c8 and b7c7259. The new Linux collectors output all18 inventories identically; reviewer compares every ordered path, byte count and SHA256 to the prior independent closure result. Added Stats presentation sources are outside all18 graphs.",
+    "protected_tracked_blobs_unchanged": 1838,
+    "protected_scope": "1838 tracked blobs under artifacts/, configs/, apps/shared/, backend migrations, frontend scripts/data, scripts/postflop-ai and src/estimated are identical across original9374d90, integrated7c979c8, headb7c7259 and basea9ee6d7. This includes numerical artifacts, receipts, pins, archive LFS pointers, collectors and gates before renewal."
+  },
+  "fresh_scoped_verification": {
+    "runtime": "Node v24.19.0 on reviewer Linux workspace",
+    "git_blob_bound_application_config_test_files": 53,
+    "account_and_native_tests_passed": 14,
+    "independent_codec_tests_passed": 3,
+    "codec_exhaustive_supported_combinations": 8192,
+    "result": "17/17 passed after checking53 materialized application/config/test files against exact b7c7259 Git blobs. Old diagnostic harness files were excluded from this application-test identity ledger because those harnesses changed; actual latest harness was independently reviewed separately.",
+    "coverage": "Retains the scoped owner authority, expectedOwner, same-account version conflict, session/data owner mismatch, queued save revalidation, exact UTF8 request-size limit, guest preflight preservation/explicit consent and supported codec roundtrip checks from the original review.",
+    "not_claimed": [
+      "full frontend suite",
+      "full build/typecheck",
+      "numerical regeneration",
+      "local replay of all LFS payloads"
+    ]
+  },
+  "linux_evidence": {
+    "url": "https://github.com/Suuu-sh/ReysonAI/actions/runs/38044609886",
+    "run_id": 38044609886,
+    "job_id": 114191500807,
+    "job_url": "https://github.com/Suuu-sh/ReysonAI/actions/runs/38044609886/job/114191500807",
+    "job_status": "completed",
+    "job_conclusion": "success",
+    "run_head": "b7c7259f88a4ceb11c55139349d934c507a5302c",
+    "harness_actual_checkout": "db4e1897784c28b7d01d41940ac1d1e31636cc03",
+    "actual_application_checkout": "7c979c8b5e60c5443455d8650ff3448733216bfc",
+    "actual_application_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+    "current_base": "a9ee6d735f8174cc55dc135975fa220e94604758",
+    "runtime": {
+      "node": "v22.20.0",
+      "platform": "linux",
+      "arch": "x64",
+      "release": "6.17.0-1022-azure",
+      "zlib": "1.3.1-470d3a2",
+      "git": "git version 2.55.0"
+    },
+    "artifact_id": 11666672160,
+    "artifact": {
+      "file": "artifact.zip",
+      "bytes": 308041,
+      "sha256": "97c847bdf626f70eb003114b51a94939c5a9aea07400ab2b17f3bbfd7da1bfcd"
+    },
+    "artifact_members": 21,
+    "artifact_uncompressed_bytes": 1126518,
+    "artifact_digest_matches_connector_and_job_log": true
+  },
+  "saved_payload_verification": {
+    "stage2": {
+      "archive": {
+        "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+        "bytes": 1747857,
+        "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+        "format": "ustar+gzip"
+      },
+      "decoded_entries": 1614,
+      "decoded_bytes": 43276102,
+      "saved_artifact_records": 1888,
+      "source_count": 196,
+      "counts": {
+        "catalog": 3115,
+        "saved": 1611,
+        "unreachable": 1504,
+        "hands": 272259
+      },
+      "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+      "archive_count_explanation": "1614 archive records are the three continuation JSONs plus1611 compact reasons. The official reviewedFiles collector subsequently hashes all1888 non-Stage3 JSON records, including274 already tracked records; none are excluded from equality against the saved receipt."
+    },
+    "stage3": {
+      "archive": {
+        "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+        "bytes": 2436451,
+        "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+        "format": "ustar+gzip-stage3-content-v1"
+      },
+      "decoded_entries": 1805,
+      "decoded_bytes": 60027700,
+      "saved_artifact_records": 1805,
+      "source_count": 100,
+      "counts": {
+        "catalog": 16132,
+        "saved": 1801,
+        "unreachable": 5621,
+        "rare": 8710,
+        "hands": 304369
+      },
+      "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+      "renewal_order": "This diagnostic uses the unchanged Stage2 receipt, SHA2567326c8a23bffca9bdc4c67167691a0f4bdf17d527b519a4b105ada8ce91ffd15. Final Stage3 sources must be recollected only after the final renewed Stage2 receipt bytes exist; the diagnostic current content hash must not be copied blindly."
+    },
+    "mw3": {
+      "subjects": 16,
+      "raw_files": 112,
+      "raw_bytes": 235515283,
+      "joint_warnings": 561,
+      "delivery_pins": 32,
+      "limitations_per_subject": 7,
+      "canonical_archive_check": "All16 snapshot.compressed.equals(original archive) assertions passed, including gzip OS byte9 with no normalization or exception. Saved archives were not replaced.",
+      "preserved": "All16 spot/input/recipe/policy/implementation/verification identities,112 raw artifact records, historical receipt evidence and seven accepted limitations per subject match.32 delivery pins match historical receipts and committed registry. Historical SQL is reconstructed and compared exactly in memory, including all statement bytes.",
+      "manifest_outputs_hash_verified": 16,
+      "historical_provenance_preserved": true
+    },
+    "mw3_manifest_outputs": [
+      {
+        "spot": "CO_open_BTN_call_BB_call",
+        "path": "diagnostic-co-btn-bb-mw3-srp-v1.manifest.json",
+        "bytes": 29931,
+        "sha256": "a4a0e4eaaacf31698f416788a5ac91c35713de77ac685b0479534c49ecf0a1bf"
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call",
+        "path": "diagnostic-co-btn-sb-mw3-srp-v1.manifest.json",
+        "bytes": 30320,
+        "sha256": "0b6098be191435bbb3e412768284041c26c786f29a0e3d20986fd71d322ac2c5"
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_call",
+        "path": "diagnostic-hj-btn-bb-mw3-srp-v1.manifest.json",
+        "bytes": 30320,
+        "sha256": "b8781b4b811105f6e573e9a5763d29383fed28d369d3643364bcc90f910631cc"
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call",
+        "path": "diagnostic-hj-btn-sb-mw3-srp-v1.manifest.json",
+        "bytes": 30320,
+        "sha256": "626994070b38f7475443460f25933c2323b1975bb80ad613ec59f36b396a2c69"
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_call",
+        "path": "diagnostic-hj-co-bb-mw3-srp-v1.manifest.json",
+        "bytes": 30301,
+        "sha256": "c0fdef09603a80616ef32765a2bf98858507fe6809c04d4f9f92dd2bd2b5cdec"
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call",
+        "path": "diagnostic-hj-co-btn-mw3-srp-v1.manifest.json",
+        "bytes": 30320,
+        "sha256": "069d27be16df1518c13235f73ed1459fbb65ef65f395aff0dec723d9afd4bad1"
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call",
+        "path": "diagnostic-hj-co-sb-mw3-srp-v1.manifest.json",
+        "bytes": 30301,
+        "sha256": "cea03eeb4d7cd3c8ad792ec4fa320c9995da514f4d4898a17cdf6c708fb73e5c"
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_call",
+        "path": "diagnostic-utg-btn-bb-mw3-srp-v1.manifest.json",
+        "bytes": 30339,
+        "sha256": "f8612e65698e53b37e66167a6b86dd65809bcc824cd1ce590164b687423390d7"
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call",
+        "path": "diagnostic-utg-btn-sb-mw3-srp-v1.manifest.json",
+        "bytes": 30339,
+        "sha256": "c1b57e1119d058756b4e412155748601a7ae8bfbd87df0e4d69c8b2f968ef623"
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_call",
+        "path": "diagnostic-utg-co-bb-mw3-srp-v1.manifest.json",
+        "bytes": 30320,
+        "sha256": "dbd7d9256f95f14b2faffb14441526ae3d8703df9104121a42dd100a827ca563"
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call",
+        "path": "diagnostic-utg-co-btn-mw3-srp-v1.manifest.json",
+        "bytes": 30339,
+        "sha256": "75b3a2e4606140ce3edf2b237c39760a1940894cfe9f8ac09710197d09e0a780"
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call",
+        "path": "diagnostic-utg-co-sb-mw3-srp-v1.manifest.json",
+        "bytes": 30320,
+        "sha256": "863c81d9270b0b515a1471711026139d87939c1859dd0b20b3b0a84a912df694"
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_call",
+        "path": "diagnostic-utg-hj-bb-mw3-srp-v1.manifest.json",
+        "bytes": 30320,
+        "sha256": "78e796882bfa45886e2bafa5136de906c8ec9eb9ebd15d22037d6593440c55f4"
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call",
+        "path": "diagnostic-utg-hj-btn-mw3-srp-v1.manifest.json",
+        "bytes": 30339,
+        "sha256": "96785b94e1d6056c302d2a8ff39c59415bd1ff573d1c6d51c797f460de87d119"
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call",
+        "path": "diagnostic-utg-hj-co-mw3-srp-v1.manifest.json",
+        "bytes": 30320,
+        "sha256": "160671e4d68953971e6bb5b2bd892b7eaf725659d8ba49d6d347a4c9de90f2dc"
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call",
+        "path": "diagnostic-utg-hj-sb-mw3-srp-v1.manifest.json",
+        "bytes": 30320,
+        "sha256": "ac173b72400553b2daa5c494be0b7d311a50de543abf7367b03873e1097f5d7a"
+      }
+    ],
+    "independent_method": "A separate native Astra reviewer downloaded and hashed the exact308041-byte CI ZIP, inspected the actual pinned harness/official collector code and complete job log, verified79 source blobs, recomputed18 content/source identities and16 output manifest byte hashes, and tested7 cleanup cases. The main reviewer independently compared all18 artifact source inventories to the prior approved source closures and checked16 manifest output byte hashes. Raw LFS decoding, hashing and canonical gzip reconstruction ran in the inspected Linux CI job; no claim is made that those large payload operations were repeated locally.",
+    "harness_safety": "Assertions and official collectors remain intact. Workflow has contents:read, pinned actions, no persisted checkout credentials or secrets. Existing differing files and symlinks are rejected rather than overwritten. No numerical generator, packager CLI, SQL database execution, account data write or deployment was performed.",
+    "cleanup_caveat": "MW3 leaves112 verified decoded files in ignored ephemeral runner directories. Its final clean git status means no tracked/unignored modifications, not removal of those ignored raw files. The preflop raw_restore_files_retained:false field applies only to files it created. No protected archive, receipt, source or SQL is changed.",
+    "reporting_correction": "Correct PR/report prose saying all temporary restored payloads were removed. Preflop removes only files it created; MW3 retains112 verified files in ignored ephemeral runner paths. None is uploaded."
+  },
+  "renewal_boundary": {
+    "source_context_approved": true,
+    "linux_saved_payload_prerequisite_satisfied": true,
+    "installable_acceptance_issued": false,
+    "formal_receipts_modified_by_review": 0,
+    "external_writes_by_review": 0,
+    "numerical_regeneration": false,
+    "new_numerical_approval": false,
+    "gto_or_solver_validation": false,
+    "hu_foundation_approval": false,
+    "human_approval_claimed": false,
+    "allowed_formal_metadata_surface": [
+      "configs/multiway-preflop-stage2.review.json: only source records, their aggregate identity and truthful source-context provenance; all saved artifact/archive/numerical/count fields stay fixed.",
+      "configs/multiway-preflop-stage3.review.json: the same source-only fields, collected only after the finalized Stage2 receipt is bound as a source.",
+      "The 16 existing artifacts/postflop/mw3-*.manifest.json files: only source_tree, sources, sources_sha256 and dependent content identity.",
+      "The 16 existing configs/mw3-*.review.json files: new matching source/manifest identity and source-context provenance, retaining historical numerical provenance, evidence, limitations and delivery pins.",
+      "The 16 existing artifacts/postflop/mw3-*.sql files: only the receipt-derived second-line comment hash. Its archive hash and every remaining SQL statement byte stay identical.",
+      "New supporting QA evidence outside every protected source graph may preserve this report and mechanical verification results. No implementation, source-root, parser, gate, frozen-model, compatibility-receipt, pin, archive or numerical data edit is included."
+    ],
+    "conditions": [
+      "Use the original report together with this addendum; preserve both exact bytes and hashes. This addendum extends the original exact-source binding to b7c7259/3ac905a and its application source7c979c8/cdc33e3 because all18 reviewed closures and conserved inputs are identical. It does not waive other original conditions.",
+      "Use verified artifact11666672160 only after checking308041 bytes and SHA25697c847bdf626f70eb003114b51a94939c5a9aea07400ab2b17f3bbfd7da1bfcd. Retain runheadb7c7259, actual harnessdb4e189, actual application7c979c8/treecdc33e3 distinctly. Do not mislabel the run as collecting the b7 root tree.",
+      "Finalize Stage2 source-only receipt first. Then recollect Stage3 against those exact Stage2 receipt bytes and re-evaluate its aggregate/content identity. The diagnostic Stage3 source row still names pre-renewal Stage2 receipt SHA2567326c8a23bffca9bdc4c67167691a0f4bdf17d527b519a4b105ada8ce91ffd15; do not copy that final binding blindly.",
+      "For MW3, verified diagnostic manifests retain source_tree cdc33e3de4fadca999dba8479ea1ca676e9ebee7. Existing official verifyMw3Snapshot compares current source/input records and validates those records in the named historical Git tree; it does not require source_tree to equal the latest HEAD tree. Reusing these exact diagnostic manifests is valid only while current source/input records still match, the historical tree is available and official verification succeeds. Alternatively recollect source metadata on the exact final application tree and independently validate the new tree/content identity; never relabel the existing bytes as a different collection.",
+      "Preserve all archived/raw numerical bytes, counts, fingerprints, recipe/input/policy/implementation/verification identities,32 pins,561 warnings,seven limitations per MW3 subject and historical numerical author/reviewer fields. Keep current implementation author model unknown and use this actual Astra task/model only as source-context reviewer provenance.",
+      "No source/generator/config implementation, root/parser/gate, frozen model, compatibility receipt, numerical data, registry pin, LFS pointer or saved archive edit is approved. No archive normalization or numerical regeneration. SQL changes are limited to the existing receipt-derived second-line comment hash; preserve archive hash and all SQL statement bytes, and execute no SQL against a database.",
+      "Before final acceptance, run unchanged official restore/acceptance/source-tree/current-inventory checks, relevant tests, typecheck/build and required CI on the exact updated head. Compare the final delta and conserved fields against b7c7259 and current development. Submit final exact head/evidence for independent review. Keep PR draft; no merge/deploy authority is supplied."
+    ]
+  },
+  "findings": {
+    "blocking_for_bounded_preparation": [],
+    "required_reporting_corrections": [
+      "Describe the actual diagnostic application tree separately from its run head.",
+      "Correct the broad all-restored-files-removed claim.",
+      "Do not label a9ee6d7 the latest live development tip after the observed ff17d71 advance."
+    ],
+    "pending_final_acceptance": [
+      "Stage2 then Stage3 mechanical source-only renewal",
+      "16 MW3 source manifests/receipts plus bounded SQL comment renewal",
+      "official final exact-head verification and required CI",
+      "independent final delta and branch-tip review"
+    ]
+  },
+  "evidence_files": [
+    {
+      "file": "compact-summary.json",
+      "bytes": 6705,
+      "sha256": "9b9f08dc99079f77b833ae1628efb13edc3fd66af3c3b7df6d57596795a8cd04"
+    },
+    {
+      "file": "linux-evidence-review.json",
+      "bytes": 67824,
+      "sha256": "41a96ece8d9a8973b19387a57ba5f4b11742420f55c6f0959bfe3a706bd82e5d"
+    },
+    {
+      "file": "SHA256-ledger.json",
+      "bytes": 6592,
+      "sha256": "2cd02c32649ea549b956eb5592330bcc738f64f3eaeb004e918517f132799666"
+    },
+    {
+      "file": "source-equivalence.json",
+      "bytes": 8210,
+      "sha256": "6db8b33f7368ec0f7aeb63da633aefdb05006f67388d9b8512215f06a2713739"
+    },
+    {
+      "file": "linux-artifact-binding.json",
+      "bytes": 5620,
+      "sha256": "67602191c2e34ac68e5618765608a734925907faf841c1dd609d72d8f7523b5a"
+    },
+    {
+      "file": "account-test-source-bindings.json",
+      "bytes": 12723,
+      "sha256": "69fa859151716f561206ca365373102670be4dafbf08991fd0a807349bbf58c0"
+    },
+    {
+      "file": "account-codec-current-head.log",
+      "bytes": 1882,
+      "sha256": "3eaa1a92df84f00330cf28d217de5276db512db32145767e77ec701d96d13880"
+    }
+  ]
+}

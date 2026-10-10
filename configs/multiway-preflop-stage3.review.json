@@ -9195,8 +9195,13 @@
     },
     {
       "path": "apps/frontend/src/account/session.ts",
-      "bytes": 7034,
-      "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+      "bytes": 9937,
+      "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+    },
+    {
+      "path": "apps/frontend/src/agent/agent-history-codec.ts",
+      "bytes": 2732,
+      "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
     },
     {
       "path": "apps/frontend/src/components/action-format.ts",
@@ -9475,8 +9480,8 @@
     },
     {
       "path": "apps/frontend/src/locales/product-direct.json",
-      "bytes": 45331,
-      "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+      "bytes": 46621,
+      "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
     },
     {
       "path": "apps/frontend/src/locales/reason-copy.ts",
@@ -9510,8 +9515,8 @@
     },
     {
       "path": "configs/multiway-preflop-stage2.review.json",
-      "bytes": 540232,
-      "sha256": "7326c8a23bffca9bdc4c67167691a0f4bdf17d527b519a4b105ada8ce91ffd15"
+      "bytes": 543098,
+      "sha256": "22ad5f2a070ff9211dcae84d82cd01e1be9922c235a55843f52e70cc45103ce3"
     },
     {
       "path": "configs/multiway-preflop-stage3.json",
@@ -9530,7 +9535,7 @@
     "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
     "format": "ustar+gzip-stage3-content-v1"
   },
-  "content_sha256": "4bb4429ff7e4f5c7c158cfcef93e31b75cee12c2c871e11e53765716992d9ab5",
+  "content_sha256": "6c5aea1b8fb570108d41fdad8eebd37bb3952a0911d27db6bfff94edf7a76399",
   "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
   "counts": {
     "catalog": 16132,
@@ -10431,6 +10436,59 @@
         "apps/frontend/tests/postflop-profile-state.test.mjs"
       ],
       "preservation": "Historical numerical authorship and review fields, saved artifacts, archive bytes, counts, fingerprints, inputs, accepted limitations and delivery bodies are preserved."
+    },
+    "pr160_source_context_preparation": {
+      "status": "prepared-pending-independent-final-head-review",
+      "authorization": {
+        "addendum": "docs/qa/pr160-source-renewal-b7c7259/pr160-source-renewal-addendum-b7c7259.json",
+        "sha256": "792e7bcdc80ae503b56721ea2a1a600c121413a9f53c8d8eb91db88391a6a50d",
+        "reviewer_model": "gpt-6-astra",
+        "reviewer_task": "/root/review_pr160_integrated_source",
+        "decision": "PASS_INDEPENDENT_SOURCE_CONTEXT_AND_SAVED_PAYLOAD_EVIDENCE_FOR_BOUNDED_RENEWAL"
+      },
+      "scope": "Mechanical Stage 3 current-source identity refresh only, recollected after finalizing the renewed Stage 2 receipt. Historical Stage 3 numerical approval, all artifact/archive bytes, fingerprint, counts and review attribution remain unchanged. This records preparation under the addendum; it is not the required fresh exact-head review or installable acceptance.",
+      "run_head": "b7c7259f88a4ceb11c55139349d934c507a5302c",
+      "application_source_commit": "7c979c8b5e60c5443455d8650ff3448733216bfc",
+      "application_source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+      "source_record_count": 100,
+      "source_records_sha256": "a4d122549d283f9164f8a1c2b6a7b828d4b015bcc802aec5981deab8d7020fa1",
+      "previous_content_sha256": "4bb4429ff7e4f5c7c158cfcef93e31b75cee12c2c871e11e53765716992d9ab5",
+      "prepared_content_sha256": "6c5aea1b8fb570108d41fdad8eebd37bb3952a0911d27db6bfff94edf7a76399",
+      "bound_stage2_receipt": {
+        "path": "configs/multiway-preflop-stage2.review.json",
+        "bytes": 543098,
+        "sha256": "22ad5f2a070ff9211dcae84d82cd01e1be9922c235a55843f52e70cc45103ce3"
+      },
+      "source_delta": {
+        "added": [
+          "apps/frontend/src/agent/agent-history-codec.ts"
+        ],
+        "modified": [
+          "apps/frontend/src/account/session.ts",
+          "apps/frontend/src/locales/product-direct.json",
+          "configs/multiway-preflop-stage2.review.json"
+        ],
+        "removed": []
+      },
+      "preserved": {
+        "artifact_records": 1805,
+        "artifact_records_unchanged": true,
+        "archive": {
+          "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+          "bytes": 2436451,
+          "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+          "format": "ustar+gzip-stage3-content-v1"
+        },
+        "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+        "counts": {
+          "catalog": 16132,
+          "saved": 1801,
+          "unreachable": 5621,
+          "rare": 8710,
+          "hands": 304369
+        }
+      },
+      "limitations": "No numerical regeneration, new strategy-quality approval, full acceptance, merge or deployment is claimed. Independent review of the final exact head and CI remain pending."
     }
   }
 }
