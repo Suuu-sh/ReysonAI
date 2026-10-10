@@ -30,7 +30,7 @@ export const subscribeAccount = (listener: () => void): (() => void) => { listen
 export async function accountRequest<P extends keyof AccountResponses>(path: P, body?: unknown): Promise<AccountResponses[P]> {
   const base = accountApiBase((import.meta as ImportMeta & { env?: Parameters<typeof accountApiBase>[0] }).env ?? {});
   const response = await fetch(`${base}/v1/account/${path}`, { credentials: "include", ...(body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }) });
-  const result = await response.json() as AccountResponses[P];
+  const result = await response.json() as AccountResponses[P] & { error?: unknown };
   if (!response.ok) throw new Error(response.status === 503 ? "disabled" : response.status === 409 ? (result?.error === "account_owner_changed" ? "session" : "conflict") : response.status === 401 ? "session" : response.status === 403 ? "verification" : response.status === 413 ? "payload_too_large" : "request");
   return result;
 }
