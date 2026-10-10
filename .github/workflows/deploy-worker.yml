@@ -24,6 +24,9 @@ on:
       - 'apps/backend/src/**'
       - 'apps/backend/tests/**'
       - 'apps/backend/package.json'
+      - 'apps/mcp/src/**'
+      - 'apps/mcp/package.json'
+      - 'apps/mcp/package-lock.json'
       - 'apps/backend/migrations/0009_ranked.sql'
       - 'apps/backend/migrations/0010_fastfold.sql'
       - 'apps/backend/migrations/0011_human_ranked.sql'
@@ -80,6 +83,10 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Install MCP runtime dependencies for the composed API Worker
+        working-directory: apps/mcp
+        run: npm ci --ignore-scripts
 
       - name: Restore exact reviewed Git LFS payload
         run: |
@@ -178,6 +185,10 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Install MCP runtime dependencies for the composed API Worker
+        working-directory: apps/mcp
+        run: npm ci --ignore-scripts
 
       - name: Restore exact reviewed Git LFS payload
         run: |
