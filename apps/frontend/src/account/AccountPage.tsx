@@ -170,7 +170,7 @@ export function AccountPage({ profile, tab = "profile", onSectionChange, onEditP
     <Sidebar activeSection={ACCOUNT_SECTION} onSectionChange={onSectionChange} profile={profile} onEditProfile={onEditProfile} onLogout={onLogout} />
     <main className="account-page">
       <div className="account-layout">
-        <header className="account-heading"><h1>{t("設定", "Settings")}</h1></header>
+        <header className="account-heading trainer-home-head"><h1 className="trainer-home-eyebrow">SETTINGS</h1></header>
         <nav className="account-tabs" aria-label={t("設定の項目", "Settings sections")}>
           {ACCOUNT_TABS.map(({ value, Icon, ja, en, shortJa, shortEn }) => <button type="button" key={value} aria-current={active === value ? "page" : undefined} aria-label={t(ja, en)}
             className={active === value ? "on" : ""} onClick={() => onSectionChange(`${ACCOUNT_SECTION}#${value}`)}>
