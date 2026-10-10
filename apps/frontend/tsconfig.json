@@ -10,7 +10,16 @@
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
     "esModuleInterop": true,
-    "types": ["vite/client"]
+    "types": [
+      "vite/client"
+    ]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "../backend/src/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "../backend/src/**/*.ts"
+  ],
+  "exclude": [
+    "../backend/src/worker.ts"
+  ]
 }
