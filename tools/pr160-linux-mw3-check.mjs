@@ -124,7 +124,7 @@ try {
       decoded = null;
       snapshot = collectMw3Snapshot(old.spot.id);
       assert.equal(snapshot.manifest.source_tree, TREE);
-      const reviewedDelta = sourceReport.mw3.find(row => row.spot === old.spot.id);
+      const reviewedDelta = sourceReport.source_closure_review.mw3.find(row => row.spot === old.spot.id);
       assert.ok(reviewedDelta, `No immutable source-context delta was preserved for ${old.spot.id}`);
       const sourceDelta = assertSourceDelta(`MW3 ${old.spot.id}`, old.sources, snapshot.manifest.sources, reviewedDelta);
       assert.equal(snapshot.manifest.sources.some(row => row.path.startsWith('.github/') || row.path.startsWith('tools/')), false,
