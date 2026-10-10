@@ -59,3 +59,34 @@ test('switching authenticated owners clears selected details and never applies t
   await click('Human FastFold');assert.match(dom.window.document.body.textContent,/1,222 → 1,333/);assert.doesNotMatch(dom.window.document.body.textContent,/1,777|1,888/);
  },url=>new Promise(done=>pending.push([new URL(url).searchParams.get('season'),done])),{rankedReady:true,rankedOwner:'owner-A'});
 });
+
+test('new Agent detail renders explicit suits, street actions, winners and results without mutating saved history', async () => {
+ const record={...hand,history:{version:1,handRanks:{BTN:4,BB:5},handNo:7,names:{BTN:'You',BB:'VEGA'},holeCards:{BTN:['Ad','8c'],BB:['Qs','6s']},board:['Qc','9s','7s','Ts','Jh'],winners:['BB'],returns:{BTN:-11.18,BB:10.54},pot:22.86,rake:1.14,log:[{street:'preflop',pos:'BTN',action:'open',to:2.5,pot:4},{street:'flop',pos:'BB',action:'check',pot:5.5},{street:'turn',pos:'BB',action:'bet33',to:1.82,pot:7.32},{street:'river',pos:'BTN',action:'call',to:6.86,pot:22.86}]}};
+ await harness(async({dom,click})=>{const before=dom.window.localStorage.getItem('reysonai:agent-hands:v1');await click('Agent matches');await click('Saved hand · saved-table');const text=dom.window.document.body.textContent;assert.match(text,/Hand history #7/);for(const value of ['A♦','8♣','Q♠','6♠','Q♣','9♠','7♠','T♠','J♥','Preflop','Flop','Turn','River','Bet','1.82','Call','6.86','Winner','VEGA','Rake','Straight','Flush'])assert.ok(text.includes(value),value);assert.doesNotMatch(text,/without session IDs, cards or action logs/);assert.equal(dom.window.localStorage.getItem('reysonai:agent-hands:v1'),before);},undefined,{},[record]);
+});
+
+test('explicit Agent entries group hands, preserve legacy rows, expose all details and status filters', async () => {
+ const a={...hand,session:{id:'entry-a',startedAt:at-5000,endedAt:at+5000},history:{version:1,handNo:1,holeCards:{BTN:['Ad','8c']},board:['Qc','9s','7s'],log:[],winners:['BTN'],returns:{BTN:3}}};
+ const b={...a,at:at+1000,returnBb:-1,history:{...a.history,handNo:2}};
+ const next={...a,at:at+7000,session:{id:'entry-b',startedAt:at+6000},returnBb:4};
+ const saved=[a,b,next,hand], rows=sessionHistoryRows([],saved,{});
+ assert.equal(rows.length,3);const grouped=rows.find(row=>row.session?.id==='entry-a');assert.equal(grouped.session.hands.length,2);assert.equal(grouped.session.hands.reduce((sum,h)=>sum+h.returnBb,0),hand.returnBb-1);
+ await harness(async({dom,click})=>{
+  await click('Agent matches');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,3);
+  await click('In progress');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,1);
+  await click('Completed');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,2);
+  const row=[...dom.window.document.querySelectorAll('tbody tr')].find(row=>row.textContent.includes('Agent session'));assert.equal(row.children[4].textContent,'2');assert.notEqual(row.children[7].textContent,'—');
+  await click('Agent session · saved-table');assert.equal(dom.window.document.querySelectorAll('details.sessions-agent-hand').length,2);
+  assert.match(dom.window.document.body.textContent,/Hand #1/);assert.match(dom.window.document.body.textContent,/Hand #2/);assert.match(dom.window.document.body.textContent,/A♦/);
+ },undefined,{},saved);
+});
+
+test('session closure updates an already-mounted Sessions list without reload', async () => {
+ const {finishAgentHistorySession}=await import('../src/agent/agent-stats.ts');
+ const saved=[{...hand,session:{id:'navigation-entry',startedAt:at-5000}}];
+ await harness(async({dom,click})=>{
+  await click('Agent matches');await click('In progress');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,1);
+  await act(async()=>finishAgentHistorySession('navigation-entry',at+1000));assert.equal(dom.window.document.querySelectorAll('tbody tr').length,0);
+  await click('Completed');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,1);
+ },undefined,{},saved);
+});

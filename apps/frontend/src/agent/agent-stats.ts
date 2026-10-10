@@ -1,6 +1,6 @@
 // Agent戦 results for プレー分析: one record per hand the human played at an Reyson Agent table,
 // synced to the account when signed in, or kept in this browser as a guest. Separate from drill history.
-import type { HandResult } from "./hand.ts";
+import type { HandResult, LogEntry } from "./hand.ts";
 import { decodeAgentHistory } from "./agent-history-codec.ts";
 import { accountStorage, AGENT_HANDS_KEY, LEGACY_AGENT_HANDS_KEY } from "../account/session.ts";
 
@@ -8,7 +8,15 @@ const KEY = AGENT_HANDS_KEY;
 const LIMIT = 3000;
 const RAISES = new Set(["open", "raise", "three_bet", "squeeze", "four_bet", "all_in"]);
 
+export type AgentHandHistory = {
+  version: 1; handNo?: number; names?: Record<string, string>;
+  holeCards: Record<string, string[]>; board: string[]; log: LogEntry[];
+  winners: string[]; returns: Record<string, number>; pot?: number; rake?: number; handRanks?: Record<string, number>;
+};
+
 export type AgentHandRecord = {
+  session?: { id: string; startedAt: number; endedAt?: number };
+  history?: AgentHandHistory;
   at: number; tableId: string; pos: string; returnBb: number;
   vpip: boolean; pfr: boolean;
   threeBetOpp: boolean; threeBet: boolean;
@@ -30,8 +38,16 @@ export function saveAgentHand(record: AgentHandRecord) {
   return next;
 }
 
+export function finishAgentHistorySession(id: string, endedAt = Date.now()) {
+  const hands = loadAgentHands();
+  if (!hands.some(hand => hand.session?.id === id && hand.session.endedAt == null)) return;
+  const next = hands.map(hand => hand.session?.id === id && hand.session.endedAt == null
+    ? { ...hand, session: { ...hand.session, endedAt: Math.max(endedAt, hand.session.startedAt, hand.at) } } : hand);
+  try { storage()?.setItem(KEY, JSON.stringify(next)); if (typeof window !== "undefined" && window.dispatchEvent) window.dispatchEvent(new window.Event("reysonai:agent-history-changed")); } catch { /* preserve saved hands on quota failure */ }
+}
+
 // The human's flags for one finished hand.
-export function handRecord(result: HandResult, tableId: string, pos: string, at = Date.now()): AgentHandRecord {
+export function handRecord(result: HandResult, tableId: string, pos: string, at = Date.now(), context: { handNo?: number; names?: Record<string, string>; session?: { id: string; startedAt: number } } = {}): AgentHandRecord {
   if (result.status !== "done" || !result.returns || !Number.isFinite(result.returns[pos] ?? 0)) throw new Error("Cannot record an unfinished Agent hand");
   const preflop = result.log.filter(entry => entry.street === "preflop");
   const mine = preflop.filter(entry => entry.pos === pos);
@@ -48,6 +64,18 @@ export function handRecord(result: HandResult, tableId: string, pos: string, at 
   const postflop = result.log.filter(entry => entry.street !== "preflop" && entry.pos === pos);
   const isBet = (action: string) => action === "raise" || action === "allin" || action.startsWith("bet");
   return {
+    ...(context.session ? { session: { ...context.session } } : {}),
+    history: {
+      version: 1, handNo: context.handNo, names: context.names,
+      // Persist only the human's cards and opponents actually exposed at showdown.
+      // Folded opponents remain hidden even though the local engine dealt their cards.
+      holeCards: Object.fromEntries(Object.entries(result.holeCards).filter(([seat]) =>
+        seat === pos || result.showdown && !result.log.some(entry => entry.pos === seat && entry.action === "fold"))
+        .map(([seat, cards]) => [seat, [...cards]])),
+      board: [...result.board], log: result.log.map(entry => ({ ...entry, ...(entry.bets ? { bets: { ...entry.bets } } : {}) })),
+      winners: [...(result.winners ?? [])], returns: { ...result.returns }, pot: result.pot, rake: result.rake,
+      ...(result.handRanks ? { handRanks: { ...result.handRanks } } : {}),
+    },
     at, tableId, pos, returnBb: result.returns?.[pos] ?? 0,
     vpip: mine.some(entry => entry.action !== "fold" && entry.action !== "check"),
     pfr: mine.some(entry => RAISES.has(entry.action)),

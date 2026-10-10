@@ -29,6 +29,11 @@ test("Google-only account UI is gated and integration TSX parses", async () => {
 test("cookie sessions isolate guests, consent-gate migration, serialize versions and preserve conflict exports", async () => {
   const previousWindow = globalThis.window, previousFetch = globalThis.fetch;
   const guestAgentHands = Array.from({ length: 3000 }, (_, index) => ({ at: index + 1, tableId: "reyson-01", pos: "BTN", returnBb: 1, vpip: true, pfr: true, threeBetOpp: false, threeBet: false, facedThreeBet: false, foldedToThreeBet: false, sawFlop: false, showdown: false, wonShowdown: false, ...(index % 2 === 0 ? { pfBets: 2, pfCalls: 1, pfFacing: 3, pfFolds: 0 } : {}) }));
+  guestAgentHands[0] = { ...guestAgentHands[0], session: { id: "entry-sync", startedAt: 1, endedAt: 5 }, history: {
+    version: 1, handNo: 1, names: { BTN: "You", BB: "VEGA" }, holeCards: { BTN: ["Ad", "8c"], BB: ["Qs", "6s"] },
+    board: ["Qc", "9s", "7s", "Ts", "Jh"], log: [{ street: "river", pos: "BTN", action: "call", to: 6.86, pot: 22.86 }],
+    winners: ["BB"], returns: { BTN: -11.18, BB: 10.54 }, pot: 22.86, rake: 1.14, handRanks: { BTN: 4, BB: 5 },
+  } };
   const values = new Map([["reysonai:profile:v1", JSON.stringify({ nickname: "Guest", level: "beginner" })], ["reysonai.trainer.rank.v1", '{"rating":9999}'], ["reysonai.trainer.review-sessions.v1", "[]"], ["evionai:agent-hands:v1", JSON.stringify(guestAgentHands)]]);
   let reloads = 0;
   globalThis.window = { location: { hostname: "localhost", hash: "", reload() { reloads++; } }, localStorage: {
@@ -88,6 +93,7 @@ test("cookie sessions isolate guests, consent-gate migration, serialize versions
     assert.equal(posts[0].data["reysonai.trainer.rank.v1"], undefined);
     assert.deepEqual(posts[0].data["reysonai.trainer.review-sessions.v1"], []);
     assert.equal(posts[0].data["reysonai:agent-hands:v1"].format, "reysonai-agent-hands:compact-v1", "explicit import maps and compacts the pre-rename key");
+    assert.deepEqual(posts[0].data["reysonai:agent-hands:v1"].records[0], guestAgentHands[0], "new session/history use the reversible old-client-safe object fallback");
     assert.equal(posts[0].data["reysonai:agent-hands:v1"].records.length, 3000, "all existing rows survive compact encoding");
     assert.ok(new TextEncoder().encode(JSON.stringify(posts[0])).byteLength < 500_000, "the 3,000-row history and other imported account data fit the existing request bound");
     assert.equal(posts[0].data["reysonai:profile:v1"].nickname, "Guest", "compact history does not replace or omit the other consented account data");
@@ -98,6 +104,8 @@ test("cookie sessions isolate guests, consent-gate migration, serialize versions
     await session.saveAccountData();
     assert.equal(agentStats.loadAgentHands().length, 3000, "new signed-in hands use accountStorage and keep the existing record limit");
     assert.equal(agentStats.loadAgentHands().at(-1).tableId, "account-table");
+    assert.deepEqual(agentStats.loadAgentHands().at(-1).session, guestAgentHands[0].session);
+    assert.deepEqual(agentStats.loadAgentHands().at(-1).history, guestAgentHands[0].history);
     assert.equal(remote["reysonai:agent-hands:v1"].records.length, 3000);
     const storage = session.accountStorage();
     storage.setItem("reysonai:display-mode:v1", "simple");
