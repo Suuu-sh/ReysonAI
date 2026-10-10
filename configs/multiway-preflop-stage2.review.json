@@ -384,6 +384,63 @@
           "prior_review_history_preserved": true
         },
         "limitations": "Source-only renewal. No strategy generation, policy/data edit, production configuration change, deployment, merge, or Worker deletion."
+      },
+      {
+        "date": "2026-10-10",
+        "reviewer": "Independent source-only MCP/frontend Worker type-split reviewer",
+        "reviewer_task": "/root/source_only_review",
+        "reviewed_source_commit": "da27207eae11c0d33ca89a8c5f12710b6c3fb37a",
+        "report": "apps/backend/MCP_FRONTEND_TYPECHECK_SOURCE_REVIEW.md",
+        "report_sha256": "4e98908aee33d3ed975ac3b884c25393a9f2a5d7d69bd93cefa2067caa602df8",
+        "scope": "Frontend/Worker TypeScript project boundary and typecheck wiring only. No renewed strategy-quality, numerical, saved-data, production, merge, or deployment approval.",
+        "blocking_findings": 0,
+        "before_content_sha256": "c413e9d2c057838e30601f0bb26c107ea829de2ac3336799e3e5982966fec021",
+        "source_identity": {
+          "source_records_before": 195,
+          "source_records_after": 195,
+          "modified": [
+            "apps/frontend/package.json"
+          ],
+          "added": [],
+          "removed": [],
+          "unchanged": 194,
+          "previous": {
+            "path": "apps/frontend/package.json",
+            "bytes": 2514,
+            "sha256": "7aa07c287011bd5c2f303680bc6f3fa07203ddb7692ed53b38b8de0907222696"
+          },
+          "current": {
+            "path": "apps/frontend/package.json",
+            "bytes": 2585,
+            "sha256": "e758dd947c258287bc5b334e55e733b82f5e61de9a3c5660f16d362aea8ce981"
+          }
+        },
+        "verification": {
+          "browser_project": "tsconfig.json includes only frontend src/**/*.ts(x) and vite/client types.",
+          "worker_project": "tsconfig.worker.json includes backend/MCP source, generated Worker declarations, and pinned @cloudflare/workers-types; lib is explicitly ES2022 with no DOM library.",
+          "package_typecheck": "Runs browser, Worker, and runtime TypeScript projects sequentially.",
+          "deployment_dependency_order": "Reviewed deployment workflow installs apps/mcp dependencies before the frontend typecheck.",
+          "reviewer_compiler_check": "Not run by the independent source-only reviewer; exact-head Actions validation follows receipt renewal."
+        },
+        "verified_unchanged": {
+          "stage2_artifacts": 1888,
+          "stage2_artifact_bytes": 79002248,
+          "archive": {
+            "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+            "bytes": 1747857,
+            "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a"
+          },
+          "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+          "counts": {
+            "catalog": 3115,
+            "saved": 1611,
+            "unreachable": 1504,
+            "hands": 272259
+          },
+          "prior_review_history_preserved": true
+        },
+        "limitations": "Source-only review. No TypeScript compiler run by the reviewer, strategy generation, policy/data edit, D1 operation, production configuration change, deployment, or merge.",
+        "after_content_sha256": "0bf4a3ac6ce0f9ba88651ebe889af19965d5eed3a74c73e961ac292f5d1de75a"
       }
     ],
     "copy_amendments": [
@@ -10365,8 +10422,8 @@
     },
     {
       "path": "apps/frontend/package.json",
-      "bytes": 2514,
-      "sha256": "7aa07c287011bd5c2f303680bc6f3fa07203ddb7692ed53b38b8de0907222696"
+      "bytes": 2585,
+      "sha256": "e758dd947c258287bc5b334e55e733b82f5e61de9a3c5660f16d362aea8ce981"
     },
     {
       "path": "apps/frontend/scripts/audit-estimates.mjs",
@@ -11279,7 +11336,7 @@
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
     }
   ],
-  "content_sha256": "c413e9d2c057838e30601f0bb26c107ea829de2ac3336799e3e5982966fec021",
+  "content_sha256": "0bf4a3ac6ce0f9ba88651ebe889af19965d5eed3a74c73e961ac292f5d1de75a",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
