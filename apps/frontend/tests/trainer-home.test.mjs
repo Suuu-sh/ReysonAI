@@ -53,9 +53,28 @@ test("ranked emblem keeps its tier but omits match history for empty and populat
       onOpenDrills() {}, onCreate() {}, onStartReview() {}, onResume() {}, onStartRanked() {}, onOpenRanking() {},
     }));
     assert.match(html, /class="ranked-tier-name"/);
+    assert.match(html, /class="ranked-current"/);
+    assert.doesNotMatch(html, /rank-ladder|Rank tiers and rating thresholds|昇格レート/);
     assert.doesNotMatch(html, /まだ試合なし|No matches yet|Last match|直近5試合|ranked-pips/);
     assert.doesNotMatch(html, /New season · server confirmed · no daily start limit|新シーズン・サーバー確定・開始回数の制限なし/);
   }
+});
+
+test("trainer home presents ranked, Agent and drill modes as compact cards with their existing actions", () => {
+  const html = renderToStaticMarkup(createElement(TrainerHome, {
+    drills: [], reviewCount: 0, rank: { rating: 1200, peak: 1250 }, rankedReady: true,
+    onOpenDrills() {}, onCreate() {}, onStartReview() {}, onResume() {}, onStartRanked() {}, onOpenRanking() {}, onStartAgent() {},
+  }));
+  assert.equal((html.match(/class="mode-block/g) ?? []).length, 3);
+  assert.match(html, /対人FastFold β/);
+  assert.match(html, /Agent戦/);
+  assert.match(html, /ドリル/);
+  assert.match(html, /Join human queue|対人待機へ/);
+  assert.match(html, /Leaderboard|ランキング/);
+  assert.match(html, /Sit down|着席する/);
+  assert.match(html, /Watch|観戦/);
+  assert.match(html, /Open drills|ドリルを開く/);
+  assert.match(html, /New drill|新しいドリル/);
 });
 
 test("sessions page keeps its session-total stats", () => {
