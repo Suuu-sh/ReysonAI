@@ -20,5 +20,6 @@ test('entry lifecycle groups two hands; StrictMode cleanup is not exit; unmount 
   await act(async()=>root.render(React.createElement(Table)));assert.notEqual(active.entry.id,first);saveAgentHand(record(3));active.close();assert.ok(loadAgentHands().every(hand=>hand.session.endedAt!=null));
   await act(async()=>root.render(null));await new Promise(resolve=>setTimeout(resolve,10));
   await act(async()=>root.render(React.createElement(Table)));saveAgentHand(record(4));dom.window.dispatchEvent(new dom.window.Event('pagehide'));assert.ok(loadAgentHands().every(hand=>hand.session.endedAt!=null));
+  const beforeRestore=active.entry.id;const restored=new dom.window.Event('pageshow');Object.defineProperty(restored,'persisted',{value:true});await act(async()=>dom.window.dispatchEvent(restored));assert.notEqual(active.entry.id,beforeRestore,'BFCache restore starts a fresh entry');saveAgentHand(record(5));assert.equal(loadAgentHands().at(-1).session.endedAt,undefined);
  } finally {await act(async()=>root.unmount());await new Promise(resolve=>setTimeout(resolve,10));dom.window.close();Object.assign(globalThis,old);delete globalThis.IS_REACT_ACT_ENVIRONMENT;}
 });
