@@ -9035,8 +9035,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 17095,
-      "sha256": "365103ce69fbeedf281a532b5f83e3361f5b5577f52f3b55befe6937c8397fda"
+      "bytes": 17820,
+      "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
     },
     {
       "path": ".gitignore",
@@ -9460,8 +9460,13 @@
     },
     {
       "path": "apps/frontend/src/locales/copy.ts",
-      "bytes": 1811,
-      "sha256": "288a0071b14fe803456f5a6966f5577d799a91fb4e8d81fdee6d5e582e667ecc"
+      "bytes": 1921,
+      "sha256": "6be5a33c6a7e926eeaad9ac86885c5e4efd7ba93ecda51edd2783a545f8d953c"
+    },
+    {
+      "path": "apps/frontend/src/locales/opponent-profile-copy.json",
+      "bytes": 4396,
+      "sha256": "1c3c0b768dd6d8fdacb89e15fb8cb9f64332575b63fd5f130c8e87176b1904e7"
     },
     {
       "path": "apps/frontend/src/locales/product-dictionary.json",
@@ -9470,8 +9475,8 @@
     },
     {
       "path": "apps/frontend/src/locales/product-direct.json",
-      "bytes": 44794,
-      "sha256": "1108ed95ac1a899850c910e9aaa9332d2b2ed99a61be837b4666a2a97b99d27f"
+      "bytes": 45331,
+      "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
     },
     {
       "path": "apps/frontend/src/locales/reason-copy.ts",
@@ -9505,8 +9510,8 @@
     },
     {
       "path": "configs/multiway-preflop-stage2.review.json",
-      "bytes": 531140,
-      "sha256": "f482e81841a18b548841d3b9f4e5db9638e4bee2be0b0a562f6b36eba381c6b5"
+      "bytes": 540232,
+      "sha256": "7326c8a23bffca9bdc4c67167691a0f4bdf17d527b519a4b105ada8ce91ffd15"
     },
     {
       "path": "configs/multiway-preflop-stage3.json",
@@ -9525,7 +9530,7 @@
     "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
     "format": "ustar+gzip-stage3-content-v1"
   },
-  "content_sha256": "357a94187939d3d1ee171139afd6b66e273dffb56d756b02694de1c4a70c10c2",
+  "content_sha256": "4bb4429ff7e4f5c7c158cfcef93e31b75cee12c2c871e11e53765716992d9ab5",
   "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
   "counts": {
     "catalog": 16132,
@@ -10275,6 +10280,157 @@
         "exact_source_tree_equality": true
       },
       "provenance_rebound_at_utc": "2026-10-07T20:09:37.522Z"
+    },
+    "pr123_source_context_renewal": {
+      "status": "source-context-pass",
+      "reviewer_model": "gpt-6-astra",
+      "reviewer_task": "/root/review_pr123_source_evidence",
+      "reviewed_at_utc": "2026-10-09T20:04:41Z",
+      "implementation_author": {
+        "task": "cloud-thread:01a121ea-40ad-76ff-863b-615dbdb920a9",
+        "code_fix_turn": "01a1220d-2afd-72d5-90b7-9a4ea19091ae",
+        "evidence_turn": "01a1222b-eace-7541-8169-5b63c599c3ab",
+        "model": null,
+        "provenance": "Exact task/turn identifiers supplied by coordinating parent; model not independently verified. Original feature task is unknown and existing numerical-author metadata is retained."
+      },
+      "source_context_decision": "PASS",
+      "source_context_scope": "Independent source-context and preserved historical evidence review. Approval is restricted to installation of accurately attributed, source-only amendments and corresponding exact manifests/receipt-derived SQL comments. No renewed strategy quality, new numerical policy approval, solver/GTO claim, production authorization, D1 execution, browser acceptance or full-suite pass.",
+      "reviewed_source_commit": "ed437f5039e74e48d28d53a8371038bb03a230e0",
+      "reviewed_source_tree": "c670c9b53cb3f4f0a2a674701c5e065837158579",
+      "code_source_commit": "599a3734a3aa0fe881b8955a4e98d469eddb9fb9",
+      "code_source_tree": "3c188f233803cbe947cf31876bfd337856808ab3",
+      "report": {
+        "path": "apps/frontend/docs/qa/pr123-source-only-review/independent-source-context-review.json",
+        "bytes": 11712,
+        "sha256": "750a1521423b014b05e8ad7d788438b921c3b6509ee270d48f194c4258e6bef3"
+      },
+      "proofs": [
+        {
+          "path": "apps/frontend/docs/qa/pr123-source-only-review/independent-source-context-review.json",
+          "bytes": 11712,
+          "sha256": "750a1521423b014b05e8ad7d788438b921c3b6509ee270d48f194c4258e6bef3"
+        },
+        {
+          "path": "apps/frontend/docs/qa/pr123-source-only-review/stage2-source-closure.json",
+          "bytes": 42121,
+          "sha256": "be45fb50830401cb2f21757ea90e055a62c6f07d73b55f04d4bad02eda32e89a"
+        },
+        {
+          "path": "apps/frontend/docs/qa/pr123-source-only-review/stage3-source-closure.json",
+          "bytes": 19160,
+          "sha256": "0d6f164aa575566f06e5b6bec682ad55ae1afc72bb3c6f396294f80285541c6f"
+        },
+        {
+          "path": "apps/frontend/docs/qa/pr123-source-only-review/mw3-source-impact.json",
+          "bytes": 33721,
+          "sha256": "32026b385e9bbd99c737e41bc6ea92f982cd6f90641a49945adf199fdd5c51fa"
+        },
+        {
+          "path": "apps/frontend/docs/qa/pr123-source-only-review/stage23-saved-byte-preservation.json",
+          "bytes": 3278,
+          "sha256": "25c0b3c3607d294c4033d06ee27d25d26280d89d4fb7aef92012bdc019fbea8e"
+        },
+        {
+          "path": "apps/frontend/docs/qa/pr123-source-only-review/mw3-saved-byte-preservation.json",
+          "bytes": 30539,
+          "sha256": "5e3407dda3be3ad86eca34591fd3976540bb66167172a342559b069cf0ae2fb0"
+        }
+      ],
+      "prior_receipt": {
+        "path": "configs/multiway-preflop-stage3.review.json",
+        "bytes": 540149,
+        "sha256": "35e9853c7a3b38ae215fa167f9b288761f39d38ffdf80fddcc138cd00c6d1a95",
+        "preserved_copy": "apps/frontend/docs/qa/pr123-source-only-review/prior-receipts/configs/multiway-preflop-stage3.review.json",
+        "commit": "ed437f5039e74e48d28d53a8371038bb03a230e0",
+        "source_tree": "c670c9b53cb3f4f0a2a674701c5e065837158579"
+      },
+      "source_identity": {
+        "source_records_before": 98,
+        "source_records_after": 99,
+        "added": 1,
+        "modified": 3,
+        "removed": 0,
+        "closure_sha256_before_stage2_receipt_renewal": "7c7e585746ef21259dc08d7fd723d06d6c99ac1929f7f56c8839ea2af10c1dd8",
+        "closure_sha256_after_stage2_receipt_renewal": "e27b02fea5209cb8d04a6db8dd0bbf2c98f8cf3b41876f3b44f60d0ac07f9034",
+        "only_additional_change_after_stage2_renewal": "configs/multiway-preflop-stage2.review.json"
+      },
+      "final_stage2_receipt": {
+        "path": "configs/multiway-preflop-stage2.review.json",
+        "bytes": 537540,
+        "sha256": "d8b5b569d6ca3126ef25804a008417b23bd484c5a4af602a31c88aebcbe8fa86"
+      },
+      "preserved": {
+        "artifact_records": 1805,
+        "artifact_records_unchanged": true,
+        "archive": {
+          "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+          "bytes": 2436451,
+          "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+          "format": "ustar+gzip-stage3-content-v1"
+        },
+        "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+        "source_fingerprint_unchanged": true,
+        "counts": {
+          "catalog": 16132,
+          "saved": 1801,
+          "unreachable": 5621,
+          "rare": 8710,
+          "hands": 304369
+        },
+        "counts_unchanged": true
+      },
+      "scope_limits": [
+        "Source-context only; no renewed numerical or strategy-quality approval.",
+        "No GTO/solver claim, browser acceptance, production authorization, D1 execution, or full-suite approval.",
+        "Existing review history, warnings, advisories, limitations, authorship, and all previous amendments are retained."
+      ],
+      "merge_decision": "BLOCK until controlled source-bound receipt renewal, exact committed source re-verification, clean official restore/full publication verification, and required exact-head CI pass"
+    },
+    "corrected_source_context_renewal": {
+      "status": "source-context-pass",
+      "reviewer_model": "gpt-6-astra",
+      "reviewer_task": "/root/review_pr123_source_evidence",
+      "reviewed_at_utc": "2026-10-09T23:26:42Z",
+      "decision": "PASS for installation of the narrowly specified consolidated source-only renewal",
+      "scope": "Source-only binding of the exact reviewed source tree and saved source closures. This does not renew numerical acceptance, strategy quality, runtime parity, production readiness or deployment authority.",
+      "source_commit": "6b5291089c15304c25af7433e87cd1bcaac38428",
+      "source_tree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5",
+      "prior_receipt_head": "7c98d662f88b88c4a4be5e622be82c359a8746d3",
+      "source_record_count": 99,
+      "source_records_sha256": "d9f68ae295d22ee4f8098cd4b5dda48e8a21185d991fa0373e6670b7d65b202a",
+      "prior_receipt": {
+        "path": "configs/multiway-preflop-stage3.review.json",
+        "bytes": 545924,
+        "sha256": "7342d6182615161384d35c9481639648e095d01daf6a5796edac405f0e0fa1d2"
+      },
+      "report": {
+        "path": "apps/frontend/docs/qa/pr123-source-only-review/independent-corrected-source-context-review.json",
+        "bytes": 21155,
+        "sha256": "c3a274b54d8ff52e498b755a278a453ed46be8ae5b8308a1231c9a222712a307"
+      },
+      "supporting_reviews": [
+        {
+          "path": "apps/frontend/docs/qa/pr123-source-only-review/independent-hu-v7-corrected-review.json",
+          "bytes": 13896,
+          "sha256": "f652772db0fe78a38e358a016c52d0a9c73efec15faf93ad19ab587f00d53f4c",
+          "reviewer_model": "gpt-6-astra",
+          "reviewer_task": "/root/review_pr123_source_evidence/inspect_hu_v7_pins"
+        }
+      ],
+      "changed_source_paths": [
+        "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+        "apps/frontend/scripts/postflop-ai/balance.mjs",
+        "apps/frontend/scripts/postflop-ai/explain-later.ts",
+        "apps/frontend/scripts/postflop-ai/explain.mjs",
+        "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+        "apps/frontend/scripts/verify-preflop-local-d1.mjs",
+        "apps/frontend/tests/adopted-hu-v7-runtime.test.mjs",
+        "apps/frontend/tests/fixtures/adopted-hu-v7-candidate-contract.json",
+        "apps/frontend/tests/hu-after-multiway-integration.test.mjs",
+        "apps/frontend/tests/postflop-profile-balance.test.mjs",
+        "apps/frontend/tests/postflop-profile-state.test.mjs"
+      ],
+      "preservation": "Historical numerical authorship and review fields, saved artifacts, archive bytes, counts, fingerprints, inputs, accepted limitations and delivery bodies are preserved."
     }
   }
 }

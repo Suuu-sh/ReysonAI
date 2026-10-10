@@ -1,0 +1,20 @@
+{
+  "status": "PASS committed-envelope integrity and sampled output equality",
+  "evidence_head": "6bf82bc341270bce6ca9fbbcb3187f60ddd8b1ec",
+  "output_count": 13,
+  "raw_bytes": 886818,
+  "raw_sha256": "13e2e209855c33995d3cfceb04ee1d0de1faad0aa7f953c72657618cc8450185",
+  "baseline": {
+    "sha256": "cddcef5f18bf3118df4d95b551f3a707f3b614e3b49734b814e31e79158ed838",
+    "bytes": 2390917,
+    "execution_tree": "04486039e4394a2238b71de24434623c255bfb87"
+  },
+  "candidate": {
+    "sha256": "9bb4937413ad957dd7ad8ed6943d79d389af23a53bea70a1750b913d73c9a8db",
+    "bytes": 2390921,
+    "execution_tree": "f1bc0d3312adb5ebb96e8890e80d17126d60bbf5"
+  },
+  "node": "v25.8.1",
+  "platform": "darwin",
+  "personally_performed": "Fetched and decompressed all committed capture artifacts, checked all bytes/hashes, recomputed13output hashes and compared full output objects/metadata/fixture; did not personally execute author capture runner."
+}

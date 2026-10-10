@@ -28,6 +28,13 @@ test('legacy Agent summaries remain separate hands, never gain invented sessions
  const records=[hand,{...hand,returnBb:-3},{at:'invalid'}];const before=JSON.stringify(records),rows=sessionHistoryRows([],records,{});assert.equal(rows.length,2);assert.ok(rows.every(row=>!('sessionId' in row.record)&&!('score' in row.record)));assert.equal(JSON.stringify(records),before);
  await harness(async({dom,click})=>{const stored=dom.window.localStorage.getItem('reysonai:agent-hands:v1');await click('Agent matches');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,2);assert.ok([...dom.window.document.querySelectorAll('tbody tr')].every(r=>r.children[5].textContent==='—'));await click('Saved hand · saved-table');assert.match(dom.window.document.body.textContent,/without session IDs, cards or action logs/);await click('Sessions');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,2);assert.equal(dom.window.localStorage.getItem('reysonai:agent-hands:v1'),stored);},undefined,{},records);
 });
+test('Sessions removes the Agent storage note in every locale while keeping the saved Agent row',async()=>{
+ for(const locale of ['en','ja','zh-CN','es']) await harness(async({dom})=>{
+  assert.equal(dom.window.document.querySelector('.sessions-source-note'),null);
+  assert.ok([...dom.window.document.querySelectorAll('.sessions-row-link')].some(button=>button.textContent.includes('saved-table')));
+  assert.match(dom.window.localStorage.getItem('reysonai:agent-hands:v1'),/saved-table/);
+ },undefined,{},[hand],locale);
+});
 test('drill/review/draft exact logs, resume and list Back survive mode switching',async()=>{
  const resumed=[];await harness(async({dom,click})=>{await click('Drills');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,3);await click('Saved draft');assert.match(dom.window.document.body.textContent,/AA/);await click('Resume');assert.equal(resumed[0].status,'draft');assert.deepEqual(resumed[0].hands,[answer]);await click('Sessions');await click('In progress');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,1);await click('Completed');await click('Review drill');assert.match(dom.window.document.body.textContent,/Your recorded action/);},undefined,{onResume:r=>resumed.push(r)});
 });

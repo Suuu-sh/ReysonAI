@@ -170,6 +170,25 @@ test("settings expose four native names; sidebar removes languages and mobile ta
   assert.match(css, /\.app-sidebar, \.app-sidebar\.is-collapsed, \.sidebar-backdrop \{ display: none; \}/);
 });
 
+test("appearance range grid title, options and descriptions are localized in Chinese and Spanish", async () => {
+  const server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
+  const copy = ["Range grid style", "How each hand cell is filled", "Original", "Main action + mix bar", "Classic", "Filled by frequency"];
+  try {
+    const { AccountPage } = await server.ssrLoadModule("/src/account/AccountPage.tsx");
+    for (const [index, locale] of ["zh-CN", "es"].entries()) {
+      useLocale(locale);
+      const page = renderToStaticMarkup(createElement(AccountPage, { tab: "appearance", profile: { nickname: "Yu", level: "beginner" }, onSectionChange() {} }));
+      for (const english of copy) {
+        assert.ok(productCopy[english]?.[index], `${locale}: ${english}`);
+        assert.equal(localized(english, "unused Japanese copy"), productCopy[english][index]);
+        assert.ok(page.includes(productCopy[english][index]), `${locale} appearance: ${english}`);
+      }
+      assert.ok(page.includes(`aria-label="${productCopy["Range grid style"][index]}"`));
+      for (const english of copy.filter(value => value !== "Original")) assert.ok(!page.includes(english), `${locale} English fallback: ${english}`);
+    }
+  } finally { await server.close(); }
+});
+
 test("a guest can switch languages even when account service is offline", async () => {
   const { refreshAccount, accountSnapshot } = await import("../src/account/session.ts");
   const fetch = globalThis.fetch;

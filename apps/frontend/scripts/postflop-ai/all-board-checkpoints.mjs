@@ -12,7 +12,19 @@ export function allBoardIdentity(inputs, candidate, laterCandidate, street) {
     policy_hash: candidate.metadata.policy_hash, later_policy_hash: laterCandidate?.metadata.policy_hash ?? null,
     config: inputs.config,
     code: captureSourceGraph({ roots: [sourceRoot] }).map(item => ({
-      path: relative(sourceDirectory, resolve(AUDIT_REPOSITORY, item.path)).replaceAll('\\', '/'), sha256: item.sha256 })) };
+      path: relative(sourceDirectory, resolve(AUDIT_REPOSITORY, item.path)).replaceAll('\\', '/'), sha256: item.sha256 })),
+    // Unadjusted HU retains the adopted identity shape. Adjusted/profile runs
+    // additionally pin provenance of both raw roles, not only their composition.
+    ...(inputs.adjusted || inputs.opponentProfile && inputs.opponentProfile !== 'standard' ? {
+      adjustment: { structure_hash: inputs.structure_hash, tableProfile: inputs.tableProfile ?? null,
+        opponentProfile: inputs.opponentProfile ?? 'standard', opponentSeat: inputs.opponentSeat ?? null,
+        flop_role_policy_hashes: candidate.metadata.role_policy_hashes ?? null,
+        later_role_policy_hashes: laterCandidate?.metadata.role_policy_hashes ?? null,
+        flop_role_source_hashes: candidate.profileCandidates ? Object.fromEntries(Object.entries(candidate.profileCandidates)
+          .map(([role, raw]) => [role, raw.metadata.source_hash])) : null,
+        later_role_source_hashes: laterCandidate?.profileCandidates ? Object.fromEntries(Object.entries(laterCandidate.profileCandidates)
+          .map(([role, raw]) => [role, raw.metadata.source_hash])) : null },
+    } : {}) };
 }
 
 export function assertAllBoardRunIdentity(inputs, candidate, laterCandidate, street, expectedIdentityHash) {

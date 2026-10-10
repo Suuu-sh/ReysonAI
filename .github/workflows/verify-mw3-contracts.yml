@@ -24,6 +24,8 @@ on:
       - 'artifacts/postflop/mw3-*'
       - 'configs/mw3-*.review.json'
       - 'apps/frontend/docs/mw3-saved-restore.md'
+      - 'apps/frontend/docs/qa/pr123-baseline-evidence/**'
+      - 'apps/frontend/tests/pr123-standard-output-parity-runner.test.mjs'
       - 'apps/frontend/scripts/postflop-ai/model.mjs'
       - 'apps/frontend/scripts/data/mw3-*.mjs'
       - 'apps/frontend/scripts/lib/continuation-evaluator.mjs'
@@ -96,9 +98,11 @@ jobs:
       - name: Test sequential saved-ledger memory boundary with synthetic bytes only
         run: node --expose-gc apps/frontend/tests/helpers/mw3-saved-memory-fixture.mjs
       - name: Test isolated three-player engine, classifier, codecs and adapters
-        run: node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.mjs apps/frontend/tests/mw3-consumer-*.test.mjs apps/frontend/tests/mw3-local-d1.test.mjs apps/frontend/tests/mw3-owned-process.test.mjs apps/frontend/tests/mw3-api-lifecycle.test.mjs apps/frontend/tests/mw3-wrangler-startup.test.mjs apps/frontend/tests/mw3-parent-boundary.test.mjs apps/frontend/tests/mw3-source-scope.test.mjs
+        run: node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.mjs apps/frontend/tests/mw3-consumer-*.test.mjs apps/frontend/tests/mw3-local-d1.test.mjs apps/frontend/tests/mw3-owned-process.test.mjs apps/frontend/tests/mw3-api-lifecycle.test.mjs apps/frontend/tests/mw3-wrangler-startup.test.mjs apps/frontend/tests/mw3-parent-boundary.test.mjs apps/frontend/tests/mw3-source-scope.test.mjs apps/frontend/tests/postflop-all-board-checkpoints.test.mjs apps/frontend/tests/postflop-all-board-lineage.test.mjs
       - name: Test unpublished, fail-closed three-player delivery boundary
         run: node --experimental-strip-types --test apps/backend/tests/mw3-*.test.mjs
+      - name: Test PR123 replay runner manifest integrity guard
+        run: node --test apps/frontend/tests/pr123-standard-output-parity-runner.test.mjs
       # This workflow never compiles/authors saved candidates, runs the pilot gate,
       # uploads artifacts, edits receipts, imports D1 or deploys the product.
       # An empty saved inventory is explicit no-data; partial/invalid inputs fail.

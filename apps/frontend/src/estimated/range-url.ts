@@ -1,6 +1,8 @@
 import type { Stage3Decision, Stage3Terminal } from "./stage3-types.ts";
 import type { ContinuationDecision, ContinuationTerminal, ContinuationFamily, HistoryAction } from "./continuation-tree.ts";
 import type { FormatKey, GameFormat } from "./game-formats.ts";
+import { normalizePostflopProfileState } from "./postflop-profile-state.ts";
+import type { PostflopProfileState } from "./postflop-profile-state.ts";
 import type { TableProfile } from "./table-profile.ts";
 import type { ResponseDataset, ThreeBetDataset, FourBetDataset } from "./preflop-types.ts";
 export type RangeRef = { dataset?: string; id?: string; rootId?: string; extraSeat?: boolean; kind: string; position: string; caller?: string; squeezer?: string; priorAction?: string | null; threeBettor?: string; opponent?: string; reason?: string };
@@ -17,7 +19,7 @@ import { multiwaySpots } from "./multiway-responses.ts";
 import { appendContinuationBlocks, chooseContinuationAction, continuationRootForSelection } from "./continuation-flow.ts";
 import { multiway2Spots } from "./multiway2-responses.ts";
 import { dataset as publishedDataset } from "./datasets.ts";
-import { defaultFormat, formatOptions } from "./game-formats.ts";
+import { defaultFormat, formatOptions, isBuilt } from "./game-formats.ts";
 import { completedFlopContext, flopDecision, laterDecision, laterStart, replayLater } from "./postflop-trial.ts";
 
 // The recorded-matchup lookup is identical to extended-ranges.ts, isolated here
@@ -237,7 +239,7 @@ export type RangeUrlSelection = {
   limpAction: string | null; limpResponseAction: string | null; limpReraiseAction: string | null;
   limpFourBetAction: string | null; squeezeResponse: string[]; continuationActions: string[]; stage3RootId?: string | null; stage3Actions?: string[]; selected: string;
 };
-export type RangeUrlState = RangeUrlSelection & {
+export type RangeUrlState = RangeUrlSelection & PostflopProfileState & {
   format: typeof defaultFormat; tableProfile: TableProfile;
   showFlop: boolean; flopCards: string[]; flopActions: string[];
   turnCard: string; turnActions: string[]; riverCard: string; riverActions: string[];
@@ -408,6 +410,9 @@ export function encodeRangeUrl(state: RangeEncodingState, actionBlocks = buildRa
     const level = profileLevel(state.tableProfile?.[key]);
     if (level !== "normal") params.set(key, level);
   }
+  const opponent = normalizePostflopProfileState(state);
+  if (opponent.opponentProfile !== "standard") params.set("opponent_profile", opponent.opponentProfile);
+  if (opponent.opponentSeat) params.set("opponent_seat", opponent.opponentSeat);
   const stage3 = stage3RootForSelection(state);
   if (stage3) {
     const normalized = normalizeStage3Selection(stage3.id, state.stage3Actions)!;
@@ -442,7 +447,7 @@ export function encodeRangeUrl(state: RangeEncodingState, actionBlocks = buildRa
 export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState | null {
   const raw = typeof query === "string" ? query.replace(/^[^?]*\?/, "").split("#")[0] : query;
   const params = new URLSearchParams(raw);
-  const keys = ["stage3_root", "stage3_actions", "gametype", "depth", "open", "ante", "rake", "call", "three_bet", "preflop_actions", "board", "flop_actions", "turn", "turn_actions", "river", "river_actions", "hand"];
+  const keys = ["stage3_root", "stage3_actions", "gametype", "depth", "open", "ante", "rake", "call", "three_bet", "preflop_actions", "board", "flop_actions", "turn", "turn_actions", "river", "river_actions", "hand", "opponent_profile", "opponent_seat"];
   if (!keys.some(key => params.has(key))) return null;
   const gametype = params.get("gametype") ?? `${defaultFormat.game}-${defaultFormat.table}`;
   const [game, table] = gametype.split("-");
@@ -455,9 +460,10 @@ export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState |
   const stage3 = params.has("stage3_root") ? normalizeStage3Selection(params.get("stage3_root")!, (params.get("stage3_actions") ?? "").split(",").filter(Boolean)) : null;
   const state: RangeUrlState = { ...replayPreflop(params.get("preflop_actions")), ...(stage3 ?? {}),
     selected: validHand(params.get("hand")), format: knownFormat ? format : { ...defaultFormat },
-    tableProfile: { call: profileLevel(params.get("call")), three_bet: profileLevel(params.get("three_bet")) }, ...emptyPostflop() };
+    tableProfile: { call: profileLevel(params.get("call")), three_bet: profileLevel(params.get("three_bet")) }, ...emptyPostflop(),
+    ...normalizePostflopProfileState({ opponentProfile: params.get("opponent_profile"), opponentSeat: params.get("opponent_seat") }) };
   const flop = boardCards(params.get("board"), 3);
-  if (!flop) return state;
+  if (!flop || !isBuilt(state.format)) return state;
   const context = completedFlopContext({ ...state, actionBlocks: buildRangeUrlActionBlocks(state),
     isDefaultTable: (Object.keys(defaultFormat) as FormatKey[]).every(key => state.format[key as keyof GameFormat] === defaultFormat[key as keyof GameFormat])
       && state.tableProfile.call === "normal" && state.tableProfile.three_bet === "normal" });

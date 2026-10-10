@@ -1,71 +1,55 @@
-import type { Candidate, FlopPolicy, Inputs, LaterPolicy, PostflopDatasets, StrategyNodes } from "../../scripts/postflop-ai/types.ts";
+import type { Candidate, InputOptions, Inputs, LaterPolicy, PostflopDatasets, StrategyNodes } from "../../scripts/postflop-ai/types.ts";
+import type { CandidateSource } from "../../scripts/postflop-ai/candidate-source.ts";
 import type { BalancedFlopBase } from "../../scripts/postflop-ai/flop-base-core.ts";
 import type { PlayerRole, BettingStep } from "../../scripts/postflop-ai/tree.ts";
 import type { LaterStreet } from "../../scripts/postflop-ai/later-tree.ts";
 export type ComboInput = { cards: string; weight: number };
-type ComputeSource = { spotId: string; datasets: PostflopDatasets; flopCandidate: Candidate; laterCandidate?: Candidate<LaterPolicy> | null; flopBase?: BalancedFlopBase | null };
+type ComputeSource = InputOptions & { spotId: string; datasets: PostflopDatasets; flopCandidate: CandidateSource; laterCandidate?: CandidateSource<LaterPolicy> | null; flopBase?: BalancedFlopBase | null };
 type BoardRequest = ComputeSource & { board: string; history?: string[] | null };
 type ExplainRequest = BoardRequest & { node: string; cards?: string; combos?: ComboInput[]; prev?: string };
 type LaterRequest = ComputeSource & { flop: string; flopActions?: string; turn?: string; turnActions?: string; river?: string; riverActions?: string };
 type LaterExplainRequest = LaterRequest & { cards?: string; combos?: ComboInput[] };
-import { buildInputs, sha } from "../../scripts/postflop-ai/browser-inputs.ts";
+import { buildInputs } from "../../scripts/postflop-ai/browser-inputs.ts";
+import { resolveFlopCandidate, resolveLaterCandidate } from "../../scripts/postflop-ai/candidate-source.ts";
 import { flopBetTable, flopUiFacts } from "../../scripts/postflop-ai/flop-ui-facts.ts";
 import { explainLaterCombo, explainLaterCombos, laterExplainContext } from "../../scripts/postflop-ai/explain-later.ts";
 import { flopRangeFacts, laterRangeFacts } from "../../scripts/postflop-ai/range-facts.ts";
-import { validatePolicy } from "../../scripts/postflop-ai/policy.ts";
 import { boardTexture, parseCards, parseFlopBoard, runoutTexture } from "../../scripts/postflop-ai/model.ts";
 import { FLOP_BETS, flopState } from "../../scripts/postflop-ai/tree.ts";
-import { referenceLaterPolicy, validateLaterPolicy } from "../../scripts/postflop-ai/later-policy.ts";
 import { laterDecision, laterStart, replayLater } from "./postflop-trial.ts";
 import { flopNodes, laterMixRows } from "../../scripts/postflop-ai/views.ts";
 import { canonicalFlop } from "../../scripts/postflop-ai/flop-isomorphism.ts";
 import { isFreshFlopBase, storedFlopNodes, storedFlopExplanation } from "../../scripts/postflop-ai/flop-base-core.ts";
 
-function policyForLater(inputs: Inputs, candidate: Candidate, laterCandidate?: Candidate<LaterPolicy> | null) {
-  if (!laterCandidate) {
-    const error = new Error("ターン・リバーのAI方針がありません。") as Error & { code: string };
-    error.code = "LATER_POLICY_MISSING";
-    throw error;
-  }
-  const flopPolicy = validatePolicy(candidate?.policy, inputs.spot.tree);
-  if (candidate?.metadata?.source_hash !== inputs.fingerprint ||
-      candidate.metadata.policy_hash !== sha(flopPolicy) ||
-      laterCandidate.metadata?.source_hash !== inputs.fingerprint ||
-      laterCandidate.metadata?.flop_policy_hash !== candidate.metadata.policy_hash) {
-    throw new Error("Later AI policy source or flop policy is stale");
-  }
-  const laterPolicy = validateLaterPolicy(laterCandidate.policy);
-  if (laterCandidate.metadata.policy_hash !== sha(laterPolicy)) throw new Error("Saved later AI policy hash does not match its content");
-  return { flopPolicy, laterPolicy };
+function policyForLater(inputs: Inputs, candidate: CandidateSource, laterCandidate?: CandidateSource<LaterPolicy> | null) {
+  const flop = resolveFlopCandidate(inputs, candidate);
+  const later = resolveLaterCandidate(inputs, laterCandidate, flop);
+  return { flopPolicy: flop.policy, laterPolicy: later.policy };
 }
 
-export function computeBoard({ spotId, board, history = null, datasets, flopCandidate, laterCandidate, flopBase }: BoardRequest) {
-  const inputs = buildInputs(spotId, datasets);
+const adjustment = (inputs: Inputs) => inputs.adjusted ? { adjusted: inputs.adjusted, structure_hash: inputs.structure_hash } : {};
+
+export function computeBoard({ spotId, board, history = null, datasets, flopCandidate, laterCandidate, flopBase, tableProfile, opponentProfile, opponentSeat }: BoardRequest) {
+  const inputs = buildInputs(spotId, datasets, { tableProfile, opponentProfile, opponentSeat });
   const selected = parseFlopBoard(board);
-  const policy = validatePolicy(flopCandidate.policy, inputs.spot.tree);
-  if (flopCandidate.metadata?.source_hash !== inputs.fingerprint || flopCandidate.metadata.policy_hash !== sha(policy)) {
-    throw new Error("ローカル候補の入力または方針ハッシュが一致しません。");
-  }
+  const candidate = resolveFlopCandidate(inputs, flopCandidate), policy = candidate.policy;
   const { spot } = inputs;
   let nodes: StrategyNodes | null = null;
-  if (isFreshFlopBase(flopBase, inputs, flopCandidate, laterCandidate)) {
+  if (!inputs.adjusted && isFreshFlopBase(flopBase, inputs, candidate, laterCandidate as Candidate<LaterPolicy> | null | undefined)) {
     try { nodes = storedFlopNodes(flopBase!, inputs, selected.cards, history); } catch { /* malformed optional cache: use the shared computation */ }
   }
   nodes ??= flopNodes(inputs, policy, selected.cards, history);
   return { kind: "ai_estimate_not_gto", spot: spot.id, tree: spot.tree, ip: spot.ip, oop: spot.oop,
     pot_bb: spot.potBb, stack_bb: spot.stackBb, board: selected.id, split: selected.split,
     texture: boardTexture(selected.cards), source_hash: inputs.fingerprint,
-    policy_hash: flopCandidate.metadata.policy_hash, nodes };
+    policy_hash: candidate.metadata.policy_hash, nodes, ...adjustment(inputs) };
 }
 
-export function computeExplain({ spotId, board, node, cards, combos, prev, history, datasets, flopCandidate, laterCandidate, flopBase }: ExplainRequest) {
-  const inputs = buildInputs(spotId, datasets);
+export function computeExplain({ spotId, board, node, cards, combos, prev, history, datasets, flopCandidate, laterCandidate, flopBase, tableProfile, opponentProfile, opponentSeat }: ExplainRequest) {
+  const inputs = buildInputs(spotId, datasets, { tableProfile, opponentProfile, opponentSeat });
   const selected = parseFlopBoard(board);
   const previous = (FLOP_BETS as readonly (string | undefined)[]).includes(prev) ? prev! : FLOP_BETS[0];
-  const policy = validatePolicy(flopCandidate.policy, inputs.spot.tree);
-  if (flopCandidate.metadata?.source_hash !== inputs.fingerprint || flopCandidate.metadata.policy_hash !== sha(policy)) {
-    throw new Error("ローカル候補の入力または方針ハッシュが一致しません。");
-  }
+  const candidate = resolveFlopCandidate(inputs, flopCandidate), policy = candidate.policy;
   const options = { boardCards: selected.cards, node, prev: previous, history, inputs, policy, cards, combos };
   let explanation;
   if (combos !== undefined) {
@@ -76,14 +60,14 @@ export function computeExplain({ spotId, board, node, cards, combos, prev, histo
   } else {
     if (typeof cards !== "string" || !/^([2-9TJQKA][cdhs]){2}$/.test(cards)) throw new Error("カードの形式が正しくありません。");
   }
-  if (isFreshFlopBase(flopBase, inputs, flopCandidate, laterCandidate)) {
+  if (!inputs.adjusted && isFreshFlopBase(flopBase, inputs, candidate, laterCandidate as Candidate<LaterPolicy> | null | undefined)) {
     try { explanation = storedFlopExplanation(flopBase!, options); } catch { /* optional base must never prevent fallback */ }
   }
   explanation ??= flopUiFacts(options);
   // Called-range equity is not in the stored base; compute it from the same contexts (never stored).
   explanation = { ...explanation, ...flopBetTable(options) };
   return { spot: inputs.spot.id, board: selected.id,
-    ...explanation };
+    ...explanation, ...adjustment(inputs) };
 }
 
 function singleCard(value: unknown, label: string, used: Set<number>) {
@@ -102,8 +86,8 @@ function parseActions(value: unknown): string[] {
 }
 
 export function computeLaterView({ spotId, flop, flopActions = "", turn = "", turnActions = "", river = "", riverActions = "",
-  datasets, flopCandidate, laterCandidate }: LaterRequest) {
-  const inputs = buildInputs(spotId, datasets);
+  datasets, flopCandidate, laterCandidate, tableProfile, opponentProfile, opponentSeat }: LaterRequest) {
+  const inputs = buildInputs(spotId, datasets, { tableProfile, opponentProfile, opponentSeat });
   const { flopPolicy, laterPolicy } = policyForLater(inputs, flopCandidate, laterCandidate);
   const flopBoard = parseFlopBoard(flop);
   const used = new Set(flopBoard.cards);
@@ -144,14 +128,15 @@ export function computeLaterView({ spotId, flop, flopActions = "", turn = "", tu
     turnPreviousAggressor: start.lastAggressor, riverPreviousAggressor,
     paths: { flop: flopPath, turn: turnPath, river: riverPath } });
   return { kind: "ai_estimate_not_gto", street, node: decision.node, actor, line: decision.line,
-    texture: runoutTexture(currentBoard), pot_bb: decision.potBb, rows };
+    texture: runoutTexture(currentBoard), pot_bb: decision.potBb, rows, ...adjustment(inputs) };
 }
 
 export function computeLaterExplain({ spotId, flop, flopActions = "", turn, turnActions = "", river = "", riverActions = "",
-  cards, combos, datasets, flopCandidate, laterCandidate }: LaterExplainRequest) {
-  const inputs = buildInputs(spotId, datasets);
+  cards, combos, datasets, flopCandidate, laterCandidate, tableProfile, opponentProfile, opponentSeat }: LaterExplainRequest) {
+  const inputs = buildInputs(spotId, datasets, { tableProfile, opponentProfile, opponentSeat });
+  const { flopPolicy, laterPolicy } = policyForLater(inputs, flopCandidate, laterCandidate);
   const options = { flop, flopActions, turn, turnActions, river, riverActions,
-    inputs, flopPolicy: flopCandidate.policy, laterPolicy: laterCandidate!.policy };
+    inputs, flopPolicy, laterPolicy };
   let explanation;
   if (combos !== undefined) {
     if (!Array.isArray(combos) || !combos.length || combos.some(item => typeof item?.cards !== "string" ||
@@ -163,24 +148,29 @@ export function computeLaterExplain({ spotId, flop, flopActions = "", turn, turn
     if (typeof cards !== "string" || !/^([2-9TJQKA][cdhs]){2}$/.test(cards)) throw new Error("カードの形式が正しくありません。");
     explanation = explainLaterCombo({ ...options, cards });
   }
-  return { spot: inputs.spot.id, ...explanation };
+  return { spot: inputs.spot.id, ...explanation, ...adjustment(inputs) };
 }
 
 // Range-level facts (tier shares of both ranges, bet-size composition, SPR, runout shift) for the advanced
 // explanations. Hero independent and never stored, so it stays out of computeExplain's stored/parity payload.
-export function computeRangeFacts({ spotId, board, node, prev, history, datasets, flopCandidate }: ExplainRequest) {
-  const inputs = buildInputs(spotId, datasets);
-  const policy = validatePolicy(flopCandidate.policy, inputs.spot.tree);
-  return flopRangeFacts({ inputs, policy, boardCards: parseFlopBoard(board).cards, node,
-    prev: (FLOP_BETS as readonly (string | undefined)[]).includes(prev) ? prev! : FLOP_BETS[0], history }) ?? null;
+export function computeRangeFacts({ spotId, board, node, prev, history, datasets, flopCandidate, tableProfile, opponentProfile, opponentSeat }: ExplainRequest) {
+  const inputs = buildInputs(spotId, datasets, { tableProfile, opponentProfile, opponentSeat });
+  const policy = resolveFlopCandidate(inputs, flopCandidate).policy;
+  const facts = flopRangeFacts({ inputs, policy, boardCards: parseFlopBoard(board).cards, node,
+    prev: (FLOP_BETS as readonly (string | undefined)[]).includes(prev) ? prev! : FLOP_BETS[0], history });
+  return facts ? { ...facts, ...adjustment(inputs) } : null;
 }
 
 export function computeLaterRangeFacts({ spotId, flop, flopActions = "", turn, turnActions = "", river = "", riverActions = "",
-  datasets, flopCandidate, laterCandidate }: LaterRequest) {
+  datasets, flopCandidate, laterCandidate, tableProfile, opponentProfile, opponentSeat }: LaterRequest) {
   try {
-    const inputs = buildInputs(spotId, datasets);
+    const inputs = buildInputs(spotId, datasets, { tableProfile, opponentProfile, opponentSeat });
     const { flopPolicy, laterPolicy } = policyForLater(inputs, flopCandidate, laterCandidate);
-    return laterRangeFacts({ inputs, flopPolicy, laterPolicy,
-      context: laterExplainContext({ flop, flopActions, turn, turnActions, river, riverActions }, inputs) }) ?? null;
-  } catch { return null; }
+    const facts = laterRangeFacts({ inputs, flopPolicy, laterPolicy,
+      context: laterExplainContext({ flop, flopActions, turn, turnActions, river, riverActions }, inputs) });
+    return facts ? { ...facts, ...adjustment(inputs) } : null;
+  } catch (error) {
+    if (opponentProfile && opponentProfile !== "standard") throw error;
+    return null;
+  }
 }

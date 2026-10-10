@@ -2,32 +2,33 @@ import { isFreshSimulationReport } from "./publish-d1.mjs";
 import { assertPostflopDeal } from "./range-support.mjs";
 // Read-only local preview of the audited pilot. Never generates or publishes a policy.
 import { loadInputs, readArtifact, requireArtifact } from "./inputs.mjs";
-import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
-import { scaleByPath, validatePolicy } from "./policy.ts";
+import { loadCandidate, loadLaterCandidate } from "./generate.mjs";
+import { validatePolicy } from "./policy.ts";
 import { SIMULATION_VERSION } from "./simulation.mjs";
 import { boardTexture, parseCards, parseFlopBoard, runoutTexture } from "./model.ts";
 import { flopBetTable, flopUiFacts } from "./flop-ui-facts.ts";
 import { explainLaterCombo, explainLaterCombos } from "./explain-later.ts";
 import { DEFAULT_SPOT_ID } from "./spots.ts";
 import { FLOP_BETS, flopState } from "./tree.ts";
-import { validateLaterPolicy } from "./later-policy.ts";
 import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.ts";
 import { flopNodes, laterMixRows } from "./views.ts";
+import { isOpponentMode, resolveFlopCandidate, resolveLaterCandidate } from "./candidate-source.ts";
+
+const adjustment = inputs => inputs.adjusted ? { adjusted: inputs.adjusted, structure_hash: inputs.structure_hash } : {};
 
 export function buildLocalBoard(boardId, inputs, candidate) {
   const board = parseFlopBoard(boardId);
   if (inputs.spot.history) assertPostflopDeal(inputs, board.cards);
-  const policy = validatePolicy(candidate.policy, inputs.spot.tree);
-  if (candidate.metadata?.source_hash !== inputs.fingerprint || candidate.metadata.policy_hash !== sha(policy)) {
-    throw new Error("ローカル候補の入力または方針ハッシュが一致しません。");
-  }
+  candidate = resolveFlopCandidate(inputs, candidate);
+  const policy = candidate.policy;
   const { spot } = inputs;
   const nodes = flopNodes(inputs, policy, board.cards);
   return { kind: "ai_estimate_not_gto", spot: spot.id, tree: spot.tree, ip: spot.ip, oop: spot.oop, pot_bb: spot.potBb, stack_bb: spot.stackBb, board: board.id, split: board.split, texture: boardTexture(board.cards),
-    source_hash: inputs.fingerprint, policy_hash: candidate.metadata.policy_hash, nodes };
+    source_hash: inputs.fingerprint, policy_hash: candidate.metadata.policy_hash, nodes, ...adjustment(inputs) };
 }
 
 export function explainLocalCombo(params, inputs, candidate) {
+  candidate = resolveFlopCandidate(inputs, candidate);
   const board = parseFlopBoard(params.get("board"));
   if (inputs.spot.history) assertPostflopDeal(inputs, board.cards);
   const prev = FLOP_BETS.includes(params.get("prev")) ? params.get("prev") : FLOP_BETS[0];
@@ -47,25 +48,13 @@ export function explainLocalCombo(params, inputs, candidate) {
     if (!/^([2-9TJQKA][cdhs]){2}$/.test(cards)) throw new Error("カードの形式が正しくありません。");
     explanation = { ...flopUiFacts({ ...options, cards }), ...flopBetTable({ ...options, cards }) };
   }
-  return { spot: inputs.spot.id, board: board.id, ...explanation };
+  return { spot: inputs.spot.id, board: board.id, ...explanation, ...adjustment(inputs) };
 }
 
 function policyForLater(inputs, candidate, laterCandidate) {
-  if (!laterCandidate) {
-    const error = new Error("ターン・リバーのAI方針がありません。");
-    error.code = "LATER_POLICY_MISSING";
-    throw error;
-  }
-  const flopPolicy = validatePolicy(candidate?.policy, inputs.spot.tree);
-  if (candidate?.metadata?.source_hash !== inputs.fingerprint ||
-      candidate.metadata.policy_hash !== sha(flopPolicy) ||
-      laterCandidate.metadata?.source_hash !== inputs.fingerprint ||
-      laterCandidate.metadata?.flop_policy_hash !== candidate.metadata.policy_hash) {
-    throw new Error("Later AI policy source or flop policy is stale");
-  }
-  const laterPolicy = validateLaterPolicy(laterCandidate.policy);
-  if (laterCandidate.metadata.policy_hash !== sha(laterPolicy)) throw new Error("Saved later AI policy hash does not match its content");
-  return { flopPolicy, laterPolicy };
+  const flop = resolveFlopCandidate(inputs, candidate);
+  const later = resolveLaterCandidate(inputs, laterCandidate, flop);
+  return { flopPolicy: flop.policy, laterPolicy: later.policy };
 }
 
 function singleCard(value, label, used) {
@@ -127,7 +116,7 @@ export function buildLaterView({ flop, flopActions = "", turn = "", turnActions 
     turnPreviousAggressor: start.lastAggressor, riverPreviousAggressor,
     paths: { flop: flopPath, turn: turnPath, river: riverPath } });
   return { kind: "ai_estimate_not_gto", street, node: decision.node, actor, line: decision.line,
-    texture: runoutTexture(currentBoard), pot_bb: decision.potBb, rows };
+    texture: runoutTexture(currentBoard), pot_bb: decision.potBb, rows, ...adjustment(inputs) };
 }
 
 export const LOCAL_POSTFLOP_ROUTES = ["/local-postflop-spot", "/local-postflop", "/local-postflop-explain", "/local-postflop-later",
@@ -137,31 +126,51 @@ export const LOCAL_POSTFLOP_ROUTES = ["/local-postflop-spot", "/local-postflop",
 // middleware below and the edge worker, which serves the same bodies from D1 artifacts.
 export function postflopResponse(pathname, params) {
   try {
-    const inputs = loadInputs(params.get("spot") || DEFAULT_SPOT_ID);
+    const options = {};
+    if (params.has("tableProfile")) {
+      const profile = JSON.parse(params.get("tableProfile"));
+      if (!profile || typeof profile !== "object" || Array.isArray(profile)) throw new Error("tableProfile must be an object");
+      options.tableProfile = profile;
+    }
+    if (params.has("opponentProfile")) options.opponentProfile = params.get("opponentProfile");
+    if (params.has("opponentSeat")) options.opponentSeat = params.get("opponentSeat");
+    const inputs = loadInputs(params.get("spot") || DEFAULT_SPOT_ID, options);
     const candidate = loadCandidate(inputs);
     const laterRoute = ["/local-postflop-later", "/local-postflop-later-explain"].includes(pathname);
-    const laterCandidate = loadLaterCandidate(inputs, candidate);
-    if ((laterRoute || inputs.spot.history) && !laterCandidate) {
+    let laterCandidate, laterPolicyError;
+    try { laterCandidate = loadLaterCandidate(inputs, candidate); }
+    catch (error) {
+      if (laterRoute || error.code !== "PROFILE_POLICY_MISSING") throw error;
+      laterCandidate = null;
+      laterPolicyError = { error: error.message, code: error.code, state: "not_generated" };
+    }
+    if ((laterRoute || inputs.spot.history && !isOpponentMode(inputs)) && !laterCandidate) {
       const error = new Error("ターン・リバーのAI方針がありません。");
       error.code = "LATER_POLICY_MISSING";
       throw error;
     }
-    const report = requireArtifact(inputs.spot, "report");
-    const currentReport = isFreshSimulationReport(inputs, candidate, laterCandidate, report);
+    const report = isOpponentMode(inputs) ? null : requireArtifact(inputs.spot, "report");
+    // Table-adjusted views reuse the saved standard policy but must not claim
+    // its report audited the adjusted ranges. Validate against original inputs.
+    const reportInputs = inputs.adjusted && inputs.baselineFingerprint ? loadInputs(inputs.spot.id) : inputs;
+    const currentReport = report && isFreshSimulationReport(reportInputs, candidate, laterCandidate, report);
     // Preserve the existing read-only legacy preview contract. Its recovered
     // defence-5 report is historical evidence, not current acceptance. New HU
     // histories always require the strict gate; publication uses it for all spots.
-    const preservedLegacyReport = !inputs.spot.history && report.source_hash === inputs.fingerprint &&
+    const preservedLegacyReport = report && !inputs.spot.history && report.source_hash === (inputs.baselineFingerprint ?? inputs.fingerprint) &&
       report.policy_hash === candidate.metadata.policy_hash && report.simulation_version === SIMULATION_VERSION &&
       report.spot === inputs.spot.id && report.results?.length === 72;
-    if (!currentReport && !preservedLegacyReport) {
+    if (report && !currentReport && !preservedLegacyReport) {
       throw new Error("候補に対応する最新の監査レポートがありません。");
     }
     if (pathname === "/local-postflop-spot") {
+      const optionalLater = laterCandidate;
       // Same body as the worker's /v1/postflop/spot: the artifacts the browser computes from.
       return { status: 200, body: { kind: "ai_estimate_not_gto", spot: inputs.spot, candidate,
-        laterCandidate: readArtifact(inputs.spot, "laterCandidate"), report,
-        report_status: currentReport ? "current" : "preserved-historical" } };
+        laterCandidate: optionalLater, report,
+        report_status: report ? (currentReport ? "current" : "preserved-historical") : "not-applicable",
+        ...(laterPolicyError ? { laterPolicyError } : {}),
+        ...adjustment(inputs), ...(inputs.adjusted ? { audit_scope: isOpponentMode(inputs) ? "structure_only_unpublished" : "standard_saved_ranges" } : {}) } };
     }
     let data;
     if (pathname === "/local-postflop-explain") data = explainLocalCombo(params, inputs, candidate);
@@ -180,7 +189,7 @@ export function postflopResponse(pathname, params) {
         }
         explanation = explainLaterCombos({ ...options, combos });
       } else explanation = explainLaterCombo({ ...options, cards: params.get("cards"), });
-      data = { spot: inputs.spot.id, ...explanation };
+      data = { spot: inputs.spot.id, ...explanation, ...adjustment(inputs) };
     }
     else if (pathname === "/local-postflop-later") {
       data = buildLaterView({
@@ -191,6 +200,7 @@ export function postflopResponse(pathname, params) {
     } else data = buildLocalBoard(params.get("board"), inputs, candidate);
     return { status: 200, body: data };
   } catch (error) {
+    if (error.code === "PROFILE_POLICY_MISSING") return { status: 404, body: { error: error.message, code: error.code, state: "not_generated" } };
     const missingLaterPolicy = error.code === "LATER_POLICY_MISSING";
     return { status: error.code === "ENOENT" || missingLaterPolicy ? 404 : 409, body: { error: missingLaterPolicy ? error.message : error.code === "ENOENT"
       ? "ローカルAI推定候補または監査レポートがありません。CLIで明示生成・監査してください。" : error.message } };

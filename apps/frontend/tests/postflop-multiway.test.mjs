@@ -67,14 +67,20 @@ test('complete observed action sequence matches in Agent and rejects reordered/m
   }
 });
 
-test('range workspace squeeze ending opens the correct HU spot with the correct remaining seats', () => {
+test('range workspace squeeze ending preserves the exact HU spot and seats with adjusted table tendencies', () => {
   const state={rangeType:'response',opener:'UTG',hero:'BB',callers:['HJ'],foldedHero:false,pendingRaise:'squeeze',squeezeResponse:['fold','call'],isDefaultTable:true};
   const actionBlocks=buildActionBlocks(state);
   const context=completedFlopContext({...state,actionBlocks});
   assert.equal(context.spotId,example.id); assert.equal(context.pilotAvailable,true);
   assert.deepEqual(new Set(context.players),new Set(['BB','HJ']));
   assert.equal(context.potBb,29);
-  assert.equal(completedFlopContext({...state,actionBlocks,isDefaultTable:false}).pilotAvailable,false);
+  // HU table tendencies adjust the saved input ranges, not the spot geometry.
+  // Supported-game and sign-in gates remain at the workspace/URL boundary.
+  const adjusted=completedFlopContext({...state,actionBlocks,isDefaultTable:false});
+  assert.equal(adjusted.pilotAvailable,true);
+  assert.equal(adjusted.spotId,context.spotId);
+  assert.deepEqual(adjusted.players,context.players);
+  assert.equal(adjusted.potBb,context.potBb);
 });
 
 test('legacy 44 plus limp4bet input fingerprints remain unchanged', () => {

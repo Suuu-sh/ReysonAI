@@ -12,4 +12,4 @@ export { DEFENCE_VERSION, rankTableCacheState } from "./postflop-defence.mts";
 export { EVALUATOR_VERSION } from "../../frontend/scripts/lib/equity.ts";
 export { validatePolicy } from "../../frontend/scripts/postflop-ai/policy.ts";
 export const MCP_DEFENCE_ADAPTER_VERSION = "mcp-postflop-defence-v1";
-export const MCP_DEFENCE_BASE_SOURCE_SHA256 = "47aba428f9c798079411014d638b7d80c25efaf15d4770fb1f144b19c0462a1d";
+export const MCP_DEFENCE_BASE_SOURCE_SHA256 = "6b76dbbfb541c1de35d3355aad313db83623a81b9bcc33a8d37b637611f14ad0";

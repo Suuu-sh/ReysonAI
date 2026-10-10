@@ -326,7 +326,8 @@ test("random tour picks never repeat immediately, and its fifty ranges preserve 
     assert.deepEqual(range.unreachable, previous ? previous.hands.filter(row => (stage === "threeBet" ? row.open : row.three_bet) === 0).map(row => row.hand) : []);
   }
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
-  assert.match(source, /!unreachable && mixed.length > 1/);
+  assert.match(source, /!unreachable && reach > 0/);
+  assert.doesNotMatch(source, /site-cell-mix/);
   assert.match(source, /unreachable \? copy.preview.unreachable/);
   assert.match(source, /actionColor\(action\)/);
 });
@@ -334,14 +335,39 @@ test("random tour picks never repeat immediately, and its fifty ranges preserve 
 test("saved postflop previews retain canonical board-specific weighted mixes, reach and real bet colors", async () => {
   const snapshot = JSON.parse(readFileSync(new URL("../src/site/postflop-preview.json", import.meta.url), "utf8"));
   const { loadInputs } = await import("../scripts/postflop-ai/inputs.mjs");
+  const { validatePolicy } = await import("../scripts/postflop-ai/policy.ts");
+  const { parseFlopBoard } = await import("../scripts/postflop-ai/model.ts");
+  const { combosOf } = await import("../scripts/lib/equity.ts");
+  const policyArtifact = JSON.parse(readFileSync(new URL("../scripts/data/postflop-ai/policies/btn-bb-srp-v1-policy.json", import.meta.url), "utf8"));
+  const inputs = loadInputs(snapshot.spot), policy = validatePolicy(policyArtifact.policy, inputs.spot.tree);
+  const { flopNodes } = await server.ssrLoadModule("/scripts/postflop-ai/views.ts");
   assert.equal(snapshot.source_hash, loadInputs(snapshot.spot).fingerprint);
   assert.equal(snapshot.ranges.length, 12);
   const { RangeMatrix, HeroActionLegend } = await server.ssrLoadModule("/src/site/ServiceSite.tsx");
+  let sourceZeroLegalClasses = 0;
   for (const range of snapshot.ranges) {
+    const parsedBoard = parseFlopBoard(range.board);
+    const actualRows = flopNodes(inputs, policy, parsedBoard.cards)[range.id.split(":").at(-1)].rows;
+    const actualByHand = new Map(actualRows.map(row => [row.hand, row]));
     assert.equal(Object.keys(range.hands).length, 169);
+    assert.equal(Object.keys(range.reach).length, 169);
     assert.match(range.board, /^(?:[2-9TJQKA][cdhs]){3}$/);
     assert.ok(["BTN", "BB"].includes(range.seat));
     for (const [hand, mix] of Object.entries(range.hands)) {
+      assert.ok(Number.isFinite(range.reach[hand]) && range.reach[hand] >= 0 && range.reach[hand] <= 1);
+      if (range.unreachable.includes(hand)) assert.equal(range.reach[hand], 0);
+      const sourceRow = actualByHand.get(hand), blocked = new Set(parsedBoard.cards);
+      const legalComboCount = combosOf(hand).filter(combo => !blocked.has(combo[0]) && !blocked.has(combo[1])).length;
+      const expectedReach = sourceRow.combos.reduce((sum, combo) => sum + (combo.reachWeight ?? combo.weight), 0) / legalComboCount;
+      assert.ok(Math.abs(range.reach[hand] - expectedReach) < 1e-12);
+      const positiveReachCombos = sourceRow.combos.filter(combo => (combo.reachWeight ?? combo.weight) > 0).length;
+      if (sourceRow.comboCount === 0 && legalComboCount > 0) {
+        sourceZeroLegalClasses++;
+        assert.equal(range.reach[hand], 0, `${range.board}/${range.id}/${hand} retains board-legal but source-zero combos in its denominator`);
+      } else if (positiveReachCombos > 0 && positiveReachCombos < legalComboCount) {
+        assert.ok(Math.abs(range.reach[hand] - sourceRow.reachWeight / legalComboCount) < 1e-12, `${range.board}/${range.id}/${hand} includes source-zero combos in the board-legal denominator`);
+        assert.ok(Math.abs(range.reach[hand] - sourceRow.reachWeight / positiveReachCombos) > 1e-12, `${range.board}/${range.id}/${hand} does not normalize only over positive-reach combos`);
+      }
       assert.deepEqual(Object.keys(mix), range.actions);
       const total = Object.values(mix).reduce((sum, value) => sum + value, 0);
       assert.ok(Math.abs(total - (range.unreachable.includes(hand) ? 0 : 1)) < 1e-12);
@@ -356,12 +382,58 @@ test("saved postflop previews retain canonical board-specific weighted mixes, re
     assert.ok(html.includes(range.board), "board stays available to assistive technology");
     assert.equal((context.match(/<i /g) ?? []).length, range.actions.filter(action => Object.entries(range.hands).some(([hand, mix]) => !range.unreachable.includes(hand) && mix[action] > 0)).length);
   }
+  assert.ok(sourceZeroLegalClasses > 0, "at least one hand class has board-legal combos excluded by the source range");
   const betting = snapshot.ranges.find(range => range.id.endsWith(":btn_first"));
   assert.deepEqual(betting.actions, ["check", "bet33", "bet75", "bet125"]);
   const source = readFileSync(new URL("../scripts/build-site-postflop-preview.mjs", import.meta.url), "utf8");
   assert.match(source, /flopNodes\(inputs, policy, parsed.cards\)/);
   assert.match(source, /return \[row.hand, row.mix\]/);
   assert.match(source, /!row.reachable/);
+  assert.match(source, /combosOf\(row\.hand\)\.filter\(combo => !blocked\.has\(combo\[0\]\) && !blocked\.has\(combo\[1\]\)\)/);
+});
+
+test("hero range cells map action shares to exact widths and reach to common bottom fill without mutating input", async () => {
+  const { RangeMatrix } = await server.ssrLoadModule("/src/site/ServiceSite.tsx");
+  const { color } = await server.ssrLoadModule("/src/components/action-format.ts");
+  const actions = ["check", "bet33", "bet75", "bet125"];
+  const ranks = [..."AKQJT98765432"];
+  const matrixHands = ranks.flatMap((first, row) => ranks.map((second, column) => row === column ? `${first}${second}` : row < column ? `${first}${second}s` : `${second}${first}o`));
+  const fixtures = {
+    AA: { check: 0, bet33: 1, bet75: 0, bet125: 0 },
+    KK: { check: .5, bet33: .5, bet75: 0, bet125: 0 },
+    QQ: { check: .3, bet33: .7, bet75: 0, bet125: 0 },
+    JJ: { check: .2, bet33: .5, bet75: .3, bet125: 0 },
+    TT: { check: .25, bet33: .25, bet75: .25, bet125: .25 },
+    "99": { check: 1, bet33: 0, bet75: 0, bet125: 0 },
+  };
+  const range = { id: "drawing-fixture", stage: "postflop", board: "As7d2c", seat: "BTN", history: [], actions,
+    hands: Object.fromEntries(matrixHands.map(hand => [hand, fixtures[hand] ?? { check: 0, bet33: 0, bet75: 0, bet125: 0 }])),
+    reach: { AA: 1, KK: .2, QQ: .7, JJ: 1, TT: .7, "99": 0 }, unreachable: [] };
+  const original = structuredClone(range);
+  const html = renderToStaticMarkup(createElement(RangeMatrix, { range, selected: "AA", onSelect() {} }));
+  const cell = hand => html.match(new RegExp(`<button type="button"[^>]*>\\s*<span class="site-cell-label">${hand}<\\/span>[\\s\\S]*?<\\/button>`))?.[0] ?? "";
+  const checkFill = (hand, reach, shares) => {
+    const markup = cell(hand);
+    assert.ok(markup, `${hand} cell renders`);
+    if (reach === 0) assert.doesNotMatch(markup, /site-cell-fill/);
+    else for (const [index, [action, width]] of shares.entries()) {
+      const left = shares.slice(0, index).reduce((sum, [, part]) => sum + part, 0);
+      assert.ok(markup.includes(`left:${left}%;width:${width}%;height:${reach * 100}%;background:${color(action)}`), `${hand}/${action} exact share and common reach height`);
+    }
+    assert.equal((markup.match(/<span style="left:/g) ?? []).length, reach > 0 ? shares.length : 0, `${hand} omits zero-share actions`);
+    assert.match(markup, /site-cell-label/);
+  };
+  checkFill("AA", 1, [["bet33", 100]]);
+  checkFill("KK", .2, [["bet33", 50], ["check", 50]]);
+  checkFill("QQ", .7, [["bet33", 70], ["check", 30]]);
+  checkFill("JJ", 1, [["bet75", 30], ["bet33", 50], ["check", 20]]);
+  checkFill("TT", .7, [["bet125", 25], ["bet75", 25], ["bet33", 25], ["check", 25]]);
+  checkFill("99", 0, []);
+  assert.deepEqual(range, original);
+
+  const preflop = { ...range, stage: "opening", reach: undefined, hands: Object.fromEntries(matrixHands.map(hand => [hand, { check: 0, bet33: hand === "AA" ? 100 : 0, bet75: 0, bet125: 0 }])) };
+  const preflopHtml = renderToStaticMarkup(createElement(RangeMatrix, { range: preflop, selected: "AA", onSelect() {} }));
+  assert.ok(preflopHtml.includes(`left:0%;width:100%;height:100%;background:${color("bet33")}`), "preflop without reach metadata fills full height");
 });
 
 test("the hero key describes only used action colors, not the situation", async () => {
@@ -557,7 +629,7 @@ for (const locale of ["en", "ja"]) {
     assert.equal(cells.filter(cell => cell.includes('aria-pressed="true"')).length, 1);
     assert.doesNotMatch(hero, /site-explorer-bar|site-segment/);
     assert.doesNotMatch(html, /reysonai:site-preview-display-mode:v1/);
-    assert.match(html, /class="site-cell-mix" aria-hidden="true"/);
+    assert.match(html, /class="site-cell-fill" aria-hidden="true"/);
     for (const [hand, values] of Object.entries(preview.opening)) {
       const breakdown = [[common.raise, values.open], [common.fold, values.fold]]
         .filter(([, frequency]) => frequency > 0)

@@ -40,7 +40,8 @@ export function validateLaterPolicy(policy: unknown): LaterPolicy {
   return (policy as LaterPolicy);
 }
 
-export function laterPolicyMix(policy: LaterPolicy, node: string, hole: readonly number[], board: readonly number[], line: PreviousLine): ActionMix {
+export function laterPolicyMix(policy: LaterPolicy, node: string, hole: readonly number[], board: readonly number[], line: PreviousLine,
+  { requireSavedPolicy = false }: { requireSavedPolicy?: boolean } = {}): ActionMix {
   const street = node.split("_")[0] as LaterStreet;
   if (!LATER_NODES[node] || board.length !== (street === "turn" ? 4 : 5) || !LINES.includes(line)) throw new Error("Invalid later policy decision");
   let tier = handTier(hole, board);
@@ -51,7 +52,10 @@ export function laterPolicyMix(policy: LaterPolicy, node: string, hole: readonly
     if (rule) return withRaise(node, rule.mix);
   }
   // Nodes added after a policy was saved (re-raises) use the reference mixes.
-  if (raiseDepth(node) >= 2 && policy !== reference) return referenceLaterTierMix(node, tier);
+  if (raiseDepth(node) >= 2 && policy !== reference) {
+    if (requireSavedPolicy) throw Object.assign(new Error(`No saved profile policy for ${node}`), { code: "PROFILE_POLICY_MISSING", state: "not_generated" });
+    return referenceLaterTierMix(node, tier);
+  }
   throw new Error(`Uncovered later policy node: ${node}/${line}/${texture}/${tier}`);
 }
 

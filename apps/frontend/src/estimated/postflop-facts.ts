@@ -12,6 +12,7 @@ export type ExplanationFacts = {
   kind?: string | null; spot?: string | null; board?: string | null; node?: string | null; street?: string | null; line?: string | null; cards?: string | null;
   equity?: number | null; aggregate?: { kind: string; combo_count: number; reach_weight: number };
   actions?: Record<string, { foldShare?: number | null; required?: number | null; groups?: { key: string | null; share: number | null }[] }>;
+  unsupported_actions?: Record<string, string | null> | null;
   defence?: DefenceFacts | null; betting?: { equity_vs_defender?: number | null; actions?: { action: string | null; alpha?: number | null; bluffs_per_100_value?: number | null; capped?: boolean | null }[] } | null;
   bet_table?: { actions?: Record<string, { calledEquity?: number | null }> } | null;
   range_facts?: RangeFacts | null;

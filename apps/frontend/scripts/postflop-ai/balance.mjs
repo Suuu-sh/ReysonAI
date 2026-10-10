@@ -5,8 +5,8 @@ import { boards, comboRange, config, seatRange } from "./inputs.mjs";
 import { flopTextureKeys, runoutTexture } from "./model.ts";
 import { handTier } from "./hu-hand-tier.ts";
 import { LATER_NODES, betFraction, laterNodeRole, streetHistories, streetState } from "./later-tree.ts";
-import { referenceLaterTierMix, validateLaterPolicy } from "./later-policy.ts";
-import { NODES, nodeRole, policyMix, treeNodes, validatePolicy } from "./policy.ts";
+import { laterPolicyMix, referenceLaterTierMix, validateLaterPolicy } from "./later-policy.ts";
+import { NODES, effectiveMix, nodeRole, policyMix, treeNodes, validatePolicy, withRaise } from "./policy.ts";
 import { FLOP_BETS, flopBetFraction, flopState, raiseDepth, treeHistories } from "./tree.ts";
 import { createTable, playFlop } from "./engine.ts";
 import { defenceFor, replayOrNull } from "./defence.ts";
@@ -339,8 +339,104 @@ function replayLaterPath(table, street, path) {
   return table;
 }
 
+const PROFILE_IDS = ["standard", "nit", "station", "lag", "maniac"];
+const profileMode = inputs => inputs.opponentProfile !== undefined && inputs.opponentProfile !== "standard";
+
+// Profile advisories describe the authored tier rules, not sampled range aggregates or
+// solver/MDF targets. A deliberately unbalanced opponent must not fail standard balance
+// heuristics. These warnings never change the policy's frequencies.
+function profileRuleFindings(inputs, rules, later = false) {
+  const findings = [];
+  for (const rule of rules) {
+    const role = later ? laterNodeRole(rule.node) : nodeRole(rule.node);
+    const context = `${rule.tier}/${later ? `${rule.line}/` : ""}${rule.texture}`;
+    const finding = (check, detail) => findings.push({ check, severity: "warn", node: rule.node,
+      role, tier: rule.tier, texture: rule.texture, ...(later ? { line: rule.line } : {}), detail: `${context}: ${detail}` });
+    if (rule.tier === "monster" && (rule.mix.fold ?? 0) >= 95) {
+      finding("monster-fold", `monsters fold ${rule.mix.fold}% of the time; review this extreme policy assumption.`);
+    }
+    if (rule.tier === "air" && (rule.mix.allin ?? 0) >= 50) {
+      finding("air-allin", `air moves all-in ${rule.mix.allin}% of the time; advisory only, including for maniac.`);
+    }
+    // Villain traits do not constrain the other seat's exploit policy (e.g. bluffing a nit).
+    if (role !== inputs.opponentSeat || !["nit", "station"].includes(inputs.opponentProfile) || rule.tier !== "air") continue;
+    const aggression = Object.entries(rule.mix).reduce((sum, [action, value]) =>
+      sum + (action === "raise" || action === "allin" || action.startsWith("bet") ? value : 0), 0);
+    if (aggression >= 50) finding("profile-contradiction",
+      `air bets/raises ${aggression}% under the low-bluff ${inputs.opponentProfile} opponent assumption.`);
+  }
+  return findings;
+}
+
+// An explicitly requested *pending decision* must exist in the engine and have a
+// compatible positive-weight holecard assignment. Never scan every zero-frequency
+// branch and call it an error: pure checks/folds are ordinary valid poker policies.
+function checkRequestedProfilePath(inputs, flop, later, request) {
+  const board = request?.board, path = request?.path;
+  if (!Array.isArray(board) || ![3, 4, 5].includes(board.length) || new Set(board).size !== board.length ||
+      board.some(card => !Number.isInteger(card) || card < 0 || card >= 52) || !path || typeof path !== "object" || Array.isArray(path) ||
+      Object.keys(path).some(street => !["flop", "turn", "river"].includes(street)) ||
+      Object.values(path).some(actions => !Array.isArray(actions))) throw new Error("Invalid requested profile board/path");
+  if (board.length > 3 && !later) throw new Error("A later policy is required for this requested decision");
+  flopState(inputs.spot.tree, path.flop ?? []);
+  for (const street of ["turn", "river"]) if (path[street]) streetState(street, path[street]);
+  const table = replayOrNull(inputs, board, path, inputs.config ?? config);
+  if (!table || ["flop", "turn", "river"].some(street =>
+    JSON.stringify(table.path[street]) !== JSON.stringify(path[street] ?? []))) {
+    throw new Error("Requested path does not reach the pending decision (terminal, all-in, or legalized continuation)");
+  }
+  const requireSavedPolicy = profileMode(inputs);
+  const reached = seat => comboRange(inputs.seatRows[seat], "freq", board).map(item => {
+    let weight = item.weight;
+    for (const entry of table.log) {
+      if (entry.seat !== seat || entry.action === null || !(weight > 0)) continue;
+      const cards = board.slice(0, entry.boardLen);
+      const raw = entry.street === "flop" ? policyMix(flop, entry.node, item.combo, cards, { requireSavedPolicy })
+        : laterPolicyMix(later, entry.node, item.combo, cards, entry.line, { requireSavedPolicy });
+      const mix = effectiveMix(withRaise(entry.node, raw), entry.canRaise);
+      weight *= mix[entry.action] / 100;
+    }
+    return { ...item, weight };
+  }).filter(item => item.weight > 0);
+  const ip = reached(inputs.spot.ip), oop = reached(inputs.spot.oop);
+  if (!ip.some(a => oop.some(b => a.combo.every(card => !b.combo.includes(card))))) {
+    throw new Error("No compatible positive-weight holecard assignment reaches the requested decision");
+  }
+}
+
+// Policies are already composed by seat (villain / exploit) before calling this.
+// Structural policy validation is shared with standard mode; saved source identity
+// validation remains with the strict candidate/audit loaders, not this heuristic.
+// `requestedPaths`: [{ board: number[3..5], path: { flop?, turn?, river? } }].
+// Each entry requests a pending decision, not a terminal outcome. Omitted entries
+// do not assert reach for hypothetical zero-weight branches. boardList/authored
+// are intentionally irrelevant to the rule-level profile advisories.
+export function checkProfileBalance(inputs, flopPolicy, laterPolicy = null, { requestedPaths = [] } = {}) {
+  const findings = [];
+  let flop, later;
+  try {
+    if (!PROFILE_IDS.includes(inputs.opponentProfile ?? "standard") ||
+        (inputs.opponentSeat !== undefined && !["ip", "oop"].includes(inputs.opponentSeat))) throw new Error("Invalid opponent profile/seat");
+    flop = validatePolicy(flopPolicy, inputs.spot.tree);
+    later = laterPolicy === null ? null : validateLaterPolicy(laterPolicy);
+    if (!Array.isArray(requestedPaths)) throw new Error("Invalid requested profile paths");
+  } catch (error) {
+    return { findings: [{ check: "profile-structure", severity: "error", node: "policy", detail: error.message }] };
+  }
+  findings.push(...profileRuleFindings(inputs, flop.rules));
+  if (later) findings.push(...profileRuleFindings(inputs,
+    [...later.streets.turn.rules, ...later.streets.river.rules], true));
+  requestedPaths.forEach((request, index) => {
+    try { checkRequestedProfilePath(inputs, flop, later, request); }
+    catch (error) { findings.push({ check: "unreachable-branch", severity: "error", node: `requested-path-${index}`, detail: error.message }); }
+  });
+  return { findings };
+}
+
 // `boardList` replaces the 12 configured boards (e.g. one canonical flop at a time for the all-board audit).
-export function checkFlopBalance(inputs, flopPolicy, { boardList = boards() } = {}) {
+export function checkFlopBalance(inputs, flopPolicy, options = {}) {
+  if (profileMode(inputs)) return checkProfileBalance(inputs, flopPolicy, null, options);
+  const { boardList = boards() } = options;
   const policy = validatePolicy(flopPolicy, inputs.spot.tree);
   const nodes = treeNodes(inputs.spot.tree).filter(node => node.endsWith("_first") || NODES[node].includes("raise"));
   const histories = firstHistoryByNode(treeHistories(inputs.spot.tree));
@@ -366,7 +462,9 @@ export function checkFlopBalance(inputs, flopPolicy, { boardList = boards() } = 
 
 // `authored`: the policy is a generated/authored candidate, which must show both override
 // dimensions on first nodes. The fixed reference comparator is exempt.
-export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = true, boardList = boards() } = {}) {
+export function checkLaterBalance(inputs, flopPolicy, laterPolicy, options = {}) {
+  if (profileMode(inputs)) return checkProfileBalance(inputs, flopPolicy, laterPolicy, options);
+  const { authored = true, boardList = boards() } = options;
   const flop = validatePolicy(flopPolicy, inputs.spot.tree);
   const later = validateLaterPolicy(laterPolicy);
   const findings = [];
