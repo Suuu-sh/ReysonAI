@@ -496,6 +496,72 @@
           "prior_review_history_preserved": true
         },
         "limitations": "Source-only correction. Exact-head Actions validation is pending; no generation, D1 operation, deployment, merge, or production configuration change."
+      },
+      {
+        "date": "2026-10-10",
+        "reviewer": "MCP composed Worker typecheck integration follow-up",
+        "reviewer_task": "/root/source_only_review",
+        "reviewed_source_commit": "bf087548172176c849958c06202299e39b446483",
+        "report": "apps/backend/MCP_WORKER_TYPECHECK_JSON_BOUNDARY_REVIEW.md",
+        "report_sha256": "56c9da060d0cf0b233b9881bb4b565d4fffab63f67a3088ea5abc7429a62ea49",
+        "scope": "Explicit TypeScript response types at existing account and published-dataset JSON boundaries exposed by the composed Worker project. No renewed strategy, numerical, or saved-data approval.",
+        "blocking_findings": 0,
+        "before_content_sha256": "c413e9d2c057838e30601f0bb26c107ea829de2ac3336799e3e5982966fec021",
+        "source_identity": {
+          "source_records_before": 195,
+          "source_records_after": 195,
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/estimated/datasets.ts"
+          ],
+          "added": [],
+          "removed": [],
+          "unchanged": 193,
+          "modified_sources": [
+            {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7057,
+              "sha256": "09bac73e8342f54c54286626dd2afdebf3522381e4ff52abee6d473dd604b4b5",
+              "previous": {
+                "bytes": 7034,
+                "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+              }
+            },
+            {
+              "path": "apps/frontend/src/estimated/datasets.ts",
+              "bytes": 5438,
+              "sha256": "8f3601317afddead6aeef71364c96cf86c8324d8bba8ca3bd19ba8806e72b453",
+              "previous": {
+                "bytes": 5397,
+                "sha256": "dd3224feae502272ded066a636760bf05b4f62d5d865ff5a802bf6ac68b3a216"
+              }
+            }
+          ]
+        },
+        "verification": {
+          "worker_import_graph": "The composed Worker project reaches browser input modules, so its tsconfig includes DOM declarations alongside Cloudflare Worker types.",
+          "json_boundaries": "The existing account path map and published dataset-index envelope are now explicit; only TypeScript assertions changed.",
+          "previous_head": "On bf087548, MCP-local typecheck passed and the Worker project reported only these two unknown-response type errors.",
+          "exact_head_ci": "Pending on the corrected PR head."
+        },
+        "verified_unchanged": {
+          "artifact_records": 1888,
+          "artifact_bytes": 79002248,
+          "archive": {
+            "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+            "bytes": 1747857,
+            "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a"
+          },
+          "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+          "counts": {
+            "catalog": 3115,
+            "saved": 1611,
+            "unreachable": 1504,
+            "hands": 272259
+          },
+          "prior_review_history_preserved": true
+        },
+        "limitations": "Type-only source correction. Exact-head Actions validation pending; no generation, D1 operation, deployment, merge, or production configuration change."
       }
     ],
     "copy_amendments": [
@@ -10977,8 +11043,8 @@
     },
     {
       "path": "apps/frontend/src/account/session.ts",
-      "bytes": 7034,
-      "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+      "bytes": 7057,
+      "sha256": "09bac73e8342f54c54286626dd2afdebf3522381e4ff52abee6d473dd604b4b5"
     },
     {
       "path": "apps/frontend/src/agent/hand.ts",
@@ -11082,8 +11148,8 @@
     },
     {
       "path": "apps/frontend/src/estimated/datasets.ts",
-      "bytes": 5397,
-      "sha256": "dd3224feae502272ded066a636760bf05b4f62d5d865ff5a802bf6ac68b3a216"
+      "bytes": 5438,
+      "sha256": "8f3601317afddead6aeef71364c96cf86c8324d8bba8ca3bd19ba8806e72b453"
     },
     {
       "path": "apps/frontend/src/estimated/english-reasons.ts",
@@ -11391,7 +11457,7 @@
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
     }
   ],
-  "content_sha256": "c413e9d2c057838e30601f0bb26c107ea829de2ac3336799e3e5982966fec021",
+  "content_sha256": "5ca4b050891009812f2ddf88b59b7685310213564258e82fc22da91309278931",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
