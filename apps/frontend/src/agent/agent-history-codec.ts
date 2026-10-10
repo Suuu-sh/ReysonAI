@@ -5,9 +5,6 @@
 const FORMAT = "reysonai-agent-hands:compact-v1";
 const FLAGS = ["vpip", "pfr", "threeBetOpp", "threeBet", "facedThreeBet", "foldedToThreeBet", "sawFlop", "showdown", "wonShowdown"] as const;
 const OPTIONAL = ["pfBets", "pfCalls", "pfFacing", "pfFolds"] as const;
-// Session/full-history records deliberately use compact-v1's object fallback.
-// Older clients also preserve these objects; a new tuple/envelope would risk losing
-// their unknown fields. Capacity errors must stay explicit, never truncate details.
 const KNOWN_KEYS = new Set<string>(["at", "tableId", "pos", "returnBb", ...FLAGS, ...OPTIONAL]);
 
 type CompactRecord = [number, string, string, number, number, number | null, number | null, number | null, number | null];
