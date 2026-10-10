@@ -439,4 +439,51 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
   .has-context-switch .settings-header { flex: 1 1 auto; }
   .action-seat-info.has-context-switch.is-open .settings-body { position: static; width: auto; padding: 0; border: 0; box-shadow: none; }
   .action-seat-info.has-context-switch.is-open .settings-backdrop { display: none; }
+  /* Postflop settings stay as compact as the board view; table details live in the format dialog. */
+  .action-seat-info.has-context-switch.is-open .settings-body ul { display: none; }
+  .action-seat-info.has-context-switch.is-open { display: grid; grid-template-columns: auto auto; column-gap: 6px; row-gap: 3px; align-items: center; }
+  .action-seat-info.has-context-switch.is-open .range-context-switch { grid-row: 1 / span 2; }
+  .action-seat-info.has-context-switch.is-open .settings-body { flex: 0 0 auto; }
+  .action-seat-info.has-context-switch.is-open .display-mode-toggle button { flex: 0 0 auto; padding: 4px 8px; font-size: 11px; }
+  .has-context-switch.is-open .settings-header { flex: 0 1 auto; gap: 4px; }
+  .has-context-switch.is-open .settings-toggle { font-size: 12px; }
 }
+
+/* Opponent assumptions in the flop dialog: type first, then which player it applies to. */
+.flop-opponent-settings { display: grid; gap: 14px; margin-top: 14px; }
+.flop-opponent-summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; padding: 8px 8px 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-raised); }
+.flop-opponent-summary-text { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.flop-opponent-summary-text span { color: var(--text-muted); font-size: 12px; }
+.flop-opponent-summary-text strong { overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.flop-advanced-button { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border: 0; border-radius: 8px; background: var(--surface-hover); color: var(--text); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.flop-advanced-button:hover { background: var(--line-strong); }
+.flop-advanced-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.opponent-settings-dialog { width: min(560px, calc(100vw - 32px)); }
+.opponent-settings-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+.opponent-settings-actions > button { min-width: 112px; }
+.postflop-profile-field { min-width: 0; display: grid; gap: 8px; }
+.postflop-profile-label { color: var(--text-muted); font-size: 12px; font-weight: 600; }
+.opponent-profile-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }
+.opponent-profile-option { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-raised); color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: border-color .15s ease, background-color .15s ease; }
+.opponent-profile-option:hover:not(:disabled) { border-color: var(--line-strong); background: var(--surface-hover); }
+.opponent-profile-option[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--surface-raised)); }
+.opponent-profile-check { flex: 0 0 16px; height: 16px; margin-top: 1px; border: 1.5px solid var(--line-strong); border-radius: 50%; transition: border-color .15s ease, box-shadow .15s ease; }
+.opponent-profile-option[aria-pressed="true"] .opponent-profile-check { border-color: var(--accent); box-shadow: inset 0 0 0 3px var(--surface-raised), inset 0 0 0 8px var(--accent); }
+.opponent-profile-text { display: grid; gap: 2px; min-width: 0; }
+.opponent-profile-text strong { font-size: 13px; font-weight: 700; }
+.opponent-profile-text small { color: var(--text-muted); font-size: 12px; line-height: 1.55; }
+.opponent-seat-options { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.opponent-seat-option { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 52px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-raised); color: var(--text); font: inherit; cursor: pointer; transition: border-color .15s ease, background-color .15s ease; }
+.opponent-seat-option:hover:not(:disabled) { border-color: var(--line-strong); }
+.opponent-seat-option[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--surface-raised)); }
+.opponent-seat-option:disabled { opacity: .45; cursor: not-allowed; }
+.opponent-seat-position { display: grid; text-align: left; font-size: 16px; font-weight: 800; line-height: 1.1; }
+.opponent-seat-position small { color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: .04em; }
+.opponent-seat-role { padding: 3px 8px; border-radius: 999px; background: var(--surface-hover); color: var(--text-muted); font-size: 11px; font-weight: 700; }
+.opponent-seat-option[aria-pressed="true"] .opponent-seat-role { background: var(--accent); color: #1a0b12; }
+.flop-opponent-settings button:focus-visible, .postflop-profile-preparing button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.postflop-profile-note p { margin: 2px 0 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+.postflop-profile-preparing > button { margin-top: 12px; min-height: 44px; }
+.postflop-adjusted-marker { display: inline-block; color: var(--text-muted); font-size: 11px; }
+.postflop-profile-note { margin-bottom: 10px; }
+

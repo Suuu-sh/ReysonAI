@@ -50,7 +50,7 @@ test("subscription shows the ¥580 Plus plan without a live purchase", () => {
 });
 
 test("appearance preferences normalise unknown values and log-out offers keeping practice data", () => {
-  assert.deepEqual(prefs.loadAppearance(), { cards: "four", motion: "standard" });
+  assert.deepEqual(prefs.loadAppearance(), { cards: "four", motion: "standard", matrix: "original" });
   const html = renderToStaticMarkup(createElement(LogoutDialog, { onCancel() {}, onConfirm() {} }));
   assert.match(html, /練習データ（ドリル・セッション・回答履歴）も削除する/);
   assert.doesNotMatch(html, /checked=""/);
@@ -93,10 +93,13 @@ test("practice export and cleanup preserve profile, appearance and unrelated dat
 
 test("appearance and range mode persist with invalid appearance values normalised", () => {
   withLocalStorage(store => {
-    prefs.saveAppearance({ cards: "two", motion: "reduce" });
-    assert.deepEqual(prefs.loadAppearance(), { cards: "two", motion: "reduce" });
-    store.setItem("reysonai:appearance:v1", JSON.stringify({ cards: "bad", motion: "bad" }));
-    assert.deepEqual(prefs.loadAppearance(), { cards: "four", motion: "standard" });
+    prefs.saveAppearance({ cards: "two", motion: "reduce", matrix: "classic" });
+    assert.deepEqual(prefs.loadAppearance(), { cards: "two", motion: "reduce", matrix: "classic" });
+    assert.equal(JSON.parse(store.getItem("reysonai:appearance:v1")).matrix, "classic");
+    store.setItem("reysonai:appearance:v1", JSON.stringify({ cards: "two", motion: "reduce" }));
+    assert.deepEqual(prefs.loadAppearance(), { cards: "two", motion: "reduce", matrix: "original" });
+    store.setItem("reysonai:appearance:v1", JSON.stringify({ cards: "bad", motion: "bad", matrix: "bad" }));
+    assert.deepEqual(prefs.loadAppearance(), { cards: "four", motion: "standard", matrix: "original" });
     prefs.saveDisplayMode("simple");
     assert.equal(prefs.loadDisplayMode(), "simple");
     prefs.saveDisplayMode("bad");

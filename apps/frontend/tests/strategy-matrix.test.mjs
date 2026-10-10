@@ -1,18 +1,28 @@
 import assert from "node:assert/strict";
-import { after, before, test } from "node:test";
-import { createServer } from "vite";
+import { test } from "node:test";
+import { build } from "esbuild";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { fileURLToPath } from "node:url";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { combosOf } from "../scripts/lib/equity.ts";
 
-let server;
-let StrategyMatrix;
-before(async () => {
-  server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, optimizeDeps: { noDiscovery: true }, appType: "custom" });
-  ({ StrategyMatrix } = await server.ssrLoadModule("/src/components/StrategyMatrix.tsx"));
+const rootPath = fileURLToPath(new URL("..", import.meta.url));
+const bundleDirectory = mkdtempSync(join(tmpdir(), "reysonai-strategy-matrix-"));
+test.after(() => rmSync(bundleDirectory, { recursive: true, force: true }));
+const bundle = await build({
+  stdin: { contents: 'export { StrategyMatrix } from "./src/components/StrategyMatrix.tsx";', resolveDir: rootPath, loader: "tsx" },
+  bundle: true, write: false, platform: "node", format: "esm", jsx: "automatic",
+  external: ["react", "react-dom", "@phosphor-icons/react"],
+  loader: { ".css": "empty", ".png": "dataurl", ".webp": "dataurl" },
 });
-after(async () => server?.close());
+const modulePath = join(bundleDirectory, "strategy-matrix.mjs");
+const code = bundle.outputFiles[0].text.replace(/from "(react(?:\/[^"]+)?|react-dom(?:\/[^"]+)?|@phosphor-icons\/react)"/g,
+  (_, specifier) => `from "${import.meta.resolve(specifier)}"`);
+writeFileSync(modulePath, code);
+const { StrategyMatrix } = await import(pathToFileURL(modulePath).href);
 
 const cell = (html, hand) => [...html.matchAll(/<button\b[^>]*>[\s\S]*?<\/button>/g)].find(([markup]) => markup.includes(`<strong>${hand}</strong>`))?.[0] ?? "";
 const render = (aggregates, actions, extra = {}) => renderToStaticMarkup(createElement(StrategyMatrix, {
@@ -110,4 +120,14 @@ test("preflop stays full-height; simple mode, unreachable cells, and mix widths 
   const simple = cell(render(aggregates, ["raise", "fold"], { boardCards: "2s3h4d", simplified: true }), "K6s");
   closeTo(height(simple), 17.5, "simple mode retains node reach height");
   assert.deepEqual(segments(simple), ["100%"]);
+});
+
+test("each matrix cell renders exactly one hand label", () => {
+  const html = render(new Map([
+    ["AA", { actions: { raise: 0.5, fold: 0.5 }, comboCount: 6 }],
+    ["AKs", { actions: { raise: 1, fold: 0 }, comboCount: 4 }],
+  ]), ["raise", "fold"]);
+  const buttons = [...html.matchAll(/<button\b[^>]*>[\s\S]*?<\/button>/g)].map(([markup]) => markup);
+  assert.ok(buttons.length > 0);
+  for (const markup of buttons) assert.equal((markup.match(/<strong>/g) ?? []).length, 1, markup);
 });

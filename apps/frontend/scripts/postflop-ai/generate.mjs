@@ -1,9 +1,10 @@
 // Explicit, local-only Codex generation of compact AI policy rules.
-// It never writes a published strategy or silently regenerates an existing candidate.
+// Profile candidates are authored in git delivery storage; generation itself never publishes to D1.
+// It never silently regenerates an existing candidate.
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
+import { copyFileSync, constants, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { artifactPaths, boards, config, readArtifact, requireArtifact, root, seatRange } from "./inputs.mjs";
 import { LATER_NODES, STREETS, openingActions, streetNodes } from "./later-tree.ts";
 import { boardHeight, boardTexture, LINES, parseCards, RUNOUT_TEXTURES, TIERS } from "./model.ts";
@@ -11,6 +12,8 @@ import { handTier } from "./hu-hand-tier.ts";
 import { NODES, treeNodes, validatePolicy } from "./policy.ts";
 import { FLOP_BETS, facingNode, flopBetLabel, raiseDepth } from "./tree.ts";
 import { validateLaterPolicy } from "./later-policy.ts";
+import { normalizeGenerationOptions } from "./generation-options.mjs";
+import { isOpponentMode, matchesCandidateSource, profileArtifactKey, resolveFlopCandidate, resolveLaterCandidate } from "./candidate-source.ts";
 
 // Local Codex model for new candidates: --model, else POSTFLOP_AI_MODEL, else this default.
 // Existing candidates are reused as saved (the first BTN/BB pilot was made with gpt-6-sol).
@@ -22,9 +25,17 @@ export const DEFAULT_EFFORT = "max";
 export const resolveEffort = cliEffort => cliEffort || process.env.POSTFLOP_AI_EFFORT || DEFAULT_EFFORT;
 export const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
-export function loadCandidate(inputs) {
-  const candidate = requireArtifact(inputs.spot, "candidate");
-  if (candidate?.metadata?.source_hash !== inputs.fingerprint || candidate.metadata.config_version !== config.version ||
+export function loadCandidate(inputs, role) {
+  if (isOpponentMode(inputs) && role === undefined) return resolveFlopCandidate(inputs, {
+    villain: loadCandidate(inputs, "villain"), exploit: loadCandidate(inputs, "exploit"),
+  });
+  if (!isOpponentMode(inputs) && role !== undefined) throw new Error("A generation role requires a nonstandard profile");
+  const candidate = requireArtifact(inputs.spot, "candidate", isOpponentMode(inputs) ? { profile: inputs.opponentProfile, role } : {});
+  if (isOpponentMode(inputs)) {
+    assertProfileIdentity(inputs, candidate, role);
+    if (candidate.metadata.tree !== inputs.spot.tree) throw new Error("Profile policy identity mismatch: tree");
+  }
+  if (!matchesCandidateSource(inputs, candidate) || candidate.metadata.config_version !== config.version ||
       (candidate.metadata.spot ?? inputs.spot.id) !== inputs.spot.id ||
       (candidate.metadata.tree ?? "oop_checks") !== inputs.spot.tree) {
     throw new Error("AI policy source is stale; archive it and explicitly generate a new candidate");
@@ -36,11 +47,28 @@ export function loadCandidate(inputs) {
 
 // Optional local later-street artifact. Missing means use the fixed reference, while
 // malformed/stale files are errors, never a silent fallback or a generation request.
-export function loadLaterCandidate(inputs, flopCandidate) {
-  const candidate = readArtifact(inputs.spot, "laterCandidate");
+export function loadLaterCandidate(inputs, flopCandidate, role) {
+  if (isOpponentMode(inputs) && role === undefined) {
+    const flop = resolveFlopCandidate(inputs, flopCandidate);
+    return resolveLaterCandidate(inputs, {
+      villain: loadLaterCandidate(inputs, flop.profileCandidates.villain, "villain"),
+      exploit: loadLaterCandidate(inputs, flop.profileCandidates.exploit, "exploit"),
+    }, flop);
+  }
+  if (!isOpponentMode(inputs) && role !== undefined) throw new Error("A generation role requires a nonstandard profile");
+  if (isOpponentMode(inputs)) {
+    assertProfileIdentity(inputs, flopCandidate, role);
+    if (flopCandidate.metadata.tree !== inputs.spot.tree) throw new Error("Profile policy identity mismatch: flop tree");
+    validatePolicy(flopCandidate.policy, inputs.spot.tree);
+  }
+  const candidate = isOpponentMode(inputs)
+    ? requireArtifact(inputs.spot, "laterCandidate", { profile: inputs.opponentProfile, role })
+    : readArtifact(inputs.spot, "laterCandidate");
   if (!candidate) return null;
-  if (candidate?.metadata?.source_hash !== inputs.fingerprint ||
-      flopCandidate?.metadata?.source_hash !== inputs.fingerprint ||
+  if (isOpponentMode(inputs)) assertProfileIdentity(inputs, candidate, role);
+  if (!matchesCandidateSource(inputs, candidate) ||
+      (isOpponentMode(inputs) && (candidate.metadata.config_version !== config.version || flopCandidate.metadata.config_version !== config.version)) ||
+      !matchesCandidateSource(inputs, flopCandidate) ||
       flopCandidate.metadata.policy_hash !== sha(flopCandidate.policy) ||
       candidate.metadata.flop_policy_hash !== flopCandidate.metadata.policy_hash) throw new Error("Later AI policy source or flop policy is stale");
   validateLaterPolicy(candidate.policy);
@@ -84,7 +112,7 @@ function spotContext(inputs) {
   return { preflop, design, heights, raiser, nodeNames };
 }
 
-export function promptFor(inputs) {
+function standardPromptFor(inputs) {
   const { spot } = inputs;
   const { preflop, design, heights, raiser, nodeNames } = spotContext(inputs);
   const nodes = treeNodes(spot.tree);
@@ -109,6 +137,93 @@ export function promptFor(inputs) {
     "Add texture overrides where the board changes the strategy (e.g. bet smaller and more often on dry boards, check more on monotone and wet boards out of position); the out-of-position player checks and leads less than the in-position player; keep some monsters in checking ranges; raises must include some draws or bluffs, not only monsters; keep bluffs proportional to the bet size. The opponent is not a fixed bot; do not exploit an opponent that folds too often.",
     `Output exactly {version:1,kind:'ai_estimate_not_gto',rules:[{node,texture,tier,mix},...]}. Mix keys must be exactly the legal actions for that node, integer 0..100, summing to 100. Include the ${nodes.length * 5} mandatory fallback rules and no more than ${nodes.length * 20} overrides; no rationale, code, private opponent cards, or other properties.`,
   ].join("\n");
+}
+
+const PROFILE_GUIDANCE = {
+  nit: {
+    villain: "NIT personality: low betting frequency, few bluffs, tight calls, and raises almost exclusively with near-nut hands.",
+    exploit: "Counterplay against NIT: bluff more into their excessive folds, but fold readily to their rare raises; avoid paying off their strongly value-heavy aggression.",
+  },
+  station: {
+    villain: "Calling station personality: calls too often and too wide, rarely raises, and seldom bluffs; weak pairs and draws still do not fold easily, and passive continuation dominates.",
+    exploit: "Counterplay against calling station: sharply reduce bluffs, value bet larger and thinner, and respect their rare raises.",
+  },
+  lag: {
+    villain: "LAG personality: high betting, raising and bluffing frequencies, loose aggressive continuation, and pressure across streets.",
+    exploit: "Counterplay against LAG: call strong hands to induce further aggression, widen bluff-catching, and retain strong hands in checking/calling ranges.",
+  },
+  maniac: {
+    villain: "Maniac personality: extremely frequent overbets, all-ins, raises and bluffs, with very wide aggressive continuation.",
+    exploit: "Counterplay against maniac: bluff-catch even wider than against LAG, induce their extreme aggression, and commit stacks with strong hands.",
+  },
+};
+
+// Also used before artifact lookup/provider invocation. Never author a profile
+// using a standard range, a composed role policy, or a mismatched input identity.
+function authoringOptions(inputs, options = {}) {
+  const selected = normalizeGenerationOptions(options);
+  if (selected.profile === "standard") {
+    if (inputs.adjusted) throw new Error("Standard policy authoring with adjusted inputs is not enabled");
+    if (isOpponentMode(inputs)) throw new Error("Generation profile does not match input profile");
+    return selected; // Standard authoring/reuse behavior predates the profile envelope.
+  } else if (!inputs.adjusted || inputs.opponentProfile !== selected.profile ||
+      inputs.adjusted.opponentProfile !== selected.profile || !["ip", "oop"].includes(inputs.opponentSeat)) {
+    throw new Error("Generation profile does not match adjusted profile inputs and opponent seat");
+  }
+  if (selected.opponentSeat !== undefined && selected.opponentSeat !== inputs.opponentSeat) throw new Error("Generation opponent seat does not match input opponent seat");
+  if (!/^[a-f0-9]{64}$/.test(inputs.fingerprint ?? "") || !/^[a-f0-9]{64}$/.test(inputs.structure_hash ?? "") ||
+      inputs.config?.version !== config.version) throw new Error("Invalid generation input identity");
+  for (const seat of [inputs.spot.ip, inputs.spot.oop]) {
+    const rows = inputs.seatRows?.[seat];
+    if (!rows?.length || new Set(rows.map(row => row.hand)).size !== rows.length ||
+        rows.some(row => !Number.isFinite(row.freq) || row.freq < 0 || row.freq > 100) || !rows.some(row => row.freq > 0)) {
+      throw new Error(`Invalid or unreachable generation input range: ${seat}`);
+    }
+  }
+  return selected;
+}
+
+function profilePrompt(inputs, selected, baseline) {
+  const opponent = inputs.spot[inputs.opponentSeat];
+  const hero = inputs.spot[inputs.opponentSeat === "ip" ? "oop" : "ip"];
+  const text = baseline
+    .replace("The opponent is not a fixed bot; do not exploit an opponent that folds too often.",
+      "The selected personality is an explicit behavioral assumption, not a fixed bot or known hidden hand.");
+  return [text,
+    `Profile: ${selected.profile}; role: ${selected.role}. For the illustrative range summaries, the opponent is ${opponent} (${inputs.opponentSeat.toUpperCase()}) and the counterplayer is ${hero}; these summaries use the actual saved ${selected.profile} villain preflop range for ${opponent}, not the standard range. This illustrative assignment does not limit the role policy to one node side.`,
+    PROFILE_GUIDANCE[selected.profile].villain,
+    PROFILE_GUIDANCE[selected.profile].exploit,
+    selected.role === "villain"
+      ? `At EVERY IP and OOP node, author the acting player as this ${selected.profile} personality itself, not an exploitative response to it. The same role file must support the personality occupying either seat; do not fill the other node side with standard or counterplay behavior.`
+      : `At EVERY IP and OOP node, author the acting player as deliberate counterplay against an opponent with the known ${selected.profile} personality. The same role file must support the counterplayer occupying either seat; do not fill the other node side with standard or villain behavior.`,
+    "These are asymmetric AI-estimated behavioral policies, not equilibrium or GTO. Profile/counterplay instructions explicitly supersede generic balanced bluff proportions and the advice to include bluffs/draws in every raise: NIT/station may legitimately have almost no bluff raises, while LAG/maniac may deliberately overbluff. Keep all legal actions, integer sums, tier/texture/line fallbacks, board-height distinctions, separate OOP/IP play and the stated rare-donk discipline. Do not add metadata or explanation to the policy JSON.",
+  ].join("\n");
+}
+
+export function promptFor(inputs, options = {}) {
+  const selected = normalizeGenerationOptions(options);
+  if (selected.profile !== "standard") authoringOptions(inputs, selected);
+  const baseline = standardPromptFor(inputs);
+  return selected.profile === "standard" ? baseline : profilePrompt(inputs, selected, baseline);
+}
+
+export function promptForLater(inputs, options = {}) {
+  const selected = normalizeGenerationOptions(options);
+  if (selected.profile !== "standard") authoringOptions(inputs, selected);
+  const baseline = standardPromptForLater(inputs);
+  return selected.profile === "standard" ? baseline : profilePrompt(inputs, selected, baseline);
+}
+
+function assertProfileIdentity(inputs, candidate, role) {
+  if (!/^[a-f0-9]{64}$/.test(inputs.structure_hash ?? "") || !["villain", "exploit"].includes(role) || !["ip", "oop"].includes(inputs.opponentSeat) ||
+      candidate?.profileCandidates || candidate?.metadata?.profile !== inputs.opponentProfile ||
+      candidate?.metadata?.role !== role || candidate?.metadata?.spot !== inputs.spot.id ||
+      candidate?.metadata?.structure_hash !== inputs.structure_hash) throw new Error("Profile policy identity mismatch");
+}
+
+function providerOptions(model, effort) {
+  if (typeof model !== "string" || !/^[a-z0-9.-]+$/.test(model) ||
+      typeof effort !== "string" || !/^[a-z]+$/.test(effort)) throw new Error("Invalid generation model or reasoning effort");
 }
 
 export function runCodex(prompt, { model = resolveModel(), effort = resolveEffort(), timeoutMs = 1800000, onThread = () => {} } = {}) {
@@ -190,25 +305,44 @@ export function runClaude(prompt, { model, timeoutMs = 1800000, onThread = () =>
 }
 const generatorFor = model => model.startsWith("claude-") ? runClaude : runCodex;
 
-export async function generate(inputs, { model = resolveModel(), effort = resolveEffort(), generator = generatorFor(model) } = {}) {
-  const path = artifactPaths(inputs.spot).candidate;
-  if (existsSync(path)) return { candidate: loadCandidate(inputs), reused: true };
-  const prompt = promptFor(inputs);
+// A compatible legacy profile candidate is promoted byte-for-byte only after the
+// ordinary loaders validate identity/content/linkage. Never overwrite public bytes.
+function reuseProfileArtifact(inputs, selected, kind, path, load) {
+  const legacy = selected.profile !== "standard"
+    ? join(root, ".local/postflop-ai", `${profileArtifactKey(inputs.spot, kind, selected.profile, selected.role)}.json`) : null;
+  if (selected.force || (!existsSync(path) && (!legacy || !existsSync(legacy)))) return null;
+  const candidate = load();
+  if (selected.profile !== "standard" && candidate.metadata.source_hash !== inputs.fingerprint) throw new Error("Profile candidate input fingerprint is stale; use --force to overwrite");
+  if (!existsSync(path)) {
+    mkdirSync(dirname(path), { recursive: true });
+    copyFileSync(legacy, path, constants.COPYFILE_EXCL);
+  }
+  return { candidate, reused: true };
+}
+
+export async function generate(inputs, { model = resolveModel(), effort = resolveEffort(), generator = generatorFor(model), ...options } = {}) {
+  const selected = authoringOptions(inputs, options);
+  const path = artifactPaths(inputs.spot, selected).candidate;
+  const reused = reuseProfileArtifact(inputs, selected, "candidate", path, () => loadCandidate(inputs, selected.role));
+  if (reused) return reused;
+  providerOptions(model, effort);
+  const prompt = promptFor(inputs, selected);
   let started = {};
   const policy = validatePolicy(await generator(prompt, { model, effort, onThread: result => { started = result ?? {}; } }), inputs.spot.tree);
   // Record what the app-server reports it used, when it says so; otherwise what was requested.
   if (started.model && started.model !== model) throw new Error(`Codex used ${started.model} instead of ${model}`);
   const usedEffort = started.reasoningEffort ?? effort;
   const candidate = { metadata: { kind: "ai_estimate_not_gto", scope: "12 representative flops; flop only; not published",
-    spot: inputs.spot.id, tree: inputs.spot.tree, source_hash: inputs.fingerprint, policy_hash: sha(policy), config_version: config.version,
-    model, reasoning_effort: usedEffort, prompt_hash: sha(prompt) }, policy };
+    spot: inputs.spot.id, tree: inputs.spot.tree, source_hash: inputs.fingerprint, structure_hash: inputs.structure_hash, policy_hash: sha(policy), config_version: config.version,
+    model, reasoning_effort: usedEffort, prompt_hash: sha(prompt),
+    ...(selected.profile !== "standard" ? { profile: selected.profile, role: selected.role, opponent_seat: inputs.opponentSeat } : {}) }, policy };
   mkdirSync(dirname(path), { recursive: true });
-  writeFileSync(path, `${JSON.stringify(candidate, null, 2)}\n`, { flag: "wx" });
+  writeFileSync(path, `${JSON.stringify(candidate, null, 2)}\n`, { flag: selected.force ? "w" : "wx" });
   return { candidate, reused: false };
 }
 
 // Turn/river rules for one spot. The flop candidate must exist: the later policy is keyed to it.
-export function promptForLater(inputs) {
+function standardPromptForLater(inputs) {
   const { spot } = inputs;
   const { preflop, design, raiser } = spotContext(inputs);
   const street = name => {
@@ -234,17 +368,27 @@ export function promptForLater(inputs) {
   ].join("\n");
 }
 
-export async function generateLater(inputs, flopCandidate, { model = resolveModel(), effort = resolveEffort(), generator = generatorFor(model) } = {}) {
-  const path = artifactPaths(inputs.spot).laterCandidate;
-  if (existsSync(path)) return { candidate: loadLaterCandidate(inputs, flopCandidate), reused: true };
-  const prompt = promptForLater(inputs);
+export async function generateLater(inputs, flopCandidate, { model = resolveModel(), effort = resolveEffort(), generator = generatorFor(model), ...options } = {}) {
+  const selected = authoringOptions(inputs, options);
+  if (selected.profile !== "standard") {
+    assertProfileIdentity(inputs, flopCandidate, selected.role);
+    validatePolicy(flopCandidate.policy, inputs.spot.tree);
+    if (flopCandidate.metadata.source_hash !== inputs.fingerprint || flopCandidate.metadata.policy_hash !== sha(flopCandidate.policy) ||
+        flopCandidate.metadata.config_version !== config.version || flopCandidate.metadata.tree !== inputs.spot.tree) throw new Error("Profile flop candidate input or policy is stale");
+  }
+  const path = artifactPaths(inputs.spot, selected).laterCandidate;
+  const reused = reuseProfileArtifact(inputs, selected, "laterCandidate", path, () => loadLaterCandidate(inputs, flopCandidate, selected.role));
+  if (reused) return reused;
+  providerOptions(model, effort);
+  const prompt = promptForLater(inputs, selected);
   let started = {};
   const policy = validateLaterPolicy(await generator(prompt, { model, effort, onThread: result => { started = result ?? {}; } }));
   if (started.model && started.model !== model) throw new Error(`Codex used ${started.model} instead of ${model}`);
   const candidate = { metadata: { kind: "ai_estimate_not_gto", scope: "turn and river; not published",
-    spot: inputs.spot.id, source_hash: inputs.fingerprint, flop_policy_hash: flopCandidate.metadata.policy_hash, policy_hash: sha(policy),
-    config_version: config.version, model, reasoning_effort: started.reasoningEffort ?? effort, prompt_hash: sha(prompt) }, policy };
+    spot: inputs.spot.id, source_hash: inputs.fingerprint, structure_hash: inputs.structure_hash, flop_policy_hash: flopCandidate.metadata.policy_hash, policy_hash: sha(policy),
+    config_version: config.version, model, reasoning_effort: started.reasoningEffort ?? effort, prompt_hash: sha(prompt),
+    ...(selected.profile !== "standard" ? { profile: selected.profile, role: selected.role, opponent_seat: inputs.opponentSeat } : {}) }, policy };
   mkdirSync(dirname(path), { recursive: true });
-  writeFileSync(path, `${JSON.stringify(candidate, null, 2)}\n`, { flag: "wx" });
+  writeFileSync(path, `${JSON.stringify(candidate, null, 2)}\n`, { flag: selected.force ? "w" : "wx" });
   return { candidate, reused: false };
 }

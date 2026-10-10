@@ -1,9 +1,10 @@
+import opponentProfileCopy from "./opponent-profile-copy.json" with { type: "json" };
 import dictionary from "./product-dictionary.json" with { type: "json" };
 import direct from "./product-direct.json" with { type: "json" };
 
 // Authored interface copy only. Interpolated values are kept verbatim: never
 // translate user names, saved drill names, cards or numerical strategy facts.
-export const productCopy: Record<string, string[]> = { ...dictionary, ...direct };
+export const productCopy: Record<string, string[]> = { ...dictionary, ...direct, ...opponentProfileCopy };
 const caseInsensitiveCopy = new Map(Object.entries(productCopy).filter(([key]) => !/\{\d+\}/.test(key)).map(([key, translations]) => [key.toLowerCase(), translations]));
 const escape = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const patterns = Object.entries(productCopy).filter(([key]) => /\{\d+\}/.test(key)).map(([key, values]) => {

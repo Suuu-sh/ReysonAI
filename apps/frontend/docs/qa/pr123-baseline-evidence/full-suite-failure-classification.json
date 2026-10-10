@@ -1,0 +1,566 @@
+{
+  "purpose": "Classification of the existing full-suite run; this is a failure inventory, not a claim that every failure is understood.",
+  "fullSuiteRun": {
+    "command": "npm test (frontend package script: node --test --test-force-exit tests/*.test.mjs)",
+    "cwd": "apps/frontend",
+    "testedHead": "7c98d662f88b88c4a4be5e622be82c359a8746d3",
+    "testedCommittedTree": "272911f994ecaa4e1d114dae8dfa655dbea28204",
+    "worktreeWasDirty": true,
+    "dirtyModifiedPathsAtRun": [
+      "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+      "apps/frontend/scripts/postflop-ai/balance.mjs",
+      "apps/frontend/scripts/postflop-ai/explain-later.ts",
+      "apps/frontend/scripts/postflop-ai/explain.mjs",
+      "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+      "apps/frontend/scripts/verify-preflop-local-d1.mjs",
+      "apps/frontend/tests/adopted-hu-v7-runtime.test.mjs",
+      "apps/frontend/tests/hu-after-multiway-integration.test.mjs",
+      "apps/frontend/tests/postflop-profile-balance.test.mjs",
+      "apps/frontend/tests/postflop-profile-state.test.mjs"
+    ],
+    "summary": {
+      "tests": 1417,
+      "passed": 1365,
+      "failed": 50,
+      "skipped": 2,
+      "durationMs": 154582.298208
+    },
+    "log": {
+      "path": "/tmp/reysonai-pr123-full-test.log",
+      "sha256": "05fa6a8e2239242871ba71e526215be6c9e2ce11e70975b576c0defd62423e52"
+    },
+    "limitations": "This run predates the focused migration-test correction below and was not run on the exact clean PR tree. No full suite was rerun."
+  },
+  "categoryCounts": {
+    "stale_schema_count_fixed": 1,
+    "confirmed_in_clean_development": 10,
+    "host_platform_mismatch": 13,
+    "unclassified": 21,
+    "linux_prctl_unavailable_on_host": 1,
+    "dirty_source_inventory_mismatch": 1,
+    "sandbox_denies_loopback_socket": 1,
+    "review_receipt_source_identity_mismatch": 2
+  },
+  "cleanDevelopmentUiSiteComparison": {
+    "development": {
+      "commit": "f789178886bf020b143051eca3c56aa77e499303",
+      "gitTree": "a114d7816fa49c41a66d6fa514cdf64ad7b4ab74"
+    },
+    "prHead": {
+      "commit": "6b5291089c15304c25af7433e87cd1bcaac38428",
+      "tree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5"
+    },
+    "focusedCommand": "node --test --test-force-exit --test-name-pattern='comparison labels share typography|Ranked card keeps core content without redundant rating details|both components import StyleMap|only the long phone comparison Agent and ranked chapters use compact readable spacing|intermediate two-column hero removes only its viewport spacer|only ReysonAI comparison cells stay continuously black|production service-site app CTAs' tests/compare-heading.test.mjs tests/ranked-card-layout.test.mjs tests/shared-style-map.test.mjs tests/site-surface.test.mjs",
+    "focusedResult": {
+      "selectedCases": 10,
+      "failed": 10,
+      "sameNamedFailuresSeenInDirtyRun": true,
+      "failureNames": [
+        "comparison labels share typography and center the text with a directly attached icon",
+        "Ranked card keeps core content without redundant rating details in en",
+        "Ranked card keeps core content without redundant rating details in ja",
+        "Ranked card keeps core content without redundant rating details in zh-CN",
+        "Ranked card keeps core content without redundant rating details in es",
+        "both components import StyleMap; duplicate frame/point renderers are absent",
+        "only the long phone comparison Agent and ranked chapters use compact readable spacing",
+        "intermediate two-column hero removes only its viewport spacer and never clips copy",
+        "only ReysonAI comparison cells stay continuously black while the section stays light",
+        "production service-site app CTAs use the app host while previews keep their existing path"
+      ]
+    },
+    "comparison": "All listed relevant test and implementation blobs match between clean development and PR head. Direct focused runs reproduced the same expectation failures, including comparison heading, four locale ranked-card cases, shared StyleMap assertion, and four site CSS/CTA cases.",
+    "identicalBlobs": [
+      {
+        "path": "apps/frontend/tests/compare-heading.test.mjs",
+        "blobSha1": "a51fd0a65f11330d9f01cea8b42a31f29f34e540",
+        "developmentEqualsPrHead": true
+      },
+      {
+        "path": "apps/frontend/src/site/site.css",
+        "blobSha1": "d8464890048c769d8f77517aeb2877b3db964f76",
+        "developmentEqualsPrHead": true
+      },
+      {
+        "path": "apps/frontend/tests/ranked-card-layout.test.mjs",
+        "blobSha1": "1b683b981287bfa7651b4274466b33fd202b4e48",
+        "developmentEqualsPrHead": true
+      },
+      {
+        "path": "apps/frontend/src/trainer/DrillLibrary.tsx",
+        "blobSha1": "0940466e73c88f392783e8b395151f40e47d0ef7",
+        "developmentEqualsPrHead": true
+      },
+      {
+        "path": "apps/frontend/tests/shared-style-map.test.mjs",
+        "blobSha1": "e1383b1ce31655da30b3021ee759407cfa60a2d7",
+        "developmentEqualsPrHead": true
+      },
+      {
+        "path": "apps/frontend/src/trainer/PlayerAnalysis.tsx",
+        "blobSha1": "56343235c3f6c3ef8ab5f5ae793233ee6cf932ed",
+        "developmentEqualsPrHead": true
+      },
+      {
+        "path": "apps/frontend/src/agent/PlayStyleDashboard.tsx",
+        "blobSha1": "5e3b50fb8e3ebe2bc8920227a04e766dd387b4a2",
+        "developmentEqualsPrHead": true
+      },
+      {
+        "path": "apps/frontend/tests/site-surface.test.mjs",
+        "blobSha1": "8a0a882a8ef2e70db5265093ce540fc1ef17e354",
+        "developmentEqualsPrHead": true
+      },
+      {
+        "path": "apps/frontend/src/site/ServiceSite.tsx",
+        "blobSha1": "0b35a6595ef920b0a5d01314ff1a73242d703315",
+        "developmentEqualsPrHead": true
+      },
+      {
+        "path": "apps/frontend/src/site/content.ts",
+        "blobSha1": "09df20b1dbd4655a4c909bd45a8aaedb19bf8045",
+        "developmentEqualsPrHead": true
+      },
+      {
+        "path": "apps/frontend/src/site/content-ja.ts",
+        "blobSha1": "e06c73d329945d54db02f94bc23f07f870587316",
+        "developmentEqualsPrHead": true
+      },
+      {
+        "path": "apps/frontend/src/site/content-es.ts",
+        "blobSha1": "a932d15e03286ebac5ce4776dd1a439701fefdaa",
+        "developmentEqualsPrHead": true
+      },
+      {
+        "path": "apps/frontend/src/site/content-zh.ts",
+        "blobSha1": "bdf0c511452543b6b7dad14c3003349d898d5752",
+        "developmentEqualsPrHead": true
+      }
+    ]
+  },
+  "migrationCorrection": {
+    "migrationPath": "apps/backend/migrations/0012_postflop_profile_policies.sql",
+    "migrationBlobSha1": "b7cb57d251b203df2531a7c091d94b102019023c",
+    "inspection": "Migration 0012 adds exactly one table, postflop_profile_policies. Applied migrations produce 28 non-internal tables.",
+    "testChange": "Change the expected table count from 27 to 28 and assert postflop_profile_policies exists exactly once.",
+    "focusedVerificationCommand": "node --test --test-force-exit tests/backend-migration-sql.test.mjs",
+    "focusedResult": {
+      "passed": 2,
+      "failed": 0
+    },
+    "fullSuiteRerun": false
+  },
+  "currentReceiptRecheck": {
+    "command": "node --test --test-force-exit tests/reviewed-preflop-archive.test.mjs tests/reviewed-preflop.test.mjs",
+    "result": {
+      "passed": 7,
+      "failed": 2
+    },
+    "remainingFailures": [
+      "Review source/configuration identity changed",
+      "Reviewed preflop source/configuration identity changed; author and review locally"
+    ],
+    "assessment": "Current working tree includes dirty source changes after the committed receipt bindings. These remain unresolved in the current overlay and are not classified as host-only."
+  },
+  "failures": [
+    {
+      "id": 1,
+      "location": "tests/backend-migration-sql.test.mjs:45:1",
+      "test": "every current backend migration, including ranked_finalize, prepares as intact SQLite statements",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: | 28 !== 27",
+      "classification": "stale_schema_count_fixed",
+      "assessment": "Migration 0012 adds postflop_profile_policies; the count is 28. Test-only correction to 28 plus explicit table assertion now passes the focused migration test."
+    },
+    {
+      "id": 2,
+      "location": "tests/compare-heading.test.mjs:4:1",
+      "test": "comparison labels share typography and center the text with a directly attached icon",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /> img \\{ position: absolute; right: calc\\(100% \\+ 6px\\)/. Input:",
+      "classification": "confirmed_in_clean_development",
+      "assessment": "The same focused test fails in clean development f789178; relevant test and source blobs are identical between development and PR head."
+    },
+    {
+      "id": 3,
+      "location": "tests/mw3-api-lifecycle.test.mjs:84:1",
+      "test": "captured controller restores exact fake HTTP routes and completes two independent owned restart phases",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: | 'darwin' !== 'linux'",
+      "classification": "host_platform_mismatch",
+      "assessment": "Direct assertion: this Mac runtime reports darwin while the fixture requires linux."
+    },
+    {
+      "id": 4,
+      "location": "tests/mw3-api-lifecycle.test.mjs:137:1",
+      "test": "API-only intentional teardown never accepts controller SQL failure, signal, timeout or overflow",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 5,
+      "location": "tests/mw3-api-lifecycle.test.mjs:154:1",
+      "test": "API teardown accepts a normal zero controller with a fast closed-stream double-fork only after owned reaping",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: | 'darwin' !== 'linux'",
+      "classification": "host_platform_mismatch",
+      "assessment": "Direct assertion: this Mac runtime reports darwin while the fixture requires linux."
+    },
+    {
+      "id": 6,
+      "location": "tests/mw3-api-lifecycle.test.mjs:178:1",
+      "test": "a captured API controller rejects wrong HTTP body and retains worker cleanup and missing-completion evidence",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: | 'darwin' !== 'linux'",
+      "classification": "host_platform_mismatch",
+      "assessment": "Direct assertion: this Mac runtime reports darwin while the fixture requires linux."
+    },
+    {
+      "id": 7,
+      "location": "tests/mw3-api-lifecycle.test.mjs:209:1",
+      "test": "last-response normal worker failure and external signal never become accepted API lifecycle proof",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: | 'darwin' !== 'linux'",
+      "classification": "host_platform_mismatch",
+      "assessment": "Direct assertion: this Mac runtime reports darwin while the fixture requires linux."
+    },
+    {
+      "id": 8,
+      "location": "tests/mw3-api-lifecycle.test.mjs:233:1",
+      "test": "worker error or external SIGKILL in the final synchronous completion gap is rejected even with a completed success file",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: | 'darwin' !== 'linux'",
+      "classification": "host_platform_mismatch",
+      "assessment": "Direct assertion: this Mac runtime reports darwin while the fixture requires linux."
+    },
+    {
+      "id": 9,
+      "location": "tests/mw3-api-lifecycle.test.mjs:264:1",
+      "test": "a graceful signal-handling worker normal exit zero is accepted only with exact controlled TERM and reaped evidence",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: | 'darwin' !== 'linux'",
+      "classification": "host_platform_mismatch",
+      "assessment": "Direct assertion: this Mac runtime reports darwin while the fixture requires linux."
+    },
+    {
+      "id": 10,
+      "location": "tests/mw3-api-lifecycle.test.mjs:277:1",
+      "test": "activated synthetic API contract binds exact registry health and four bounded owned phases including corruption rejection",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: | 'darwin' !== 'linux'",
+      "classification": "host_platform_mismatch",
+      "assessment": "Direct assertion: this Mac runtime reports darwin while the fixture requires linux."
+    },
+    {
+      "id": 11,
+      "location": "tests/mw3-api-lifecycle.test.mjs:307:1",
+      "test": "activated health rejects the same registry count with a different captured source identity",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: | 'darwin' !== 'linux'",
+      "classification": "host_platform_mismatch",
+      "assessment": "Direct assertion: this Mac runtime reports darwin while the fixture requires linux."
+    },
+    {
+      "id": 12,
+      "location": "tests/mw3-api-lifecycle.test.mjs:321:1",
+      "test": "a generic signal-handling worker exit 143 is rejected despite complete HTTP and controlled owner TERM",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: | 'darwin' !== 'linux'",
+      "classification": "host_platform_mismatch",
+      "assessment": "Direct assertion: this Mac runtime reports darwin while the fixture requires linux."
+    },
+    {
+      "id": 13,
+      "location": "tests/mw3-local-d1.test.mjs:207:1",
+      "test": "synthetic process fixture: supervisor retains successful stdout and stderr without discarding warnings",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: | 'darwin' !== 'linux'",
+      "classification": "host_platform_mismatch",
+      "assessment": "Direct assertion: this Mac runtime reports darwin while the fixture requires linux."
+    },
+    {
+      "id": 14,
+      "location": "tests/mw3-local-d1.test.mjs:217:1",
+      "test": "synthetic process fixtures: NOT NULL text before killed, timed-out or interrupted children is never completed SQL proof",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: The \"string\" argument must be of type string. Received type undefined (undefined)",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 15,
+      "location": "tests/mw3-local-d1.test.mjs:240:1",
+      "test": "runtime pins follow wrangler-dist and Miniflare dependency resolution rather than sibling guesses",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: | 'darwin' !== 'linux'",
+      "classification": "host_platform_mismatch",
+      "assessment": "Direct assertion: this Mac runtime reports darwin while the fixture requires linux."
+    },
+    {
+      "id": 16,
+      "location": "tests/mw3-owned-process.test.mjs:12:1",
+      "test": "stub supervisor accepts genuine SQLite error with normal exits, including normal124/137",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: | 'darwin' !== 'linux'",
+      "classification": "host_platform_mismatch",
+      "assessment": "Direct assertion: this Mac runtime reports darwin while the fixture requires linux."
+    },
+    {
+      "id": 17,
+      "location": "tests/mw3-owned-process.test.mjs:37:1",
+      "test": "expected SQL text followed by SIGKILL/SIGTERM/timeout is never completed rollback evidence",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Require the production helper structured failure, not an unrelated throw",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 18,
+      "location": "tests/mw3-owned-process.test.mjs:73:1",
+      "test": "inner/outer deadlines and output overflow clean owned child and grandchild, preserving diagnostics",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Require the production helper structured failure, not an unrelated throw",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 19,
+      "location": "tests/mw3-owned-process.test.mjs:101:1",
+      "test": "spawn/measurement/cleanup/resource failures retain original outcomes and never become SQL failures",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Require the production helper structured failure, not an unrelated throw",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 20,
+      "location": "tests/mw3-owned-process.test.mjs:154:1",
+      "test": "zero child exit without valid JSON success remains outside expected SQL-failure proof",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: | 'darwin' !== 'linux'",
+      "classification": "host_platform_mismatch",
+      "assessment": "Direct assertion: this Mac runtime reports darwin while the fixture requires linux."
+    },
+    {
+      "id": 21,
+      "location": "tests/mw3-owned-process.test.mjs:266:1",
+      "test": "fast setsid double-fork with closed streams is discovered and reaped on normal/inner/outer completion",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Require the production helper structured failure, not an unrelated throw",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 22,
+      "location": "tests/mw3-owned-process.test.mjs:305:1",
+      "test": "abrupt supervisor SIGKILL rejects SQL and API completion; separate test containment cleans exact births",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Traceback (most recent call last): | assert ctypes.CDLL(None).prctl(36,1,0,0,0)==0",
+      "classification": "linux_prctl_unavailable_on_host",
+      "assessment": "Fixture requires Linux prctl; this host does not provide the tested symbol/behavior."
+    },
+    {
+      "id": 23,
+      "location": "tests/mw3-owned-process.test.mjs:343:1",
+      "test": "a retry uses a fresh command ID while preserving the original completed SQL failure evidence",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: API and SQL completion evidence have separate purposes",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 24,
+      "location": "tests/mw3-parent-boundary.test.mjs:22:1",
+      "test": "cached live version A cannot supply classifier logic while captured reviewed version B is attested",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Boundary path must stay inside the repository",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 25,
+      "location": "tests/mw3-parent-boundary.test.mjs:65:1",
+      "test": "exact-buffer hooks support captured JSON and builtins while rejecting every undeclared local import",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Boundary path must stay inside the repository",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 26,
+      "location": "tests/mw3-parent-boundary.test.mjs:86:1",
+      "test": "captured import.meta root and read-only origin Git-object metadata preserve tree-relative provenance",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Boundary path must stay inside the repository",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 27,
+      "location": "tests/mw3-parent-boundary.test.mjs:105:1",
+      "test": "captured typed TS, relative TS and JSON dependencies evaluate from recorded stripped bytes despite live/replay changes",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Boundary path must stay inside the repository",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 28,
+      "location": "tests/mw3-parent-boundary.test.mjs:137:1",
+      "test": "the complete actual parent graph links under exact-buffer hooks, including the captured shared registry, migrated runtime modules and nonexecuting type provenance, without invoking the oracle",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Boundary path must stay inside the repository",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 29,
+      "location": "tests/mw3-parent-boundary.test.mjs:197:1",
+      "test": "captured declaration provenance is retained but .d.ts and .d.mts can never execute",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Boundary path must stay inside the repository",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 30,
+      "location": "tests/mw3-source-scope.test.mjs:148:1",
+      "test": "official collection accepts the source inventory with all parser provenance and unchanged archive bytes",
+      "diagnostic": "Error: Mw3 source tree byte size differs: apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+      "classification": "dirty_source_inventory_mismatch",
+      "assessment": "Validator names mw3-local-d1-oracle.mjs and that source file was modified in the tested dirty worktree; not classified as host-only."
+    },
+    {
+      "id": 31,
+      "location": "tests/mw3-source-scope.test.mjs:218:1",
+      "test": "the reduced ledger still executes the complete captured verification parent without a live-source fallback",
+      "diagnostic": "Error: Command failed: /opt/homebrew/Cellar/node/25.8.1_1/bin/node --input-type=module -e",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 32,
+      "location": "tests/postflop-all-board-checkpoints.test.mjs:9:1",
+      "test": "all-board checkpoints resume only exact input/policy/code identity",
+      "diagnostic": "Error: Refuse symlink or nonregular all-board output/checkpoint path",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 33,
+      "location": "tests/postflop-all-board-checkpoints.test.mjs:51:1",
+      "test": "identity and checkpoint files reject links, dangling links and directory substitutions",
+      "diagnostic": "Error: Refuse symlink or nonregular all-board output/checkpoint path",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 34,
+      "location": "tests/postflop-all-board-checkpoints.test.mjs:70:1",
+      "test": "independent writers reuse an identical winner and cannot replace different completed checkpoint bytes",
+      "diagnostic": "Error: Refuse symlink or nonregular all-board output/checkpoint path",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 35,
+      "location": "tests/postflop-all-board-checkpoints.test.mjs:89:1",
+      "test": "identity-file EEXIST requires identical complete bytes and never rewrites mismatches",
+      "diagnostic": "Error: Refuse symlink or nonregular all-board output/checkpoint path",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 36,
+      "location": "tests/postflop-all-board-checkpoints.test.mjs:104:1",
+      "test": "cached same-row writes recheck current checkpoint and identity files on disk",
+      "diagnostic": "Error: Refuse symlink or nonregular all-board output/checkpoint path",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 37,
+      "location": "tests/postflop-all-board-checkpoints.test.mjs:120:1",
+      "test": "a corrupt concurrent checkpoint winner is rejected without replacement or temporary-file residue",
+      "diagnostic": "Error: Refuse symlink or nonregular all-board output/checkpoint path",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 38,
+      "location": "tests/postflop-all-board-lineage.test.mjs:23:1",
+      "test": "new revisions preserve historical canonical bytes; identical writes reuse and changed bytes fail",
+      "diagnostic": "Error: Refuse symlink or nonregular all-board output/checkpoint path",
+      "classification": "unclassified",
+      "assessment": "Evidence does not establish a host-only or PR-caused root cause; left unresolved."
+    },
+    {
+      "id": 39,
+      "location": "tests/postflop-flop-base.test.mjs:147:1",
+      "test": "local flop middleware serves stored Brotli with content-encoding, decoded by fetch",
+      "diagnostic": "Error: listen EPERM: operation not permitted 127.0.0.1",
+      "classification": "sandbox_denies_loopback_socket",
+      "assessment": "The captured run was denied loopback listen with EPERM; environment limitation is directly shown."
+    },
+    {
+      "id": 40,
+      "location": "tests/ranked-card-layout.test.mjs:20:3",
+      "test": "Ranked card keeps core content without redundant rating details in en",
+      "diagnostic": "TypeError: Cannot read properties of null (reading 'textContent')",
+      "classification": "confirmed_in_clean_development",
+      "assessment": "The same focused test fails in clean development f789178; relevant test and source blobs are identical between development and PR head."
+    },
+    {
+      "id": 41,
+      "location": "tests/ranked-card-layout.test.mjs:20:3",
+      "test": "Ranked card keeps core content without redundant rating details in ja",
+      "diagnostic": "TypeError: Cannot read properties of null (reading 'textContent')",
+      "classification": "confirmed_in_clean_development",
+      "assessment": "The same focused test fails in clean development f789178; relevant test and source blobs are identical between development and PR head."
+    },
+    {
+      "id": 42,
+      "location": "tests/ranked-card-layout.test.mjs:20:3",
+      "test": "Ranked card keeps core content without redundant rating details in zh-CN",
+      "diagnostic": "TypeError: Cannot read properties of null (reading 'textContent')",
+      "classification": "confirmed_in_clean_development",
+      "assessment": "The same focused test fails in clean development f789178; relevant test and source blobs are identical between development and PR head."
+    },
+    {
+      "id": 43,
+      "location": "tests/ranked-card-layout.test.mjs:20:3",
+      "test": "Ranked card keeps core content without redundant rating details in es",
+      "diagnostic": "TypeError: Cannot read properties of null (reading 'textContent')",
+      "classification": "confirmed_in_clean_development",
+      "assessment": "The same focused test fails in clean development f789178; relevant test and source blobs are identical between development and PR head."
+    },
+    {
+      "id": 44,
+      "location": "tests/reviewed-preflop-archive.test.mjs:26:1",
+      "test": "clean checkout restoration refuses changed candidates, symlinks and missing LFS payload",
+      "diagnostic": "Error: Review source/configuration identity changed",
+      "classification": "review_receipt_source_identity_mismatch",
+      "assessment": "Official validator refuses current source/config identity. The tested worktree contains uncommitted protected-source edits; retain as a source-binding blocker, not a host failure."
+    },
+    {
+      "id": 45,
+      "location": "tests/reviewed-preflop.test.mjs:27:1",
+      "test": "committed review manifest matches every artifact and source byte",
+      "diagnostic": "Error: Reviewed preflop source/configuration identity changed; author and review locally",
+      "classification": "review_receipt_source_identity_mismatch",
+      "assessment": "Official validator refuses current source/config identity. The tested worktree contains uncommitted protected-source edits; retain as a source-binding blocker, not a host failure."
+    },
+    {
+      "id": 46,
+      "location": "tests/shared-style-map.test.mjs:32:1",
+      "test": "both components import StyleMap; duplicate frame/point renderers are absent",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /import \\{ StyleMap, type StyleZone \\} from \".*\\/StyleMap\\.tsx\"/. Input:",
+      "classification": "confirmed_in_clean_development",
+      "assessment": "The same focused test fails in clean development f789178; relevant test and source blobs are identical between development and PR head."
+    },
+    {
+      "id": 47,
+      "location": "tests/site-surface.test.mjs:110:1",
+      "test": "only the long phone comparison Agent and ranked chapters use compact readable spacing",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /overflow: hidden|max-height:|site-persona/. Input:",
+      "classification": "confirmed_in_clean_development",
+      "assessment": "The same focused test fails in clean development f789178; relevant test and source blobs are identical between development and PR head."
+    },
+    {
+      "id": 48,
+      "location": "tests/site-surface.test.mjs:119:1",
+      "test": "intermediate two-column hero removes only its viewport spacer and never clips copy",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /overflow:|max-height:|aspect-ratio:|hero-range-size/. Input:",
+      "classification": "confirmed_in_clean_development",
+      "assessment": "The same focused test fails in clean development f789178; relevant test and source blobs are identical between development and PR head."
+    },
+    {
+      "id": 49,
+      "location": "tests/site-surface.test.mjs:128:1",
+      "test": "only ReysonAI comparison cells stay continuously black while the section stays light",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /grid-template|font-size|site-hero/. Input:",
+      "classification": "confirmed_in_clean_development",
+      "assessment": "The same focused test fails in clean development f789178; relevant test and source blobs are identical between development and PR head."
+    },
+    {
+      "id": 50,
+      "location": "tests/site-surface.test.mjs:499:1",
+      "test": "production service-site app CTAs use the app host while previews keep their existing path",
+      "diagnostic": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: | 7 !== 6",
+      "classification": "confirmed_in_clean_development",
+      "assessment": "The same focused test fails in clean development f789178; relevant test and source blobs are identical between development and PR head."
+    }
+  ]
+}

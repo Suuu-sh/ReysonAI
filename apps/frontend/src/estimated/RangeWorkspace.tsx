@@ -64,6 +64,7 @@ import { Mw3PostflopTrial, useMw3RangeSession } from "./Mw3PostflopTrial.tsx";
 import { currentMw3PotBb } from "./mw3-range-state.ts";
 import { mw3DeliveryClient } from "./mw3-browser.ts";
 import { FlopCardDialog, PostflopTrial, StreetCardDialog, suitLabels } from "./PostflopTrial.tsx";
+import { ProfilePolicyPreparing } from "./PostflopProfileSettings.tsx";
 import { useAccount } from "../account/AuthPanel.tsx";
 import { LearningGate, learningAllowed } from "../account/LearningAccess.tsx";
 import { Cards, ChatText, Path } from "@phosphor-icons/react";
@@ -71,6 +72,8 @@ import { nextPendingStreetCardDialog } from "./street-card-dialog-state.ts";
 import { buildActionBlocks, encodeRangeUrl, multiwayContext, readRangeUrl, replaceRangeUrl } from "./range-url.ts";
 export { buildActionBlocks } from "./range-url.ts";
 import { PreflopCallEvBars } from "./PreflopCallEvBars.tsx";
+import { defaultOpponentSeat, normalizePostflopProfileState } from "./postflop-profile-state.ts";
+import type { OpponentProfile, OpponentSeat, PostflopProfileState } from "./postflop-profile-state.ts";
 import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, currentPostflopPotBb, laterStart, recognizedFlop } from "./postflop-trial.ts";
 import { defaultFormat, formatLabel, isBuilt } from "./game-formats.ts";
 import { DEFAULT_PROFILE, adjustOpeningSpot, adjustmentReason, describeProfile, isDefaultProfile, markAdjustedModel, normalizeProfile } from "./table-profile.ts";
@@ -124,8 +127,8 @@ export function selectedHandForRangeEntry(entry: RangeEntry, selected: string) {
   return entry.spot?.hands.find(row => row.hand === selected) ?? entry.hand;
 }
 const legacySelectionStorageKey = "reysonai-legacy:estimated-selection:v1";
-function restoredSelection(initialRangeType: string): RangeUrlSelection {
-  const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, limpReraiseAction: null, limpFourBetAction: null, squeezeResponse: [], continuationActions: [], stage3RootId: null, stage3Actions: [], coldAction: null, selected: "AKo" };
+function restoredSelection(initialRangeType: string): RangeUrlSelection & PostflopProfileState {
+  const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, limpReraiseAction: null, limpFourBetAction: null, squeezeResponse: [], continuationActions: [], stage3RootId: null, stage3Actions: [], coldAction: null, selected: "AKo", ...normalizePostflopProfileState(null) };
   if (typeof window === "undefined") return fallback;
   try {
     const stored = window.sessionStorage.getItem(selectionStorageKey) ?? window.sessionStorage.getItem(legacySelectionStorageKey);
@@ -151,7 +154,7 @@ function restoredSelection(initialRangeType: string): RangeUrlSelection {
     const continuationActions = Array.isArray(saved.continuationActions) && saved.continuationActions.length <= 24
       && saved.continuationActions.every((action: string) => ["fold", "call", "four_bet", "all_in"].includes(action)) ? saved.continuationActions : [];
     const stage3 = saved.stage3RootId ? normalizeStage3Selection(saved.stage3RootId, saved.stage3Actions) : null;
-    return { ...fallback, ...saved, coldAction, continuationActions, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, ...(stage3 ?? { stage3RootId: null, stage3Actions: [] }), selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
+    return { ...fallback, ...saved, ...normalizePostflopProfileState(saved), coldAction, continuationActions, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, ...(stage3 ?? { stage3RootId: null, stage3Actions: [] }), selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
   } catch { return fallback; }
 }
 
@@ -403,6 +406,8 @@ export function EstimatedRanges(props: EstimatedRangesProps) {
 function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange, mw3Client = mw3DeliveryClient }: EstimatedRangesProps) {
   const [initialUrlState] = useState(() => readRangeUrl());
   const [initialSelection] = useState(() => initialUrlState ?? restoredSelection(initialRangeType));
+  const [opponentProfile, setOpponentProfile] = useState<OpponentProfile>(initialSelection.opponentProfile);
+  const [opponentSeat, setOpponentSeat] = useState<OpponentSeat | null>(initialSelection.opponentSeat);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showFlop, setShowFlop] = useState(initialUrlState?.showFlop ?? false);
   // Postflop (flop to river) requires Google sign-in; preflop ranges stay open to guests.
@@ -679,8 +684,8 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const currentRequestKey = useRef(requestKey);
   currentRequestKey.current = requestKey;
   useEffect(() => {
-    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions, coldAction, selected }));
-  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions, coldAction, selected]);
+    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions, coldAction, selected, opponentProfile, opponentSeat }));
+  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions, coldAction, selected, opponentProfile, opponentSeat]);
   useEffect(() => { setLocalEstimate(null); setLocalEstimateRequestKey(null); setLocalStatus(activeGenerationRequest ? "checking" : "idle"); setLocalError(""); }, [requestKey]);
   useEffect(() => {
     if (!activeGenerationRequest || !requestKey) return;
@@ -727,30 +732,34 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const stage3Runtime = useStage3UiRuntime(structuralActionBlocks.some(block => block.stage3Node));
   const actionBlocks = withStage3Availability(withContinuationAvailability(structuralActionBlocks, continuationRuntime.runtime, continuationRuntime.error), stage3Runtime.runtime, stage3Runtime.error);
   const liveContinuationSeats = stage3LiveSeats(actionBlocks) ?? continuationLiveSeats(actionBlocks);
-  const flopContext = !currentError ? completedFlopContext({ actionBlocks, rangeType, opener, hero, pendingRaise, squeezeResponse,
+  const flopContext = !currentError && isBuilt(format) ? completedFlopContext({ actionBlocks, rangeType, opener, hero, pendingRaise, squeezeResponse,
     callers, foldedHero, isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format), limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }) : null;
   const flopActive = showFlop && Boolean(flopContext);
-  const mw3Session = useMw3RangeSession(flopContext, { flopCards, flopActions, turnCard, turnActions, riverCard, riverActions }, mw3Client, showFlop && postflopAllowed);
+  const mw3Session = useMw3RangeSession(flopContext, { flopCards, flopActions, turnCard, turnActions, riverCard, riverActions }, mw3Client, showFlop && postflopAllowed && opponentProfile === "standard");
   // Temporary loading/missing policy data is not proof that an otherwise valid
   // board/history is invalid. Persist the validated selection, not whether its
   // strategy can be rendered in this particular async frame. Exact zero support
   // is different: only a proved unreachable terminal invalidates that intent.
   const sourceProvesUnreachable = actionBlocks.at(-1)?.continuationStatus === "unreachable";
-  const urlFlopContext = !currentError && !sourceProvesUnreachable ? completedFlopContext({
+  const urlFlopContext = !currentError && isBuilt(format) && !sourceProvesUnreachable ? completedFlopContext({
     ...actionState, actionBlocks: structuralActionBlocks,
     isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format),
   }) : null;
   const persistFlop = showFlop && Boolean(urlFlopContext);
+  // HU archetypes have no MW3 policies. Keep the selected assumption, but never
+  // show standard MW3 frequencies until the user explicitly restores Standard.
+  const mw3ProfilePreparing = opponentProfile !== "standard" && (flopContext?.kind === "mw3_srp" || flopContext?.kind === "multiway_unavailable");
+  const effectiveOpponentSeat = opponentSeat ?? defaultOpponentSeat(flopContext);
   useEffect(() => {
     // Wait for dependent street resets before serializing a changed upstream path.
     if (flopChanged || turnChanged) return;
     replaceRangeUrl(encodeRangeUrl({ rangeType, opener, hero, callers, foldedHero, pendingRaise,
       continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction,
-      limpFourBetAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions, selected, format, tableProfile, showFlop: persistFlop,
+      limpFourBetAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions, selected, format, tableProfile, opponentProfile, opponentSeat, showFlop: persistFlop,
       flopCards, flopActions, turnCard, turnActions, riverCard, riverActions }, actionBlocks));
   }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse,
     coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions,
-    selected, format, tableProfile, persistFlop, flopCards, flopActions, turnCard, turnActions,
+    selected, format, tableProfile, opponentProfile, opponentSeat, persistFlop, flopCards, flopActions, turnCard, turnActions,
     riverCard, riverActions, flopChanged, turnChanged, actionBlocks]);
   const flopBoard = recognizedFlop(flopCards);
   const canEnterLaterStreets = Boolean(flopContext?.pilotAvailable && flopBoard && laterStart(flopActions, flopContext));
@@ -980,6 +989,13 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const displayedEntries = focusedEntry ? [focusedEntry] : visibleRangeEntries;
 
   // Guests who reach the flop see only the sign-in card, centred on one screen (no action strip).
+  // Opponent assumptions change every later policy, so any change restarts from the flop decision.
+  const applyOpponent = (profile: OpponentProfile | undefined, seat: OpponentSeat | undefined, cards: string[]) => {
+    const profileChanged = !!profile && profile !== opponentProfile; if (profileChanged) setOpponentProfile(profile);
+    const seatChanged = !!seat && seat !== effectiveOpponentSeat; if (seatChanged) setOpponentSeat(seat);
+    if (profileChanged || seatChanged) { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); }
+    return profileChanged || seatChanged;
+  };
   if (flopActive && !postflopAllowed) return <div className="shell">
     <Sidebar activeSection={RANGE_SECTION}
       onSectionChange={onSectionChange ?? (() => {})}
@@ -1045,7 +1061,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
         </Panel>
-        {flopActive ? (flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? <Mw3PostflopTrial context={flopContext!} session={mw3Session} cards={flopCards} displayMode={displayMode} /> : <PostflopTrial context={flopContext!} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} />) : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
+        {flopActive ? (mw3ProfilePreparing ? <ProfilePolicyPreparing onRestoreStandard={() => setOpponentProfile("standard")} /> : flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? <Mw3PostflopTrial context={flopContext!} session={mw3Session} cards={flopCards} displayMode={displayMode} /> : <PostflopTrial context={flopContext!} tableProfile={tableProfile} opponentProfile={opponentProfile} opponentSeat={effectiveOpponentSeat} onOpponentProfileChange={setOpponentProfile} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} />) : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length } as CSSProperties}>
           {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} actionLabels={entry.model.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} {...(entry.unreachableReason ? { unreachableReason: entry.unreachableReason } : {})} /> : entry.loading ? <RangeMatrixSkeleton key={entry.position} className="multiway-range-panel missing-range-panel" ariaLabel={`${entry.position}のレンジ`} title={entry.title} label={entry.statusDescription ?? ""} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
             {entry.retryContinuation && <button type="button" onClick={entry.retryStage3 ? stage3Runtime.retry : continuationRuntime.retry}>{continuationCopy("retry")}</button>}
@@ -1056,7 +1072,10 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
         </div>
       </>}
       {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
-      {flopActive && flopDialogOpen && <FlopCardDialog cards={flopCards} onClose={() => setFlopDialogOpen(false)} onApply={cards => { if (cards.join("") !== flopCards.join("")) { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); } setFlopDialogOpen(false); }} />}
+      {flopActive && flopDialogOpen && <FlopCardDialog cards={flopCards} profile={opponentProfile} seat={flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? undefined : effectiveOpponentSeat}
+        positions={{ ip: flopContext!.ip ?? null, oop: flopContext!.oop ?? null }} onClose={() => setFlopDialogOpen(false)}
+        onApply={(cards, seat, profile) => {
+          if (applyOpponent(profile, seat, cards) || cards.join("") !== flopCards.join("")) { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); } setFlopDialogOpen(false); }} />}
       {flopActive && streetCardDialog && <StreetCardDialog street={streetCardDialog}
         currentCard={streetCardDialog === "turn" ? turnCard : riverCard}
         usedCards={[...flopCards, ...(streetCardDialog === "river" ? [turnCard] : [])].filter(Boolean)}

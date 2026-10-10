@@ -2,7 +2,7 @@
   "schema_version": 1,
   "kind": "mw3-artifact-snapshot",
   "approval": "unapproved",
-  "source_tree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+  "source_tree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5",
   "spot": {
     "id": "UTG_open_CO_call_BB_call",
     "slug": "utg-co-bb-mw3-srp-v1",
@@ -34,8 +34,8 @@
     },
     {
       "path": "apps/backend/src/postflop.ts",
-      "bytes": 4488,
-      "sha256": "267a592f4f6719d45ebe9a8c39f105e9dbbcf789ff5dcb7fe58b93c5ed1e6dd1"
+      "bytes": 6379,
+      "sha256": "e8f282efa1133d4f589e14ca56fe030354c5fcc30fd5a4de2a3cd208308b432a"
     },
     {
       "path": "apps/frontend/docs/mw3-source-identity/exact-pair-parity.json",
@@ -74,8 +74,8 @@
     },
     {
       "path": "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
-      "bytes": 48874,
-      "sha256": "5a8e2d6515536c49211cef0d04dd3573c8e30b7291771e6e29021c219c7c4013"
+      "bytes": 48903,
+      "sha256": "7374953abc2a00fedab9692cfaed400ef48b545940de833ede9c185e995660e3"
     },
     {
       "path": "apps/frontend/scripts/ci/mw3-registry-mode.mjs",
@@ -134,8 +134,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
-      "bytes": 13322,
-      "sha256": "9bd17ab71c5009af828aec9b4260bc8cdb89c7da1cc55334aeeec70276f3219d"
+      "bytes": 14269,
+      "sha256": "1d1ad3609d8cdb7f0e74ef1d399e72970963d716eff6652af1b2a07affc92aec"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/cached-values.ts",
@@ -144,8 +144,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/defence.ts",
-      "bytes": 55632,
-      "sha256": "47aba428f9c798079411014d638b7d80c25efaf15d4770fb1f144b19c0462a1d"
+      "bytes": 56594,
+      "sha256": "6b76dbbfb541c1de35d3355aad313db83623a81b9bcc33a8d37b637611f14ad0"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/engine.ts",
@@ -178,9 +178,14 @@
       "sha256": "ab830cfa6a3488e4dc9cbdc0f6aa3c9d0b7299b77c7458269404cd067c4d173b"
     },
     {
+      "path": "apps/frontend/scripts/postflop-ai/input-options.ts",
+      "bytes": 11258,
+      "sha256": "d39b90dbc961724718ce5180482dec0cd8da88748a2fb018b651db8a7f60436e"
+    },
+    {
       "path": "apps/frontend/scripts/postflop-ai/later-policy.ts",
-      "bytes": 8281,
-      "sha256": "654bfd24a665f27c5c0d4a8e0aa97e9c7107ac064b97f6e5421235d02232fb33"
+      "bytes": 8523,
+      "sha256": "2a1c7b06c56ca88eac3d4e0642f2f13fb15f29d7a75b238abc3b3b91f0da1c10"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/later-tree.ts",
@@ -394,8 +399,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/policy.ts",
-      "bytes": 10545,
-      "sha256": "7697491739c8dc9a73bc65110f6a6059272c0690886e41d0378b124e6e4c0d36"
+      "bytes": 10874,
+      "sha256": "f9cf0c4cac35520699fa427c7e46cb106c15667b8a2ea0b190002f1cf79507e9"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/range-equity.ts",
@@ -424,8 +429,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/types.ts",
-      "bytes": 4439,
-      "sha256": "fca9397238fdda34ae4848225cb85dd9fe5a8fefcf493a9c188ea18a761229b2"
+      "bytes": 5213,
+      "sha256": "d30d1fb50ad2ec0095fd040e05074d75b0c40cf5b48e013cc182aeee057f18ea"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/vendor/babel-parser-7.29.7.license.json",
@@ -449,8 +454,8 @@
     },
     {
       "path": "apps/frontend/scripts/verify-preflop-local-d1.mjs",
-      "bytes": 22777,
-      "sha256": "61e65d7ef9e66abab958b9b05fd1b8e1e6328d7b0af33ce639383d0901af23f4"
+      "bytes": 22932,
+      "sha256": "d10b99c1801a59eff79e22a98cfb7780db840e962ae0aabf3a66990b65d84401"
     },
     {
       "path": "apps/frontend/src/account/config.ts",
@@ -644,8 +649,13 @@
     },
     {
       "path": "apps/frontend/src/locales/copy.ts",
-      "bytes": 1811,
-      "sha256": "288a0071b14fe803456f5a6966f5577d799a91fb4e8d81fdee6d5e582e667ecc"
+      "bytes": 1921,
+      "sha256": "6be5a33c6a7e926eeaad9ac86885c5e4efd7ba93ecda51edd2783a545f8d953c"
+    },
+    {
+      "path": "apps/frontend/src/locales/opponent-profile-copy.json",
+      "bytes": 4396,
+      "sha256": "1c3c0b768dd6d8fdacb89e15fb8cb9f64332575b63fd5f130c8e87176b1904e7"
     },
     {
       "path": "apps/frontend/src/locales/product-dictionary.json",
@@ -654,8 +664,8 @@
     },
     {
       "path": "apps/frontend/src/locales/product-direct.json",
-      "bytes": 44794,
-      "sha256": "1108ed95ac1a899850c910e9aaa9332d2b2ed99a61be837b4666a2a97b99d27f"
+      "bytes": 45331,
+      "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
     },
     {
       "path": "apps/frontend/src/locales/reason-copy.ts",
@@ -710,7 +720,7 @@
       "sha256": "fdc83f2ed78e0690e148b39fa23b8edc0bf204fe1a3f1ca4c4e6ea9377da2b55"
     }
   ],
-  "sources_sha256": "75349554ff71d8f39327a9cbe89ea76ccbbf3a9c173df8ab4b3475e588d4f143",
+  "sources_sha256": "799012d3570d80443335328b8f5056144bb83874f599f1ec22e47383acf274ed",
   "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
   "artifacts": [
     {
@@ -776,5 +786,5 @@
     "bytes": 353793,
     "sha256": "fab985466902709975e0e02e39d4eb9f5e41b0eb05f80d4d9f4824fe4d5913df"
   },
-  "content_sha256": "ab52ce17321af55daf0e23fda69a8b59eddf069ff6e196b746a27ec330678205"
+  "content_sha256": "fe4ee16947cd0d48a502eed9b97975fd81eac62b488b5bf8e75f10b40abcd925"
 }

@@ -18,6 +18,8 @@ export function Dialog({ labelledBy, onClose, className = "", children }: Dialog
     const dialog = dialogRef.current;
     dialog?.focus();
     const onKey = (event: KeyboardEvent) => {
+      // A nested dialog owns the keyboard until it closes.
+      if (dialog?.querySelector("[role='dialog']")) return;
       if (event.key === "Escape") {
         event.preventDefault();
         closeRef.current();

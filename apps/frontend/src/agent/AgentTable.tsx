@@ -155,7 +155,12 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
       try {
         const spot = spotById(id);
         const [datasets, body] = await Promise.all([loadPostflopDatasets(spot), loadPostflopSpot(id)]);
-        kit = makePostflopKit(id, datasets, body?.candidate, body?.laterCandidate);
+        // This Agent consumer uses standard HU policies only. Profile pairs are
+        // not a standard candidate and must never be reduced to one role here.
+        const candidate = body?.candidate, laterCandidate = body?.laterCandidate;
+        if (candidate && !("villain" in candidate) && laterCandidate && !("villain" in laterCandidate)) {
+          kit = makePostflopKit(id, datasets, candidate, laterCandidate);
+        }
       } catch { kit = null; }
       if (!cancelled) setKits(current => new Map(current).set(id, kit));
     })();

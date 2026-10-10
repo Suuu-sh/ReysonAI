@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "kind": "pr123-independent-source-context-review",
+  "reviewer_model": "gpt-6-astra",
+  "reviewer_task": "/root/review_pr123_source_evidence",
+  "reviewed_at_utc": "2026-10-09T20:04:41Z",
+  "implementation_author": {
+    "task": "cloud-thread:01a121ea-40ad-76ff-863b-615dbdb920a9",
+    "code_fix_turn": "01a1220d-2afd-72d5-90b7-9a4ea19091ae",
+    "evidence_turn": "01a1222b-eace-7541-8169-5b63c599c3ab",
+    "model": null,
+    "provenance": "Exact task/turn identifiers supplied by coordinating parent; model not independently verified. Original feature task is unknown and existing numerical-author metadata is retained."
+  },
+  "repository": "Suuu-sh/ReysonAI",
+  "pull_request": 123,
+  "base": {
+    "commit": "f789178886bf020b143051eca3c56aa77e499303",
+    "tree": "a114d7816fa49c41a66d6fa514cdf64ad7b4ab74"
+  },
+  "source": {
+    "commit": "599a3734a3aa0fe881b8955a4e98d469eddb9fb9",
+    "tree": "3c188f233803cbe947cf31876bfd337856808ab3"
+  },
+  "reviewed_head": {
+    "commit": "ed437f5039e74e48d28d53a8371038bb03a230e0",
+    "tree": "c670c9b53cb3f4f0a2a674701c5e065837158579"
+  },
+  "source_context_decision": "PASS",
+  "merge_decision": "BLOCK until controlled source-bound receipt renewal, exact committed source re-verification, clean official restore/full publication verification, and required exact-head CI pass",
+  "scope": "Independent source-context and preserved historical evidence review. Approval is restricted to installation of accurately attributed, source-only amendments and corresponding exact manifests/receipt-derived SQL comments. No renewed strategy quality, new numerical policy approval, solver/GTO claim, production authorization, D1 execution, browser acceptance or full-suite pass.",
+  "methods": [
+    "Read exact base/head Git trees through GitHub connector; verified real commit-to-tree mappings.",
+    "Read all changed Stage2 bound sources; independently SHA256/byte-checked all 22 changed records from exact GitHub text.",
+    "Fetched and independently SHA256-checked 156 Stage2 executable/declaration source records. Reproduced the unchanged Stage2 and Stage3 source-walker functions with a virtual read-only filesystem backed by exact GitHub contents and actual Git tree adjacency. Non-code unchanged records were checked against historical receipt records and base/head Git blob identity.",
+    "Executed the unchanged MW3 sourcePathsFor and AST dependency extraction over connector-fetched source with its exact manifest-hash-verified vendored Babel parser. This is independent dependency traversal, not execution of full official snapshot collectors or acceptance simulations.",
+    "Independently checked all 16 manifest-to-receipt bindings, 16 historical receipt SHA256s, 112 archived artifact metadata records against the prior preservation ledger, and all 32 receipt pins against the actual static registry.",
+    "Independently checked both preflop raw receipt SHA256s, all 20 LFS pointer object hashes/sizes against their associated receipts/manifests, and preserved Git blob identity. Actual LFS payload decompression was performed by the author according to the packet, not by this reviewer."
+  ],
+  "source_results": {
+    "stage2": {
+      "before": 188,
+      "after": 195,
+      "added": 7,
+      "modified": 15,
+      "removed": 0,
+      "closure_sha256": "0777db0470fd01d804c46f02deb366ceafa0159c5e61be358341ac3dc599583b"
+    },
+    "stage3": {
+      "before": 98,
+      "after": 99,
+      "added": 1,
+      "modified": 3,
+      "removed": 0,
+      "closure_sha256_before_stage2_receipt_renewal": "7c7e585746ef21259dc08d7fd723d06d6c99ac1929f7f56c8839ea2af10c1dd8"
+    },
+    "mw3": {
+      "spots": 16,
+      "pilot_sources": 136,
+      "other_spot_sources": 137,
+      "added_per_spot": 2,
+      "modified_per_spot": 8,
+      "removed_per_spot": 0,
+      "all_packet_closure_digests_independently_reproduced": true,
+      "code_records_rehashed": 105
+    }
+  },
+  "preservation": {
+    "stage2": {
+      "total_artifact_records": 1888,
+      "tracked_artifact_records": 274,
+      "all_tracked_git_blobs_unchanged": true,
+      "archive_restored_records": 1614,
+      "count_explanation": "1888 = 274 tracked JSON artifacts + 1614 archived/restored JSON artifacts. The packet's 1614 count is archive scope, not a reduced accepted dataset inventory."
+    },
+    "stage3": {
+      "artifact_records": 1805,
+      "archive_pointer_and_receipt_unchanged": true
+    },
+    "mw3": {
+      "protected_git_blobs": 84,
+      "all_84_unchanged_from_base": true,
+      "protected_categories": {
+        "recipes": 19,
+        "registry": 1,
+        "manifests": 16,
+        "sql": 16,
+        "archives": 16,
+        "receipts": 16
+      },
+      "raw_artifact_records_matching_prior_ledger": 112,
+      "delivery_pins_verified": 32,
+      "historical_receipt_hashes_verified": 16,
+      "all_seven_accepted_limitations_retained": true
+    },
+    "preflop_historical_receipt_hashes_verified": 2,
+    "standard_HU_policy_and_report_files": 255,
+    "all_standard_HU_policy_and_report_git_blobs_unchanged": true,
+    "historical_HU": {
+      "foundation_manifest": "artifacts/postflop/hu-after-multiway-foundation-v3.manifest.json",
+      "foundation_approval": "unapproved",
+      "foundation_scope": "candidate-preservation",
+      "legacy_manifest": "artifacts/postflop/legacy-hu45-source.manifest.json",
+      "legacy_status": "historical-not-current-audit-approval",
+      "receipt": "configs/hu-postflop-after-multiway.review.json",
+      "receipt_present_in_base": false,
+      "receipt_present_in_head": false,
+      "conclusion": "Preserved historical/candidate bytes only. There is no accepted HU archive receipt here to renew or fabricate."
+    }
+  },
+  "semantic_findings": [
+    "Stage3 numerical and publication modules are unchanged; its direct changes are additive locale copy and the main-only deployment workflow. Stage3 must bind the final renewed Stage2 receipt, so its final closure digest will change after that write.",
+    "Standard/default input processing preserves existing fingerprint and seatRows and adds structure_hash; adjustments are explicit. Nonstandard opponent modes use only the selected saved profile ranges, reject missing sources and unsupported MW3 adjustment, and do not substitute standard strategy.",
+    "Profile defence branches and missing-rule fail-closed behavior are conditional on nonstandard opponent mode. Standard defence algorithms remain intact. Both standard generator prompt function bodies are byte-identical after extracting the renamed standard wrappers.",
+    "Dedicated MW3 engine, inputs, runtime, recipes, codecs, exact-pair identity subjects and static approval registry remain unchanged. Shared HU browser/defence/type and locale paths explain the broader protected provenance changes without changing approved MW3 numerical policy.",
+    "Publishing preserves the standard postflop dataset_versions three-key metadata contract, separates postflop-profiles metadata, and validates each present four-file profile unit and its exact opponent-seat identity. No receipt gate or source exclusion was relaxed.",
+    "Migration 0012 is additive CREATE TABLE IF NOT EXISTS with profile/seat/role/stage checks and a composite primary key. Deployment still requires main and a non-PR event; reviewing or merging into development is not production approval."
+  ],
+  "nonblocking_documentation_findings": [
+    "The PR body and 2026-10-08 StageD result incorrectly state 35 spots x 4 profiles x 2 roles x 2 stages = 960 files. The exact tree contains 960 = 60 spot slugs x 4 profiles x 2 roles x 2 stages, including some HU-after-multiway histories. Correct the scope statement before presenting final completion.",
+    "Existing historical review limitations remain historical: saved AI estimates are not solver/GTO approval; no original warning/advisory or limitation is cleared by this review."
+  ],
+  "authorized_renewal_shape": {
+    "stage2": "Keep artifacts[1888], archive, source_fingerprint, counts, every original review field/amendment/limitation byte-semantically unchanged. Replace sources with the reviewed exact 195-record closure; recompute content_sha256 using the unmodified contract. Append only a clearly scoped independent PR123 source renewal, bound to this report and exact source commit/tree, with genuine reviewer identity and preserved prior receipt hash/copy. Do not replace historical numerical authorship.",
+    "stage3": "After Stage2 is finalized, recollect the actual 99-record source closure so configs/multiway-preflop-stage2.review.json binds the final Stage2 bytes. Preserve all 1805 artifacts, archive, source_fingerprint, counts and historical reviews. Recompute its official content identity and append source-only attribution. Do not reuse the pre-renewal Stage3 closure digest.",
+    "mw3_manifests": "For all 16 manifests, preserve approval=unapproved, spot numerical identity, inputs and inputs_sha256, all seven raw artifact records, archive object/format/bytes/SHA256 and policy identities. Replace only source_tree with the verified reviewed source tree, exact sources, sources_sha256 and content_sha256 as produced by unchanged schema/hash helpers.",
+    "mw3_receipts": "Preserve original author_model, author_task, strategy_type, spot, archive_sha256, deliveries, evidence, accepted_limitations, raw_artifact_records and all historical/retained-quality/compatibility fields. Archive/hash-link each prior receipt. Record this distinct gpt-6-astra reviewer task only for a clearly scoped source-context renewal; update current-context source_tree, manifest_sha256, sources_sha256 and content_sha256 to exact renewed manifests. Bind report/proofs by bytes and SHA256. Do not attribute new simulations or numerical acceptance to this reviewer.",
+    "mw3_sql": "Use the official receipt-derived SQL builder. Only the leading receipt hash comment should change; independently compare the full remaining SQL body and all 32 registry pins, which must stay byte-identical.",
+    "hu": "Do not create/renew a fictional accepted HU receipt. Preserve both historical archives/manifests and the 255 current standard policy/report files; describe their existing separate acceptance boundary honestly."
+  },
+  "remaining_verification": [
+    "Install the narrowly scoped renewal, then re-read exact committed trees/receipts and prove no unintended source/data changes.",
+    "Run clean official Stage2 and Stage3 restore and full publication/hash/fingerprint/count verification on materialized archives. Verify all 1888+1805 artifact records, not merely 1614+1805 archive records.",
+    "Run all 16 official MW3 snapshot/inventory verifications and source-tree checks, including immutable canonical SQL and registry pin equivalence. Preserve stale historical receipt rejection tests.",
+    "Run affected profile, standard-HU/MCP and MW3 contract/regression tests, final typecheck/build and exact-head required Linux CI. The review did not personally execute those suites.",
+    "Any later source changes inside a protected closure require review of the actual delta and fresh binding; documentation-only count corrections outside the closures do not alter the recorded numerical sources.",
+    "Production D1, migrations/deployment and live browser/auth acceptance remain separate and unauthorized by this report."
+  ],
+  "not_performed": [
+    "No external write, commit, push, PR review submission, merge or deployment",
+    "No numerical regeneration or policy rewriting",
+    "No direct LFS payload decompression by this reviewer",
+    "No official full snapshot collector or full publication/runtime suite execution by this reviewer"
+  ]
+}

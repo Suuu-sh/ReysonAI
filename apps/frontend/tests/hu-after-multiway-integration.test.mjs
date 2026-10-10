@@ -19,7 +19,11 @@ test('catalog histories resolve identically for Agent and completed Range contex
     const context = completedFlopContext(state);
     assert.equal(context.spotId, spot.id);
     assert.deepEqual(context.players, [spot.oop, spot.ip]);
-    assert.equal(completedFlopContext({ ...state, isDefaultTable: false }).pilotAvailable, false);
+    const adjustedContext = completedFlopContext({ ...state, isDefaultTable: false });
+    assert.equal(adjustedContext.pilotAvailable, true);
+    assert.equal(adjustedContext.spotId, context.spotId);
+    assert.deepEqual(adjustedContext.players, context.players);
+    assert.equal(adjustedContext.potBb, context.potBb);
     assert.ok(datasetsNeededForSpot(spot).includes('hu-after-multiway-spots'));
   }
 });

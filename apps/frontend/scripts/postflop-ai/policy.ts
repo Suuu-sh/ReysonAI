@@ -43,13 +43,15 @@ export function validatePolicy(policy: unknown, tree: string = DEFAULT_TREE): Fl
   return (policy as FlopPolicy);
 }
 
-export function policyMix(policy: FlopPolicy, node: string, hole: readonly number[], flop: readonly number[]): ActionMix {
+export function policyMix(policy: FlopPolicy, node: string, hole: readonly number[], flop: readonly number[],
+  { requireSavedPolicy = false }: { requireSavedPolicy?: boolean } = {}): ActionMix {
   const tier = handTier(hole, flop), keys = flopTextureKeys(flop), texture = keys[0];
   let rule;
   for (const key of keys) if ((rule = policy.rules.find(item => item.node === node && item.tier === tier && item.texture === key))) break;
   if (!rule) {
     // Nodes added after a policy was saved (re-raises) use the reference mixes.
     if (raiseDepth(node) < 2 || policy === referenceAll) throw new Error(`Uncovered policy node: ${node}/${texture}/${tier}`);
+    if (requireSavedPolicy) throw Object.assign(new Error(`No saved profile policy for ${node}`), { code: "PROFILE_POLICY_MISSING", state: "not_generated" });
     return referenceMix(node, tier);
   }
   return withRaise(node, rule.mix);
@@ -161,7 +163,8 @@ export function opponentMix(node: string, hole: readonly number[], flop: readonl
 
 // Weights each combo of `role`'s range by the policy frequency of that player's own
 // earlier flop actions in `steps` (from tree.flopState), i.e. its reach at a later decision.
-export function scaleByPath<T extends WeightedCombo>(items: T[], role: PlayerRole, steps: readonly ReachStep[], policy: FlopPolicy, flop: readonly number[]): T[] {
+export function scaleByPath<T extends WeightedCombo>(items: T[], role: PlayerRole, steps: readonly ReachStep[], policy: FlopPolicy, flop: readonly number[],
+  { requireSavedPolicy = false }: { requireSavedPolicy?: boolean } = {}): T[] {
   return steps.filter(step => step.role === role).reduce((range, step) =>
-    range.map(item => ({ ...item, weight: item.weight * effectiveMix(policyMix(policy, step.node, item.combo, flop), step.canRaise)[step.action] / 100 })), items);
+    range.map(item => ({ ...item, weight: item.weight * effectiveMix(policyMix(policy, step.node, item.combo, flop, { requireSavedPolicy }), step.canRaise)[step.action] / 100 })), items);
 }

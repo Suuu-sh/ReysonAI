@@ -1,0 +1,174 @@
+{
+  "reviewer": {
+    "model": "gpt-6-astra",
+    "task_path": "/root/review_pr123_source_evidence/inspect_hu_v7_pins",
+    "mode": "Independent read-only review of source provenance, Git trees, input bytes and reproduction logic"
+  },
+  "evidence_head": "6bf82bc341270bce6ca9fbbcb3187f60ddd8b1ec",
+  "result": "PASS corrected reproduction/provenance for the bounded thirteen-output standard-mode comparison.",
+  "scope_statement": "The earlier overlay-before-baseline reproduction blocker is resolved. The corrected method, independently reconstructed execution trees, exact inherited input bytes and parent-verified separate output envelopes establish credible committed evidence for this finite historical-versus-candidate-source comparison. This does not claim exhaustive numerical equivalence, a full candidate checkout, Linux runtime parity, a personally executed capture, or overall merge readiness.",
+  "supersedes": {
+    "report": "/tmp/pr123-historical-provenance-review.json",
+    "sha256": "a3583f8d3830d5339910036d70399d5d9c52ee1734d2e58815e212c3ca06e3a0",
+    "scope": "Resolves the reproduction-order/provenance blocker at the new evidence head. The earlier criticism remains accurate for the superseded runner."
+  },
+  "runner_review": {
+    "result": "PASS",
+    "distinct_worktrees": "Two separate mktemp directories are created and populated as detached historical-baseline worktrees. Only candidate_dir receives the 70-path source checkout. Baseline capture reads baseline_dir; candidate capture reads candidate_dir.",
+    "cleanliness": "The runner asserts both initial worktrees have empty tracked/untracked porcelain status and that the historical HEAD tree equals the expected baseline. Candidate modifications are then checked to be confined to the closure. No later runner operation overlays the baseline directory.",
+    "runtime": "An explicit Node.js v25.8.1 gate now fails on a different version. Capture records actual node/platform. Published run is darwin and is not described as Linux parity.",
+    "candidate_binding": "Every closure path is verified against source and protected-PR Git blobs, then checked out into the candidate index/worktree. git write-tree computes the mixed overlay execution tree, distinct from both the historical tree and the full candidate source tree.",
+    "input_binding": "All eleven declared JSON inputs are checked in both worktrees for byte length, SHA-256 and Git blob identity, and against each of the historical/source/protected-head commits. This includes all six filesystem-read datasets previously missing from explicit evidence.",
+    "outputs": "Separate baseline and candidate envelopes are saved and compressed; full output objects and per-output hashes must compare equal, with exactly thirteen values and the unchanged canonical object digest.",
+    "metadata_boundary": "Capture labels remain supplied by the runner, but the corrected runner now derives execution-tree identity from the actual candidate index and independently verifies clean baseline/input bindings. The independently recalculated tree below corroborates the declared mixed tree."
+  },
+  "independent_git_tree_reconstruction": {
+    "method": "Fetched untruncated recursive Git trees for historical 7c2, source 91109e and protected head 6b529. Rebuilt hierarchical Git tree objects from each leaf mode/name/blob, sorted entries using Git directory ordering, and SHA-1 hashed the canonical tree object bytes. Then replaced exactly the 70 manifest paths in the historical leaf map with their verified source leaves and reconstructed the overlay tree.",
+    "historical_commit": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+    "historical_tree": "04486039e4394a2238b71de24434623c255bfb87",
+    "source_tree": "9d4bf2f8ae341d38507f209ccd8bcc9f437bbd2d",
+    "protected_pr_tree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5",
+    "candidate_overlay_execution_tree": "f1bc0d3312adb5ebb96e8890e80d17126d60bbf5",
+    "overlay_paths": 70,
+    "paths_changed_from_historical": 32,
+    "outside_closure_changes": 0,
+    "all_declared_trees_match": true,
+    "important_distinction": "f1bc0d3312adb5ebb96e8890e80d17126d60bbf5 is the actual baseline-plus-closure execution tree, not the full source tree 9d4bf2f8ae341d38507f209ccd8bcc9f437bbd2d."
+  },
+  "independent_input_byte_verification": {
+    "result": "PASS all eleven",
+    "method": "Fetched the eleven historical files, hashed their exact UTF-8 bytes with SHA-256 and Git blob SHA-1, and checked byte lengths. All matched the new input manifest. Independently compared each manifest blob/size against all three previously fetched complete commit trees; historical/source/protected-head identities are equal.",
+    "files": [
+      {
+        "path": "apps/frontend/src/estimated/opening-ranges.json",
+        "bytes": 113403,
+        "sha256": "236225dbae1c8aa2e2e7af8a449555f27ef80fed878114408c0e7338b89d0f0b",
+        "gitBlob": "bae724d848d3097e69d5bbd1609e88cdc782bbee",
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/src/estimated/preflop-ranges.json",
+        "bytes": 391641,
+        "sha256": "fdc83f2ed78e0690e148b39fa23b8edc0bf204fe1a3f1ca4c4e6ea9377da2b55",
+        "gitBlob": "51a9d150ade383d5f8e881292046bc9c0a56996d",
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/src/estimated/four-bet-responses.json",
+        "bytes": 379467,
+        "sha256": "70c6302ea11c6f725702030f8980883ef1ec66fb630c3d90f6c1395c4e76add5",
+        "gitBlob": "15b00acf14f2858f5a82675e96c8e6e14206672b",
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/src/estimated/three-bet-responses.json",
+        "bytes": 387728,
+        "sha256": "e46bbb59dc55df01240a73602b0cb214a652e5c2346f84a791178b938df40973",
+        "gitBlob": "6ce7f34b9e7376c01877de5b4109add855156888",
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/src/estimated/limp-responses.json",
+        "bytes": 74768,
+        "sha256": "370d4b30a08394c2f6919cbbd5dec6f5531af41cfeddde3ece22f90922b34f77",
+        "gitBlob": "e1fed48b4bbcc8cd21821f2dc51ca2fbb0080add",
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/src/estimated/limp-deep-responses.json",
+        "bytes": 50652,
+        "sha256": "e815907ad05b1a24f733acf9fe06cb06c2f89c41039a7226cefb420d7956e53e",
+        "gitBlob": "a0813729a0a8cfbc163742b267fd7e8e51c63a00",
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
+        "bytes": 1554,
+        "sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491",
+        "gitBlob": "6749cba8463a891c995cb7a4f233bf8066ddead0",
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/scripts/data/hu-after-multiway-spots.json",
+        "bytes": 299507,
+        "sha256": "eb9af7d0c68a7c40e3d53f0c0e901ade41903045b802d7927ed448780ce19854",
+        "gitBlob": "358129cc92e711f291a18e72a28bd8937229c706",
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/src/estimated/table-profile-adjustments.json",
+        "bytes": 21073,
+        "sha256": "1c6bd85b52b6f89d11c276157b1eb602a51a4879ce3b3347f5bee84d91f8a690",
+        "gitBlob": "4dc3d1f6116a51dae86882f701a1e82b5582f29b",
+        "pass": true
+      },
+      {
+        "path": "configs/cash-6max-100bb.json",
+        "bytes": 918,
+        "sha256": "0910a97e1c477c1055a95db3334f8764e37647ed2497e3eb6b666f1cfa9628f2",
+        "gitBlob": "6bc1027ebdf0acf7e4a3d5bd7c3812b94b1ba76e",
+        "pass": true
+      },
+      {
+        "path": "configs/multiway-preflop-stage2.json",
+        "bytes": 95,
+        "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa",
+        "gitBlob": "79a7ae11e567516b2c98870bd763716d97d8cf86",
+        "pass": true
+      }
+    ]
+  },
+  "closure_evidence_carried_forward": {
+    "current_manifest_unchanged": true,
+    "result": "All 70 source/protected-head Git blob identities verified. Sixty non-JSON source files fetched and Git-blob hashed. Static erased-TypeScript analysis found 204 import/export edges, including 196 relative edges, with no missing relative import, nonliteral dynamic import, parse error or fetched-source mismatch.",
+    "limitation": "This is static import and source-byte verification, not a live filesystem access trace. The explicit eleven-input bindings cover the known filesystem-read datasets and numerical configuration/catalog imports used by the capture."
+  },
+  "script_and_manifest_checksums": {
+    "capture_script_sha256": "3bb1bad005d3fcf52f4efa2366a4c430797fcd6553fa2091d97b27b4fd73dff6",
+    "capture_script_matches_summary": true,
+    "input_manifest_sha256": "9d8b9152e41c62f119c52472e9762313447a08dffe62026a6d51da13193da179",
+    "input_manifest_matches_summary": true,
+    "runtime_closure_manifest_sha256": "c28d77a70470845f89c37e1659c8b9a9b4b84ad6f6bca669f2e1df5e32a70d1c"
+  },
+  "separate_parent_artifact_verification": {
+    "performed_by": "/root/review_pr123_source_evidence",
+    "source": "/tmp/pr123-fixed-envelope-verification.json",
+    "result": {
+      "status": "PASS committed-envelope integrity and sampled output equality",
+      "evidence_head": "6bf82bc341270bce6ca9fbbcb3187f60ddd8b1ec",
+      "output_count": 13,
+      "raw_bytes": 886818,
+      "raw_sha256": "13e2e209855c33995d3cfceb04ee1d0de1faad0aa7f953c72657618cc8450185",
+      "baseline": {
+        "sha256": "cddcef5f18bf3118df4d95b551f3a707f3b614e3b49734b814e31e79158ed838",
+        "bytes": 2390917,
+        "execution_tree": "04486039e4394a2238b71de24434623c255bfb87"
+      },
+      "candidate": {
+        "sha256": "9bb4937413ad957dd7ad8ed6943d79d389af23a53bea70a1750b913d73c9a8db",
+        "bytes": 2390921,
+        "execution_tree": "f1bc0d3312adb5ebb96e8890e80d17126d60bbf5"
+      },
+      "node": "v25.8.1",
+      "platform": "darwin",
+      "personally_performed": "Fetched and decompressed all committed capture artifacts, checked all bytes/hashes, recomputed13output hashes and compared full output objects/metadata/fixture; did not personally execute author capture runner."
+    },
+    "attribution": "The parent independently fetched/decompressed the committed baseline, candidate and canonical artifacts, recomputed their hashes, compared all thirteen full outputs and digest maps, and matched the candidate fixture. This child reviewed that report but does not claim to have repeated the decompression/output comparison."
+  },
+  "historical_output_origin_verdict": "The earlier pending origin question is adequately resolved for the thirteen committed samples: the corrected runner uses a pristine historical implementation and separately verified candidate overlay, the declared execution trees are independently reconstructed exactly, the actual input bytes are pinned, and separate committed capture envelopes were independently checked by the parent. The actual macOS execution was performed by the author; neither reviewer is claiming to have rerun the historical application.",
+  "limits_and_nonclaims": [
+    "Only the specified thirteen standard-mode outputs and prompt variants are compared. This is not proof of all spots, policies, boards, stacks, replay branches or profile outputs.",
+    "The candidate execution is a documented 70-file runtime/import closure overlay on the historical tree, not a complete candidate checkout.",
+    "The archived run used Node.js v25.8.1 on darwin. No claim of Linux runtime parity is made.",
+    "This reviewer executed only independent source/AST/import analyses, Git tree reconstruction and byte hashing; not the application capture, original baseline collector, strategy simulation, CI, build or full runtime suite.",
+    "This provenance PASS neither renews numerical receipts nor approves a deployment or the PR merge. Those remain separate gates."
+  ],
+  "remaining_required_changes": [],
+  "sources": {
+    "runner": "https://github.com/Suuu-sh/ReysonAI/blob/6bf82bc341270bce6ca9fbbcb3187f60ddd8b1ec/apps/frontend/docs/qa/pr123-baseline-evidence/reproduce-standard-output-parity.sh",
+    "capture": "https://github.com/Suuu-sh/ReysonAI/blob/6bf82bc341270bce6ca9fbbcb3187f60ddd8b1ec/apps/frontend/docs/qa/pr123-baseline-evidence/standard-output-capture.mjs",
+    "inputs": "https://github.com/Suuu-sh/ReysonAI/blob/6bf82bc341270bce6ca9fbbcb3187f60ddd8b1ec/apps/frontend/docs/qa/pr123-baseline-evidence/runtime-filesystem-json-inputs.json",
+    "summary": "https://github.com/Suuu-sh/ReysonAI/blob/6bf82bc341270bce6ca9fbbcb3187f60ddd8b1ec/apps/frontend/docs/qa/pr123-baseline-evidence/standard-output-parity.json",
+    "readme": "https://github.com/Suuu-sh/ReysonAI/blob/6bf82bc341270bce6ca9fbbcb3187f60ddd8b1ec/apps/frontend/docs/qa/pr123-baseline-evidence/README.md"
+  }
+}

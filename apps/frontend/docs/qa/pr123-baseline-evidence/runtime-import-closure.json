@@ -1,0 +1,498 @@
+{
+  "source_commit": "91109e156c17c7fdb9e2eb0dbc8d0704c7ee3e46",
+  "source_tree": "9d4bf2f8ae341d38507f209ccd8bcc9f437bbd2d",
+  "pr_head_commit": "6b5291089c15304c25af7433e87cd1bcaac38428",
+  "pr_head_tree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5",
+  "closure": [
+    {
+      "path": "apps/frontend/scripts/data/hu-after-multiway-spots.json",
+      "source_blob": "358129cc92e711f291a18e72a28bd8937229c706",
+      "pr_head_blob": "358129cc92e711f291a18e72a28bd8937229c706",
+      "local_blob": "358129cc92e711f291a18e72a28bd8937229c706",
+      "size_bytes": 299507
+    },
+    {
+      "path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
+      "source_blob": "6749cba8463a891c995cb7a4f233bf8066ddead0",
+      "pr_head_blob": "6749cba8463a891c995cb7a4f233bf8066ddead0",
+      "local_blob": "6749cba8463a891c995cb7a4f233bf8066ddead0",
+      "size_bytes": 1554
+    },
+    {
+      "path": "apps/frontend/scripts/lib/equity.ts",
+      "source_blob": "bec2be699825fbe5bf2b03414ae6c4ac4a253355",
+      "pr_head_blob": "bec2be699825fbe5bf2b03414ae6c4ac4a253355",
+      "local_blob": "bec2be699825fbe5bf2b03414ae6c4ac4a253355",
+      "size_bytes": 8670
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/balance.mjs",
+      "source_blob": "37e13295ca4d6aa7b8c92823faa8dcd936ab2da6",
+      "pr_head_blob": "37e13295ca4d6aa7b8c92823faa8dcd936ab2da6",
+      "local_blob": "37e13295ca4d6aa7b8c92823faa8dcd936ab2da6",
+      "size_bytes": 32966
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+      "source_blob": "996a8ad1098c340095c08516dd7b5246b248229b",
+      "pr_head_blob": "996a8ad1098c340095c08516dd7b5246b248229b",
+      "local_blob": "996a8ad1098c340095c08516dd7b5246b248229b",
+      "size_bytes": 14269
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/cached-values.ts",
+      "source_blob": "a4718ea4a002677b53c65cae9d25691efa6120d1",
+      "pr_head_blob": "a4718ea4a002677b53c65cae9d25691efa6120d1",
+      "local_blob": "a4718ea4a002677b53c65cae9d25691efa6120d1",
+      "size_bytes": 3101
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/candidate-source.ts",
+      "source_blob": "6253bf8e99b2364dce45b9b74e496135c51e6535",
+      "pr_head_blob": "6253bf8e99b2364dce45b9b74e496135c51e6535",
+      "local_blob": "6253bf8e99b2364dce45b9b74e496135c51e6535",
+      "size_bytes": 7986
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/defence.ts",
+      "source_blob": "027b5c34cbd4eb45c71dc59c39ccece5198533a9",
+      "pr_head_blob": "027b5c34cbd4eb45c71dc59c39ccece5198533a9",
+      "local_blob": "027b5c34cbd4eb45c71dc59c39ccece5198533a9",
+      "size_bytes": 56594
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/engine.ts",
+      "source_blob": "680f6d786080c1903072442def836f39b899eee1",
+      "pr_head_blob": "680f6d786080c1903072442def836f39b899eee1",
+      "local_blob": "680f6d786080c1903072442def836f39b899eee1",
+      "size_bytes": 11304
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/equity-kernel.ts",
+      "source_blob": "ce3aeb377c9498ffdc8f09cb32693b7aa86b02a8",
+      "pr_head_blob": "ce3aeb377c9498ffdc8f09cb32693b7aa86b02a8",
+      "local_blob": "ce3aeb377c9498ffdc8f09cb32693b7aa86b02a8",
+      "size_bytes": 11245
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/explain-aggregate.ts",
+      "source_blob": "636a8592f671cddd00a0551bbaf3837b80b4170f",
+      "pr_head_blob": "636a8592f671cddd00a0551bbaf3837b80b4170f",
+      "local_blob": "636a8592f671cddd00a0551bbaf3837b80b4170f",
+      "size_bytes": 2603
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/explain-later.ts",
+      "source_blob": "c5ef093041a9f6abfaba45ffb7efb5f24d49586a",
+      "pr_head_blob": "c5ef093041a9f6abfaba45ffb7efb5f24d49586a",
+      "local_blob": "c5ef093041a9f6abfaba45ffb7efb5f24d49586a",
+      "size_bytes": 19957
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/explain.mjs",
+      "source_blob": "e1056ed13761b6e44a86f38f8455521e7c95e146",
+      "pr_head_blob": "e1056ed13761b6e44a86f38f8455521e7c95e146",
+      "local_blob": "e1056ed13761b6e44a86f38f8455521e7c95e146",
+      "size_bytes": 9830
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-isomorphism.ts",
+      "source_blob": "6d18352f1d8a96c2414b3d5f41cd529f0459720a",
+      "pr_head_blob": "6d18352f1d8a96c2414b3d5f41cd529f0459720a",
+      "local_blob": "6d18352f1d8a96c2414b3d5f41cd529f0459720a",
+      "size_bytes": 4926
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+      "source_blob": "8a677bdd280f70f1429ae8a0bcd50418c9cb2d07",
+      "pr_head_blob": "8a677bdd280f70f1429ae8a0bcd50418c9cb2d07",
+      "local_blob": "8a677bdd280f70f1429ae8a0bcd50418c9cb2d07",
+      "size_bytes": 13124
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
+      "source_blob": "340f46962d58a2a521994eae213609b72937d7c8",
+      "pr_head_blob": "340f46962d58a2a521994eae213609b72937d7c8",
+      "local_blob": "340f46962d58a2a521994eae213609b72937d7c8",
+      "size_bytes": 34692
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/generation-options.mjs",
+      "source_blob": "11dda71af31c264a60b345e05ec123e1dd94b505",
+      "pr_head_blob": "11dda71af31c264a60b345e05ec123e1dd94b505",
+      "local_blob": "11dda71af31c264a60b345e05ec123e1dd94b505",
+      "size_bytes": 1932
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/hu-hand-tier.ts",
+      "source_blob": "647c5b41a9dd1e81afb6936888f17fb4e581d785",
+      "pr_head_blob": "647c5b41a9dd1e81afb6936888f17fb4e581d785",
+      "local_blob": "647c5b41a9dd1e81afb6936888f17fb4e581d785",
+      "size_bytes": 3835
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/hu-v7-street-state.ts",
+      "source_blob": "e0f13de29fe218ee61140586f9f093545e2921cd",
+      "pr_head_blob": "e0f13de29fe218ee61140586f9f093545e2921cd",
+      "local_blob": "e0f13de29fe218ee61140586f9f093545e2921cd",
+      "size_bytes": 13292
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/input-options.ts",
+      "source_blob": "c42d6958188121253254c8b2295188022ab77abf",
+      "pr_head_blob": "c42d6958188121253254c8b2295188022ab77abf",
+      "local_blob": "c42d6958188121253254c8b2295188022ab77abf",
+      "size_bytes": 11258
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
+      "source_blob": "b7bd921c895a903b897960330bf156564c3fca11",
+      "pr_head_blob": "b7bd921c895a903b897960330bf156564c3fca11",
+      "local_blob": "b7bd921c895a903b897960330bf156564c3fca11",
+      "size_bytes": 15625
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/later-policy.ts",
+      "source_blob": "b60cba71f0386b97056f5b9513c47c285c35d144",
+      "pr_head_blob": "b60cba71f0386b97056f5b9513c47c285c35d144",
+      "local_blob": "b60cba71f0386b97056f5b9513c47c285c35d144",
+      "size_bytes": 8523
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/later-tree.ts",
+      "source_blob": "9a45b4970009e23fe165172c5813cd437444c242",
+      "pr_head_blob": "9a45b4970009e23fe165172c5813cd437444c242",
+      "local_blob": "9a45b4970009e23fe165172c5813cd437444c242",
+      "size_bytes": 6392
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/model.ts",
+      "source_blob": "356ceca9836744ef678350ae4e45529532badeb3",
+      "pr_head_blob": "356ceca9836744ef678350ae4e45529532badeb3",
+      "local_blob": "356ceca9836744ef678350ae4e45529532badeb3",
+      "size_bytes": 7589
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/multiway-inputs.mjs",
+      "source_blob": "7baadfcb2fe06ee190cdcb3c649a5533f49fd217",
+      "pr_head_blob": "7baadfcb2fe06ee190cdcb3c649a5533f49fd217",
+      "local_blob": "7baadfcb2fe06ee190cdcb3c649a5533f49fd217",
+      "size_bytes": 4246
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/multiway-spots.ts",
+      "source_blob": "23fecc2f80008df9e08617d2ad45a8b8b23cc426",
+      "pr_head_blob": "23fecc2f80008df9e08617d2ad45a8b8b23cc426",
+      "local_blob": "23fecc2f80008df9e08617d2ad45a8b8b23cc426",
+      "size_bytes": 2252
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/policy.ts",
+      "source_blob": "00eb3c8c13725f16f91438676f1847be2c3191b7",
+      "pr_head_blob": "00eb3c8c13725f16f91438676f1847be2c3191b7",
+      "local_blob": "00eb3c8c13725f16f91438676f1847be2c3191b7",
+      "size_bytes": 10874
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/profile-reference.ts",
+      "source_blob": "eabb732907db25b4fed82e1d4f31eb6b81b91837",
+      "pr_head_blob": "eabb732907db25b4fed82e1d4f31eb6b81b91837",
+      "local_blob": "eabb732907db25b4fed82e1d4f31eb6b81b91837",
+      "size_bytes": 2246
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/range-equity.ts",
+      "source_blob": "10b8153c0b851c5b7ffd48546d71f0d46c09fdb2",
+      "pr_head_blob": "10b8153c0b851c5b7ffd48546d71f0d46c09fdb2",
+      "local_blob": "10b8153c0b851c5b7ffd48546d71f0d46c09fdb2",
+      "size_bytes": 18505
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/range-facts.ts",
+      "source_blob": "93794548f5f272315004b4060e5b27015dc417eb",
+      "pr_head_blob": "93794548f5f272315004b4060e5b27015dc417eb",
+      "local_blob": "93794548f5f272315004b4060e5b27015dc417eb",
+      "size_bytes": 6454
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/spots-core.ts",
+      "source_blob": "a9d3634b2cff6683ea19d2081f52b268d27fa405",
+      "pr_head_blob": "a9d3634b2cff6683ea19d2081f52b268d27fa405",
+      "local_blob": "a9d3634b2cff6683ea19d2081f52b268d27fa405",
+      "size_bytes": 12425
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/spots.ts",
+      "source_blob": "268e2a9c5dd6ccff876e8acc8b92ee06040bc5e0",
+      "pr_head_blob": "268e2a9c5dd6ccff876e8acc8b92ee06040bc5e0",
+      "local_blob": "268e2a9c5dd6ccff876e8acc8b92ee06040bc5e0",
+      "size_bytes": 1933
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/street-state.mjs",
+      "source_blob": "c5d57b82f08ddbaaf813c5f06990380d2837bde6",
+      "pr_head_blob": "c5d57b82f08ddbaaf813c5f06990380d2837bde6",
+      "local_blob": "c5d57b82f08ddbaaf813c5f06990380d2837bde6",
+      "size_bytes": 379
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/tree.ts",
+      "source_blob": "c8c1fc1732af7734b40ddec1265f169d19aead95",
+      "pr_head_blob": "c8c1fc1732af7734b40ddec1265f169d19aead95",
+      "local_blob": "c8c1fc1732af7734b40ddec1265f169d19aead95",
+      "size_bytes": 8501
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/types.ts",
+      "source_blob": "aa642728136f3cda6944b453c435e99ed1813791",
+      "pr_head_blob": "aa642728136f3cda6944b453c435e99ed1813791",
+      "local_blob": "aa642728136f3cda6944b453c435e99ed1813791",
+      "size_bytes": 5213
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/views.ts",
+      "source_blob": "261927aa908bd45c9b1b9fcd44d190774cf4930b",
+      "pr_head_blob": "261927aa908bd45c9b1b9fcd44d190774cf4930b",
+      "local_blob": "261927aa908bd45c9b1b9fcd44d190774cf4930b",
+      "size_bytes": 9792
+    },
+    {
+      "path": "apps/frontend/src/account/config.ts",
+      "source_blob": "0553f04742b02d00f9df1469fea93017402a99f3",
+      "pr_head_blob": "0553f04742b02d00f9df1469fea93017402a99f3",
+      "local_blob": "0553f04742b02d00f9df1469fea93017402a99f3",
+      "size_bytes": 594
+    },
+    {
+      "path": "apps/frontend/src/account/session.ts",
+      "source_blob": "65b20b9592be39d613d6617620a6aeaa3347ac45",
+      "pr_head_blob": "65b20b9592be39d613d6617620a6aeaa3347ac45",
+      "local_blob": "65b20b9592be39d613d6617620a6aeaa3347ac45",
+      "size_bytes": 7034
+    },
+    {
+      "path": "apps/frontend/src/components/action-format.ts",
+      "source_blob": "d17ebc1f0c0afa38aa055d3f126a7724b17b35b3",
+      "pr_head_blob": "d17ebc1f0c0afa38aa055d3f126a7724b17b35b3",
+      "local_blob": "d17ebc1f0c0afa38aa055d3f126a7724b17b35b3",
+      "size_bytes": 1296
+    },
+    {
+      "path": "apps/frontend/src/data.ts",
+      "source_blob": "53124dd4a628ef83e7ab9ee5a3e4ec780232e397",
+      "pr_head_blob": "53124dd4a628ef83e7ab9ee5a3e4ec780232e397",
+      "local_blob": "53124dd4a628ef83e7ab9ee5a3e4ec780232e397",
+      "size_bytes": 3718
+    },
+    {
+      "path": "apps/frontend/src/estimated/call-ev.ts",
+      "source_blob": "518a697dde125102f1c7699e1d51909c4cf3f76f",
+      "pr_head_blob": "518a697dde125102f1c7699e1d51909c4cf3f76f",
+      "local_blob": "518a697dde125102f1c7699e1d51909c4cf3f76f",
+      "size_bytes": 22090
+    },
+    {
+      "path": "apps/frontend/src/estimated/cold-three-bet-responses.ts",
+      "source_blob": "dc8f66229246224a07a00e50957b9c66e8a44e98",
+      "pr_head_blob": "dc8f66229246224a07a00e50957b9c66e8a44e98",
+      "local_blob": "dc8f66229246224a07a00e50957b9c66e8a44e98",
+      "size_bytes": 5020
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-tree.ts",
+      "source_blob": "c397adb07555f1bf62989e246963cb5c880dbf14",
+      "pr_head_blob": "c397adb07555f1bf62989e246963cb5c880dbf14",
+      "local_blob": "c397adb07555f1bf62989e246963cb5c880dbf14",
+      "size_bytes": 15974
+    },
+    {
+      "path": "apps/frontend/src/estimated/datasets.ts",
+      "source_blob": "ee06df957932e4980c4443ebf91d96d601a611c5",
+      "pr_head_blob": "ee06df957932e4980c4443ebf91d96d601a611c5",
+      "local_blob": "ee06df957932e4980c4443ebf91d96d601a611c5",
+      "size_bytes": 5397
+    },
+    {
+      "path": "apps/frontend/src/estimated/eqr.ts",
+      "source_blob": "10fbf1765c97cffb9ca54cedd2242252e9efccf4",
+      "pr_head_blob": "10fbf1765c97cffb9ca54cedd2242252e9efccf4",
+      "local_blob": "10fbf1765c97cffb9ca54cedd2242252e9efccf4",
+      "size_bytes": 5661
+    },
+    {
+      "path": "apps/frontend/src/estimated/multiway-responses.ts",
+      "source_blob": "57e09e51fb3ec79a244cb8f669e725fcadee23ad",
+      "pr_head_blob": "57e09e51fb3ec79a244cb8f669e725fcadee23ad",
+      "local_blob": "57e09e51fb3ec79a244cb8f669e725fcadee23ad",
+      "size_bytes": 4427
+    },
+    {
+      "path": "apps/frontend/src/estimated/multiway2-responses.ts",
+      "source_blob": "327d77db8877b053bbbe39e18d8a6d38289b65f1",
+      "pr_head_blob": "327d77db8877b053bbbe39e18d8a6d38289b65f1",
+      "local_blob": "327d77db8877b053bbbe39e18d8a6d38289b65f1",
+      "size_bytes": 6269
+    },
+    {
+      "path": "apps/frontend/src/estimated/mw3-context.ts",
+      "source_blob": "3ba37130418a82b3befa290104480b78926d8729",
+      "pr_head_blob": "3ba37130418a82b3befa290104480b78926d8729",
+      "local_blob": "3ba37130418a82b3befa290104480b78926d8729",
+      "size_bytes": 2575
+    },
+    {
+      "path": "apps/frontend/src/estimated/opening-ranges.ts",
+      "source_blob": "7bd346e1f62eeabb5875ee4f66e569789074c6ed",
+      "pr_head_blob": "7bd346e1f62eeabb5875ee4f66e569789074c6ed",
+      "local_blob": "7bd346e1f62eeabb5875ee4f66e569789074c6ed",
+      "size_bytes": 2853
+    },
+    {
+      "path": "apps/frontend/src/estimated/opponent-profiles.ts",
+      "source_blob": "9497e841e6095b00ede080f61f6ebf99953f8ef8",
+      "pr_head_blob": "9497e841e6095b00ede080f61f6ebf99953f8ef8",
+      "local_blob": "9497e841e6095b00ede080f61f6ebf99953f8ef8",
+      "size_bytes": 10956
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-profile-state.ts",
+      "source_blob": "fe8db80da4ed0b8320572d04786ed12e42388cf3",
+      "pr_head_blob": "fe8db80da4ed0b8320572d04786ed12e42388cf3",
+      "local_blob": "fe8db80da4ed0b8320572d04786ed12e42388cf3",
+      "size_bytes": 1741
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-trial.ts",
+      "source_blob": "adce7cb3ee25d311c93e7753fe3b663d03917981",
+      "pr_head_blob": "adce7cb3ee25d311c93e7753fe3b663d03917981",
+      "local_blob": "adce7cb3ee25d311c93e7753fe3b663d03917981",
+      "size_bytes": 16889
+    },
+    {
+      "path": "apps/frontend/src/estimated/preflop-types.ts",
+      "source_blob": "564416995a8d5ca811f927b41b7b955e03415a91",
+      "pr_head_blob": "564416995a8d5ca811f927b41b7b955e03415a91",
+      "local_blob": "564416995a8d5ca811f927b41b7b955e03415a91",
+      "size_bytes": 5205
+    },
+    {
+      "path": "apps/frontend/src/estimated/rake.ts",
+      "source_blob": "42bdf1075e68a91f82c0cd8c6cd3e44c7c91e248",
+      "pr_head_blob": "42bdf1075e68a91f82c0cd8c6cd3e44c7c91e248",
+      "local_blob": "42bdf1075e68a91f82c0cd8c6cd3e44c7c91e248",
+      "size_bytes": 1052
+    },
+    {
+      "path": "apps/frontend/src/estimated/ranges.ts",
+      "source_blob": "d05c82cf8dab7de1db63bbb55079248843e3ff5b",
+      "pr_head_blob": "d05c82cf8dab7de1db63bbb55079248843e3ff5b",
+      "local_blob": "d05c82cf8dab7de1db63bbb55079248843e3ff5b",
+      "size_bytes": 3720
+    },
+    {
+      "path": "apps/frontend/src/estimated/sizing.ts",
+      "source_blob": "1255ae4d10527cdeabe41d8481f3b1f31abd1f99",
+      "pr_head_blob": "1255ae4d10527cdeabe41d8481f3b1f31abd1f99",
+      "local_blob": "1255ae4d10527cdeabe41d8481f3b1f31abd1f99",
+      "size_bytes": 3516
+    },
+    {
+      "path": "apps/frontend/src/estimated/table-profile-adjustments.json",
+      "source_blob": "4dc3d1f6116a51dae86882f701a1e82b5582f29b",
+      "pr_head_blob": "4dc3d1f6116a51dae86882f701a1e82b5582f29b",
+      "local_blob": "4dc3d1f6116a51dae86882f701a1e82b5582f29b",
+      "size_bytes": 21073
+    },
+    {
+      "path": "apps/frontend/src/estimated/table-profile.ts",
+      "source_blob": "b331937cd77710a5d88dc08837a2cc0601dd8f86",
+      "pr_head_blob": "b331937cd77710a5d88dc08837a2cc0601dd8f86",
+      "local_blob": "b331937cd77710a5d88dc08837a2cc0601dd8f86",
+      "size_bytes": 9258
+    },
+    {
+      "path": "apps/frontend/src/i18n.ts",
+      "source_blob": "d67b116682bc541f2c7693525da3d64353ad9f0a",
+      "pr_head_blob": "d67b116682bc541f2c7693525da3d64353ad9f0a",
+      "local_blob": "d67b116682bc541f2c7693525da3d64353ad9f0a",
+      "size_bytes": 36000
+    },
+    {
+      "path": "apps/frontend/src/locale-metadata.ts",
+      "source_blob": "ad93bb31fa8f6fb8d3e611b4481d2be593820483",
+      "pr_head_blob": "ad93bb31fa8f6fb8d3e611b4481d2be593820483",
+      "local_blob": "ad93bb31fa8f6fb8d3e611b4481d2be593820483",
+      "size_bytes": 433
+    },
+    {
+      "path": "apps/frontend/src/locale.ts",
+      "source_blob": "72bac14549976627b1274241c321011dbe368652",
+      "pr_head_blob": "72bac14549976627b1274241c321011dbe368652",
+      "local_blob": "72bac14549976627b1274241c321011dbe368652",
+      "size_bytes": 1420
+    },
+    {
+      "path": "apps/frontend/src/locales/copy.ts",
+      "source_blob": "c8695c63cef0bfbc47ec480cdc766c9be38dcabe",
+      "pr_head_blob": "c8695c63cef0bfbc47ec480cdc766c9be38dcabe",
+      "local_blob": "c8695c63cef0bfbc47ec480cdc766c9be38dcabe",
+      "size_bytes": 1921
+    },
+    {
+      "path": "apps/frontend/src/locales/opponent-profile-copy.json",
+      "source_blob": "435e288a15974900f0309c91a9118264f1a35f1a",
+      "pr_head_blob": "435e288a15974900f0309c91a9118264f1a35f1a",
+      "local_blob": "435e288a15974900f0309c91a9118264f1a35f1a",
+      "size_bytes": 4396
+    },
+    {
+      "path": "apps/frontend/src/locales/product-dictionary.json",
+      "source_blob": "e46a8bac53b0f8847d56845dce287e6b48a474f4",
+      "pr_head_blob": "e46a8bac53b0f8847d56845dce287e6b48a474f4",
+      "local_blob": "e46a8bac53b0f8847d56845dce287e6b48a474f4",
+      "size_bytes": 43357
+    },
+    {
+      "path": "apps/frontend/src/locales/product-direct.json",
+      "source_blob": "f0def66276f434bed18e47fc9c9756215d978580",
+      "pr_head_blob": "f0def66276f434bed18e47fc9c9756215d978580",
+      "local_blob": "f0def66276f434bed18e47fc9c9756215d978580",
+      "size_bytes": 45331
+    },
+    {
+      "path": "apps/frontend/src/locales/reason-copy.ts",
+      "source_blob": "32c58e784bf5026a952c4c4ae3a033348fd26e13",
+      "pr_head_blob": "32c58e784bf5026a952c4c4ae3a033348fd26e13",
+      "local_blob": "32c58e784bf5026a952c4c4ae3a033348fd26e13",
+      "size_bytes": 5172
+    },
+    {
+      "path": "apps/frontend/src/locales/reasons-primary.json",
+      "source_blob": "70e07f7fa8bbae972d9c65c73386e2bf24f6cbb0",
+      "pr_head_blob": "70e07f7fa8bbae972d9c65c73386e2bf24f6cbb0",
+      "local_blob": "70e07f7fa8bbae972d9c65c73386e2bf24f6cbb0",
+      "size_bytes": 54916
+    },
+    {
+      "path": "apps/frontend/src/locales/reasons-secondary.json",
+      "source_blob": "49063465b2d0e2129c737eab545935f1e78a107f",
+      "pr_head_blob": "49063465b2d0e2129c737eab545935f1e78a107f",
+      "local_blob": "49063465b2d0e2129c737eab545935f1e78a107f",
+      "size_bytes": 53169
+    },
+    {
+      "path": "configs/cash-6max-100bb.json",
+      "source_blob": "6bc1027ebdf0acf7e4a3d5bd7c3812b94b1ba76e",
+      "pr_head_blob": "6bc1027ebdf0acf7e4a3d5bd7c3812b94b1ba76e",
+      "local_blob": "6bc1027ebdf0acf7e4a3d5bd7c3812b94b1ba76e",
+      "size_bytes": 918
+    },
+    {
+      "path": "configs/multiway-preflop-stage2.json",
+      "source_blob": "79a7ae11e567516b2c98870bd763716d97d8cf86",
+      "pr_head_blob": "79a7ae11e567516b2c98870bd763716d97d8cf86",
+      "local_blob": "79a7ae11e567516b2c98870bd763716d97d8cf86",
+      "size_bytes": 95
+    }
+  ]
+}

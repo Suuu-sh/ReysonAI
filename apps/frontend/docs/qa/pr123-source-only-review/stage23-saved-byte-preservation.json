@@ -1,0 +1,106 @@
+{
+ "schema_version": 1,
+ "kind": "stage23-saved-byte-preservation-inventory",
+ "scope": "Read-only official archive decoding against existing manifests; no restore writes.",
+ "provenance": {
+  "repository": "Suuu-sh/ReysonAI",
+  "pr": 123,
+  "base": {
+   "commit": "f789178886bf020b143051eca3c56aa77e499303",
+   "tree": "a114d7816fa49c41a66d6fa514cdf64ad7b4ab74"
+  },
+  "frozenRemoteHead": "599a3734a3aa0fe881b8955a4e98d469eddb9fb9",
+  "frozenTree": "3c188f233803cbe947cf31876bfd337856808ab3",
+  "localEvidenceCommit": "7ff2dff7861ec4d2d291dcedda7ec3a6d31396e9",
+  "localEvidenceTree": "3c188f233803cbe947cf31876bfd337856808ab3",
+  "localTreeMatchesFrozenRemoteTree": true,
+  "changedPathsInFullPr": 1037
+ },
+ "stage2": {
+  "receipt": {
+   "path": "configs/multiway-preflop-stage2.review.json",
+   "bytes": 531140,
+   "sha256": "f482e81841a18b548841d3b9f4e5db9638e4bee2be0b0a562f6b36eba381c6b5"
+  },
+  "archive": {
+   "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+   "bytes": 1747857,
+   "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+   "matchesReceipt": true,
+   "decodedFiles": 1614,
+   "decodedBytes": 43276102,
+   "decodedRecordsSha256": "f6eba698d8d9ba0bacc5b678535879ca070b838e42cade2ae6974bf759f591d2",
+   "existingArtifactFiles": {
+    "present": 1,
+    "missing": 1613,
+    "mismatched": 0
+   }
+  }
+ },
+ "stage3": {
+  "receipt": {
+   "path": "configs/multiway-preflop-stage3.review.json",
+   "bytes": 540149,
+   "sha256": "35e9853c7a3b38ae215fa167f9b288761f39d38ffdf80fddcc138cd00c6d1a95"
+  },
+  "archive": {
+   "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+   "bytes": 2436451,
+   "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+   "matchesReceipt": true,
+   "decodedFiles": 1805,
+   "decodedBytes": 60027700,
+   "decodedRecordsSha256": "a5db207cae8b669328284d112ba1419056f1c3787b410cdb8146975766ac65ad",
+   "existingArtifactFiles": {
+    "present": 0,
+    "missing": 1805,
+    "mismatched": 0
+   }
+  }
+ },
+ "historicalReceiptRecords": [
+  {
+   "name": "stage2",
+   "expected": {
+    "path": "configs/multiway-preflop-stage2.review.json",
+    "bytes": 531140,
+    "sha256": "f482e81841a18b548841d3b9f4e5db9638e4bee2be0b0a562f6b36eba381c6b5"
+   },
+   "actual": {
+    "path": "configs/multiway-preflop-stage2.review.json",
+    "bytes": 531140,
+    "sha256": "f482e81841a18b548841d3b9f4e5db9638e4bee2be0b0a562f6b36eba381c6b5"
+   },
+   "match": true
+  },
+  {
+   "name": "stage3",
+   "expected": {
+    "path": "configs/multiway-preflop-stage3.review.json",
+    "bytes": 540149,
+    "sha256": "35e9853c7a3b38ae215fa167f9b288761f39d38ffdf80fddcc138cd00c6d1a95"
+   },
+   "actual": {
+    "path": "configs/multiway-preflop-stage3.review.json",
+    "bytes": 540149,
+    "sha256": "35e9853c7a3b38ae215fa167f9b288761f39d38ffdf80fddcc138cd00c6d1a95"
+   },
+   "match": true
+  }
+ ],
+ "officialRestoreGates": [
+  {
+   "name": "Stage2 official restore preflight",
+   "status": "blocked-fail-closed",
+   "error": "Review source/configuration identity changed",
+   "writesPerformed": false
+  },
+  {
+   "name": "Stage3 official restore preflight",
+   "status": "blocked-fail-closed",
+   "error": "Stage 3 review source/configuration identity changed",
+   "writesPerformed": false
+  }
+ ],
+ "writePerformed": false
+}

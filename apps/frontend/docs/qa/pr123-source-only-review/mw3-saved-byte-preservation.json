@@ -1,0 +1,785 @@
+{
+ "schema_version": 1,
+ "kind": "mw3-saved-byte-preservation-inventory",
+ "scope": "Read-only official MW3 archive decoding and byte/hash comparison against existing manifests and preservation ledgers. Does not renew historical approvals.",
+ "provenance": {
+  "repository": "Suuu-sh/ReysonAI",
+  "pr": 123,
+  "base": {
+   "commit": "f789178886bf020b143051eca3c56aa77e499303",
+   "tree": "a114d7816fa49c41a66d6fa514cdf64ad7b4ab74"
+  },
+  "frozenRemoteHead": "599a3734a3aa0fe881b8955a4e98d469eddb9fb9",
+  "frozenTree": "3c188f233803cbe947cf31876bfd337856808ab3",
+  "localEvidenceCommit": "7ff2dff7861ec4d2d291dcedda7ec3a6d31396e9",
+  "localEvidenceTree": "3c188f233803cbe947cf31876bfd337856808ab3",
+  "localTreeMatchesFrozenRemoteTree": true,
+  "changedPathsInFullPr": 1037
+ },
+ "preservationLedger": {
+  "path": "apps/frontend/docs/qa/pr94-mw3-production-source-review/protected-preservation.json",
+  "bytes": 94969,
+  "sha256": "4289b7da709e2dbc10c43d5c6d1e4808fa87c9957dac613df3f07c0f85c7833e"
+ },
+ "protectedFiles": {
+  "count": 84,
+  "matches": 84,
+  "mismatches": []
+ },
+ "decodedRawArtifactRecords": {
+  "expected": 112,
+  "matched": 112,
+  "missingLedgerRows": 0,
+  "differentFromLedger": 0
+ },
+ "registeredPins": {
+  "registryFile": {
+   "path": "apps/shared/mw3-approved.ts",
+   "bytes": 14126,
+   "sha256": "7e1ac4ba059b4a34d8fdc7f6c6891be9929eafec470dc577c0d8702cf632fe81"
+  },
+  "pinCount": 32,
+  "receiptPinCount": 32,
+  "matched": 32,
+  "mismatches": 0
+ },
+ "historicalReceiptRecords": [
+  {
+   "path": "configs/mw3-co-btn-bb-mw3-srp-v1.review.json",
+   "bytes": 13285,
+   "sha256": "695ce0cf15ef52e827c6e284f8747eb3b6bb315e53e78bc2fac9a744539291ae",
+   "match": true
+  },
+  {
+   "path": "configs/mw3-co-btn-sb-mw3-srp-v1.review.json",
+   "bytes": 13445,
+   "sha256": "e712a64ef08934460e0c1cca8af6a1c1f85b0032164ce149b86ae1276e5ccf96",
+   "match": true
+  },
+  {
+   "path": "configs/mw3-hj-btn-bb-mw3-srp-v1.review.json",
+   "bytes": 13448,
+   "sha256": "5899578be2d80bc69d7f84f810f8fd45e17d588873750cf77aa80cd259a6bc30",
+   "match": true
+  },
+  {
+   "path": "configs/mw3-hj-btn-sb-mw3-srp-v1.review.json",
+   "bytes": 13443,
+   "sha256": "111fafedd739b3dc6045f5e27adb6ca5e5aa483904bf7a2a816e014a53ed0e94",
+   "match": true
+  },
+  {
+   "path": "configs/mw3-hj-co-bb-mw3-srp-v1.review.json",
+   "bytes": 13435,
+   "sha256": "2b3a6de38458cabc866a414234b58b0bc451ff936d591c83931fbde451f25145",
+   "match": true
+  },
+  {
+   "path": "configs/mw3-hj-co-btn-mw3-srp-v1.review.json",
+   "bytes": 13442,
+   "sha256": "f8c7188383415d711c5fdef4502b82eac5ea4ebf473127b44cf26ebd06a3fdb1",
+   "match": true
+  },
+  {
+   "path": "configs/mw3-hj-co-sb-mw3-srp-v1.review.json",
+   "bytes": 13437,
+   "sha256": "7bfd48414e28880b921079f261729962e940dd1f7ca3151e310e9c263f3639b1",
+   "match": true
+  },
+  {
+   "path": "configs/mw3-utg-btn-bb-mw3-srp-v1.review.json",
+   "bytes": 13455,
+   "sha256": "8d5ae184dc030c5c08aae09e0f6e01771365b44bcddf12e0d83c401f6e65a606",
+   "match": true
+  },
+  {
+   "path": "configs/mw3-utg-btn-sb-mw3-srp-v1.review.json",
+   "bytes": 13463,
+   "sha256": "49c257897798453e2b5b0506339710ea53984e3eaffea66d58fb8c9ba90628dc",
+   "match": true
+  },
+  {
+   "path": "configs/mw3-utg-co-bb-mw3-srp-v1.review.json",
+   "bytes": 13442,
+   "sha256": "cac44fa2494f0c5136313eb37e0d8f0b185e70af2a3b61c0ff9431fc5655ac9d",
+   "match": true
+  },
+  {
+   "path": "configs/mw3-utg-co-btn-mw3-srp-v1.review.json",
+   "bytes": 13464,
+   "sha256": "895e35067b083902bde2758b2adbd5e88386aaa5ac0711078e57fba9364e315b",
+   "match": true
+  },
+  {
+   "path": "configs/mw3-utg-co-sb-mw3-srp-v1.review.json",
+   "bytes": 13448,
+   "sha256": "91f7ffb9218885ba9fcfe49c9efc070d62f54e2b88dd4198a2da8437ce78a441",
+   "match": true
+  },
+  {
+   "path": "configs/mw3-utg-hj-bb-mw3-srp-v1.review.json",
+   "bytes": 13445,
+   "sha256": "7738ced60c9a958028f0cc394fd53bd51058e7c191d745988afb6a560a57ad4b",
+   "match": true
+  },
+  {
+   "path": "configs/mw3-utg-hj-btn-mw3-srp-v1.review.json",
+   "bytes": 13464,
+   "sha256": "77769632453f0cc9ce71d96bc340375b7ac2268fb436148c0009a11ba83c33a3",
+   "match": true
+  },
+  {
+   "path": "configs/mw3-utg-hj-co-mw3-srp-v1.review.json",
+   "bytes": 13448,
+   "sha256": "604266ca564863a98ace5f64b458941a8dee61f3e412a5750c21fe81ec3d334f",
+   "match": true
+  },
+  {
+   "path": "configs/mw3-utg-hj-sb-mw3-srp-v1.review.json",
+   "bytes": 13448,
+   "sha256": "7e2bd13d69072ef692840c3543124b7d160b2f3c5847f7645715eeccdc36b3b5",
+   "match": true
+  }
+ ],
+ "allHistoricalReceiptRecordsMatchPriorLedger": true,
+ "acceptedLimitations": [
+  "AI estimate, not equilibrium/GTO proof",
+  "Joint MDF deviations are advisory",
+  "Zero-support reasons require independent source/policy review",
+  "Replay uses the same engine, not an independent solver",
+  "Structural coverage is geometric context/source-combo tier coverage, not joint policy reach",
+  "Fold conditions of seats outside the active three are unmodeled",
+  "After 3-to-2, context buckets can merge different surviving opponent identities"
+ ],
+ "all16ReceiptsHaveSameAcceptedLimitations": true,
+ "spots": [
+  {
+   "slug": "co-btn-bb-mw3-srp-v1",
+   "spotId": "CO_open_BTN_call_BB_call",
+   "manifest": {
+    "path": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.manifest.json",
+    "bytes": 29377,
+    "sha256": "139c90557a5e91ee84ee9f790900857ffa6c3a47ea628cc6adedfdd69df43f0a"
+   },
+   "archive": {
+    "path": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.tar.gz",
+    "bytes": 363593,
+    "sha256": "b8adf765d22a128a88ce346ffda9f67615b98ada1e6579d56461da8910db8d9b"
+   },
+   "sql": {
+    "path": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.sql",
+    "bytes": 1591059,
+    "sha256": "2d7eddbfeae6f956cf5403231fee4d530a1a7c42c7c0ad325b8103e4c4cc4e5b"
+   },
+   "receiptPath": "configs/mw3-co-btn-bb-mw3-srp-v1.review.json",
+   "archiveMatchesManifest": true,
+   "decodedArtifactCount": 7,
+   "decodedArtifactBytes": 14890656,
+   "decodedArtifactRecordsSha256": "daa64005091dceab59c3182a599d5e33308517cc7b62342d2a254a10e42feb1b",
+   "decodedRawMatchesPreservationLedger": true,
+   "reportArtifactRecords": {
+    "count": 5,
+    "sha256": "36cd2411f6a5a2a80b5a94ed6bbda04d35504fa861b42b0d55a895a94e70d0b5"
+   },
+   "historicalReceipt": {
+    "status": "independently-reviewed",
+    "reviewerModel": "gpt-6-astra",
+    "authorModel": "gpt-6-astra",
+    "reviewerAndAuthorTasksDistinct": true,
+    "evidenceSummarySha256": "8a3198dacefbb9403f0b875d610150089eac7d70c774916443f22496497edb00",
+    "acceptedLimitationsSha256": "e83ba2a8c96d34dbc8510e422a1e0b8584bafacb3ccad5e0800c7119a78da5e0"
+   },
+   "sourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c"
+  },
+  {
+   "slug": "co-btn-sb-mw3-srp-v1",
+   "spotId": "CO_open_BTN_call_SB_call",
+   "manifest": {
+    "path": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.manifest.json",
+    "bytes": 29766,
+    "sha256": "dfc46d43704aac1378d04bc86a0ef0a6af8a33deba494c1d1212526509fbcc5d"
+   },
+   "archive": {
+    "path": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.tar.gz",
+    "bytes": 352115,
+    "sha256": "71b7423b1450638f8f2a6077c0d6c87b6715ebc81c9462a0f35cd5d83ddf1e7f"
+   },
+   "sql": {
+    "path": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.sql",
+    "bytes": 1589911,
+    "sha256": "a3fd0902f261b07ebd007557108d563f739085c1c31eeaf515b3adc76037b54b"
+   },
+   "receiptPath": "configs/mw3-co-btn-sb-mw3-srp-v1.review.json",
+   "archiveMatchesManifest": true,
+   "decodedArtifactCount": 7,
+   "decodedArtifactBytes": 14762448,
+   "decodedArtifactRecordsSha256": "38f767239e520ceb55541f1339c2ecf7f3d740e32188ef6247dfba3439f360bd",
+   "decodedRawMatchesPreservationLedger": true,
+   "reportArtifactRecords": {
+    "count": 5,
+    "sha256": "2a51916e96f6f4c6be2d4293ab86d9bac41b83acf6a13b8b9e6d8360db4c2fb0"
+   },
+   "historicalReceipt": {
+    "status": "independently-reviewed",
+    "reviewerModel": "gpt-6-astra",
+    "authorModel": "gpt-6-astra",
+    "reviewerAndAuthorTasksDistinct": true,
+    "evidenceSummarySha256": "7b3923d36e81390bce2b3b4993de3370dd99ee8f66b5935cad501ab12c8bb5e3",
+    "acceptedLimitationsSha256": "e83ba2a8c96d34dbc8510e422a1e0b8584bafacb3ccad5e0800c7119a78da5e0"
+   },
+   "sourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c"
+  },
+  {
+   "slug": "hj-btn-bb-mw3-srp-v1",
+   "spotId": "HJ_open_BTN_call_BB_call",
+   "manifest": {
+    "path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.manifest.json",
+    "bytes": 29766,
+    "sha256": "eae8a35ceffcdba30086a8af9f358df4a8187347ade56804671985ed28ec8bca"
+   },
+   "archive": {
+    "path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.tar.gz",
+    "bytes": 357921,
+    "sha256": "a1d6d54a8d169260c7bf38cfb062915c2ab9e64f116dfb8101c7b63dad6fbb0a"
+   },
+   "sql": {
+    "path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.sql",
+    "bytes": 1614488,
+    "sha256": "d93eaf55c710d840d5da4bda01e7fab2a0cf25e3bb0c6eae5126af19e700e3cf"
+   },
+   "receiptPath": "configs/mw3-hj-btn-bb-mw3-srp-v1.review.json",
+   "archiveMatchesManifest": true,
+   "decodedArtifactCount": 7,
+   "decodedArtifactBytes": 14891151,
+   "decodedArtifactRecordsSha256": "2d2eed07eb456d495ce958991b4df93fac4dbe2c18aac226bdefd76813de59ed",
+   "decodedRawMatchesPreservationLedger": true,
+   "reportArtifactRecords": {
+    "count": 5,
+    "sha256": "3d1d7f2c3f004941bceac8ecef81e9deea1d2d75ec4013d0974722699a1021f8"
+   },
+   "historicalReceipt": {
+    "status": "independently-reviewed",
+    "reviewerModel": "gpt-6-astra",
+    "authorModel": "gpt-6-astra",
+    "reviewerAndAuthorTasksDistinct": true,
+    "evidenceSummarySha256": "1d6cc3333a8794391331d45eeab7a08616f06b813f4ba970127a305c394239c3",
+    "acceptedLimitationsSha256": "e83ba2a8c96d34dbc8510e422a1e0b8584bafacb3ccad5e0800c7119a78da5e0"
+   },
+   "sourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c"
+  },
+  {
+   "slug": "hj-btn-sb-mw3-srp-v1",
+   "spotId": "HJ_open_BTN_call_SB_call",
+   "manifest": {
+    "path": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.manifest.json",
+    "bytes": 29766,
+    "sha256": "ec995c14f7eeb13c5cb475014e8f71071cf364085a959cb277544ef8ac8d7cfb"
+   },
+   "archive": {
+    "path": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.tar.gz",
+    "bytes": 349739,
+    "sha256": "f3ec418992730e69f548e354508c95e0a42e4963cb7dd6b8d15cacc3d500d45e"
+   },
+   "sql": {
+    "path": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.sql",
+    "bytes": 1576072,
+    "sha256": "dbd649a1003b0517a0504b546632f454fa80fec9cebf7bdd0971b30577cc1b84"
+   },
+   "receiptPath": "configs/mw3-hj-btn-sb-mw3-srp-v1.review.json",
+   "archiveMatchesManifest": true,
+   "decodedArtifactCount": 7,
+   "decodedArtifactBytes": 14762941,
+   "decodedArtifactRecordsSha256": "5bb9d1b889430aab1cfa1563f6c03162e301140317f34117f3ea150947f9cd39",
+   "decodedRawMatchesPreservationLedger": true,
+   "reportArtifactRecords": {
+    "count": 5,
+    "sha256": "ff3b7030cdcd6245952668e453841245f0e82251c0f86ad7c7f4d94eb4cf50b5"
+   },
+   "historicalReceipt": {
+    "status": "independently-reviewed",
+    "reviewerModel": "gpt-6-astra",
+    "authorModel": "gpt-6-astra",
+    "reviewerAndAuthorTasksDistinct": true,
+    "evidenceSummarySha256": "20b74638e532d0066a86a749b914685387ecee8fa480c3133e810df936dac7dc",
+    "acceptedLimitationsSha256": "e83ba2a8c96d34dbc8510e422a1e0b8584bafacb3ccad5e0800c7119a78da5e0"
+   },
+   "sourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c"
+  },
+  {
+   "slug": "hj-co-bb-mw3-srp-v1",
+   "spotId": "HJ_open_CO_call_BB_call",
+   "manifest": {
+    "path": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.manifest.json",
+    "bytes": 29747,
+    "sha256": "d18f8dc380e3ff0a2a07d5241f08e24feabfba5b714d7173281ea6e7c24aa85b"
+   },
+   "archive": {
+    "path": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.tar.gz",
+    "bytes": 355876,
+    "sha256": "9e12080a2e5fbd5d642339a17508e7bd7cdff2aacf7739e3e416df816282ec0c"
+   },
+   "sql": {
+    "path": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.sql",
+    "bytes": 1606790,
+    "sha256": "5924d6830c49ffca6e1bc43fbcd2e95167cc1f96a9eaeb34a1df58fd3ea65eab"
+   },
+   "receiptPath": "configs/mw3-hj-co-bb-mw3-srp-v1.review.json",
+   "archiveMatchesManifest": true,
+   "decodedArtifactCount": 7,
+   "decodedArtifactBytes": 14891506,
+   "decodedArtifactRecordsSha256": "d1a63b3bc978ecf55745844ad546cdf7c65700b812475bd87b5d8db13c045d71",
+   "decodedRawMatchesPreservationLedger": true,
+   "reportArtifactRecords": {
+    "count": 5,
+    "sha256": "9f7d601288a10355af95acb65711356b13c6e641f9808da3e68ab37f09fa1fc0"
+   },
+   "historicalReceipt": {
+    "status": "independently-reviewed",
+    "reviewerModel": "gpt-6-astra",
+    "authorModel": "gpt-6-astra",
+    "reviewerAndAuthorTasksDistinct": true,
+    "evidenceSummarySha256": "8a3198dacefbb9403f0b875d610150089eac7d70c774916443f22496497edb00",
+    "acceptedLimitationsSha256": "e83ba2a8c96d34dbc8510e422a1e0b8584bafacb3ccad5e0800c7119a78da5e0"
+   },
+   "sourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c"
+  },
+  {
+   "slug": "hj-co-btn-mw3-srp-v1",
+   "spotId": "HJ_open_CO_call_BTN_call",
+   "manifest": {
+    "path": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.manifest.json",
+    "bytes": 29766,
+    "sha256": "7b0f9d3bad4750e1f673ea6b575776c02db568035b3d5cf4ffe243fdeef7e432"
+   },
+   "archive": {
+    "path": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.tar.gz",
+    "bytes": 346320,
+    "sha256": "b0ad2b74cdc937f228aa4cb862502390ba03606dc548218d713da5875e1a4d00"
+   },
+   "sql": {
+    "path": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.sql",
+    "bytes": 1526887,
+    "sha256": "2a8bf28171b18c1287859c5527f9503c129166787ab1f92cc64ebc8a72e16454"
+   },
+   "receiptPath": "configs/mw3-hj-co-btn-mw3-srp-v1.review.json",
+   "archiveMatchesManifest": true,
+   "decodedArtifactCount": 7,
+   "decodedArtifactBytes": 14397841,
+   "decodedArtifactRecordsSha256": "5e0ea9215c90ab72056dd621533be29ff55394920a1e49788e7cde619b2b64b5",
+   "decodedRawMatchesPreservationLedger": true,
+   "reportArtifactRecords": {
+    "count": 5,
+    "sha256": "48baa86f509e7f316b01154e9e817e5297abc49e3dd761417d4fa6d7d20bd479"
+   },
+   "historicalReceipt": {
+    "status": "independently-reviewed",
+    "reviewerModel": "gpt-6-astra",
+    "authorModel": "gpt-6-astra",
+    "reviewerAndAuthorTasksDistinct": true,
+    "evidenceSummarySha256": "432005bf39183827663a836b00999d2c2c3fb3f8a7494f3f15ac76d3b6cdc860",
+    "acceptedLimitationsSha256": "e83ba2a8c96d34dbc8510e422a1e0b8584bafacb3ccad5e0800c7119a78da5e0"
+   },
+   "sourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c"
+  },
+  {
+   "slug": "hj-co-sb-mw3-srp-v1",
+   "spotId": "HJ_open_CO_call_SB_call",
+   "manifest": {
+    "path": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.manifest.json",
+    "bytes": 29747,
+    "sha256": "5398166987ceb9ede69b33e8f507ec1a5937db265d99de9d629de627a103585b"
+   },
+   "archive": {
+    "path": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.tar.gz",
+    "bytes": 349456,
+    "sha256": "2c41876d803519c8f05f347ecbf55404d29e17baf6f588089782d727f3ab13d7"
+   },
+   "sql": {
+    "path": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.sql",
+    "bytes": 1575504,
+    "sha256": "53c319921c68fee3d7c621adc99888ff29f792701ef78d319921f53065f5a450"
+   },
+   "receiptPath": "configs/mw3-hj-co-sb-mw3-srp-v1.review.json",
+   "archiveMatchesManifest": true,
+   "decodedArtifactCount": 7,
+   "decodedArtifactBytes": 14763075,
+   "decodedArtifactRecordsSha256": "e5c8914235bf16152b4dcb2d320b509ed7015d881a441b6514f6484458fcb118",
+   "decodedRawMatchesPreservationLedger": true,
+   "reportArtifactRecords": {
+    "count": 5,
+    "sha256": "329c8ad0e18f0e47dd1a04e3763c79d567f75837e61f1d8f2108b9000247a1cc"
+   },
+   "historicalReceipt": {
+    "status": "independently-reviewed",
+    "reviewerModel": "gpt-6-astra",
+    "authorModel": "gpt-6-astra",
+    "reviewerAndAuthorTasksDistinct": true,
+    "evidenceSummarySha256": "d5861a2793fa3744964b64776d38d6d5a5654a34a6436324bd0d0eae75d565e8",
+    "acceptedLimitationsSha256": "e83ba2a8c96d34dbc8510e422a1e0b8584bafacb3ccad5e0800c7119a78da5e0"
+   },
+   "sourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c"
+  },
+  {
+   "slug": "utg-btn-bb-mw3-srp-v1",
+   "spotId": "UTG_open_BTN_call_BB_call",
+   "manifest": {
+    "path": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.manifest.json",
+    "bytes": 29785,
+    "sha256": "d6d27ea736de3ecfee9a5b6f6e61a48256414698821f74cdbe990ceca266f875"
+   },
+   "archive": {
+    "path": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.tar.gz",
+    "bytes": 356007,
+    "sha256": "1a8ca191895c386944c903e6de9b9c7e1d25e77ce1f471a21036ee9321a4b69e"
+   },
+   "sql": {
+    "path": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.sql",
+    "bytes": 1609439,
+    "sha256": "4bcc23a9c1e534cc1e31300e03339ee174135c1e612a5d2345c490ff322a37a5"
+   },
+   "receiptPath": "configs/mw3-utg-btn-bb-mw3-srp-v1.review.json",
+   "archiveMatchesManifest": true,
+   "decodedArtifactCount": 7,
+   "decodedArtifactBytes": 14891547,
+   "decodedArtifactRecordsSha256": "620ae5025b4400d6bb514311b612fb4b0f332bd74c54cf23d6f01605df089326",
+   "decodedRawMatchesPreservationLedger": true,
+   "reportArtifactRecords": {
+    "count": 5,
+    "sha256": "0c96865e8bcbaec21363494952f4d4a0a2ecc2b1686e2bfe5b9a295f2615ea22"
+   },
+   "historicalReceipt": {
+    "status": "independently-reviewed",
+    "reviewerModel": "gpt-6-astra",
+    "authorModel": "gpt-6-astra",
+    "reviewerAndAuthorTasksDistinct": true,
+    "evidenceSummarySha256": "49462c32d648fe9074d37fbdb0c9beab990f49a67cdc1e6291dcc0db33bab832",
+    "acceptedLimitationsSha256": "e83ba2a8c96d34dbc8510e422a1e0b8584bafacb3ccad5e0800c7119a78da5e0"
+   },
+   "sourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c"
+  },
+  {
+   "slug": "utg-btn-sb-mw3-srp-v1",
+   "spotId": "UTG_open_BTN_call_SB_call",
+   "manifest": {
+    "path": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.manifest.json",
+    "bytes": 29785,
+    "sha256": "bd5552c71c2fd09dc8de27a43e5fc2084a77235193443bd27289605be9a810d2"
+   },
+   "archive": {
+    "path": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.tar.gz",
+    "bytes": 349201,
+    "sha256": "fb452978edb7aaf29593c6af6c3cf8dbb5352009580606938b485aba5886095d"
+   },
+   "sql": {
+    "path": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.sql",
+    "bytes": 1574637,
+    "sha256": "33172cdac9ae498196b31fc5446e447c63ebe22e2b1316b811fbbee088995a88"
+   },
+   "receiptPath": "configs/mw3-utg-btn-sb-mw3-srp-v1.review.json",
+   "archiveMatchesManifest": true,
+   "decodedArtifactCount": 7,
+   "decodedArtifactBytes": 14763342,
+   "decodedArtifactRecordsSha256": "20265859f7bf653d912941c8e83b9ddb1dca1827caf245124f0a99160da71fda",
+   "decodedRawMatchesPreservationLedger": true,
+   "reportArtifactRecords": {
+    "count": 5,
+    "sha256": "d3efa6248c3e28c7cc65d17f92dd01a08a6c414e4f73c3fbb4a83d5a8ad15508"
+   },
+   "historicalReceipt": {
+    "status": "independently-reviewed",
+    "reviewerModel": "gpt-6-astra",
+    "authorModel": "gpt-6-astra",
+    "reviewerAndAuthorTasksDistinct": true,
+    "evidenceSummarySha256": "5ca67da886d4c8ace38e25204ebaa0ee9e92bf6fcb2d9f199d3f4c4f3c4e8537",
+    "acceptedLimitationsSha256": "e83ba2a8c96d34dbc8510e422a1e0b8584bafacb3ccad5e0800c7119a78da5e0"
+   },
+   "sourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c"
+  },
+  {
+   "slug": "utg-co-bb-mw3-srp-v1",
+   "spotId": "UTG_open_CO_call_BB_call",
+   "manifest": {
+    "path": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.manifest.json",
+    "bytes": 29766,
+    "sha256": "170ce4d3a8dd3bdd8e6deaa08d642d6e6a332c4e56b65c385f98d49c41209385"
+   },
+   "archive": {
+    "path": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.tar.gz",
+    "bytes": 353793,
+    "sha256": "fab985466902709975e0e02e39d4eb9f5e41b0eb05f80d4d9f4824fe4d5913df"
+   },
+   "sql": {
+    "path": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.sql",
+    "bytes": 1605208,
+    "sha256": "5ba6cd39781d8d1b440973dfad86f2ecc14100b9ffd8f55acdece6df34e51024"
+   },
+   "receiptPath": "configs/mw3-utg-co-bb-mw3-srp-v1.review.json",
+   "archiveMatchesManifest": true,
+   "decodedArtifactCount": 7,
+   "decodedArtifactBytes": 14891913,
+   "decodedArtifactRecordsSha256": "5a73cdd6cb6d23b5578233904261dc57562ed5e323cc91625c9bbd14015535f8",
+   "decodedRawMatchesPreservationLedger": true,
+   "reportArtifactRecords": {
+    "count": 5,
+    "sha256": "4ecf59fcb34d6821db4f85e2d0a01d0a17eaf1543800cc81294ac0d5f5b0370a"
+   },
+   "historicalReceipt": {
+    "status": "independently-reviewed",
+    "reviewerModel": "gpt-6-astra",
+    "authorModel": "gpt-6-astra",
+    "reviewerAndAuthorTasksDistinct": true,
+    "evidenceSummarySha256": "49462c32d648fe9074d37fbdb0c9beab990f49a67cdc1e6291dcc0db33bab832",
+    "acceptedLimitationsSha256": "e83ba2a8c96d34dbc8510e422a1e0b8584bafacb3ccad5e0800c7119a78da5e0"
+   },
+   "sourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c"
+  },
+  {
+   "slug": "utg-co-btn-mw3-srp-v1",
+   "spotId": "UTG_open_CO_call_BTN_call",
+   "manifest": {
+    "path": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.manifest.json",
+    "bytes": 29785,
+    "sha256": "3d81dbb046e6fb2faed383e7d7306319de6cc6c47aac3ab5c641421be9a1446b"
+   },
+   "archive": {
+    "path": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.tar.gz",
+    "bytes": 343601,
+    "sha256": "3a3d6f4d1cabcfcff881b5b90470ad153748264734fce92f0bd6a816fbe58604"
+   },
+   "sql": {
+    "path": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.sql",
+    "bytes": 1525883,
+    "sha256": "e22865059a13ff9bec6b4e8fec110e4a8c5ed8c9f238f39bbc994ae84de318d2"
+   },
+   "receiptPath": "configs/mw3-utg-co-btn-mw3-srp-v1.review.json",
+   "archiveMatchesManifest": true,
+   "decodedArtifactCount": 7,
+   "decodedArtifactBytes": 14396679,
+   "decodedArtifactRecordsSha256": "e12b96a388e9e1dcf02fad2b93fa617f33ecfe8992fb1678999d672ec8c8e04e",
+   "decodedRawMatchesPreservationLedger": true,
+   "reportArtifactRecords": {
+    "count": 5,
+    "sha256": "2be07b8b912824c326fb6a10d827bf7cacb27dc09bcda1fd31c47bd1ac1be30e"
+   },
+   "historicalReceipt": {
+    "status": "independently-reviewed",
+    "reviewerModel": "gpt-6-astra",
+    "authorModel": "gpt-6-astra",
+    "reviewerAndAuthorTasksDistinct": true,
+    "evidenceSummarySha256": "558b41182772cde64395bf0834e9f5ff80dbec1f8a9f6f8064f8bef2a6ae7592",
+    "acceptedLimitationsSha256": "e83ba2a8c96d34dbc8510e422a1e0b8584bafacb3ccad5e0800c7119a78da5e0"
+   },
+   "sourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c"
+  },
+  {
+   "slug": "utg-co-sb-mw3-srp-v1",
+   "spotId": "UTG_open_CO_call_SB_call",
+   "manifest": {
+    "path": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.manifest.json",
+    "bytes": 29766,
+    "sha256": "a0e4d0ff2ae761a5a908377092d258d140db5e67245876547883cfb01ab61e8d"
+   },
+   "archive": {
+    "path": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.tar.gz",
+    "bytes": 347918,
+    "sha256": "c859afc13e369cd1cf3ab8ea545d8115a5eaba4d55725de772f222a560f4b7a0"
+   },
+   "sql": {
+    "path": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.sql",
+    "bytes": 1568069,
+    "sha256": "eb4843a166c31a0d8e52f878f6702bb96e8e95c36ae09180742e1f434a075ffc"
+   },
+   "receiptPath": "configs/mw3-utg-co-sb-mw3-srp-v1.review.json",
+   "archiveMatchesManifest": true,
+   "decodedArtifactCount": 7,
+   "decodedArtifactBytes": 14763605,
+   "decodedArtifactRecordsSha256": "d6d13155b401d42d8f290f6bbd1accd8f9a321bfaf38dbcf702b02df0dcee828",
+   "decodedRawMatchesPreservationLedger": true,
+   "reportArtifactRecords": {
+    "count": 5,
+    "sha256": "d0b72bf30e44d6ebe1e526f8ac7b2bb33cfba3f69a0806a076e1ecc20b5ae56f"
+   },
+   "historicalReceipt": {
+    "status": "independently-reviewed",
+    "reviewerModel": "gpt-6-astra",
+    "authorModel": "gpt-6-astra",
+    "reviewerAndAuthorTasksDistinct": true,
+    "evidenceSummarySha256": "1d6cc3333a8794391331d45eeab7a08616f06b813f4ba970127a305c394239c3",
+    "acceptedLimitationsSha256": "e83ba2a8c96d34dbc8510e422a1e0b8584bafacb3ccad5e0800c7119a78da5e0"
+   },
+   "sourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c"
+  },
+  {
+   "slug": "utg-hj-bb-mw3-srp-v1",
+   "spotId": "UTG_open_HJ_call_BB_call",
+   "manifest": {
+    "path": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.manifest.json",
+    "bytes": 29766,
+    "sha256": "2d8179cced593a98bdc07a1f6f2d888abf14133d7dc32485934890c290d2e83a"
+   },
+   "archive": {
+    "path": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.tar.gz",
+    "bytes": 352915,
+    "sha256": "d84390b598755b265f5e5ae5e5601d05fc69e7346971b955c2ab0d4732ab577a"
+   },
+   "sql": {
+    "path": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.sql",
+    "bytes": 1602292,
+    "sha256": "fccac27d5c469ed94c158259d7a1a0d686bab8c1d1ec1dc45573ccd4c113a859"
+   },
+   "receiptPath": "configs/mw3-utg-hj-bb-mw3-srp-v1.review.json",
+   "archiveMatchesManifest": true,
+   "decodedArtifactCount": 7,
+   "decodedArtifactBytes": 14892356,
+   "decodedArtifactRecordsSha256": "8731664ed205046cbc1be71e2b5aa66963aeecd30ddb71b1d7fa095e246ef43c",
+   "decodedRawMatchesPreservationLedger": true,
+   "reportArtifactRecords": {
+    "count": 5,
+    "sha256": "dacce49d6097dc449a843a31d480f5d3503ca89875e8c12e081aff3aba598be4"
+   },
+   "historicalReceipt": {
+    "status": "independently-reviewed",
+    "reviewerModel": "gpt-6-astra",
+    "authorModel": "gpt-6-astra",
+    "reviewerAndAuthorTasksDistinct": true,
+    "evidenceSummarySha256": "98bb90eb113b231245fc7a6359e358a1c0a1b35192a82dc37478f5e5aadb9583",
+    "acceptedLimitationsSha256": "e83ba2a8c96d34dbc8510e422a1e0b8584bafacb3ccad5e0800c7119a78da5e0"
+   },
+   "sourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c"
+  },
+  {
+   "slug": "utg-hj-btn-mw3-srp-v1",
+   "spotId": "UTG_open_HJ_call_BTN_call",
+   "manifest": {
+    "path": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.manifest.json",
+    "bytes": 29785,
+    "sha256": "3e169c044bbef25a4f5761505a695b2312c87f9a6859457c12bc72c768dea621"
+   },
+   "archive": {
+    "path": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.tar.gz",
+    "bytes": 342470,
+    "sha256": "fae0fe5f2ce9fc718f68b9160e4f6e99ed14138b5319008cacb4684b1aca9f3e"
+   },
+   "sql": {
+    "path": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.sql",
+    "bytes": 1524093,
+    "sha256": "188519d42aab80e6d9c4b783a75a49e30edc0a9a3120eaeafb51a41df1fa7570"
+   },
+   "receiptPath": "configs/mw3-utg-hj-btn-mw3-srp-v1.review.json",
+   "archiveMatchesManifest": true,
+   "decodedArtifactCount": 7,
+   "decodedArtifactBytes": 14396831,
+   "decodedArtifactRecordsSha256": "8c852ae2feab1c6f5eb2d15fa64fa3e4d50ea3431ba78f26dce79f09f3b57698",
+   "decodedRawMatchesPreservationLedger": true,
+   "reportArtifactRecords": {
+    "count": 5,
+    "sha256": "48c0b1a5d7109491766dd21c2ab80b68025a0d465c757a1c6b4837c5f4e001cf"
+   },
+   "historicalReceipt": {
+    "status": "independently-reviewed",
+    "reviewerModel": "gpt-6-astra",
+    "authorModel": "gpt-6-astra",
+    "reviewerAndAuthorTasksDistinct": true,
+    "evidenceSummarySha256": "4e09b9db725e2f9f28829babf46fe28cd3a51af7e69ea2efa3ee1dbb47791f47",
+    "acceptedLimitationsSha256": "e83ba2a8c96d34dbc8510e422a1e0b8584bafacb3ccad5e0800c7119a78da5e0"
+   },
+   "sourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c"
+  },
+  {
+   "slug": "utg-hj-co-mw3-srp-v1",
+   "spotId": "UTG_open_HJ_call_CO_call",
+   "manifest": {
+    "path": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.manifest.json",
+    "bytes": 29766,
+    "sha256": "c4e164cabc5661e92e02bc2582298aa8dbf47ef794a16ecef5cbece85c677a96"
+   },
+   "archive": {
+    "path": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.tar.gz",
+    "bytes": 340387,
+    "sha256": "a0531cb661d36f6beee9076196a40e7a8fef414cbe2c60ffb9283ac1037ac19b"
+   },
+   "sql": {
+    "path": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.sql",
+    "bytes": 1519315,
+    "sha256": "8d157d531e80e159477a39ea23bae15a35a577185234b9a68abe1ebc70102918"
+   },
+   "receiptPath": "configs/mw3-utg-hj-co-mw3-srp-v1.review.json",
+   "archiveMatchesManifest": true,
+   "decodedArtifactCount": 7,
+   "decodedArtifactBytes": 14395820,
+   "decodedArtifactRecordsSha256": "63a33abeded2b8e2de57aaa89fdbb5dadd3359d2bb7ac9e85a59bcce5e42c77d",
+   "decodedRawMatchesPreservationLedger": true,
+   "reportArtifactRecords": {
+    "count": 5,
+    "sha256": "0d463e5ef1888a7734e94a9985fbe280e81b6c02209132c7afa5f517d0f634f2"
+   },
+   "historicalReceipt": {
+    "status": "independently-reviewed",
+    "reviewerModel": "gpt-6-astra",
+    "authorModel": "gpt-6-astra",
+    "reviewerAndAuthorTasksDistinct": true,
+    "evidenceSummarySha256": "03b30c1a407af7f61d26c905e79402036a207054831f2c046768261aff76ae6a",
+    "acceptedLimitationsSha256": "e83ba2a8c96d34dbc8510e422a1e0b8584bafacb3ccad5e0800c7119a78da5e0"
+   },
+   "sourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c"
+  },
+  {
+   "slug": "utg-hj-sb-mw3-srp-v1",
+   "spotId": "UTG_open_HJ_call_SB_call",
+   "manifest": {
+    "path": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.manifest.json",
+    "bytes": 29766,
+    "sha256": "01b84ecca82ba01290e84743466e77f83d7187f464f20900c8083589e9943d55"
+   },
+   "archive": {
+    "path": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.tar.gz",
+    "bytes": 346992,
+    "sha256": "ed25dd6a611d329ec8f78614320d66c5f84284ee4f3e2cf14129cbd75d5b7afa"
+   },
+   "sql": {
+    "path": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.sql",
+    "bytes": 1562974,
+    "sha256": "1783155556de0ccc74af669b44a447e27bceb8c11b91254a90a0a7d74577efaf"
+   },
+   "receiptPath": "configs/mw3-utg-hj-sb-mw3-srp-v1.review.json",
+   "archiveMatchesManifest": true,
+   "decodedArtifactCount": 7,
+   "decodedArtifactBytes": 14763572,
+   "decodedArtifactRecordsSha256": "14ba461290b536f65488c0d6d259e9f53ba2848746b80073f2b7578655fe8784",
+   "decodedRawMatchesPreservationLedger": true,
+   "reportArtifactRecords": {
+    "count": 5,
+    "sha256": "a4bf4daaf3960ede74972e0afb8ff71213bfc0874680ab9c2eb46efa4faefe77"
+   },
+   "historicalReceipt": {
+    "status": "independently-reviewed",
+    "reviewerModel": "gpt-6-astra",
+    "authorModel": "gpt-6-astra",
+    "reviewerAndAuthorTasksDistinct": true,
+    "evidenceSummarySha256": "1d6cc3333a8794391331d45eeab7a08616f06b813f4ba970127a305c394239c3",
+    "acceptedLimitationsSha256": "e83ba2a8c96d34dbc8510e422a1e0b8584bafacb3ccad5e0800c7119a78da5e0"
+   },
+   "sourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c"
+  }
+ ],
+ "officialVerifierGate": {
+  "name": "MW3 official saved-inventory verifier",
+  "status": "blocked-fail-closed",
+  "error": "Mw3 source/input dependency inventory differs",
+  "writesPerformed": false
+ },
+ "migrationBoundary": {
+  "migration": {
+   "path": "apps/backend/migrations/0012_postflop_profile_policies.sql",
+   "bytes": 662,
+   "sha256": "88ce94e4ada93cdbf48bfb0baa722c8947e888ad8e67a929744a8e8f26b82afe"
+  },
+  "workflowTriggerPushMain": true,
+  "exactRemoteD1ApplyStepPresent": true,
+  "productionPreflightExecuted": false,
+  "remoteD1Touched": false,
+  "deployed": false,
+  "merged": false
+ },
+ "writePerformed": false
+}

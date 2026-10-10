@@ -9,7 +9,7 @@ import { execFileSync } from "node:child_process";
 import { closeSync, openSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { buildSql as buildPostflopSql, publishableSpots } from "./postflop-ai/publish-d1.mjs";
+import { buildSql as buildPostflopSql, publishableProfiles, publishableSpots } from "./postflop-ai/publish-d1.mjs";
 import { publishableFlopBases, flopBaseSqlLines } from "./postflop-ai/flop-base-d1.mjs";
 import { ESTIMATED_DIR, preflopDatasetEntries, preflopSqlChunks } from "./lib/preflop-sql.mjs";
 export { ESTIMATED_DIR, PART_CHARS, preflopDatasets, buildPreflopSql, preflopDatasetEntries, preflopSqlChunks } from "./lib/preflop-sql.mjs";
@@ -42,8 +42,9 @@ async function main(argv) {
     }
     if (!only || only === "postflop") {
       const spots = publishableSpots(console.log, { requireAll: argv.includes("--require-all") });
-      writeFileSync(descriptor, buildPostflopSql(spots));
-      console.log(`${spots.length} postflop spots`);
+      const profiles = publishableProfiles(console.log, { requireAll: argv.includes("--require-all") });
+      writeFileSync(descriptor, buildPostflopSql(spots, undefined, undefined, profiles));
+      console.log(`${spots.length} postflop spots; ${profiles.length * 4} profile policy rows`);
     }
   } finally { closeSync(descriptor); }
   if (!only || only === "flop-base") {

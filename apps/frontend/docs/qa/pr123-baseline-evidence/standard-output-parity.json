@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 2,
+  "status": "corrected-two-checkout-comparison",
+  "purpose": "Verify standard-mode output stability for the protected PR123 runtime/import closure while binding the inherited filesystem JSON inputs.",
+  "supersededPriorPublication": {
+    "status": "superseded-by-clean-two-checkout-rerun",
+    "reason": "The published reproduction runner applied the candidate closure before both capture calls, so replaying that script ran the candidate overlay twice. The separately recorded original capture commands used two distinct directories; this report does not claim those original runs were contaminated. The corrected run below now independently performs and records the comparison.",
+    "priorReportedResult": {
+      "allEqual": true,
+      "outputCount": 13
+    },
+    "priorRunner": "reproduce-standard-output-parity.sh before this correction",
+    "priorCandidateOnlyArtifact": {
+      "path": "superseded-candidate-only-output-objects.json.gz",
+      "gzipSha256": "db2eac5468111dffd02f4bb6475876506825fbcc59ed13993dc8e339b206fba6",
+      "compressedBytes": 48968,
+      "uncompressedSha256": "13e2e209855c33995d3cfceb04ee1d0de1faad0aa7f953c72657618cc8450185",
+      "status": "preserved-and-labeled-superseded"
+    },
+    "originalCaptureDirectories": {
+      "baseline": "/tmp/pr123-capture-work",
+      "candidate": "/tmp/pr123-candidate-work",
+      "baselineWasClean": true,
+      "distinctDirectories": true
+    }
+  },
+  "captureScript": {
+    "path": "standard-output-capture.mjs",
+    "sha256": "3bb1bad005d3fcf52f4efa2366a4c430797fcd6553fa2091d97b27b4fd73dff6",
+    "sameScriptForBothRuns": true
+  },
+  "runtime": {
+    "node": "v25.8.1",
+    "platform": "darwin",
+    "requiredNode": "v25.8.1",
+    "sameNodeAndPlatform": true
+  },
+  "baseline": {
+    "label": "baseline-7c2",
+    "commit": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+    "checkoutTree": "04486039e4394a2238b71de24434623c255bfb87",
+    "executionTree": "04486039e4394a2238b71de24434623c255bfb87",
+    "checkoutWasCleanBeforeCapture": true,
+    "runtimeMs": 11794.85725
+  },
+  "candidate": {
+    "label": "candidate-91109",
+    "sourceCommit": "91109e156c17c7fdb9e2eb0dbc8d0704c7ee3e46",
+    "sourceTree": "9d4bf2f8ae341d38507f209ccd8bcc9f437bbd2d",
+    "protectedPrHead": "6b5291089c15304c25af7433e87cd1bcaac38428",
+    "protectedPrTree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5",
+    "checkoutCommit": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+    "checkoutTree": "04486039e4394a2238b71de24434623c255bfb87",
+    "executionTree": "f1bc0d3312adb5ebb96e8890e80d17126d60bbf5",
+    "method": "Separate baseline checkout with only the verified 70-file runtime/import closure checked out from source commit; changed paths were confined to that closure.",
+    "closure": {
+      "path": "runtime-import-closure.json",
+      "files": 70,
+      "manifestSha256": "c28d77a70470845f89c37e1659c8b9a9b4b84ad6f6bca669f2e1df5e32a70d1c",
+      "allSourceAndPrHeadBlobsMatch": true,
+      "changedWorktreePaths": 32,
+      "outsideClosureChanges": 0
+    },
+    "runtimeMs": 11781.778625
+  },
+  "inheritedFilesystemJsonInputs": {
+    "path": "runtime-filesystem-json-inputs.json",
+    "files": 11,
+    "manifestSha256": "9d8b9152e41c62f119c52472e9762313447a08dffe62026a6d51da13193da179",
+    "allBaselineSourceAndPrHeadBlobsMatch": true,
+    "allBaselineAndCandidateBytesMatch": true
+  },
+  "inputs": {
+    "spot": "BTN_open_BB_call",
+    "fingerprintSha256": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
+    "seatRowsSha256": "a115b43c5fa038493620a4bf45751f09e5a0b6d76d1d8c6f8289342ac36b5e0d",
+    "board": "Js8s5d",
+    "turn": "3c",
+    "river": "2h",
+    "identicalBetweenRuns": true
+  },
+  "digestMethod": "SHA-256 of raw prompt strings and JSON.stringify(output objects), matching hu-v7-parity digest helper",
+  "rawCaptureEnvelopes": {
+    "baseline": {
+      "path": "baseline-capture.json.gz",
+      "gzipSha256": "ef84765648b12fdb8fc51b1c5b544179229da32039c1273fdbd2225cfb4122f8",
+      "compressedBytes": 65948,
+      "uncompressedSha256": "cddcef5f18bf3118df4d95b551f3a707f3b614e3b49734b814e31e79158ed838",
+      "uncompressedBytes": 2390917
+    },
+    "candidate": {
+      "path": "candidate-capture.json.gz",
+      "gzipSha256": "8f38562a9fbd4f25b6070f27035e4b2f5cb95e92d252a01530b349fb95742a66",
+      "compressedBytes": 66040,
+      "uncompressedSha256": "9bb4937413ad957dd7ad8ed6943d79d389af23a53bea70a1750b913d73c9a8db",
+      "uncompressedBytes": 2390921
+    }
+  },
+  "canonicalOutputArtifact": {
+    "path": "raw-standard-output-objects.json.gz",
+    "gzipSha256": "9f336573051bdf4439e01e44d9766658ac9b0d1dc598b597cc1774c0b07e6767",
+    "compressedBytes": 48968,
+    "uncompressedCanonicalObjectSha256": "13e2e209855c33995d3cfceb04ee1d0de1faad0aa7f953c72657618cc8450185",
+    "uncompressedBytes": 886818,
+    "outputCount": 13,
+    "extraction": "gzip -dc raw-standard-output-objects.json.gz > canonical-outputs.json"
+  },
+  "result": {
+    "outputCount": 13,
+    "allEqual": true,
+    "perOutputSha256": [
+      {
+        "output": "standard_flop_prompt",
+        "baselineSha256": "25a5f161120c6e540eddd477430a96772774e98bbed9d0b63c3d07df20f68053",
+        "candidateSha256": "25a5f161120c6e540eddd477430a96772774e98bbed9d0b63c3d07df20f68053",
+        "equal": true
+      },
+      {
+        "output": "standard_later_prompt",
+        "baselineSha256": "45b5622bf587de13d78f68870678566408c10b4888c5f8219501ca4de5b406da",
+        "candidateSha256": "45b5622bf587de13d78f68870678566408c10b4888c5f8219501ca4de5b406da",
+        "equal": true
+      },
+      {
+        "output": "standard_4bp_flop_prompt",
+        "baselineSha256": "63c0355283de269f16753f3efbb52467c36adf46a42b00017d46ba65f3dbc626",
+        "candidateSha256": "63c0355283de269f16753f3efbb52467c36adf46a42b00017d46ba65f3dbc626",
+        "equal": true
+      },
+      {
+        "output": "standard_limp_later_prompt",
+        "baselineSha256": "c89e74e43bb7b4c6aea49d0fb355e747515e7a9729c511423d926319045c6b27",
+        "candidateSha256": "c89e74e43bb7b4c6aea49d0fb355e747515e7a9729c511423d926319045c6b27",
+        "equal": true
+      },
+      {
+        "output": "flop_nodes_all",
+        "baselineSha256": "38d682d864ab12983df1c1a54927e8a2a19037bc31952a0b9d1ea7259960c3f2",
+        "candidateSha256": "38d682d864ab12983df1c1a54927e8a2a19037bc31952a0b9d1ea7259960c3f2",
+        "equal": true
+      },
+      {
+        "output": "flop_explain_first",
+        "baselineSha256": "2bf81c7d164255d0ff703255304464c9bf465195d5acc182ca1f739d231f787c",
+        "candidateSha256": "2bf81c7d164255d0ff703255304464c9bf465195d5acc182ca1f739d231f787c",
+        "equal": true
+      },
+      {
+        "output": "flop_explain_facing",
+        "baselineSha256": "fa373bf9683099352692b9d13ea3d30f289079d792dbc5603bb1ed05c486ee21",
+        "candidateSha256": "fa373bf9683099352692b9d13ea3d30f289079d792dbc5603bb1ed05c486ee21",
+        "equal": true
+      },
+      {
+        "output": "flop_ui_facts",
+        "baselineSha256": "9e7d156d52683aa1ff0bef51730dbd2177f5de5fce9e04e593edb3db9e234e38",
+        "candidateSha256": "9e7d156d52683aa1ff0bef51730dbd2177f5de5fce9e04e593edb3db9e234e38",
+        "equal": true
+      },
+      {
+        "output": "flop_range_facts",
+        "baselineSha256": "48d75e2770d4c90f279b47e9c600309819280ab858824afd944eb47f8f0a19fd",
+        "candidateSha256": "48d75e2770d4c90f279b47e9c600309819280ab858824afd944eb47f8f0a19fd",
+        "equal": true
+      },
+      {
+        "output": "turn_explanation",
+        "baselineSha256": "dbb0db91b3c339fc53f1a3a3f6d3dc0dfd20366d5a182b586d513ffe54bd00cc",
+        "candidateSha256": "dbb0db91b3c339fc53f1a3a3f6d3dc0dfd20366d5a182b586d513ffe54bd00cc",
+        "equal": true
+      },
+      {
+        "output": "river_explanation",
+        "baselineSha256": "23c566134795a75e18573463fc8bdfabf84dfbc90c87fb008ad8c52d5007db92",
+        "candidateSha256": "23c566134795a75e18573463fc8bdfabf84dfbc90c87fb008ad8c52d5007db92",
+        "equal": true
+      },
+      {
+        "output": "standard_flop_balance",
+        "baselineSha256": "823796ba6d0fab056edcfd55902b5a6508ce1aa2c42388c7ac0fdb9d45587ee5",
+        "candidateSha256": "823796ba6d0fab056edcfd55902b5a6508ce1aa2c42388c7ac0fdb9d45587ee5",
+        "equal": true
+      },
+      {
+        "output": "standard_later_balance",
+        "baselineSha256": "2577c30bdbbb0fedd5d4cd3ea35d9d8c88aaea9b67e0d15870d7654762fe3d93",
+        "candidateSha256": "2577c30bdbbb0fedd5d4cd3ea35d9d8c88aaea9b67e0d15870d7654762fe3d93",
+        "equal": true
+      }
+    ]
+  }
+}

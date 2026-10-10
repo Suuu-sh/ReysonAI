@@ -1,0 +1,187 @@
+{
+  "head": "6b5291089c15304c25af7433e87cd1bcaac38428",
+  "verdict": "PASS for the four source corrections and bounded compatibility-contract design; independent provenance of the 13 newly claimed historical output digests is still pending. No remaining concrete unsafe default-numerical semantic delta was found in the reviewed 10-module sources. This is not approval of numerical receipts, full-suite status, or merge readiness.",
+  "verification_performed": [
+    "Fetched all ten historical modules directly from GitHub at 7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5 and all ten candidate modules at the exact review head.",
+    "Independently executed the repository-equivalent erased-AST digest method with Node v24.19.0 and the fetched repository Babel parser. All ten old module hashes, ten current module hashes, 181 historical declaration hashes, 194 candidate declaration names/hashes, 26 modified existing declarations and 13 additions agree exactly with the candidate fixture. No omitted or unexpected declaration was found.",
+    "Verified the completion extension current hash and exact single-expression inverse: cf83ad65989991b37526c95d28f5a48a45ad157394e52b10babe54e9668cfdae maps back to 84bbeb55f66decc4bdb5f72e6d40f6f1182d084f098234d4cd33546387060023, with the replacement expression occurring exactly once.",
+    "Reviewed the 91109e correction diff and current source, including added profile balance missing-node/standard fallback tests and completed-HU/MW3 boundary tests.",
+    "Read the new adopted-hu-v7 test and full candidate fixture. The test retains the original historical contract and still enforces the preexisting helper/classifier, 425 engine scenarios, 85 UI cases, bet125 and active numeric-closure protections."
+  ],
+  "source_corrections": [
+    {
+      "file": "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+      "result": "PASS",
+      "reason": "Hero policy lookup now occurs only when table exists or requireSavedPolicy is true. Standard/no-table no longer performs a lookup absent from the historical path. Supplemental profile facts are also conditional. This restores historical standard evaluation behavior without removing profile support."
+    },
+    {
+      "file": "apps/frontend/scripts/postflop-ai/explain.mjs",
+      "result": "PASS",
+      "reason": "The entire supplemental profileReferenceFacts expression, including policyMix argument evaluation, is now guarded by requireSavedPolicy. Existing standard hero lookup branches remain."
+    },
+    {
+      "file": "apps/frontend/scripts/postflop-ai/explain-later.ts",
+      "result": "PASS",
+      "reason": "The entire supplemental profileReferenceFacts expression, including laterPolicyMix argument evaluation, is now guarded by requireSavedPolicy. Historical heroTable-dependent behavior remains."
+    },
+    {
+      "file": "apps/frontend/scripts/postflop-ai/balance.mjs",
+      "result": "PASS",
+      "reason": "Requested-path historical lookups pass requireSavedPolicy derived from profileMode(inputs) to both flop and later policy readers. The new tests cover missing authored flop/later re-raise rules, retain legacy standard fallback and do not inspect omitted requestedPaths."
+    }
+  ],
+  "contract_assessment": {
+    "honest_bounded_acceptance": "The change is a separately labeled proposed candidate contract. It preserves the historical values, binds exactly the reviewed modified source/declarations to candidate hashes, retains direct historical hashes on unchanged declarations, and adds sampled default outputs. This is a legitimate reviewed extension mechanism once its source semantics and sample origins are independently checked; it is not necessary to demand exhaustive runtime proof.",
+    "not_an_exact_default_ast_proof": "The modified declarations, notably the whole Defence class, are pinned to newly reviewed hashes. The test does not reconstruct all their historical default branch ASTs. Therefore do not describe it as whole-class/default-AST identity or proof of every possible output. Our source review establishes the unchanged arithmetic/default conditionals for the specific pinned revision; the candidate hashes then detect later drift.",
+    "standard_arithmetic": "For valid standard/unadjusted inputs, profile flags are false; historical defence caches, caps/floor/ceiling/equity/fallback arithmetic remain. Policy/view/range additions pass a false guard and preserve formulas. The corrected explanatory calls no longer expand standard evaluation. Profile branches are intentionally different and separately pinned/tested.",
+    "generator_extension": "generate.mjs legitimately changes lifecycle/identity/metadata and adjusted-input handling; it must remain an explicit candidate extension, not a claim of byte-identical historical generator behavior. Standard prompt bodies were previously verified exact after their explicit renaming; current source hash remains identical to that reviewed candidate. Four prompt samples supplement that source evidence.",
+    "completion_extension": "The deliberate default-table gate removal is confined to HU. The exact inverse proves the rest of this declaration unchanged, while added tests cover explicit true/false/omitted HU flags, unchanged MW3 default-only gating, and malformed/pot-mismatch cases. A blanket restoration would regress the intended adjusted-HU feature."
+  },
+  "golden_coverage": {
+    "status": "Origin not independently established in this review yet; capture evidence has been requested from the parent/author.",
+    "claimed_source_commit": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+    "scenario": {
+      "spot": "BTN_open_BB_call",
+      "board": "Js8s5d",
+      "turn": "3c",
+      "river": "2h",
+      "input_fingerprint": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
+      "seat_rows_sha256": "a115b43c5fa038493620a4bf45751f09e5a0b6d76d1d8c6f8289342ac36b5e0d"
+    },
+    "sample_count": 13,
+    "what_the_test_covers": "Nine computation output samples use BTN_open_BB_call with reference flop/later policy on Js8s5d / 3c / 2h: all flop nodes, first/facing explanations, flop UI/range facts, turn/river explanations, and standard flop/later balance. Four additional prompt strings cover standard flop/later, one 4-bet flop and one limp later prompt.",
+    "limits": "These are finite samples, not all 85 spots, all authored policies, uncapped/default override instances, absent replay tables or all low-SPR paths. Existing engine/UI fixtures cover broader chip/path behavior but do not make these numeric computation samples exhaustive. Limited sampling by itself is not a code blocker when combined with independently reviewed conditional semantics and exact candidate pins.",
+    "evidence_needed": "To confirm the claimed baseline origin, provide the capture script/command and raw outputs from an immutable 7c2 checkout with exact input identities, or independently reproduce those thirteen digests. A source_commit field alone is not execution provenance. This reviewer has not run the historical output collector or either full runtime suite."
+  },
+  "nonblocking_hardening": [
+    "Assert candidate.standard_path_output_baseline.source_commit === contract.baseline so future metadata drift cannot silently mislabel samples.",
+    "Assert candidate.completion_extension.baseline_declaration_sha256 === contract.completion.completedFlopContext. The inverse check already enforces the latter value, but this validates duplicated metadata too.",
+    "Keep the review description explicit about new whole-declaration pins plus finite historical samples; do not rewrite the original baseline fixture or accepted numerical receipt identities."
+  ],
+  "no_required_code_blocker_identified": true,
+  "not_claimed": [
+    "Personally executing the author-reported 50/66 focused tests, full 1,417-test suite, type-check or build",
+    "Personally reproducing the thirteen historical computation outputs",
+    "Running the original baseline collector or strategy simulation",
+    "Approving or renewing numerical receipts",
+    "Overall PR merge readiness"
+  ],
+  "sources": {
+    "test": "https://github.com/Suuu-sh/ReysonAI/blob/6b5291089c15304c25af7433e87cd1bcaac38428/apps/frontend/tests/adopted-hu-v7-runtime.test.mjs",
+    "candidate_fixture": "https://github.com/Suuu-sh/ReysonAI/blob/6b5291089c15304c25af7433e87cd1bcaac38428/apps/frontend/tests/fixtures/adopted-hu-v7-candidate-contract.json",
+    "historical_fixture": "https://github.com/Suuu-sh/ReysonAI/blob/6b5291089c15304c25af7433e87cd1bcaac38428/apps/frontend/tests/fixtures/adopted-hu-v7-contract.json",
+    "fix_commit": "https://github.com/Suuu-sh/ReysonAI/commit/91109e156c17c7fdb9e2eb0dbc8d0704c7ee3e46"
+  },
+  "independent_digest_results": {
+    "head": "6b5291089c15304c25af7433e87cd1bcaac38428",
+    "baseline": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+    "modules": [
+      {
+        "path": "apps/frontend/scripts/postflop-ai/defence.ts",
+        "oldModule": "5d4ff296e443e704e90b2639448d83408189962537f49c27fd833b3ec540dd60",
+        "newModule": "fd309e564372d832247e4d6a22d8db330a041cd676c3abbe4532c2289bcfff79",
+        "oldDeclarationCount": 43,
+        "currentDeclarationCount": 43,
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/views.ts",
+        "oldModule": "5c866564158c9ec0fcb3545b021a1d584f5b83a97a038d077a4916dbb9cad24d",
+        "newModule": "e90a912a6d10ec1f026ad5dc6a453733a467fe8092cd6f3180c6774c32f28a11",
+        "oldDeclarationCount": 7,
+        "currentDeclarationCount": 7,
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+        "oldModule": "be35f43e232e0e76b0a7313a74f4db54f6c6603bb50afec959ba887feb4632ed",
+        "newModule": "ae2cee40256d91abcaebed3db485d3ac0febfc89c0b8f6437f2ab35d0dbadd26",
+        "oldDeclarationCount": 14,
+        "currentDeclarationCount": 14,
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/explain.mjs",
+        "oldModule": "11d17b738222b1037b5f52bbbb596f6aeceb73138aacc1e0b0f232df0913456f",
+        "newModule": "af36e421d12de4cf6cc30f391d8364c1f46cc2fe928c4e6f937f2cda37b656ae",
+        "oldDeclarationCount": 13,
+        "currentDeclarationCount": 13,
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/explain-later.ts",
+        "oldModule": "6ea2f63c0e454ebbc32092cfa275a646e1952efe09215e51ec5be7c37c8d727e",
+        "newModule": "8340910c612992e892954bebbf546d48eff565d04e6096addcb00e201ac4e357",
+        "oldDeclarationCount": 17,
+        "currentDeclarationCount": 17,
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/range-facts.ts",
+        "oldModule": "49412642d1cba462593d095d0a1b3201218b93404063d21625dd0ee6a875efb1",
+        "newModule": "fef1eea40f1932a6f247abfdf8d835c24557b57e6fa2f5bf203f646ba1310377",
+        "oldDeclarationCount": 10,
+        "currentDeclarationCount": 10,
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/balance.mjs",
+        "oldModule": "2ee370847cddd83aef3b67fd685d710be9cb7306e361e89bd9be2a3de3554ba0",
+        "newModule": "f9f915431043c42c900d33e3107c94dd13e18600cfc98fd13ce67998299caedb",
+        "oldDeclarationCount": 31,
+        "currentDeclarationCount": 36,
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
+        "oldModule": "9a507d0c736a4c8d00a4abe091948e16588ba1a4ca1eabbca24f550fe6d9a98a",
+        "newModule": "0d010564aa5b0d2d926424130efdfe56fe87d65c1b3bf001b7a6976feff2f65e",
+        "oldDeclarationCount": 15,
+        "currentDeclarationCount": 23,
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/policy.ts",
+        "oldModule": "98d44446ed0e0bda11830a6e909537dfb88dc770e230c124452d89a432721fdc",
+        "newModule": "da558fb63da3cb78c6eb864be5dc99727d0439afe0e80c1e7ffc13425acac318",
+        "oldDeclarationCount": 18,
+        "currentDeclarationCount": 18,
+        "pass": true
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/later-policy.ts",
+        "oldModule": "3d03249ea981b9da18f51dfbcd12c2f90e5988dfd9181a23d234121cdd2dcff4",
+        "newModule": "9aa4f31f5d57d3f580e63ff7580fc7074bbee487b66ced03cf8b43b019520a81",
+        "oldDeclarationCount": 13,
+        "currentDeclarationCount": 13,
+        "pass": true
+      }
+    ],
+    "failures": [],
+    "completion": {
+      "current": "cf83ad65989991b37526c95d28f5a48a45ad157394e52b10babe54e9668cfdae",
+      "inverse": "84bbeb55f66decc4bdb5f72e6d40f6f1182d084f098234d4cd33546387060023",
+      "occurrences": 1
+    }
+  },
+  "review_provenance": {
+    "reviewer_model": "gpt-6-astra",
+    "reviewer_task_path": "/root/review_pr123_source_evidence/inspect_hu_v7_pins",
+    "mode": "Independent read-only review; source-only bounded acceptance",
+    "exact_head": "6b5291089c15304c25af7433e87cd1bcaac38428",
+    "reported_at_utc": "2026-10-09T23:25:52Z"
+  },
+  "bounded_result": "PASS",
+  "closure_validation_scope": {
+    "historical_modules_fetched_and_digested": 10,
+    "candidate_modules_fetched_and_digested": 10,
+    "historical_declarations_independently_verified": 181,
+    "candidate_declarations_independently_verified": 194,
+    "changed_existing_declarations": 26,
+    "explicit_added_declarations": 13,
+    "whole_module_and_declaration_inventory_matches": true,
+    "numeric_closure_test_preserved_and_source_read": true,
+    "full_transitive_closure_collector_executed": false,
+    "explanation": "This reviewer validated source declarations and module bindings in the ten-module candidate contract. The existing active numeric-closure assertion is retained, but the full transitive closure/receipt collector was not personally executed. Parent performs independent wider source-closure validation."
+  }
+}
