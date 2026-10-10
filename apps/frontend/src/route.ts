@@ -62,6 +62,7 @@ export function isProductAppRoute(pathname: string, hostname: string) {
 export function canonicalPath(pathname: string) {
   const path = clean(pathname);
   if (under(path, "/app") || under(path, "/ranges") || under(path, "/solutions") || path === "/analyze" || path === WELCOME_PATH) return HOME_PATH;
+  if (path === "/account" || path === "/account/account") return "/account/profile";
   if (under(path, "/trainer")) return trainerPath(legacyTrainerRoute(path));
   if (under(path, "/analysis") || under(path, "/learn/analysis")) return "/stats";
   for (const name of ["sessions", "weakness"]) if (under(path, `/${name}`)) return `/learn/${name}`;
@@ -78,7 +79,7 @@ export function sectionOfPath(pathname: string) {
 
 export function pathOfSection(section: string) {
   const [name, tab] = section.split("#");
-  if (name === ACCOUNT_SECTION) return `/account/${tab || "account"}`;
+  if (name === ACCOUNT_SECTION) return `/account/${tab || "profile"}`;
   return SECTIONS.find(([key]) => key === name)?.[1] ?? HOME_PATH;
 }
 

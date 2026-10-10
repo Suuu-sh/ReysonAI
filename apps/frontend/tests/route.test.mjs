@@ -27,6 +27,10 @@ test("sections map to /analyze and /learn", () => {
   assert.equal(pathOfSection("プレー分析"), "/stats");
   assert.equal(pathOfSection("弱点"), "/learn/weakness");
   assert.equal(pathOfSection("アカウント#language"), "/account/language");
+  assert.equal(pathOfSection("アカウント"), "/account/profile");
+  assert.equal(canonicalPath("/account"), "/account/profile");
+  assert.equal(canonicalPath("/account/account"), "/account/profile");
+  assert.equal(sectionOfPath("/account/profile"), "アカウント#profile");
   assert.equal(sectionOfPath("/stats"), "プレー分析");
   assert.equal(canonicalPath("/learn/analysis"), "/stats");
   assert.equal(canonicalPath("/analysis"), "/stats");
