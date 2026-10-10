@@ -84,7 +84,8 @@ export function datasetNames(): Promise<string[]> {
       ? Promise.resolve(listFiles(fs, new URL("./", here)))
       : fetch(`${apiBase()}/v1/preflop/datasets`).then(async response => {
         if (!response.ok) throw new Error(`データセット一覧を読み込めませんでした（${response.status}）。`);
-        return Object.keys((await response.json()).datasets);
+        const payload = await response.json() as { datasets: Record<string, unknown> };
+        return Object.keys(payload.datasets);
       });
     index.then(names => { known = new Set(names); }, () => { index = null; });
   }
