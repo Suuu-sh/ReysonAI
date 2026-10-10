@@ -4,7 +4,8 @@ import type { AnswerEntry, RankState } from "./types.ts";
 type PlayerAnalysisModel = ReturnType<typeof analyzePlayer>;
 interface BreakdownCounts { total: number; best: number; mixed: number; miss: number; score: number }
 interface BreakdownRow extends BreakdownCounts { key: string; label: string }
-import { ArrowRight, Barbell, CalendarBlank, ChartLineUp, Cards, Crosshair, Info, Robot, Trophy, Target, TrendDown, TrendUp } from "@phosphor-icons/react";
+import { ArrowRight, Barbell, CalendarBlank, ChartBar, ChartLineUp, Cards, Crosshair, Robot, Trophy, Target, TrendDown, TrendUp } from "@phosphor-icons/react";
+import { InfoTip, lastDays, PanelHead, rollingRate, Sparkline, StackedColumns, StatPanel, thin, TimeSeries } from "./stats-charts.tsx";
 import { AgentAnalysis } from "../agent/AgentAnalysis.tsx";
 import { PlayStyleDashboard } from "../agent/PlayStyleDashboard.tsx";
 import { StyleMap, styleTypeName, type StyleZone } from "../agent/StyleMap.tsx";
@@ -47,23 +48,6 @@ function CountUp({ value, duration = 900 }: { value: number; duration?: number }
     return () => cancelAnimationFrame(frame);
   }, [value, duration]);
   return <>{shown}</>;
-}
-
-// Long method notes stay available but out of the way.
-function InfoTip({ label = "説明", children }: { label?: string; children: ReactNode }) {
-  return <details className="analysis-info">
-    <summary aria-label={label} title={label}><Info size={14} /></summary>
-    <div className="analysis-info-body">{children}</div>
-  </details>;
-}
-
-function Kpi({ label, icon: Icon, value, sub, accent, compact, children }: { label: ReactNode; icon?: Icon; value: ReactNode; sub?: ReactNode; accent?: boolean; compact?: boolean; children?: ReactNode }) {
-  return <div className={`analysis-kpi${accent ? " accent" : ""}${compact ? " compact" : ""}`}>
-    <span className="analysis-kpi-label">{Icon && <i aria-hidden="true"><Icon size={16} /></i>}{label}</span>
-    <strong>{value}</strong>
-    {sub && <small>{sub}</small>}
-    {children}
-  </div>;
 }
 
 // Practice style zones, in map percent. They mirror analyzePlayer's rules: x = 50 - fold delta / 0.30 * 38,
@@ -116,7 +100,7 @@ function ActionRow({ title, detail, metric, index }: { title: string; detail: st
 
 function ActionComparison({ analysis }: { analysis: PlayerAnalysisModel }) {
   const { metrics, bySpot } = analysis;
-  return <section className="analysis-card analysis-actions" aria-labelledby="analysis-actions-title">
+  return <section className="analysis-card analysis-actions stats-span-5" aria-labelledby="analysis-actions-title">
     <header className="analysis-card-head">
       <h2 id="analysis-actions-title">アクションの選び方</h2>
       <span className="analysis-legend"><b className="mine" />あなた<i className="policy" />推定方針</span>
@@ -141,29 +125,49 @@ function ActionComparison({ analysis }: { analysis: PlayerAnalysisModel }) {
   </section>;
 }
 
+const SUMMARY_LABELS = (): [string, string, string, string] => [t("Min", "最小", "最小", "Mín."), t("Avg", "平均", "平均", "Media"), t("Max", "最大", "最大", "Máx."), t("Last", "現在", "当前", "Actual")];
+
 function ScoreChart({ progress }: { progress: ReturnType<typeof scoreProgress> }) {
-  const left = 28, right = 712, top = 8, bottom = 100;
-  const x = (index: number) => left + (progress.series.length === 1 ? (right - left) / 2 : index * (right - left) / (progress.series.length - 1));
-  const y = (value: number | null) => bottom - value! * (bottom - top);
-  const line = progress.series.map((value, index) => `${x(index).toFixed(1)},${y(value).toFixed(1)}`).join(" ");
-  return <section className="analysis-card analysis-score" aria-labelledby="analysis-score-title">
-    <header className="analysis-card-head">
-      <h2 id="analysis-score-title">ReysonAI Score の推移</h2>
-      <span className="analysis-caption">保存済みレンジとの一致度</span>
-      <InfoTip label="スコアの計算方法">
+  return <section className="analysis-card analysis-score stats-span-8" aria-labelledby="analysis-score-title">
+    <PanelHead id="analysis-score-title" title="ReysonAI Score の推移" caption="保存済みレンジとの一致度"
+      info={<InfoTip label="スコアの計算方法">
         <p>各回答を同じ局面・ハンドの推定頻度と比べ、「選んだ行動の頻度 ÷ 最頻行動の頻度」で採点します。線は直近10回答の移動平均です（復習の再回答も含む）。推定方針が更新されると過去分も再計算されます。</p>
-      </InfoTip>
-    </header>
-    <svg className="analysis-score-chart" viewBox="0 0 720 112" preserveAspectRatio="none" role="img"
-      aria-label={localized(`ReysonAI Score over time. ${progress.answered} answers; average of the last ${progress.recentCount} answers: ${pct(progress.current)}.`, `ReysonAI Score の推移。${progress.answered}回答、直近${progress.recentCount}回答の平均は${pct(progress.current)}。`)}>
-      <defs><linearGradient id="score-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="var(--accent)" stopOpacity=".28" /><stop offset="1" stopColor="var(--accent)" stopOpacity="0" /></linearGradient></defs>
-      {[1, 0.5, 0].map(level => <g key={level}><line className="grid" x1={left} x2={right} y1={y(level)} y2={y(level)} /><text x="0" y={y(level) + 3.5}>{level * 100}</text></g>)}
-      {progress.series.length > 1 && <polygon className="area" points={`${left},${bottom} ${line} ${x(progress.series.length - 1)},${bottom}`} />}
-      {progress.series.length > 1 && <polyline className="analysis-score-line" points={line} pathLength="1" />}
-      <circle className="point-ring" cx={x(progress.series.length - 1)} cy={y(progress.current)} r="4" />
-      <circle className="point" cx={x(progress.series.length - 1)} cy={y(progress.current)} r="4" />
-    </svg>
-    <div className="analysis-score-axis"><span>1回答目</span><span>{progress.answered}回答目</span></div>
+      </InfoTip>}>
+      <span className="stats-chip">{t(`Rolling ${progress.windowSize}`, `移動平均 ${progress.windowSize}`, `移动平均 ${progress.windowSize}`, `Media móvil ${progress.windowSize}`)}</span>
+    </PanelHead>
+    <TimeSeries series={[{ id: "score", label: "ReysonAI Score", values: progress.series, className: "analysis-score-line" }]}
+      min={0} max={1} ticks={[0, .25, .5, .75, 1]} format={value => `${Math.round(value * 100)}`} height={168}
+      xLabel={index => t(`Answer ${index + 1}`, `${index + 1}回答目`, `第${index + 1}题`, `Respuesta ${index + 1}`)}
+      svgClassName="analysis-score-chart" summaryLabels={SUMMARY_LABELS()}
+      ariaLabel={localized(`ReysonAI Score over time. ${progress.answered} answers; average of the last ${progress.recentCount} answers: ${pct(progress.current)}.`, `ReysonAI Score の推移。${progress.answered}回答、直近${progress.recentCount}回答の平均は${pct(progress.current)}。`)} />
+  </section>;
+}
+
+const RESULT_KEYS = () => [
+  { id: "best", label: t("Best", "ベスト", "最佳", "Mejor") },
+  { id: "mixed", label: t("Mixed OK", "混合で可", "混合可", "Mixta válida") },
+  { id: "miss", label: t("Miss", "ミス", "失误", "Fallo") },
+];
+
+// Answers per local day, split by result. Old entries without a timestamp are not placed on a day.
+function dailyBuckets(history: AnswerEntry[], days: number) {
+  const range = lastDays(days);
+  const buckets = range.map(day => ({ label: day.label, parts: [0, 0, 0] }));
+  for (const entry of history) {
+    if (entry.at == null) continue;
+    const index = range.findIndex(day => entry.at! >= day.start && entry.at! < day.end);
+    if (index >= 0) buckets[index].parts[entry.result === "best" ? 0 : entry.result === "mixed" ? 1 : 2]++;
+  }
+  return buckets;
+}
+
+function DailyAnswers({ history, days }: { history: AnswerEntry[]; days: number }) {
+  const buckets = useMemo(() => dailyBuckets(history, days), [history, days]);
+  return <section className="analysis-card stats-daily stats-span-4" aria-labelledby="stats-daily-title">
+    <PanelHead id="stats-daily-title" title={t("Answers per day", "日別の回答数", "每日答题数", "Respuestas por día")}
+      caption={t(`Last ${days} days`, `直近${days}日`, `最近${days}天`, `Últimos ${days} días`)} />
+    <StackedColumns buckets={buckets} keys={RESULT_KEYS()} height={168}
+      ariaLabel={t(`Answers per day for the last ${days} days by result`, `直近${days}日の結果別の回答数`, `最近${days}天按结果的答题数`, `Respuestas por día y resultado, últimos ${days} días`)} />
   </section>;
 }
 
@@ -209,16 +213,17 @@ function Breakdown({ history }: { history: AnswerEntry[] }) {
     <td className="tone-mixed">{share(row, "mixed")}</td>
     <td className="tone-miss">{share(row, "miss")}</td>
     <td>{row.total ? Math.round(row.score / row.total * 100) : 0}</td>
+    <td className="stats-mix" aria-hidden="true"><span>{(["best", "mixed", "miss"] as const).map(key => row[key] > 0 && <i key={key} className={`part-${key}`} style={{ flexGrow: row[key] }} />)}</span></td>
   </tr>;
   const total = all.reduce((sum, row) => ({ total: sum.total + row.total, best: sum.best + row.best, mixed: sum.mixed + row.mixed, miss: sum.miss + row.miss, score: sum.score + row.score }), { total: 0, best: 0, mixed: 0, miss: 0, score: 0 });
-  return <section className="analysis-card stats-breakdown" aria-labelledby="stats-breakdown-title">
+  return <section className="analysis-card stats-breakdown stats-span-8" aria-labelledby="stats-breakdown-title">
     <h2 id="stats-breakdown-title" className="stats-sr">回答の内訳</h2>
     <div className="stats-tabs" role="tablist" aria-label="内訳の切り口">
       {BREAKDOWNS.map(([value, label]) => <button key={value} type="button" role="tab" aria-selected={by === value} className={by === value ? "on" : ""} onClick={() => setBy(value)}>{label}</button>)}
     </div>
     <div className="stats-table-wrap">
       <table className="stats-table">
-        <thead><tr><th scope="col" /><th scope="col">回答</th><th scope="col" className="tone-best">ベスト %</th><th scope="col" className="tone-mixed">混合で可 %</th><th scope="col" className="tone-miss">ミス %</th><th scope="col">スコア</th></tr></thead>
+        <thead><tr><th scope="col" /><th scope="col">回答</th><th scope="col" className="tone-best">ベスト %</th><th scope="col" className="tone-mixed">混合で可 %</th><th scope="col" className="tone-miss">ミス %</th><th scope="col">スコア</th><th scope="col" className="stats-mix-head"><span className="stats-sr">{t("Result split", "結果の割合", "结果比例", "Reparto de resultados")}</span></th></tr></thead>
         <tbody>
           {line(total, "すべて", true)}
           {rows.map(row => line(row, row.label))}
@@ -258,6 +263,11 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, r
   const [view, setView] = useState(initialView);
   const animal = practiceAnimal(analysis);
   const agentRead = useMemo(() => view === "agent" ? playerRead(loadAgentHands()) : null, [view]);
+  const accuracySeries = useMemo(() => rollingRate(history, entry => entry.score, 10), [history]);
+  const dailyDays = PERIODS.find(([value]) => value === period)?.[2] ?? 14;
+  const volume = useMemo(() => lastDays(14).map(day => history.filter(entry => entry.at != null && entry.at >= day.start && entry.at < day.end).length), [history]);
+  const recentAnswers = volume.slice(-7).reduce((sum, count) => sum + count, 0);
+  const resultShare = useMemo(() => (["best", "mixed", "miss"] as const).map(key => history.length ? history.filter(entry => entry.result === key).length / history.length : 0), [history]);
 
   return <div className="player-analysis">
     <header className="trainer-home-head stats-page-head">
@@ -286,43 +296,54 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, r
       {agentRead && <div className="analysis-card analysis-agent-read"><PlayStyleDashboard read={agentRead} /></div>}
     </div> : view === "ranked" ? <RankedStats rank={rank!} ready={rankedReady} /> : <>
 
-    <div className="analysis-kpis">
-      <Kpi label="ReysonAI Score" icon={ChartLineUp} accent value={progress.current == null ? "—" : <><CountUp value={Math.round(progress.current * 100)} /><small>%</small></>}
-        sub={scoreDelta == null ? `直近${progress.recentCount || 10}回答の平均${progress.recentCount && progress.recentCount < progress.windowSize ? " · 暫定" : ""}` : <span className={deltaTone(scoreDelta)}>{points(scoreDelta)}{localized(" · versus 10 answers ago", " · 10回答前比")}</span>}>
-      </Kpi>
-      <Kpi label="正答率" icon={Crosshair} value={stats.answered ? <><CountUp value={Math.round(stats.rate * 100)} /><small>%</small></> : "—"} sub={`${stats.answered}回答`} />
-      <Kpi label="プレイスタイル" icon={Target} value={<span className="analysis-animal-kpi"><StyleAvatar id={animal.id} color={animal.color} size={40} />{analysis.ready ? analysis.style.label : "判定中"}</span>} sub={analysis.ready ? "練習での傾向（暫定）" : `${analysis.samples} / ${STYLE_SAMPLE_TARGET}問`}>
+    <div className="analysis-kpis stats-panels">
+      <StatPanel label="ReysonAI Score" icon={ChartLineUp} accent value={progress.current == null ? "—" : <><CountUp value={Math.round(progress.current * 100)} /><small>%</small></>}
+        sub={scoreDelta == null ? `直近${progress.recentCount || 10}回答の平均${progress.recentCount && progress.recentCount < progress.windowSize ? " · 暫定" : ""}` : <span className={deltaTone(scoreDelta)}>{points(scoreDelta)}{localized(" · versus 10 answers ago", " · 10回答前比")}</span>}
+        spark={<Sparkline values={thin(progress.series)} min={0} max={1} />} />
+      <StatPanel label="正答率" icon={Crosshair} value={stats.answered ? <><CountUp value={Math.round(stats.rate * 100)} /><small>%</small></> : "—"} sub={`${stats.answered}回答`}
+        spark={<Sparkline values={thin(accuracySeries)} min={0} max={1} />} />
+      <StatPanel label={t("Answers", "回答数", "答题数", "Respuestas")} icon={ChartBar} value={<CountUp value={history.length} />}
+        sub={t(`${recentAnswers} in the last 7 days`, `直近7日 ${recentAnswers}回答`, `最近7天 ${recentAnswers}题`, `${recentAnswers} en 7 días`)}
+        spark={<Sparkline kind="bars" values={volume} min={0} />} />
+      <StatPanel label={t("Result split", "判定の内訳", "判定分布", "Reparto de resultados")} icon={Target}
+        value={history.length ? <>{Math.round(resultShare[0] * 100)}<small>% {t("best", "ベスト", "最佳", "mejor")}</small></> : "—"}
+        sub={history.length ? t(`Mixed ${Math.round(resultShare[1] * 100)}% · Miss ${Math.round(resultShare[2] * 100)}%`, `混合 ${Math.round(resultShare[1] * 100)}% · ミス ${Math.round(resultShare[2] * 100)}%`, `混合 ${Math.round(resultShare[1] * 100)}% · 失误 ${Math.round(resultShare[2] * 100)}%`, `Mixta ${Math.round(resultShare[1] * 100)}% · Fallo ${Math.round(resultShare[2] * 100)}%`) : `0回答`}>
+        <span className="stats-split" aria-hidden="true">{(["best", "mixed", "miss"] as const).map((key, k) => resultShare[k] > 0 && <i key={key} className={`part-${key}`} style={{ flexGrow: resultShare[k] }} />)}</span>
+      </StatPanel>
+      <StatPanel label="プレイスタイル" icon={Target} className="stats-panel-style" value={<span className="analysis-animal-kpi"><StyleAvatar id={animal.id} color={animal.color} size={26} />{analysis.ready ? analysis.style.label : "判定中"}</span>} sub={analysis.ready ? "練習での傾向（暫定）" : `${analysis.samples} / ${STYLE_SAMPLE_TARGET}問`}>
         {!analysis.ready && <span className="analysis-kpi-bar" aria-hidden="true"><i style={{ width: `${styleProgress * 100}%` } as CSSProperties} /></span>}
-      </Kpi>
-      <Kpi label="出題の内訳" icon={Cards} compact value={<><CountUp value={analysis.openSamples} /><small>オープン</small> <CountUp value={analysis.responseSamples} /><small>vs オープン</small></>}
+      </StatPanel>
+      <StatPanel label="出題の内訳" icon={Cards} className="compact" value={<><CountUp value={analysis.openSamples} /><small>オープン</small> <CountUp value={analysis.responseSamples} /><small>vs オープン</small></>}
         sub={analysis.ready ? `${analysis.distinctSpots}局面` : "判定には各10問・3局面以上"} />
     </div>
 
-    <section className="analysis-card practice-animals" aria-label={localized("Drill play styles", "ドリルのプレイスタイル")}>
-      <p>{t("Types describe deviations from the estimate for the same drill questions, not Agent-table VPIP/PFR or real-money play.", "タイプは同じドリル問題の推定方針との差を表します。Agent卓のVPIP・PFRや実戦の打ち方の判定ではありません。", "类型表示在相同训练题目中与估计策略的偏差，并不代表Agent牌桌的VPIP/PFR或真钱游戏表现。", "Los tipos describen las desviaciones respecto a la estimación de las mismas preguntas de práctica; no representan el VPIP/PFR en mesas Agent ni el juego con dinero real.")}</p>
-      <ol className="style-roster">{(["nit", "tight_passive", "tag", "passive", "balanced", "aggressive", "station", "lag"] as const).map(id => {
-        const style = STYLES[id], current = animal.id === id;
-        return <li key={id} className={current ? "is-current" : ""} aria-current={current ? "true" : undefined} style={{ "--style": style.color } as CSSProperties}>
-          <StyleAvatar id={id} color={style.color} size={40} dim={!current} /><span>{styleTypeName(id)}</span>
-        </li>;
-      })}</ol>
-      <p>{localized(PRACTICE_EXPLANATIONS[analysis.style.key], analysis.style.explanation)}</p>
-    </section>
-
-    <div className="analysis-main">
-      <DrillStyleMap analysis={analysis} />
-      {analysis.samples ? <ActionComparison analysis={analysis} /> : <section className="analysis-card analysis-welcome">
-        <span className="analysis-welcome-icon"><Target size={22} weight="duotone" /></span>
+    <div className="stats-grid">
+      {progress.answered > 0 ? <ScoreChart progress={progress} /> : <section className="analysis-card analysis-welcome stats-span-8">
+        <span className="analysis-welcome-icon"><Target size={20} weight="duotone" /></span>
         <h2>まずは練習から</h2>
         <p>オープン・コール・3bet・フォールドの選び方を記録し、推定方針との差からプレースタイルを見つけます。</p>
         <button type="button" className="analysis-start" onClick={onStart}>ドリルを選ぶ<ArrowRight size={15} /></button>
       </section>}
-    </div>
+      <DailyAnswers history={history} days={dailyDays} />
 
-    {history.length > 0 && <Breakdown history={history} />}
-    {analysis.samples > 0 && <>
-      {progress.answered > 0 && <ScoreChart progress={progress} />}
-      <div className="analysis-bottom" aria-label="練習結果の強みと弱点">
+      <DrillStyleMap analysis={analysis} />
+      {analysis.samples ? <ActionComparison analysis={analysis} /> : <section className="analysis-card analysis-actions stats-span-5 stats-empty-panel">
+        <PanelHead title="アクションの選び方" />
+        <p className="analysis-empty">{t("Action rates appear after your first drill answers.", "ドリルに回答するとアクションごとの選択率を表示します。", "回答训练题后显示各行动的选择率。", "Las tasas por acción aparecen tras tus primeras respuestas.")}</p>
+      </section>}
+      <section className="analysis-card practice-animals stats-span-3" aria-label={localized("Drill play styles", "ドリルのプレイスタイル")}>
+        <p>{t("Types describe deviations from the estimate for the same drill questions, not Agent-table VPIP/PFR or real-money play.", "タイプは同じドリル問題の推定方針との差を表します。Agent卓のVPIP・PFRや実戦の打ち方の判定ではありません。", "类型表示在相同训练题目中与估计策略的偏差，并不代表Agent牌桌的VPIP/PFR或真钱游戏表现。", "Los tipos describen las desviaciones respecto a la estimación de las mismas preguntas de práctica; no representan el VPIP/PFR en mesas Agent ni el juego con dinero real.")}</p>
+        <ol className="style-roster">{(["nit", "tight_passive", "tag", "passive", "balanced", "aggressive", "station", "lag"] as const).map(id => {
+          const style = STYLES[id], current = animal.id === id;
+          return <li key={id} className={current ? "is-current" : ""} aria-current={current ? "true" : undefined} style={{ "--style": style.color } as CSSProperties}>
+            <StyleAvatar id={id} color={style.color} size={28} dim={!current} /><span>{styleTypeName(id)}</span>
+          </li>;
+        })}</ol>
+        <p>{localized(PRACTICE_EXPLANATIONS[analysis.style.key], analysis.style.explanation)}</p>
+      </section>
+
+      {history.length > 0 && <Breakdown history={history} />}
+      {analysis.samples > 0 && <div className="analysis-bottom stats-span-4" aria-label="練習結果の強みと弱点">
         <HighlightCard title="強み" tone="strength" items={highlights.strengths} empty="5問以上で正答率80%以上の項目はまだありません。" />
         <HighlightCard title="弱点" tone="weakness" items={highlights.weaknesses} empty="判定できる弱点データはまだありません。">
           {highlights.reviewCount > 0 && <p className="analysis-review"><strong>復習待ち {highlights.reviewCount}ハンド</strong>{highlights.review.map(item => item.label).join("、")}{highlights.reviewCount > highlights.review.length ? " など" : ""}</p>}
@@ -332,8 +353,8 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, r
           <header className="analysis-card-head"><h2><Target size={15} weight="bold" />次の練習ポイント</h2></header>
           <ul>{guidanceNotes(metrics).map((note, index) => <li key={note} style={{ "--i": index } as CSSProperties}>{note}</li>)}</ul>
         </section>
-      </div>
-    </>}
+      </div>}
+    </div>
 
     </>}
 
