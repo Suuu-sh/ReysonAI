@@ -1,0 +1,883 @@
+{
+ "schema_version": 1,
+ "kind": "mw3-source-impact-inventory",
+ "scope": "Official sourcePathsFor(currentMw3ArchiveIdentity(...)) closure intersection with the frozen PR code diff. Each old manifest remains source-bound to its historical tree; this is impact evidence only.",
+ "provenance": {
+  "repository": "Suuu-sh/ReysonAI",
+  "pr": 123,
+  "base": {
+   "commit": "f789178886bf020b143051eca3c56aa77e499303",
+   "tree": "a114d7816fa49c41a66d6fa514cdf64ad7b4ab74"
+  },
+  "frozenRemoteHead": "599a3734a3aa0fe881b8955a4e98d469eddb9fb9",
+  "frozenTree": "3c188f233803cbe947cf31876bfd337856808ab3",
+  "localEvidenceCommit": "7ff2dff7861ec4d2d291dcedda7ec3a6d31396e9",
+  "localEvidenceTree": "3c188f233803cbe947cf31876bfd337856808ab3",
+  "localTreeMatchesFrozenRemoteTree": true,
+  "changedPathsInFullPr": 1037
+ },
+ "spotCount": 16,
+ "uniqueAffectedPaths": [
+  "apps/backend/src/postflop.ts",
+  "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+  "apps/frontend/scripts/postflop-ai/defence.ts",
+  "apps/frontend/scripts/postflop-ai/input-options.ts",
+  "apps/frontend/scripts/postflop-ai/later-policy.ts",
+  "apps/frontend/scripts/postflop-ai/policy.ts",
+  "apps/frontend/scripts/postflop-ai/types.ts",
+  "apps/frontend/src/locales/copy.ts",
+  "apps/frontend/src/locales/opponent-profile-copy.json",
+  "apps/frontend/src/locales/product-direct.json"
+ ],
+ "spots": [
+  {
+   "slug": "co-btn-bb-mw3-srp-v1",
+   "spotId": "CO_open_BTN_call_BB_call",
+   "historicalSourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+   "currentSourceRecordCount": 136,
+   "currentSourceRecordsSha256": "c6cd743aa583bbf388f4f1e85a08d2c7e2a5fc4e91baad21b9c8f83de8407f06",
+   "sourceDelta": {
+    "added": [
+     "apps/frontend/scripts/postflop-ai/input-options.ts",
+     "apps/frontend/src/locales/opponent-profile-copy.json"
+    ],
+    "removed": [],
+    "changed": [
+     "apps/backend/src/postflop.ts",
+     "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+     "apps/frontend/scripts/postflop-ai/defence.ts",
+     "apps/frontend/scripts/postflop-ai/later-policy.ts",
+     "apps/frontend/scripts/postflop-ai/policy.ts",
+     "apps/frontend/scripts/postflop-ai/types.ts",
+     "apps/frontend/src/locales/copy.ts",
+     "apps/frontend/src/locales/product-direct.json"
+    ]
+   },
+   "changedPaths": [
+    "apps/backend/src/postflop.ts",
+    "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "apps/frontend/scripts/postflop-ai/defence.ts",
+    "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "apps/frontend/scripts/postflop-ai/policy.ts",
+    "apps/frontend/scripts/postflop-ai/types.ts",
+    "apps/frontend/src/locales/copy.ts",
+    "apps/frontend/src/locales/opponent-profile-copy.json",
+    "apps/frontend/src/locales/product-direct.json"
+   ]
+  },
+  {
+   "slug": "co-btn-sb-mw3-srp-v1",
+   "spotId": "CO_open_BTN_call_SB_call",
+   "historicalSourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+   "currentSourceRecordCount": 137,
+   "currentSourceRecordsSha256": "d5b1070f7f8da092fc864f70dab87078056c3fa2f4158fba96143bbe1934779a",
+   "sourceDelta": {
+    "added": [
+     "apps/frontend/scripts/postflop-ai/input-options.ts",
+     "apps/frontend/src/locales/opponent-profile-copy.json"
+    ],
+    "removed": [],
+    "changed": [
+     "apps/backend/src/postflop.ts",
+     "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+     "apps/frontend/scripts/postflop-ai/defence.ts",
+     "apps/frontend/scripts/postflop-ai/later-policy.ts",
+     "apps/frontend/scripts/postflop-ai/policy.ts",
+     "apps/frontend/scripts/postflop-ai/types.ts",
+     "apps/frontend/src/locales/copy.ts",
+     "apps/frontend/src/locales/product-direct.json"
+    ]
+   },
+   "changedPaths": [
+    "apps/backend/src/postflop.ts",
+    "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "apps/frontend/scripts/postflop-ai/defence.ts",
+    "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "apps/frontend/scripts/postflop-ai/policy.ts",
+    "apps/frontend/scripts/postflop-ai/types.ts",
+    "apps/frontend/src/locales/copy.ts",
+    "apps/frontend/src/locales/opponent-profile-copy.json",
+    "apps/frontend/src/locales/product-direct.json"
+   ]
+  },
+  {
+   "slug": "hj-btn-bb-mw3-srp-v1",
+   "spotId": "HJ_open_BTN_call_BB_call",
+   "historicalSourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+   "currentSourceRecordCount": 137,
+   "currentSourceRecordsSha256": "05bfa15107e7abc562e1a4cec09e4adc7d3755f5a3c9d3172c7e08db33943d27",
+   "sourceDelta": {
+    "added": [
+     "apps/frontend/scripts/postflop-ai/input-options.ts",
+     "apps/frontend/src/locales/opponent-profile-copy.json"
+    ],
+    "removed": [],
+    "changed": [
+     "apps/backend/src/postflop.ts",
+     "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+     "apps/frontend/scripts/postflop-ai/defence.ts",
+     "apps/frontend/scripts/postflop-ai/later-policy.ts",
+     "apps/frontend/scripts/postflop-ai/policy.ts",
+     "apps/frontend/scripts/postflop-ai/types.ts",
+     "apps/frontend/src/locales/copy.ts",
+     "apps/frontend/src/locales/product-direct.json"
+    ]
+   },
+   "changedPaths": [
+    "apps/backend/src/postflop.ts",
+    "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "apps/frontend/scripts/postflop-ai/defence.ts",
+    "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "apps/frontend/scripts/postflop-ai/policy.ts",
+    "apps/frontend/scripts/postflop-ai/types.ts",
+    "apps/frontend/src/locales/copy.ts",
+    "apps/frontend/src/locales/opponent-profile-copy.json",
+    "apps/frontend/src/locales/product-direct.json"
+   ]
+  },
+  {
+   "slug": "hj-btn-sb-mw3-srp-v1",
+   "spotId": "HJ_open_BTN_call_SB_call",
+   "historicalSourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+   "currentSourceRecordCount": 137,
+   "currentSourceRecordsSha256": "fe31d196b0ac75c51a6cfe632e02cbb86ab1e4f7e7c3807d833c986671b5bbd7",
+   "sourceDelta": {
+    "added": [
+     "apps/frontend/scripts/postflop-ai/input-options.ts",
+     "apps/frontend/src/locales/opponent-profile-copy.json"
+    ],
+    "removed": [],
+    "changed": [
+     "apps/backend/src/postflop.ts",
+     "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+     "apps/frontend/scripts/postflop-ai/defence.ts",
+     "apps/frontend/scripts/postflop-ai/later-policy.ts",
+     "apps/frontend/scripts/postflop-ai/policy.ts",
+     "apps/frontend/scripts/postflop-ai/types.ts",
+     "apps/frontend/src/locales/copy.ts",
+     "apps/frontend/src/locales/product-direct.json"
+    ]
+   },
+   "changedPaths": [
+    "apps/backend/src/postflop.ts",
+    "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "apps/frontend/scripts/postflop-ai/defence.ts",
+    "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "apps/frontend/scripts/postflop-ai/policy.ts",
+    "apps/frontend/scripts/postflop-ai/types.ts",
+    "apps/frontend/src/locales/copy.ts",
+    "apps/frontend/src/locales/opponent-profile-copy.json",
+    "apps/frontend/src/locales/product-direct.json"
+   ]
+  },
+  {
+   "slug": "hj-co-bb-mw3-srp-v1",
+   "spotId": "HJ_open_CO_call_BB_call",
+   "historicalSourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+   "currentSourceRecordCount": 137,
+   "currentSourceRecordsSha256": "f687eed2204e83c85a103c596feaf1088655667d5032320826fa801c7e126a2b",
+   "sourceDelta": {
+    "added": [
+     "apps/frontend/scripts/postflop-ai/input-options.ts",
+     "apps/frontend/src/locales/opponent-profile-copy.json"
+    ],
+    "removed": [],
+    "changed": [
+     "apps/backend/src/postflop.ts",
+     "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+     "apps/frontend/scripts/postflop-ai/defence.ts",
+     "apps/frontend/scripts/postflop-ai/later-policy.ts",
+     "apps/frontend/scripts/postflop-ai/policy.ts",
+     "apps/frontend/scripts/postflop-ai/types.ts",
+     "apps/frontend/src/locales/copy.ts",
+     "apps/frontend/src/locales/product-direct.json"
+    ]
+   },
+   "changedPaths": [
+    "apps/backend/src/postflop.ts",
+    "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "apps/frontend/scripts/postflop-ai/defence.ts",
+    "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "apps/frontend/scripts/postflop-ai/policy.ts",
+    "apps/frontend/scripts/postflop-ai/types.ts",
+    "apps/frontend/src/locales/copy.ts",
+    "apps/frontend/src/locales/opponent-profile-copy.json",
+    "apps/frontend/src/locales/product-direct.json"
+   ]
+  },
+  {
+   "slug": "hj-co-btn-mw3-srp-v1",
+   "spotId": "HJ_open_CO_call_BTN_call",
+   "historicalSourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+   "currentSourceRecordCount": 137,
+   "currentSourceRecordsSha256": "a49cbd2787714f11cd9bdc2f9c4c83d3865430d8f70cadaa7baf985b79ba31cc",
+   "sourceDelta": {
+    "added": [
+     "apps/frontend/scripts/postflop-ai/input-options.ts",
+     "apps/frontend/src/locales/opponent-profile-copy.json"
+    ],
+    "removed": [],
+    "changed": [
+     "apps/backend/src/postflop.ts",
+     "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+     "apps/frontend/scripts/postflop-ai/defence.ts",
+     "apps/frontend/scripts/postflop-ai/later-policy.ts",
+     "apps/frontend/scripts/postflop-ai/policy.ts",
+     "apps/frontend/scripts/postflop-ai/types.ts",
+     "apps/frontend/src/locales/copy.ts",
+     "apps/frontend/src/locales/product-direct.json"
+    ]
+   },
+   "changedPaths": [
+    "apps/backend/src/postflop.ts",
+    "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "apps/frontend/scripts/postflop-ai/defence.ts",
+    "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "apps/frontend/scripts/postflop-ai/policy.ts",
+    "apps/frontend/scripts/postflop-ai/types.ts",
+    "apps/frontend/src/locales/copy.ts",
+    "apps/frontend/src/locales/opponent-profile-copy.json",
+    "apps/frontend/src/locales/product-direct.json"
+   ]
+  },
+  {
+   "slug": "hj-co-sb-mw3-srp-v1",
+   "spotId": "HJ_open_CO_call_SB_call",
+   "historicalSourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+   "currentSourceRecordCount": 137,
+   "currentSourceRecordsSha256": "1e92a10e8fdf44e93089bfb5044f45e1ed65ecabc2d2242b80435034bc30fb87",
+   "sourceDelta": {
+    "added": [
+     "apps/frontend/scripts/postflop-ai/input-options.ts",
+     "apps/frontend/src/locales/opponent-profile-copy.json"
+    ],
+    "removed": [],
+    "changed": [
+     "apps/backend/src/postflop.ts",
+     "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+     "apps/frontend/scripts/postflop-ai/defence.ts",
+     "apps/frontend/scripts/postflop-ai/later-policy.ts",
+     "apps/frontend/scripts/postflop-ai/policy.ts",
+     "apps/frontend/scripts/postflop-ai/types.ts",
+     "apps/frontend/src/locales/copy.ts",
+     "apps/frontend/src/locales/product-direct.json"
+    ]
+   },
+   "changedPaths": [
+    "apps/backend/src/postflop.ts",
+    "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "apps/frontend/scripts/postflop-ai/defence.ts",
+    "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "apps/frontend/scripts/postflop-ai/policy.ts",
+    "apps/frontend/scripts/postflop-ai/types.ts",
+    "apps/frontend/src/locales/copy.ts",
+    "apps/frontend/src/locales/opponent-profile-copy.json",
+    "apps/frontend/src/locales/product-direct.json"
+   ]
+  },
+  {
+   "slug": "utg-btn-bb-mw3-srp-v1",
+   "spotId": "UTG_open_BTN_call_BB_call",
+   "historicalSourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+   "currentSourceRecordCount": 137,
+   "currentSourceRecordsSha256": "491ca6584960a43224c6b675823f4468d66d5265c08436071d3fd5165c5a8143",
+   "sourceDelta": {
+    "added": [
+     "apps/frontend/scripts/postflop-ai/input-options.ts",
+     "apps/frontend/src/locales/opponent-profile-copy.json"
+    ],
+    "removed": [],
+    "changed": [
+     "apps/backend/src/postflop.ts",
+     "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+     "apps/frontend/scripts/postflop-ai/defence.ts",
+     "apps/frontend/scripts/postflop-ai/later-policy.ts",
+     "apps/frontend/scripts/postflop-ai/policy.ts",
+     "apps/frontend/scripts/postflop-ai/types.ts",
+     "apps/frontend/src/locales/copy.ts",
+     "apps/frontend/src/locales/product-direct.json"
+    ]
+   },
+   "changedPaths": [
+    "apps/backend/src/postflop.ts",
+    "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "apps/frontend/scripts/postflop-ai/defence.ts",
+    "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "apps/frontend/scripts/postflop-ai/policy.ts",
+    "apps/frontend/scripts/postflop-ai/types.ts",
+    "apps/frontend/src/locales/copy.ts",
+    "apps/frontend/src/locales/opponent-profile-copy.json",
+    "apps/frontend/src/locales/product-direct.json"
+   ]
+  },
+  {
+   "slug": "utg-btn-sb-mw3-srp-v1",
+   "spotId": "UTG_open_BTN_call_SB_call",
+   "historicalSourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+   "currentSourceRecordCount": 137,
+   "currentSourceRecordsSha256": "1c909134951337f38ed929f5770709d81957893b4d402d33b7c2273a8da2c7d9",
+   "sourceDelta": {
+    "added": [
+     "apps/frontend/scripts/postflop-ai/input-options.ts",
+     "apps/frontend/src/locales/opponent-profile-copy.json"
+    ],
+    "removed": [],
+    "changed": [
+     "apps/backend/src/postflop.ts",
+     "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+     "apps/frontend/scripts/postflop-ai/defence.ts",
+     "apps/frontend/scripts/postflop-ai/later-policy.ts",
+     "apps/frontend/scripts/postflop-ai/policy.ts",
+     "apps/frontend/scripts/postflop-ai/types.ts",
+     "apps/frontend/src/locales/copy.ts",
+     "apps/frontend/src/locales/product-direct.json"
+    ]
+   },
+   "changedPaths": [
+    "apps/backend/src/postflop.ts",
+    "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "apps/frontend/scripts/postflop-ai/defence.ts",
+    "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "apps/frontend/scripts/postflop-ai/policy.ts",
+    "apps/frontend/scripts/postflop-ai/types.ts",
+    "apps/frontend/src/locales/copy.ts",
+    "apps/frontend/src/locales/opponent-profile-copy.json",
+    "apps/frontend/src/locales/product-direct.json"
+   ]
+  },
+  {
+   "slug": "utg-co-bb-mw3-srp-v1",
+   "spotId": "UTG_open_CO_call_BB_call",
+   "historicalSourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+   "currentSourceRecordCount": 137,
+   "currentSourceRecordsSha256": "7f162fcfbcae300460e45bbef56f43535d222f1c90c4e9859a24da67a5b11872",
+   "sourceDelta": {
+    "added": [
+     "apps/frontend/scripts/postflop-ai/input-options.ts",
+     "apps/frontend/src/locales/opponent-profile-copy.json"
+    ],
+    "removed": [],
+    "changed": [
+     "apps/backend/src/postflop.ts",
+     "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+     "apps/frontend/scripts/postflop-ai/defence.ts",
+     "apps/frontend/scripts/postflop-ai/later-policy.ts",
+     "apps/frontend/scripts/postflop-ai/policy.ts",
+     "apps/frontend/scripts/postflop-ai/types.ts",
+     "apps/frontend/src/locales/copy.ts",
+     "apps/frontend/src/locales/product-direct.json"
+    ]
+   },
+   "changedPaths": [
+    "apps/backend/src/postflop.ts",
+    "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "apps/frontend/scripts/postflop-ai/defence.ts",
+    "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "apps/frontend/scripts/postflop-ai/policy.ts",
+    "apps/frontend/scripts/postflop-ai/types.ts",
+    "apps/frontend/src/locales/copy.ts",
+    "apps/frontend/src/locales/opponent-profile-copy.json",
+    "apps/frontend/src/locales/product-direct.json"
+   ]
+  },
+  {
+   "slug": "utg-co-btn-mw3-srp-v1",
+   "spotId": "UTG_open_CO_call_BTN_call",
+   "historicalSourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+   "currentSourceRecordCount": 137,
+   "currentSourceRecordsSha256": "2e4951eeb62fef772bbcac5ae4ae335130c11278ae9fa314a457d1d999981d11",
+   "sourceDelta": {
+    "added": [
+     "apps/frontend/scripts/postflop-ai/input-options.ts",
+     "apps/frontend/src/locales/opponent-profile-copy.json"
+    ],
+    "removed": [],
+    "changed": [
+     "apps/backend/src/postflop.ts",
+     "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+     "apps/frontend/scripts/postflop-ai/defence.ts",
+     "apps/frontend/scripts/postflop-ai/later-policy.ts",
+     "apps/frontend/scripts/postflop-ai/policy.ts",
+     "apps/frontend/scripts/postflop-ai/types.ts",
+     "apps/frontend/src/locales/copy.ts",
+     "apps/frontend/src/locales/product-direct.json"
+    ]
+   },
+   "changedPaths": [
+    "apps/backend/src/postflop.ts",
+    "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "apps/frontend/scripts/postflop-ai/defence.ts",
+    "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "apps/frontend/scripts/postflop-ai/policy.ts",
+    "apps/frontend/scripts/postflop-ai/types.ts",
+    "apps/frontend/src/locales/copy.ts",
+    "apps/frontend/src/locales/opponent-profile-copy.json",
+    "apps/frontend/src/locales/product-direct.json"
+   ]
+  },
+  {
+   "slug": "utg-co-sb-mw3-srp-v1",
+   "spotId": "UTG_open_CO_call_SB_call",
+   "historicalSourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+   "currentSourceRecordCount": 137,
+   "currentSourceRecordsSha256": "85c4edf81497f3d714452090938f9a83484fa1dfc28261ba6827a21a90b9965d",
+   "sourceDelta": {
+    "added": [
+     "apps/frontend/scripts/postflop-ai/input-options.ts",
+     "apps/frontend/src/locales/opponent-profile-copy.json"
+    ],
+    "removed": [],
+    "changed": [
+     "apps/backend/src/postflop.ts",
+     "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+     "apps/frontend/scripts/postflop-ai/defence.ts",
+     "apps/frontend/scripts/postflop-ai/later-policy.ts",
+     "apps/frontend/scripts/postflop-ai/policy.ts",
+     "apps/frontend/scripts/postflop-ai/types.ts",
+     "apps/frontend/src/locales/copy.ts",
+     "apps/frontend/src/locales/product-direct.json"
+    ]
+   },
+   "changedPaths": [
+    "apps/backend/src/postflop.ts",
+    "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "apps/frontend/scripts/postflop-ai/defence.ts",
+    "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "apps/frontend/scripts/postflop-ai/policy.ts",
+    "apps/frontend/scripts/postflop-ai/types.ts",
+    "apps/frontend/src/locales/copy.ts",
+    "apps/frontend/src/locales/opponent-profile-copy.json",
+    "apps/frontend/src/locales/product-direct.json"
+   ]
+  },
+  {
+   "slug": "utg-hj-bb-mw3-srp-v1",
+   "spotId": "UTG_open_HJ_call_BB_call",
+   "historicalSourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+   "currentSourceRecordCount": 137,
+   "currentSourceRecordsSha256": "70885f2cde693e5525f528a1dc5d4363268b0aeb53869311c16c74db3f38dcd9",
+   "sourceDelta": {
+    "added": [
+     "apps/frontend/scripts/postflop-ai/input-options.ts",
+     "apps/frontend/src/locales/opponent-profile-copy.json"
+    ],
+    "removed": [],
+    "changed": [
+     "apps/backend/src/postflop.ts",
+     "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+     "apps/frontend/scripts/postflop-ai/defence.ts",
+     "apps/frontend/scripts/postflop-ai/later-policy.ts",
+     "apps/frontend/scripts/postflop-ai/policy.ts",
+     "apps/frontend/scripts/postflop-ai/types.ts",
+     "apps/frontend/src/locales/copy.ts",
+     "apps/frontend/src/locales/product-direct.json"
+    ]
+   },
+   "changedPaths": [
+    "apps/backend/src/postflop.ts",
+    "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "apps/frontend/scripts/postflop-ai/defence.ts",
+    "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "apps/frontend/scripts/postflop-ai/policy.ts",
+    "apps/frontend/scripts/postflop-ai/types.ts",
+    "apps/frontend/src/locales/copy.ts",
+    "apps/frontend/src/locales/opponent-profile-copy.json",
+    "apps/frontend/src/locales/product-direct.json"
+   ]
+  },
+  {
+   "slug": "utg-hj-btn-mw3-srp-v1",
+   "spotId": "UTG_open_HJ_call_BTN_call",
+   "historicalSourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+   "currentSourceRecordCount": 137,
+   "currentSourceRecordsSha256": "75624eae756929b023483c972ae1c28de92bc7dbf273481935708539159b19cc",
+   "sourceDelta": {
+    "added": [
+     "apps/frontend/scripts/postflop-ai/input-options.ts",
+     "apps/frontend/src/locales/opponent-profile-copy.json"
+    ],
+    "removed": [],
+    "changed": [
+     "apps/backend/src/postflop.ts",
+     "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+     "apps/frontend/scripts/postflop-ai/defence.ts",
+     "apps/frontend/scripts/postflop-ai/later-policy.ts",
+     "apps/frontend/scripts/postflop-ai/policy.ts",
+     "apps/frontend/scripts/postflop-ai/types.ts",
+     "apps/frontend/src/locales/copy.ts",
+     "apps/frontend/src/locales/product-direct.json"
+    ]
+   },
+   "changedPaths": [
+    "apps/backend/src/postflop.ts",
+    "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "apps/frontend/scripts/postflop-ai/defence.ts",
+    "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "apps/frontend/scripts/postflop-ai/policy.ts",
+    "apps/frontend/scripts/postflop-ai/types.ts",
+    "apps/frontend/src/locales/copy.ts",
+    "apps/frontend/src/locales/opponent-profile-copy.json",
+    "apps/frontend/src/locales/product-direct.json"
+   ]
+  },
+  {
+   "slug": "utg-hj-co-mw3-srp-v1",
+   "spotId": "UTG_open_HJ_call_CO_call",
+   "historicalSourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+   "currentSourceRecordCount": 137,
+   "currentSourceRecordsSha256": "272ff992ee229b3ed5d0c6bda979975b639b6abb536ba3a2f5f6207df523eed2",
+   "sourceDelta": {
+    "added": [
+     "apps/frontend/scripts/postflop-ai/input-options.ts",
+     "apps/frontend/src/locales/opponent-profile-copy.json"
+    ],
+    "removed": [],
+    "changed": [
+     "apps/backend/src/postflop.ts",
+     "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+     "apps/frontend/scripts/postflop-ai/defence.ts",
+     "apps/frontend/scripts/postflop-ai/later-policy.ts",
+     "apps/frontend/scripts/postflop-ai/policy.ts",
+     "apps/frontend/scripts/postflop-ai/types.ts",
+     "apps/frontend/src/locales/copy.ts",
+     "apps/frontend/src/locales/product-direct.json"
+    ]
+   },
+   "changedPaths": [
+    "apps/backend/src/postflop.ts",
+    "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "apps/frontend/scripts/postflop-ai/defence.ts",
+    "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "apps/frontend/scripts/postflop-ai/policy.ts",
+    "apps/frontend/scripts/postflop-ai/types.ts",
+    "apps/frontend/src/locales/copy.ts",
+    "apps/frontend/src/locales/opponent-profile-copy.json",
+    "apps/frontend/src/locales/product-direct.json"
+   ]
+  },
+  {
+   "slug": "utg-hj-sb-mw3-srp-v1",
+   "spotId": "UTG_open_HJ_call_SB_call",
+   "historicalSourceTree": "236a2144a49a0b0f43940ae9fe2c978728ab8d6c",
+   "currentSourceRecordCount": 137,
+   "currentSourceRecordsSha256": "32bf8bcf45e7c0ba2ff3f75b5f4307d2d0ab59ab49d5e5f537abe8ee6012956b",
+   "sourceDelta": {
+    "added": [
+     "apps/frontend/scripts/postflop-ai/input-options.ts",
+     "apps/frontend/src/locales/opponent-profile-copy.json"
+    ],
+    "removed": [],
+    "changed": [
+     "apps/backend/src/postflop.ts",
+     "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+     "apps/frontend/scripts/postflop-ai/defence.ts",
+     "apps/frontend/scripts/postflop-ai/later-policy.ts",
+     "apps/frontend/scripts/postflop-ai/policy.ts",
+     "apps/frontend/scripts/postflop-ai/types.ts",
+     "apps/frontend/src/locales/copy.ts",
+     "apps/frontend/src/locales/product-direct.json"
+    ]
+   },
+   "changedPaths": [
+    "apps/backend/src/postflop.ts",
+    "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "apps/frontend/scripts/postflop-ai/defence.ts",
+    "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "apps/frontend/scripts/postflop-ai/policy.ts",
+    "apps/frontend/scripts/postflop-ai/types.ts",
+    "apps/frontend/src/locales/copy.ts",
+    "apps/frontend/src/locales/opponent-profile-copy.json",
+    "apps/frontend/src/locales/product-direct.json"
+   ]
+  }
+ ],
+ "changedSourceRecords": [
+  {
+   "base": {
+    "path": ".github/workflows/deploy-worker.yml",
+    "bytes": 17095,
+    "sha256": "365103ce69fbeedf281a532b5f83e3361f5b5577f52f3b55befe6937c8397fda"
+   },
+   "current": {
+    "path": ".github/workflows/deploy-worker.yml",
+    "bytes": 17820,
+    "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
+   }
+  },
+  {
+   "base": {
+    "path": "apps/backend/src/postflop.ts",
+    "bytes": 4488,
+    "sha256": "267a592f4f6719d45ebe9a8c39f105e9dbbcf789ff5dcb7fe58b93c5ed1e6dd1"
+   },
+   "current": {
+    "path": "apps/backend/src/postflop.ts",
+    "bytes": 6379,
+    "sha256": "e8f282efa1133d4f589e14ca56fe030354c5fcc30fd5a4de2a3cd208308b432a"
+   }
+  },
+  {
+   "base": {
+    "path": "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "bytes": 13322,
+    "sha256": "9bd17ab71c5009af828aec9b4260bc8cdb89c7da1cc55334aeeec70276f3219d"
+   },
+   "current": {
+    "path": "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+    "bytes": 14269,
+    "sha256": "1d1ad3609d8cdb7f0e74ef1d399e72970963d716eff6652af1b2a07affc92aec"
+   }
+  },
+  {
+   "base": null,
+   "current": {
+    "path": "apps/frontend/scripts/postflop-ai/candidate-source.ts",
+    "bytes": 7986,
+    "sha256": "3382266a731f4c0ad8f68ee0281ab0a70748e148ac8be1e39108909fbaca6ba4"
+   }
+  },
+  {
+   "base": {
+    "path": "apps/frontend/scripts/postflop-ai/defence.ts",
+    "bytes": 55632,
+    "sha256": "47aba428f9c798079411014d638b7d80c25efaf15d4770fb1f144b19c0462a1d"
+   },
+   "current": {
+    "path": "apps/frontend/scripts/postflop-ai/defence.ts",
+    "bytes": 56594,
+    "sha256": "6b76dbbfb541c1de35d3355aad313db83623a81b9bcc33a8d37b637611f14ad0"
+   }
+  },
+  {
+   "base": {
+    "path": "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+    "bytes": 12010,
+    "sha256": "124f5faca5c63e3c0d382b0a2ecef8db547b1c2e7dc47d7b859d2b1552a3a9d6"
+   },
+   "current": {
+    "path": "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+    "bytes": 13013,
+    "sha256": "e8c40c3ae4788831d100955aa5f12b0d76efe89d79091e367a5d677bc567a44b"
+   }
+  },
+  {
+   "base": null,
+   "current": {
+    "path": "apps/frontend/scripts/postflop-ai/generate-profiles.mjs",
+    "bytes": 10356,
+    "sha256": "eee090f7c629b373f7bc6537757b10361a00a6e12f1f27b5078c2e32f5503fdf"
+   }
+  },
+  {
+   "base": {
+    "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
+    "bytes": 23996,
+    "sha256": "46ec36d6c23aaa2d0ae86b8926f2f1fab5cb2b18688c617ba5a8152d1cf2c74e"
+   },
+   "current": {
+    "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
+    "bytes": 34692,
+    "sha256": "85b554f82fd7dce2fa4430d0bf187279a0f10228ecc5894801ad18d9af7e5b11"
+   }
+  },
+  {
+   "base": null,
+   "current": {
+    "path": "apps/frontend/scripts/postflop-ai/generation-options.mjs",
+    "bytes": 1932,
+    "sha256": "2c67872688e0a8525668642368d0fd52ebeda6c2908070fd6bc42c14edefd6fb"
+   }
+  },
+  {
+   "base": null,
+   "current": {
+    "path": "apps/frontend/scripts/postflop-ai/input-options.ts",
+    "bytes": 11258,
+    "sha256": "d39b90dbc961724718ce5180482dec0cd8da88748a2fb018b651db8a7f60436e"
+   }
+  },
+  {
+   "base": {
+    "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
+    "bytes": 13598,
+    "sha256": "1191d34c5849e88d6e2502948d12796a8135fd33d71f8b366151aa2953e85564"
+   },
+   "current": {
+    "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
+    "bytes": 15625,
+    "sha256": "599f07d0c2c0be1cbb6391043dc28c31d3b3c84221ccb4789e6161fbeec243c2"
+   }
+  },
+  {
+   "base": {
+    "path": "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "bytes": 8281,
+    "sha256": "654bfd24a665f27c5c0d4a8e0aa97e9c7107ac064b97f6e5421235d02232fb33"
+   },
+   "current": {
+    "path": "apps/frontend/scripts/postflop-ai/later-policy.ts",
+    "bytes": 8523,
+    "sha256": "2a1c7b06c56ca88eac3d4e0642f2f13fb15f29d7a75b238abc3b3b91f0da1c10"
+   }
+  },
+  {
+   "base": {
+    "path": "apps/frontend/scripts/postflop-ai/policy.ts",
+    "bytes": 10545,
+    "sha256": "7697491739c8dc9a73bc65110f6a6059272c0690886e41d0378b124e6e4c0d36"
+   },
+   "current": {
+    "path": "apps/frontend/scripts/postflop-ai/policy.ts",
+    "bytes": 10874,
+    "sha256": "f9cf0c4cac35520699fa427c7e46cb106c15667b8a2ea0b190002f1cf79507e9"
+   }
+  },
+  {
+   "base": null,
+   "current": {
+    "path": "apps/frontend/scripts/postflop-ai/profile-reference.ts",
+    "bytes": 2246,
+    "sha256": "ac122a565b23f345e5351629df2d7d4bc4911e662f6abf9b615a77b1782205cc"
+   }
+  },
+  {
+   "base": {
+    "path": "apps/frontend/scripts/postflop-ai/publish-d1.mjs",
+    "bytes": 9655,
+    "sha256": "5c9a216f9489728dee1c97d70a81e576293763c020ad0be0fb376e74a8a46fd6"
+   },
+   "current": {
+    "path": "apps/frontend/scripts/postflop-ai/publish-d1.mjs",
+    "bytes": 18904,
+    "sha256": "36731c2a7ff9593215d6cc3fc4d63abd7f8c13b945febdde3eeaa47d991bf6e3"
+   }
+  },
+  {
+   "base": {
+    "path": "apps/frontend/scripts/postflop-ai/types.ts",
+    "bytes": 4439,
+    "sha256": "fca9397238fdda34ae4848225cb85dd9fe5a8fefcf493a9c188ea18a761229b2"
+   },
+   "current": {
+    "path": "apps/frontend/scripts/postflop-ai/types.ts",
+    "bytes": 5213,
+    "sha256": "d30d1fb50ad2ec0095fd040e05074d75b0c40cf5b48e013cc182aeee057f18ea"
+   }
+  },
+  {
+   "base": {
+    "path": "apps/frontend/scripts/postflop-ai/views.ts",
+    "bytes": 8965,
+    "sha256": "0b7324bf521165d7b657d6f8d5de867f3aa409b9b7d662f8d9dc772643f58248"
+   },
+   "current": {
+    "path": "apps/frontend/scripts/postflop-ai/views.ts",
+    "bytes": 9792,
+    "sha256": "251117e6151407f0fc9915b005cf5295173bd2ea03b7df6aa502460179e88c74"
+   }
+  },
+  {
+   "base": {
+    "path": "apps/frontend/scripts/publish-d1.mjs",
+    "bytes": 3824,
+    "sha256": "56444b4ad44e3314d869552849643c3276cfaecf23c0b98eee38bf8c0b9bb10c"
+   },
+   "current": {
+    "path": "apps/frontend/scripts/publish-d1.mjs",
+    "bytes": 4026,
+    "sha256": "6fc316986d1e8396f765189769f9ce3583bdbe85cfcac3e82c005e5e88cefe2e"
+   }
+  },
+  {
+   "base": null,
+   "current": {
+    "path": "apps/frontend/src/estimated/postflop-profile-state.ts",
+    "bytes": 1741,
+    "sha256": "f33c757aa29762af7630e4bef81907278bf64600b8d3531ec842600b569216ff"
+   }
+  },
+  {
+   "base": {
+    "path": "apps/frontend/src/locales/copy.ts",
+    "bytes": 1811,
+    "sha256": "288a0071b14fe803456f5a6966f5577d799a91fb4e8d81fdee6d5e582e667ecc"
+   },
+   "current": {
+    "path": "apps/frontend/src/locales/copy.ts",
+    "bytes": 1921,
+    "sha256": "6be5a33c6a7e926eeaad9ac86885c5e4efd7ba93ecda51edd2783a545f8d953c"
+   }
+  },
+  {
+   "base": null,
+   "current": {
+    "path": "apps/frontend/src/locales/opponent-profile-copy.json",
+    "bytes": 4396,
+    "sha256": "1c3c0b768dd6d8fdacb89e15fb8cb9f64332575b63fd5f130c8e87176b1904e7"
+   }
+  },
+  {
+   "base": {
+    "path": "apps/frontend/src/locales/product-direct.json",
+    "bytes": 44794,
+    "sha256": "1108ed95ac1a899850c910e9aaa9332d2b2ed99a61be837b4666a2a97b99d27f"
+   },
+   "current": {
+    "path": "apps/frontend/src/locales/product-direct.json",
+    "bytes": 45331,
+    "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+   }
+  }
+ ],
+ "negativeControl": {
+  "receipt": {
+   "path": "configs/source-identity-mw3.review.json",
+   "bytes": 10958,
+   "sha256": "bd8e0ec1dade99adb73565416eee00b6395728c879ee910642c59b8af8b3cde2"
+  },
+  "changedPathOverlapWithMw3CompatibilityIdentity": [],
+  "overlapEmpty": true,
+  "officialChecks": {
+   "semantic": {
+    "historicalHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+    "currentRawHash": "1686a96550a09cd8af233990341d2d840e5c714320050f5274ff45bbcfee448e",
+    "currentSourcesSha256": "c28a1e4fe4b2bd2d055cb2ff129ef35ef39e737bc7fa91a7ae471f16617c17c6",
+    "inventorySha256": "dab5917d7315cfd0a99472c01be0fe752102efb74e4329deeab484a6097f7fa2",
+    "reviewSha256": "bd8e0ec1dade99adb73565416eee00b6395728c879ee910642c59b8af8b3cde2",
+    "check": "mw3CompatibilityIdentity completed without error; this is not strategy/runtime/source-renewal acceptance"
+   },
+   "pilot": {
+    "historicalHash": "0f35a9371c0220d1a41587c51f6d90698f9294d3f0706c841b58b31bed4d19d6",
+    "currentRawHash": "3a4ef9e08754cca78c32d6cd191f8eb0d18d538f78be608899c0d8923116c1b2",
+    "currentSourcesSha256": "c28a1e4fe4b2bd2d055cb2ff129ef35ef39e737bc7fa91a7ae471f16617c17c6",
+    "inventorySha256": "dab5917d7315cfd0a99472c01be0fe752102efb74e4329deeab484a6097f7fa2",
+    "reviewSha256": "bd8e0ec1dade99adb73565416eee00b6395728c879ee910642c59b8af8b3cde2",
+    "check": "mw3CompatibilityIdentity completed without error; this is not strategy/runtime/source-renewal acceptance"
+   },
+   "authored": {
+    "historicalHash": "92b946dfc5c87359dcb3e610e832e262c2d3ac366110f295968eca2f7392c088",
+    "currentRawHash": "80f5cd2d013d295a5aacf1b7217911696c6e5f5b8922273cb9315c2a181ae057",
+    "currentSourcesSha256": "c28a1e4fe4b2bd2d055cb2ff129ef35ef39e737bc7fa91a7ae471f16617c17c6",
+    "inventorySha256": "dab5917d7315cfd0a99472c01be0fe752102efb74e4329deeab484a6097f7fa2",
+    "reviewSha256": "bd8e0ec1dade99adb73565416eee00b6395728c879ee910642c59b8af8b3cde2",
+    "check": "mw3CompatibilityIdentity completed without error; this is not strategy/runtime/source-renewal acceptance"
+   }
+  }
+ }
+}

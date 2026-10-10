@@ -26,6 +26,31 @@ export async function routePostflop(db: D1Database | undefined, path: string, pa
     for (const row of results) (spots[row.spot_id] ??= {})[row.stage] = row.policy_hash;
     return { status: 200, body: { kind: "ai_estimate_not_gto", spots } };
   }
+  if (path === "/v1/postflop/profile-policy") {
+    // Each selector is explicit and singular: never substitute a balanced,
+    // different-role or different-street policy when this row is absent.
+    const profile = params.get("profile") ?? "";
+    const spot = params.get("spot") ?? "";
+    const opponentSeat = params.get("opponentSeat") ?? "";
+    const role = params.get("role") ?? "";
+    const stage = params.get("stage") ?? "";
+    if (["profile", "spot", "opponentSeat", "role", "stage"].some(key => params.getAll(key).length !== 1)
+      || !["nit", "station", "lag", "maniac"].includes(profile)
+      || !SPOT_ID.test(spot) || spot.length > 128
+      || !["ip", "oop"].includes(opponentSeat)
+      || !["villain", "exploit"].includes(role)
+      || !["flop", "later"].includes(stage)) {
+      return { status: 400, body: { error: "valid profile, spot, opponentSeat, role and stage are required" } };
+    }
+    const { results } = await db.prepare("SELECT metadata_json, policy_json, published_at FROM postflop_profile_policies WHERE profile = ? AND spot_id = ? AND opponent_seat = ? AND role = ? AND stage = ?")
+      .bind(profile, spot, opponentSeat, role, stage).all<{ metadata_json: string; policy_json: string; published_at: string }>();
+    const row = results[0];
+    if (!row) return { status: 404, body: { error: "No stored profile policy", code: "PROFILE_POLICY_MISSING", state: "not_generated" } };
+    // Only scalar envelope fields are serialized; stored payload bytes pass through.
+    return { status: 200, text: `{"kind":"ai_estimate_not_gto","profile":${JSON.stringify(profile)},"spot":${JSON.stringify(spot)},` +
+      `"opponentSeat":${JSON.stringify(opponentSeat)},"role":${JSON.stringify(role)},"stage":${JSON.stringify(stage)},` +
+      `"metadata":${row.metadata_json},"policy":${row.policy_json},"publishedAt":${JSON.stringify(row.published_at)}}` };
+  }
   const spotId = params.get("spot");
   if (!spotId || !SPOT_ID.test(spotId)) return { status: 400, body: { error: "spot is required" } };
 

@@ -27,7 +27,7 @@ export const UNRELATED_TABLES = Object.freeze(['account_data', 'account_native_a
   'account_oauth_states', 'account_rate_limits', 'account_sessions', 'account_users', 'dataset_versions',
   'fastfold_actions', 'fastfold_dataset_parts', 'fastfold_players', 'fastfold_results', 'fastfold_sessions',
   'human_rank_players', 'human_rank_receipts', 'human_rank_results', 'human_rank_tables', 'postflop_flop_base_br',
-  'postflop_policies', 'postflop_reasons', 'postflop_reports', 'postflop_spots', 'preflop_dataset_parts', 'preflop_datasets', 'ranked_matches', 'ranked_players']);
+  'postflop_policies', 'postflop_profile_policies', 'postflop_reasons', 'postflop_reports', 'postflop_spots', 'preflop_dataset_parts', 'preflop_datasets', 'ranked_matches', 'ranked_players']);
 const FRONTEND = fileURLToPath(new URL('../../', import.meta.url));
 const BINDING = 'MW3_LOCAL_VERIFY', NAME = 'reysonai-mw3-local-verification';
 const MW3_TABLES = ['mw3_policy_deliveries', 'mw3_policy_parts'];

@@ -1,4 +1,5 @@
-import type { FrequencyRow, Inputs, PostflopDatasets, SourceAction, SourceDataset, SourceHand, SourceSpot } from "./types.ts";
+import { adjustedInputOptions, finalizeInputs, inputStructureHash } from "./input-options.ts";
+import type { FrequencyRow, InputOptions, Inputs, PostflopDatasets, SourceAction, SourceDataset, SourceHand, SourceSpot } from "./types.ts";
 import type { WeightedCombo } from "../lib/equity.ts";
 import type { MultiwaySpot, Spot } from "./spots.ts";
 import { multiwayInputData } from "./multiway-inputs.mjs";
@@ -84,10 +85,22 @@ function productRows(factors: readonly (readonly [SourceHand[], SourceAction])[]
   return hands.map(hand => ({ hand, freq: maps.reduce((product, map) => product * map.get(hand)! / 100, 100) }));
 }
 
-export function buildInputs(spotId: string = DEFAULT_SPOT_ID, datasets: PostflopDatasets = {}): Inputs {
+export function buildInputs(spotId: string = DEFAULT_SPOT_ID, datasets: PostflopDatasets = {}, options: InputOptions = {}): Inputs {
+  const base = buildBaseInputs(spotId, datasets, adjustedInputOptions(options));
+  return finalizeInputs(base, options, name => getDataset(datasets, name, ...(DATASET_ALIASES[name] ?? [])), sha,
+    inputStructureHash(base, gameConfig, flopConfig(), sha));
+}
+
+const DATASET_ALIASES: Record<string, string[]> = {
+  "opening-ranges": ["opening", "openingRanges"], "preflop-ranges": ["responses", "preflopRanges"],
+  "three-bet-responses": ["threeBets", "threeBetResponses"], "four-bet-responses": ["fourBets", "fourBetResponses"],
+  "limp-responses": ["limp", "limpResponses"], "limp-deep-responses": ["limpDeep", "limpDeepResponses"],
+};
+
+function buildBaseInputs(spotId: string, datasets: PostflopDatasets, allowUnreachable: boolean): Omit<Inputs, "structure_hash"> {
   const config = pilotConfig;
   const spot: Spot = multiwaySpotById(spotId) ?? createPostflopSpots(datasets).spotById(spotId);
-  if (!spot.reachable) throw new Error(`${spot.id} is unreachable: the saved ${spot.responseId} range never calls`);
+  if (!spot.reachable && !allowUnreachable) throw new Error(`${spot.id} is unreachable: the saved ${spot.responseId} range never calls`);
 
   if (spot.history) {
     const { sources, seatRows } = multiwayInputData(spot as MultiwaySpot, (name: string) => getDataset(datasets, name));
@@ -130,7 +143,7 @@ export function buildInputs(spotId: string = DEFAULT_SPOT_ID, datasets: Postflop
       [spot.opener]: productRows([[opening.hands, "open"], [threeBetResponse.hands, "four_bet"]]),
       [spot.threeBettor]: productRows([[threeBet.hands, "three_bet"], [response.hands, "call"]]),
     };
-    if (Object.values(seatRows).some(rows => !rows.some(row => row.freq > 0))) throw new Error(`${spot.id} is unreachable: a saved range never reaches the flop`);
+    if (!allowUnreachable && Object.values(seatRows).some(rows => !rows.some(row => row.freq > 0))) throw new Error(`${spot.id} is unreachable: a saved range never reaches the flop`);
     const fingerprint = sha({ spot, opening, response, threeBetResponse, threeBet, gameConfig, config: flopConfig() });
     return { spot, opening, response, threeBetResponse, threeBet, config, fingerprint, seatRows };
   }

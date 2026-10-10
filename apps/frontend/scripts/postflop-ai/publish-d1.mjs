@@ -5,8 +5,13 @@ import { hasPostflopDeal } from "./range-support.mjs";
 // apps/backend/migrations). Spots whose flop policy or report is missing or stale are
 // skipped. Run through scripts/publish-d1.mjs.
 import { createHash, randomUUID } from "node:crypto";
-import { loadInputs, readArtifact, config, boards, laterSizingHash } from "./inputs.mjs";
+import { existsSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+import { artifactPaths, config, loadInputs, readArtifact, root, boards, laterSizingHash } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate, sha as policySha } from "./generate.mjs";
+import { generationInputOptions } from "./generation-options.mjs";
+import { PROFILE_IDS, POLICY_ROLES } from "./generate-profiles.mjs";
+import { profileArtifactKey, resolveFlopCandidate, resolveLaterCandidate } from "./candidate-source.ts";
 import { SIMULATION_VERSION, PROFILES } from "./simulation.mjs";
 import { POSTFLOP_SPOTS } from "./spots.ts";
 
@@ -90,11 +95,12 @@ export function isFreshSimulationReport(inputs, candidate, laterCandidate, repor
   return expected.size === 0;
 }
 
-export function buildSql(published, publishedAt = new Date().toISOString(), publicationRevision = randomUUID()) {
+export function buildSql(published, publishedAt = new Date().toISOString(), publicationRevision = randomUUID(), profiles = []) {
   // Missing local artifacts must never erase an unrelated published spot.
-  if (!published.length) return "-- No publishable postflop artifacts; no database changes.\n";
+  if (!published.length && !profiles.length) return "-- No publishable postflop artifacts; no database changes.\n";
   if (new Set(published.map(item => item.spot.id)).size !== published.length) throw new Error("Duplicate published postflop spot");
-  const lines = ["-- spot-scoped postflop upsert; preserves every unmentioned spot."];
+  if (new Set(profiles.map(item => `${item.profile}|${item.spot.id}`)).size !== profiles.length) throw new Error("Duplicate published postflop profile/spot");
+  const lines = ["-- spot-scoped postflop upsert; preserves every unmentioned spot and profile."];
   for (const { spot, candidate, laterCandidate, report } of published) {
     const id = quote(spot.id);
     for (const table of ["postflop_policies", "postflop_reports", "postflop_reasons", "postflop_spots"]) {
@@ -109,8 +115,39 @@ export function buildSql(published, publishedAt = new Date().toISOString(), publ
   }
   const hashes = Object.fromEntries(published.map(({ spot, candidate, laterCandidate }) =>
     [spot.id, { flop: candidate.metadata.policy_hash, later: laterCandidate?.metadata.policy_hash ?? null }]));
-  lines.push("DELETE FROM dataset_versions WHERE name = 'postflop';");
-  lines.push(`INSERT INTO dataset_versions (name, content_hash, published_at, detail_json) VALUES ('postflop', ${quote(sha(JSON.stringify({ publicationRevision, publishedAt, hashes })))}, ${quote(publishedAt)}, ${jsonValue({ mode: "spot-upsert", publication_revision: publicationRevision, touched_spots: hashes }, "dataset detail")});`);
+  const profileHashes = {};
+  for (const { profile, spot, flop, later, opponentSeat: declaredOpponentSeat } of profiles) {
+    const opponentSeat = itemOpponentSeat({ flop, later, opponentSeat: declaredOpponentSeat });
+    lines.push(`DELETE FROM postflop_profile_policies WHERE profile = ${quote(profile)} AND spot_id = ${quote(spot.id)} AND opponent_seat = ${quote(opponentSeat)};`);
+    profileHashes[profile] ??= {};
+    const roles = profileHashes[profile][spot.id] = {};
+    for (const role of POLICY_ROLES) {
+      roles[role] = {};
+      for (const [stage, candidate] of [["flop", flop[role]], ["later", later[role]]]) {
+        const label = `${profile}/${spot.id}/${role}/${stage}`;
+        const metadata = { ...candidate.metadata, opponent_seat: opponentSeat };
+        roles[role][stage] = { policy: candidate.metadata.policy_hash, metadata: sha(JSON.stringify(metadata)) };
+        lines.push(`INSERT INTO postflop_profile_policies (profile, spot_id, opponent_seat, role, stage, metadata_json, policy_json, published_at) VALUES (${quote(profile)}, ${quote(spot.id)}, ${quote(opponentSeat)}, ${quote(role)}, ${quote(stage)}, ${jsonValue(metadata, `${label} metadata`)}, ${jsonValue(candidate.policy, `${label} policy`)}, ${quote(publishedAt)});`);
+      }
+    }
+  }
+  // A partial publication gets a new revision even for A -> B -> A. Hashing
+  // only the touched content would revive a stale cache for untouched rows.
+  // Keep standard policy metadata isolated from profile-only writes: MCP reads
+  // this exact three-key detail contract and hashes only the standard catalog.
+  if (published.length) {
+    lines.push("DELETE FROM dataset_versions WHERE name = 'postflop';");
+    lines.push(`INSERT INTO dataset_versions (name, content_hash, published_at, detail_json) VALUES ('postflop', ${quote(sha(JSON.stringify({ publicationRevision, publishedAt, hashes })))}, ${quote(publishedAt)}, ${jsonValue({ mode: "spot-upsert", publication_revision: publicationRevision, touched_spots: hashes }, "dataset detail")});`);
+  }
+  if (profiles.length) {
+    const profileDetail = { kind: "ai_estimate_not_gto", mode: "profile-spot-upsert", publication_revision: publicationRevision,
+      touched_profiles: Object.fromEntries(PROFILE_IDS.map(profile => [profile, {
+        spots: Object.keys(profileHashes[profile] ?? {}).length,
+        policies: Object.keys(profileHashes[profile] ?? {}).length * 4,
+      }])), policies: profiles.length * 4 };
+    lines.push("DELETE FROM dataset_versions WHERE name = 'postflop-profiles';");
+    lines.push(`INSERT INTO dataset_versions (name, content_hash, published_at, detail_json) VALUES ('postflop-profiles', ${quote(sha(JSON.stringify({ publicationRevision, publishedAt, profiles: profileHashes })))}, ${quote(publishedAt)}, ${jsonValue(profileDetail, "profile dataset detail")});`);
+  }
   return `${lines.join("\n")}\n`;
 }
 
@@ -130,4 +167,105 @@ export function publishableSpots(log = console.log, { requireAll = false } = {})
     log(`publish ${spot.id}${result.laterCandidate ? " +later" : ""}`);
   }
   return published;
+}
+
+// Each generated profile/spot is an indivisible four-file delivery unit. Fully
+// absent HU-after-multiway units are still preparing; any present partial/stale
+// unit is a hard failure before producing spot/profile-scoped delivery SQL.
+export function publishableProfiles(log = console.log, { requireAll = false, spots = POSTFLOP_SPOTS,
+  read = readArtifact, inputsFor = loadInputs, hasArtifact } = {}) {
+  const published = [];
+  if (read === readArtifact) for (const profile of PROFILE_IDS) {
+    const expected = new Set(spots.flatMap(spot => POLICY_ROLES.flatMap(role => ["candidate", "laterCandidate"].map(kind =>
+      `${profileArtifactKey(spot, kind, profile, role).split("/").at(-1)}.json`))));
+    for (const base of ["scripts/data/postflop-ai/profiles", ".local/postflop-ai/profiles"]) {
+      const directory = join(root, base, profile);
+      if (!existsSync(directory)) continue;
+      for (const name of readdirSync(directory)) if (name.endsWith(".json") && !expected.has(name)) {
+        throw new Error(`${profile}/${name}: unknown generated profile artifact`);
+      }
+    }
+  }
+  for (const profile of PROFILE_IDS) for (const spot of spots) {
+    const flop = {}, later = {};
+    try {
+      let present = 0;
+      for (const role of POLICY_ROLES) for (const [kind, pair] of [["candidate", flop], ["laterCandidate", later]]) {
+        pair[role] = read(spot, kind, { profile, role });
+        // JSON null/false is an invalid present file, not an ungenerated unit.
+        const onDisk = hasArtifact ? hasArtifact(spot, kind, { profile, role }) : read === readArtifact &&
+          (existsSync(artifactPaths(spot, { profile, role })[kind]) ||
+            existsSync(join(root, ".local/postflop-ai", `${profileArtifactKey(spot, kind, profile, role)}.json`)));
+        if (onDisk || pair[role] !== null && pair[role] !== undefined) present++;
+      }
+      if (!present && "history" in spot) { log(`skip ${profile}/${spot.id}: profile policy is not generated`); continue; }
+      if (present && present !== 4) throw new Error(`Incomplete generated profile policy: ${present}/4 files`);
+      let inputs, opponentSeat;
+      if (present) {
+        const candidates = POLICY_ROLES.flatMap(role => [flop[role], later[role]]);
+        const declaredSeats = new Set(candidates.flatMap(item => {
+          const metadata = item?.metadata ?? {};
+          const values = [metadata.opponent_seat, metadata.opponentSeat].filter(value => value !== undefined);
+          if (values.some(value => value !== "ip" && value !== "oop") || new Set(values).size > 1) {
+            throw new Error("Invalid or conflicting opponent-seat metadata");
+          }
+          return values;
+        }));
+        if (declaredSeats.size > 1) throw new Error("Profile policy pair mixes opponent seats");
+        const seats = declaredSeats.size ? [...declaredSeats] : ["ip", "oop"];
+        const matches = [];
+        for (const seat of seats) {
+          try {
+            const candidateInputs = inputsFor(spot.id, generationInputOptions(spot.id, profile, seat));
+            const sourceHashesMatch = candidates.every(item => item?.metadata?.source_hash === candidateInputs.fingerprint);
+            const seatMetadataMatches = candidates.every(item => {
+              const metadata = item?.metadata ?? {};
+              return (metadata.opponent_seat === undefined || metadata.opponent_seat === seat) &&
+                (metadata.opponentSeat === undefined || metadata.opponentSeat === seat);
+            });
+            if (sourceHashesMatch && seatMetadataMatches) matches.push({ seat, inputs: candidateInputs });
+          } catch { /* A seat without usable profile source data cannot match a saved source hash. */ }
+        }
+        if (matches.length !== 1) throw new Error("Profile source hashes do not identify exactly one opponent seat");
+        ({ seat: opponentSeat, inputs } = matches[0]);
+      } else {
+        // Preserve the existing preparing/unreachable behavior for absent units.
+        try {
+          opponentSeat = generationInputOptions(spot.id, profile).opponentSeat;
+          inputs = inputsFor(spot.id, generationInputOptions(spot.id, profile));
+        } catch (error) {
+          if (/unreachable after range adjustment/.test(error.message)) {
+            log(`skip ${profile}/${spot.id}: unreachable adjusted history`); continue;
+          }
+          throw error;
+        }
+      }
+      if (!present && !requireAll) { log(`skip ${profile}/${spot.id}: profile policy is not generated`); continue; }
+      if (present !== 4) throw new Error(`Incomplete generated profile policy: ${present}/4 files`);
+      for (const role of POLICY_ROLES) for (const [stage, candidate] of [["flop", flop[role]], ["later", later[role]]]) {
+        const metadata = candidate?.metadata;
+        if (metadata?.profile !== profile || metadata?.role !== role || metadata?.spot !== spot.id ||
+            metadata?.structure_hash !== inputs.structure_hash || metadata?.config_version !== config.version ||
+            candidate?.profileCandidates || metadata?.kind !== "ai_estimate_not_gto" ||
+            (stage === "flop" ? metadata?.tree !== spot.tree : metadata?.tree !== undefined && metadata.tree !== spot.tree)) {
+          throw new Error(`Profile policy identity mismatch: ${stage}/${role}`);
+        }
+      }
+      const resolved = resolveFlopCandidate(inputs, flop);
+      resolveLaterCandidate(inputs, later, resolved);
+      published.push({ profile, spot, flop, later, opponentSeat });
+      log(`publish ${profile}/${spot.id}: villain+exploit flop+later`);
+    } catch (error) { throw new Error(`${profile}/${spot.id} is not publishable: ${error.message}`, { cause: error }); }
+  }
+  return published;
+}
+
+function itemOpponentSeat({ flop, later, opponentSeat }) {
+  const values = POLICY_ROLES.flatMap(role => [flop[role], later[role]]).map(item =>
+    item?.metadata?.opponent_seat ?? item?.metadata?.opponentSeat).filter(value => value !== undefined);
+  const selected = opponentSeat ?? values[0];
+  if (!selected || !["ip", "oop"].includes(selected) || values.some(value => value !== selected) || new Set(values).size > 1) {
+    throw new Error("Profile publication requires one verified opponent seat per unit");
+  }
+  return selected;
 }

@@ -54,6 +54,14 @@ test("preflop call EV uses the flop-style right column without inventing other a
   assert.equal(renderToStaticMarkup(createElement(PreflopCallEvBars, { items, facts: { eqr: 0.9, equityPct: 45.5 } })), "");
 });
 
+test("classic matrix background excludes unreachable cells and preserves their hatching", () => {
+  const css = readFileSync(new URL("../src/styles.css", import.meta.url), "utf8");
+  const rangeCss = readFileSync(new URL("../src/estimated/ranges.css", import.meta.url), "utf8");
+  assert.match(css, /\[data-matrix="classic"\] \.matrix button:not\(\.unreachable-hand\) \{ background: #1c1c21 !important; \}/);
+  assert.doesNotMatch(css, /\[data-matrix="classic"\] \.matrix button\s*\{[^}]*background/);
+  assert.match(rangeCss, /\.matrix button\.unreachable-hand \{ background: repeating-linear-gradient\(/);
+});
+
 test("standard matrix shows aggregate frequencies full-height when no postflop reach data is supplied", () => {
   const aggregates = new Map([
     ["AA", { actions: { raise: 1, fold: 0 }, comboCount: 6 }],
