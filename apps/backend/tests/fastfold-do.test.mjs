@@ -38,7 +38,7 @@ test('actual SQLite DO binding + D1 auth/CAS across shards, expiry, restart, sav
  const {Miniflare}=await import(process.env.WORKERD_MODULE);const {build}=await import('../../frontend/node_modules/esbuild/lib/main.js');
  const dir=await mkdtemp(join(tmpdir(),'fastfold-do-test-'));let mf;
  try{
- const bundled=await build({entryPoints:[new URL('./fixtures/api-fastfold-test-worker.ts',import.meta.url).pathname],bundle:true,write:false,platform:'browser',format:'esm',external:['cloudflare:workers'],logLevel:'silent'});
+ const bundled=await build({entryPoints:[new URL('../src/worker.ts',import.meta.url).pathname],bundle:true,write:false,platform:'browser',conditions:['workerd'],format:'esm',external:['cloudflare:workers'],logLevel:'silent'});
  const workerEnv={...Object.fromEntries(Object.entries(env).filter(([k])=>k!=='DB').map(([k,value])=>[k,{type:'text',value}])),DB:{type:'d1',id:'fastfold-test-db'},FASTFOLD_RUNTIME:{type:'durable-object',worker:'ff-local-test',exportName:'FastFoldRuntime'}};
  const options={cf:false,telemetry:{enabled:false},resourcePersistencePath:join(dir,'storage'),workers:[{config:{name:'ff-local-test',compatibilityDate:'2026-09-22',env:workerEnv,exports:{FastFoldRuntime:{type:'durable-object',storage:'sqlite'}},manifest:{mainModule:'worker.mjs',modulesRoot:'/',modules:{'worker.mjs':{type:'esm',contents:bundled.outputFiles[0].text}}}}}]};
  mf=new Miniflare(options);await mf.ready;let db=await mf.getD1Database('DB');
