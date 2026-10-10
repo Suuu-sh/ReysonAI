@@ -12,6 +12,8 @@ source_commit=91109e156c17c7fdb9e2eb0dbc8d0704c7ee3e46
 source_tree=9d4bf2f8ae341d38507f209ccd8bcc9f437bbd2d
 pr_head=6b5291089c15304c25af7433e87cd1bcaac38428
 pr_head_tree=b02e4eca21633c17f877515ad5bda0f55f66a7a5
+expected_closure_sha256=c28d77a70470845f89c37e1659c8b9a9b4b84ad6f6bca669f2e1df5e32a70d1c
+expected_input_sha256=9d8b9152e41c62f119c52472e9762313447a08dffe62026a6d51da13193da179
 
 [[ "$(node --version)" == "v25.8.1" ]] || {
   printf 'This capture is pinned to Node.js v25.8.1; found %s\n' "$(node --version)" >&2
@@ -46,6 +48,8 @@ git -C "$repo_root" worktree add --detach "$candidate_dir" "$baseline_commit" >/
 
 closure_sha256=$(shasum -a 256 "$closure_manifest" | awk '{print $1}')
 input_sha256=$(shasum -a 256 "$input_manifest" | awk '{print $1}')
+[[ "$closure_sha256" == "$expected_closure_sha256" ]]
+[[ "$input_sha256" == "$expected_input_sha256" ]]
 
 # Verify all 70 source files against both the reviewed source commit and the
 # exact protected PR head, then apply only that closure to a separate checkout.
@@ -75,11 +79,21 @@ const [repo, baseline, candidate, closurePath, inputPath] = process.argv.slice(2
 const closure = JSON.parse(fs.readFileSync(closurePath, 'utf8'));
 const inputs = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
 const closurePaths = new Set(closure.closure.map(item => item.path));
+assert.equal(closure.closure.length, 70, 'Unexpected runtime/import closure size');
+assert.equal(closure.canonicalSha256, '7599580f60f998f83fe65eac1dc45b7d17632ae9790e352170e0fbb5f4864053');
 const statuses = execFileSync('git', ['-C', candidate, 'status', '--porcelain=v1', '-z'], { encoding: 'utf8' })
   .split('\0').filter(Boolean).map(item => item.slice(3));
 assert(statuses.every(file => closurePaths.has(file)), 'Candidate overlay changed a path outside the 70-file closure');
 assert.equal(inputs.files.length, 11, 'Expected the pinned eleven JSON inputs');
+assert.deepEqual([inputs.baselineCommit, inputs.sourceCommit, inputs.prHeadCommit], [
+  '7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5',
+  '91109e156c17c7fdb9e2eb0dbc8d0704c7ee3e46',
+  '6b5291089c15304c25af7433e87cd1bcaac38428',
+]);
+assert.equal(new Set(inputs.files.map(item => item.path)).size, inputs.files.length, 'Duplicate JSON input path');
 for (const item of inputs.files) {
+  assert.equal(item.sourceBlob, item.baselineBlob, `Source JSON blob differs: ${item.path}`);
+  assert.equal(item.prHeadBlob, item.baselineBlob, `Protected PR JSON blob differs: ${item.path}`);
   for (const [label, root] of [['baseline', baseline], ['candidate', candidate]]) {
     const filename = path.join(root, item.path);
     const bytes = fs.readFileSync(filename);
