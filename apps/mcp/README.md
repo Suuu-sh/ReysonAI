@@ -17,7 +17,7 @@ The data are saved AI estimates for education, not verified GTO, live-game advic
 
 ## Architecture
 
-The package is deliberately separate from `apps/backend`. Its lockfile, test-only Wrangler config and CI do not edit or deploy the existing API Worker. The disabled production template and exact route ownership, deployment, approval, and rollback plan are documented in [PRODUCTION.md](./PRODUCTION.md). Only `/mcp`, `/oauth/mcp/*`, `/.well-known/oauth-authorization-server`, and `/.well-known/oauth-protected-resource/mcp` are assigned to MCP; `/v1/*`, `/health`, and every other path stay on the existing API Worker.
+The runtime and its pinned dependencies remain under `apps/mcp`, while the API Worker's Cloudflare entry composes `apps/mcp/src/index.ts` with the existing API router in `apps/backend/src/index.ts`. MCP paths are dispatched before the API's general `OPTIONS` and CORS handling; all other paths continue through the existing API router. The current migration and sanitized rollback record are in [MCP_CONSOLIDATION.md](../backend/MCP_CONSOLIDATION.md). This draft changes no live Worker settings, routes, resources, credentials, or data. The standalone plan in [PRODUCTION.md](./PRODUCTION.md) is historical and is not the active migration plan.
 
 The runtime composes the official `@cloudflare/workers-oauth-provider` authorization and resource roles, plus `createMcpHandler` from `agents/mcp/server` and `@modelcontextprotocol/server` v2. The server is stateless per request and supports ordinary legacy Streamable HTTP clients without protocol sessions. Dependencies are pinned to the Agents release's exact SDK peer requirement, not an incompatible newer server SDK.
 
