@@ -2,9 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
-import { routeRanked, gradeRanked, questionPool } from '../src/ranked.ts';
+import { routeRanked } from '../src/ranked.ts';
+import { gradeRanked, questionPool } from '../src/domain/ranked-quiz.ts';
 import { digest } from '../src/account.ts';
 import worker from '../src/index.ts';
+import './ranked-finalization.test.mjs';
 const token='a'.repeat(64);
 async function fixture() {
  const sqlite=new DatabaseSync(':memory:');sqlite.exec('PRAGMA foreign_keys=ON');

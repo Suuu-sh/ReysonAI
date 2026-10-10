@@ -1,47 +1,17 @@
 import { accountTransport, digest, type AccountEnv } from './account.ts';
 import { readPublishedDataset } from './application/published-datasets.ts';
+import { finalizeRankedMatch, type RankedMatchRecord, type RankedPlayerRecord } from './application/ranked-finalization.ts';
 import { D1PublishedDatasetReader } from './infrastructure/d1-published-dataset-repository.ts';
+import { D1RankedFinalizationRepository } from './infrastructure/d1-ranked-finalization-repository.ts';
+import { questionPool } from './domain/ranked-quiz.ts';
 import type { D1Database } from './postflop.ts';
-import { RANKED_LENGTH, RANKED_DAILY_LIMIT, START_RATING, LEADERBOARD_MIN_MATCHES, rateMatch, displayTier } from '../../shared/ranked-rules.ts';
+import { RANKED_LENGTH, RANKED_DAILY_LIMIT, START_RATING, LEADERBOARD_MIN_MATCHES, displayTier } from '../../shared/ranked-rules.ts';
 
 type RankedEnv = AccountEnv & { RANKED_ENABLED?: string };
-type Question = { spotId: string; hand: string; mix: Record<string,number> };
-type Match = { id:string; user_id:string; questions_json:string; actions_json:string|null; status:string; expires_at:number; completed_at:number; before_rating:number; after_rating:number; score:number };
-type Player = { user_id:string; public_name:string; rating:number; peak:number; matches:number };
+type Match = RankedMatchRecord;
+type Player = RankedPlayerRecord;
 const reply = (body:unknown,status=200) => new Response(JSON.stringify(body), {status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const random = () => crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296;
-const primary = (mix:Record<string,number>) => Object.entries(mix).sort((a,b)=>b[1]-a[1])[0][0];
-const grid = [...'AKQJT98765432'];
-const hands = grid.flatMap((a,r)=>grid.map((b,c)=>r===c?a+b:r<c?a+b+'s':b+a+'o'));
-export function questionPool(source:{spots:Array<{id:string;hands:Array<Record<string,unknown>>}>},kind:string) {
-  if (!Array.isArray(source.spots) || !source.spots.length) throw new Error("invalid_ranked_dataset");
-  return source.spots.map(spot=>{
-    const questions = spot.hands.map(row=>({spotId:spot.id,hand:String(row.hand),mix:Object.fromEntries((kind==='open'?['fold','open']:['fold','call','three_bet']).map(action=>[action,Number(row[action])/100]))}));
-    if (questions.length !== 169 || new Set(questions.map(q=>q.hand)).size !== 169 || questions.some(q=>!hands.includes(q.hand) || Object.values(q.mix).some(v=>!Number.isFinite(v)||v<0||v>1) || Object.values(q.mix).reduce((a,b)=>a+b,0)>1.001)) throw new Error('invalid_ranked_dataset');
-    // SB may put mass into limp, which this drill does not offer. Condition on the
-    // offered choices; all-limp hands have no answer and are never issued.
-    const valid = questions.filter(q=>Object.values(q.mix).reduce((a,b)=>a+b,0)>0).map(q=>{
-      const total=Object.values(q.mix).reduce((a,b)=>a+b,0);
-      return {...q,mix:Object.fromEntries(Object.entries(q.mix).map(([key,value])=>[key,value/total]))};
-    });
-    if (!valid.length) throw new Error('invalid_ranked_dataset');
-    const byHand = new Map(valid.map(q=>[q.hand,q]));
-    return valid.map(q=>{
-      const index=hands.indexOf(q.hand),r=Math.floor(index/13),c=index%13,main=primary(q.mix);
-      const edge=[[-1,0],[1,0],[0,-1],[0,1]].some(([dr,dc])=>r+dr>=0&&r+dr<13&&c+dc>=0&&c+dc<13&&byHand.has(hands[(r+dr)*13+c+dc])&&primary(byHand.get(hands[(r+dr)*13+c+dc])!.mix)!==main);
-      return {...q,weight:Math.max(...Object.values(q.mix))<.95?4:edge?3:main==='fold'?.15:.6};
-    });
-  });
-}
-export function gradeRanked(questions:Question[], actions:unknown) {
-  if(!Array.isArray(actions)||actions.length!==RANKED_LENGTH||questions.length!==RANKED_LENGTH) throw new Error('complete_match_required');
-  return questions.map((q,index)=>{
-    const action=actions[index];
-    if(typeof action!=='string'||!Object.hasOwn(q.mix,action)) throw new Error('invalid_action');
-    const top=Math.max(...Object.values(q.mix)),freq=q.mix[action];
-    return {mix:q.mix,score:freq>=top-.05?1:freq>=.2?.5:0};
-  });
-}
 const publicMatch=(m:Match)=>({id:m.id,at:m.completed_at,before:m.before_rating,after:m.after_rating,accuracy:m.score/RANKED_LENGTH,answered:RANKED_LENGTH});
 
 export async function routeRanked(request:Request,env:RankedEnv):Promise<Response> {
@@ -115,17 +85,11 @@ export async function routeRanked(request:Request,env:RankedEnv):Promise<Respons
     const finish=path.match(/^matches\/([a-f0-9-]{36})\/finish$/);
     if(finish&&request.method==='POST') {
       const body=await boundedBody(request);if(!body||Object.keys(body).some(k=>k!=='actions')) return reply({error:'invalid_submission'},400);
-      const [match]=await query<Match>('SELECT * FROM ranked_matches WHERE id=? AND user_id=?',finish[1],user);
-      if(!match) return reply({error:'match_not_found'},404);
-      const log=gradeRanked(JSON.parse(match.questions_json),body.actions),actions=JSON.stringify(body.actions);
-      if(match.status==='complete') return match.actions_json===actions?reply({match:publicMatch(match),state:await state()}):reply({error:'match_already_finalized'},409);
-      if(match.status!=='active'||match.expires_at<=now) return reply({error:'match_expired'},409);
-      const [player]=await query<Player>('SELECT * FROM ranked_players WHERE user_id=?',user);
-      const after=Math.max(0,rateMatch(player.rating,log)),score=log.reduce((sum,v)=>sum+v.score,0);
-      await query("UPDATE ranked_matches SET status='complete',actions_json=?,completed_at=?,before_rating=?,after_rating=?,score=? WHERE id=? AND user_id=? AND status='active' AND expires_at>? AND (SELECT rating FROM ranked_players WHERE user_id=?)=? RETURNING id",actions,now,player.rating,after,score,match.id,user,now,user,player.rating);
-      const [saved]=await query<Match>('SELECT * FROM ranked_matches WHERE id=? AND user_id=?',match.id,user);
-      if(saved.status!=='complete'||saved.actions_json!==actions) return reply({error:'match_already_finalized'},409);
-      return reply({match:publicMatch(saved),state:await state()});
+      const finalized=await finalizeRankedMatch(new D1RankedFinalizationRepository(db),user,finish[1],body.actions,now);
+      if(finalized.kind==='not_found') return reply({error:'match_not_found'},404);
+      if(finalized.kind==='conflict') return reply({error:'match_already_finalized'},409);
+      if(finalized.kind==='expired') return reply({error:'match_expired'},409);
+      return reply({match:publicMatch(finalized.match),state:await state()});
     }
     return reply({error:'not_found'},404);
   } catch(error) {
