@@ -1,19 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repo_root=$(cd "${1:?Usage: bash reproduce-standard-output-parity.sh <repository-root> <output-directory>}" && pwd -P)
-output_dir=${2:?Usage: bash reproduce-standard-output-parity.sh <repository-root> <output-directory>}
 script_dir=$(cd "$(dirname "$0")" && pwd -P)
 closure_manifest="$script_dir/runtime-import-closure.json"
 input_manifest="$script_dir/runtime-filesystem-json-inputs.json"
+expected_closure_sha256=c28d77a70470845f89c37e1659c8b9a9b4b84ad6f6bca669f2e1df5e32a70d1c
+expected_input_sha256=9d8b9152e41c62f119c52472e9762313447a08dffe62026a6d51da13193da179
+if [[ ${1:-} == --check-manifests ]]; then
+  node "$script_dir/verify-standard-output-parity-manifests.mjs" "$closure_manifest" "$input_manifest"
+  exit 0
+fi
+repo_root=$(cd "${1:?Usage: bash reproduce-standard-output-parity.sh <repository-root> <output-directory>}" && pwd -P)
+output_dir=${2:?Usage: bash reproduce-standard-output-parity.sh <repository-root> <output-directory>}
 baseline_commit=7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5
 baseline_tree=04486039e4394a2238b71de24434623c255bfb87
 source_commit=91109e156c17c7fdb9e2eb0dbc8d0704c7ee3e46
 source_tree=9d4bf2f8ae341d38507f209ccd8bcc9f437bbd2d
 pr_head=6b5291089c15304c25af7433e87cd1bcaac38428
 pr_head_tree=b02e4eca21633c17f877515ad5bda0f55f66a7a5
-expected_closure_sha256=c28d77a70470845f89c37e1659c8b9a9b4b84ad6f6bca669f2e1df5e32a70d1c
-expected_input_sha256=9d8b9152e41c62f119c52472e9762313447a08dffe62026a6d51da13193da179
+expected_candidate_execution_tree=f1bc0d3312adb5ebb96e8890e80d17126d60bbf5
 
 [[ "$(node --version)" == "v25.8.1" ]] || {
   printf 'This capture is pinned to Node.js v25.8.1; found %s\n' "$(node --version)" >&2
@@ -50,6 +55,7 @@ closure_sha256=$(shasum -a 256 "$closure_manifest" | awk '{print $1}')
 input_sha256=$(shasum -a 256 "$input_manifest" | awk '{print $1}')
 [[ "$closure_sha256" == "$expected_closure_sha256" ]]
 [[ "$input_sha256" == "$expected_input_sha256" ]]
+node "$script_dir/verify-standard-output-parity-manifests.mjs" "$closure_manifest" "$input_manifest" >/dev/null
 
 # Verify all 70 source files against both the reviewed source commit and the
 # exact protected PR head, then apply only that closure to a separate checkout.
@@ -69,6 +75,7 @@ NODE
 )
 
 candidate_tree=$(git -C "$candidate_dir" write-tree)
+[[ "$candidate_tree" == "$expected_candidate_execution_tree" ]]
 node - "$repo_root" "$baseline_dir" "$candidate_dir" "$closure_manifest" "$input_manifest" <<'NODE'
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
@@ -80,7 +87,8 @@ const closure = JSON.parse(fs.readFileSync(closurePath, 'utf8'));
 const inputs = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
 const closurePaths = new Set(closure.closure.map(item => item.path));
 assert.equal(closure.closure.length, 70, 'Unexpected runtime/import closure size');
-assert.equal(closure.canonicalSha256, '7599580f60f998f83fe65eac1dc45b7d17632ae9790e352170e0fbb5f4864053');
+assert.equal(crypto.createHash('sha256').update(fs.readFileSync(closurePath)).digest('hex'),
+  'c28d77a70470845f89c37e1659c8b9a9b4b84ad6f6bca669f2e1df5e32a70d1c', 'Exact runtime closure manifest bytes changed');
 const statuses = execFileSync('git', ['-C', candidate, 'status', '--porcelain=v1', '-z'], { encoding: 'utf8' })
   .split('\0').filter(Boolean).map(item => item.slice(3));
 assert(statuses.every(file => closurePaths.has(file)), 'Candidate overlay changed a path outside the 70-file closure');
