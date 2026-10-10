@@ -181,7 +181,18 @@ test('ordinary Agent saves one real MW3 result, preserves prior history and reop
       assert.equal(latest.status, 'done'); assert.equal(latest.postflopKind, 'mw3_srp');
       const saved = loadAgentHands();
       assert.deepEqual(saved[0], prior[0]);
-      assert.deepEqual(saved[1], handRecord(latest, AGENT_TABLE.id, 'BTN', 1791222000201));
+      const session = saved[1].session;
+      assert.match(session.id, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+      assert.equal(session.startedAt, 1791222000201);
+      assert.equal(session.endedAt, undefined, 'a settled hand does not end the entry');
+      const names = { BTN: 'You', ...Object.fromEntries(['SB', 'BB', 'UTG', 'HJ', 'CO'].map((pos, index) => [pos, AGENT_TABLE.agents[index].name.en])) };
+      const expected = handRecord(latest, AGENT_TABLE.id, 'BTN', 1791222000201, { session: { id: session.id, startedAt: 1791222000201 }, handNo: 1, names });
+      assert.deepEqual(saved[1], JSON.parse(JSON.stringify(expected)), 'persist the real MW3 payout and full entry-scoped snapshot');
+      assert.equal(saved[1].returnBb, latest.returns.BTN);
+      assert.deepEqual(saved[1].history.board, latest.board);
+      const exposed = Object.keys(saved[1].history.holeCards);
+      assert.ok(exposed.includes('BTN'));
+      for (const entry of latest.log.filter(entry => entry.action === 'fold' && entry.pos !== 'BTN')) assert.ok(!exposed.includes(entry.pos), 'folded opponent cards remain private');
       assert.equal(summarizeAgentHands(saved).hands, 2);
       const bytes = localStorage.getItem('reysonai:agent-hands:v1');
       for (let opening = 0; opening < 2; opening++) {
@@ -192,6 +203,9 @@ test('ordinary Agent saves one real MW3 result, preserves prior history and reop
         assert.equal(document.querySelector('.game-details-modal'), null);
         assert.equal(localStorage.getItem('reysonai:agent-hands:v1'), bytes, 'Stats/Close/reopen does not save again');
       }
+      await act(async () => document.querySelector('.agent-back').click());
+      assert.equal(loadAgentHands()[1].session.endedAt, 1791222000201, 'explicit Back ends the entry');
+      assert.deepEqual(loadAgentHands()[0], prior[0]);
       assert.equal(localStorage.getItem('evionai:agent-hands:v1'), oldHistory);
     } finally {
       Date.now = originalNow;
