@@ -1,78 +1,107 @@
 {
-  "purpose": "Compare thirteen saved standard-mode prompt, policy, explanation, range-fact, node and balance outputs between the exact historical baseline and the PR runtime/import closure. The published compressed object contains all thirteen canonical output values; individual baseline/candidate capture envelopes remain summarized by hash.",
+  "schemaVersion": 2,
+  "status": "corrected-two-checkout-comparison",
+  "purpose": "Verify standard-mode output stability for the protected PR123 runtime/import closure while binding the inherited filesystem JSON inputs.",
+  "supersededPriorPublication": {
+    "status": "superseded-by-clean-two-checkout-rerun",
+    "reason": "The published reproduction runner applied the candidate closure before both capture calls, so replaying that script ran the candidate overlay twice. The separately recorded original capture commands used two distinct directories; this report does not claim those original runs were contaminated. The corrected run below now independently performs and records the comparison.",
+    "priorReportedResult": {
+      "allEqual": true,
+      "outputCount": 13
+    },
+    "priorRunner": "reproduce-standard-output-parity.sh before this correction",
+    "priorCandidateOnlyArtifact": {
+      "path": "superseded-candidate-only-output-objects.json.gz",
+      "gzipSha256": "db2eac5468111dffd02f4bb6475876506825fbcc59ed13993dc8e339b206fba6",
+      "compressedBytes": 48968,
+      "uncompressedSha256": "13e2e209855c33995d3cfceb04ee1d0de1faad0aa7f953c72657618cc8450185",
+      "status": "preserved-and-labeled-superseded"
+    },
+    "originalCaptureDirectories": {
+      "baseline": "/tmp/pr123-capture-work",
+      "candidate": "/tmp/pr123-candidate-work",
+      "baselineWasClean": true,
+      "distinctDirectories": true
+    }
+  },
   "captureScript": {
     "path": "standard-output-capture.mjs",
-    "sha256": "b312ced1e1cd088beb7380cb432ac5ccb66baafdb8aa94f748936cf8a8ddf69f",
+    "sha256": "3bb1bad005d3fcf52f4efa2366a4c430797fcd6553fa2091d97b27b4fd73dff6",
     "sameScriptForBothRuns": true
   },
-  "reproduction": {
-    "runner": "reproduce-standard-output-parity.sh",
-    "invocation": "bash apps/frontend/docs/qa/pr123-baseline-evidence/reproduce-standard-output-parity.sh <clean-repository-root> <output-directory>",
-    "runtime": "Node.js v25.8.1 with --experimental-strip-types; observed host darwin",
-    "candidateMethod": "A clean worktree at the historical baseline with only the 70 verified runtime/import/data closure files overlaid from source commit 91109e156c17c7fdb9e2eb0dbc8d0704c7ee3e46. It is not represented as a full candidate checkout.",
-    "exactObservedCommands": [
-      "PR123_SOURCE_COMMIT=7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5 PR123_SOURCE_TREE=04486039e4394a2238b71de24434623c255bfb87 node --experimental-strip-types /tmp/pr123-standard-output-capture.mjs /tmp/pr123-capture-work baseline-7c2 /tmp/pr123-baseline-standard-outputs.json",
-      "PR123_SOURCE_COMMIT=91109e156c17c7fdb9e2eb0dbc8d0704c7ee3e46 PR123_SOURCE_TREE=9d4bf2f8ae341d38507f209ccd8bcc9f437bbd2d node --experimental-strip-types /tmp/pr123-standard-output-capture.mjs /tmp/pr123-candidate-work candidate-91109 /tmp/pr123-candidate-standard-outputs.json"
-    ]
-  },
-  "baseline": {
-    "commit": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
-    "tree": "04486039e4394a2238b71de24434623c255bfb87",
-    "checkoutWasClean": true,
-    "runtimeMs": 11751.717791
-  },
-  "candidate": {
-    "sourceCommit": "91109e156c17c7fdb9e2eb0dbc8d0704c7ee3e46",
-    "sourceTree": "9d4bf2f8ae341d38507f209ccd8bcc9f437bbd2d",
-    "prHeadCommit": "6b5291089c15304c25af7433e87cd1bcaac38428",
-    "prHeadTree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5",
-    "checkoutCommit": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
-    "checkoutTree": "04486039e4394a2238b71de24434623c255bfb87",
-    "closureVerification": {
-      "files": 70,
-      "allSourceAndPrHeadBlobsMatch": true,
-      "sourceTreeRecursiveEntries": 2964,
-      "sourceTreeTruncated": false,
-      "prHeadTreeRecursiveEntries": 2965,
-      "prHeadTreeTruncated": false,
-      "manifestPath": "runtime-import-closure.json",
-      "manifestSha256": "c28d77a70470845f89c37e1659c8b9a9b4b84ad6f6bca669f2e1df5e32a70d1c",
-      "canonicalSha256": "7599580f60f998f83fe65eac1dc45b7d17632ae9790e352170e0fbb5f4864053"
-    },
-    "runtimeMs": 11828.55575
-  },
-  "environment": {
+  "runtime": {
     "node": "v25.8.1",
     "platform": "darwin",
-    "sameForBothRuns": true
+    "requiredNode": "v25.8.1",
+    "sameNodeAndPlatform": true
+  },
+  "baseline": {
+    "label": "baseline-7c2",
+    "commit": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+    "checkoutTree": "04486039e4394a2238b71de24434623c255bfb87",
+    "executionTree": "04486039e4394a2238b71de24434623c255bfb87",
+    "checkoutWasCleanBeforeCapture": true,
+    "runtimeMs": 11794.85725
+  },
+  "candidate": {
+    "label": "candidate-91109",
+    "sourceCommit": "91109e156c17c7fdb9e2eb0dbc8d0704c7ee3e46",
+    "sourceTree": "9d4bf2f8ae341d38507f209ccd8bcc9f437bbd2d",
+    "protectedPrHead": "6b5291089c15304c25af7433e87cd1bcaac38428",
+    "protectedPrTree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5",
+    "checkoutCommit": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+    "checkoutTree": "04486039e4394a2238b71de24434623c255bfb87",
+    "executionTree": "f1bc0d3312adb5ebb96e8890e80d17126d60bbf5",
+    "method": "Separate baseline checkout with only the verified 70-file runtime/import closure checked out from source commit; changed paths were confined to that closure.",
+    "closure": {
+      "path": "runtime-import-closure.json",
+      "files": 70,
+      "manifestSha256": "c28d77a70470845f89c37e1659c8b9a9b4b84ad6f6bca669f2e1df5e32a70d1c",
+      "allSourceAndPrHeadBlobsMatch": true,
+      "changedWorktreePaths": 32,
+      "outsideClosureChanges": 0
+    },
+    "runtimeMs": 11781.778625
+  },
+  "inheritedFilesystemJsonInputs": {
+    "path": "runtime-filesystem-json-inputs.json",
+    "files": 11,
+    "manifestSha256": "9d8b9152e41c62f119c52472e9762313447a08dffe62026a6d51da13193da179",
+    "allBaselineSourceAndPrHeadBlobsMatch": true,
+    "allBaselineAndCandidateBytesMatch": true
   },
   "inputs": {
     "spot": "BTN_open_BB_call",
+    "fingerprintSha256": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
+    "seatRowsSha256": "a115b43c5fa038493620a4bf45751f09e5a0b6d76d1d8c6f8289342ac36b5e0d",
     "board": "Js8s5d",
     "turn": "3c",
     "river": "2h",
-    "fingerprintSha256": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
-    "seatRowsSha256": "a115b43c5fa038493620a4bf45751f09e5a0b6d76d1d8c6f8289342ac36b5e0d",
-    "equalBetweenRuns": true
+    "identicalBetweenRuns": true
   },
-  "digestMethod": "SHA-256 of raw prompt strings and JSON.stringify(output objects), matching hu-v7-parity digest helper.",
+  "digestMethod": "SHA-256 of raw prompt strings and JSON.stringify(output objects), matching hu-v7-parity digest helper",
   "rawCaptureEnvelopes": {
     "baseline": {
-      "sha256": "ad3fdc80e75e693387f8c299c58ddfb132cf74009f39ec52635574f6bb8d2a84",
-      "bytes": 2390646,
-      "published": false
+      "path": "baseline-capture.json.gz",
+      "gzipSha256": "ef84765648b12fdb8fc51b1c5b544179229da32039c1273fdbd2225cfb4122f8",
+      "compressedBytes": 65948,
+      "uncompressedSha256": "cddcef5f18bf3118df4d95b551f3a707f3b614e3b49734b814e31e79158ed838",
+      "uncompressedBytes": 2390917
     },
     "candidate": {
-      "sha256": "1b2b31b40d2657fb004355be55ad12186f43c11f633ed6b30e6339dfe38d1049",
-      "bytes": 2390648,
-      "published": false
+      "path": "candidate-capture.json.gz",
+      "gzipSha256": "8f38562a9fbd4f25b6070f27035e4b2f5cb95e92d252a01530b349fb95742a66",
+      "compressedBytes": 66040,
+      "uncompressedSha256": "9bb4937413ad957dd7ad8ed6943d79d389af23a53bea70a1750b913d73c9a8db",
+      "uncompressedBytes": 2390921
     }
   },
   "canonicalOutputArtifact": {
     "path": "raw-standard-output-objects.json.gz",
-    "gzipSha256": "db2eac5468111dffd02f4bb6475876506825fbcc59ed13993dc8e339b206fba6",
+    "gzipSha256": "9f336573051bdf4439e01e44d9766658ac9b0d1dc598b597cc1774c0b07e6767",
     "compressedBytes": 48968,
     "uncompressedCanonicalObjectSha256": "13e2e209855c33995d3cfceb04ee1d0de1faad0aa7f953c72657618cc8450185",
+    "uncompressedBytes": 886818,
     "outputCount": 13,
     "extraction": "gzip -dc raw-standard-output-objects.json.gz > canonical-outputs.json"
   },
