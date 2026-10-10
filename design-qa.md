@@ -848,3 +848,8 @@ Verification:
 ## 2026-10-10 — Service-site hero range axes follow-up
 - Browser QA on the service-site hero: desktop 169-cell matrix retained square cell geometry; action-frequency widths use the existing shared colors and are unchanged, with common band baselines/no stepped edges and centered labels. On the tested real postflop range, A5o displayed 75% reach, AA/AKo/66 100%, and 32o no fill; selecting A5o retained click-to-freeze behavior.
 - Mobile QA at 390×844 and 320×740: the 169-cell desktop chart remains full width and square; the separate subdued decorative mobile chart remains inert and hidden from assistive technology, with headline and CTAs readable and fitting. No layout, tour cadence, or interaction changes.
+
+## 2026-10-10 — Remove Agent sync note from Sessions list
+- Removed only the four-locale explanatory paragraph above the Sessions list. The separate saved-hand detail disclosure, Agent history rows and storage, ranked count rows, sync, and import consent are unchanged.
+- A synthetic localStorage fixture verifies that the note is absent in all four locales while the saved Agent row and stored record remain. No authenticated account or real user history was used.
+- Focused session-history tests 7/7, typecheck, build, and Sites tests 7/7 passed. Build retains the existing large-chunk warning. The full frontend suite had 1,237 tests: 1,149 passed, 80 failed, 8 skipped; observed failures include absent ignored continuation datasets, local middleware listen restrictions, and process-supervision checks. No browser visual walkthrough was available in this execution environment.

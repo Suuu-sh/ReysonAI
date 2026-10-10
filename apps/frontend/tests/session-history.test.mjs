@@ -13,8 +13,8 @@ const hand={at,tableId:'saved-table',pos:'BTN',returnBb:2,vpip:true,pfr:false,th
 const answer={spotId:'UTG_open',hand:'AA',cards:['As','Ah'],action:'open',result:'best',score:1};
 const practice={at:at-100,answered:1,score:1,durationMs:1000,hands:[answer]};
 const props={drills:[{id:'one',name:'Exact saved drill',sessions:[practice]}],reviews:[{...practice,id:'review-one'}],drafts:{one:{drillName:'Saved draft',reviewOnly:false,savedAt:at+100,elapsedMs:3000,session:{answered:1,score:1,log:[answer]}}},onResume(){}};
-async function harness(run,fetcher=async()=>{throw Error('unexpected network')},extra={},saved=[hand]) {
- const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/learn/sessions'});dom.window.localStorage.setItem('reysonai:agent-hands:v1',JSON.stringify(saved));dom.window.localStorage.setItem('reysonai:locale:v1','en');
+async function harness(run,fetcher=async()=>{throw Error('unexpected network')},extra={},saved=[hand],locale='en') {
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/learn/sessions'});dom.window.localStorage.setItem('reysonai:agent-hands:v1',JSON.stringify(saved));dom.window.localStorage.setItem('reysonai:locale:v1',locale);
  const previous={window:globalThis.window,document:globalThis.document,HTMLElement:globalThis.HTMLElement,fetch:globalThis.fetch};Object.assign(globalThis,{window:dom.window,document:dom.window.document,HTMLElement:dom.window.HTMLElement,fetch:fetcher,IS_REACT_ACT_ENVIRONMENT:true});
  const root=createRoot(dom.window.document.querySelector('#root'));
  const click=async text=>{const b=[...dom.window.document.querySelectorAll('button')].find(b=>b.textContent===text);assert.ok(b,`missing ${text}`);await act(async()=>b.click());};
@@ -23,6 +23,13 @@ async function harness(run,fetcher=async()=>{throw Error('unexpected network')},
 test('legacy Agent summaries remain separate hands, never gain invented sessions/accuracy or rewrite storage',async()=>{
  const records=[hand,{...hand,returnBb:-3},{at:'invalid'}];const before=JSON.stringify(records),rows=sessionHistoryRows([],records,{});assert.equal(rows.length,2);assert.ok(rows.every(row=>!('sessionId' in row.record)&&!('score' in row.record)));assert.equal(JSON.stringify(records),before);
  await harness(async({dom,click})=>{const stored=dom.window.localStorage.getItem('reysonai:agent-hands:v1');await click('Agent matches');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,2);assert.ok([...dom.window.document.querySelectorAll('tbody tr')].every(r=>r.children[5].textContent==='—'));await click('Saved hand · saved-table');assert.match(dom.window.document.body.textContent,/without session IDs, cards or action logs/);await click('Sessions');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,2);assert.equal(dom.window.localStorage.getItem('reysonai:agent-hands:v1'),stored);},undefined,{},records);
+});
+test('Sessions removes the Agent storage note in every locale while keeping the saved Agent row',async()=>{
+ for(const locale of ['en','ja','zh-CN','es']) await harness(async({dom})=>{
+  assert.equal(dom.window.document.querySelector('.sessions-source-note'),null);
+  assert.ok([...dom.window.document.querySelectorAll('.sessions-row-link')].some(button=>button.textContent.includes('saved-table')));
+  assert.match(dom.window.localStorage.getItem('reysonai:agent-hands:v1'),/saved-table/);
+ },undefined,{},[hand],locale);
 });
 test('drill/review/draft exact logs, resume and list Back survive mode switching',async()=>{
  const resumed=[];await harness(async({dom,click})=>{await click('Drills');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,3);await click('Saved draft');assert.match(dom.window.document.body.textContent,/AA/);await click('Resume');assert.equal(resumed[0].status,'draft');assert.deepEqual(resumed[0].hands,[answer]);await click('Sessions');await click('In progress');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,1);await click('Completed');await click('Review drill');assert.match(dom.window.document.body.textContent,/Your recorded action/);},undefined,{onResume:r=>resumed.push(r)});
