@@ -2,7 +2,7 @@ import type { Profile } from "../profile.ts";
 import type { Icon } from "@phosphor-icons/react";
 import { BrandIcon } from "./BrandIcon.tsx";
 import { CaretDoubleLeft, ChartBar, CaretDoubleRight, ClockCounterClockwise, GraduationCap, SquaresFour, GearSix } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useState, type PointerEvent as ReactPointerEvent } from "react";
 import { ACCOUNT_SECTION, AccountMenu } from "../account/AccountMenu.tsx";
 import "../account/preferences.ts";
 import { localized } from "../i18n.ts";
@@ -46,15 +46,30 @@ function readInitialCollapsed() {
 
 export function Sidebar({ activeSection, onSectionChange, profile = null, onEditProfile }: { activeSection: string; onSectionChange: (section: string) => void; profile?: Profile | null; onEditProfile?: () => void; onLogout?: () => void }) {
   const [collapsed, setCollapsed] = useState(readInitialCollapsed);
+  const [hoverExpanded, setHoverExpanded] = useState(false);
   const toggle = (next: boolean) => {
     setCollapsed(next);
     try { window.localStorage.setItem(COLLAPSE_KEY, next ? "1" : "0"); } catch {}
+  };
+  const onPointerEnter = (event: ReactPointerEvent<HTMLElement>) => {
+    if (!collapsed || event.pointerType === "touch") return;
+    if (window.matchMedia("(hover: hover) and (pointer: fine) and (min-width: 651px)").matches) setHoverExpanded(true);
+  };
+  const visuallyCollapsed = collapsed && !hoverExpanded;
+  const toggleSidebar = () => {
+    if (hoverExpanded) {
+      toggle(true);
+      setHoverExpanded(false);
+      return;
+    }
+    toggle(!collapsed);
   };
 
   return (
     <>
     {!collapsed && <div className="sidebar-backdrop" aria-hidden="true" onClick={() => toggle(true)} />}
-    <aside className={`app-sidebar${collapsed ? " is-collapsed" : ""}`} aria-label="ReysonAI サイドバー">
+    <aside className={`app-sidebar${collapsed ? " is-collapsed" : ""}${hoverExpanded ? " is-hover-expanded" : ""}`} aria-label="ReysonAI サイドバー"
+      onPointerEnter={onPointerEnter} onPointerLeave={() => setHoverExpanded(false)}>
       <div className="sidebar-heading">
         <div className="brand">
           <BrandIcon size={30} />
@@ -62,17 +77,6 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
             Reyson<span>AI</span>
           </div>
         </div>
-        <button
-          type="button"
-          className="sidebar-toggle"
-          aria-label={collapsed ? "サイドバーを展開" : "サイドバーを折りたたむ"}
-          aria-expanded={!collapsed}
-          aria-controls="main-navigation"
-          title={collapsed ? "サイドバーを展開" : "サイドバーを折りたたむ"}
-          onClick={() => toggle(!collapsed)}
-        >
-          {collapsed ? <CaretDoubleRight size={17} /> : <CaretDoubleLeft size={17} />}
-        </button>
       </div>
       <nav id="main-navigation" className="header-nav" aria-label="メインナビゲーション">
         {navigationGroups.map(group => (
@@ -101,13 +105,24 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
           </div>
         ))}
       </nav>
-      {profile ? <AccountMenu profile={profile} collapsed={collapsed}
+      {profile ? <AccountMenu profile={profile} collapsed={visuallyCollapsed}
         onNavigate={tab => onSectionChange(`${ACCOUNT_SECTION}#${tab}`)} onLogout={() => onSectionChange(LOGOUT_SECTION)} /> : (
         <div className="header-meta">
           <strong>Range Explorer</strong>
           <small>READ-ONLY / v0.1</small>
         </div>
       )}
+      <button
+        type="button"
+        className="sidebar-toggle"
+        aria-label={visuallyCollapsed ? "サイドバーを展開" : "サイドバーを折りたたむ"}
+        aria-expanded={!visuallyCollapsed}
+        aria-controls="main-navigation"
+        title={visuallyCollapsed ? "サイドバーを展開" : "サイドバーを折りたたむ"}
+        onClick={toggleSidebar}
+      >
+        {visuallyCollapsed ? <CaretDoubleRight size={17} /> : <CaretDoubleLeft size={17} />}
+      </button>
     </aside>
     <nav className="mobile-tab-bar" aria-label={localized("Main navigation", "メインナビゲーション")}>
       {[
