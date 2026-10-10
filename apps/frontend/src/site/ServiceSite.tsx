@@ -138,9 +138,9 @@ export function RangeMatrix({ range, selected, onSelect }: { range: HeroRange; s
         const mixed = range.actions.filter(option => values[option] > 0).sort((a, b) => stripAggression.indexOf(a) - stripAggression.indexOf(b));
         const reach = postflop ? range.reach?.[hand] ?? 0 : 1;
         let left = 0;
-        const fills = mixed.map(option => {
-          const width = values[option];
-          const fill = <span key={option} style={{ left: `${left}%`, width: `${width}%`, height: `${reach * 100}%`, background: actionColor(option) }} />;
+        const fills = stripAggression.map(option => {
+          const width = values[option] ?? 0;
+          const fill = <span key={option} data-action={option} style={{ left: `${left}%`, width: `${width}%`, height: `${reach * 100}%`, background: actionColor(option), opacity: !unreachable && reach > 0 && width > 0 ? 1 : 0 }} />;
           left += width;
           return fill;
         });
@@ -148,7 +148,7 @@ export function RangeMatrix({ range, selected, onSelect }: { range: HeroRange; s
         return <button type="button" key={hand} className={`site-cell ${unreachable ? "is-unreachable" : `is-${action}${postflop ? " is-postflop" : ""}`}${selected === hand ? " is-selected" : ""}`}
           style={{ "--wave": wave, "--hero-action-color": actionColor(action) } as CSSProperties}
           aria-label={`${hand}: ${breakdown}`} aria-pressed={selected === hand} title={`${range.id} · ${hand} · ${breakdown}`} onClick={() => onSelect(hand)}>
-          <span className="site-cell-label">{hand}</span>{!unreachable && reach > 0 && <span className="site-cell-fill" aria-hidden="true">{fills}</span>}
+          <span className="site-cell-label">{hand}</span><span className="site-cell-fill" aria-hidden="true">{fills}</span>
         </button>;
       })}
     </fieldset>
@@ -284,9 +284,6 @@ function Header() {
       <Brand />
       <nav className="site-nav" aria-label={c.common.menuLabel}>
         {c.nav.map(item => <a key={item.href} href={item.href} onClick={() => setOpen(false)}>{item.label}</a>)}
-        <select className="site-lang site-nav-lang" value={locale} onChange={event => onLocaleChange(event.target.value as SiteLocale)} aria-label={c.common.languageLabel}>
-          {LOCALES.map(option => <option key={option.value} value={option.value} lang={option.value}>{option.label}</option>)}
-        </select>
       </nav>
       <div className="site-header-actions">
         <select className="site-lang" value={locale} onChange={event => onLocaleChange(event.target.value as SiteLocale)} aria-label={c.common.languageLabel}>

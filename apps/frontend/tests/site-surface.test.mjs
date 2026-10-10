@@ -415,12 +415,21 @@ test("hero range cells map action shares to exact widths and reach to common bot
   const checkFill = (hand, reach, shares) => {
     const markup = cell(hand);
     assert.ok(markup, `${hand} cell renders`);
-    if (reach === 0) assert.doesNotMatch(markup, /site-cell-fill/);
-    else for (const [index, [action, width]] of shares.entries()) {
-      const left = shares.slice(0, index).reduce((sum, [, part]) => sum + part, 0);
-      assert.ok(markup.includes(`left:${left}%;width:${width}%;height:${reach * 100}%;background:${color(action)}`), `${hand}/${action} exact share and common reach height`);
+    assert.match(markup, /class="site-cell-fill" aria-hidden="true"/);
+    const fills = new Map([...markup.matchAll(/<span data-action="([^"]+)" style="([^"]+)"><\/span>/g)].map(([, action, style]) => [action, style]));
+    assert.equal(fills.size, 10, `${hand} keeps stable action layers between ranges`);
+    if (reach === 0) {
+      for (const [action, style] of fills) assert.match(style, /opacity:0$/, `${hand}/${action} zero-reach layer stays hidden`);
+    } else {
+      for (const [index, [action, width]] of shares.entries()) {
+        const left = shares.slice(0, index).reduce((sum, [, part]) => sum + part, 0);
+        assert.equal(fills.get(action), `left:${left}%;width:${width}%;height:${reach * 100}%;background:${color(action)};opacity:1`, `${hand}/${action} exact share and common reach height`);
+      }
+      const positive = new Set(shares.map(([action]) => action));
+      for (const [action, style] of fills) {
+        if (!positive.has(action)) assert.match(style, /width:0%;.*opacity:0$/, `${hand}/${action} zero-share layer stays hidden`);
+      }
     }
-    assert.equal((markup.match(/<span style="left:/g) ?? []).length, reach > 0 ? shares.length : 0, `${hand} omits zero-share actions`);
     assert.match(markup, /site-cell-label/);
   };
   checkFill("AA", 1, [["bet33", 100]]);
@@ -434,6 +443,17 @@ test("hero range cells map action shares to exact widths and reach to common bot
   const preflop = { ...range, stage: "opening", reach: undefined, hands: Object.fromEntries(matrixHands.map(hand => [hand, { check: 0, bet33: hand === "AA" ? 100 : 0, bet75: 0, bet125: 0 }])) };
   const preflopHtml = renderToStaticMarkup(createElement(RangeMatrix, { range: preflop, selected: "AA", onSelect() {} }));
   assert.ok(preflopHtml.includes(`left:0%;width:100%;height:100%;background:${color("bet33")}`), "preflop without reach metadata fills full height");
+
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /\.has-motion \.site-cell-fill span\s*\{[^}]*transition: left \.42s[^}]*width \.42s[^}]*height \.42s[^}]*opacity \.42s/);
+  assert.match(css, /@media screen and \(max-width: 720px\)[\s\S]*?\.has-motion \.site-hero-range \.site-cell-fill span \{ transition: none; \}/);
+});
+
+test("the service site keeps a single locale selector in the persistent header actions", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const header = source.match(/function Header\(\)[\s\S]*?function emphasizeHeadlineReason/)?.[0] ?? "";
+  assert.equal((header.match(/className="site-lang"/g) ?? []).length, 1);
+  assert.doesNotMatch(header, /site-nav-lang/);
 });
 
 test("the hero key describes only used action colors, not the situation", async () => {
