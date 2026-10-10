@@ -2,7 +2,7 @@ name: Verify authenticated free MCP
 on:
   pull_request:
     branches: [development, main]
-    paths: ['apps/mcp/**', 'apps/backend/src/account.ts', 'apps/backend/migrations/0007_accounts.sql', 'apps/frontend/src/estimated/**', '.github/workflows/verify-mcp.yml']
+    paths: ['apps/mcp/**', 'apps/backend/src/index.ts', 'apps/backend/src/worker.ts', 'apps/backend/src/account.ts', 'apps/backend/migrations/0007_accounts.sql', 'apps/frontend/src/estimated/**', '.github/workflows/verify-mcp.yml']
   push:
     branches: ['feat/authenticated-free-mcp']
     paths: ['apps/mcp/**', '.github/workflows/verify-mcp.yml']
@@ -33,6 +33,9 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build:check
-      - name: Existing API account and range contracts remain unchanged
+      - name: Dry-run the composed API Worker bundle without deploying
         working-directory: apps/backend
-        run: node --experimental-strip-types --test tests/account.test.mjs tests/account-local.test.mjs tests/native-account.test.mjs tests/preflop-datasets.test.mjs
+        run: npx --yes wrangler@4.147.0 deploy --dry-run --config wrangler.jsonc --outdir ../mcp/.local/api-build
+      - name: Existing API and account contracts remain unchanged
+        working-directory: apps/backend
+        run: node --experimental-strip-types --test tests/index.test.mjs tests/postflop.test.mjs tests/preflop-datasets.test.mjs tests/postflop-runtime-config.test.mjs tests/account.test.mjs tests/account-local.test.mjs tests/native-account.test.mjs
