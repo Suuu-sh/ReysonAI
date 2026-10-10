@@ -325,6 +325,65 @@
           "source_graph": "Official reviewedSourcePaths and fileRecord,114 retained paths;113 byte-identical and locale1 modified."
         },
         "limitations": "Read-only saved-byte/source review; no generation or rerun of original quantitative quality. Parent must install and run unmodified restore/verify and applicable CI. Frozen-candidate390px Stats/Close/reopen and loading hold/release remain incomplete. No strict final-head D1,live-auth E2E,merge/main/production or deployment approval."
+      },
+      {
+        "date": "2026-10-10",
+        "reviewer": "Independent source-only MCP/API consolidation reviewer",
+        "reviewer_task": "/root/source_only_review",
+        "reviewed_source_commit": "9c69754f46061e5ccc8dea281c6770402cc94f98",
+        "report": "apps/backend/MCP_CONSOLIDATION_SOURCE_REVIEW.md",
+        "report_sha256": "e33fba813b402da01a127b6edbb99598cdd2d8ad594d1db9e475a8a17efc140c",
+        "scope": "Workflow/source configuration only: MCP package trigger coverage and dependency installation in the API Worker verify/deploy jobs. No renewed strategy, numerical, or saved-data approval.",
+        "blocking_findings": 0,
+        "before_content_sha256": "306b6fbe738ccf409c13be9e89c914890b0d33289e0e3613dde870e083004f19",
+        "after_content_sha256": "c413e9d2c057838e30601f0bb26c107ea829de2ac3336799e3e5982966fec021",
+        "source_records_before": 195,
+        "source_records_after": 195,
+        "changes": {
+          "modified": [
+            ".github/workflows/deploy-worker.yml"
+          ],
+          "added": [],
+          "removed": [],
+          "unchanged": 194
+        },
+        "source_identity": {
+          "previous": {
+            "path": ".github/workflows/deploy-worker.yml",
+            "bytes": 17820,
+            "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
+          },
+          "current": {
+            "path": ".github/workflows/deploy-worker.yml",
+            "bytes": 18213,
+            "sha256": "3a9243cb6d964fb0201a5d51c6bd31a65c3d4352dea59e3a6d07345d3dcb7df9"
+          }
+        },
+        "verification": {
+          "reviewed_delta": "Adds apps/mcp/src/**, package.json and package-lock.json paths and runs npm ci --ignore-scripts in verify and deploy before reviewed payload restoration/deployment.",
+          "exact_head_mcp_ci": "Run #83: typecheck and build check passed; 68 tests passed, zero failures or skips; composed API Worker Wrangler dry-run passed.",
+          "exact_head_preflop_gate": "Restore jobs currently fail closed because this workflow source record had not yet been renewed; no downstream verification/deployment ran.",
+          "stage3_dependency": "Stage 3 separately binds this workflow and the Stage 2 receipt; its own source records are renewed in a companion receipt update."
+        },
+        "verified_unchanged": {
+          "artifact_records": 1888,
+          "artifact_bytes": 79002248,
+          "archive": {
+            "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+            "bytes": 1747857,
+            "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+            "format": "ustar+gzip"
+          },
+          "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+          "counts": {
+            "catalog": 3115,
+            "saved": 1611,
+            "unreachable": 1504,
+            "hands": 272259
+          },
+          "prior_review_history_preserved": true
+        },
+        "limitations": "Source-only renewal. No strategy generation, policy/data edit, production configuration change, deployment, merge, or Worker deletion."
       }
     ],
     "copy_amendments": [
@@ -10251,8 +10310,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 17820,
-      "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
+      "bytes": 18213,
+      "sha256": "3a9243cb6d964fb0201a5d51c6bd31a65c3d4352dea59e3a6d07345d3dcb7df9"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -11220,7 +11279,7 @@
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
     }
   ],
-  "content_sha256": "306b6fbe738ccf409c13be9e89c914890b0d33289e0e3613dde870e083004f19",
+  "content_sha256": "c413e9d2c057838e30601f0bb26c107ea829de2ac3336799e3e5982966fec021",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
