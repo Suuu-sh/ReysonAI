@@ -1,0 +1,18 @@
+{
+  "scenario": "owner-missing",
+  "source_commit": "339b97a3f2fc4740fb621d098e74ee4f458957c7",
+  "network": "All fetch intercepted into unmodified routeAccount with in-memory SQLite and synthetic users. No real account access/upload.",
+  "status": "PASS",
+  "read_mismatch_rejected_before_adoption": true,
+  "prior_snapshot_preserved": true,
+  "writes_paused": true,
+  "explicit_same_owner_refresh_recovers": true,
+  "writes": [
+    {
+      "cookieOwner": "A",
+      "expectedOwner": "A",
+      "status": 200,
+      "bytes": 266
+    }
+  ]
+}

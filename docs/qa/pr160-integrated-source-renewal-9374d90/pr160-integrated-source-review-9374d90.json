@@ -1,0 +1,1059 @@
+{
+  "schema_version": 1,
+  "decision": "PASS_INDEPENDENT_SOURCE_CONTEXT_ONLY",
+  "review_scope": "Fresh scoped application-code and source-context review for PR #160. This report is not an installable numerical acceptance receipt.",
+  "source_commit": "9374d90f31fe8891ceb924c29eb436edefd76e4c",
+  "source_tree": "49dca15db8b1bdc4ba380a6c8994b6dc78d614a5",
+  "base_commit": "4114419a18ac70c1a9093f6bb39e529dee0cafe6",
+  "source_parents": [
+    "7530de5c102f00ed9f85f03032000e1897f42bcb",
+    "4114419a18ac70c1a9093f6bb39e529dee0cafe6"
+  ],
+  "pull_request": "https://github.com/Suuu-sh/ReysonAI/pull/160",
+  "comparison": {
+    "files": 67,
+    "insertions": 3268,
+    "deletions": 42,
+    "notes": "The Sessions explanatory-note deletion is already in development through PR #166. This review uses the effective integrated diff, not the original PR149 base or old PR160 code PASS."
+  },
+  "reviewer": {
+    "task": "/root/review_pr160_integrated_source",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "xhigh",
+    "identity_evidence": "Parent supplied the actual native collaboration spawn metadata: explicit model=gpt-6-astra, reasoning_effort=xhigh, fork_turns=none at 2026-10-10 09:32 UTC, returning this exact task. This is provenance for the present native review; it does not upgrade the older cloud review's unknown model.",
+    "independent_from_implementation_author": true,
+    "authored_application_patch": false,
+    "private_session_or_credential_files_accessed": false,
+    "support_review_task": "/root/review_pr160_integrated_source/verify_source_closure_conservation"
+  },
+  "implementation_author": {
+    "task": "01a12141-db67-70c1-a95e-228cae8f5088",
+    "integration_turn": "01a12508-8fb9-7376-aca7-a5f3828d5368",
+    "model": null,
+    "model_status": "Unknown; parent reports actual author model is not exposed.",
+    "numerical_author_provenance": "Historical numerical author/reviewer model and task fields must be retained verbatim. The current integration author is not being represented as a new numerical author."
+  },
+  "code_findings": [],
+  "code_review": {
+    "owner_authority": "GET /data selects the row and returns ownerId from the same authenticated cookie user. Client adoption requires a match with /session. POST expectedOwner is an assertion only; the cookie selects the database row. Missing or mismatched owner is rejected with 409 before account_data creation or update.",
+    "read_races": "A mismatched /session versus /data pair does not relabel or adopt another account's snapshot. The prior in-memory snapshot remains exportable; writes pause. For a verified changed owner whose read fails, old account data is cleared rather than exposed as the new user's.",
+    "writes_versions": "The 350ms autosave waits for a pending focus revalidation. The serialized write queue, expected snapshot owner, backend version predicate and409 mapping retain conflict behavior. Error states pause later automatic writes, while dirty records remain exportable and failed dirty logout does not discard them.",
+    "guest_consent": "Signed-in Agent stats read accountStorage, which excludes the legacy guest key. Guest history is read only from local browser storage when signed out or during explicit consented import. Import is replacement, not merge; ranked keys remain excluded and guest source is not deleted.",
+    "size_boundary": "Guest import measures UTF-8 bytes of the complete serialized body including version, import flags, consent and expectedOwner before replacing account memory. Exactly 500,000 bytes are allowed; larger imports preserve account memory, backend snapshot and guest source. Ordinary oversize saves are rejected by the unchanged backend 500,000-byte limit and leave dirty export available.",
+    "codec": "Only the account wire format is compacted. All 512 flag states and 16 optional-field combinations preserve supported record facts; legacy object arrays and unknown object fields round trip. Guest-local encoding remains unchanged, account export expands the compact representation, and the existing 3,000-row rolling limit is retained.",
+    "legacy_compatibility": "Old clients without expectedOwner deliberately fail closed on writes while authenticated reads remain possible. This is not old-client write compatibility. Export-before-reload/sign-out recovery is disclosed in the PR and copy.",
+    "privacy_security": "Destination, cookie authority, OAuth scope, credential persistence, deployment configuration and schema are unchanged. Test execution used synthetic users and isolated in-memory SQLite, with no real account history sent.",
+    "numerical_semantics": "Fresh source inspection confirms AgentTable passes classification profileId but no registry to createAgent; its default emptyRegistry cannot select a different strategy. Integrated AgentTable also rejects villain profile candidates when building its standard HU kit. The dedicated MW3 hand path accepts no history/profile argument. The changed practice-history source affects records and classification display, not saved numerical strategies.",
+    "copy": "Both 500 KB recovery messages include Chinese and Spanish translations in product-direct.json. The numerical identifiers, saved action frequencies, facts and game rules are not translated or changed."
+  },
+  "verification": {
+    "source_materialization": "56 directly inspected source/config/test files were fetched at exact head and independently checked against their Git blob SHA before execution.",
+    "runtime": "Linux Node v24.19.0",
+    "backend_account_native": {
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "command": "node --experimental-strip-types --test apps/backend/tests/account.test.mjs apps/backend/tests/native-account.test.mjs",
+      "log": "backend-independent-tests.log"
+    },
+    "fresh_codec": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "exhaustive_round_trip_cases": 8192,
+      "command": "node --test independent-codec.test.mjs",
+      "test": "independent-codec.test.mjs",
+      "log": "independent-codec.log"
+    },
+    "harness_syntax": {
+      "node_check": "PASS",
+      "bash_n": "PASS"
+    },
+    "not_independently_run": [
+      "Full frontend suite",
+      "Production build",
+      "Typecheck",
+      "Browser visual walkthrough",
+      "Real-account authentication or upload",
+      "Current-head Linux official numerical snapshot/acceptance replay"
+    ]
+  },
+  "ci": {
+    "source_failure_job": "https://github.com/Suuu-sh/ReysonAI/actions/runs/38041309735/job/114181945840",
+    "source_failure_verified": "restore-reviewed-preflop.mjs:50 rejects Review source/configuration identity changed. It is a valid stale-source gate, not a network failure.",
+    "remaining_source_identity_failure_runs": [
+      38041309728,
+      38041309735,
+      38041309812
+    ],
+    "historical_diagnostic_run": "https://github.com/Suuu-sh/ReysonAI/actions/runs/38041309772",
+    "historical_diagnostic": {
+      "run_head": "9374d90f31fe8891ceb924c29eb436edefd76e4c",
+      "harness_merge_checkout": "82ec0b5727730a4dd6ca47dfb1fae0a1b0bd8507",
+      "actual_reviewed_source": "339b97a3f2fc4740fb621d098e74ee4f458957c7",
+      "actual_reviewed_tree": "228bde91e060d20f36aee9c53e6eb7a60ac16c6b",
+      "scope_correction": "The workflow success proves the fixed historical source's diagnostic only. Workflow configuration and actual checkout logs both establish this; it is not a current 9374d90 official collector PASS.",
+      "subjects": 16,
+      "raw_files": 112,
+      "raw_bytes": 235515283,
+      "historical_joint_warnings": 561,
+      "receipt_issued": false,
+      "artifact_id": 11666226479
+    },
+    "merge_eligible": false,
+    "production_eligible": false
+  },
+  "renewal_boundary": {
+    "source_context_approved": true,
+    "installable_acceptance_issued": false,
+    "formal_receipts_modified": 0,
+    "external_repository_writes": 0,
+    "production_writes": 0,
+    "numerical_regeneration": false,
+    "new_numerical_review": false,
+    "human_approval_claimed": false,
+    "hu_foundation_approval": false,
+    "permitted_scope": "A separate authorized author may prepare mechanical source-only renewal artifacts for this reviewed source, subject to every condition below. This report alone is not final gate acceptance.",
+    "conditions": [
+      "Bind the renewal to exact reviewed source 9374d90f31fe8891ceb924c29eb436edefd76e4c/tree49dca15db8b1bdc4ba380a6c8994b6dc78d614a5 and this report's immutable hash. Any application/generator/collector/config source difference requires fresh review.",
+      "Replay unchanged official source collectors and verifiers on the integrated source with the saved LFS payloads. For MW3 use Linux Node 22.20.0 and require exact canonical compressed-byte equality, including gzip byte 9. No gzip normalization, archive replacement, policy authoring, numerical generator or packager run is permitted.",
+      "Independently verify Stage2 and Stage3 saved archive/raw-artifact identities, counts, numerical fingerprints and limitations remain those of current development. Do not use old ea8e712-era receipts as the baseline.",
+      "Finalize Stage2 source-only receipt first; then collect/review Stage3 against the exact finalized Stage2 receipt bytes because Stage3 includes that receipt in its source graph.",
+      "For all 16 MW3 subjects preserve raw artifact hashes, archive hashes/bytes, input/recipe identities, policies, evidence, seven limitations per subject, 561 historical joint warnings and 32 delivery pins. Preserve historical numerical author/reviewer provenance; attach this review as new source-context provenance only.",
+      "Any renewal SQL change is limited to the receipt-derived second-line comment hash; its archive hash and every SQL statement byte remain unchanged. Do not run SQL against any database.",
+      "Keep gates, registry pins, HU foundation archive/manifest and its existing acceptance state unchanged. Never convert this source review into HU numerical approval or GTO/solver validation.",
+      "Preserve historical receipts/evidence with their original identities and limitations. Use truthful new reviewer task/model metadata, retain unknown current implementation-author model as unknown, and do not rewrite old unverified reviewer identities.",
+      "After renewal, rerun official acceptance, restore, source-identity, relevant tests and required CI on the final commit. Review the final allowed metadata-only delta and current branch tips before any separate merge decision. No merge/deployment authority is granted here."
+    ],
+    "allowed_formal_metadata_surface": [
+      "configs/multiway-preflop-stage2.review.json: only source records, their aggregate identity and truthful source-context provenance; all saved artifact/archive/numerical/count fields stay fixed.",
+      "configs/multiway-preflop-stage3.review.json: the same source-only fields, collected only after the finalized Stage2 receipt is bound as a source.",
+      "The 16 existing artifacts/postflop/mw3-*.manifest.json files: only source_tree, sources, sources_sha256 and dependent content identity.",
+      "The 16 existing configs/mw3-*.review.json files: new matching source/manifest identity and source-context provenance, retaining historical numerical provenance, evidence, limitations and delivery pins.",
+      "The 16 existing artifacts/postflop/mw3-*.sql files: only the receipt-derived second-line comment hash. Its archive hash and every remaining SQL statement byte stay identical.",
+      "New supporting QA evidence outside every protected source graph may preserve this report and mechanical verification results. No implementation, source-root, parser, gate, frozen-model, compatibility-receipt, pin, archive or numerical data edit is included."
+    ]
+  },
+  "limitations": [
+    "Code/source-context PASS is narrower than final receipt installation or merge readiness.",
+    "Git-blob/LFS-pointer conservation is not a substitute for the mandatory current-head raw/canonical payload replay.",
+    "The existing full frontend suite and build claims in the PR are not promoted to independent passes by this report.",
+    "All historical policies remain AI estimates with their recorded limitations; no new numerical quality, HU-foundation approval, human sign-off or GTO claim is made."
+  ],
+  "source_closure_review": {
+    "method": "Unmodified official source-path function bodies executed read-only against independently fetched Git-blob-verified bytes. MW3 uses the exact vendored AST parser and official immutable source constants. No collectMw3Snapshot, archive restoration, generation, gate simulation or receipt issuance is performed.",
+    "stage2": {
+      "source_count": 196,
+      "added": [
+        {
+          "path": "apps/frontend/src/agent/agent-history-codec.ts",
+          "bytes": 2732,
+          "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+        }
+      ],
+      "removed": [],
+      "modified": [
+        {
+          "path": "apps/backend/src/account.ts",
+          "before": {
+            "path": "apps/backend/src/account.ts",
+            "bytes": 13612,
+            "sha256": "4407807e9dc8204c298bc5c2a7c5f29f2a68d6e120d132510d3e46af083093da"
+          },
+          "after": {
+            "path": "apps/backend/src/account.ts",
+            "bytes": 13982,
+            "sha256": "44f048b0514c2d8919d9a7350f9de8370b88ffad6bbfb06db99bb67bd3a93926"
+          }
+        },
+        {
+          "path": "apps/frontend/src/account/session.ts",
+          "before": {
+            "path": "apps/frontend/src/account/session.ts",
+            "bytes": 7034,
+            "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+          },
+          "after": {
+            "path": "apps/frontend/src/account/session.ts",
+            "bytes": 9937,
+            "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+          }
+        },
+        {
+          "path": "apps/frontend/src/locales/product-direct.json",
+          "before": {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "bytes": 45331,
+            "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+          },
+          "after": {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "bytes": 46621,
+            "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+          }
+        }
+      ]
+    },
+    "stage3": {
+      "source_count": 100,
+      "added": [
+        {
+          "path": "apps/frontend/src/agent/agent-history-codec.ts",
+          "bytes": 2732,
+          "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+        }
+      ],
+      "removed": [],
+      "modified": [
+        {
+          "path": "apps/frontend/src/account/session.ts",
+          "before": {
+            "path": "apps/frontend/src/account/session.ts",
+            "bytes": 7034,
+            "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+          },
+          "after": {
+            "path": "apps/frontend/src/account/session.ts",
+            "bytes": 9937,
+            "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+          }
+        },
+        {
+          "path": "apps/frontend/src/locales/product-direct.json",
+          "before": {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "bytes": 45331,
+            "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+          },
+          "after": {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "bytes": 46621,
+            "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+          }
+        }
+      ]
+    },
+    "mw3": [
+      {
+        "spot": "CO_open_BTN_call_BB_call",
+        "manifest_path": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.manifest.json",
+        "source_count": 137,
+        "added": [
+          {
+            "path": "apps/frontend/src/agent/agent-history-codec.ts",
+            "bytes": 2732,
+            "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+          }
+        ],
+        "removed": [],
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "before": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "after": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 9937,
+              "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+            }
+          },
+          {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "before": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 45331,
+              "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 46621,
+              "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+            }
+          }
+        ]
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call",
+        "manifest_path": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.manifest.json",
+        "source_count": 138,
+        "added": [
+          {
+            "path": "apps/frontend/src/agent/agent-history-codec.ts",
+            "bytes": 2732,
+            "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+          }
+        ],
+        "removed": [],
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "before": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "after": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 9937,
+              "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+            }
+          },
+          {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "before": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 45331,
+              "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 46621,
+              "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+            }
+          }
+        ]
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_call",
+        "manifest_path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.manifest.json",
+        "source_count": 138,
+        "added": [
+          {
+            "path": "apps/frontend/src/agent/agent-history-codec.ts",
+            "bytes": 2732,
+            "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+          }
+        ],
+        "removed": [],
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "before": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "after": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 9937,
+              "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+            }
+          },
+          {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "before": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 45331,
+              "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 46621,
+              "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+            }
+          }
+        ]
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call",
+        "manifest_path": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.manifest.json",
+        "source_count": 138,
+        "added": [
+          {
+            "path": "apps/frontend/src/agent/agent-history-codec.ts",
+            "bytes": 2732,
+            "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+          }
+        ],
+        "removed": [],
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "before": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "after": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 9937,
+              "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+            }
+          },
+          {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "before": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 45331,
+              "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 46621,
+              "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+            }
+          }
+        ]
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_call",
+        "manifest_path": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.manifest.json",
+        "source_count": 138,
+        "added": [
+          {
+            "path": "apps/frontend/src/agent/agent-history-codec.ts",
+            "bytes": 2732,
+            "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+          }
+        ],
+        "removed": [],
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "before": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "after": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 9937,
+              "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+            }
+          },
+          {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "before": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 45331,
+              "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 46621,
+              "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+            }
+          }
+        ]
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call",
+        "manifest_path": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.manifest.json",
+        "source_count": 138,
+        "added": [
+          {
+            "path": "apps/frontend/src/agent/agent-history-codec.ts",
+            "bytes": 2732,
+            "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+          }
+        ],
+        "removed": [],
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "before": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "after": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 9937,
+              "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+            }
+          },
+          {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "before": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 45331,
+              "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 46621,
+              "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+            }
+          }
+        ]
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call",
+        "manifest_path": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.manifest.json",
+        "source_count": 138,
+        "added": [
+          {
+            "path": "apps/frontend/src/agent/agent-history-codec.ts",
+            "bytes": 2732,
+            "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+          }
+        ],
+        "removed": [],
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "before": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "after": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 9937,
+              "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+            }
+          },
+          {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "before": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 45331,
+              "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 46621,
+              "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+            }
+          }
+        ]
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_call",
+        "manifest_path": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.manifest.json",
+        "source_count": 138,
+        "added": [
+          {
+            "path": "apps/frontend/src/agent/agent-history-codec.ts",
+            "bytes": 2732,
+            "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+          }
+        ],
+        "removed": [],
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "before": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "after": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 9937,
+              "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+            }
+          },
+          {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "before": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 45331,
+              "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 46621,
+              "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+            }
+          }
+        ]
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call",
+        "manifest_path": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.manifest.json",
+        "source_count": 138,
+        "added": [
+          {
+            "path": "apps/frontend/src/agent/agent-history-codec.ts",
+            "bytes": 2732,
+            "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+          }
+        ],
+        "removed": [],
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "before": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "after": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 9937,
+              "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+            }
+          },
+          {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "before": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 45331,
+              "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 46621,
+              "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+            }
+          }
+        ]
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_call",
+        "manifest_path": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.manifest.json",
+        "source_count": 138,
+        "added": [
+          {
+            "path": "apps/frontend/src/agent/agent-history-codec.ts",
+            "bytes": 2732,
+            "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+          }
+        ],
+        "removed": [],
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "before": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "after": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 9937,
+              "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+            }
+          },
+          {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "before": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 45331,
+              "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 46621,
+              "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+            }
+          }
+        ]
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call",
+        "manifest_path": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.manifest.json",
+        "source_count": 138,
+        "added": [
+          {
+            "path": "apps/frontend/src/agent/agent-history-codec.ts",
+            "bytes": 2732,
+            "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+          }
+        ],
+        "removed": [],
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "before": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "after": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 9937,
+              "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+            }
+          },
+          {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "before": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 45331,
+              "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 46621,
+              "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+            }
+          }
+        ]
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call",
+        "manifest_path": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.manifest.json",
+        "source_count": 138,
+        "added": [
+          {
+            "path": "apps/frontend/src/agent/agent-history-codec.ts",
+            "bytes": 2732,
+            "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+          }
+        ],
+        "removed": [],
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "before": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "after": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 9937,
+              "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+            }
+          },
+          {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "before": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 45331,
+              "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 46621,
+              "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+            }
+          }
+        ]
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_call",
+        "manifest_path": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.manifest.json",
+        "source_count": 138,
+        "added": [
+          {
+            "path": "apps/frontend/src/agent/agent-history-codec.ts",
+            "bytes": 2732,
+            "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+          }
+        ],
+        "removed": [],
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "before": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "after": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 9937,
+              "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+            }
+          },
+          {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "before": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 45331,
+              "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 46621,
+              "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+            }
+          }
+        ]
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call",
+        "manifest_path": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.manifest.json",
+        "source_count": 138,
+        "added": [
+          {
+            "path": "apps/frontend/src/agent/agent-history-codec.ts",
+            "bytes": 2732,
+            "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+          }
+        ],
+        "removed": [],
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "before": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "after": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 9937,
+              "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+            }
+          },
+          {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "before": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 45331,
+              "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 46621,
+              "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+            }
+          }
+        ]
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call",
+        "manifest_path": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.manifest.json",
+        "source_count": 138,
+        "added": [
+          {
+            "path": "apps/frontend/src/agent/agent-history-codec.ts",
+            "bytes": 2732,
+            "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+          }
+        ],
+        "removed": [],
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "before": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "after": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 9937,
+              "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+            }
+          },
+          {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "before": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 45331,
+              "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 46621,
+              "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+            }
+          }
+        ]
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call",
+        "manifest_path": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.manifest.json",
+        "source_count": 138,
+        "added": [
+          {
+            "path": "apps/frontend/src/agent/agent-history-codec.ts",
+            "bytes": 2732,
+            "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
+          }
+        ],
+        "removed": [],
+        "modified": [
+          {
+            "path": "apps/frontend/src/account/session.ts",
+            "before": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 7034,
+              "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+            },
+            "after": {
+              "path": "apps/frontend/src/account/session.ts",
+              "bytes": 9937,
+              "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+            }
+          },
+          {
+            "path": "apps/frontend/src/locales/product-direct.json",
+            "before": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 45331,
+              "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+            },
+            "after": {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 46621,
+              "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
+            }
+          }
+        ]
+      }
+    ],
+    "all_deltas_equal_current_development": true,
+    "removed_paths": [],
+    "stage3_binding_note": "Source counts above describe the reviewed application head before renewal. The Stage3 record for configs/multiway-preflop-stage2.review.json must change again after Stage2 renewal, then be re-collected and verified.",
+    "full_evidence": {
+      "file": "current-source-closures.json",
+      "bytes": 564399,
+      "sha256": "b457f4b8f170cb3ed0ddefe9dd1111a836ea392c7a8af61ddc5c605ef25d9926"
+    },
+    "independent_base_traversal": "All 18 independently traversed current-development closures exactly equal the source records in their saved receipts/manifests.",
+    "support_git_blob_verified_files": 615
+  },
+  "reviewed_at_utc": "2026-10-10T09:49:03Z",
+  "remote_head_last_rechecked_utc": "2026-10-10T09:41:02Z",
+  "conservation_review": {
+    "complete_tree_delta": {
+      "paths": 67,
+      "modified": 13,
+      "added": 54,
+      "removed": 0
+    },
+    "exact_git_blob_verified_local_files": 615,
+    "base_matches_current_saved_source_ledgers": true,
+    "stage2": {
+      "base_sources": 195,
+      "head_sources": 196,
+      "added": [
+        "apps/frontend/src/agent/agent-history-codec.ts"
+      ],
+      "modified": [
+        "apps/backend/src/account.ts",
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/locales/product-direct.json"
+      ],
+      "removed": []
+    },
+    "stage3": {
+      "base_sources": 99,
+      "head_sources": 100,
+      "added": [
+        "apps/frontend/src/agent/agent-history-codec.ts"
+      ],
+      "modified": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/locales/product-direct.json"
+      ],
+      "removed": []
+    },
+    "mw3": {
+      "subjects": 16,
+      "pilot_base_sources": 136,
+      "pilot_head_sources": 137,
+      "each_of_15_authored_base_sources": 137,
+      "each_of_15_authored_head_sources": 138,
+      "each_added": [
+        "apps/frontend/src/agent/agent-history-codec.ts"
+      ],
+      "each_modified": [
+        "apps/frontend/src/account/session.ts",
+        "apps/frontend/src/locales/product-direct.json"
+      ],
+      "each_removed": []
+    },
+    "preserved_tracked_scopes": {
+      "artifacts/": 54,
+      "configs/": 23,
+      "apps/frontend/src/estimated/": 359,
+      "apps/frontend/scripts/data/": 1238,
+      "apps/frontend/scripts/postflop-ai/": 150,
+      "apps/shared/": 2,
+      "apps/backend/migrations/": 12,
+      "apps/backend/scripts/sql/": 1
+    },
+    "stage2_artifact_records": 1888,
+    "stage3_artifact_records": 1805,
+    "all18_archive_pointers_and_declared_payload_hashes_match_unchanged_receipts": true,
+    "all16_mw3_manifests_receipts_sqls_conserved": true,
+    "mw3_raw_records": 112,
+    "mw3_declared_raw_bytes": 235515283,
+    "mw3_reserved_pins": 32,
+    "mw3_preserved_joint_warnings": 561,
+    "mw3_preserved_limitations_per_subject": 7,
+    "scope_limit": "Archive hashes and raw-record totals here are verified conserved declarations and unchanged tracked LFS pointers; fresh archived-payload rehash and current-head canonical collector replay remain installation prerequisites."
+  },
+  "evidence_files": [
+    {
+      "file": "current-source-closures.json",
+      "bytes": 564399,
+      "sha256": "b457f4b8f170cb3ed0ddefe9dd1111a836ea392c7a8af61ddc5c605ef25d9926"
+    },
+    {
+      "file": "base-source-closures.json",
+      "bytes": 512726,
+      "sha256": "a8a355b76a0b16cb259ffaf8121dd80773ae8013fe723df83d3bd78418452acc"
+    },
+    {
+      "file": "conservation.json",
+      "bytes": 572841,
+      "sha256": "f3daa0bcec6fccf6fdef3b06a79c4662ac53d1e52e2787fc1eadbab39785afc0"
+    },
+    {
+      "file": "closure-materialization-ledger.json",
+      "bytes": 173111,
+      "sha256": "81eccc98a07c584e44ceba206504e8224358001a2ca9f6057adb6a9020ef6832"
+    },
+    {
+      "file": "closure-review-summary.json",
+      "bytes": 8930,
+      "sha256": "005537c5798a9238551a248ef1a1a9857e98744635cb441edcfeef13e6d50e74"
+    },
+    {
+      "file": "closure-SHA256-ledger.json",
+      "bytes": 1919,
+      "sha256": "fa4b84783e3a0eb371eb9955dcabee30c0b3ef8c60487bfcf9cc77be6e5ca94c"
+    },
+    {
+      "file": "source-delta.json",
+      "bytes": 31350,
+      "sha256": "f5129b87c8cb1dd85bb61f4942501f1060bcb0b69276c224ff7b6fdb81196bb3"
+    },
+    {
+      "file": "enumerate-closures.mjs",
+      "bytes": 5635,
+      "sha256": "e5619dbb763fc1adbc4b5e351c1354ca0d06647fc3926ee45a158a2cc73adfe3"
+    },
+    {
+      "file": "build-conservation.py",
+      "bytes": 4856,
+      "sha256": "18a5125ba7963fb1eef12bf58f3bc1f7a7e8d44bae271d6c145b8b48ebe8d3f1"
+    },
+    {
+      "file": "base-source-enumeration.log",
+      "bytes": 2447,
+      "sha256": "ee8d017f73d860e23408fafbc50f310d2def1a34c948603b3092312a5f9c1712"
+    },
+    {
+      "file": "current-source-enumeration.log",
+      "bytes": 8202,
+      "sha256": "c104dd92473574d0f884b7087191397d75d84a7461298ccaf179deb95eadc51e"
+    },
+    {
+      "file": "application-materialization-ledger.json",
+      "bytes": 12443,
+      "sha256": "cd6b08e0347cba71c59399467b4d3a80eced528010557ac819d3919720b5133c"
+    },
+    {
+      "file": "backend-independent-tests.log",
+      "bytes": 1559,
+      "sha256": "9fd9f73965f4bdaa50797747b1f31172bef56ee7466d3c9e9b0487e3329df9b5"
+    },
+    {
+      "file": "independent-codec.test.mjs",
+      "bytes": 2268,
+      "sha256": "d4a90de81ac154224ee5f94bbfa7f6e6eff7bfa00ec8656d00d06d2f4cb94848"
+    },
+    {
+      "file": "independent-codec.log",
+      "bytes": 439,
+      "sha256": "48391b9f28086c3c206b2319a07c19e7076f2917866247c171ac7807c5b1ae98"
+    },
+    {
+      "file": "protected-tree-conservation.json",
+      "bytes": 18413,
+      "sha256": "612262f787fce4fc342e4121370f61d8308f92ce253ade78caf2cb196c79bea9"
+    }
+  ]
+}

@@ -77,6 +77,24 @@ test("interface copy is localized but dynamic user text and poker facts stay ver
   }
 });
 
+test("account sync size warnings have Chinese and Spanish recovery copy", () => {
+  const warnings = [
+    "This data exceeds the 500 KB account-sync limit. It was not uploaded and the account snapshot was not replaced. No automatic retry was made; keep this page open and export before reloading or signing out.",
+    "This account snapshot exceeds the 500 KB sync limit. Saving is paused; the account snapshot was not replaced. Keep this page open and export your records before reloading or signing out.",
+  ];
+  for (const locale of ["zh-CN", "es"]) {
+    useLocale(locale);
+    for (const english of warnings) {
+      const text = localized(english, "日本語の上限警告");
+      assert.notEqual(text, english, `${locale} copy is translated`);
+      assert.match(text, /500 KB/);
+      assert.match(text, /不會|不会|No se|No habrá|已暂停|Se han pausado/);
+      assert.match(text, /导出|exporta|exporta tus|exporta los/i);
+      assert.match(text, /重新加载|recargar/);
+    }
+  }
+});
+
 test("preflop and flop explanations preserve recorded figures in both new languages", () => {
   const hand = { hand: "22", call: 95, three_bet: 5, fold: 0 };
   const detailed = { reason: "保存済み説明", facts: { equity_vs_open_pct: 47.5, realized_equity_pct: 41, call_ev_bb: 0.64 } };

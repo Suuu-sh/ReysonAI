@@ -133,7 +133,7 @@ export function PlayStyleDashboard({ read, onClose }: { read: PlayerRead; onClos
         "Exploiting is coming: once opponent-adjusted range tables exist, the agents will switch their strategy to this read. For now they all play the balanced Reyson solver estimate.",
         "エクスプロイトは準備中です。相手像別のレンジ表ができると、Agentはこの読みに合わせて打ち方を切り替えます。今は全員が均衡（Reyson solver）通りに打っています。")}</p>
     </div>
-    <p className="style-note">{localized("Practice tendencies at the Agent table only; not a diagnosis of real-money play. Kept in this browser.", "Agent卓での練習傾向です（実戦の診断ではありません）。記録はこのブラウザ内だけに保存されます。")}</p>
+    <p className="style-note">{t("Practice tendencies from Agent tables only; not a diagnosis of real-money play. Syncs to your account when signed in; saved in this browser as a guest.", "Agent卓での練習傾向です（実戦の診断ではありません）。ログイン中はアカウントに同期され、ゲスト時はこのブラウザに保存されます。", "这仅反映 Agent 桌的练习倾向，并非真钱游戏诊断。登录后会同步到帐户；访客模式下保存在此浏览器。", "Tendencias de práctica en mesas Agent; no es un diagnóstico del juego con dinero real. Al iniciar sesión se sincroniza con tu cuenta; como invitado, se guarda en este navegador.")}</p>
   </section>;
 }
 

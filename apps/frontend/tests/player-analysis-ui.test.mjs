@@ -39,7 +39,29 @@ test("Drill and Agent Stats share the dark map structure but keep source-specifi
   assert.match(drill, /今回出た問題の平均方針/);
   assert.match(agent, /↑<br\/>レイズ多/);
   assert.match(agent, /Agent基準/);
+  assert.match(agent, /ログイン中はアカウントに同期され、ゲスト時はこのブラウザに保存されます/);
   assert.doesNotMatch(agent, /↑<br\/>3bet 多/);
+});
+
+test("Agent stats storage note reflects account sync and guest-local storage in every locale", () => {
+  const previousWindow = globalThis.window;
+  const copy = {
+    en: /Syncs to your account when signed in; saved in this browser as a guest\./,
+    ja: /ログイン中はアカウントに同期され、ゲスト時はこのブラウザに保存されます。/,
+    "zh-CN": /登录后会同步到帐户；访客模式下保存在此浏览器。/,
+    es: /Al iniciar sesión se sincroniza con tu cuenta; como invitado, se guarda en este navegador\./,
+  };
+  try {
+    for (const [locale, pattern] of Object.entries(copy)) {
+      globalThis.window = { localStorage: { getItem: key => key === "reysonai:locale:v1" ? locale : null } };
+      const html = renderToStaticMarkup(createElement(PlayerAnalysis, { history: [], initialView: "agent", onStart() {} }));
+      assert.match(html, pattern);
+      assert.doesNotMatch(html, /Kept in this browser|このブラウザ内だけに保存/);
+    }
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window;
+    else globalThis.window = previousWindow;
+  }
 });
 
 test("player analysis includes graded strengths, weaknesses and a link to detailed review", () => {

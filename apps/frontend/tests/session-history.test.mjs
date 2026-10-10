@@ -20,6 +20,10 @@ async function harness(run,fetcher=async()=>{throw Error('unexpected network')},
  const click=async text=>{const b=[...dom.window.document.querySelectorAll('button')].find(b=>b.textContent===text);assert.ok(b,`missing ${text}`);await act(async()=>b.click());};
  try{await act(async()=>root.render(React.createElement(SessionPage,{...props,...extra})));await run({dom,root,click});}finally{await act(async()=>root.unmount());dom.window.close();Object.assign(globalThis,previous);delete globalThis.IS_REACT_ACT_ENVIRONMENT;}
 }
+test('Sessions omits the Agent storage note in every locale while keeping saved Agent rows',async()=>{
+ const modes={en:'Agent matches',ja:'Agent戦','zh-CN':'Agent对战',es:'Partidas Agent'};
+ for(const [locale,label] of Object.entries(modes)) await harness(async({dom,click})=>{await click(label);assert.equal(dom.window.document.querySelector('.sessions-source-note'),null);assert.equal(dom.window.document.querySelectorAll('tbody tr').length,1);},undefined,{},[hand],locale);
+});
 test('legacy Agent summaries remain separate hands, never gain invented sessions/accuracy or rewrite storage',async()=>{
  const records=[hand,{...hand,returnBb:-3},{at:'invalid'}];const before=JSON.stringify(records),rows=sessionHistoryRows([],records,{});assert.equal(rows.length,2);assert.ok(rows.every(row=>!('sessionId' in row.record)&&!('score' in row.record)));assert.equal(JSON.stringify(records),before);
  await harness(async({dom,click})=>{const stored=dom.window.localStorage.getItem('reysonai:agent-hands:v1');await click('Agent matches');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,2);assert.ok([...dom.window.document.querySelectorAll('tbody tr')].every(r=>r.children[5].textContent==='—'));await click('Saved hand · saved-table');assert.match(dom.window.document.body.textContent,/without session IDs, cards or action logs/);await click('Sessions');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,2);assert.equal(dom.window.localStorage.getItem('reysonai:agent-hands:v1'),stored);},undefined,{},records);
@@ -36,7 +40,7 @@ test('drill/review/draft exact logs, resume and list Back survive mode switching
 });
 test('ranked loads only with authenticated readiness; local data never substitutes; paging appends confirmed IDs',async()=>{
  let calls=0;await harness(({dom})=>assert.match(dom.window.document.body.textContent,/verified sign-in/),async()=>{calls++;return Response.json({});});assert.equal(calls,0);
- const fetched=[];await harness(async({dom,click})=>{assert.equal(fetched.length,3);assert.ok(fetched.every(r=>r.opts.credentials==='include'&&r.opts.cache==='no-store'&&!r.url.includes('user_id')));await click('Ranked');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,3);await click('Human FastFold · Load older results');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,4);assert.equal(dom.window.document.body.textContent.includes('Human FastFold · Load older results'),false);await click('Human FastFold');assert.match(dom.window.document.body.textContent,/Server-confirmed personal result/);assert.match(dom.window.document.body.textContent,/1,000 → 1,001/);},async(url,opts)=>{fetched.push({url,opts});const q=new URL(url).searchParams,season=q.get('season');return Response.json({season,items:[{id:season+(q.has('cursor')?'-older':''),at:at-1000,beforeRating:1000,afterRating:1001,hero:'BTN',netBb:2,heroCards:['As','Kd'],board:[],log:null,answered:20,accuracy:.75}],nextCursor:season==='human-fastfold-v1'&&!q.has('cursor')?'cursor-one':null});},{rankedReady:true,rankedOwner:'owner-A'});
+ const fetched=[];await harness(async({dom,click})=>{assert.equal(fetched.length,3);assert.ok(fetched.every(r=>r.opts.credentials==='include'&&r.opts.cache==='no-store'&&!r.url.includes('user_id')));await click('Ranked');const rows=[...dom.window.document.querySelectorAll('tbody tr')];assert.equal(rows.length,3);assert.deepEqual(rows.map(row=>row.children[2].textContent),['Human FastFold','Legacy Agent ranked','Legacy ranked quiz']);const status=[...dom.window.document.querySelectorAll('.sessions-ranked-status > div')];assert.equal(status.length,3);assert.deepEqual(status.map(row=>row.children[0].textContent),['Human FastFold','Legacy Agent ranked','Legacy ranked quiz']);assert.ok(status.every(row=>row.textContent.includes('1 loaded')));await click('Human FastFold · Load older results');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,4);assert.equal(dom.window.document.body.textContent.includes('Human FastFold · Load older results'),false);await click('Human FastFold');assert.match(dom.window.document.body.textContent,/Server-confirmed personal result/);assert.match(dom.window.document.body.textContent,/1,000 → 1,001/);},async(url,opts)=>{fetched.push({url,opts});const q=new URL(url).searchParams,season=q.get('season');return Response.json({season,items:[{id:season+(q.has('cursor')?'-older':''),at:at-1000,beforeRating:1000,afterRating:1001,hero:'BTN',netBb:2,heroCards:['As','Kd'],board:[],log:null,answered:20,accuracy:.75}],nextCursor:season==='human-fastfold-v1'&&!q.has('cursor')?'cursor-one':null});},{rankedReady:true,rankedOwner:'owner-A'});
 });
 test('sign-out masks ranked results immediately and discards late responses',async()=>{
  const pending=[];await harness(async({dom,root})=>{await act(async()=>root.render(React.createElement(SessionPage,{...props,rankedReady:false,rankedOwner:null})));assert.match(dom.window.document.body.textContent,/verified sign-in/);await act(async()=>pending.forEach(([season,done])=>done(Response.json({season,items:[{id:'private-owner-A',at,beforeRating:1000,afterRating:900}],nextCursor:null}))));assert.doesNotMatch(dom.window.document.body.textContent,/private-owner-A|900/);},url=>new Promise(done=>pending.push([new URL(url).searchParams.get('season'),done])),{rankedReady:true,rankedOwner:'owner-A'});
@@ -54,4 +58,35 @@ test('switching authenticated owners clears selected details and never applies t
   await act(async()=>pending.slice(3).forEach(([season,done])=>done(Response.json({season,items:[{id:'owner-B-'+season,at,beforeRating:1222,afterRating:1333,hero:'BTN',netBb:1}],nextCursor:null}))));
   await click('Human FastFold');assert.match(dom.window.document.body.textContent,/1,222 → 1,333/);assert.doesNotMatch(dom.window.document.body.textContent,/1,777|1,888/);
  },url=>new Promise(done=>pending.push([new URL(url).searchParams.get('season'),done])),{rankedReady:true,rankedOwner:'owner-A'});
+});
+
+test('new Agent detail renders explicit suits, street actions, winners and results without mutating saved history', async () => {
+ const record={...hand,history:{version:1,handRanks:{BTN:4,BB:5},handNo:7,names:{BTN:'You',BB:'VEGA'},holeCards:{BTN:['Ad','8c'],BB:['Qs','6s']},board:['Qc','9s','7s','Ts','Jh'],winners:['BB'],returns:{BTN:-11.18,BB:10.54},pot:22.86,rake:1.14,log:[{street:'preflop',pos:'BTN',action:'open',to:2.5,pot:4},{street:'flop',pos:'BB',action:'check',pot:5.5},{street:'turn',pos:'BB',action:'bet33',to:1.82,pot:7.32},{street:'river',pos:'BTN',action:'call',to:6.86,pot:22.86}]}};
+ await harness(async({dom,click})=>{const before=dom.window.localStorage.getItem('reysonai:agent-hands:v1');await click('Agent matches');await click('Saved hand · saved-table');const text=dom.window.document.body.textContent;assert.match(text,/Hand history #7/);for(const value of ['A♦','8♣','Q♠','6♠','Q♣','9♠','7♠','T♠','J♥','Preflop','Flop','Turn','River','Bet','1.82','Call','6.86','Winner','VEGA','Rake','Straight','Flush'])assert.ok(text.includes(value),value);assert.doesNotMatch(text,/without session IDs, cards or action logs/);assert.equal(dom.window.localStorage.getItem('reysonai:agent-hands:v1'),before);},undefined,{},[record]);
+});
+
+test('explicit Agent entries group hands, preserve legacy rows, expose all details and status filters', async () => {
+ const a={...hand,session:{id:'entry-a',startedAt:at-5000,endedAt:at+5000},history:{version:1,handNo:1,holeCards:{BTN:['Ad','8c']},board:['Qc','9s','7s'],log:[],winners:['BTN'],returns:{BTN:3}}};
+ const b={...a,at:at+1000,returnBb:-1,history:{...a.history,handNo:2}};
+ const next={...a,at:at+7000,session:{id:'entry-b',startedAt:at+6000},returnBb:4};
+ const saved=[a,b,next,hand], rows=sessionHistoryRows([],saved,{});
+ assert.equal(rows.length,3);const grouped=rows.find(row=>row.session?.id==='entry-a');assert.equal(grouped.session.hands.length,2);assert.equal(grouped.session.hands.reduce((sum,h)=>sum+h.returnBb,0),hand.returnBb-1);
+ await harness(async({dom,click})=>{
+  await click('Agent matches');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,3);
+  await click('In progress');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,1);
+  await click('Completed');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,2);
+  const row=[...dom.window.document.querySelectorAll('tbody tr')].find(row=>row.textContent.includes('Agent session'));assert.equal(row.children[4].textContent,'2');assert.notEqual(row.children[7].textContent,'—');
+  await click('Agent session · saved-table');assert.equal(dom.window.document.querySelectorAll('details.sessions-agent-hand').length,2);
+  assert.match(dom.window.document.body.textContent,/Hand #1/);assert.match(dom.window.document.body.textContent,/Hand #2/);assert.match(dom.window.document.body.textContent,/A♦/);
+ },undefined,{},saved);
+});
+
+test('session closure updates an already-mounted Sessions list without reload', async () => {
+ const {finishAgentHistorySession}=await import('../src/agent/agent-stats.ts');
+ const saved=[{...hand,session:{id:'navigation-entry',startedAt:at-5000}}];
+ await harness(async({dom,click})=>{
+  await click('Agent matches');await click('In progress');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,1);
+  await act(async()=>finishAgentHistorySession('navigation-entry',at+1000));assert.equal(dom.window.document.querySelectorAll('tbody tr').length,0);
+  await click('Completed');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,1);
+ },undefined,{},saved);
 });

@@ -58,3 +58,7 @@
 .sessions-page .trainer-pulse dt,.sessions-detail .trainer-pulse dt { white-space:normal; overflow-wrap:anywhere; }
 @media(max-width:650px) { .sessions-page-head .trainer-pulse,.sessions-summary { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); } .sessions-summary > div:last-child:nth-child(odd) { grid-column:1 / -1; } }
 @media(max-width:650px) { .sessions-page .sessions-filters { min-width:0; width:100%; } .sessions-mode-filters button { padding:8px 6px; overflow-wrap:anywhere; } .sessions-page button,.sessions-detail button { min-height:44px; } .sessions-open { width:44px; } .sessions-flags { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+.sessions-agent-hand { border-top: 1px solid var(--border, #303036); padding: 16px 0; }
+.sessions-agent-hand > summary { cursor: pointer; line-height: 1.6; overflow-wrap: anywhere; }
+.sessions-agent-hand[open] > summary { margin-bottom: 16px; }

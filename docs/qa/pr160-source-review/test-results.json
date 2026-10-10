@@ -1,0 +1,70 @@
+{
+  "source_commit": "339b97a3f2fc4740fb621d098e74ee4f458957c7",
+  "frontend_focused": {
+    "tests": 36,
+    "pass": 36,
+    "fail": 0,
+    "runtime": "Node25.8.1 darwin-arm64",
+    "logs": [
+      "frontend-focused.log",
+      "frontend-remaining.log"
+    ],
+    "files": [
+      "account-session.test.mjs",
+      "learning-access.test.mjs",
+      "session-history.test.mjs",
+      "player-analysis-ui.test.mjs",
+      "localization-languages.test.mjs"
+    ],
+    "invocation_note": "Initial command also named nonexistent player-analysis.test.mjs/localization.test.mjs; Node ignored those patterns. Correct actual filenames were explicitly run in frontend-remaining.log. Totals use reported executed tests only."
+  },
+  "backend": {
+    "tests": 14,
+    "pass": 14,
+    "fail": 0,
+    "runtime": "official Node22.20.0 darwin-arm64",
+    "files": [
+      "account.test.mjs",
+      "native-account.test.mjs"
+    ],
+    "log": "backend-account.log"
+  },
+  "custom_real_backend": {
+    "scenarios": 12,
+    "pass": 12,
+    "runtime": "official Node22.20.0 darwin-arm64",
+    "database": "in-memory SQLite only",
+    "requests": "All intercepted into unmodified routeAccount with synthetic fixtures; no real upload"
+  },
+  "typecheck": {
+    "status": "PASS",
+    "log": "typecheck.log"
+  },
+  "additional_account_ui": {
+    "tests": 8,
+    "pass": 6,
+    "fail": 2,
+    "baseline_result": "Same2 failures reproduced on exact PR base ea8e7120939493d40794e5249aeeee4b7abecf8a",
+    "cause": "Old appearance test expectations omit the existing matrix:original property",
+    "records_unchanged_from_base": [
+      {
+        "path": "apps/frontend/src/account/preferences.ts",
+        "bytes": 2513,
+        "sha256": "d642419e69bdaa7f1c789758b2999f48c1658b5a4d12a43c371aa6f168881962"
+      },
+      {
+        "path": "apps/frontend/tests/account.test.mjs",
+        "bytes": 5919,
+        "sha256": "552028009e7120adfdc362c13b813b25c689830ee72812a3b1caaf67f383222c"
+      }
+    ],
+    "logs": [
+      "frontend-account-ui.log",
+      "base-account-ui.log"
+    ],
+    "not_a_pr_regression": true
+  },
+  "build_sites": "Author-reported success only; not independently rerun",
+  "full_suite": "Not run; no full-suite PASS claimed",
+  "model_attestation": "Unavailable; test execution does not prove actual reviewer model"
+}
