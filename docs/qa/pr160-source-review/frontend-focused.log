@@ -1,0 +1,37 @@
+✔ Google-only account UI is gated and integration TSX parses (4868.999959ms)
+✔ cookie sessions isolate guests, consent-gate migration, serialize versions and preserve conflict exports (154.369542ms)
+✔ all Learn sections are protected, ranges and settings are public (1931.235958ms)
+✔ loading, guest, unverified and expired accounts never render learning children (23.030625ms)
+✔ OAuth intent allowlist persists only section names and guest back clears it (0.233834ms)
+✔ ProductApp routes every learning destination through the guard and guest continuation resets ranges (3.61075ms)
+✔ save 401 blocks learning and preserves unsaved account records for export (6.496ms)
+✔ expired session offers Google reauthentication without discarding the export snapshot (14.218458ms)
+✔ focus session validation preserves dirty records without data reload or learning remount (23.12475ms)
+✔ postflop (flop to river) is behind Google sign-in for guests (1.014333ms)
+▲ [WARNING] Duplicate key "A 6-max table where every Agent plays the Reyson solver estimate." in object literal [duplicate-object-key]
+
+    src/locales/product-direct.json:1214:2:
+      1214 │   "A 6-max table where every Agent plays the Reyson solver estim...
+           ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  The original key "A 6-max table where every Agent plays the Reyson solver estimate." is here:
+
+    src/locales/product-direct.json:914:2:
+      914 │   "A 6-max table where every Agent plays the Reyson solver estima...
+          ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+✔ Sessions explains Agent account sync and guest browser storage in every locale (247.598333ms)
+✔ legacy Agent summaries remain separate hands, never gain invented sessions/accuracy or rewrite storage (56.985209ms)
+✔ drill/review/draft exact logs, resume and list Back survive mode switching (80.8805ms)
+✔ ranked loads only with authenticated readiness; local data never substitutes; paging appends confirmed IDs (114.149666ms)
+✔ sign-out masks ranked results immediately and discards late responses (38.591959ms)
+✔ malformed ranked pages remain unavailable with retry while local storage is retained (36.65575ms)
+✔ switching authenticated owners clears selected details and never applies the previous owner response (56.205833ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11105.391458

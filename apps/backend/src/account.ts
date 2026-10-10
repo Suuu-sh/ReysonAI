@@ -46,7 +46,7 @@ export async function verifyGoogleToken(token:string,clientId:string,nonceHash:s
   return claims;
 }
 export function allowedData(data:unknown):data is Record<string,unknown> {
-  const keys=['reysonai:profile:v1','reysonai:appearance:v1','reysonai:display-mode:v1','reysonai:locale:v1','reysonai.trainer.history.v1','reysonai.trainer.drills.v1','reysonai.trainer.drafts.v1','reysonai.trainer.review-sessions.v1'];
+  const keys=['reysonai:profile:v1','reysonai:appearance:v1','reysonai:display-mode:v1','reysonai:locale:v1','reysonai.trainer.history.v1','reysonai.trainer.drills.v1','reysonai.trainer.drafts.v1','reysonai.trainer.review-sessions.v1','reysonai:agent-hands:v1'];
   return !!data && typeof data==='object' && !Array.isArray(data) && Object.keys(data).every(k=>keys.includes(k));
 }
 export async function routeAccount(request:Request,env:AccountEnv):Promise<Response> {
@@ -121,7 +121,11 @@ export async function routeAccount(request:Request,env:AccountEnv):Promise<Respo
   if(path==='session') return reply({user:user?publicUser(user):null});
   if(path==='logout') {if(rawToken) await db.prepare('DELETE FROM account_sessions WHERE token_hash=?').bind(await digest(rawToken)).run();return reply({ok:true},200,[cookie(sessionCookie,'',0),cookie(stateCookie,'',0)]);}
   if(!user) return reply({error:'sign_in_required'},401);
-  if(request.method==='GET') {const row=(await query<{data_json:string;version:number}>('SELECT data_json,version FROM account_data WHERE user_id=?',user.id))[0];return reply({data:row?JSON.parse(row.data_json):{},version:row?.version||0});}
+  if(request.method==='GET') {const row=(await query<{data_json:string;version:number}>('SELECT data_json,version FROM account_data WHERE user_id=?',user.id))[0];return reply({ownerId:user.id,data:row?JSON.parse(row.data_json):{},version:row?.version||0});}
+  // Treat the client owner as an assertion only. The cookie remains the sole
+  // authority for selecting the account row; reject stale-tab snapshots before
+  // creating or updating any account data.
+  if(typeof body.expectedOwner!=='string' || body.expectedOwner!==user.id) return reply({error:'account_owner_changed'},409);
   if(!allowedData(body.data) || !Number.isSafeInteger(body.version) || Number(body.version)<0) return reply({error:'invalid_data_or_ranked_data'},400);
   if(body.importLocal && body.consent!==true) return reply({error:'explicit_import_consent_required'},400);
   await db.prepare('INSERT OR IGNORE INTO account_data(user_id) VALUES (?)').bind(user.id).run();

@@ -1,0 +1,18 @@
+{
+  "scenario": "normal-held-recheck",
+  "source_commit": "339b97a3f2fc4740fb621d098e74ee4f458957c7",
+  "network": "All fetch intercepted into unmodified routeAccount with in-memory SQLite and synthetic users. No real account access/upload.",
+  "status": "PASS",
+  "writes": [
+    {
+      "cookieOwner": "A",
+      "expectedOwner": "A",
+      "status": 200,
+      "bytes": 260
+    }
+  ],
+  "read_A": 3,
+  "read_B": 2,
+  "guest_unchanged": true,
+  "detail": "normal-held-recheck"
+}

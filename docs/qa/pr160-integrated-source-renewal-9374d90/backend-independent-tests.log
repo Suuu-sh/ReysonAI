@@ -1,0 +1,22 @@
+✔ disabled/origin/method gates and exact credentialed CORS (5.563584ms)
+✔ snapshot allowlist includes Agent stats and excludes arbitrary/rank keys (0.176947ms)
+✔ Google signed identity, PKCE/state replay, owned snapshots and logout (96.084172ms)
+✔ cross-tab account owner changes pause the 350ms Agent auto-save and preserve the old export (507.354386ms)
+✔ a /session A then /data B race preserves A in memory and recovers through same-owner refresh (7.514809ms)
+✔ guest import preflights the exact owner-bound 500KB request and old-client recovery stays fail-closed (55.373316ms)
+✔ disabled by default; browser authority, insecure native transport and CORS fail closed (9.214456ms)
+✔ strict start/body/redirect/method validation and per-route rate limits (67.205322ms)
+✔ independent browser state and PKCE; callback replay and injection never mint credentials (73.94304ms)
+✔ exact expiry boundaries for pending attempts, Google state, app codes and native sessions (33.555948ms)
+✔ concurrent exchanges produce one session; failed session insert rolls back code claim (23.700776ms)
+✔ cancel before browser, during consent, after code and after exchange prevents late sessions (90.681224ms)
+✔ denied/invalid provider identity returns only trusted state and never a session (61.670351ms)
+✔ native ownership, account switching, shared Web snapshots, conflict/consent, revocation and transport isolation (58.825259ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 828.029732

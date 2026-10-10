@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "kind": "Linux source/archive diagnostic; not a receipt or independent approval",
+  "workflow": "PR160 Linux MW3 source check (review/CI only)",
+  "run_id": 37967442609,
+  "job_id": 113945227664,
+  "run_url": "https://github.com/Suuu-sh/ReysonAI/actions/runs/37967442609",
+  "source_commit": "339b97a3f2fc4740fb621d098e74ee4f458957c7",
+  "source_tree": "228bde91e060d20f36aee9c53e6eb7a60ac16c6b",
+  "runtime": {
+    "os": "ubuntu-24.04",
+    "node": "22.20.0"
+  },
+  "result": {
+    "status": "PASS_LINUX_EXACT_ARCHIVE_DIAGNOSTIC_ONLY",
+    "subjects": 16,
+    "raw_files": 112,
+    "raw_bytes": 235515283,
+    "historical_joint_warnings": 561,
+    "receipt_issued": false
+  },
+  "steps": "All diagnostic steps completed successfully; all 16 official exact canonical archive and current-source verification checks passed.",
+  "artifact": {
+    "id": 11633703694,
+    "name": "pr160-linux-diagnostic-339b97a-37967442609-1",
+    "size_bytes": 288185,
+    "sha256": "c7b93c23b2a313a2c4354473a2da481422f10b1f5f0036301e092d29c960bd10",
+    "url": "https://github.com/Suuu-sh/ReysonAI/actions/runs/37967442609/artifacts/11633703694",
+    "retention_days": 14
+  },
+  "qualifications": [
+    "This diagnostic checks the exact saved Linux archives and official current-source verifier; it is not a new numerical review, approval receipt, or installable acceptance artifact.",
+    "The actual required reviewer model remains unverified; no independent approval is claimed.",
+    "No raw artifacts were included in the PR documentation; the runner retained diagnostic JSON/manifests for the configured retention period."
+  ]
+}
