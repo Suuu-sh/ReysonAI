@@ -7,12 +7,12 @@
   "reviewer_model": "gpt-6-astra",
   "reviewer_task": "/root/review_mw3_shared_model_boundary",
   "author_task": "mw3-hj-co-sb-mw3-srp-v1-authored-v1",
-  "source_tree": "c670c9b53cb3f4f0a2a674701c5e065837158579",
+  "source_tree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5",
   "scope": "Independent MW3 source-context-only renewal for published source dff40dfe8bb9c3c4831bba86eb8d77e5ff2e042a, full Git tree 236a2144a49a0b0f43940ae9fe2c978728ab8d6c, following the adopted HU-v7 correction. The complete published tree equals local freeze 2029ad54d9906895d001f3caf4a19917c53606fa; its protected graph is identical to tested/payload-collected commit c44283fd0dd0232e40ff1198730ae6bc9e269d73 after three test-only changes, verified by final source recollection and Git-tree binding. Relative to the earlier ffe7 independent MW3 context, all sixteen closures have exactly five modified shared records, four naturally unreachable HU experiment records removed, and zero additions (134 pilot/135 authored records). The recursive collector, roots, parser, exclusions, exact-pair gate, frozen model binding, dedicated MW3 numerical/recipe/input/codec code and reserved registry pins remain unchanged. Altered HU defence/engine and HU-only Agent decision paths cannot affect the unchanged dedicated MW3 early-return path; locale changes add explanatory text only. All16 complete official snapshot collectors ran at the corrected product checkpoint; after three test-only changes, all16 actual source closures were recollected and their full current records verified against the final committed Git tree. Hash-bound prior unchanged-data evidence was reused only after rechecking all original112 raw files/235515283 bytes,16 canonical archives,32 pins and unchanged evidence/recipes/inputs. All561 warnings and seven limitations per spot are retained. Both original historical and earlier ffe7 receipts fail for this new source context. This receipt authorizes installation only of the exact renewed manifest, receipt and receipt-derived SQL comment, followed by committed-inventory checks and CI. It does not renew strategy quality, generate numerical artifacts, attest fresh acceptance-gate simulation, actual D1 or live-auth/browser E2E, or authorize main/production deployment.",
-  "manifest_sha256": "530f4cb46e8a467f0bb8cc84184f662387513d28e934ee96c1290cac948a2626",
+  "manifest_sha256": "6d9c8c22665bb4815420ce0e7bcd79b68d4379d78a1a49e7432f5aa1713aa30e",
   "archive_sha256": "2c41876d803519c8f05f347ecbf55404d29e17baf6f588089782d727f3ab13d7",
-  "content_sha256": "9628d313278173f73a7913d498346f41b14c630d88b6be7c7fcff743543679ec",
-  "sources_sha256": "a4088cd287386c6b0338a321e46c774e607920274afb898c27993dbae23ff158",
+  "content_sha256": "5444106585f7c1391af7c885bab940699f0517dc4a786ad98b4f2722057ecb5b",
+  "sources_sha256": "aeebd990ef1ac2ade313b4f27b0dfa38ba48f98704e8a12ed51d9d4ad9987ce4",
   "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
   "spot": "HJ_open_CO_call_SB_call",
   "deliveries": [
@@ -269,5 +269,51 @@
         "sha256": "5e3407dda3be3ad86eca34591fd3976540bb66167172a342559b069cf0ae2fb0"
       }
     ]
+  },
+  "corrected_source_context_renewal": {
+    "status": "source-context-pass",
+    "reviewer_model": "gpt-6-astra",
+    "reviewer_task": "/root/review_pr123_source_evidence",
+    "reviewed_at_utc": "2026-10-09T23:26:42Z",
+    "decision": "PASS for installation of the narrowly specified consolidated source-only renewal",
+    "scope": "Source-only binding of the exact reviewed source tree and saved source closures. This does not renew numerical acceptance, strategy quality, runtime parity, production readiness or deployment authority.",
+    "source_commit": "6b5291089c15304c25af7433e87cd1bcaac38428",
+    "source_tree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5",
+    "prior_receipt_head": "7c98d662f88b88c4a4be5e622be82c359a8746d3",
+    "source_record_count": 137,
+    "source_records_sha256": "aeebd990ef1ac2ade313b4f27b0dfa38ba48f98704e8a12ed51d9d4ad9987ce4",
+    "prior_receipt": {
+      "path": "configs/mw3-hj-co-sb-mw3-srp-v1.review.json",
+      "bytes": 16554,
+      "sha256": "bcceb7adaa58c6361eabd79f252ac153520d54d5697dd9cb05eb1db415d9bbd2"
+    },
+    "report": {
+      "path": "apps/frontend/docs/qa/pr123-source-only-review/independent-corrected-source-context-review.json",
+      "bytes": 21155,
+      "sha256": "c3a274b54d8ff52e498b755a278a453ed46be8ae5b8308a1231c9a222712a307"
+    },
+    "supporting_reviews": [
+      {
+        "path": "apps/frontend/docs/qa/pr123-source-only-review/independent-hu-v7-corrected-review.json",
+        "bytes": 13896,
+        "sha256": "f652772db0fe78a38e358a016c52d0a9c73efec15faf93ad19ab587f00d53f4c",
+        "reviewer_model": "gpt-6-astra",
+        "reviewer_task": "/root/review_pr123_source_evidence/inspect_hu_v7_pins"
+      }
+    ],
+    "changed_source_paths": [
+      "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+      "apps/frontend/scripts/postflop-ai/balance.mjs",
+      "apps/frontend/scripts/postflop-ai/explain-later.ts",
+      "apps/frontend/scripts/postflop-ai/explain.mjs",
+      "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+      "apps/frontend/scripts/verify-preflop-local-d1.mjs",
+      "apps/frontend/tests/adopted-hu-v7-runtime.test.mjs",
+      "apps/frontend/tests/fixtures/adopted-hu-v7-candidate-contract.json",
+      "apps/frontend/tests/hu-after-multiway-integration.test.mjs",
+      "apps/frontend/tests/postflop-profile-balance.test.mjs",
+      "apps/frontend/tests/postflop-profile-state.test.mjs"
+    ],
+    "preservation": "Historical numerical authorship and review fields, saved artifacts, archive bytes, counts, fingerprints, inputs, accepted limitations and delivery bodies are preserved."
   }
 }

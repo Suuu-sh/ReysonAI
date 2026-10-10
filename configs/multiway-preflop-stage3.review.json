@@ -9510,8 +9510,8 @@
     },
     {
       "path": "configs/multiway-preflop-stage2.review.json",
-      "bytes": 537540,
-      "sha256": "d8b5b569d6ca3126ef25804a008417b23bd484c5a4af602a31c88aebcbe8fa86"
+      "bytes": 540232,
+      "sha256": "7326c8a23bffca9bdc4c67167691a0f4bdf17d527b519a4b105ada8ce91ffd15"
     },
     {
       "path": "configs/multiway-preflop-stage3.json",
@@ -9530,7 +9530,7 @@
     "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
     "format": "ustar+gzip-stage3-content-v1"
   },
-  "content_sha256": "dbd612957d6530d57c2afb396be94c0f37de1b9dbe25c7d6a3ef64f56bc6b8bb",
+  "content_sha256": "4bb4429ff7e4f5c7c158cfcef93e31b75cee12c2c871e11e53765716992d9ab5",
   "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
   "counts": {
     "catalog": 16132,
@@ -10385,6 +10385,52 @@
         "Existing review history, warnings, advisories, limitations, authorship, and all previous amendments are retained."
       ],
       "merge_decision": "BLOCK until controlled source-bound receipt renewal, exact committed source re-verification, clean official restore/full publication verification, and required exact-head CI pass"
+    },
+    "corrected_source_context_renewal": {
+      "status": "source-context-pass",
+      "reviewer_model": "gpt-6-astra",
+      "reviewer_task": "/root/review_pr123_source_evidence",
+      "reviewed_at_utc": "2026-10-09T23:26:42Z",
+      "decision": "PASS for installation of the narrowly specified consolidated source-only renewal",
+      "scope": "Source-only binding of the exact reviewed source tree and saved source closures. This does not renew numerical acceptance, strategy quality, runtime parity, production readiness or deployment authority.",
+      "source_commit": "6b5291089c15304c25af7433e87cd1bcaac38428",
+      "source_tree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5",
+      "prior_receipt_head": "7c98d662f88b88c4a4be5e622be82c359a8746d3",
+      "source_record_count": 99,
+      "source_records_sha256": "d9f68ae295d22ee4f8098cd4b5dda48e8a21185d991fa0373e6670b7d65b202a",
+      "prior_receipt": {
+        "path": "configs/multiway-preflop-stage3.review.json",
+        "bytes": 545924,
+        "sha256": "7342d6182615161384d35c9481639648e095d01daf6a5796edac405f0e0fa1d2"
+      },
+      "report": {
+        "path": "apps/frontend/docs/qa/pr123-source-only-review/independent-corrected-source-context-review.json",
+        "bytes": 21155,
+        "sha256": "c3a274b54d8ff52e498b755a278a453ed46be8ae5b8308a1231c9a222712a307"
+      },
+      "supporting_reviews": [
+        {
+          "path": "apps/frontend/docs/qa/pr123-source-only-review/independent-hu-v7-corrected-review.json",
+          "bytes": 13896,
+          "sha256": "f652772db0fe78a38e358a016c52d0a9c73efec15faf93ad19ab587f00d53f4c",
+          "reviewer_model": "gpt-6-astra",
+          "reviewer_task": "/root/review_pr123_source_evidence/inspect_hu_v7_pins"
+        }
+      ],
+      "changed_source_paths": [
+        "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+        "apps/frontend/scripts/postflop-ai/balance.mjs",
+        "apps/frontend/scripts/postflop-ai/explain-later.ts",
+        "apps/frontend/scripts/postflop-ai/explain.mjs",
+        "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+        "apps/frontend/scripts/verify-preflop-local-d1.mjs",
+        "apps/frontend/tests/adopted-hu-v7-runtime.test.mjs",
+        "apps/frontend/tests/fixtures/adopted-hu-v7-candidate-contract.json",
+        "apps/frontend/tests/hu-after-multiway-integration.test.mjs",
+        "apps/frontend/tests/postflop-profile-balance.test.mjs",
+        "apps/frontend/tests/postflop-profile-state.test.mjs"
+      ],
+      "preservation": "Historical numerical authorship and review fields, saved artifacts, archive bytes, counts, fingerprints, inputs, accepted limitations and delivery bodies are preserved."
     }
   }
 }

@@ -1,0 +1,349 @@
+{
+  "schema_version": 1,
+  "kind": "pr123-independent-consolidated-corrected-source-context-review",
+  "reviewer_model": "gpt-6-astra",
+  "reviewer_task": "/root/review_pr123_source_evidence",
+  "reviewed_at_utc": "2026-10-09T23:26:42Z",
+  "repository": "Suuu-sh/ReysonAI",
+  "pull_request": 123,
+  "prior_receipt_head": {
+    "commit": "7c98d662f88b88c4a4be5e622be82c359a8746d3",
+    "tree": "272911f994ecaa4e1d114dae8dfa655dbea28204"
+  },
+  "reviewed_source": {
+    "commit": "6b5291089c15304c25af7433e87cd1bcaac38428",
+    "tree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5"
+  },
+  "source_context_decision": "PASS for installation of the narrowly specified consolidated source-only renewal",
+  "compatibility_contract_decision": "Bounded PASS for corrected source semantics and explicit candidate AST/declaration binding. The 13 claimed historical runtime-output hashes remain unverified as historical-baseline evidence.",
+  "merge_decision": "BLOCK until final receipt installation is independently verified, genuine historical golden-output provenance is established, unexplained full-suite failures are resolved or evidenced as baseline/host-only, and required exact-final-head CI passes.",
+  "scope": "Read-only independent source-context review. Consolidates the reviewed two-file preservation-sentinel change and four HU corrections with their five changed/new test artifacts. Does not approve numerical regeneration, new historical HU receipts, production actions, a solver/GTO claim, or a blanket runtime/whole-class AST equivalence claim.",
+  "implementation_author": {
+    "task": "cloud-thread:01a121ea-40ad-76ff-863b-615dbdb920a9",
+    "model": null,
+    "provenance": "Task supplied by coordinating parent; actual implementation model and original feature task not independently verified. Preserve all historical author/reviewer identities unchanged."
+  },
+  "supporting_reviews": [
+    {
+      "path": "apps/frontend/docs/qa/pr123-source-only-review/independent-source-context-review.json",
+      "bytes": 11712,
+      "sha256": "750a1521423b014b05e8ad7d788438b921c3b6509ee270d48f194c4258e6bef3",
+      "scope": "Original approved source context and saved numerical preservation; retain verbatim."
+    },
+    {
+      "suggested_path": "apps/frontend/docs/qa/pr123-source-only-review/independent-hu-v7-corrected-review.json",
+      "bytes": 13896,
+      "sha256": "f652772db0fe78a38e358a016c52d0a9c73efec15faf93ad19ab587f00d53f4c",
+      "reviewer_model": "gpt-6-astra",
+      "reviewer_task": "/root/review_pr123_source_evidence/inspect_hu_v7_pins",
+      "scope": "Independent historical/current AST and declaration review; historical output provenance explicitly pending."
+    }
+  ],
+  "exact_changed_files_since_prior_receipt_head": [
+    {
+      "path": "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+      "bytes": 48903,
+      "sha256": "7374953abc2a00fedab9692cfaed400ef48b545940de833ede9c185e995660e3"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/balance.mjs",
+      "bytes": 32966,
+      "sha256": "ebea820740540130c6d3c572ded8ce92fe50222c7051cdc1c0b0cbaa3d6e0001"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/explain-later.ts",
+      "bytes": 19957,
+      "sha256": "b2fcea425ba35f559c444121f129e1dfd870afdabf08bad54992b897d7c0166e"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/explain.mjs",
+      "bytes": 9830,
+      "sha256": "8c71b9da1b9bd3fab5ea98465c007b5bdaf82e982328b9bead3b4246b065c753"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+      "bytes": 13124,
+      "sha256": "8b94ef706fd41590672f28267604ca1d983ea63faa381f358c927fd6ebb709d8"
+    },
+    {
+      "path": "apps/frontend/scripts/verify-preflop-local-d1.mjs",
+      "bytes": 22932,
+      "sha256": "d10b99c1801a59eff79e22a98cfb7780db840e962ae0aabf3a66990b65d84401"
+    },
+    {
+      "path": "apps/frontend/tests/adopted-hu-v7-runtime.test.mjs",
+      "bytes": 9728,
+      "sha256": "ccf065692450ff5b90c8b4bd659641c0b0f13b044cf0aa763958780801176851"
+    },
+    {
+      "path": "apps/frontend/tests/fixtures/adopted-hu-v7-candidate-contract.json",
+      "bytes": 37074,
+      "sha256": "d096f54e9b4efb9f4f8ea8c60333749202b98671a80e14de88409ebbbe736873"
+    },
+    {
+      "path": "apps/frontend/tests/hu-after-multiway-integration.test.mjs",
+      "bytes": 3726,
+      "sha256": "6255f0399423d2efcd50dcc0bb593273dba2e9d76daf0468a3f22982ec7fdb61"
+    },
+    {
+      "path": "apps/frontend/tests/postflop-profile-balance.test.mjs",
+      "bytes": 10431,
+      "sha256": "bfd4ae8621a336252ddb5bd1441883e22a70e5027945bf11f46d32992f4cc678"
+    },
+    {
+      "path": "apps/frontend/tests/postflop-profile-state.test.mjs",
+      "bytes": 8386,
+      "sha256": "01b8dbacaca1187351788a940239415f72e90ce12b218dcbc4121a2cdf847ef7"
+    }
+  ],
+  "independent_checks": {
+    "exact_recursive_git_tree_delta_files": 11,
+    "delta_from_sentinel_commit_05d981_files": 9,
+    "historical_pins_receipts_manifests_migrations_archives_all_policy_and_delivery_blobs_unchanged": true,
+    "source_dependency_membership": "The two sentinel edits and four corrected modules add no imports or dependency-discovery changes. The complete Git delta contains no collector, exclusion, dependency, recipe, registry or source-identity contract changes. Prior independently traversed source path sets are unchanged.",
+    "source_closures": {
+      "configs/multiway-preflop-stage2.review.json": {
+        "count": 195,
+        "changed_records": [
+          "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "ae36f2f098fe5e017321d9b26ea7b4108ba79d10bd057b06a94b6a3115f4f100",
+        "pretty_sha256": "06725536e41896604955353a79402c9e501bded7c630cf08ad559bc48f834781"
+      },
+      "configs/multiway-preflop-stage3.review.json": {
+        "count": 99,
+        "changed_records": [],
+        "compact_sha256": "e27b02fea5209cb8d04a6db8dd0bbf2c98f8cf3b41876f3b44f60d0ac07f9034",
+        "pretty_sha256": "96245605372d7ee9a364d511a83f088da87bc778e8d883f3b9d316e755b2060c"
+      },
+      "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.manifest.json": {
+        "count": 136,
+        "changed_records": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "46d511c722654c7b5393688f62d275895d9206ac8344aba45915c5793be25350",
+        "pretty_sha256": "f24a883b1b973af73bc4686617426bfa466132cd7cbb1d89175378e3f890d597"
+      },
+      "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.manifest.json": {
+        "count": 137,
+        "changed_records": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "ada5101cea700d31a9beffc08b58d9149fbb001df3a3de7611d81d88b1b5e4f7",
+        "pretty_sha256": "fa06dad48a8ad933899089a7336010a92c6e08e7895131cfb96f479f574f3b5e"
+      },
+      "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.manifest.json": {
+        "count": 137,
+        "changed_records": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "69a5d1dadb919a4be2e5fa286deb9d7fd599ce92a1cb4136e0382db0089b48c1",
+        "pretty_sha256": "76e82125f3bc6cc0fce50382c2c82717e489aa7ccda987b84645565d747693a3"
+      },
+      "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.manifest.json": {
+        "count": 137,
+        "changed_records": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "fe916324a073c7481307135c3b1e23585309a49b75489c47e6b08005118b2190",
+        "pretty_sha256": "0d54bcb247b11350a3df80d90c406060610b20ec96ba906bb97dca23a9188ecf"
+      },
+      "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.manifest.json": {
+        "count": 137,
+        "changed_records": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "ba859e710dc7e1535f9705e625499aa3208ea9a52c547f57366b99033ad26692",
+        "pretty_sha256": "8b40b91d4e92760dbe99f0b3295fac05000c3fd49f4a18bbe1f01665d5b7f9f6"
+      },
+      "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.manifest.json": {
+        "count": 137,
+        "changed_records": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "5376b0cf55f7e7a88b8dfdb305c254a2018aff9ce2b0bd8bb90cedf469a6db1a",
+        "pretty_sha256": "eb6f013b93482b8c60e8ad4809b8e916298b5a6f5c16b57187edbc6bbbd82a41"
+      },
+      "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.manifest.json": {
+        "count": 137,
+        "changed_records": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "16d3e35c99ec51947d65c7aa3049088c7295ec4c56d8454cbc00aec0bd2ba189",
+        "pretty_sha256": "aeebd990ef1ac2ade313b4f27b0dfa38ba48f98704e8a12ed51d9d4ad9987ce4"
+      },
+      "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.manifest.json": {
+        "count": 137,
+        "changed_records": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "ea02d1b33f001c30d739bde96e56bcd85f3edfc8b0c7c8e7b41917121bc2b1e8",
+        "pretty_sha256": "d264b1e2c539e0b60124e8c172739e4a1dfc9a4855bfb7617cf358a45da774dc"
+      },
+      "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.manifest.json": {
+        "count": 137,
+        "changed_records": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "7bc9738f4edb4bb2671a53b91f563d7000ccb54b360ee0584496958ae95eb252",
+        "pretty_sha256": "91ac234b296b77cd0782555bb15bae15e4fc5e2ae483f76aaf5f0fb1026e7fda"
+      },
+      "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.manifest.json": {
+        "count": 137,
+        "changed_records": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "a475fb5a23468f427dd73ab06a2d6ad659c4a8724e573d122bb3bc7f6d9caeae",
+        "pretty_sha256": "799012d3570d80443335328b8f5056144bb83874f599f1ec22e47383acf274ed"
+      },
+      "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.manifest.json": {
+        "count": 137,
+        "changed_records": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "f922090629a0813e20c61fa7339fab4d55797ca8f1f4c4c6ff901c44701a799e",
+        "pretty_sha256": "53ce2579e5c388c8f00029b1ade6735888e4dea5daad3e0b767ac03ad14068f5"
+      },
+      "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.manifest.json": {
+        "count": 137,
+        "changed_records": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "655ad6c8b9fa7fce35a887c43dacf28e29ea5d1c7d602797add2da399e869cf6",
+        "pretty_sha256": "23b71a5f826e880e39215db803e275507fe493485305dcb8d82b7fd2b5045d50"
+      },
+      "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.manifest.json": {
+        "count": 137,
+        "changed_records": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "7b0186aa5180ef5b3ebf93ecca264711b926df0b90109c98400a8a931f1ffce3",
+        "pretty_sha256": "889f121411ebd60e5ef75be6efb5025b170e4d96b94fa3f899e6c881ad9dac0c"
+      },
+      "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.manifest.json": {
+        "count": 137,
+        "changed_records": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "88c81bc2240d9d2ceaeca1d4c15d7238d7c1a01bf902a220b71cb130cb1a4c0d",
+        "pretty_sha256": "c43bb98d9f903ca2a739111b98c7c2adbad253cfcdfbd966899ff653a9e235c1"
+      },
+      "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.manifest.json": {
+        "count": 137,
+        "changed_records": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "0187fc5ad7ee1906207aea85285e77782bab021480ba05a6c73a209b43c143d1",
+        "pretty_sha256": "5ae808915341d5062e51dbb618a4afad896a9c858c02f7f9ae55ec99b3b88c1a"
+      },
+      "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.manifest.json": {
+        "count": 137,
+        "changed_records": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "compact_sha256": "bf7b51172677726c99321ba0825c1580567b284d6d9f2e8af50ecd7b9993119f",
+        "pretty_sha256": "8ceec10f3b48f937b0d81d577426cfb5e0b610aa4ade595d4e9720dcec2c8664"
+      }
+    },
+    "hu_ast_verification": {
+      "changed_modules_bound": 10,
+      "historical_declaration_hashes_verified": 181,
+      "candidate_declarations_verified": 194,
+      "changed_existing_declarations": 26,
+      "explicit_additions": 13,
+      "unexpected_declaration_omissions_or_additions": 0,
+      "completion_inverse_matches_immutable_historical_digest": true
+    },
+    "semantic_findings": [
+      "The sentinel INSERT and MW3 table-list entry add coverage for postflop_profile_policies without relaxing snapshot, foreign-key, table inventory or rollback assertions. Their exact current source hashes match the previously approved sentinel delta.",
+      "explain.mjs and explain-later.ts now evaluate supplemental profile reference lookups only for nonstandard profile inputs, preserving standard lazy evaluation. flop-ui-facts.ts computes the hero base only when a replay table or profile mode requires it, restoring historical standard no-table behavior.",
+      "balance.mjs now passes requireSavedPolicy for nonstandard requested-profile history lookups on both flop and later streets. Added tests explicitly require missing re-raise rules to produce error findings and retain standard fallback and omitted requestedPaths behavior.",
+      "The historical HU contract file is byte-unchanged. The new candidate fixture is separate and explicitly proposed, with independently verified historical/current module and declaration digests. It pins reviewed changed declarations rather than falsely asserting they remain whole-module historical AST. No remaining concrete unsafe standard-numerical semantic delta was identified in the reviewed sources.",
+      "Completed HU routing intentionally supports adjusted ranges. One exact inverse expression restores the original completedFlopContext digest; unchanged MW3 default-table gating is retained. Tests now cover default/false/omitted HU flags, unchanged MW3 flags, malformed endings and pot mismatch.",
+      "Generator source validation, metadata and lifecycle extensions remain intentional differences; standard prompt bodies preserve historical content after explicit declaration-name mapping. This review does not characterize all generator behavior as unchanged."
+    ]
+  },
+  "execution_evidence": {
+    "personally_observed_exact_head_linux_ci": {
+      "head": "6b5291089c15304c25af7433e87cd1bcaac38428",
+      "passed": [
+        "account authentication run38003646562",
+        "authenticated MCP run38003646665",
+        "public postflop runtime config run38003646578"
+      ],
+      "failed": [
+        {
+          "run": 38003646600,
+          "job": 114067337363
+        },
+        {
+          "run": 38003646564,
+          "job": 114067336901
+        },
+        {
+          "run": 38003646583,
+          "job": 114067337019
+        }
+      ],
+      "common_failure": "restore-reviewed-preflop.mjs:50: Review source/configuration identity changed",
+      "downstream_status": "The three failed workflows stopped at restoration; downstream suites/build/publication checks were skipped, not passed.",
+      "environment_warning": "These jobs use Node22.20.0 while jsdom30.1.1 declares >=22.22.2 within Node22. This is an observed warning, not a proven test failure."
+    },
+    "author_reported_not_personally_executed": {
+      "focused_tests_passed": 50,
+      "broader_tests_passed": 66,
+      "typecheck_and_build": "reported pass",
+      "full_suite": {
+        "tests": 1417,
+        "passed": 1365,
+        "failed": 50,
+        "skipped": 2,
+        "scope": "Author confirmed the run used dirty local HEAD7c98 with10 tracked modifications and4 untracked paths, not an attested complete6b529 source snapshot. No full-suite pass is established.",
+        "failures": "15 directly identify host constraints; other35 lack clean-baseline classification. Source mismatches and a migration statement-count mismatch are included."
+      }
+    },
+    "historical_golden_provenance": {
+      "claimed_baseline": "7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5",
+      "claimed_tree": "04486039e4394a2238b71de24434623c255bfb87",
+      "values": 13,
+      "status": "UNVERIFIED. Author confirmed no baseline capture command/script/raw outputs were recorded; current-code comparison alone does not establish historical origin. Genuine clean-baseline capture is required before calling these historical evidence."
+    }
+  },
+  "authorized_renewal_shape": {
+    "history": "Preserve the original independent report and installed pr123_source_context_renewal amendments verbatim. Preserve exact copies/hash/byte pointers for all18 receipts as installed at7c98. Append a distinctly named corrected-source renewal with genuine reviewer attribution and this report plus the detailed HU review. Do not overwrite historical numerical reviewers, limitations or authors.",
+    "stage2": "Keep the195 source paths; replace only flop-ui-facts.ts and verify-preflop-local-d1.mjs with the exact records above. Recompute the unchanged official content identity. Preserve all1888 artifact records, archive, counts, fingerprint and previous review fields. Append scoped corrected-source attribution.",
+    "stage3": "Finalize Stage2 first, then recollect the99 source records to bind the exact final Stage2 receipt bytes/hash. No other Stage3 source row changes are approved. Preserve all1805 artifacts, archive, counts, fingerprint and previous review fields; recompute official identity and append scoped attribution.",
+    "mw3": "For all16 manifests replace only the two sentinel source rows, retain unchanged136/137 path inventories, and set source_tree to the real reviewed tree b02e4eca21633c17f877515ad5bda0f55f66a7a5. Recompute official source/content/manifest hashes and receipt bindings. Preserve all112 raw artifact records, inputs, archives,32 registry pins, strategy data, historical attribution, evidence and all seven limitations. Append only corrected-source attribution.",
+    "sql": "Rebuild using the official receipt-derived builder and independently verify that only the leading receipt-hash comment changes. All SQL bodies and archive hashes must remain byte-identical.",
+    "hu": "Do not create an accepted historical HU archive receipt or overwrite adopted-hu-v7-contract.json. Preserve standard/HU archive and policy bytes. The candidate contract is a reviewed extension with bounded evidence, not retroactive numerical approval."
+  },
+  "remaining_merge_verification": [
+    "Read exact committed final reports/receipt amendments/prior copies and validate every bytes/hash pointer. Prove no unrelated source or data changes.",
+    "Verify Stage3 binds finalized Stage2. Verify all16 manifest/receipt pairs and full canonical SQL remainders with unchanged registry pins.",
+    "Run official clean Stage2/Stage3 restore/full verification and MW3 restore/inventory/source gates; require final exact-head Linux CI pass.",
+    "Obtain clean historical7c2 and candidate captures using the same explicit script/inputs/runtime, record command and raw outputs, and independently verify all13 golden hashes or correct any unsupported fixture provenance.",
+    "Classify the previously reported50 failures using exact test/error evidence and clean appropriate baselines; fix PR-caused failures without weakening preservation gates. Dirty-worktree aggregate counts cannot establish final-head quality.",
+    "Retain honest limits: source review and finite sample output checks do not establish exhaustive numerical equivalence, solver quality or production readiness."
+  ],
+  "not_performed": [
+    "No external write, commit, push, review submission, merge, production D1 or deployment.",
+    "No full archive decompression, numerical regeneration, full collector/full suite or baseline golden capture personally executed in this review turn."
+  ]
+}

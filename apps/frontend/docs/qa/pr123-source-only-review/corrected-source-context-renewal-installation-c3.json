@@ -1,0 +1,601 @@
+{
+  "schema_version": 1,
+  "kind": "pr123-corrected-source-context-renewal-installation",
+  "status": "locally-installed-and-verified",
+  "repository": "Suuu-sh/ReysonAI",
+  "pull_request": 123,
+  "expected_pr_head": "52183cd79ab80ce74367b6ebab1a4c7ad7ae00ce",
+  "expected_pr_tree": "8af164b0aba86531260267c251c06b99aded00f8",
+  "reviewed_source": {
+    "commit": "6b5291089c15304c25af7433e87cd1bcaac38428",
+    "tree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5"
+  },
+  "reviewer_report": {
+    "path": "apps/frontend/docs/qa/pr123-source-only-review/independent-corrected-source-context-review.json",
+    "bytes": 21155,
+    "sha256": "c3a274b54d8ff52e498b755a278a453ed46be8ae5b8308a1231c9a222712a307"
+  },
+  "supporting_reviews": [
+    {
+      "path": "apps/frontend/docs/qa/pr123-source-only-review/independent-hu-v7-corrected-review.json",
+      "bytes": 13896,
+      "sha256": "f652772db0fe78a38e358a016c52d0a9c73efec15faf93ad19ab587f00d53f4c",
+      "reviewer_model": "gpt-6-astra",
+      "reviewer_task": "/root/review_pr123_source_evidence/inspect_hu_v7_pins"
+    },
+    {
+      "path": "apps/frontend/docs/qa/pr123-source-only-review/pr123-historical-provenance-corrected-review.json",
+      "bytes": 12726,
+      "sha256": "e6df50c6e1df364952dd1d7989e9830aa71dcfd7abe03f3b634f537f3cc41200",
+      "reviewer_model": "gpt-6-astra",
+      "reviewer_task": "/root/review_pr123_source_evidence/inspect_hu_v7_pins"
+    },
+    {
+      "path": "apps/frontend/docs/qa/pr123-source-only-review/pr123-fixed-envelope-verification.json",
+      "bytes": 938,
+      "sha256": "99a4b231cd96fc023220c10139d8caa63c4e92ae9036aaddba6de75529ebc0b2",
+      "attribution": "parent artifact verification; not an independent review"
+    }
+  ],
+  "reviewed_source_files_verified": 11,
+  "stage2": {
+    "path": "configs/multiway-preflop-stage2.review.json",
+    "previous_sha256": "d8b5b569d6ca3126ef25804a008417b23bd484c5a4af602a31c88aebcbe8fa86",
+    "new_sha256": "7326c8a23bffca9bdc4c67167691a0f4bdf17d527b519a4b105ada8ce91ffd15",
+    "sources": 195,
+    "changed_source_paths": [
+      "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+      "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+    ],
+    "artifacts": 1888,
+    "archive": {
+      "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+      "bytes": 1747857,
+      "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+      "format": "ustar+gzip"
+    },
+    "content_sha256": "306b6fbe738ccf409c13be9e89c914890b0d33289e0e3613dde870e083004f19"
+  },
+  "stage3": {
+    "path": "configs/multiway-preflop-stage3.review.json",
+    "previous_sha256": "7342d6182615161384d35c9481639648e095d01daf6a5796edac405f0e0fa1d2",
+    "new_sha256": "20c2a64cd7045e7401f07a2e4ab92f894135d6d8419c8754cc68d30bb3ae4672",
+    "sources": 99,
+    "changed_source_paths": [
+      "configs/multiway-preflop-stage2.review.json"
+    ],
+    "artifacts": 1805,
+    "archive": {
+      "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+      "bytes": 2436451,
+      "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+      "format": "ustar+gzip-stage3-content-v1"
+    },
+    "content_sha256": "4bb4429ff7e4f5c7c158cfcef93e31b75cee12c2c871e11e53765716992d9ab5"
+  },
+  "mw3": {
+    "spots": 16,
+    "source_tree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5",
+    "artifact_records": 112,
+    "per_spot": [
+      {
+        "spot": "CO_open_BTN_call_BB_call",
+        "slug": "co-btn-bb-mw3-srp-v1",
+        "manifestPath": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.manifest.json",
+        "archivePath": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.tar.gz",
+        "receiptPath": "configs/mw3-co-btn-bb-mw3-srp-v1.review.json",
+        "sqlPath": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.sql",
+        "source_count": 136,
+        "changed_source_paths": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "archive": {
+          "bytes": 363593,
+          "sha256": "b8adf765d22a128a88ce346ffda9f67615b98ada1e6579d56461da8910db8d9b"
+        },
+        "artifact_records": 7,
+        "limitations": 7,
+        "old_manifest_sha256": "6da819ded86473ef55d22310476945cf8541293b60d5c74e7635d82c95f59144",
+        "new_manifest_sha256": "48b0509f982b79d30829660e6af5feb7849ce9758a247b9530dd99767ddd78f0",
+        "old_receipt_sha256": "5bf5aa38739189b36532d126abc24f4ee28af3ff2ccd9b5bd81bd01e16f711b4",
+        "new_receipt_sha256": "495b9104ba4d45c57b777c331e09a8daff27da0fd2b50d1df112572021347e10",
+        "old_sql_sha256": "988c097232019ab3f71f3439cd51cadf568ec6e0825b4c24b708afde2c52a4b7",
+        "new_sql_sha256": "1397a426940785e1e84a91114d0256e6b77bdea3cf5882963daa9773413571f0",
+        "sql_body_sha256": "eb304345a3c02180357ed53a375a6a5a858c126af98faaabf8e64e125ee28797"
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call",
+        "slug": "co-btn-sb-mw3-srp-v1",
+        "manifestPath": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.manifest.json",
+        "archivePath": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.tar.gz",
+        "receiptPath": "configs/mw3-co-btn-sb-mw3-srp-v1.review.json",
+        "sqlPath": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.sql",
+        "source_count": 137,
+        "changed_source_paths": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "archive": {
+          "bytes": 352115,
+          "sha256": "71b7423b1450638f8f2a6077c0d6c87b6715ebc81c9462a0f35cd5d83ddf1e7f"
+        },
+        "artifact_records": 7,
+        "limitations": 7,
+        "old_manifest_sha256": "5804a4c2b834118b9b8839f3dc35ec67b8a70478e85c60a8d5b5413bd6c65e00",
+        "new_manifest_sha256": "c0c98705948d01c975ad8584ac822786bc58288f131ca405cba949d8db07e836",
+        "old_receipt_sha256": "a52c12ca8d16e765ebdc79d310970951d45dac648d503027647dd4621ae3daac",
+        "new_receipt_sha256": "526f5ac8e4cb6bb098550d38871d7711c4be652da4106613bc39d2e10047366b",
+        "old_sql_sha256": "01e78a88aa34bc1e45dd23ff4f1993d6d80f302d111db721e701bd9c5937582d",
+        "new_sql_sha256": "1480bff0a34c0ff1c4d3ce8d92166400c4fc5127baf0dcb04dd29f73877257d8",
+        "sql_body_sha256": "35b2f6e2790bb8f598ad73e851d61036fa24eba2f5b6fe630728e14972843b8c"
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_call",
+        "slug": "hj-btn-bb-mw3-srp-v1",
+        "manifestPath": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.manifest.json",
+        "archivePath": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.tar.gz",
+        "receiptPath": "configs/mw3-hj-btn-bb-mw3-srp-v1.review.json",
+        "sqlPath": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.sql",
+        "source_count": 137,
+        "changed_source_paths": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "archive": {
+          "bytes": 357921,
+          "sha256": "a1d6d54a8d169260c7bf38cfb062915c2ab9e64f116dfb8101c7b63dad6fbb0a"
+        },
+        "artifact_records": 7,
+        "limitations": 7,
+        "old_manifest_sha256": "b7d8af458a0ad2c267da41ab02cc5f77f3943ccf01e1b5735351cfaea59c8030",
+        "new_manifest_sha256": "a565a2a59bfdd61763c1fc91ad8e6aa5b0cfaeed8f42d2d5f607e0f20005a8a3",
+        "old_receipt_sha256": "bb4869754fbc56b64ac5281cf4cb99cbff8dc9690bb38515954084e0ed0b1942",
+        "new_receipt_sha256": "f1c6bc3c2d4f515859a1fcbce0a3a7f56d39d023d516ea0c99e767e79717b672",
+        "old_sql_sha256": "2cdb80e235fceabab31689c765a405b2fc8de0477054280a290d5d3222e9bee9",
+        "new_sql_sha256": "094cc2ec1a15f3276c210ed58233a05beeb1bbce71317ad1642df85f478fbebe",
+        "sql_body_sha256": "7d46cf5846fff838c76d98579f6f5f76986e866dc674afe4a340e109d34a3dbc"
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call",
+        "slug": "hj-btn-sb-mw3-srp-v1",
+        "manifestPath": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.manifest.json",
+        "archivePath": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.tar.gz",
+        "receiptPath": "configs/mw3-hj-btn-sb-mw3-srp-v1.review.json",
+        "sqlPath": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.sql",
+        "source_count": 137,
+        "changed_source_paths": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "archive": {
+          "bytes": 349739,
+          "sha256": "f3ec418992730e69f548e354508c95e0a42e4963cb7dd6b8d15cacc3d500d45e"
+        },
+        "artifact_records": 7,
+        "limitations": 7,
+        "old_manifest_sha256": "34843b489f8179d10b25c8a96989d5ca5ce8d266b4ed6c576e16e9a7271a2727",
+        "new_manifest_sha256": "92abf1844ae2dcac1b164d356cacb0a335e8e6f7104ba5c6a798816b9669a3cf",
+        "old_receipt_sha256": "c410f4d1fb4eb3ce268e6572542fe01edd4a95232ce0029f7955ab18cf3ef439",
+        "new_receipt_sha256": "3cfcc7c4c6b2623273d903a1fd92b097fbf7353f22a78fec9d99d583372932be",
+        "old_sql_sha256": "04812e5bd7761a357ce50e3c821fb019c3dbd000a3d543d39068775ac9efeaa9",
+        "new_sql_sha256": "5e3e3141b61a83414d7d9d458c3351dc6ef2ae3bc02a4bdded08db1acb07b250",
+        "sql_body_sha256": "a53d3772148bbe7acb87a26845cdaed73bc4f6c52e4159e1064e60cba13b2822"
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_call",
+        "slug": "hj-co-bb-mw3-srp-v1",
+        "manifestPath": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.manifest.json",
+        "archivePath": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.tar.gz",
+        "receiptPath": "configs/mw3-hj-co-bb-mw3-srp-v1.review.json",
+        "sqlPath": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.sql",
+        "source_count": 137,
+        "changed_source_paths": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "archive": {
+          "bytes": 355876,
+          "sha256": "9e12080a2e5fbd5d642339a17508e7bd7cdff2aacf7739e3e416df816282ec0c"
+        },
+        "artifact_records": 7,
+        "limitations": 7,
+        "old_manifest_sha256": "5b3d07a81d2887da3ba8763f033f1f70b35c6889264c72d48567ba249220c489",
+        "new_manifest_sha256": "7ab21f285d0d4f82bf74fdf24c8615d94cf7cf39b5f16a4d56cfeeffd73f0c09",
+        "old_receipt_sha256": "680b6c67c227448b83d269f09dfb11be2b7305862b143aa5d65a39e4ed43d319",
+        "new_receipt_sha256": "a738252228cfde76298d5ceecdfdde3ff95070a142a1da76f1949fa12ebffa2c",
+        "old_sql_sha256": "933c2f0170410e4528492e3678563c3b3a056f3942492e602b27da53d3feb71f",
+        "new_sql_sha256": "266df6067d1d46b24a6a2f7bf7a4d493148ac4d94546b17c1b5d6385d6be0c52",
+        "sql_body_sha256": "6181a1192966003fab28cf4f5ce398df180388a8a34be83227c4918bddba0c07"
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call",
+        "slug": "hj-co-btn-mw3-srp-v1",
+        "manifestPath": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.manifest.json",
+        "archivePath": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.tar.gz",
+        "receiptPath": "configs/mw3-hj-co-btn-mw3-srp-v1.review.json",
+        "sqlPath": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.sql",
+        "source_count": 137,
+        "changed_source_paths": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "archive": {
+          "bytes": 346320,
+          "sha256": "b0ad2b74cdc937f228aa4cb862502390ba03606dc548218d713da5875e1a4d00"
+        },
+        "artifact_records": 7,
+        "limitations": 7,
+        "old_manifest_sha256": "63f179d1b772f43c19ec063c966462f30abd5cd2d6e1352e94ecd5c1c14d35e3",
+        "new_manifest_sha256": "62c02970c366ce691cc146726e3cc1ea2c1b8836b1c2d14116606e83ae317ffc",
+        "old_receipt_sha256": "4f8db69772e30321384939c941f7ca43e3aca9c17bc2f97f75d1bf7b2a1047b4",
+        "new_receipt_sha256": "87ae566b63ca851ac1f7c77d546d930e0279fa3669008f6dfcf715ceafec2ac9",
+        "old_sql_sha256": "3392dd98f23fc539c69e267989f7af6b0c89ddfd66b05bde09b39d3786cd22a2",
+        "new_sql_sha256": "328a86f7f9dadbee9dcd6036c1f906dccfdde3fed512297049f159067cda2c0b",
+        "sql_body_sha256": "45d0dddf3b0a5d80e597dbf6980a51a017d44294c1562c2123316192eafda6e0"
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call",
+        "slug": "hj-co-sb-mw3-srp-v1",
+        "manifestPath": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.manifest.json",
+        "archivePath": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.tar.gz",
+        "receiptPath": "configs/mw3-hj-co-sb-mw3-srp-v1.review.json",
+        "sqlPath": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.sql",
+        "source_count": 137,
+        "changed_source_paths": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "archive": {
+          "bytes": 349456,
+          "sha256": "2c41876d803519c8f05f347ecbf55404d29e17baf6f588089782d727f3ab13d7"
+        },
+        "artifact_records": 7,
+        "limitations": 7,
+        "old_manifest_sha256": "530f4cb46e8a467f0bb8cc84184f662387513d28e934ee96c1290cac948a2626",
+        "new_manifest_sha256": "6d9c8c22665bb4815420ce0e7bcd79b68d4379d78a1a49e7432f5aa1713aa30e",
+        "old_receipt_sha256": "bcceb7adaa58c6361eabd79f252ac153520d54d5697dd9cb05eb1db415d9bbd2",
+        "new_receipt_sha256": "30af55012da600e7bb3eb45bf3e6e7829ba0d2744237621b304bc75b10a33b88",
+        "old_sql_sha256": "5b8bc5e46b4614695205ddf3573ba7df4ecc89d4f33b7d3fb0027573d5fa5f4e",
+        "new_sql_sha256": "87acbb7a20b4631f91d5220bfd0543f74285ff315678f1ddfd54f841a7c7addf",
+        "sql_body_sha256": "8f580a48cfe4816a792396ba3bd20a1f35ec209301111f23ac59928f45f1f44b"
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_call",
+        "slug": "utg-btn-bb-mw3-srp-v1",
+        "manifestPath": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.manifest.json",
+        "archivePath": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.tar.gz",
+        "receiptPath": "configs/mw3-utg-btn-bb-mw3-srp-v1.review.json",
+        "sqlPath": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.sql",
+        "source_count": 137,
+        "changed_source_paths": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "archive": {
+          "bytes": 356007,
+          "sha256": "1a8ca191895c386944c903e6de9b9c7e1d25e77ce1f471a21036ee9321a4b69e"
+        },
+        "artifact_records": 7,
+        "limitations": 7,
+        "old_manifest_sha256": "66e2478c8e6599533f0b265b2230135599d511ccdce6053a7f868005a73c61c0",
+        "new_manifest_sha256": "137ae5436805e98cce6dcc3bb957ac3b0a7ad2b410e64661800110af6157741e",
+        "old_receipt_sha256": "98d541abdd1f9fec58509f396f646a3d558a0bf9122afe057ccc9430b79007b5",
+        "new_receipt_sha256": "c1207d84932f52925e07c0fd399e43b37aea3faef08f66578c0208ac81ba7881",
+        "old_sql_sha256": "8f961fc75fdd59ceb3eb8b99e366687526956eb98a581efe3355750878b376c1",
+        "new_sql_sha256": "85fe137f5a9462eab57cdec1113ee2d03e9e8f36b3e28ed04e86af3b38f06a96",
+        "sql_body_sha256": "729fd2fd574e5efaec43df1d3a9b8b6fec519ccc541d62d976e20515d19be9d2"
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call",
+        "slug": "utg-btn-sb-mw3-srp-v1",
+        "manifestPath": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.manifest.json",
+        "archivePath": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.tar.gz",
+        "receiptPath": "configs/mw3-utg-btn-sb-mw3-srp-v1.review.json",
+        "sqlPath": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.sql",
+        "source_count": 137,
+        "changed_source_paths": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "archive": {
+          "bytes": 349201,
+          "sha256": "fb452978edb7aaf29593c6af6c3cf8dbb5352009580606938b485aba5886095d"
+        },
+        "artifact_records": 7,
+        "limitations": 7,
+        "old_manifest_sha256": "5ecd07245d2b0de4a343d113e5c7d9fb841c4f225fac9d882a7d1c3a0e00ad82",
+        "new_manifest_sha256": "55ce05572ed887bbcd5f9af8dc753ade260f4c315ccc18cc758b4ebf8c9adb1d",
+        "old_receipt_sha256": "38a9a5003bb4dc53bff25f9b4e9e3c382545acaa0cf75c0b000f7bcb7d1da3fa",
+        "new_receipt_sha256": "ae4cac1698a17fca2ea919c931ed37f24c0b7d7f1bea6bf5c73d274bbe4e4025",
+        "old_sql_sha256": "e80b7ee80af9751e22b8407ebc998cc441cf2b494f574db7eec8c12615ac6b33",
+        "new_sql_sha256": "81a5e423072c58b2d9871b400480c3ab31732241b8cc4b3d3825e7abf237a2ca",
+        "sql_body_sha256": "c45d44133a262915a7f55a16a788b1cc7809e25c250954c166bef12938fdf71d"
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_call",
+        "slug": "utg-co-bb-mw3-srp-v1",
+        "manifestPath": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.manifest.json",
+        "archivePath": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.tar.gz",
+        "receiptPath": "configs/mw3-utg-co-bb-mw3-srp-v1.review.json",
+        "sqlPath": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.sql",
+        "source_count": 137,
+        "changed_source_paths": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "archive": {
+          "bytes": 353793,
+          "sha256": "fab985466902709975e0e02e39d4eb9f5e41b0eb05f80d4d9f4824fe4d5913df"
+        },
+        "artifact_records": 7,
+        "limitations": 7,
+        "old_manifest_sha256": "e753ff96c7a3e2509acc274d9771ac97e30d3baf8898dd69d2bac363df049e2c",
+        "new_manifest_sha256": "0ca3449922bbbc57b8c2eba7512d3eb544d28f387830e05b90e9919c1ff8d83e",
+        "old_receipt_sha256": "c4b1ac6c04ecb14a33af914954d7e0db17ed969c89e1652103980a225811e9b8",
+        "new_receipt_sha256": "4cfe7a46adfc2c2ba5d8244230c0c44a2e4df27d83273e20126277a9df1e2621",
+        "old_sql_sha256": "a26c295e8a693779e403db91cebd7f991734d30bdd0ddcc8a81f9f8f0bee2c2f",
+        "new_sql_sha256": "5a98ee508618fceef225117a6cf152ef8cf8bd1ff8673de4715ed6554dd7ad39",
+        "sql_body_sha256": "ea891c33decf677f93496875fe4618858e937c89dea0a69f1cb4abe91fa7de43"
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call",
+        "slug": "utg-co-btn-mw3-srp-v1",
+        "manifestPath": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.manifest.json",
+        "archivePath": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.tar.gz",
+        "receiptPath": "configs/mw3-utg-co-btn-mw3-srp-v1.review.json",
+        "sqlPath": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.sql",
+        "source_count": 137,
+        "changed_source_paths": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "archive": {
+          "bytes": 343601,
+          "sha256": "3a3d6f4d1cabcfcff881b5b90470ad153748264734fce92f0bd6a816fbe58604"
+        },
+        "artifact_records": 7,
+        "limitations": 7,
+        "old_manifest_sha256": "16b596e6761dd330a106a3ef870d7e90a1e4d890880e7f11f6a2460d65d341c4",
+        "new_manifest_sha256": "ef9dd496bb40175a1e0a078c7fa0bdcb603d6bf0ec490c298fa6d545ea05db1a",
+        "old_receipt_sha256": "ab26f6e1b5c28738867f443ab19c7593678f90e2c716d50bf1aea21687e1fc72",
+        "new_receipt_sha256": "1e320dfdd5aae93e83cd3fbe358c5e235741a38220d31f5b5def78156900d6fc",
+        "old_sql_sha256": "5b0423cd4c8ebe8f16033ce3e31e4ed056319a6c93501593919fb4120c208258",
+        "new_sql_sha256": "4893835f8f0a287a1f47136731c1188a641972e948101ecbe670e1d4beed0035",
+        "sql_body_sha256": "3d11a0029c03f313f94d97417ba455ba2393adae39864894e65a7dd7385093cf"
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call",
+        "slug": "utg-co-sb-mw3-srp-v1",
+        "manifestPath": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.manifest.json",
+        "archivePath": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.tar.gz",
+        "receiptPath": "configs/mw3-utg-co-sb-mw3-srp-v1.review.json",
+        "sqlPath": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.sql",
+        "source_count": 137,
+        "changed_source_paths": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "archive": {
+          "bytes": 347918,
+          "sha256": "c859afc13e369cd1cf3ab8ea545d8115a5eaba4d55725de772f222a560f4b7a0"
+        },
+        "artifact_records": 7,
+        "limitations": 7,
+        "old_manifest_sha256": "7dc94be3cf58c16d577a96733bdca1e27a12c3f6473cdda968b4958de6f547a3",
+        "new_manifest_sha256": "9ae483363593bd9ce347f49571f501c80f7b3f7bfdf3c750a67f95e5f57ca1a6",
+        "old_receipt_sha256": "1170f4fc95badb39deede8979549e252ea389423372b21941cd5ee7feee27570",
+        "new_receipt_sha256": "ab879933a299ba28f985ca4409690c6a19688a62012fc6e6431bb25765efcb21",
+        "old_sql_sha256": "f72f2d8fc943792f1a818f70afeed9026548fe8aa5d083f2d4521b3213a6729d",
+        "new_sql_sha256": "549e26d5b21bdb1321a0dd2af0891ef7b06b7fe6a9fe05f11c09c043909fc63d",
+        "sql_body_sha256": "15d60b9436082dbaee082c150d99226c1219fb2d54a93226c9fcdca1bd99c704"
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_call",
+        "slug": "utg-hj-bb-mw3-srp-v1",
+        "manifestPath": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.manifest.json",
+        "archivePath": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.tar.gz",
+        "receiptPath": "configs/mw3-utg-hj-bb-mw3-srp-v1.review.json",
+        "sqlPath": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.sql",
+        "source_count": 137,
+        "changed_source_paths": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "archive": {
+          "bytes": 352915,
+          "sha256": "d84390b598755b265f5e5ae5e5601d05fc69e7346971b955c2ab0d4732ab577a"
+        },
+        "artifact_records": 7,
+        "limitations": 7,
+        "old_manifest_sha256": "88b7928949d24f4f4b358e77c8d5d74ff9ad47a5977124c86cd43de7d983225a",
+        "new_manifest_sha256": "ff75fde0193ca62a99f0185fb9e6823d5925b691fd939950ba74954eb9924dd1",
+        "old_receipt_sha256": "24be6621de66e4380b3e1c906890101149bdc63cb10f4a1a60dbf57e3a6e6296",
+        "new_receipt_sha256": "c10ffe537040e1183713588b86eeda2cc3782445f431904c0922e4995003f3c5",
+        "old_sql_sha256": "9b065362783ccb805cb4f09f5191ed83bea3610038b0045c6fb3b68762939313",
+        "new_sql_sha256": "e521fa9fa9a6b8b2690393f941bf01971fed4d895a37586d0407be3442465df8",
+        "sql_body_sha256": "fefbea4ba81a18d61626b746926b5973ae5c93c95adad192e06b88913d9d4450"
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call",
+        "slug": "utg-hj-btn-mw3-srp-v1",
+        "manifestPath": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.manifest.json",
+        "archivePath": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.tar.gz",
+        "receiptPath": "configs/mw3-utg-hj-btn-mw3-srp-v1.review.json",
+        "sqlPath": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.sql",
+        "source_count": 137,
+        "changed_source_paths": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "archive": {
+          "bytes": 342470,
+          "sha256": "fae0fe5f2ce9fc718f68b9160e4f6e99ed14138b5319008cacb4684b1aca9f3e"
+        },
+        "artifact_records": 7,
+        "limitations": 7,
+        "old_manifest_sha256": "90a2e65284d78a6971d8af7feecf4ab4d7dff7c89e4e91ebaee23eca65857c5b",
+        "new_manifest_sha256": "0f4e1cfdc72c88886a9b3a5f6698772b777fc8be3cea1eee49c4578afe4d32b2",
+        "old_receipt_sha256": "06e0964ff86aa6a282dd90890bcea4c0207dcbe4f5eedf2109451842469ee272",
+        "new_receipt_sha256": "9e02e01e3a02bf899f9831b58f0a152edb55b996030a3b6d964136b4f2367a87",
+        "old_sql_sha256": "2b82d4f12fc298c4878a8d63182c667f3c3d119adc495c1da87dd087cf9f8fd8",
+        "new_sql_sha256": "a0565e5026c027d543a6c756c3638cc34e77076bdc87e17f8ea0da3452e6a522",
+        "sql_body_sha256": "37102ffd0118a56f88de0ab91a2f4779ac545d6e5ccc5c62d0de38b467df6a7d"
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call",
+        "slug": "utg-hj-co-mw3-srp-v1",
+        "manifestPath": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.manifest.json",
+        "archivePath": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.tar.gz",
+        "receiptPath": "configs/mw3-utg-hj-co-mw3-srp-v1.review.json",
+        "sqlPath": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.sql",
+        "source_count": 137,
+        "changed_source_paths": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "archive": {
+          "bytes": 340387,
+          "sha256": "a0531cb661d36f6beee9076196a40e7a8fef414cbe2c60ffb9283ac1037ac19b"
+        },
+        "artifact_records": 7,
+        "limitations": 7,
+        "old_manifest_sha256": "1e81579a896f4634f815cdd10a6c97ab44d326572308e5af79dfd5196b2cfd3a",
+        "new_manifest_sha256": "d504ac670cd062c48e110be604ed34eb671d7b019e7e56f02b8f4b70b0edde55",
+        "old_receipt_sha256": "2a41e1431f1b09ec627f317aa94c48c84b1e38aa51b9a20c06ff388d4774b681",
+        "new_receipt_sha256": "7eda792f21bdfd2f41d389a664dcadaec95aca0eee0285d0dabc0b94bb79d8bd",
+        "old_sql_sha256": "d3e73131e44a5875c3cc716ecc0bf7a6d3e09cf37b407b14517145a7f2b41be9",
+        "new_sql_sha256": "b72fc31b0a08ac325217a9d4884cb35d3500a95a04b575dbc8438304ab7bfdaa",
+        "sql_body_sha256": "22bd1af1be7bbd83782b0c5573d808b68f841c86ead795509a808c9adbbd6676"
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call",
+        "slug": "utg-hj-sb-mw3-srp-v1",
+        "manifestPath": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.manifest.json",
+        "archivePath": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.tar.gz",
+        "receiptPath": "configs/mw3-utg-hj-sb-mw3-srp-v1.review.json",
+        "sqlPath": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.sql",
+        "source_count": 137,
+        "changed_source_paths": [
+          "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+          "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+        ],
+        "archive": {
+          "bytes": 346992,
+          "sha256": "ed25dd6a611d329ec8f78614320d66c5f84284ee4f3e2cf14129cbd75d5b7afa"
+        },
+        "artifact_records": 7,
+        "limitations": 7,
+        "old_manifest_sha256": "f840c4883f6df233b44946ba227972cb5af7be249e3c4d4be3475528065cb671",
+        "new_manifest_sha256": "77e4e7739e0b59cf711e4aa9e17ce7ac0bbccae2b6e1e820f4f1a262a68bebe8",
+        "old_receipt_sha256": "4b8b9385b368a7b0526feefd267f44c17839125b114e40e6628235e42b7aa02e",
+        "new_receipt_sha256": "e64ac9ece9131fa3c00f53f4f96e99e6a6f1cf0b5e0704d6c49fc853f4d28280",
+        "old_sql_sha256": "0875498d5d7e15dcb4439797496af5312bcc108737f52ed434e6fc45fe011c97",
+        "new_sql_sha256": "31c7b7cc32149a6acb2de6eddf9752c1d62e79d79463a050d1a816a5ba00c580",
+        "sql_body_sha256": "c2850ecbf6f0c73cbf21ad2196606b10241db2e5bfd154032d3d6c2212804757"
+      }
+    ]
+  },
+  "non_claims": [
+    "No new numerical policy was generated or approved.",
+    "Historical authorship, numerical reviews, inputs, archives, and limitations are preserved.",
+    "SQL was rebuilt from saved artifacts using the official receipt-derived builder; only the leading receipt hash comment differs.",
+    "No D1 database access, migration, deploy, or merge was performed."
+  ],
+  "verification": {
+    "reviewed_source": {
+      "commit": "6b5291089c15304c25af7433e87cd1bcaac38428",
+      "tree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5",
+      "reviewed_files": 11,
+      "remote_blob_matches_at_input_head": 11
+    },
+    "preflop_saved_byte_restore": {
+      "status": "passed",
+      "stage2": {
+        "files": 1614,
+        "bytes": 43276102,
+        "archive_bytes": 1747857,
+        "archive_sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a"
+      },
+      "stage3": {
+        "files": 1805,
+        "bytes": 60027700,
+        "archive_bytes": 2436451,
+        "archive_sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b"
+      }
+    },
+    "preflop_publication_bundle": {
+      "status": "passed",
+      "catalog": 3115,
+      "saved": 1611,
+      "unreachable": 1504,
+      "hands": 272259,
+      "sql_bytes": 129253470,
+      "sql_sha256": "ce17d72e71bcec59e16da9f4dc6a9b67030563c8bc5c07e53f46e85b9c411917",
+      "generated_strategies": false,
+      "artifact_records": 3693,
+      "stage2_counts": {
+        "catalog": 3115,
+        "saved": 1611,
+        "unreachable": 1504,
+        "hands": 272259
+      },
+      "stage3_counts": {
+        "catalog": 16132,
+        "saved": 1801,
+        "unreachable": 5621,
+        "rare": 8710,
+        "hands": 304369
+      }
+    },
+    "mw3_saved_archive_verification": {
+      "status": "passed",
+      "accepted_spots": 16,
+      "registered_pairs": 16,
+      "restored_or_written_files": 0,
+      "raw_artifact_records_preserved": 112
+    },
+    "preservation_checks": {
+      "protected_files": 84,
+      "protected_files_matching": 84,
+      "historical_receipt_records": 18,
+      "historical_receipt_records_matching": 18,
+      "registry_and_receipt_pins": 32,
+      "registry_and_receipt_pins_matching": 32,
+      "mw3_compatibility_identity_negative_control": "passed",
+      "saved_sql_body_preserved": true,
+      "only_leading_receipt_hash_comment_rebuilt": true
+    },
+    "local_checks": {
+      "focused_tests": {
+        "passed": 45,
+        "failed": 0
+      },
+      "typecheck": "passed",
+      "build": "passed",
+      "sites_tests": {
+        "passed": 7,
+        "failed": 0
+      },
+      "backend_tests": {
+        "passed": 24,
+        "failed": 0,
+        "skipped": 1
+      },
+      "full_frontend_suite": {
+        "total": 1408,
+        "passed": 1373,
+        "failed": 33,
+        "skipped": 2,
+        "unresolved_environment_or_baseline_failures": [
+          "21 Linux-specific expectations observed on macOS (darwin)",
+          "1 loopback listener denied with EPERM in the sandbox",
+          "10 UI/locale tests asserting unchanged development-branch markup or styles",
+          "1 mw3-source-scope process terminated by SIGKILL"
+        ],
+        "claim": "The full suite did not pass locally; the failures require Linux/CI or a less restricted runtime to adjudicate."
+      }
+    },
+    "integration_status": "not merged; no deploy or database mutation"
+  }
+}

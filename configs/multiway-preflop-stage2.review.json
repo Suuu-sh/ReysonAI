@@ -746,6 +746,52 @@
         "Existing review history, warnings, advisories, limitations, authorship, and all previous amendments are retained."
       ],
       "merge_decision": "BLOCK until controlled source-bound receipt renewal, exact committed source re-verification, clean official restore/full publication verification, and required exact-head CI pass"
+    },
+    "corrected_source_context_renewal": {
+      "status": "source-context-pass",
+      "reviewer_model": "gpt-6-astra",
+      "reviewer_task": "/root/review_pr123_source_evidence",
+      "reviewed_at_utc": "2026-10-09T23:26:42Z",
+      "decision": "PASS for installation of the narrowly specified consolidated source-only renewal",
+      "scope": "Source-only binding of the exact reviewed source tree and saved source closures. This does not renew numerical acceptance, strategy quality, runtime parity, production readiness or deployment authority.",
+      "source_commit": "6b5291089c15304c25af7433e87cd1bcaac38428",
+      "source_tree": "b02e4eca21633c17f877515ad5bda0f55f66a7a5",
+      "prior_receipt_head": "7c98d662f88b88c4a4be5e622be82c359a8746d3",
+      "source_record_count": 195,
+      "source_records_sha256": "06725536e41896604955353a79402c9e501bded7c630cf08ad559bc48f834781",
+      "prior_receipt": {
+        "path": "configs/multiway-preflop-stage2.review.json",
+        "bytes": 537540,
+        "sha256": "d8b5b569d6ca3126ef25804a008417b23bd484c5a4af602a31c88aebcbe8fa86"
+      },
+      "report": {
+        "path": "apps/frontend/docs/qa/pr123-source-only-review/independent-corrected-source-context-review.json",
+        "bytes": 21155,
+        "sha256": "c3a274b54d8ff52e498b755a278a453ed46be8ae5b8308a1231c9a222712a307"
+      },
+      "supporting_reviews": [
+        {
+          "path": "apps/frontend/docs/qa/pr123-source-only-review/independent-hu-v7-corrected-review.json",
+          "bytes": 13896,
+          "sha256": "f652772db0fe78a38e358a016c52d0a9c73efec15faf93ad19ab587f00d53f4c",
+          "reviewer_model": "gpt-6-astra",
+          "reviewer_task": "/root/review_pr123_source_evidence/inspect_hu_v7_pins"
+        }
+      ],
+      "changed_source_paths": [
+        "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+        "apps/frontend/scripts/postflop-ai/balance.mjs",
+        "apps/frontend/scripts/postflop-ai/explain-later.ts",
+        "apps/frontend/scripts/postflop-ai/explain.mjs",
+        "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+        "apps/frontend/scripts/verify-preflop-local-d1.mjs",
+        "apps/frontend/tests/adopted-hu-v7-runtime.test.mjs",
+        "apps/frontend/tests/fixtures/adopted-hu-v7-candidate-contract.json",
+        "apps/frontend/tests/hu-after-multiway-integration.test.mjs",
+        "apps/frontend/tests/postflop-profile-balance.test.mjs",
+        "apps/frontend/tests/postflop-profile-state.test.mjs"
+      ],
+      "preservation": "Historical numerical authorship and review fields, saved artifacts, archive bytes, counts, fingerprints, inputs, accepted limitations and delivery bodies are preserved."
     }
   },
   "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
@@ -10495,8 +10541,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
-      "bytes": 13013,
-      "sha256": "e8c40c3ae4788831d100955aa5f12b0d76efe89d79091e367a5d677bc567a44b"
+      "bytes": 13124,
+      "sha256": "8b94ef706fd41590672f28267604ca1d983ea63faa381f358c927fd6ebb709d8"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/generate-profiles.mjs",
@@ -10745,8 +10791,8 @@
     },
     {
       "path": "apps/frontend/scripts/verify-preflop-local-d1.mjs",
-      "bytes": 22777,
-      "sha256": "61e65d7ef9e66abab958b9b05fd1b8e1e6328d7b0af33ce639383d0901af23f4"
+      "bytes": 22932,
+      "sha256": "d10b99c1801a59eff79e22a98cfb7780db840e962ae0aabf3a66990b65d84401"
     },
     {
       "path": "apps/frontend/scripts/verify-reviewed-preflop.mjs",
@@ -11174,7 +11220,7 @@
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
     }
   ],
-  "content_sha256": "30dc42c7ca18652e32d519c71da904ad8e79c4e6883f9b0006da9f29ad97945b",
+  "content_sha256": "306b6fbe738ccf409c13be9e89c914890b0d33289e0e3613dde870e083004f19",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
