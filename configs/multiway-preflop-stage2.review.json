@@ -10855,8 +10855,8 @@
     },
     {
       "path": "apps/frontend/src/account/session.ts",
-      "bytes": 9982,
-      "sha256": "ca7bab94b076851ecc34f1b6c33ecbb9d3bdad2b64434c569917e68412709ec1"
+      "bytes": 9937,
+      "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
     },
     {
       "path": "apps/frontend/src/agent/agent-history-codec.ts",
@@ -10965,8 +10965,8 @@
     },
     {
       "path": "apps/frontend/src/estimated/datasets.ts",
-      "bytes": 5469,
-      "sha256": "71edae8d4a165f778a953bcaeb59c40a526b762f794d2e58818d5c7cf74383f2"
+      "bytes": 5397,
+      "sha256": "dd3224feae502272ded066a636760bf05b4f62d5d865ff5a802bf6ac68b3a216"
     },
     {
       "path": "apps/frontend/src/estimated/english-reasons.ts",
@@ -11274,7 +11274,7 @@
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
     }
   ],
-  "content_sha256": "2319597dab297fb9eca1059ca056a9185925f52ada2a8e0509d675b19546e10d",
+  "content_sha256": "1d451526d21e88b8df0a940956510ffef960db7c592a251e364117341bc66958",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -11370,7 +11370,7 @@
   ],
   "mcp_api_main_source_renewal": {
     "status": "prepared-pending-independent-source-review",
-    "scope": "Mechanical source/configuration identity refresh only for the MCP API composition workflow and durable API Worker config. Preserve historical numerical acceptance, authored content, reviewer records, evidence, warnings, limitations, dataset records, and archived payload bytes; TypeScript 7 fetch-response annotations support the independent composed-Worker typecheck. This records no new numerical or strategy-quality approval.",
+    "scope": "Mechanical source/configuration identity refresh only for the MCP API composition workflow and durable API Worker config. Preserve historical numerical acceptance, authored content, reviewer records, evidence, warnings, limitations, dataset records, and archived payload bytes. The composed Worker typecheck uses a typecheck-only compatibility declaration for inherited browser Fetch JSON typing without changing receipt-pinned application sources. This records no new numerical or strategy-quality approval.",
     "changed_sources": [
       {
         "path": ".github/workflows/deploy-worker.yml",
@@ -11397,38 +11397,12 @@
           "bytes": 1669,
           "sha256": "7c6895420fedb903b401667f46dc2826b00da388232a0667d49f089b2d379c06"
         }
-      },
-      {
-        "path": "apps/frontend/src/account/session.ts",
-        "before": {
-          "path": "apps/frontend/src/account/session.ts",
-          "bytes": 9937,
-          "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
-        },
-        "after": {
-          "path": "apps/frontend/src/account/session.ts",
-          "bytes": 9982,
-          "sha256": "ca7bab94b076851ecc34f1b6c33ecbb9d3bdad2b64434c569917e68412709ec1"
-        }
-      },
-      {
-        "path": "apps/frontend/src/estimated/datasets.ts",
-        "before": {
-          "path": "apps/frontend/src/estimated/datasets.ts",
-          "bytes": 5397,
-          "sha256": "dd3224feae502272ded066a636760bf05b4f62d5d865ff5a802bf6ac68b3a216"
-        },
-        "after": {
-          "path": "apps/frontend/src/estimated/datasets.ts",
-          "bytes": 5469,
-          "sha256": "71edae8d4a165f778a953bcaeb59c40a526b762f794d2e58818d5c7cf74383f2"
-        }
       }
     ],
     "checks": {
       "canonical_collector": "apps/frontend/scripts/lib/reviewed-preflop.mjs reviewedSourcePaths/fileRecord",
       "source_records": 196,
-      "unchanged_source_records": 192,
+      "unchanged_source_records": 194,
       "numerical_artifacts_unchanged": true,
       "archive_record_unchanged": true,
       "executable_sql_changed": false
