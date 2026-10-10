@@ -2,10 +2,10 @@ name: Verify authenticated free MCP
 on:
   pull_request:
     branches: [development, main]
-    paths: ['apps/mcp/**', 'apps/backend/src/index.ts', 'apps/backend/src/worker.ts', 'apps/backend/src/account.ts', 'apps/backend/migrations/0007_accounts.sql', 'apps/frontend/src/estimated/**', 'apps/frontend/tsconfig.json', 'apps/frontend/tsconfig.worker.json', '.github/workflows/verify-mcp.yml']
+    paths: ['apps/mcp/**', 'apps/backend/src/index.ts', 'apps/backend/src/worker.ts', 'apps/backend/src/account.ts', 'apps/backend/migrations/0007_accounts.sql', 'apps/frontend/src/estimated/**', 'apps/frontend/src/account/session.worker.ts', 'apps/frontend/worker-response-json-compat.d.ts', 'apps/frontend/tsconfig.json', 'apps/frontend/tsconfig.worker.json', '.github/workflows/verify-mcp.yml']
   push:
     branches: ['feat/authenticated-free-mcp']
-    paths: ['apps/mcp/**', 'apps/frontend/tsconfig.json', 'apps/frontend/tsconfig.worker.json', '.github/workflows/verify-mcp.yml']
+    paths: ['apps/mcp/**', 'apps/frontend/src/estimated/datasets.worker.ts', 'apps/frontend/src/account/session.worker.ts', 'apps/frontend/worker-response-json-compat.d.ts', 'apps/frontend/tsconfig.json', 'apps/frontend/tsconfig.worker.json', '.github/workflows/verify-mcp.yml']
 permissions:
   contents: read
 concurrency:

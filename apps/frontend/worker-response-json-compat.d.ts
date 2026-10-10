@@ -1,9 +1,7 @@
-// The composed project includes browser modules whose untyped Fetch JSON calls
-// follow the DOM default. Keep that default local to this mixed Worker check.
-declare global {
-  interface Body {
-    json<T = any>(): Promise<T>;
-  }
-}
-
+/**
+ * The Worker check resolves browser-only modules to declaration-only Worker
+ * views. Cloudflare's Body.json() default remains `unknown` for Worker code.
+ */
+/// <reference path="./src/account/session.worker.ts" />
+/// <reference path="./src/estimated/datasets.worker.ts" />
 export {};
