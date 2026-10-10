@@ -13,6 +13,10 @@ const RUNS_PER_PAGE = 100;
 const MAX_RUN_HISTORY_RESULTS = 1000;
 const MAX_RUN_HISTORY_PAGES = MAX_RUN_HISTORY_RESULTS / RUNS_PER_PAGE;
 const DATA_ROOTS = ['artifacts/', 'configs/', 'apps/frontend/scripts/data/'];
+const REVIEW_RECEIPTS = [
+  'configs/multiway-preflop-stage2.review.json',
+  'configs/multiway-preflop-stage3.review.json',
+];
 const MIGRATIONS = new Map([
   ['apps/backend/migrations/0003_preflop.sql', 'preflop'],
   ['apps/backend/migrations/0009_ranked.sql', 'ranked_schema'],
@@ -94,6 +98,7 @@ function addCodeScopes(plan, paths) {
       plan.verify_preflop = true;
       plan.verify_postflop = true;
       plan.verify_mw3 = true;
+      plan.verify_backend = true;
       plan.needs_frontend_deps = true;
     }
 
@@ -257,6 +262,40 @@ export function changedPaths(repoRoot, beforeSha, afterSha) {
   if (!SHA_RE.test(beforeSha) || !SHA_RE.test(afterSha)) throw new Error('invalid tree comparison SHA');
   const raw = runGit(repoRoot, ['diff', '--name-only', '-z', '--no-renames', beforeSha, afterSha], { encoding: null, maxBuffer: 128 * 1024 * 1024 });
   return raw.toString('utf8').split('\0').filter(Boolean);
+}
+
+function reviewedSourcePathsAtCommit(repoRoot, sha) {
+  const paths = new Set();
+  for (const receiptPath of REVIEW_RECEIPTS) {
+    const source = runGit(repoRoot, ['show', `${sha}:${receiptPath}`], { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 });
+    const receipt = JSON.parse(source);
+    if (!Array.isArray(receipt.sources)) throw new Error(`reviewed source list is missing in ${receiptPath} at ${sha}`);
+    for (const record of receipt.sources) {
+      const path = record?.path;
+      if (typeof path !== 'string' || !path || path.startsWith('/') || path.includes('\\') || path.split('/').includes('..')) {
+        throw new Error(`invalid reviewed source path in ${receiptPath} at ${sha}`);
+      }
+      paths.add(path);
+    }
+  }
+  return paths;
+}
+
+function changedReviewedSourcePaths(repoRoot, beforeSha, afterSha, changed) {
+  const sources = new Set([
+    ...reviewedSourcePathsAtCommit(repoRoot, beforeSha),
+    ...reviewedSourcePathsAtCommit(repoRoot, afterSha),
+  ]);
+  return changed.filter(path => sources.has(path));
+}
+
+function requireReviewedSourceValidation(plan, changedSources) {
+  if (changedSources.length === 0) return;
+  plan.verify_data = true;
+  plan.verify_preflop = true;
+  plan.verify_postflop = true;
+  plan.verify_mw3 = true;
+  plan.needs_frontend_deps = true;
 }
 
 function schemaOutput(plan, group, changed, allowed) {
@@ -433,16 +472,18 @@ export async function classifyEvent({ repoRoot, eventName, ref, sha, repository,
     const baseSha = event?.pull_request?.base?.sha;
     if (!SHA_RE.test(baseSha ?? '') || !SHA_RE.test(sha ?? '')) return fullValidationPlan('invalid pull request base; fail-closed full validation');
     const paths = changedPaths(repoRoot, baseSha, sha);
+    const sourceChanges = changedReviewedSourcePaths(repoRoot, baseSha, sha, paths);
     const before = fingerprintsAtCommit(repoRoot, baseSha);
     const after = fingerprintsAtCommit(repoRoot, sha);
     const groups = changedGroups(before, after);
     const plan = classifyChangedPaths(paths, { dataGroups: groups });
-    if (groups.length || paths.some(isDatasetValidationCode)) {
+    if (groups.length || paths.some(isDatasetValidationCode) || sourceChanges.length) {
       plan.verify_data = true;
       plan.verify_preflop ||= groups.includes('preflop') || groups.includes('full') || paths.some(path => isDatasetValidationCode(path));
       plan.verify_postflop ||= groups.includes('postflop') || groups.includes('profile_schema') || groups.includes('preflop') || groups.includes('full') || paths.some(path => isDatasetValidationCode(path));
       plan.verify_mw3 ||= groups.includes('mw3') || groups.includes('preflop') || groups.includes('full') || paths.some(path => isDatasetValidationCode(path));
     }
+    requireReviewedSourceValidation(plan, sourceChanges);
     plan.input_hashes = JSON.stringify(after);
     return plan;
   }
@@ -470,8 +511,11 @@ export async function classifyEvent({ repoRoot, eventName, ref, sha, repository,
     plan.baseline_sha = baseline.head_sha;
     plan.input_hashes = JSON.stringify(after);
     addCodeScopes(plan, paths);
+    const sourceChanges = changedReviewedSourcePaths(repoRoot, baseline.head_sha, sha, paths);
+    requireReviewedSourceValidation(plan, sourceChanges);
     if (groups.length) applyDataChanges(plan, groups, true);
     if (groups.includes('full')) plan.reason = 'unclassified or global data input changed; full reviewed release';
+    else if (sourceChanges.length && !groups.length) plan.reason = `reviewed source changed: ${sourceChanges.join(', ')}`;
     else if (groups.length) plan.reason = `data input hashes changed: ${groups.join(', ')}`;
     plan.fastfold_predeploy ||= plan.deploy_api || plan.deploy_frontend || plan.data_release;
     return plan;

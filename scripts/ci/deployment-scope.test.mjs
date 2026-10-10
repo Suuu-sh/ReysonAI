@@ -70,7 +70,22 @@ function baseFiles() {
     'artifacts/postflop/mw3-demo.sql': 'INSERT INTO mw3_policy_deliveries VALUES (1);\n',
     'artifacts/postflop/hu-demo.sql': 'INSERT INTO postflop_policies VALUES (1);\n',
     'apps/backend/migrations/0009_ranked.sql': 'CREATE TABLE ranked (id TEXT);\n',
-    'configs/multiway-preflop-stage2.review.json': '{"source":"old"}\n',
+    'apps/backend/src/fastfold.ts': 'export const sourceVersion = 1;\n',
+    'apps/backend/wrangler.jsonc': '{"name":"backend"}\n',
+    'apps/frontend/package.json': '{"name":"frontend"}\n',
+    'apps/frontend/package-lock.json': '{"lockfileVersion":3}\n',
+    'apps/frontend/wrangler.jsonc': '{"name":"frontend"}\n',
+    'configs/multiway-preflop-stage2.review.json': JSON.stringify({ sources: [
+      { path: 'apps/backend/src/fastfold.ts' },
+      { path: 'apps/backend/wrangler.jsonc' },
+      { path: 'apps/frontend/package.json' },
+      { path: 'apps/frontend/package-lock.json' },
+      { path: 'apps/frontend/wrangler.jsonc' },
+    ] }) + '\n',
+    'configs/multiway-preflop-stage3.review.json': JSON.stringify({ sources: [
+      { path: 'apps/frontend/package.json' },
+      { path: 'apps/frontend/package-lock.json' },
+    ] }) + '\n',
   };
 }
 
@@ -222,7 +237,16 @@ test('changed data for an unknown artifact family takes the full reviewed path',
 test('review receipt changes run all integrity checks without re-importing reviewed data', async t => {
   const root = repository(t);
   const base = commit(root, baseFiles());
-  const head = commit(root, { 'configs/multiway-preflop-stage2.review.json': '{"source":"refreshed"}\n' });
+  const head = commit(root, { 'configs/multiway-preflop-stage2.review.json': JSON.stringify({
+    sources: [
+      { path: 'apps/backend/src/fastfold.ts' },
+      { path: 'apps/backend/wrangler.jsonc' },
+      { path: 'apps/frontend/package.json' },
+      { path: 'apps/frontend/package-lock.json' },
+      { path: 'apps/frontend/wrangler.jsonc' },
+    ],
+    refreshed: true,
+  }) + '\n' });
   const plan = await classifyEvent({
     repoRoot: root, eventName: 'push', ref: 'refs/heads/main', sha: head,
     repository: 'Suuu-sh/ReysonAI', runId: '200', fetcher: successFetcher(workflowRun({ head_sha: base })),
@@ -237,6 +261,57 @@ test('review receipt changes run all integrity checks without re-importing revie
   assert.equal(plan.publish_postflop, false);
   assert.equal(plan.import_mw3, false);
   assert.equal(plan.apply_ranked_schema, false);
+});
+
+test('canonical reviewed-source changes run every integrity verifier without enabling D1 writes', async t => {
+  const paths = [
+    'apps/backend/src/fastfold.ts',
+    'apps/backend/wrangler.jsonc',
+    'apps/frontend/package.json',
+    'apps/frontend/package-lock.json',
+    'apps/frontend/wrangler.jsonc',
+  ];
+  for (const path of paths) {
+    const root = repository(t);
+    const base = commit(root, baseFiles());
+    const head = commit(root, { [path]: `${path} changed\n` });
+    const plan = await classifyEvent({
+      repoRoot: root, eventName: 'pull_request', ref: 'refs/pull/1/merge', sha: head,
+      event: { pull_request: { base: { sha: base } } }, repository: 'Suuu-sh/ReysonAI', runId: '200',
+      fetcher: async () => { throw new Error('PR classification must not use production run history'); },
+    });
+    assert.equal(plan.verify_data, true, path);
+    assert.equal(plan.verify_preflop, true, path);
+    assert.equal(plan.verify_postflop, true, path);
+    assert.equal(plan.verify_mw3, true, path);
+    assert.equal(plan.needs_frontend_deps, true, path);
+    assert.equal(plan.data_release, false, path);
+    assert.equal(plan.import_preflop, false, path);
+    assert.equal(plan.publish_postflop, false, path);
+    assert.equal(plan.import_mw3, false, path);
+    assert.equal(plan.apply_ranked_schema, false, path);
+  }
+});
+
+test('main deploy verifies reviewed source-only changes without repeating any D1 import', async t => {
+  const root = repository(t);
+  const base = commit(root, baseFiles());
+  const head = commit(root, { 'apps/backend/src/fastfold.ts': 'export const sourceVersion = 2;\n' });
+  const plan = await classifyEvent({
+    repoRoot: root, eventName: 'push', ref: 'refs/heads/main', sha: head,
+    repository: 'Suuu-sh/ReysonAI', runId: '200', fetcher: successFetcher(workflowRun({ head_sha: base })),
+  });
+  assert.equal(plan.release_safe, true);
+  assert.equal(plan.verify_data, true);
+  assert.equal(plan.verify_preflop, true);
+  assert.equal(plan.verify_postflop, true);
+  assert.equal(plan.verify_mw3, true);
+  assert.equal(plan.verify_backend, true);
+  assert.equal(plan.deploy_api, true);
+  assert.equal(plan.data_release, false);
+  assert.equal(plan.import_preflop, false);
+  assert.equal(plan.publish_postflop, false);
+  assert.equal(plan.import_mw3, false);
 });
 
 test('PR code changes use the base/head hashes and never enable production writes', async t => {
@@ -422,6 +497,15 @@ test('GitHub history/API errors choose the fail-closed full path', async t => {
   assert.equal(plan.verify_data, true);
   assert.equal(plan.data_release, false);
   assert.equal(plan.import_mw3, false);
+});
+
+test('deployment workflow and classifier changes retain the FastFold runtime verifier', () => {
+  for (const path of ['.github/workflows/deploy-worker.yml', 'scripts/ci/deployment-scope.mjs']) {
+    const plan = classifyChangedPaths([path]);
+    assert.equal(plan.verify_backend, true, path);
+    assert.equal(plan.verify_data, true, path);
+    assert.equal(plan.data_release, false, path);
+  }
 });
 
 test('standalone scope paths keep code-only changes apart from data roots', () => {

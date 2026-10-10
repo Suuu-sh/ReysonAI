@@ -9035,8 +9035,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 28529,
-      "sha256": "e8562dd5f1d80f06b36e38c29b1aaa2f68a5aa3eb42e9daf10485da4385734e3"
+      "bytes": 28655,
+      "sha256": "133d91a92bb000619d69af5278cbf74be135e9bdcf371eb125d549f21ee69c12"
     },
     {
       "path": ".gitignore",
@@ -9515,8 +9515,8 @@
     },
     {
       "path": "configs/multiway-preflop-stage2.review.json",
-      "bytes": 547159,
-      "sha256": "49f178776f34ad737c340b685cae3c7b169ab456ba3967b77138446126cfc54c"
+      "bytes": 547181,
+      "sha256": "d0da30bde57aa76e530dc5f84abfbd5c8448864a7921d6d11c902fec17bd04c0"
     },
     {
       "path": "configs/multiway-preflop-stage3.json",
@@ -9530,13 +9530,13 @@
     },
     {
       "path": "scripts/ci/deployment-scope.mjs",
-      "bytes": 25184,
-      "sha256": "1e51cc33d8d483fce5a3a76fdef4a9ffab7316b3c2cc9b3fcb78755304eb44b4"
+      "bytes": 27090,
+      "sha256": "6a957cf9bb50c5f3e7376b46b8436f453b33f49c6362c3078083531c28a9cb20"
     },
     {
       "path": "scripts/ci/deployment-scope.test.mjs",
-      "bytes": 22403,
-      "sha256": "3c5428ec0271606bf117f7bbf0aff969a6e7b2f08276717379df4e41c6933e52"
+      "bytes": 26179,
+      "sha256": "0ea4a667de19104e7b6367a725ed1e8778b79e7b977e83773b41efb14fbf2c55"
     }
   ],
   "archive": {
@@ -9545,7 +9545,7 @@
     "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
     "format": "ustar+gzip-stage3-content-v1"
   },
-  "content_sha256": "7d035225eb8468c28a7cfbb76ad150d5c297983448684e718b903cb115257a11",
+  "content_sha256": "30a7bb82224abc247e1d3fd8dbf1d2dc3105d77b9a9864dc5fdc6187b83c715d",
   "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
   "counts": {
     "catalog": 16132,
@@ -10542,31 +10542,31 @@
     }
   },
   "ci_efficiency_source_renewal": {
-    "status": "independent-source-review-passed-pending-CI",
+    "status": "mechanically-rebound-pending-exact-head-ci-and-independent-review",
     "base_candidate_sha": "0f63a809656c5357ef4048a3e5bfeaf276a6eb4d",
     "scope": "Mechanical Stage 3 source identity refresh for the CI classifier/deployment workflow and updated Stage 2 receipt. It preserves historical Stage 3 numerical acceptance and grants no data reapproval or production authorization.",
     "changed_source_paths": [
       ".github/workflows/deploy-worker.yml",
-      "scripts/ci/deployment-scope.mjs",
-      "scripts/ci/deployment-scope.test.mjs",
       "apps/frontend/scripts/lib/reviewed-preflop.mjs",
       "apps/frontend/scripts/lib/reviewed-stage3.mjs",
-      "configs/multiway-preflop-stage2.review.json"
+      "configs/multiway-preflop-stage2.review.json",
+      "scripts/ci/deployment-scope.mjs",
+      "scripts/ci/deployment-scope.test.mjs"
     ],
     "changed_delivery_code_paths": [],
     "source_records": {
       "stage2_count": 198,
       "stage2_receipt": {
         "path": "configs/multiway-preflop-stage2.review.json",
-        "bytes": 547159,
-        "sha256": "49f178776f34ad737c340b685cae3c7b169ab456ba3967b77138446126cfc54c"
+        "bytes": 547181,
+        "sha256": "d0da30bde57aa76e530dc5f84abfbd5c8448864a7921d6d11c902fec17bd04c0"
       },
       "stage3_count": 102,
-      "stage3_content_sha256": "7d035225eb8468c28a7cfbb76ad150d5c297983448684e718b903cb115257a11",
+      "stage3_content_sha256": "30a7bb82224abc247e1d3fd8dbf1d2dc3105d77b9a9864dc5fdc6187b83c715d",
       "stage3_deploy_workflow": {
         "path": ".github/workflows/deploy-worker.yml",
-        "bytes": 28529,
-        "sha256": "e8562dd5f1d80f06b36e38c29b1aaa2f68a5aa3eb42e9daf10485da4385734e3"
+        "bytes": 28655,
+        "sha256": "133d91a92bb000619d69af5278cbf74be135e9bdcf371eb125d549f21ee69c12"
       }
     },
     "preserved": {

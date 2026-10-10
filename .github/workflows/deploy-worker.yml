@@ -237,7 +237,7 @@ jobs:
         run: node --experimental-strip-types --test tests/ranked.test.mjs
 
       - name: Verify continuous FastFold authentication, replay and atomic settlement
-        if: github.event_name != 'pull_request' && needs.scope.outputs.verify_backend == 'true'
+        if: needs.scope.outputs.verify_backend == 'true'
         working-directory: apps/backend
         run: npx --yes --package=wrangler@4.147.0 --call 'node scripts/verify-fastfold-local-runtime.mjs --wrangler "$(command -v wrangler)"'
 
@@ -287,6 +287,7 @@ jobs:
     if: >-
       github.ref == 'refs/heads/main' &&
       github.event_name != 'pull_request' &&
+      github.run_attempt == 1 &&
       needs.verify.outputs.release_safe == 'true' &&
       (needs.verify.outputs.data_release == 'true' ||
        needs.verify.outputs.deploy_api == 'true' ||
@@ -319,6 +320,11 @@ jobs:
           fetch-depth: ${{ (needs.verify.outputs.import_preflop == 'true' || needs.verify.outputs.publish_postflop == 'true' || needs.verify.outputs.import_mw3 == 'true') && '0' || '1' }}
           persist-credentials: false
           lfs: false
+
+      - name: Prepare deployment log directory
+        run: |
+          mkdir -p .local
+          test -d .local && test -w .local
 
       - name: Set up Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6

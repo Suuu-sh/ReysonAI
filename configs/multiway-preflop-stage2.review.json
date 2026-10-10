@@ -10300,8 +10300,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 28529,
-      "sha256": "e8562dd5f1d80f06b36e38c29b1aaa2f68a5aa3eb42e9daf10485da4385734e3"
+      "bytes": 28655,
+      "sha256": "133d91a92bb000619d69af5278cbf74be135e9bdcf371eb125d549f21ee69c12"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -11275,16 +11275,16 @@
     },
     {
       "path": "scripts/ci/deployment-scope.mjs",
-      "bytes": 25184,
-      "sha256": "1e51cc33d8d483fce5a3a76fdef4a9ffab7316b3c2cc9b3fcb78755304eb44b4"
+      "bytes": 27090,
+      "sha256": "6a957cf9bb50c5f3e7376b46b8436f453b33f49c6362c3078083531c28a9cb20"
     },
     {
       "path": "scripts/ci/deployment-scope.test.mjs",
-      "bytes": 22403,
-      "sha256": "3c5428ec0271606bf117f7bbf0aff969a6e7b2f08276717379df4e41c6933e52"
+      "bytes": 26179,
+      "sha256": "0ea4a667de19104e7b6367a725ed1e8778b79e7b977e83773b41efb14fbf2c55"
     }
   ],
-  "content_sha256": "29ab9ca2cd331532ad0ff501df22f6772298733cfee5ee4042eeed72dea45696",
+  "content_sha256": "238766e57a27b8996b30c6c0cd9897f83e8a54076995f6db9a34ac55018c1c35",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -11419,15 +11419,15 @@
     }
   },
   "ci_efficiency_source_renewal": {
-    "status": "independent-source-review-passed-pending-CI",
+    "status": "mechanically-rebound-pending-exact-head-ci-and-independent-review",
     "base_candidate_sha": "0f63a809656c5357ef4048a3e5bfeaf276a6eb4d",
     "scope": "Mechanical source-only binding update for CI scope classification and deployment verification. It keeps reviewed payload identity and existing review decisions intact; it does not grant data reapproval or production authorization.",
     "changed_source_paths": [
       ".github/workflows/deploy-worker.yml",
-      "scripts/ci/deployment-scope.mjs",
-      "scripts/ci/deployment-scope.test.mjs",
       "apps/frontend/scripts/lib/reviewed-preflop.mjs",
-      "apps/frontend/scripts/lib/reviewed-stage3.mjs"
+      "apps/frontend/scripts/lib/reviewed-stage3.mjs",
+      "scripts/ci/deployment-scope.mjs",
+      "scripts/ci/deployment-scope.test.mjs"
     ],
     "changed_delivery_code_paths": [],
     "verification_paths": [
@@ -11437,11 +11437,11 @@
     ],
     "source_records": {
       "stage2_count": 198,
-      "stage2_content_sha256": "29ab9ca2cd331532ad0ff501df22f6772298733cfee5ee4042eeed72dea45696",
+      "stage2_content_sha256": "238766e57a27b8996b30c6c0cd9897f83e8a54076995f6db9a34ac55018c1c35",
       "stage2_deploy_workflow": {
         "path": ".github/workflows/deploy-worker.yml",
-        "bytes": 28529,
-        "sha256": "e8562dd5f1d80f06b36e38c29b1aaa2f68a5aa3eb42e9daf10485da4385734e3"
+        "bytes": 28655,
+        "sha256": "133d91a92bb000619d69af5278cbf74be135e9bdcf371eb125d549f21ee69c12"
       }
     },
     "preserved": {

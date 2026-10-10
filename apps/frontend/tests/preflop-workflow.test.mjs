@@ -17,13 +17,37 @@ test("main deployment requires verification and deploys compatible client before
   assert.match(deployment, /needs: verify/);
   assert.match(deployment, /github\.ref == 'refs\/heads\/main'/);
   assert.match(deployment, /github\.event_name != 'pull_request'/);
+  assert.match(deployment, /github\.run_attempt == 1/);
   assert.match(deployment, /needs\.verify\.outputs\.release_safe == 'true'/);
+  const prepareLogs = deployment.indexOf('      - name: Prepare deployment log directory');
+  const firstRemoteMutation = Math.min(
+    ...['Apply exact ranked schema', 'Apply exact FastFold schema', 'Apply exact six-human ranked schema',
+      'Apply exact postflop profile schema', 'Import exact reviewed MW3 data and require full D1 readback',
+      'Deploy ranked API before enabling the client', 'Deploy Worker']
+      .map(name => deployment.indexOf(`      - name: ${name}`)).filter(index => index >= 0),
+  );
+  assert.ok(prepareLogs >= 0 && prepareLogs < firstRemoteMutation);
+  const logPreparation = deployment.slice(prepareLogs, deployment.indexOf('      - name: ', prepareLogs + 1));
+  assert.match(logPreparation, /mkdir -p \.local/);
+  assert.match(logPreparation, /test -d \.local && test -w \.local/);
+  const fastfoldRuntime = workflow.slice(workflow.indexOf('      - name: Verify continuous FastFold authentication'));
+  assert.match(fastfoldRuntime, /if: needs\.scope\.outputs\.verify_backend == 'true'/);
+  assert.doesNotMatch(fastfoldRuntime.split('\n')[1], /event_name/);
   assert.ok(deployment.indexOf("deploy --config wrangler.jsonc") < deployment.indexOf("import-reviewed-preflop.mjs --remote"));
   assert.match(deployment, /--check-bundle/);
   assert.match(workflow, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/);
   assert.match(workflow, /apps\/backend\/migrations\/0003_preflop.sql/);
   assert.match(workflow, /configs\/\*\*/);
 });
+test('failed-job-only reruns cannot deploy using stale release-safe outputs', () => {
+  const deployment = workflow.slice(workflow.indexOf('  deploy:'));
+  const jobIf = deployment.slice(deployment.indexOf('    if: >-'), deployment.indexOf('    runs-on:'));
+  assert.match(jobIf, /github\.run_attempt == 1/);
+  assert.match(jobIf, /needs\.verify\.outputs\.release_safe == 'true'/);
+  const staleOutputs = { runAttempt: 2, releaseSafe: 'true', deployApi: 'true' };
+  assert.equal(staleOutputs.runAttempt === 1 && staleOutputs.releaseSafe === 'true' && staleOutputs.deployApi === 'true', false);
+});
+
 test("production entry point is pinned, explicit, main-only, preflop-only and has no rewind/retry", () => {
   assert.match(importer, /process\.argv\[2\] !== "--remote"/);
   assert.match(importer, /GITHUB_REF !== "refs\/heads\/main"/);
