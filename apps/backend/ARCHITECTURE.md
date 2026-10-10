@@ -1,6 +1,6 @@
 # Backend boundaries and incremental DDD plan
 
-This describes the backend at `main` commit `7158301dafd2021d982540c7ae809515bafd262c` and the first incremental boundary extraction. It is intentionally a map of the code that exists, not a target-wide folder migration.
+This describes the backend at `main` commit `7158301dafd2021d982540c7ae809515bafd262c` and the first two incremental boundary extractions. It is intentionally a map of the code that exists, not a target-wide folder migration.
 
 ## Current bounded contexts and state owners
 
@@ -34,6 +34,22 @@ The extracted boundary is in `src/domain/published-dataset.ts`, `src/application
 
 The existing contract is held by Worker tests for accepted/encoded names, malformed paths, status/error mapping, exact ETag matching, cache and CORS headers, and raw Unicode/whitespace delivery. The use case tests cover missing, skipped, duplicate and non-zero-first parts. The adapter test applies migration `0003_preflop.sql` to an isolated in-memory SQLite database and checks the actual SQL order and text reconstruction.
 
+## Second vertical slice: Ranked finalization
+
+The next bounded operation is finalizing a server-issued quiz. `src/domain/ranked-quiz.ts` now owns question-pool construction and grading. `src/application/ranked-finalization.ts` owns the existing sequence: load by match and authenticated owner, grade the stored questions, resolve exact replay versus conflict, check expiry, calculate the player's rating, issue the compare-and-swap, then reload the owner-scoped row. `src/infrastructure/d1-ranked-finalization-repository.ts` keeps the owner filters and exact existing SQL. `src/ranked.ts` remains the HTTP/authentication adapter and maps use-case outcomes to the existing response contract.
+
+```text
+routeRanked (auth, request validation, HTTP mapping)
+        │
+        └── application: finalizeRankedMatch
+                 ├── domain: gradeRanked; shared ranked rules: rateMatch
+                 └── port: RankedFinalizationRepository
+                              └── infrastructure: D1RankedFinalizationRepository
+                                         └── one conditional UPDATE → ranked_finalize trigger
+```
+
+The compare-and-swap remains one D1 statement with the same predicates and binds. SQLite commits the `ranked_finalize` trigger's rating, peak and match-count changes in that statement's transaction. The application does not split settlement into a later save or event. Characterization remains in the route suite for owner isolation, replay, expiry and concurrent duplicate submissions; the new application and adapter tests pin grading/order, SQL/binds, trigger settlement and stale-CAS behavior using the local migration fixture.
+
 ## Invariants to keep at their boundaries
 
 - Do not parse/stringify published JSON in the delivery path. Part order, whitespace, Unicode text, hash ETag, and list byte count come from the canonical publication path.
@@ -45,8 +61,8 @@ The existing contract is held by Worker tests for accepted/encoded names, malfor
 
 ## Suggested next steps
 
-1. **Identity and account sync:** separate provider/session mechanics from account snapshot use cases after keeping owner assertion, per-transport auth, explicit import consent, request limits and version-CAS behavior under characterization tests.
-2. **Rated quiz:** extract question-pool construction and grading as pure domain rules, then isolate match-start/finalize use cases around the existing D1 statements and trigger semantics. Keep `ranked-history.ts` as a read model rather than forcing it into the write aggregate.
+1. **Ranked match start:** separate quota reservation, active-match reuse and match issuance only with tests that preserve the current ordering, uniqueness constraint, source checks and random weighted sampling. Keep `ranked-history.ts` as a read model rather than forcing it into the write aggregate.
+2. **Identity and account sync:** separate provider/session mechanics from account snapshot use cases after keeping owner assertion, per-transport auth, explicit import consent, request limits and version-CAS behavior under characterization tests.
 3. **Agent practice:** separate pure hand/action rules from the request orchestration while preserving DO serialization, D1 session CAS, receipt/replay handling and strategy-source checks.
 4. **Human competition:** model queue, reservation, hand, settlement and exit rules only alongside tests for the ten coordinated SQL triggers, ownership, deadlines, alarm scheduling and history-GET side effects.
 5. **Remaining read models:** extract the postflop policy, MW3 delivery and R2 solution reads where a caller-independent use case is useful; retain their exact payload-byte, cache, CORS and fail-closed contracts.
