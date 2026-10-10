@@ -1,0 +1,115 @@
+{
+  "decision": "PASS_LINUX_SAVED_PAYLOAD_EVIDENCE_FOR_SOURCE_ONLY_PREPARATION",
+  "scope": "Independent read-only inspection of run/job, exact GitHub artifact bytes, actual harness, unmodified source verifiers, preserved source/archive/receipt declarations and diagnostic outputs. No numerical authoring or new numerical approval.",
+  "reviewer": {
+    "task": "/root/review_pr160_integrated_source/verify_linux_replay_evidence",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "xhigh",
+    "identity_evidence": "Model and effort inherited from parent native review task whose explicit spawn metadata was verified by parent. This review does not establish or relabel the implementation author model.",
+    "implementation_author_model": null,
+    "external_writes": 0
+  },
+  "run": {
+    "url": "https://github.com/Suuu-sh/ReysonAI/actions/runs/38044609886",
+    "run_id": 38044609886,
+    "job_id": 114191500807,
+    "job_url": "https://github.com/Suuu-sh/ReysonAI/actions/runs/38044609886/job/114191500807",
+    "job_status": "completed",
+    "job_conclusion": "success",
+    "run_head": "b7c7259f88a4ceb11c55139349d934c507a5302c",
+    "harness_actual_checkout": "db4e1897784c28b7d01d41940ac1d1e31636cc03",
+    "actual_application_checkout": "7c979c8b5e60c5443455d8650ff3448733216bfc",
+    "actual_application_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+    "current_base": "a9ee6d735f8174cc55dc135975fa220e94604758",
+    "runtime": {
+      "node": "v22.20.0",
+      "platform": "linux",
+      "arch": "x64",
+      "release": "6.17.0-1022-azure",
+      "zlib": "1.3.1-470d3a2",
+      "git": "git version 2.55.0"
+    },
+    "artifact_id": 11666672160,
+    "artifact": {
+      "file": "artifact.zip",
+      "bytes": 308041,
+      "sha256": "97c847bdf626f70eb003114b51a94939c5a9aea07400ab2b17f3bbfd7da1bfcd"
+    },
+    "artifact_members": 21,
+    "artifact_uncompressed_bytes": 1126518,
+    "artifact_digest_matches_connector_and_job_log": true
+  },
+  "stage2": {
+    "archive": {
+      "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+      "bytes": 1747857,
+      "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+      "format": "ustar+gzip"
+    },
+    "decoded_entries": 1614,
+    "decoded_bytes": 43276102,
+    "saved_artifact_records": 1888,
+    "source_count": 196,
+    "counts": {
+      "catalog": 3115,
+      "saved": 1611,
+      "unreachable": 1504,
+      "hands": 272259
+    },
+    "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+    "archive_count_explanation": "1614 archive records are the three continuation JSONs plus1611 compact reasons. The official reviewedFiles collector subsequently hashes all1888 non-Stage3 JSON records, including274 already tracked records; none are excluded from equality against the saved receipt."
+  },
+  "stage3": {
+    "archive": {
+      "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+      "bytes": 2436451,
+      "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+      "format": "ustar+gzip-stage3-content-v1"
+    },
+    "decoded_entries": 1805,
+    "decoded_bytes": 60027700,
+    "saved_artifact_records": 1805,
+    "source_count": 100,
+    "counts": {
+      "catalog": 16132,
+      "saved": 1801,
+      "unreachable": 5621,
+      "rare": 8710,
+      "hands": 304369
+    },
+    "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+    "renewal_order": "This diagnostic uses the unchanged Stage2 receipt, SHA2567326c8a23bffca9bdc4c67167691a0f4bdf17d527b519a4b105ada8ce91ffd15. Final Stage3 sources must be recollected only after the final renewed Stage2 receipt bytes exist; the diagnostic current content hash must not be copied blindly."
+  },
+  "mw3": {
+    "subjects": 16,
+    "raw_files": 112,
+    "raw_bytes": 235515283,
+    "joint_warnings": 561,
+    "delivery_pins": 32,
+    "limitations_per_subject": 7,
+    "canonical_archive_check": "All16 snapshot.compressed.equals(original archive) assertions passed, including gzip OS byte9 with no normalization or exception. Saved archives were not replaced.",
+    "preserved": "All16 spot/input/recipe/policy/implementation/verification identities,112 raw artifact records, historical receipt evidence and seven accepted limitations per subject match.32 delivery pins match historical receipts and committed registry. Historical SQL is reconstructed and compared exactly in memory, including all statement bytes.",
+    "manifest_outputs_hash_verified": 16,
+    "historical_provenance_preserved": true
+  },
+  "cleanup_caveat": "MW3 leaves112 verified decoded files in ignored ephemeral runner directories. Its final clean git status means no tracked/unignored modifications, not removal of those ignored raw files. The preflop raw_restore_files_retained:false field applies only to files it created. No protected archive, receipt, source or SQL is changed.",
+  "independent_cleanup_tests": 7,
+  "scope_limit": [
+    "The diagnostic ZIP contains reports/manifests/logs, not original LFS payloads. This reviewer downloaded and hashed the exact ZIP and reviewed the complete harness/official modules and job log; the raw LFS rehash/canonical collector executions were performed by that inspected Linux CI run, not rerun locally.",
+    "This review independently checks preserved numerical declarations and source identity. It is not an independent numerical calculation or re-simulation."
+  ],
+  "remaining_boundaries": [
+    "Main reviewer must bind the current application/source delta and exact branch/base tips; this report is limited to Linux evidence.",
+    "Separate authorized mechanical source-only renewal still required. Old Stage2, Stage3 and MW3 receipts correctly fail current-source acceptance.",
+    "Renew Stage2 first, then recollect/review Stage3 against its exact final bytes.",
+    "Preserve all archive/raw/policy/fingerprint/count/limitation/provenance and registry fields. MW3 SQL may change only the required receipt-derived second-line comment hash, never the archive hash or SQL statement bytes.",
+    "No new numerical, GTO, solver, HU-foundation, human, merge or production approval is created.",
+    "After renewal, run official acceptance/restore/source-identity checks, relevant tests and all required CI against final exact commit."
+  ],
+  "base_note": "The run and source-only preparation bind integrated base a9ee6d7. Parent independently reports development has since advanced to ff17d71; this report does not authorize merge against any later base.",
+  "full_report": {
+    "file": "linux-evidence-review.json",
+    "bytes": 67824,
+    "sha256": "41a96ece8d9a8973b19387a57ba5f4b11742420f55c6f0959bfe3a706bd82e5d"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "decision": "PASS_INDEPENDENT_SCOPED_CODE_REVIEW",
+  "source_commit": "339b97a3f2fc4740fb621d098e74ee4f458957c7",
+  "source_tree": "228bde91e060d20f36aee9c53e6eb7a60ac16c6b",
+  "reviewer_task": "01a1216a-2ed3-7143-a6ba-8bfaad15c086",
+  "implementation_author_task": "01a12141-db67-70c1-a95e-228cae8f5088",
+  "actual_reviewer_model": null,
+  "model_qualification_not_attested": true,
+  "findings": [],
+  "previous_findings": {
+    "R1": "fixed and regression retested",
+    "R2": "fixed; authenticated owner in data response compared before memory adoption",
+    "R3": "fixed; exact serialized owner-bound envelope measured before memory replacement"
+  },
+  "authority_review": "GET /data derives both ownerId and selected account_data user_id from the same authenticated cookie user. The earlier GET /session is compared as an expectation; its identity alone does not label data. POST expectedOwner remains an assertion, never the database owner authority.",
+  "boundary_evidence": [
+    "changed-owner-read-race.json",
+    "cold-load-owner-race.json",
+    "failed-recheck.json",
+    "held-owner-change.json",
+    "import-size-boundary.json",
+    "load-owner-race.json",
+    "normal-held-recheck.json",
+    "normal-overflow.json",
+    "old-client.json",
+    "owner-missing.json",
+    "unobserved-owner-change.json",
+    "version-conflict.json"
+  ],
+  "scope_consent_credentials": "Existing cookie API destination and openid/email scope unchanged. No credential/session persistence changes. Guest replacement still requires explicit consent; ranked keys excluded.",
+  "legacy_clients": "Authenticated GET/export remain possible; writes lacking expectedOwner deliberately receive409, dirty logout is blocked and snapshot export retained. PR body documents export-before-reload recovery. This is fail-closed compatibility, not legacy write compatibility.",
+  "numerical_nonimpact": {
+    "new_codec": "Only account-wire Agent practice history serialization, all persisted numerical artifacts unchanged.",
+    "agent_statistics": "AgentTable hands the statistics-derived profileId to createAgent, which uses unchanged emptyRegistry by default; balanced frequencies are unchanged. The dedicated three-player branch calls playMw3AgentHand before HU decision code and receives no history/profile argument.",
+    "source_paths": "Stage2/Stage3/MW3/HU conservative source closures correctly include the new codec from account/session; no exclusion or collector modified.",
+    "new_numerical_review": false
+  },
+  "limits": [
+    "Code PASS is not a source-renewal acceptance receipt.",
+    "No live-account upload, authentication E2E or production writes.",
+    "Build/Sites/full-suite and final CI are not independently established in this turn.",
+    "The required actual reviewer model remains unverified."
+  ]
+}

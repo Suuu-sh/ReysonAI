@@ -1,0 +1,256 @@
+{
+  "schema_version": 1,
+  "decision": "BLOCK_SOURCE_ONLY_RENEWAL",
+  "code_review_decision": "PASS_INDEPENDENT_SCOPED_CODE_REVIEW",
+  "reviewed_at_utc": "2026-10-09T17:11:23.476293+00:00",
+  "source_commit": "339b97a3f2fc4740fb621d098e74ee4f458957c7",
+  "source_tree": "228bde91e060d20f36aee9c53e6eb7a60ac16c6b",
+  "source_parent": "2db605826f943e10b746dbb76c52c8202a70fb7a",
+  "pr_base": "ea8e7120939493d40794e5249aeeee4b7abecf8a",
+  "remote_head_rechecked_at_completion": "339b97a3f2fc4740fb621d098e74ee4f458957c7",
+  "implementation_local_commit": "f81b352ed9a38654970d5e7249726a20b5252564",
+  "implementation_tree_verified_equal": true,
+  "current_context_review": {
+    "reviewer_task": "01a1216a-2ed3-7143-a6ba-8bfaad15c086",
+    "implementation_author_task": "01a12141-db67-70c1-a95e-228cae8f5088",
+    "requested_model": "gpt-6-astra",
+    "requested_thinking": "xhigh",
+    "reviewer_model": null,
+    "actual_model_verified": false,
+    "routing_is_not_actual_model_attestation": true,
+    "ordinary_task_metadata_checked": true,
+    "private_sessions_or_credentials_searched": false,
+    "independent_from_implementation_author": true
+  },
+  "code_findings": [],
+  "prior_findings": {
+    "R1": "FIXED; pending recheck and unobserved cookie switch regression PASS",
+    "R2": "FIXED; authoritative owner returned with data; cold/existing/changed-owner/missing-owner reads tested before adoption; export and recovery PASS",
+    "R3": "FIXED; exact full request envelope preflight;500020/500001 rejected before replacing memory,500000 UTF-8 bytes accepted with explicit consent"
+  },
+  "independent_tests": {
+    "source_commit": "339b97a3f2fc4740fb621d098e74ee4f458957c7",
+    "frontend_focused": {
+      "tests": 36,
+      "pass": 36,
+      "fail": 0,
+      "runtime": "Node25.8.1 darwin-arm64",
+      "logs": [
+        "frontend-focused.log",
+        "frontend-remaining.log"
+      ],
+      "files": [
+        "account-session.test.mjs",
+        "learning-access.test.mjs",
+        "session-history.test.mjs",
+        "player-analysis-ui.test.mjs",
+        "localization-languages.test.mjs"
+      ],
+      "invocation_note": "Initial command also named nonexistent player-analysis.test.mjs/localization.test.mjs; Node ignored those patterns. Correct actual filenames were explicitly run in frontend-remaining.log. Totals use reported executed tests only."
+    },
+    "backend": {
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "runtime": "official Node22.20.0 darwin-arm64",
+      "files": [
+        "account.test.mjs",
+        "native-account.test.mjs"
+      ],
+      "log": "backend-account.log"
+    },
+    "custom_real_backend": {
+      "scenarios": 12,
+      "pass": 12,
+      "runtime": "official Node22.20.0 darwin-arm64",
+      "database": "in-memory SQLite only",
+      "requests": "All intercepted into unmodified routeAccount with synthetic fixtures; no real upload"
+    },
+    "typecheck": {
+      "status": "PASS",
+      "log": "typecheck.log"
+    },
+    "additional_account_ui": {
+      "tests": 8,
+      "pass": 6,
+      "fail": 2,
+      "baseline_result": "Same2 failures reproduced on exact PR base ea8e7120939493d40794e5249aeeee4b7abecf8a",
+      "cause": "Old appearance test expectations omit the existing matrix:original property",
+      "records_unchanged_from_base": [
+        {
+          "path": "apps/frontend/src/account/preferences.ts",
+          "bytes": 2513,
+          "sha256": "d642419e69bdaa7f1c789758b2999f48c1658b5a4d12a43c371aa6f168881962"
+        },
+        {
+          "path": "apps/frontend/tests/account.test.mjs",
+          "bytes": 5919,
+          "sha256": "552028009e7120adfdc362c13b813b25c689830ee72812a3b1caaf67f383222c"
+        }
+      ],
+      "logs": [
+        "frontend-account-ui.log",
+        "base-account-ui.log"
+      ],
+      "not_a_pr_regression": true
+    },
+    "build_sites": "Author-reported success only; not independently rerun",
+    "full_suite": "Not run; no full-suite PASS claimed",
+    "model_attestation": "Unavailable; test execution does not prove actual reviewer model"
+  },
+  "source_review": {
+    "stage2": {
+      "artifact_records": 1888,
+      "artifact_bytes": 79002248,
+      "archive": {
+        "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+        "bytes": 1747857,
+        "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+        "format": "ustar+gzip"
+      },
+      "recomputed_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+      "saved_counts": {
+        "catalog": 3115,
+        "saved": 1611,
+        "unreachable": 1504,
+        "hands": 272259
+      },
+      "source_records": 189,
+      "source_delta_from_prior_receipt": {
+        "added": [
+          "apps/frontend/src/agent/agent-history-codec.ts"
+        ],
+        "removed": [],
+        "modified": [
+          "apps/backend/src/account.ts",
+          "apps/frontend/src/account/session.ts",
+          "apps/frontend/src/locales/product-direct.json"
+        ]
+      },
+      "restore_rejected": "Review source/configuration identity changed",
+      "assert_review_rejected": "Reviewed preflop source/configuration identity changed; author and review locally"
+    },
+    "stage3": {
+      "artifact_records": 1805,
+      "artifact_bytes": 60027700,
+      "archive": {
+        "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+        "bytes": 2436451,
+        "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+        "format": "ustar+gzip-stage3-content-v1"
+      },
+      "recomputed_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+      "saved_counts": {
+        "catalog": 16132,
+        "saved": 1801,
+        "unreachable": 5621,
+        "rare": 8710,
+        "hands": 304369
+      },
+      "source_records": 99,
+      "source_delta_from_prior_receipt": {
+        "added": [
+          "apps/frontend/src/agent/agent-history-codec.ts"
+        ],
+        "removed": [],
+        "modified": [
+          "apps/frontend/src/account/session.ts",
+          "apps/frontend/src/locales/product-direct.json"
+        ]
+      },
+      "restore_rejected": "Stage 3 review source/configuration identity changed",
+      "assert_review_rejected": "Reviewed Stage 3 source/configuration identity changed"
+    },
+    "mw3": {
+      "official_collectMw3Snapshot_subjects_completed": 16,
+      "official_verifyMw3Snapshot_native_output_subjects_completed": 16,
+      "official_sourcePathsFor_verified_against_current_tree": 16,
+      "raw_files": 112,
+      "raw_bytes": 235515283,
+      "saved_archives_rehashed": 16,
+      "archive_lfs_pointers_match_remote_tree": true,
+      "delivery_pins_unchanged": 32,
+      "recipe_profile_source_records_unchanged": 19,
+      "historical_joint_warnings_retained": 561,
+      "historical_limitations_per_subject": 7,
+      "historical_SQL_exact_canonical_comparison": 16,
+      "historical_author_model_and_task_retained": true,
+      "current_source_records": {
+        "pilot": 135,
+        "authored": 136
+      },
+      "common_source_delta": {
+        "added": [
+          "apps/frontend/src/agent/agent-history-codec.ts"
+        ],
+        "removed": [],
+        "modified": [
+          "apps/frontend/src/account/session.ts",
+          "apps/frontend/src/locales/product-direct.json"
+        ]
+      },
+      "canonical_saved_archive_equality": false,
+      "gzip_diagnostic": "All16 official Node22.20.0 Darwin native outputs differ from saved Linux gzip only at byte9:19 versus3. Length, all other archive bytes and decoded raw bytes agree. Official verification of native outputs passes; pairing native manifests with saved archives rejects. No byte normalization, saved archive replacement, gate relaxation, generator or packager execution."
+    },
+    "hu": {
+      "source_records": 104,
+      "input_records": 12,
+      "source_delta": {
+        "added": [
+          "apps/frontend/src/agent/agent-history-codec.ts"
+        ],
+        "removed": [],
+        "modified": [
+          "apps/frontend/src/account/session.ts",
+          "apps/frontend/src/locales/product-direct.json"
+        ]
+      },
+      "input_delta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "foundation_archive_and_manifest": "Unchanged; historical unapproved state preserved",
+      "new_numerical_acceptance": false
+    },
+    "source_scope": "New account/session codec closure is included by unchanged official collectors. Backend account ownership/import and warning text changes do not alter numerical artifacts, dedicated recipes, frozen numerical implementation or delivery pins. Prior review assertions correctly fail for changed sources."
+  },
+  "receipt_blockers": [
+    {
+      "id": "MODEL_PROVENANCE",
+      "status": "BLOCK",
+      "detail": "The actual required gpt-6-astra reviewer model cannot be verified from ordinary task/runtime metadata. Parent-requested routing cannot honestly populate reviewer_model. Repository AGENTS and assertMw3IndependentReceipt require this identity."
+    },
+    {
+      "id": "CANONICAL_ARCHIVE_REPRODUCTION",
+      "status": "UNRESOLVED_PLATFORM_BOUNDARY",
+      "detail": "Full native collection completed, but exact saved canonical compressed-byte equality did not pass on Darwin. Verify unchanged saved archives with the pinned Linux runtime before any claim of matching canonical archive regeneration. No discrepancy has been hidden or normalized."
+    }
+  ],
+  "installation_boundary": {
+    "receipt_candidates_issued": 0,
+    "installable_acceptance_candidates": 0,
+    "collected_manifests": "Diagnostic unapproved manifests only; native Darwin archive hashes differ from saved archive hashes. Do not install these as renewal artifacts.",
+    "formal_files_modified": 0,
+    "stage2_final_then_stage3_binding": "Not issued. Stage3 still binds the unchanged prior Stage2 receipt; any future renewal must first finalize Stage2 and bind its exact final bytes.",
+    "mw3_manifest_receipt_SQL_comment_updates": "Not issued; all16 originals and SQL bodies remain unchanged.",
+    "no_human_approval_claimed": true,
+    "no_new_numerical_review_claimed": true,
+    "no_real_account_upload": true,
+    "no_merge_deploy_auth_config_change": true,
+    "final_CI": "Not independently completed; remains separate after a qualified review and faithful installation."
+  },
+  "prior_evidence": [
+    {
+      "directory": "evidence",
+      "records_verified": 42,
+      "ledger_sha256": "967ba9d088acb901fecde88afd5d5617530ae78bf3153373a5f99327a1ba36fb"
+    },
+    {
+      "directory": "evidence-v2",
+      "records_verified": 25,
+      "ledger_sha256": "86e7a650be61b8b5dd87347cb9eaa91b805b07e39fa6c0e62ee31a76db8147ae"
+    }
+  ],
+  "evidence_directory": "<evidence-v3>"
+}

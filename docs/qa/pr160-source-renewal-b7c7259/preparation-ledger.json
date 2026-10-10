@@ -1,0 +1,715 @@
+{
+  "schema_version": 1,
+  "status": "PREPARED_PENDING_FRESH_EXACT_HEAD_REVIEW_AND_FINAL_CI",
+  "repository": "Suuu-sh/ReysonAI",
+  "pull_request": 160,
+  "previous_reviewed_head": "b7c7259f88a4ceb11c55139349d934c507a5302c",
+  "application_source_commit": "7c979c8b5e60c5443455d8650ff3448733216bfc",
+  "application_source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+  "captured_development_base": "a9ee6d735f8174cc55dc135975fa220e94604758",
+  "latest_observed_development": "ff17d71fbce0aa70c6137dbcfc8a7f2c38eb6733",
+  "live_base_drift_paths": [
+    "apps/frontend/src/account/AccountPage.tsx",
+    "apps/frontend/src/route.ts",
+    "apps/frontend/tests/route.test.mjs"
+  ],
+  "all_drift_outside_reviewed_closures": true,
+  "authorization_addendum": {
+    "file": "pr160-source-renewal-addendum-b7c7259.json",
+    "bytes": 25360,
+    "sha256": "792e7bcdc80ae503b56721ea2a1a600c121413a9f53c8d8eb91db88391a6a50d",
+    "decision": "PASS_INDEPENDENT_SOURCE_CONTEXT_AND_SAVED_PAYLOAD_EVIDENCE_FOR_BOUNDED_RENEWAL"
+  },
+  "original_independent_report": {
+    "file": "pr160-integrated-source-review-9374d90.json",
+    "bytes": 46480,
+    "sha256": "2f8a43cec4daba803f304ac07964f5fba1202d3894ef5e8293fa7c94c1dafe92",
+    "preserved_byte_for_byte": true
+  },
+  "verified_linux_payload": {
+    "run_id": 38044609886,
+    "artifact_id": 11666672160,
+    "artifact_bytes": 308041,
+    "artifact_sha256": "97c847bdf626f70eb003114b51a94939c5a9aea07400ab2b17f3bbfd7da1bfcd",
+    "harness_commit": "db4e1897784c28b7d01d41940ac1d1e31636cc03",
+    "application_commit": "7c979c8b5e60c5443455d8650ff3448733216bfc",
+    "application_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+    "archive_canonical_equality": "All16 snapshot.compressed.equals(original archive) assertions passed, including gzip OS byte9 with no normalization or exception. Saved archives were not replaced."
+  },
+  "stage2": {
+    "previous_receipt_sha256": "7326c8a23bffca9bdc4c67167691a0f4bdf17d527b519a4b105ada8ce91ffd15",
+    "prepared_receipt_sha256": "22ad5f2a070ff9211dcae84d82cd01e1be9922c235a55843f52e70cc45103ce3",
+    "source_records": 196,
+    "source_records_sha256": "8d960d1b20e902694659cd3fd7f5519e91b72bd41ddc0768b5c03a3955975ed4",
+    "content_sha256": "05d0ef955bf4cce619e9fd7de4377519779458e90bdb080ec99526d7c650e439",
+    "artifact_records": 1888,
+    "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+    "counts": {
+      "catalog": 3115,
+      "saved": 1611,
+      "unreachable": 1504,
+      "hands": 272259
+    },
+    "archive": {
+      "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+      "bytes": 1747857,
+      "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a"
+    }
+  },
+  "stage3": {
+    "previous_receipt_sha256": "20c2a64cd7045e7401f07a2e4ab92f894135d6d8419c8754cc68d30bb3ae4672",
+    "prepared_receipt_sha256": "4060996fd22a0c84ae8ae2d01e943b1d4c70130226e27b10ecf81fc05d995bca",
+    "source_records": 100,
+    "content_sha256": "6c5aea1b8fb570108d41fdad8eebd37bb3952a0911d27db6bfff94edf7a76399",
+    "bound_stage2_receipt_sha256": "22ad5f2a070ff9211dcae84d82cd01e1be9922c235a55843f52e70cc45103ce3",
+    "artifact_records": 1805,
+    "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+    "counts": {
+      "catalog": 16132,
+      "saved": 1801,
+      "unreachable": 5621,
+      "rare": 8710,
+      "hands": 304369
+    },
+    "archive": {
+      "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+      "bytes": 2436451,
+      "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b"
+    }
+  },
+  "mw3": {
+    "subjects": [
+      {
+        "spot": "CO_open_BTN_call_BB_call",
+        "source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_records": 137,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "manifest_bytes": 29931,
+        "manifest_sha256": "a4a0e4eaaacf31698f416788a5ac91c35713de77ac685b0479534c49ecf0a1bf",
+        "content_sha256": "670c48726c6f43028edcc031586883b5a15a8e87497ace0fe815459651276163",
+        "sources_sha256": "8634a9b4d27c265968be61c62b235f881ff4161a3b16001816d48518ffab4586",
+        "receipt_bytes": 24582,
+        "receipt_sha256": "898c93bfd85341fa63045311aa45724c37dfe2f3c6c5daccb88a0e6477452e47",
+        "receipt_compact_sha256": "898c93bfd85341fa63045311aa45724c37dfe2f3c6c5daccb88a0e6477452e47",
+        "sql_bytes": 1591059,
+        "sql_sha256": "0c1ebd813bda009062043f262b68e90628ebb617ca039aab84b13547d3e91bbf",
+        "sql_statement_count": 100,
+        "sql_statement_bytes_unchanged": true,
+        "archive": {
+          "path": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.tar.gz",
+          "bytes": 363593,
+          "sha256": "b8adf765d22a128a88ce346ffda9f67615b98ada1e6579d56461da8910db8d9b"
+        },
+        "artifact_records": 7,
+        "artifact_records_unchanged": true,
+        "inputs_unchanged": true,
+        "delivery_pins": 2,
+        "limitations_per_subject": 7,
+        "joint_warning_count": 39
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call",
+        "source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_records": 138,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "manifest_bytes": 30320,
+        "manifest_sha256": "0b6098be191435bbb3e412768284041c26c786f29a0e3d20986fd71d322ac2c5",
+        "content_sha256": "0b85f3c2ac678369018d2cd7a9e0db98a75628a67578490c787dab492a90584e",
+        "sources_sha256": "8413116c299cae5be95cd56b4be47290cd1f2ce66ad50369252e394c693b6858",
+        "receipt_bytes": 24742,
+        "receipt_sha256": "8b3c88e7bdeefab98e861b56038032ad820ba70b7d6d2d6426bfe2173234518f",
+        "receipt_compact_sha256": "8b3c88e7bdeefab98e861b56038032ad820ba70b7d6d2d6426bfe2173234518f",
+        "sql_bytes": 1589911,
+        "sql_sha256": "ddacae824b036d27707807005dded89d203f8658e43e6fe692aa9dbfdd1cc646",
+        "sql_statement_count": 100,
+        "sql_statement_bytes_unchanged": true,
+        "archive": {
+          "path": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.tar.gz",
+          "bytes": 352115,
+          "sha256": "71b7423b1450638f8f2a6077c0d6c87b6715ebc81c9462a0f35cd5d83ddf1e7f"
+        },
+        "artifact_records": 7,
+        "artifact_records_unchanged": true,
+        "inputs_unchanged": true,
+        "delivery_pins": 2,
+        "limitations_per_subject": 7,
+        "joint_warning_count": 27
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_call",
+        "source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_records": 138,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "manifest_bytes": 30320,
+        "manifest_sha256": "b8781b4b811105f6e573e9a5763d29383fed28d369d3643364bcc90f910631cc",
+        "content_sha256": "cf42f2c18fe233d6b09d7a541bfa4a2f0c4892935de73d2cf2fbecd0ce1c58eb",
+        "sources_sha256": "bda6cf69fbeff4e7803cba34ecbe4403da7e33185a501085700f6225e4b92533",
+        "receipt_bytes": 24745,
+        "receipt_sha256": "b07e2eab8fdc967282c62e7e940cf5b11e41a171b4cb72afc73b64e8b2d00933",
+        "receipt_compact_sha256": "b07e2eab8fdc967282c62e7e940cf5b11e41a171b4cb72afc73b64e8b2d00933",
+        "sql_bytes": 1614488,
+        "sql_sha256": "1c9bfd804f39ff64fdc291a800a7c2d06fa5c5b5d8a206751a9f79ac6c325607",
+        "sql_statement_count": 101,
+        "sql_statement_bytes_unchanged": true,
+        "archive": {
+          "path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.tar.gz",
+          "bytes": 357921,
+          "sha256": "a1d6d54a8d169260c7bf38cfb062915c2ab9e64f116dfb8101c7b63dad6fbb0a"
+        },
+        "artifact_records": 7,
+        "artifact_records_unchanged": true,
+        "inputs_unchanged": true,
+        "delivery_pins": 2,
+        "limitations_per_subject": 7,
+        "joint_warning_count": 37
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call",
+        "source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_records": 138,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "manifest_bytes": 30320,
+        "manifest_sha256": "626994070b38f7475443460f25933c2323b1975bb80ad613ec59f36b396a2c69",
+        "content_sha256": "81f1586812a6da57fe72f9532d97401e5bf00d9d45e19d0a480816bfc25c6d58",
+        "sources_sha256": "e2e1a0d843ce630f463e69817b2726bd8dbe7f0f686a0c6be41c2df119690288",
+        "receipt_bytes": 24740,
+        "receipt_sha256": "ef908be65ef0a4fd4eeff0f847b152968e234149d9143ddd1d2bbf4654dc6288",
+        "receipt_compact_sha256": "ef908be65ef0a4fd4eeff0f847b152968e234149d9143ddd1d2bbf4654dc6288",
+        "sql_bytes": 1576072,
+        "sql_sha256": "f8425f8250a390fd2a4963600afeb9a950da0bd9d348ae977a307b0a7caf14e1",
+        "sql_statement_count": 99,
+        "sql_statement_bytes_unchanged": true,
+        "archive": {
+          "path": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.tar.gz",
+          "bytes": 349739,
+          "sha256": "f3ec418992730e69f548e354508c95e0a42e4963cb7dd6b8d15cacc3d500d45e"
+        },
+        "artifact_records": 7,
+        "artifact_records_unchanged": true,
+        "inputs_unchanged": true,
+        "delivery_pins": 2,
+        "limitations_per_subject": 7,
+        "joint_warning_count": 32
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_call",
+        "source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_records": 138,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "manifest_bytes": 30301,
+        "manifest_sha256": "c0fdef09603a80616ef32765a2bf98858507fe6809c04d4f9f92dd2bd2b5cdec",
+        "content_sha256": "e41ef498196ffe1bd9e00e4aa16d643d20e35c4c62b4fe528cc59a10531ffa43",
+        "sources_sha256": "e7ca5a46d327378b3dc0922f0e971800a6055c436e7d004d0ef0340ba9bd93be",
+        "receipt_bytes": 24727,
+        "receipt_sha256": "f13734254836ae253ce0c5efae7e92d129648a6c6a4c09d84fad541bd725085a",
+        "receipt_compact_sha256": "f13734254836ae253ce0c5efae7e92d129648a6c6a4c09d84fad541bd725085a",
+        "sql_bytes": 1606790,
+        "sql_sha256": "bb00f58b44c4c9c8c1deb3fa4eaf622e5e82087e313c2908f0955508690c31e6",
+        "sql_statement_count": 101,
+        "sql_statement_bytes_unchanged": true,
+        "archive": {
+          "path": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.tar.gz",
+          "bytes": 355876,
+          "sha256": "9e12080a2e5fbd5d642339a17508e7bd7cdff2aacf7739e3e416df816282ec0c"
+        },
+        "artifact_records": 7,
+        "artifact_records_unchanged": true,
+        "inputs_unchanged": true,
+        "delivery_pins": 2,
+        "limitations_per_subject": 7,
+        "joint_warning_count": 39
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call",
+        "source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_records": 138,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "manifest_bytes": 30320,
+        "manifest_sha256": "069d27be16df1518c13235f73ed1459fbb65ef65f395aff0dec723d9afd4bad1",
+        "content_sha256": "d9f52e68ca83103e431eaf10e84befd0f73797c93c8bfb2452ce7794a4e31eb0",
+        "sources_sha256": "160aec4abec0593f382eb50ee111cddee0305666e42fa36050d582b46489ca8f",
+        "receipt_bytes": 24738,
+        "receipt_sha256": "232989bc3a28ce40c78a0e0c4a7a4834528bbbfafb7ca5bef770d7e91a8db82e",
+        "receipt_compact_sha256": "232989bc3a28ce40c78a0e0c4a7a4834528bbbfafb7ca5bef770d7e91a8db82e",
+        "sql_bytes": 1526887,
+        "sql_sha256": "b54333925aa8c1c470260ed585eade4885f7b5b084c00d860c75c712d7ee5f7d",
+        "sql_statement_count": 96,
+        "sql_statement_bytes_unchanged": true,
+        "archive": {
+          "path": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.tar.gz",
+          "bytes": 346320,
+          "sha256": "b0ad2b74cdc937f228aa4cb862502390ba03606dc548218d713da5875e1a4d00"
+        },
+        "artifact_records": 7,
+        "artifact_records_unchanged": true,
+        "inputs_unchanged": true,
+        "delivery_pins": 2,
+        "limitations_per_subject": 7,
+        "joint_warning_count": 39
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call",
+        "source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_records": 138,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "manifest_bytes": 30301,
+        "manifest_sha256": "cea03eeb4d7cd3c8ad792ec4fa320c9995da514f4d4898a17cdf6c708fb73e5c",
+        "content_sha256": "3bed5a6ded36504b4c3ba5e8113f5c3f70474e9f8a58b329cfae908948defb76",
+        "sources_sha256": "651ba7877bd335cc5ccb8ef5b9f48643c992348618826284515b3740975433a8",
+        "receipt_bytes": 24729,
+        "receipt_sha256": "b568f18131026259a0892d60bc945e6b541d959f3cae1a58a81887279a4b54ad",
+        "receipt_compact_sha256": "b568f18131026259a0892d60bc945e6b541d959f3cae1a58a81887279a4b54ad",
+        "sql_bytes": 1575504,
+        "sql_sha256": "33f8e50ff98a7b0bc7d355dcb4626c0ca49f0188062b1d3094425bf026976a88",
+        "sql_statement_count": 99,
+        "sql_statement_bytes_unchanged": true,
+        "archive": {
+          "path": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.tar.gz",
+          "bytes": 349456,
+          "sha256": "2c41876d803519c8f05f347ecbf55404d29e17baf6f588089782d727f3ab13d7"
+        },
+        "artifact_records": 7,
+        "artifact_records_unchanged": true,
+        "inputs_unchanged": true,
+        "delivery_pins": 2,
+        "limitations_per_subject": 7,
+        "joint_warning_count": 30
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_call",
+        "source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_records": 138,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "manifest_bytes": 30339,
+        "manifest_sha256": "f8612e65698e53b37e66167a6b86dd65809bcc824cd1ce590164b687423390d7",
+        "content_sha256": "87d4f7fb3576e486f90715d0f39e095b935c47255d9fab04c2540d6af15e1178",
+        "sources_sha256": "93499a13f757d1d18bc5b3947c45c1ca8579f1cb1f5858e01bfc9b01d4139a60",
+        "receipt_bytes": 24757,
+        "receipt_sha256": "064b29e811ac96ea5a81d08a1360ae5f33f70426a3a4062f1939db88c87730d1",
+        "receipt_compact_sha256": "064b29e811ac96ea5a81d08a1360ae5f33f70426a3a4062f1939db88c87730d1",
+        "sql_bytes": 1609439,
+        "sql_sha256": "9da53574f5f43f879d8ad6c5d0ba20eeddfa7fc9f86a7471f4dba2ea1e7026a2",
+        "sql_statement_count": 101,
+        "sql_statement_bytes_unchanged": true,
+        "archive": {
+          "path": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.tar.gz",
+          "bytes": 356007,
+          "sha256": "1a8ca191895c386944c903e6de9b9c7e1d25e77ce1f471a21036ee9321a4b69e"
+        },
+        "artifact_records": 7,
+        "artifact_records_unchanged": true,
+        "inputs_unchanged": true,
+        "delivery_pins": 2,
+        "limitations_per_subject": 7,
+        "joint_warning_count": 36
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call",
+        "source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_records": 138,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "manifest_bytes": 30339,
+        "manifest_sha256": "c1b57e1119d058756b4e412155748601a7ae8bfbd87df0e4d69c8b2f968ef623",
+        "content_sha256": "2f4161ed612d9bf6d66dd89185fc7005116e6da587d5ebd4612f75c54a8a155e",
+        "sources_sha256": "04c390d36074f4c09993b0df18d2649ee36cbbdc6d3ece380bbb2fc5e9f51e61",
+        "receipt_bytes": 24765,
+        "receipt_sha256": "e0a9eb77c1461e1e31b0a2078cb93b1d5b7c33cc18e38a9bde95a369577ddc78",
+        "receipt_compact_sha256": "e0a9eb77c1461e1e31b0a2078cb93b1d5b7c33cc18e38a9bde95a369577ddc78",
+        "sql_bytes": 1574637,
+        "sql_sha256": "32fa40c61944f35d5ca82076003652f89f7121f3568534f654faebc1615872a4",
+        "sql_statement_count": 99,
+        "sql_statement_bytes_unchanged": true,
+        "archive": {
+          "path": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.tar.gz",
+          "bytes": 349201,
+          "sha256": "fb452978edb7aaf29593c6af6c3cf8dbb5352009580606938b485aba5886095d"
+        },
+        "artifact_records": 7,
+        "artifact_records_unchanged": true,
+        "inputs_unchanged": true,
+        "delivery_pins": 2,
+        "limitations_per_subject": 7,
+        "joint_warning_count": 29
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_call",
+        "source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_records": 138,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "manifest_bytes": 30320,
+        "manifest_sha256": "dbd7d9256f95f14b2faffb14441526ae3d8703df9104121a42dd100a827ca563",
+        "content_sha256": "fb7531f81aaeea14bfaa366f80228d9223563b739f116686d01fb4369909a367",
+        "sources_sha256": "f35cb9279e06b85b8fefe3033f3f3f13bfc3d9e5f9675b313b7891934d424ff3",
+        "receipt_bytes": 24739,
+        "receipt_sha256": "faa5dcb3617bffbaf398d79d921ef1b5a652c73eb006c0878764ad2365c3a53d",
+        "receipt_compact_sha256": "faa5dcb3617bffbaf398d79d921ef1b5a652c73eb006c0878764ad2365c3a53d",
+        "sql_bytes": 1605208,
+        "sql_sha256": "85571d5005c700cf079c7e316bdedcca1c7749ae461f6e5abf07d90d87185a27",
+        "sql_statement_count": 101,
+        "sql_statement_bytes_unchanged": true,
+        "archive": {
+          "path": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.tar.gz",
+          "bytes": 353793,
+          "sha256": "fab985466902709975e0e02e39d4eb9f5e41b0eb05f80d4d9f4824fe4d5913df"
+        },
+        "artifact_records": 7,
+        "artifact_records_unchanged": true,
+        "inputs_unchanged": true,
+        "delivery_pins": 2,
+        "limitations_per_subject": 7,
+        "joint_warning_count": 36
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call",
+        "source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_records": 138,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "manifest_bytes": 30339,
+        "manifest_sha256": "75b3a2e4606140ce3edf2b237c39760a1940894cfe9f8ac09710197d09e0a780",
+        "content_sha256": "e330757afdd5c350d82c641ce1528dedfa07613676ba038685b58c79bded4434",
+        "sources_sha256": "0fc20af921b78f457fcec5908a138cb0dfd101bee27ff20c478d1050f247de38",
+        "receipt_bytes": 24766,
+        "receipt_sha256": "bf3cdfab278b3eefd0ce6c65fddc2766477d54c7d4603e846974e9a2a2eeadcf",
+        "receipt_compact_sha256": "bf3cdfab278b3eefd0ce6c65fddc2766477d54c7d4603e846974e9a2a2eeadcf",
+        "sql_bytes": 1525883,
+        "sql_sha256": "eb7f9d4d6e1e273258b5b9bea0b1d9f1aa360e431dcb662e04c11fe1caaecf6e",
+        "sql_statement_count": 96,
+        "sql_statement_bytes_unchanged": true,
+        "archive": {
+          "path": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.tar.gz",
+          "bytes": 343601,
+          "sha256": "3a3d6f4d1cabcfcff881b5b90470ad153748264734fce92f0bd6a816fbe58604"
+        },
+        "artifact_records": 7,
+        "artifact_records_unchanged": true,
+        "inputs_unchanged": true,
+        "delivery_pins": 2,
+        "limitations_per_subject": 7,
+        "joint_warning_count": 32
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call",
+        "source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_records": 138,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "manifest_bytes": 30320,
+        "manifest_sha256": "863c81d9270b0b515a1471711026139d87939c1859dd0b20b3b0a84a912df694",
+        "content_sha256": "f812cde6e363d39662be575515060f0fa879f1f0919588acd81b13e777156654",
+        "sources_sha256": "8e0d2a7766f26fe3120273d84f8d2c5056564cb557440da83410b4c0bb356d44",
+        "receipt_bytes": 24745,
+        "receipt_sha256": "d4e3a57b64c393b8cebdb60bf66954a253e737f45826fec82f1a304412022c0a",
+        "receipt_compact_sha256": "d4e3a57b64c393b8cebdb60bf66954a253e737f45826fec82f1a304412022c0a",
+        "sql_bytes": 1568069,
+        "sql_sha256": "e69e53fb02ae82a0db574d67e2f25b6b6121f91faa0da718cbd8a9a3ab4a9520",
+        "sql_statement_count": 99,
+        "sql_statement_bytes_unchanged": true,
+        "archive": {
+          "path": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.tar.gz",
+          "bytes": 347918,
+          "sha256": "c859afc13e369cd1cf3ab8ea545d8115a5eaba4d55725de772f222a560f4b7a0"
+        },
+        "artifact_records": 7,
+        "artifact_records_unchanged": true,
+        "inputs_unchanged": true,
+        "delivery_pins": 2,
+        "limitations_per_subject": 7,
+        "joint_warning_count": 37
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_call",
+        "source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_records": 138,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "manifest_bytes": 30320,
+        "manifest_sha256": "78e796882bfa45886e2bafa5136de906c8ec9eb9ebd15d22037d6593440c55f4",
+        "content_sha256": "0229d6789f26a70981872b25624fc1c51901b20b04b5e424ecfbde68e5e24797",
+        "sources_sha256": "b907fc15fb5397b378fc4d71389939e3136815bc4f5b76ce608927d5a9f7568c",
+        "receipt_bytes": 24742,
+        "receipt_sha256": "047674ecadec16cb15f57c62864fc8cae6676537e934925deb839d5b678ef8a6",
+        "receipt_compact_sha256": "047674ecadec16cb15f57c62864fc8cae6676537e934925deb839d5b678ef8a6",
+        "sql_bytes": 1602292,
+        "sql_sha256": "8f86ba11d1cd879ba0f5c883265e615b795fb08454d8ccdfb98fa2d7d3ce341e",
+        "sql_statement_count": 101,
+        "sql_statement_bytes_unchanged": true,
+        "archive": {
+          "path": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.tar.gz",
+          "bytes": 352915,
+          "sha256": "d84390b598755b265f5e5ae5e5601d05fc69e7346971b955c2ab0d4732ab577a"
+        },
+        "artifact_records": 7,
+        "artifact_records_unchanged": true,
+        "inputs_unchanged": true,
+        "delivery_pins": 2,
+        "limitations_per_subject": 7,
+        "joint_warning_count": 40
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call",
+        "source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_records": 138,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "manifest_bytes": 30339,
+        "manifest_sha256": "96785b94e1d6056c302d2a8ff39c59415bd1ff573d1c6d51c797f460de87d119",
+        "content_sha256": "9f969a4512c3fda06877e977353afd3ac2354d1196e97f27fe42e8864e090f20",
+        "sources_sha256": "e5a100d06e5b3ef6bd924722823b3e537eda2e89129dabbccb7360ccf22b275c",
+        "receipt_bytes": 24766,
+        "receipt_sha256": "d8be82193ca8dff63114fd088daeb7468f6d45107a0beb15847c5a50f4d8f1d8",
+        "receipt_compact_sha256": "d8be82193ca8dff63114fd088daeb7468f6d45107a0beb15847c5a50f4d8f1d8",
+        "sql_bytes": 1524093,
+        "sql_sha256": "9cb16dc3b0ba34c23ad7d6633b11c41bf20602bc1b95da54f832b68f6423ea36",
+        "sql_statement_count": 96,
+        "sql_statement_bytes_unchanged": true,
+        "archive": {
+          "path": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.tar.gz",
+          "bytes": 342470,
+          "sha256": "fae0fe5f2ce9fc718f68b9160e4f6e99ed14138b5319008cacb4684b1aca9f3e"
+        },
+        "artifact_records": 7,
+        "artifact_records_unchanged": true,
+        "inputs_unchanged": true,
+        "delivery_pins": 2,
+        "limitations_per_subject": 7,
+        "joint_warning_count": 39
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call",
+        "source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_records": 138,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "manifest_bytes": 30320,
+        "manifest_sha256": "160671e4d68953971e6bb5b2bd892b7eaf725659d8ba49d6d347a4c9de90f2dc",
+        "content_sha256": "8da6848090a3c4b86563a0ae3297d1d6f23f768f563f3534161af83f2b73d990",
+        "sources_sha256": "bc72c1e4f12e763384e8571e965a82a6993dc505a11053efbfb8e3fd36389643",
+        "receipt_bytes": 24745,
+        "receipt_sha256": "d5a36683db00db720fc0201abb9631566c2414c3486582cafeaa399cf0849900",
+        "receipt_compact_sha256": "d5a36683db00db720fc0201abb9631566c2414c3486582cafeaa399cf0849900",
+        "sql_bytes": 1519315,
+        "sql_sha256": "a11a2d9e12171a1b77dd39211eb113e228d961204575adc21b4dc56fe77e57ea",
+        "sql_statement_count": 96,
+        "sql_statement_bytes_unchanged": true,
+        "archive": {
+          "path": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.tar.gz",
+          "bytes": 340387,
+          "sha256": "a0531cb661d36f6beee9076196a40e7a8fef414cbe2c60ffb9283ac1037ac19b"
+        },
+        "artifact_records": 7,
+        "artifact_records_unchanged": true,
+        "inputs_unchanged": true,
+        "delivery_pins": 2,
+        "limitations_per_subject": 7,
+        "joint_warning_count": 32
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call",
+        "source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_records": 138,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "manifest_bytes": 30320,
+        "manifest_sha256": "ac173b72400553b2daa5c494be0b7d311a50de543abf7367b03873e1097f5d7a",
+        "content_sha256": "ce5f75c086a984b63bf202b1476d72e72f373f7d46b7220af99ac5bedf6bb21b",
+        "sources_sha256": "15d63b0049b5ddafa6a7006be0e473ccbe82cb3be796c97048ad57815417007d",
+        "receipt_bytes": 24745,
+        "receipt_sha256": "48224b3afb7695adcbcef7d35dd254453ff6ffe1a64c2c3b6d07a148f9a54f75",
+        "receipt_compact_sha256": "48224b3afb7695adcbcef7d35dd254453ff6ffe1a64c2c3b6d07a148f9a54f75",
+        "sql_bytes": 1562974,
+        "sql_sha256": "7d0c06192a7cf5809466ca4ec166fd6167d549bb2b213432afc197e99015acf1",
+        "sql_statement_count": 99,
+        "sql_statement_bytes_unchanged": true,
+        "archive": {
+          "path": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.tar.gz",
+          "bytes": 346992,
+          "sha256": "ed25dd6a611d329ec8f78614320d66c5f84284ee4f3e2cf14129cbd75d5b7afa"
+        },
+        "artifact_records": 7,
+        "artifact_records_unchanged": true,
+        "inputs_unchanged": true,
+        "delivery_pins": 2,
+        "limitations_per_subject": 7,
+        "joint_warning_count": 37
+      }
+    ],
+    "manifest_source_trees": [
+      "cdc33e3de4fadca999dba8479ea1ca676e9ebee7"
+    ],
+    "manifest_records": 2207,
+    "raw_artifact_records": 112,
+    "archives_unchanged": true,
+    "pins": 32,
+    "joint_warning_count": 561,
+    "limitations_per_subject": [
+      7
+    ],
+    "sql_statement_bytes_unchanged": true,
+    "output_ledger": {
+      "file": "mw3-renewal-output-ledger.json",
+      "bytes": 23838,
+      "sha256": "9b069f6d7748165db79b0a6b2305839a422d1ce7f003695ec5e27826e1e14dfc"
+    }
+  },
+  "preserved_scope": {
+    "numerical_generation": false,
+    "new_numerical_approval": false,
+    "archives_replaced": false,
+    "sql_executed": false,
+    "registry_pins_changed": false,
+    "original_report_changed": false,
+    "implementation_author_model_inferred": false
+  },
+  "verification_pending": [
+    "official committed MW3 inventory/source-tree check at final commit",
+    "full frontend tests/typecheck/build where dependencies permit",
+    "required final-head CI",
+    "fresh independent review of exact final head",
+    "refresh development/base comparison before parent decides integration"
+  ],
+  "current_authpanel_warning_locales": {
+    "zh-CN": true,
+    "es": true,
+    "localization_test_contains_both_assertions": true
+  },
+  "cleanup_correction": "The Linux MW3 diagnostic retained 112 verified decoded files in ignored ephemeral runner paths. The preflop raw_restore_files_retained:false field applies only to files created by the preflop restore step. A clean git status does not mean ignored files were removed. No production user history or data was uploaded."
+}

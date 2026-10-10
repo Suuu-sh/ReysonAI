@@ -328,6 +328,55 @@
       },
       {
         "date": "2026-10-10",
+        "status": "prepared-pending-independent-final-head-review",
+        "authorization": {
+          "addendum": "docs/qa/pr160-source-renewal-b7c7259/pr160-source-renewal-addendum-b7c7259.json",
+          "sha256": "792e7bcdc80ae503b56721ea2a1a600c121413a9f53c8d8eb91db88391a6a50d",
+          "reviewer_model": "gpt-6-astra",
+          "reviewer_task": "/root/review_pr160_integrated_source",
+          "decision": "PASS_INDEPENDENT_SOURCE_CONTEXT_AND_SAVED_PAYLOAD_EVIDENCE_FOR_BOUNDED_RENEWAL"
+        },
+        "scope": "Mechanical Stage 2 current-source identity refresh only. The prior independently reviewed numerical approval, all artifact/archive bytes, fingerprint, counts and historical review attribution remain unchanged. This records preparation under the addendum; it is not the required fresh exact-head review or installable acceptance.",
+        "run_head": "b7c7259f88a4ceb11c55139349d934c507a5302c",
+        "application_source_commit": "7c979c8b5e60c5443455d8650ff3448733216bfc",
+        "application_source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+        "source_record_count": 196,
+        "source_records_sha256": "8d960d1b20e902694659cd3fd7f5519e91b72bd41ddc0768b5c03a3955975ed4",
+        "previous_content_sha256": "306b6fbe738ccf409c13be9e89c914890b0d33289e0e3613dde870e083004f19",
+        "prepared_content_sha256": "05d0ef955bf4cce619e9fd7de4377519779458e90bdb080ec99526d7c650e439",
+        "prior_source_record_count": 195,
+        "source_delta": {
+          "added": [
+            "apps/frontend/src/agent/agent-history-codec.ts"
+          ],
+          "modified": [
+            "apps/backend/src/account.ts",
+            "apps/frontend/src/account/session.ts",
+            "apps/frontend/src/locales/product-direct.json"
+          ],
+          "removed": []
+        },
+        "preserved": {
+          "artifact_records": 1888,
+          "artifact_records_unchanged": true,
+          "archive": {
+            "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+            "bytes": 1747857,
+            "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+            "format": "ustar+gzip"
+          },
+          "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+          "counts": {
+            "catalog": 3115,
+            "saved": 1611,
+            "unreachable": 1504,
+            "hands": 272259
+          }
+        },
+        "limitations": "No numerical regeneration, new strategy-quality approval, full acceptance, merge or deployment is claimed. Independent review of the final exact head and CI remain pending."
+      },
+      {
+        "date": "2026-10-10",
         "reviewer": "Independent source-only MCP/API consolidation reviewer",
         "reviewer_task": "/root/source_only_review",
         "reviewed_source_commit": "9c69754f46061e5ccc8dea281c6770402cc94f98",
@@ -10508,8 +10557,8 @@
     },
     {
       "path": "apps/backend/src/account.ts",
-      "bytes": 13612,
-      "sha256": "4407807e9dc8204c298bc5c2a7c5f29f2a68d6e120d132510d3e46af083093da"
+      "bytes": 13982,
+      "sha256": "44f048b0514c2d8919d9a7350f9de8370b88ffad6bbfb06db99bb67bd3a93926"
     },
     {
       "path": "apps/backend/src/fastfold-rating.ts",
@@ -11043,8 +11092,13 @@
     },
     {
       "path": "apps/frontend/src/account/session.ts",
-      "bytes": 7057,
-      "sha256": "09bac73e8342f54c54286626dd2afdebf3522381e4ff52abee6d473dd604b4b5"
+      "bytes": 9960,
+      "sha256": "b673cebc63f573dbce80f37dfae9cd4d898b70332a10a50ff8723cb039c5cb9d"
+    },
+    {
+      "path": "apps/frontend/src/agent/agent-history-codec.ts",
+      "bytes": 2732,
+      "sha256": "82a006485b07c39aed6299637d8cf2fbf62a8cc852ad176d04ef19a2f4af4489"
     },
     {
       "path": "apps/frontend/src/agent/hand.ts",
@@ -11408,8 +11462,8 @@
     },
     {
       "path": "apps/frontend/src/locales/product-direct.json",
-      "bytes": 45331,
-      "sha256": "bc5a4be1ac0b2c8b7ba2b3da054918e900245a194ec22a3ab22cbebc42bca6ca"
+      "bytes": 46621,
+      "sha256": "2fb0da840de093b84237d265f7caa2b9d17b3364b432bcf245a0d7271c3254e7"
     },
     {
       "path": "apps/frontend/src/locales/reason-copy.ts",
@@ -11457,7 +11511,7 @@
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
     }
   ],
-  "content_sha256": "5ca4b050891009812f2ddf88b59b7685310213564258e82fc22da91309278931",
+  "content_sha256": "c6a9126035d02aba5ee07320d4052ac5f8af384d58157afb953bf57b0cbb71b9",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,

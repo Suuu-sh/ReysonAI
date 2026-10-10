@@ -1,0 +1,20 @@
+{
+  "scenario": "import-size-boundary",
+  "source_commit": "339b97a3f2fc4740fb621d098e74ee4f458957c7",
+  "network": "All fetch intercepted into unmodified routeAccount with in-memory SQLite and synthetic users. No real account access/upload.",
+  "status": "PASS",
+  "old_500020_body_rejected_before_write": true,
+  "body_500001_rejected_before_write": true,
+  "oversize_memory_and_remote_preserved": true,
+  "exact_utf8_body_500000_accepted": true,
+  "explicit_consent_required": true,
+  "guest_source_preserved": true,
+  "writes": [
+    {
+      "cookieOwner": "A",
+      "expectedOwner": "A",
+      "status": 200,
+      "bytes": 500000
+    }
+  ]
+}
