@@ -9035,8 +9035,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 18213,
-      "sha256": "3a9243cb6d964fb0201a5d51c6bd31a65c3d4352dea59e3a6d07345d3dcb7df9"
+      "bytes": 28529,
+      "sha256": "e8562dd5f1d80f06b36e38c29b1aaa2f68a5aa3eb42e9daf10485da4385734e3"
     },
     {
       "path": ".gitignore",
@@ -9125,13 +9125,13 @@
     },
     {
       "path": "apps/frontend/scripts/lib/reviewed-preflop.mjs",
-      "bytes": 11232,
-      "sha256": "2a8f47f783266bb37c98c3865e14182d4b80551a849c3aa1a80d36f0f5ba9230"
+      "bytes": 11311,
+      "sha256": "b95c7235a5be1b666c1270708536182775b4e7ee7b75beb567a1a578a627450b"
     },
     {
       "path": "apps/frontend/scripts/lib/reviewed-stage3.mjs",
-      "bytes": 5130,
-      "sha256": "445d91c9bf8a99c826acf1010d4a895ebb7db4bc8343482bae2335ec3e098da5"
+      "bytes": 5209,
+      "sha256": "d287283ad2c338ef9ad3c08833b0d62a48e9121140de64ae7a33c4cd7b9e6b9c"
     },
     {
       "path": "apps/frontend/scripts/lib/stage3-artifacts.mjs",
@@ -9515,8 +9515,8 @@
     },
     {
       "path": "configs/multiway-preflop-stage2.review.json",
-      "bytes": 544995,
-      "sha256": "05ffaf77d5aad94c88a1bb5dc94a76d7e2ec3db92b6f5a2e98bae1bbfdf6c450"
+      "bytes": 547097,
+      "sha256": "6c317af7723655f2275f6165b8575cc4889033bd4e7e6606f57c5690f99e61b7"
     },
     {
       "path": "configs/multiway-preflop-stage3.json",
@@ -9527,6 +9527,16 @@
       "path": "configs/typescript-policy-source.review.json",
       "bytes": 259714,
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
+    },
+    {
+      "path": "scripts/ci/deployment-scope.mjs",
+      "bytes": 25184,
+      "sha256": "1e51cc33d8d483fce5a3a76fdef4a9ffab7316b3c2cc9b3fcb78755304eb44b4"
+    },
+    {
+      "path": "scripts/ci/deployment-scope.test.mjs",
+      "bytes": 22403,
+      "sha256": "3c5428ec0271606bf117f7bbf0aff969a6e7b2f08276717379df4e41c6933e52"
     }
   ],
   "archive": {
@@ -9535,7 +9545,7 @@
     "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
     "format": "ustar+gzip-stage3-content-v1"
   },
-  "content_sha256": "00cc0440d4f457f3c0b6f9590a75480f83dfa8005f39b40cc6d0d29d8a0706bb",
+  "content_sha256": "1b17bfd9b5750ef3920e6c870570e0e9d98c91f3e4a9a3b916e51b0859caeaad",
   "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
   "counts": {
     "catalog": 16132,
@@ -10529,6 +10539,53 @@
       "numerical_artifacts_unchanged": true,
       "archive_record_unchanged": true,
       "executable_sql_changed": false
+    }
+  },
+  "ci_efficiency_source_renewal": {
+    "status": "independent-source-review-passed-pending-CI",
+    "base_candidate_sha": "0f63a809656c5357ef4048a3e5bfeaf276a6eb4d",
+    "scope": "Mechanical Stage 3 source identity refresh for the CI classifier/deployment workflow and updated Stage 2 receipt. It preserves historical Stage 3 numerical acceptance and grants no data reapproval or production authorization.",
+    "changed_source_paths": [
+      ".github/workflows/deploy-worker.yml",
+      "scripts/ci/deployment-scope.mjs",
+      "scripts/ci/deployment-scope.test.mjs",
+      "apps/frontend/scripts/lib/reviewed-preflop.mjs",
+      "apps/frontend/scripts/lib/reviewed-stage3.mjs",
+      "configs/multiway-preflop-stage2.review.json"
+    ],
+    "changed_delivery_code_paths": [],
+    "source_records": {
+      "stage2_count": 198,
+      "stage2_receipt": {
+        "path": "configs/multiway-preflop-stage2.review.json",
+        "bytes": 547097,
+        "sha256": "6c317af7723655f2275f6165b8575cc4889033bd4e7e6606f57c5690f99e61b7"
+      },
+      "stage3_count": 102,
+      "stage3_content_sha256": "1b17bfd9b5750ef3920e6c870570e0e9d98c91f3e4a9a3b916e51b0859caeaad",
+      "stage3_deploy_workflow": {
+        "path": ".github/workflows/deploy-worker.yml",
+        "bytes": 28529,
+        "sha256": "e8562dd5f1d80f06b36e38c29b1aaa2f68a5aa3eb42e9daf10485da4385734e3"
+      }
+    },
+    "preserved": {
+      "stage2_artifacts_archive_fingerprint_counts_review": {
+        "artifacts": true,
+        "archive": true,
+        "source_fingerprint": true,
+        "counts": true,
+        "review": true
+      },
+      "stage3_artifacts_archive_fingerprint_counts_review": {
+        "artifacts": true,
+        "archive": true,
+        "source_fingerprint": true,
+        "counts": true,
+        "review": true
+      },
+      "no_strategy_data_regeneration": true,
+      "no_production_d1_access": true
     }
   }
 }

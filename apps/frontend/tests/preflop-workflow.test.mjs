@@ -15,7 +15,9 @@ test("PR verification has no production credentials or strategy-generation comma
 test("main deployment requires verification and deploys compatible client before data", () => {
   const deployment = workflow.slice(workflow.indexOf("  deploy:"));
   assert.match(deployment, /needs: verify/);
-  assert.match(deployment, /github\.ref == 'refs\/heads\/main' && github\.event_name != 'pull_request'/);
+  assert.match(deployment, /github\.ref == 'refs\/heads\/main'/);
+  assert.match(deployment, /github\.event_name != 'pull_request'/);
+  assert.match(deployment, /needs\.verify\.outputs\.release_safe == 'true'/);
   assert.ok(deployment.indexOf("deploy --config wrangler.jsonc") < deployment.indexOf("import-reviewed-preflop.mjs --remote"));
   assert.match(deployment, /--check-bundle/);
   assert.match(workflow, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/);
