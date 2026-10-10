@@ -33,7 +33,6 @@
 .account-page { overflow: auto; }
 .account-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); grid-template-rows: auto 1fr; gap: 12px 20px; width: min(100%, 980px); margin: 0 auto; padding: 8px 4px 24px; animation: fade-up .3s var(--ease-out) both; }
 .account-heading { grid-column: 1 / -1; }
-.account-heading h1 { margin: 0; font-size: 19px; }
 .account-tabs { display: grid; align-content: start; gap: 2px; }
 .account-tabs button { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 0; border-radius: 9px; background: transparent; color: var(--text-muted); font-size: 13px; font-weight: 600; text-align: left; cursor: pointer; }
 .account-tabs button:hover { background: var(--surface-hover); color: var(--text); }
