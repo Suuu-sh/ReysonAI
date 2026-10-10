@@ -1,0 +1,18 @@
+{
+  "scenario": "version-conflict",
+  "source_commit": "339b97a3f2fc4740fb621d098e74ee4f458957c7",
+  "network": "All fetch intercepted into unmodified routeAccount with in-memory SQLite and synthetic users. No real account access/upload.",
+  "status": "PASS",
+  "writes": [
+    {
+      "cookieOwner": "A",
+      "expectedOwner": "A",
+      "status": 409,
+      "bytes": 264
+    }
+  ],
+  "unsaved_export_retained": true,
+  "dirty_logout_blocked": true,
+  "no_automatic_or_manual_retry": true,
+  "remote_data_unchanged": true
+}

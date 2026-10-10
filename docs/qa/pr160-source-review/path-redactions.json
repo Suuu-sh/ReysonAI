@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "only_local_path_replacements": true,
+  "replacements": [
+    {
+      "file": "review-summary.json",
+      "field": "/evidence_directory",
+      "replacement": "<evidence-v3>",
+      "kind": "machine-local absolute path",
+      "original_bytes": 10824,
+      "original_sha256": "2d98af974e829a969b733df016b87cc4e2c668874b349c692195f1c85fecb3c6",
+      "saved_bytes": 10780,
+      "saved_sha256": "cb028f489304e9ea97e9fbeccc531f3013815575fe1d445c1b138e8650d45c4d"
+    },
+    {
+      "file": "frontend-account-ui.log",
+      "scope": "all local absolute workspace paths",
+      "replacement": "<workspace>",
+      "count": 4,
+      "kind": "machine-local absolute path",
+      "original_bytes": 2885,
+      "original_sha256": "05d7cf655ee4cf0b2c7cefec1720374f0bcb55c86c069baa86b3bbf5eb40aebb",
+      "saved_bytes": 2561,
+      "saved_sha256": "2306dc864cf69b947c870100f02811f35feaf45dbc08e43835317cf340ef811d"
+    }
+  ],
+  "mapping_note": "<evidence-v3> names the source evidence directory without exposing its machine-local absolute path; <workspace> replaces local checkout paths in a test log. Original bytes and SHA-256 values are recorded in preservation-manifest.json and SHA256-ledger.json."
+}
