@@ -129,3 +129,20 @@ test("ranked answers stay outside local drill history", async () => {
   assert.match(source, /if \(!rankedMatch\) onAnswer\(/);
   assert.match(source, /PlayerAnalysis rank=\{rankState\} rankedReady=\{rankedReady\}/);
 });
+
+test("drill Stats use compact observability panels: metric tiles, time series, daily columns and a breakdown", () => {
+  const now = Date.now();
+  const history = Array.from({ length: 24 }, (_, i) => ({ spotId: i % 2 ? "UTG_open" : "BB_vs_BTN", hand: "AA", action: i % 3 ? "open" : "fold", result: i % 3 ? "best" : "miss", score: i % 3 ? 1 : 0, at: now - i * 3600000 }));
+  const doc = new JSDOM(renderToStaticMarkup(createElement(PlayerAnalysis, { history, onStart() {}, onOpenWeakness() {} }))).window.document;
+  assert.equal(doc.querySelectorAll(".stats-panels > .stats-panel").length, 6);
+  assert.ok(doc.querySelectorAll(".stats-panel .stats-spark").length >= 3);
+  const score = doc.querySelector(".analysis-score .stats-ts");
+  assert.ok(score.querySelector("svg.analysis-score-chart polyline.analysis-score-line"));
+  assert.deepEqual([...score.querySelectorAll(".stats-ts-y span")].map(span => span.textContent), ["0", "25", "50", "75", "100"]);
+  assert.equal(score.querySelectorAll(".stats-ts-summary dd").length, 4);
+  const columns = doc.querySelectorAll(".stats-daily .stats-col");
+  assert.equal(columns.length, 14);
+  assert.ok([...columns].every(column => column.getAttribute("tabindex") === "0" && column.getAttribute("aria-label")));
+  assert.ok(doc.querySelector(".stats-breakdown .stats-mix i.part-best"));
+  assert.doesNotMatch(doc.body.innerHTML, /rk-hero|analysis-hero/);
+});
