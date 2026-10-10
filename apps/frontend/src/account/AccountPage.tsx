@@ -15,7 +15,7 @@ import { ACCOUNT_SECTION } from "./AccountMenu.tsx";
 
 const t = (ja: string, en: string) => localized(en, ja);
 export const ACCOUNT_TABS = [
-  { value: "account", Icon: UserCircle, ja: "アカウント", en: "Account" },
+  { value: "profile", Icon: UserCircle, ja: "アカウント", en: "Account" },
   { value: "subscription", Icon: CreditCard, ja: "サブスクリプション", en: "Subscription", shortJa: "プラン", shortEn: "Plan" },
   { value: "appearance", Icon: Palette, ja: "外観", en: "Appearance" },
   { value: "language", Icon: Translate, ja: "言語", en: "Language" },
@@ -171,8 +171,8 @@ export function LogoutDialog({ onCancel, onConfirm }: { onCancel: () => void; on
   </Dialog>;
 }
 
-export function AccountPage({ profile, tab = "account", onSectionChange, onEditProfile, onProfileSaved, onLogout }: { profile: Profile; tab?: string; onSectionChange: (name: string) => void; onEditProfile?: () => void; onProfileSaved: (profile: Profile | null) => void; onLogout?: () => void }) {
-  const active = ACCOUNT_TABS.some(item => item.value === tab) ? tab : "account";
+export function AccountPage({ profile, tab = "profile", onSectionChange, onEditProfile, onProfileSaved, onLogout }: { profile: Profile; tab?: string; onSectionChange: (name: string) => void; onEditProfile?: () => void; onProfileSaved: (profile: Profile | null) => void; onLogout?: () => void }) {
+  const active = ACCOUNT_TABS.some(item => item.value === tab) ? tab : "profile";
   return <div className="shell">
     <Sidebar activeSection={ACCOUNT_SECTION} onSectionChange={onSectionChange} profile={profile} onEditProfile={onEditProfile} onLogout={onLogout} />
     <main className="account-page">
@@ -186,7 +186,7 @@ export function AccountPage({ profile, tab = "account", onSectionChange, onEditP
           </button>)}
         </nav>
         <div className="account-content">
-          {active === "account" ? <AccountTab key={profile?.updatedAt} profile={profile} onProfileSaved={onProfileSaved} />
+          {active === "profile" ? <AccountTab key={profile?.updatedAt} profile={profile} onProfileSaved={onProfileSaved} />
             : active === "subscription" ? <SubscriptionTab />
             : active === "appearance" ? <AppearanceTab />
             : <LanguageTab />}
