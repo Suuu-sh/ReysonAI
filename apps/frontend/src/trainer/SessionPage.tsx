@@ -7,6 +7,7 @@ import { displayDrillName } from "./drill-store.ts";
 import { practiceSessionRows } from "./practice-sessions.ts";
 import { localized, localeTag } from "../locale.ts";
 import "./sessions.css";
+import { AgentHandHistory } from "./AgentHandHistory.tsx";
 import { loadAgentHands } from "../agent/agent-stats.ts";
 import { loadRankedHistory } from "./ranked-history-api.ts";
 import { RANKED_SEASONS, sessionHistoryRows, type HistoryRow, type RankedHistoryPage, type RankedSeason } from "./session-history.ts";
@@ -95,7 +96,7 @@ function SavedHandDetail({ row, onBack }: { row: Exclude<HistoryRow, { mode: "dr
       {ranked && <div><dt>{t("Rating", "レート", "评分", "Puntuación")}</dt><dd>{ffNumber(ranked.beforeRating)} → {ffNumber(ranked.afterRating)}</dd></div>}
     </dl>
     {row.mode === "agent" ? <>
-      <p className="sessions-source-note">{t("These browser records store one hand's result and statistics, without session IDs, cards or action logs. No session grouping or accuracy is reconstructed. Existing data is kept as saved.", "このブラウザの旧記録はハンドごとの収支・指標のみです。セッションID・カード・アクション履歴は保存されていません。セッションや正答率を復元せず、既存データをそのまま保持します。", "浏览器旧记录仅保存每手收益与指标，没有会话ID、牌面或行动日志。不重建会话或正确率，原数据保持不变。", "Estos registros del navegador guardan resultado y estadísticas por mano, sin ID de sesión, cartas ni acciones. No se reconstruyen sesiones ni precisión. Los datos existentes se conservan.")}</p>
+      {row.record.history ? <AgentHandHistory record={row.record} /> : <p className="sessions-source-note">{t("These browser records store one hand's result and statistics, without session IDs, cards or action logs. No session grouping or accuracy is reconstructed. Existing data is kept as saved.", "このブラウザの旧記録はハンドごとの収支・指標のみです。セッションID・カード・アクション履歴は保存されていません。セッションや正答率を復元せず、既存データをそのまま保持します。", "浏览器旧记录仅保存每手收益与指标，没有会话ID、牌面或行动日志。不重建会话或正确率，原数据保持不变。", "Estos registros del navegador guardan resultado y estadísticas por mano, sin ID de sesión, cartas ni acciones. No se reconstruyen sesiones ni precisión. Los datos existentes se conservan.")}</p>}
       <dl className="sessions-flags">{([ ["VPIP", row.record.vpip], ["PFR", row.record.pfr], ["3bet", row.record.threeBet], [t("Showdown", "ショーダウン", "摊牌", "Showdown"), row.record.showdown] ] as [string, boolean][]).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{typeof value !== "boolean" ? "—" : value ? t("Yes", "あり", "是", "Sí") : t("No", "なし", "否", "No")}</dd></div>)}</dl>
     </> : row.season === "quiz-v1" ? <p className="sessions-source-note">{t("Saved ranked quiz summary", "保存済みランククイズ集計", "已保存排位答题摘要", "Resumen guardado del cuestionario")} · {row.record.answered} · {rowAccuracy(row)}. {t("Per-question history is not returned by this history API.", "この履歴APIでは問題ごとの履歴を返していません。", "此历史API不返回逐题日志。", "Esta API no devuelve el historial por pregunta.")}</p> : <section className="sessions-history">
       <h2>{t("Recorded hand", "保存されたハンド", "已保存手牌", "Mano registrada")}</h2>

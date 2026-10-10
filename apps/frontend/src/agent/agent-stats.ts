@@ -1,13 +1,20 @@
 // Agent戦 results for プレー分析: one record per hand the human played at an Reyson Agent table,
 // kept only in this browser. Separate from the drill answer history on purpose.
-import type { HandResult } from "./hand.ts";
+import type { HandResult, LogEntry } from "./hand.ts";
 
 const KEY = "reysonai:agent-hands:v1";
 const OLD_KEY = "evionai:agent-hands:v1"; // before the ReysonAI rename: still read when the new key is empty
 const LIMIT = 3000;
 const RAISES = new Set(["open", "raise", "three_bet", "squeeze", "four_bet", "all_in"]);
 
+export type AgentHandHistory = {
+  version: 1; handNo?: number; names?: Record<string, string>;
+  holeCards: Record<string, string[]>; board: string[]; log: LogEntry[];
+  winners: string[]; returns: Record<string, number>; pot?: number; rake?: number; handRanks?: Record<string, number>;
+};
+
 export type AgentHandRecord = {
+  history?: AgentHandHistory;
   at: number; tableId: string; pos: string; returnBb: number;
   vpip: boolean; pfr: boolean;
   threeBetOpp: boolean; threeBet: boolean;
@@ -30,7 +37,7 @@ export function saveAgentHand(record: AgentHandRecord) {
 }
 
 // The human's flags for one finished hand.
-export function handRecord(result: HandResult, tableId: string, pos: string, at = Date.now()): AgentHandRecord {
+export function handRecord(result: HandResult, tableId: string, pos: string, at = Date.now(), context: { handNo?: number; names?: Record<string, string> } = {}): AgentHandRecord {
   if (result.status !== "done" || !result.returns || !Number.isFinite(result.returns[pos] ?? 0)) throw new Error("Cannot record an unfinished Agent hand");
   const preflop = result.log.filter(entry => entry.street === "preflop");
   const mine = preflop.filter(entry => entry.pos === pos);
@@ -47,6 +54,17 @@ export function handRecord(result: HandResult, tableId: string, pos: string, at 
   const postflop = result.log.filter(entry => entry.street !== "preflop" && entry.pos === pos);
   const isBet = (action: string) => action === "raise" || action === "allin" || action.startsWith("bet");
   return {
+    history: {
+      version: 1, ...context,
+      // Persist only the human's cards and opponents actually exposed at showdown.
+      // Folded opponents remain hidden even though the local engine dealt their cards.
+      holeCards: Object.fromEntries(Object.entries(result.holeCards).filter(([seat]) =>
+        seat === pos || result.showdown && !result.log.some(entry => entry.pos === seat && entry.action === "fold"))
+        .map(([seat, cards]) => [seat, [...cards]])),
+      board: [...result.board], log: result.log.map(entry => ({ ...entry, ...(entry.bets ? { bets: { ...entry.bets } } : {}) })),
+      winners: [...(result.winners ?? [])], returns: { ...result.returns }, pot: result.pot, rake: result.rake,
+      ...(result.handRanks ? { handRanks: { ...result.handRanks } } : {}),
+    },
     at, tableId, pos, returnBb: result.returns?.[pos] ?? 0,
     vpip: mine.some(entry => entry.action !== "fold" && entry.action !== "check"),
     pfr: mine.some(entry => RAISES.has(entry.action)),

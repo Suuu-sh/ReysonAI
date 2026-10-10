@@ -55,3 +55,8 @@ test('switching authenticated owners clears selected details and never applies t
   await click('Human FastFold');assert.match(dom.window.document.body.textContent,/1,222 → 1,333/);assert.doesNotMatch(dom.window.document.body.textContent,/1,777|1,888/);
  },url=>new Promise(done=>pending.push([new URL(url).searchParams.get('season'),done])),{rankedReady:true,rankedOwner:'owner-A'});
 });
+
+test('new Agent detail renders explicit suits, street actions, winners and results without mutating saved history', async () => {
+ const record={...hand,history:{version:1,handNo:7,names:{BTN:'You',BB:'VEGA'},holeCards:{BTN:['Ad','8c'],BB:['Qs','6s']},board:['Qc','9s','7s','Ts','Jh'],winners:['BB'],returns:{BTN:-11.18,BB:10.54},pot:22.86,rake:1.14,log:[{street:'preflop',pos:'BTN',action:'open',to:2.5,pot:4},{street:'flop',pos:'BB',action:'check',pot:5.5},{street:'turn',pos:'BB',action:'bet33',to:1.82,pot:7.32},{street:'river',pos:'BTN',action:'call',to:6.86,pot:22.86}]}};
+ await harness(async({dom,click})=>{const before=dom.window.localStorage.getItem('reysonai:agent-hands:v1');await click('Agent matches');await click('Saved hand · saved-table');const text=dom.window.document.body.textContent;assert.match(text,/Hand history #7/);for(const value of ['A♦','8♣','Q♠','6♠','Q♣','9♠','7♠','T♠','J♥','Preflop','Flop','Turn','River','Bet','1.82','Call','6.86','Winner','VEGA','Rake'])assert.ok(text.includes(value),value);assert.doesNotMatch(text,/without session IDs, cards or action logs/);assert.equal(dom.window.localStorage.getItem('reysonai:agent-hands:v1'),before);},undefined,{},[record]);
+});

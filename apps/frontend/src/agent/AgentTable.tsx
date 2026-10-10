@@ -1,3 +1,4 @@
+import { POSITIONS } from "./preflop.ts";
 import { GameplayDetails, GamePanel } from "./GameplayDetails.tsx";
 import { StyleAvatar } from "./StyleAvatar.tsx";
 import { OpponentProfile, profileCopy as profileText, type OpponentProfileData } from "./OpponentProfile.tsx";
@@ -209,7 +210,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
   useEffect(() => {
     if (!done || recorded.current === session.handNo) return;
     recorded.current = session.handNo;
-    if (humanPos && !waitingMode) saveAgentHand(handRecord(result!, tableId, humanPos));
+    if (humanPos && !waitingMode) saveAgentHand(handRecord(result!, tableId, humanPos, Date.now(), { handNo: session.handNo + 1, names: Object.fromEntries(POSITIONS.map(pos => [pos, nameOf(pos)])) }));
     setHistory(current => [{ no: session.handNo + 1, winners: (result!.winners ?? []).map(nameOf).join(" / "),
       nameOf, log: [...revealed], board: [...boardCards], resultBb: humanPos && Number.isFinite(result!.returns![humanPos]) ? result!.returns![humanPos] : null, cards: humanPos ? [...(result!.holeCards[humanPos] ?? [])] : [], mine: humanPos && Number.isFinite(result!.returns![humanPos]) ? toPoints(result!.returns![humanPos]) : null, showdown: Boolean(result!.showdown) }, ...current].slice(0, 30));
   }, [done, humanPos, session.handNo, result, tableId, nameOf]);
