@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "independent-source-context-only-addendum",
+  "reviewed_at": "2026-10-10T12:05:49Z",
+  "reviewer": {
+    "task": "/root/review_mcp_api_integration",
+    "provider": "OpenAI",
+    "model": "Runtime model identifier not exposed; no numerical-reviewer identity claimed",
+    "independence": "Separate read-only reviewer; did not author candidate or modify GitHub, manifests, receipts, SQL or production."
+  },
+  "subject": {
+    "repository": "Suuu-sh/ReysonAI",
+    "pr": 173,
+    "head": "eb5f875a7b25beb95cab461adcfb805fb6a53d06",
+    "tree": "95127a20748792b60bb073eea9c58959dbc483e7",
+    "historical_source_tree": "cdc33e3de4fadca999dba8479ea1ca676e9ebee7",
+    "url": "https://github.com/Suuu-sh/ReysonAI/pull/173"
+  },
+  "finding": {
+    "bounded_two_file_source_context_renewal_supported": true,
+    "blocking_code_findings_for_these_two_type_assertions": [],
+    "runtime_behavior_change": false,
+    "details": "Exact full-text equality holds after adding only the two listed TypeScript assertions. They introduce no imports, runtime expressions, request changes or validation removal. This is not a claim that JSON data are newly runtime-validated."
+  },
+  "changed_records": [
+    {
+      "path": "apps/frontend/src/account/session.ts",
+      "old": {
+        "bytes": 9937,
+        "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43",
+        "git_blob": "1d596c78d2861c5f15783f50afc376243b549354"
+      },
+      "current": {
+        "bytes": 9982,
+        "sha256": "ca7bab94b076851ecc34f1b6c33ecbb9d3bdad2b64434c569917e68412709ec1",
+        "git_blob": "75fd5cdebd45db44b14cf678011544ba0dae975d"
+      },
+      "only_edit": "Append `as AccountResponses[P] & { error?: unknown }` to the existing response.json() expression."
+    },
+    {
+      "path": "apps/frontend/src/estimated/datasets.ts",
+      "old": {
+        "bytes": 5397,
+        "sha256": "dd3224feae502272ded066a636760bf05b4f62d5d865ff5a802bf6ac68b3a216",
+        "git_blob": "ee06df957932e4980c4443ebf91d96d601a611c5"
+      },
+      "current": {
+        "bytes": 5438,
+        "sha256": "8f3601317afddead6aeef71364c96cf86c8324d8bba8ca3bd19ba8806e72b453",
+        "git_blob": "2ac9db66eb435370d22aff56de67fe3099d5138e"
+      },
+      "only_edit": "Append `as { datasets: Record<string, unknown> }` to the existing dataset-index response.json() expression."
+    }
+  ],
+  "inventory_verification": {
+    "manifests": 16,
+    "distinct_source_paths": 152,
+    "distinct_input_paths": 3,
+    "total_unique_paths": 155,
+    "changed_sources": 2,
+    "unchanged_source_paths": 150,
+    "unchanged_input_paths": 3,
+    "method": "Read all 16 current manifest source/input inventories. Compare nontruncated Git tree blobs and paths against each manifest's source_tree. All 16 use the same historical tree. Only the two listed paths have different Git blobs. Rehash both old/current UTF-8 file contents with Python hashlib SHA256 and Git blob SHA1; all four reconstructed Git object identities match GitHub. Confirm exactly listed assertion insertion yields full current text.",
+    "manifest_sources_range": [
+      137,
+      138
+    ],
+    "inputs_per_manifest": 3,
+    "all_16_archive_git_blobs_unchanged": true,
+    "archive_limitation": "Archive Git/LFS-pointer identity verified; compressed or decoded archive payloads were not downloaded or rehashed by this reviewer.",
+    "shared_32_pin_registry_git_blob_unchanged": true,
+    "evidence": "mcp-type-boundary-inventory-eb5f875a.json"
+  },
+  "current_blocker": {
+    "stage2_session_record_hash_incorrect": true,
+    "recorded_sha256": "e7ca942577c3204bb008f5ead63a05f98b43eb45966edd7747f6f334a839bfc9",
+    "actual_sha256": "ca7bab94b076851ecc34f1b6c33ecbb9d3bdad2b64434c569917e68412709ec1",
+    "latest_mcp_ci": "https://github.com/Suuu-sh/ReysonAI/actions/runs/38050494947",
+    "latest_mcp_ci_status": "success",
+    "formal_source_identity_ci": "fails; renewal not yet installed correctly"
+  },
+  "supported_metadata_scope": [
+    "Stage2 source records for these two exact paths and derived content identity, with truthful source-only provenance; preserve all prior evidence.",
+    "Stage3 corresponding source records, exact finalized Stage2 receipt binding, and derived identity.",
+    "All 16 existing MW3 manifests: source_tree set to a real committed tree containing the exact reviewed source bytes; these two source records, sources_sha256 and dependent content identity only.",
+    "All 16 existing MW3 receipts: matching source/manifest/context identity and truthful source-only addendum provenance; preserve historical numerical evidence and reviewer identities.",
+    "Existing MW3 SQL: only any receipt-derived second-line comment identity required by the unchanged official process; preserve archive identity and every executable SQL statement byte.",
+    "Supporting review/evidence files outside protected source graphs."
+  ],
+  "conservation_conditions": [
+    "No numerical generation, new quality approval, archive reconstruction/normalization, policy/raw-data changes, checker/source-root exclusion or compatibility bypass.",
+    "Retain exact archive/LFS pointers, raw-artifact records, inputs, recipe/policy/implementation/verification identities, counts, fingerprints, warnings, limitations and registry pins.",
+    "Use official fileRecord and collectors on exact committed bytes; do not copy guessed hashes or relabel a historical source tree.",
+    "Before acceptance verify current official source inventories introduce no additional changed path. If they do, stop and separately review those deltas.",
+    "Finalize Stage2 before Stage3; rerun unchanged official restoration, source-tree/current-inventory, strict delivery and applicable exact-head CI.",
+    "Independently review final metadata delta and conserved fields. This report itself does not issue installable receipts or waive final verification."
+  ],
+  "not_authorized_or_claimed": [
+    "Numerical/strategy-quality renewal",
+    "GTO or solver verification",
+    "Raw archive re-decoding by this reviewer",
+    "Fresh compiler or runtime execution by this reviewer",
+    "All-CI success",
+    "Production deployment or binding/route changes",
+    "Merge authorization",
+    "Worker deletion",
+    "Database execution"
+  ],
+  "external_writes": 0,
+  "formal_receipts_modified": 0
+}

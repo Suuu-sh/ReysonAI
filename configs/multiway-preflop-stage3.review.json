@@ -9196,7 +9196,7 @@
     {
       "path": "apps/frontend/src/account/session.ts",
       "bytes": 9982,
-      "sha256": "e7ca942577c3204bb008f5ead63a05f98b43eb45966edd7747f6f334a839bfc9"
+      "sha256": "ca7bab94b076851ecc34f1b6c33ecbb9d3bdad2b64434c569917e68412709ec1"
     },
     {
       "path": "apps/frontend/src/agent/agent-history-codec.ts",
@@ -9515,8 +9515,8 @@
     },
     {
       "path": "configs/multiway-preflop-stage2.review.json",
-      "bytes": 555560,
-      "sha256": "801d0f810cbbbf96936a66306297d43fc47be46a83ae1e9ae453cac03d52b47b"
+      "bytes": 558879,
+      "sha256": "6baa73d4a447f11c080f1c4f5af5ec77915c1bde09dc48504b1f86ef2251888d"
     },
     {
       "path": "configs/multiway-preflop-stage3.json",
@@ -9535,7 +9535,7 @@
     "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
     "format": "ustar+gzip-stage3-content-v1"
   },
-  "content_sha256": "973d192ad6753d95c101ef51e5ea97e27d28d0d4ffa45ecc377ef5fc21441e7f",
+  "content_sha256": "e2382cb40ebf5f5cc91ee860cca8942bc08e5fc52f1816878abc193e8a84ed43",
   "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
   "counts": {
     "catalog": 16132,
@@ -10793,6 +10793,74 @@
         "prior_review_history_preserved": true
       },
       "limitations": "Mechanical Stage 3 source-record update for type-only code edits. Exact-head CI pending; no generation, D1 operation, deployment, merge, or production configuration change."
+    }
+  },
+  "pr173_source_context_renewal": {
+    "schema_version": 1,
+    "status": "source-context-preparation-pending-independent-final-byte-review",
+    "scope": "Bounded source-only metadata repair for the two independently reviewed TypeScript assertions. Historical numerical acceptance, authorship, reviewer identities, evidence, warnings and limitations remain unchanged. No new numerical or strategy-quality approval is asserted.",
+    "source_commit": "eb5f875a7b25beb95cab461adcfb805fb6a53d06",
+    "source_tree": "95127a20748792b60bb073eea9c58959dbc483e7",
+    "independent_source_review": {
+      "path": "docs/qa/pr173-source-only-review/mcp-type-boundary-review-eb5f875a.json",
+      "bytes": 6361,
+      "sha256": "0be23b91a4c57390d885b7585d1133babd47c8a05b6e674a0939dccf210da244",
+      "reviewer": {
+        "task": "/root/review_mcp_api_integration",
+        "provider": "OpenAI",
+        "model": "Runtime model identifier not exposed; no numerical-reviewer identity claimed",
+        "independence": "Separate read-only reviewer; did not author candidate or modify GitHub, manifests, receipts, SQL or production."
+      }
+    },
+    "independent_inventory": {
+      "path": "docs/qa/pr173-source-only-review/mcp-type-boundary-inventory-eb5f875a.json",
+      "bytes": 59204,
+      "sha256": "5807adf3603eccd7f18d9d8ff4da93d2be0cf2d8979f3d14a7c0fcf4a3d3b0a9"
+    },
+    "prior_receipt": {
+      "commit": "eb5f875a7b25beb95cab461adcfb805fb6a53d06",
+      "path": "configs/multiway-preflop-stage3.review.json",
+      "bytes": 565407,
+      "sha256": "60a7693bbd3bba2c02da70c8c89aee5b22b46d4ee35d1d4d8e2575cb66e3c474"
+    },
+    "before_content_sha256": "973d192ad6753d95c101ef51e5ea97e27d28d0d4ffa45ecc377ef5fc21441e7f",
+    "after_content_sha256": "e2382cb40ebf5f5cc91ee860cca8942bc08e5fc52f1816878abc193e8a84ed43",
+    "changed_source_records": [
+      {
+        "previous": {
+          "path": "apps/frontend/src/account/session.ts",
+          "bytes": 9982,
+          "sha256": "e7ca942577c3204bb008f5ead63a05f98b43eb45966edd7747f6f334a839bfc9"
+        },
+        "current": {
+          "path": "apps/frontend/src/account/session.ts",
+          "bytes": 9982,
+          "sha256": "ca7bab94b076851ecc34f1b6c33ecbb9d3bdad2b64434c569917e68412709ec1"
+        }
+      },
+      {
+        "previous": {
+          "path": "configs/multiway-preflop-stage2.review.json",
+          "bytes": 555560,
+          "sha256": "801d0f810cbbbf96936a66306297d43fc47be46a83ae1e9ae453cac03d52b47b"
+        },
+        "current": {
+          "path": "configs/multiway-preflop-stage2.review.json",
+          "bytes": 558879,
+          "sha256": "6baa73d4a447f11c080f1c4f5af5ec77915c1bde09dc48504b1f86ef2251888d"
+        }
+      }
+    ],
+    "verification_scope": "Exact current UTF-8 file bytes and official unchanged source collectors; every retained current source/input record is checked against the actual committed source tree. Historical artifact/archive records are conserved, not regenerated or freshly numerically approved.",
+    "limitations": [
+      "Archives retain their exact committed Git/LFS-pointer identities; this cloud work did not download or decode LFS archive payloads.",
+      "No numerical generation, numerical reapproval, database execution, production change or verifier modification.",
+      "Full official restoration and strict delivery verification remain required through exact-head CI."
+    ],
+    "stage2_binding": {
+      "path": "configs/multiway-preflop-stage2.review.json",
+      "bytes": 558879,
+      "sha256": "6baa73d4a447f11c080f1c4f5af5ec77915c1bde09dc48504b1f86ef2251888d"
     }
   }
 }
