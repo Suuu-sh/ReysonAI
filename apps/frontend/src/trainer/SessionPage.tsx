@@ -117,6 +117,7 @@ type PageState = { owner: string; pages: Partial<Record<RankedSeason, RankedHist
 export function SessionPage({ drills, reviews, drafts, onResume, rankedReady = false, rankedOwner = null }: Props) {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [mode, setMode] = useState("all"), [filter, setFilter] = useState("all"), [limit, setLimit] = useState(50);
+  const [bookmarkedOnly, setBookmarkedOnly] = useState(false);
   const practice = useMemo(() => practiceSessionRows(drills, reviews, drafts), [drills, reviews, drafts]);
   const [agent, setAgent] = useState(loadAgentHands);
   useEffect(() => {
@@ -148,7 +149,7 @@ export function SessionPage({ drills, reviews, drafts, onResume, rankedReady = f
   const rows = useMemo(() => sessionHistoryRows(practice, agent, Object.fromEntries(RANKED_SEASONS.map(season => [season, current?.pages[season]?.items ?? []]))), [practice, agent, current]);
   const selected = rows.find(row => row.key === selectedKey);
   if (selected) return selected.mode === "drills" ? <PracticeDetail session={selected.record} onBack={() => setSelectedKey(null)} onResume={onResume} /> : <SavedHandDetail row={selected} onBack={() => setSelectedKey(null)} />;
-  const filtered = rows.filter(row => (mode === "all" || row.mode === mode) && (filter === "all" || (rowInProgress(row) ? "draft" : "completed") === filter));
+  const filtered = rows.filter(row => (mode === "all" || row.mode === mode) && (filter === "all" || (rowInProgress(row) ? "draft" : "completed") === filter) && (!bookmarkedOnly || row.mode === "agent" && (row.session ? row.session.hands.some(hand => hand.bookmarked) : row.record.bookmarked)));
   const visible = filtered.slice(0, limit);
   const drillAttempts = practice.filter(row => row.drillId !== "ranked");
   const answered = drillAttempts.reduce((sum, row) => sum + row.answered, 0), score = drillAttempts.reduce((sum, row) => sum + row.score, 0);
@@ -164,6 +165,7 @@ export function SessionPage({ drills, reviews, drafts, onResume, rankedReady = f
     </header>
     <div className="lb-period sessions-filters sessions-mode-filters" role="group" aria-label={t("History mode", "履歴のモード", "历史模式", "Modo de historial")}>{["all", "ranked", "agent", "drills"].map(value => <button type="button" key={value} className={mode === value ? "on" : ""} aria-pressed={mode === value} onClick={() => { setMode(value); setLimit(50); }}>{value === "all" ? t("All", "すべて", "全部", "Todos") : modeLabel(value)}</button>)}</div>
     <div className="lb-period sessions-filters" role="group" aria-label={t("History status", "履歴の状態", "历史状态", "Estado del historial")}>{[["all", t("All", "すべて", "全部", "Todos")], ["draft", t("In progress", "途中保存", "进行中", "En curso")], ["completed", t("Completed", "完了", "已完成", "Completado")]].map(([value, label]) => <button type="button" key={value} className={filter === value ? "on" : ""} aria-pressed={filter === value} onClick={() => { setFilter(value); setLimit(50); }}>{label}</button>)}</div>
+    <div className="lb-period sessions-filters" role="group" aria-label={t("Review bookmarks", "復習用ブックマーク", "复习书签", "Marcadores de revisión")}><button type="button" className={bookmarkedOnly ? "on" : ""} aria-pressed={bookmarkedOnly} onClick={() => { setBookmarkedOnly(value => !value); setMode("agent"); setLimit(50); }}>{t("Bookmarked Agent hands", "復習するAgentハンド", "已收藏的Agent手牌", "Manos Agent guardadas")}</button></div>
     {(mode === "all" || mode === "ranked") && (!allowed || activeRankedSeasons.length > 0) && <div className="sessions-ranked-status">
       {!allowed ? <p role="status">{t("Ranked history needs a verified sign-in and live server connection.", "ランク履歴には認証済みログインとサーバー接続が必要です。", "排位历史需要已验证登录与实时服务器连接。", "El historial clasificado requiere sesión verificada y conexión al servidor.")}</p> : activeRankedSeasons.map(season => <div key={season}><span>{seasonLabel(season)}</span>{current?.busy[season] ? <span role="status">{t("Loading…", "読み込み中…", "加载中…", "Cargando…")}</span> : current?.errors[season] ? <><span role="alert">{t("History unavailable", "履歴を取得できません", "历史不可用", "Historial no disponible")}</span><button type="button" className="config-edit" onClick={() => void load(season, current.pages[season]?.nextCursor ?? null, generation.current)}>{t("Retry", "再試行", "重试", "Reintentar")}</button></> : null}</div>)}
     </div>}

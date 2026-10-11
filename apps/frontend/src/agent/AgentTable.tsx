@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 import { PokerTable, PokerSeat, PokerChip, PokerActionButton } from "./PokerTable.tsx";
 import { PlayingCard } from "../components/PlayingCard.tsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ChartBar, Eye, FastForward, Info, Lightning } from "@phosphor-icons/react";
+import { ArrowLeft, Bookmark, ChartBar, Eye, FastForward, Info, Lightning } from "@phosphor-icons/react";
 import { preloadDatasets } from "../estimated/datasets.ts";
 import { loadPostflopDatasets, loadPostflopSpot } from "../estimated/postflop-browser.ts";
 import { mw3DeliveryClient, type Mw3DeliveryClient, type Mw3Kit } from "../estimated/mw3-browser.ts";
@@ -23,7 +23,9 @@ import { LoadingDots, LoadingInline } from "../components/Loading.tsx";
 import { AgentAvatar } from "./AgentAvatar.tsx";
 import { createAgent, makePostflopKit, type PostflopKit } from "./policy.ts";
 import { createSession, finishHand, handSeed, seatPositions, toPoints, type Session } from "./session.ts";
-import { handRecord, loadAgentHands, saveAgentHand } from "./agent-stats.ts";
+import { handRecord, loadAgentHands, saveAgentHand, saveAgentHandReview, setAgentHandBookmarked } from "./agent-stats.ts";
+import { accountSnapshot } from "../account/session.ts";
+import { exactAgentReview } from "./agent-review.ts";
 import { playerRead } from "./player-read.ts";
 import { PlayStyleCard, PlayStyleDashboard } from "./PlayStyleDashboard.tsx";
 import "./agent.css";
@@ -230,10 +232,24 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
 
   // Record the finished hand once: Agent戦 in プレー分析 (human only) and the recent-hands list.
   const recorded = useRef(-1);
+  const [bookmarked, setBookmarked] = useState(false);
+  useEffect(() => { setBookmarked(false); }, [session.handNo]);
   useEffect(() => {
     if (!done || recorded.current === session.handNo) return;
     recorded.current = session.handNo;
-    if (humanPos && !waitingMode) saveAgentHand(handRecord(result!, tableId, humanPos, Date.now(), { session: historySession.entry, handNo: session.handNo + 1, names: Object.fromEntries(POSITIONS.map(pos => [pos, nameOf(pos)])) }));
+    if (humanPos && !waitingMode) {
+      const record = handRecord(result!, tableId, humanPos, Date.now(), { session: historySession.entry, handNo: session.handNo + 1, names: Object.fromEntries(POSITIONS.map(pos => [pos, nameOf(pos)])) });
+      const saved = saveAgentHand(record);
+      setBookmarked(Boolean(saved.find(hand => hand.session?.id === historySession.entry.id && hand.history?.handNo === session.handNo + 1)?.bookmarked));
+      if (!watch && !handoffKey) {
+        const expectedOwnerId = accountSnapshot().user?.id ?? null;
+        const selector = { sessionId: historySession.entry.id, handNo: session.handNo + 1 };
+        void import("./agent-review.ts").then(({ exactAgentReview }) => {
+          const reviewDecisions = exactAgentReview(result!.log, result!.holeCards, humanPos, mw3Client.supportsSpot);
+          saveAgentHandReview(selector, reviewDecisions, expectedOwnerId);
+        }).catch(() => { /* keep the immediately saved history; comparison remains unavailable */ });
+      }
+    }
     const showdown = Boolean(result!.showdown);
     // Only expose cards for seats that reached an actual showdown. In particular, folded
     // opponents' dealt cards remain private even though the deterministic result has them.
@@ -244,7 +260,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
     })) : [];
     setHistory(current => [{ no: session.handNo + 1, winners: (result!.winners ?? []).map(nameOf).join(" / "),
       nameOf, log: [...revealed], board: [...boardCards], resultBb: humanPos && Number.isFinite(result!.returns![humanPos]) ? result!.returns![humanPos] : null, cards: humanPos ? [...(result!.holeCards[humanPos] ?? [])] : [], mine: humanPos && Number.isFinite(result!.returns![humanPos]) ? toPoints(result!.returns![humanPos]) : null, showdown, showdownPlayers }, ...current].slice(0, 30));
-  }, [done, humanPos, session.handNo, result, tableId, nameOf]);
+  }, [done, humanPos, session.handNo, result, tableId, nameOf, watch, waitingMode, handoffKey]);
 
   const act = (key: string) => setHumanActions(current => [...current, key]);
   const nextHand = useCallback(() => {
@@ -395,6 +411,11 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
             </>
             : done ? <>
               <p className="agent-summary">{myDelta == null ? winnerLine : <>{localized("This hand", "このハンド")} <b className={myDelta > 0 ? "up" : myDelta < 0 ? "down" : ""}>{signed(myDelta)}</b></>}</p>
+              {!watch && !waitingMode && humanPos && <button type="button" className="agent-skip" aria-pressed={bookmarked} onClick={() => {
+                const value = !bookmarked;
+                const saved = setAgentHandBookmarked({ sessionId: historySession.entry.id, handNo: session.handNo + 1, tableId, pos: humanPos }, value);
+                setBookmarked(Boolean(saved.find(hand => hand.session?.id === historySession.entry.id && hand.history?.handNo === session.handNo + 1)?.bookmarked));
+              }}><Bookmark size={14} weight={bookmarked ? "fill" : "regular"} />{bookmarked ? agentAutoSkipCopy("Bookmarked for review", "復習用に保存済み", "已加入复习", "Guardada para revisar") : agentAutoSkipCopy("Review this hand", "このハンドを復習", "复习这手", "Revisar esta mano")}</button>}
               {autoSkippedHand === session.handNo && !autoSkipAfterFold && <button type="button" className="agent-next" onClick={nextHand}>{agentAutoSkipCopy("Next hand", "次のハンド", "下一手", "Siguiente mano")}</button>}
             </>
             : <>

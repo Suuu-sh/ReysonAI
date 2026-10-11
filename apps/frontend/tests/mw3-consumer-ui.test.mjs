@@ -5,7 +5,7 @@ import { JSDOM } from 'jsdom';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -22,15 +22,19 @@ const rootPath = fileURLToPath(new URL('..', import.meta.url));
 const bundleDirectory = mkdtempSync(join(tmpdir(), 'reysonai-mw3-ui-'));
 test.after(() => rmSync(bundleDirectory, { recursive: true, force: true }));
 async function importConsumerBundle(result, name) {
-  // Keep React and React DOM on the test runner's canonical module boundary.
-  // File URLs also keep initialization failures from logging a huge data URL.
-  const code = result.outputFiles[0].text.replace(/from "(react(?:\/[^"]+)?|react-dom(?:\/[^"]+)?|@phosphor-icons\/react)"/g,
-    (_, specifier) => `from "${import.meta.resolve(specifier)}"`);
-  const path = join(bundleDirectory, `${name}.mjs`);
-  writeFileSync(path, code);
+  // Preserve local lazy chunks so large preflop data is not parsed on mount.
+  for (const output of result.outputFiles) {
+    const code = output.text.replace(/from "(react(?:\/[^\"]+)?|react-dom(?:\/[^\"]+)?|@phosphor-icons\/react)"/g,
+      (_, specifier) => `from "${import.meta.resolve(specifier)}"`);
+    mkdirSync(join(output.path, '..'), { recursive: true });
+    writeFileSync(output.path, code);
+  }
+  const path = result.outputFiles.find(output => output.path.endsWith(`/${name}.js`))?.path;
+  if (!path) throw new Error(`Missing ${name} entry bundle`);
   return import(pathToFileURL(path).href);
 }
 const bundle = await build({
+  outdir: join(bundleDirectory, 'range'), entryNames: 'range', chunkNames: 'chunks/[name]-[hash]', splitting: true,
   stdin: { contents: 'export { useMw3RangeSession, Mw3PostflopTrial } from "./src/estimated/Mw3PostflopTrial.tsx"; export { Mw3RangeView } from "./src/estimated/Mw3RangeView.tsx"; export { ActionPath } from "./src/estimated/RangeWorkspace.tsx";', resolveDir: rootPath, loader: 'tsx' },
   bundle: true, write: false, platform: 'node', format: 'esm', jsx: 'automatic', external: ['react', 'react-dom', '@phosphor-icons/react'],
   loader: { '.css': 'empty', '.png': 'dataurl', '.webp': 'dataurl' },
@@ -133,7 +137,7 @@ test('rewind and board replacement render only the newest numerical view and kee
 // A test-only module boundary controls the already-reached hand. Production
 // AgentTablePage still imports the actual pure hand runner and accepts only its
 // dedicated delivery interface; no query string or browser storage injects it.
-const agentBundle = await build({ entryPoints: [fileURLToPath(new URL('../src/agent/AgentTable.tsx', import.meta.url))],
+const agentBundle = await build({ outdir: join(bundleDirectory, 'agent'), entryNames: 'agent', chunkNames: 'chunks/[name]-[hash]', splitting: true, entryPoints: [fileURLToPath(new URL('../src/agent/AgentTable.tsx', import.meta.url))],
   bundle: true, write: false, platform: 'node', format: 'esm', jsx: 'automatic', external: ['react', 'react-dom', '@phosphor-icons/react'],
   loader: { '.css': 'empty', '.png': 'dataurl', '.webp': 'dataurl' },
   plugins: [{ name: 'test-only-reached-agent-hand', setup(builder) {
