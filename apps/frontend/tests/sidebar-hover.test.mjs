@@ -33,7 +33,8 @@ after(async () => {
 
 test("collapsed sidebar hover is temporary, touch-safe, and separate from the persistent bottom toggle", async () => {
   const styles = readFileSync(new URL("../src/styles.css", import.meta.url), "utf8");
-  assert.match(styles, /\.app-sidebar\.is-collapsed:not\(\.is-hover-expanded\) \{ flex-basis: 64px;/);
+  assert.match(styles, /\.app-sidebar\.is-collapsed:not\(\.is-hover-expanded\) \{ flex-basis: 64px;[^}]*gap: 22px; padding: 14px 7px 12px;/);
+  assert.match(styles, /\.app-sidebar\.is-collapsed:not\(\.is-hover-expanded\) \.header-nav-group-label \{ visibility: hidden; \}/);
   assert.match(styles, /\.app-sidebar\.is-collapsed:not\(\.is-hover-expanded\) \.header-nav button > span/);
   assert.match(styles, /@media \(max-width: 650px\) \{\s*\.app-sidebar, \.app-sidebar\.is-collapsed, \.sidebar-backdrop \{ display: none; \}/);
   let fineHover = true;
@@ -62,7 +63,7 @@ test("collapsed sidebar hover is temporary, touch-safe, and separate from the pe
     assert.equal(toggle.getAttribute("aria-expanded"), "false");
     assert.match(toggle.getAttribute("aria-label"), /Expand sidebar|サイドバーを展開/);
     assert.equal(toggle.title, toggle.getAttribute("aria-label"));
-    assert.equal(sidebar.lastElementChild, toggle, "persistent toggle stays at the bottom of the sidebar");
+    assert.equal(toggle.nextElementSibling, container.querySelector(".account-menu, .header-meta"), "persistent toggle stays immediately above the account area");
     assert.equal(navigation.compareDocumentPosition(toggle) & dom.window.Node.DOCUMENT_POSITION_FOLLOWING, dom.window.Node.DOCUMENT_POSITION_FOLLOWING);
 
     const pointer = async (type, pointerType) => act(async () => {
