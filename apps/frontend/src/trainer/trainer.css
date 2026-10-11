@@ -744,6 +744,8 @@
 .trainer-home .mode-block { grid-template-columns: minmax(0, 1fr); grid-template-rows: 76px minmax(0, 1fr) auto; align-content: stretch; align-items: start; gap: 10px; min-width: 0; min-height: 310px; padding: 14px; overflow: hidden; border-radius: 12px; background: var(--surface); }
 .trainer-home .mode-visual { min-height: 76px; overflow: hidden; }
 .trainer-home .mode-body { align-content: start; gap: 5px; }
+.trainer-home .mode-block.is-ranked .mode-eyebrow,
+.trainer-home .mode-block.is-ranked .mode-body > h3 { justify-self: center; text-align: center; }
 .trainer-home .mode-body h3 { font-size: 17px; line-height: 1.25; overflow-wrap: anywhere; }
 .trainer-home .mode-body p { font-size: 12px; line-height: 1.5; }
 .trainer-home .mode-eyebrow { font-size: 9px; letter-spacing: .13em; }

@@ -80,6 +80,7 @@ test("trainer home presents ranked, Agent and drill modes as compact cards with 
 
 test("trainer home Agent and drill artwork stays bounded on hover and keyboard focus", async () => {
   const css = await readFile(new URL("../src/trainer/trainer.css", import.meta.url), "utf8");
+  assert.match(css, /\.trainer-home \.mode-block\.is-ranked \.mode-eyebrow,\s*\.trainer-home \.mode-block\.is-ranked \.mode-body > h3 \{ justify-self: center; text-align: center; \}/);
   assert.match(css, /\.trainer-home \.agent-lineup \{[^}]*display: flex;[^}]*height: 76px;[^}]*overflow: hidden;/s);
   assert.match(css, /\.trainer-home \.agent-lineup \.agent-table-face \{[^}]*position: static;[^}]*opacity: 1;[^}]*transform: none;[^}]*transition: none;/s);
   assert.match(css, /\.trainer-home \.agent-lineup \.agent-table-face\.is-near,\s*\.trainer-home \.agent-lineup \.agent-table-face\.is-front \{ transform: none; \}/);
