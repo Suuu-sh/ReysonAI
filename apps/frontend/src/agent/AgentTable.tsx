@@ -24,6 +24,7 @@ import { AgentAvatar } from "./AgentAvatar.tsx";
 import { createAgent, makePostflopKit, type PostflopKit } from "./policy.ts";
 import { createSession, finishHand, handSeed, seatPositions, toPoints, type Session } from "./session.ts";
 import { handRecord, loadAgentHands, saveAgentHand, setAgentHandBookmarked } from "./agent-stats.ts";
+import { exactPreflopReview } from "./agent-review.ts";
 import { playerRead } from "./player-read.ts";
 import { PlayStyleCard, PlayStyleDashboard } from "./PlayStyleDashboard.tsx";
 import "./agent.css";
@@ -236,7 +237,8 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
     if (!done || recorded.current === session.handNo) return;
     recorded.current = session.handNo;
     if (humanPos && !waitingMode) {
-      const saved = saveAgentHand(handRecord(result!, tableId, humanPos, Date.now(), { session: historySession.entry, handNo: session.handNo + 1, names: Object.fromEntries(POSITIONS.map(pos => [pos, nameOf(pos)])) }));
+      const reviewDecisions = exactPreflopReview(result!.log, result!.holeCards, humanPos, mw3Client.supportsSpot);
+      const saved = saveAgentHand(handRecord(result!, tableId, humanPos, Date.now(), { session: historySession.entry, handNo: session.handNo + 1, names: Object.fromEntries(POSITIONS.map(pos => [pos, nameOf(pos)])), reviewDecisions }));
       setBookmarked(Boolean(saved.find(hand => hand.session?.id === historySession.entry.id && hand.history?.handNo === session.handNo + 1)?.bookmarked));
     }
     const showdown = Boolean(result!.showdown);

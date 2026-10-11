@@ -5,9 +5,9 @@
 const FORMAT = "reysonai-agent-hands:compact-v1";
 const FLAGS = ["vpip", "pfr", "threeBetOpp", "threeBet", "facedThreeBet", "foldedToThreeBet", "sawFlop", "showdown", "wonShowdown"] as const;
 const OPTIONAL = ["pfBets", "pfCalls", "pfFacing", "pfFolds"] as const;
-const KNOWN_KEYS = new Set<string>(["at", "tableId", "pos", "returnBb", ...FLAGS, ...OPTIONAL, "bookmarked"]);
+const KNOWN_KEYS = new Set<string>(["at", "tableId", "pos", "returnBb", ...FLAGS, ...OPTIONAL]);
 
-type CompactRecord = [number, string, string, number, number, number | null, number | null, number | null, number | null, boolean?];
+type CompactRecord = [number, string, string, number, number, number | null, number | null, number | null, number | null];
 type CompactHistory = { format: typeof FORMAT; records: unknown[] };
 
 function compactRecord(value: unknown): unknown {
@@ -18,7 +18,7 @@ function compactRecord(value: unknown): unknown {
       FLAGS.some(key => typeof record[key] !== "boolean") || OPTIONAL.some(key => record[key] !== undefined && !Number.isFinite(record[key]))) return record;
   const flags = FLAGS.reduce((bits, key, index) => bits | (record[key] ? 1 << index : 0), 0);
   return [record.at as number, record.tableId, record.pos, record.returnBb as number, flags,
-    ...OPTIONAL.map(key => Number.isFinite(record[key]) ? record[key] as number : null), ...(typeof record.bookmarked === "boolean" ? [record.bookmarked] : [])] as CompactRecord;
+    ...OPTIONAL.map(key => Number.isFinite(record[key]) ? record[key] as number : null)] as CompactRecord;
 }
 
 export function encodeAgentHistoryForAccount(value: unknown): unknown {
@@ -34,12 +34,11 @@ function isCompactHistory(value: unknown): value is CompactHistory {
 export function decodeAgentHistory(value: unknown): unknown {
   if (!isCompactHistory(value)) return value;
   return value.records.map(record => {
-    if (!Array.isArray(record) || record.length < 9 || record.length > 10) return record;
+    if (!Array.isArray(record) || record.length !== 9) return record;
     const [at, tableId, pos, returnBb, bits, ...optional] = record;
     const expanded: Record<string, unknown> = { at, tableId, pos, returnBb };
     FLAGS.forEach((key, index) => { expanded[key] = Boolean(Number(bits) & (1 << index)); });
     OPTIONAL.forEach((key, index) => { if (optional[index] !== null) expanded[key] = optional[index]; });
-    if (typeof optional[4] === "boolean") expanded.bookmarked = optional[4];
     return expanded;
   });
 }

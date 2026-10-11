@@ -10,6 +10,7 @@ import { currentHandCategory } from "../src/agent/hand-presentation.ts";
 import { createAgent, makePostflopKit } from "../src/agent/policy.ts";
 import { applyPreflop, handClass, nextActor, preflopOptions, startPreflop } from "../src/agent/preflop.ts";
 import { createSession, finishHand, handSeed, seatPositions, toPoints } from "../src/agent/session.ts";
+import { exactPreflopReview } from "../src/agent/agent-review.ts";
 import { AGENT_TABLES } from "../src/agent/characters.ts";
 import { readFileSync } from "node:fs";
 
@@ -191,13 +192,21 @@ test("review snapshots preserve the exact saved preflop frequencies for the huma
     const action = pending.pending.options[0]?.key;
     if (!action) continue;
     const next = playHand({ seed, human: "BTN", humanActions: [action], agents, postflop: noPostflop });
-    if (next.reviewDecisions?.length) captured = { action, decision: next.reviewDecisions[0] };
+    const decision = exactPreflopReview(next.log, next.holeCards, "BTN")[0];
+    if (decision) captured = { action, decision };
   }
   assert.ok(captured, "fixture includes a saved preflop strategy row");
   assert.equal(captured.decision.street, "preflop");
   assert.equal(captured.decision.action, captured.action);
   assert.ok(captured.decision.policy[captured.action] > 0, "the selected action has its saved frequency");
   assert.ok(Math.abs(Object.values(captured.decision.policy).reduce((sum, value) => sum + value, 0) - 1) < 1e-8);
+});
+
+test("review leaves a no-data fallback explicitly unavailable", () => {
+  const seed = "review-no-policy", pending = playHand({ seed, human: "BTN", agents, postflop: noPostflop });
+  if (pending.status !== "awaiting" || pending.pending.street !== "preflop") return;
+  const next = playHand({ seed, human: "BTN", humanActions: [pending.pending.options[0].key], agents, postflop: noPostflop });
+  assert.deepEqual(exactPreflopReview(next.log, next.holeCards, "BTN", undefined, () => undefined), []);
 });
 
 test("session: button moves each hand and points use 1BB = 100", () => {

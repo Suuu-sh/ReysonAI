@@ -79,7 +79,7 @@ export function setAgentHandBookmarked(selector: { sessionId?: string; handNo?: 
 }
 
 // The human's flags for one finished hand.
-export function handRecord(result: HandResult, tableId: string, pos: string, at = Date.now(), context: { handNo?: number; names?: Record<string, string>; session?: { id: string; startedAt: number } } = {}): AgentHandRecord {
+export function handRecord(result: HandResult, tableId: string, pos: string, at = Date.now(), context: { handNo?: number; names?: Record<string, string>; session?: { id: string; startedAt: number }; reviewDecisions?: AgentHandHistory["reviewDecisions"] } = {}): AgentHandRecord {
   if (result.status !== "done" || !result.returns || !Number.isFinite(result.returns[pos] ?? 0)) throw new Error("Cannot record an unfinished Agent hand");
   const preflop = result.log.filter(entry => entry.street === "preflop");
   const mine = preflop.filter(entry => entry.pos === pos);
@@ -99,7 +99,7 @@ export function handRecord(result: HandResult, tableId: string, pos: string, at 
     ...(context.session ? { session: { ...context.session } } : {}),
     history: {
       version: 1, handNo: context.handNo, names: context.names, reviewPolicyVersion: 1,
-      ...(result.reviewDecisions?.length ? { reviewDecisions: result.reviewDecisions.map(decision => ({ ...decision, policy: { ...decision.policy } })) } : {}),
+      ...(context.reviewDecisions?.length ? { reviewDecisions: context.reviewDecisions.map(decision => ({ ...decision, policy: { ...decision.policy } })) } : {}),
       // Persist only the human's cards and opponents actually exposed at showdown.
       // Folded opponents remain hidden even though the local engine dealt their cards.
       holeCards: Object.fromEntries(Object.entries(result.holeCards).filter(([seat]) =>

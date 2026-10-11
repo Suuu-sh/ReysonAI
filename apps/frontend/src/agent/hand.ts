@@ -61,8 +61,6 @@ export type HandResult = {
   rake?: number;
   pot?: number;
   handRanks?: Record<string, number>; // made-hand category of each seat at showdown (0 high card … 8 straight flush)
-  // Exact saved policy for supported human decision nodes. Frequencies are 0..1, never EV.
-  reviewDecisions?: { logIndex: number; street: string; action: string; policy: Record<string, number>; source?: string }[];
 };
 
 const CATEGORY = ["ハイカード", "ワンペア", "ツーペア", "スリーカード", "ストレート", "フラッシュ", "フルハウス", "フォーカード", "ストレートフラッシュ"];
@@ -123,11 +121,9 @@ export function playHand(setup: HandSetup): HandResult {
   const holeText = Object.fromEntries(Object.entries(hole).map(([pos, cards]) => [pos, cards.map(cardText)]));
   const humanQueue = [...(setup.humanActions ?? [])];
   const log: LogEntry[] = [];
-  const reviewDecisions: NonNullable<HandResult["reviewDecisions"]> = [];
   let decisionIndex = 0;
   const drawFor = () => setup.draw ? setup.draw(decisionIndex++) : seededRandom(seedFor(`${setup.seed}|decision|${decisionIndex++}`))();
-  const result = (extra: Partial<HandResult>): HandResult => ({ status: "done", holeCards: holeText, board: [], log,
-    ...(reviewDecisions.length ? { reviewDecisions: reviewDecisions.map(decision => ({ ...decision, policy: { ...decision.policy } })) } : {}), ...extra });
+  const result = (extra: Partial<HandResult>): HandResult => ({ status: "done", holeCards: holeText, board: [], log, ...extra });
 
   // Preflop.
   let state = startPreflop();
@@ -144,8 +140,6 @@ export function playHand(setup: HandSetup): HandResult {
       const picked = options.find(option => option.key === key);
       if (!picked) throw new Error(`Illegal preflop action ${key} for ${pos}`);
       action = offered.choices.find(choice => choice.action.key === key)?.action ?? { type: key as any, key };
-      if (offered.tableRule !== "no_data") reviewDecisions.push({ logIndex: log.length, street: "preflop", action: key,
-        policy: Object.fromEntries(offered.choices.map(choice => [choice.action.key, choice.freq / 100])), ...(offered.source ? { source: offered.source } : {}) });
     } else {
       const decision = setup.agents.preflop({ pos, hand, cards: hole[pos], offered, random: drawFor() });
       action = decision.action; tableRule = offered.tableRule;
@@ -209,7 +203,6 @@ export function playHand(setup: HandSetup): HandResult {
               pending: { street, pos, options: [{ key: "check" }], pot, board: board.slice(0, cards).map(cardText), toCall: 0, notice: "no_data" } });
             const key = humanQueue.shift()!;
             if (key !== "check") throw new Error(`Illegal ${street} action ${key} for ${pos}`);
-            // This check is a safety fallback because this line has no usable saved policy.
           }
           log.push({ street, pos, action: "check", pot, bets: {} });
         }
@@ -248,9 +241,6 @@ export function playHand(setup: HandSetup): HandResult {
         pot: round(table.pot), board: boardSoFar(cards.length), toCall });
       action = humanQueue.shift()!;
       if (!actions.includes(action)) throw new Error(`Illegal ${street} action ${action} for ${seat}`);
-      const base = kit.defence.baseMix(table, cards, node, hole[seat]);
-      const policy = kit.defence.mix(table, cards, node, hole[seat], base);
-      reviewDecisions.push({ logIndex: log.length, street, action, policy: Object.fromEntries(Object.entries(policy).map(([key, frequency]) => [key, frequency / 100])), source: `postflop:${spot.id}:${street}:${node}` });
     } else {
       action = setup.agents.postflop({ kit, table, street, seat, node, board: cards, hole: hole[seat], line, actions, random: drawFor() }).action;
     }
