@@ -9035,8 +9035,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 17820,
-      "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
+      "bytes": 28899,
+      "sha256": "1af5358720d63ea0f72c4dd7363b8484ff2de07f44bb909f24fa813b6977fac8"
     },
     {
       "path": ".gitignore",
@@ -9125,13 +9125,13 @@
     },
     {
       "path": "apps/frontend/scripts/lib/reviewed-preflop.mjs",
-      "bytes": 11232,
-      "sha256": "2a8f47f783266bb37c98c3865e14182d4b80551a849c3aa1a80d36f0f5ba9230"
+      "bytes": 11311,
+      "sha256": "b95c7235a5be1b666c1270708536182775b4e7ee7b75beb567a1a578a627450b"
     },
     {
       "path": "apps/frontend/scripts/lib/reviewed-stage3.mjs",
-      "bytes": 5130,
-      "sha256": "445d91c9bf8a99c826acf1010d4a895ebb7db4bc8343482bae2335ec3e098da5"
+      "bytes": 5209,
+      "sha256": "d287283ad2c338ef9ad3c08833b0d62a48e9121140de64ae7a33c4cd7b9e6b9c"
     },
     {
       "path": "apps/frontend/scripts/lib/stage3-artifacts.mjs",
@@ -9515,8 +9515,8 @@
     },
     {
       "path": "configs/multiway-preflop-stage2.review.json",
-      "bytes": 543098,
-      "sha256": "22ad5f2a070ff9211dcae84d82cd01e1be9922c235a55843f52e70cc45103ce3"
+      "bytes": 547181,
+      "sha256": "7f5e2d2730e830371aa48bc740d5207d4cb7dfc7b51ee0683fe15f2a03926c0b"
     },
     {
       "path": "configs/multiway-preflop-stage3.json",
@@ -9527,6 +9527,16 @@
       "path": "configs/typescript-policy-source.review.json",
       "bytes": 259714,
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
+    },
+    {
+      "path": "scripts/ci/deployment-scope.mjs",
+      "bytes": 27090,
+      "sha256": "6a957cf9bb50c5f3e7376b46b8436f453b33f49c6362c3078083531c28a9cb20"
+    },
+    {
+      "path": "scripts/ci/deployment-scope.test.mjs",
+      "bytes": 26179,
+      "sha256": "0ea4a667de19104e7b6367a725ed1e8778b79e7b977e83773b41efb14fbf2c55"
     }
   ],
   "archive": {
@@ -9535,7 +9545,7 @@
     "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
     "format": "ustar+gzip-stage3-content-v1"
   },
-  "content_sha256": "6c5aea1b8fb570108d41fdad8eebd37bb3952a0911d27db6bfff94edf7a76399",
+  "content_sha256": "8b6ce6282078cb4c8f649190dbef7dd48eec946c42ab4646bd64bea486963a84",
   "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
   "counts": {
     "catalog": 16132,
@@ -10489,6 +10499,93 @@
         }
       },
       "limitations": "No numerical regeneration, new strategy-quality approval, full acceptance, merge or deployment is claimed. Independent review of the final exact head and CI remain pending."
+    }
+  },
+  "mcp_api_main_source_renewal": {
+    "status": "prepared-pending-independent-source-review",
+    "scope": "Mechanical Stage 3 source identity refresh for the MCP API workflow, durable API Worker config, and its updated Stage 2 source receipt. Historical Stage 3 numerical acceptance, source fingerprint, counts, authorship, evidence, warnings, limitations, archived bytes, and generated SQL remain unchanged. The composed Worker typecheck uses a typecheck-only compatibility declaration for inherited browser Fetch JSON typing without changing receipt-pinned application sources. This records no new numerical or strategy-quality approval.",
+    "changed_sources": [
+      {
+        "path": ".github/workflows/deploy-worker.yml",
+        "before": {
+          "path": ".github/workflows/deploy-worker.yml",
+          "bytes": 17820,
+          "sha256": "5a7804310fbee8aa0b781bdc9b37f8c6fc6319c8f21acfe94bcda943a6e08318"
+        },
+        "after": {
+          "path": ".github/workflows/deploy-worker.yml",
+          "bytes": 18213,
+          "sha256": "3a9243cb6d964fb0201a5d51c6bd31a65c3d4352dea59e3a6d07345d3dcb7df9"
+        }
+      },
+      {
+        "path": "configs/multiway-preflop-stage2.review.json",
+        "before": {
+          "path": "configs/multiway-preflop-stage2.review.json",
+          "bytes": 543098,
+          "sha256": "22ad5f2a070ff9211dcae84d82cd01e1be9922c235a55843f52e70cc45103ce3"
+        },
+        "after": {
+          "path": "configs/multiway-preflop-stage2.review.json",
+          "bytes": 544995,
+          "sha256": "05ffaf77d5aad94c88a1bb5dc94a76d7e2ec3db92b6f5a2e98bae1bbfdf6c450"
+        }
+      }
+    ],
+    "checks": {
+      "canonical_collector": "apps/frontend/scripts/lib/reviewed-stage3.mjs reviewedStage3SourcePaths/stage3FileRecord",
+      "source_records": 100,
+      "unchanged_source_records": 98,
+      "numerical_artifacts_unchanged": true,
+      "archive_record_unchanged": true,
+      "executable_sql_changed": false
+    }
+  },
+  "ci_efficiency_source_renewal": {
+    "status": "mechanically-rebound-pending-exact-head-ci-and-independent-review",
+    "base_candidate_sha": "0f63a809656c5357ef4048a3e5bfeaf276a6eb4d",
+    "scope": "Mechanical Stage 3 source identity refresh for the CI classifier/deployment workflow and updated Stage 2 receipt. It preserves historical Stage 3 numerical acceptance and grants no data reapproval or production authorization.",
+    "changed_source_paths": [
+      ".github/workflows/deploy-worker.yml",
+      "apps/frontend/scripts/lib/reviewed-preflop.mjs",
+      "apps/frontend/scripts/lib/reviewed-stage3.mjs",
+      "configs/multiway-preflop-stage2.review.json",
+      "scripts/ci/deployment-scope.mjs",
+      "scripts/ci/deployment-scope.test.mjs"
+    ],
+    "changed_delivery_code_paths": [],
+    "source_records": {
+      "stage2_count": 198,
+      "stage2_receipt": {
+        "path": "configs/multiway-preflop-stage2.review.json",
+        "bytes": 547181,
+        "sha256": "d0da30bde57aa76e530dc5f84abfbd5c8448864a7921d6d11c902fec17bd04c0"
+      },
+      "stage3_count": 102,
+      "stage3_content_sha256": "30a7bb82224abc247e1d3fd8dbf1d2dc3105d77b9a9864dc5fdc6187b83c715d",
+      "stage3_deploy_workflow": {
+        "path": ".github/workflows/deploy-worker.yml",
+        "bytes": 28655,
+        "sha256": "133d91a92bb000619d69af5278cbf74be135e9bdcf371eb125d549f21ee69c12"
+      }
+    },
+    "preserved": {
+      "stage2_artifacts_archive_fingerprint_counts_review": {
+        "artifacts": true,
+        "archive": true,
+        "source_fingerprint": true,
+        "counts": true,
+        "review": true
+      },
+      "stage3_artifacts_archive_fingerprint_counts_review": {
+        "artifacts": true,
+        "archive": true,
+        "source_fingerprint": true,
+        "counts": true,
+        "review": true
+      },
+      "no_strategy_data_regeneration": true,
+      "no_production_d1_access": true
     }
   }
 }

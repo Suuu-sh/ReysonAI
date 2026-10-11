@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "moduleSuffixes": [".worker", ""],
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "esModuleInterop": true,
+    "types": [],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ]
+  },
+  "include": [
+    "../backend/src/**/*.ts",
+    "../mcp/src/**/*.ts",
+    "./worker-response-json-compat.d.ts",
+    "../mcp/worker-configuration.d.ts",
+    "../mcp/node_modules/@cloudflare/workers-types/index.d.ts"
+  ]
+}

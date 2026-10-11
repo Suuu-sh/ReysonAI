@@ -6,6 +6,9 @@
   "workers_dev": false,
   "durable_objects": {"bindings": [{"name": "FASTFOLD_RUNTIME", "class_name": "FastFoldRuntime"}]},
   "migrations": [{"tag": "fastfold-sqlite-v1", "new_sqlite_classes": ["FastFoldRuntime"]}],
+  "kv_namespaces": [
+    { "binding": "OAUTH_KV", "id": "7361b0416fd648c0848b3692face14b5" }
+  ],
   "routes": [{ "pattern": "api.reysonai.com", "custom_domain": true }],
   "r2_buckets": [
     {
@@ -32,6 +35,10 @@
     "FASTFOLD_ENABLED": "true",
     "AUTH_APP_URL": "https://app.reysonai.com",
     "GOOGLE_REDIRECT_URI": "https://api.reysonai.com/v1/account/google/callback",
-    "GOOGLE_CLIENT_ID": "371026940937-n07f7kfnjqdljjrg8phqgidadas875n3.apps.googleusercontent.com"
+    "GOOGLE_CLIENT_ID": "371026940937-n07f7kfnjqdljjrg8phqgidadas875n3.apps.googleusercontent.com",
+    "MCP_ENABLED": "true",
+    "MCP_ACCESS_MODE": "authenticated_free",
+    "MCP_ORIGIN": "https://api.reysonai.com",
+    "MCP_ALLOWED_ORIGINS": "https://app.reysonai.com"
   }
 }

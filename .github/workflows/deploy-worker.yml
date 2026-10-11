@@ -17,6 +17,7 @@ on:
       - 'apps/frontend/package-lock.json'
       - 'apps/frontend/vite.config.*'
       - 'apps/frontend/tsconfig*.json'
+      - 'apps/frontend/worker-response-json-compat.d.ts'
       - 'apps/frontend/wrangler.jsonc'
       - 'apps/frontend/tests/**'
       - 'apps/backend/migrations/0003_preflop.sql'
@@ -24,6 +25,10 @@ on:
       - 'apps/backend/src/**'
       - 'apps/backend/tests/**'
       - 'apps/backend/package.json'
+      - 'apps/backend/package-lock.json'
+      - 'apps/mcp/src/**'
+      - 'apps/mcp/package.json'
+      - 'apps/mcp/package-lock.json'
       - 'apps/backend/migrations/0009_ranked.sql'
       - 'apps/backend/migrations/0010_fastfold.sql'
       - 'apps/backend/migrations/0011_human_ranked.sql'
@@ -32,7 +37,8 @@ on:
       - 'apps/shared/**'
       - 'configs/**'
       - 'artifacts/preflop/**'
-      - 'artifacts/postflop/mw3-*'
+      - 'artifacts/postflop/**'
+      - 'scripts/ci/**'
       - 'apps/backend/scripts/sql/mw3-schema.sql'
       - '.gitattributes'
       - '.github/workflows/deploy-worker.yml'
@@ -41,19 +47,113 @@ on:
       - development
       - main
       - codex/fix/pr44_frozen_loading/01a11189
+      - codex/mcp-api-main-20261010
+      - codex/backend-ddd-main-20261010
   workflow_dispatch:
+    inputs:
+      force_data_release:
+        description: 'Run all reviewed D1 data steps after a failed/unknown release or an intentional republish.'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
-# Keep the running deployment intact; only the newest pending run is retained.
+# Never cancel a production deployment; replace only stale pull-request verification.
 concurrency:
   group: ${{ github.event_name == 'pull_request' && format('reysonai-preflop-pr-{0}', github.event.pull_request.number) || 'reysonai-frontend-production' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  scope:
+    name: Classify reviewed code and data inputs
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      lineage_known: ${{ steps.scope.outputs.lineage_known }}
+      release_safe: ${{ steps.scope.outputs.release_safe }}
+      verify_data: ${{ steps.scope.outputs.verify_data }}
+      verify_preflop: ${{ steps.scope.outputs.verify_preflop }}
+      verify_postflop: ${{ steps.scope.outputs.verify_postflop }}
+      verify_mw3: ${{ steps.scope.outputs.verify_mw3 }}
+      verify_backend: ${{ steps.scope.outputs.verify_backend }}
+      verify_frontend: ${{ steps.scope.outputs.verify_frontend }}
+      needs_frontend_deps: ${{ steps.scope.outputs.needs_frontend_deps }}
+      needs_mcp_deps: ${{ steps.scope.outputs.needs_mcp_deps }}
+      deploy_api: ${{ steps.scope.outputs.deploy_api }}
+      deploy_frontend: ${{ steps.scope.outputs.deploy_frontend }}
+      data_release: ${{ steps.scope.outputs.data_release }}
+      import_preflop: ${{ steps.scope.outputs.import_preflop }}
+      publish_postflop: ${{ steps.scope.outputs.publish_postflop }}
+      import_mw3: ${{ steps.scope.outputs.import_mw3 }}
+      apply_ranked_schema: ${{ steps.scope.outputs.apply_ranked_schema }}
+      apply_fastfold_schema: ${{ steps.scope.outputs.apply_fastfold_schema }}
+      apply_human_schema: ${{ steps.scope.outputs.apply_human_schema }}
+      apply_profile_schema: ${{ steps.scope.outputs.apply_profile_schema }}
+      apply_mw3_schema: ${{ steps.scope.outputs.apply_mw3_schema }}
+      mw3_live: ${{ steps.scope.outputs.mw3_live }}
+      fastfold_predeploy: ${{ steps.scope.outputs.fastfold_predeploy }}
+      fastfold_postimport: ${{ steps.scope.outputs.fastfold_postimport }}
+      mode: ${{ steps.scope.outputs.mode }}
+      reason: ${{ steps.scope.outputs.reason }}
+      baseline_run_id: ${{ steps.scope.outputs.baseline_run_id }}
+      baseline_sha: ${{ steps.scope.outputs.baseline_sha }}
+      input_hashes: ${{ steps.scope.outputs.input_hashes }}
+    steps:
+      - name: Check out commit metadata and pointers only
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          lfs: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.20.0'
+
+      - name: Classify code and data against the last successful production release
+        id: scope
+        run: node scripts/ci/deployment-scope.mjs
+
+      - name: Test deployment scope decisions with synthetic Git data
+        run: node --test scripts/ci/deployment-scope.test.mjs
+
   verify:
     name: Verify reviewed preflop snapshot
+    needs: scope
+    if: always()
+    outputs:
+      lineage_known: ${{ needs.scope.outputs.lineage_known }}
+      release_safe: ${{ needs.scope.outputs.release_safe }}
+      verify_data: ${{ needs.scope.outputs.verify_data }}
+      verify_preflop: ${{ needs.scope.outputs.verify_preflop }}
+      verify_postflop: ${{ needs.scope.outputs.verify_postflop }}
+      verify_mw3: ${{ needs.scope.outputs.verify_mw3 }}
+      verify_backend: ${{ needs.scope.outputs.verify_backend }}
+      verify_frontend: ${{ needs.scope.outputs.verify_frontend }}
+      needs_frontend_deps: ${{ needs.scope.outputs.needs_frontend_deps }}
+      needs_mcp_deps: ${{ needs.scope.outputs.needs_mcp_deps }}
+      deploy_api: ${{ needs.scope.outputs.deploy_api }}
+      deploy_frontend: ${{ needs.scope.outputs.deploy_frontend }}
+      data_release: ${{ needs.scope.outputs.data_release }}
+      import_preflop: ${{ needs.scope.outputs.import_preflop }}
+      publish_postflop: ${{ needs.scope.outputs.publish_postflop }}
+      import_mw3: ${{ needs.scope.outputs.import_mw3 }}
+      apply_ranked_schema: ${{ needs.scope.outputs.apply_ranked_schema }}
+      apply_fastfold_schema: ${{ needs.scope.outputs.apply_fastfold_schema }}
+      apply_human_schema: ${{ needs.scope.outputs.apply_human_schema }}
+      apply_profile_schema: ${{ needs.scope.outputs.apply_profile_schema }}
+      apply_mw3_schema: ${{ needs.scope.outputs.apply_mw3_schema }}
+      mw3_live: ${{ needs.scope.outputs.mw3_live }}
+      fastfold_predeploy: ${{ needs.scope.outputs.fastfold_predeploy }}
+      fastfold_postimport: ${{ needs.scope.outputs.fastfold_postimport }}
+      mode: ${{ needs.scope.outputs.mode }}
+      reason: ${{ needs.scope.outputs.reason }}
+      baseline_run_id: ${{ needs.scope.outputs.baseline_run_id }}
+      baseline_sha: ${{ needs.scope.outputs.baseline_sha }}
+      input_hashes: ${{ needs.scope.outputs.input_hashes }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
@@ -64,29 +164,65 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=2048
       WRANGLER_SEND_METRICS: 'false'
     steps:
+      - name: Require successful scope classification
+        if: needs.scope.result != 'success'
+        working-directory: .
+        run: exit 1
+
       - name: Check out exact workflow revision
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          fetch-depth: 0 # MW3 saved provenance verifies historical source trees.
+          fetch-depth: ${{ (needs.scope.outputs.verify_preflop == 'true' || needs.scope.outputs.verify_postflop == 'true' || needs.scope.outputs.verify_mw3 == 'true') && '0' || '1' }}
           persist-credentials: false
-          lfs: true
+          lfs: false
 
       - name: Set up Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '22.20.0'
           cache: npm
-          cache-dependency-path: apps/frontend/package-lock.json
+          cache-dependency-path: |
+            apps/frontend/package-lock.json
+            apps/mcp/package-lock.json
 
       - name: Install dependencies
+        if: needs.scope.outputs.needs_frontend_deps == 'true'
         run: npm ci
 
+      - name: Install MCP runtime dependencies for backend verification
+        if: needs.scope.outputs.verify_backend == 'true'
+        working-directory: apps/mcp
+        run: npm ci --ignore-scripts
+
       - name: Restore exact reviewed Git LFS payload
+        if: needs.scope.outputs.verify_preflop == 'true' || needs.scope.outputs.verify_postflop == 'true' || needs.scope.outputs.verify_mw3 == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          node scripts/restore-reviewed-preflop.mjs
-          node scripts/restore-reviewed-stage3.mjs
+          set -euo pipefail
+          auth="$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 | tr -d '\n')"
+          git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic $auth"
+          lfs_status=0
+          if [[ "${{ needs.scope.outputs.verify_preflop }}" == 'true' || "${{ needs.scope.outputs.verify_postflop }}" == 'true' ]]; then
+            git lfs pull --include='artifacts/preflop/**,artifacts/postflop/**' || lfs_status=$?
+          else
+            git lfs pull --include='artifacts/postflop/mw3-*' || lfs_status=$?
+          fi
+          if ! git config --local --unset-all http.https://github.com/.extraheader; then
+            echo '::error::Could not remove temporary GitHub checkout credentials'
+            exit 1
+          fi
+          unset GITHUB_TOKEN auth
+          if [[ "$lfs_status" -ne 0 ]]; then
+            exit "$lfs_status"
+          fi
+          if [[ "${{ needs.scope.outputs.verify_preflop }}" == 'true' || "${{ needs.scope.outputs.verify_postflop }}" == 'true' ]]; then
+            node scripts/restore-reviewed-preflop.mjs
+            node scripts/restore-reviewed-stage3.mjs
+          fi
 
       - name: Verify immutable MW3 production contract and exact accepted SQL
+        if: needs.scope.outputs.verify_mw3 == 'true'
         run: |
           node --test tests/mw3-production-delivery.test.mjs
           node scripts/mw3-production-delivery.mjs verify
@@ -94,23 +230,29 @@ jobs:
       # Authoring and independent AI review happen locally, before commit.
       # CI must never generate strategies or update the review receipt.
       - name: Verify reviewed artifact and source hashes; serialize preflop only
+        if: needs.scope.outputs.verify_preflop == 'true'
         run: node scripts/verify-reviewed-preflop.mjs --out .local/reviewed-preflop
 
       - name: Check continuation invariants and unchanged HU inputs
+        if: needs.scope.outputs.verify_preflop == 'true' || needs.scope.outputs.verify_postflop == 'true'
         run: node --test --test-force-exit --test-concurrency=1 tests/continuation-*.test.mjs tests/stage3-*.test.mjs tests/reviewed-preflop.test.mjs tests/preflop-delivery.test.mjs tests/preflop-workflow.test.mjs tests/ranked-workflow.test.mjs tests/preflop-local-d1.test.mjs tests/reviewed-preflop-archive.test.mjs tests/detailed-reasons.test.mjs
 
       - name: Verify authoritative ranked service without live credentials
+        if: needs.scope.outputs.verify_backend == 'true'
         working-directory: apps/backend
         run: node --experimental-strip-types --test tests/ranked.test.mjs
 
       - name: Verify continuous FastFold authentication, replay and atomic settlement
+        if: needs.scope.outputs.verify_backend == 'true'
         working-directory: apps/backend
         run: npx --yes --package=wrangler@4.147.0 --call 'node scripts/verify-fastfold-local-runtime.mjs --wrangler "$(command -v wrangler)"'
 
       - name: Verify local D1 roundtrip, idempotency, isolation and failed-import rollback
+        if: needs.scope.outputs.verify_preflop == 'true'
         run: node scripts/verify-preflop-local-d1.mjs --sql .local/reviewed-preflop/preflop.sql --manifest .local/reviewed-preflop/delivery.json
 
       - name: Typecheck and build compatible client
+        if: needs.scope.outputs.verify_frontend == 'true'
         run: |
           npm run typecheck
           npm run build
@@ -121,9 +263,11 @@ jobs:
       # from scripts/data/postflop-ai/profiles too. No provider runs in CI.
       # Spot/profile-scoped SQL preserves every unmentioned history and profile.
       - name: Check postflop policy delivery
+        if: needs.scope.outputs.verify_postflop == 'true'
         run: node scripts/publish-d1.mjs --only postflop --require-all --out .local/postflop.sql
 
       - name: Retain exact validated delivery SQL
+        if: needs.scope.outputs.verify_preflop == 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           # One name per commit (overwritten on re-runs) so "re-run failed jobs" finds it.
@@ -136,10 +280,24 @@ jobs:
           include-hidden-files: true
           retention-days: 30
 
+      - name: Require proven release lineage before production changes
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && needs.scope.outputs.release_safe != 'true'
+        working-directory: .
+        run: |
+          echo "::error::Production release lineage is unknown. Review the full verification above, then use the explicit force_data_release workflow input for recovery."
+          exit 1
+
   deploy:
     name: Deploy authoritative ranked API, compatible client and reviewed preflop data
     needs: verify
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      github.event_name != 'pull_request' &&
+      github.run_attempt == 1 &&
+      needs.verify.outputs.release_safe == 'true' &&
+      (needs.verify.outputs.data_release == 'true' ||
+       needs.verify.outputs.deploy_api == 'true' ||
+       needs.verify.outputs.deploy_frontend == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
@@ -165,32 +323,69 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          fetch-depth: 0 # Same exact saved-source verification as the verify job.
+          fetch-depth: ${{ (needs.verify.outputs.import_preflop == 'true' || needs.verify.outputs.publish_postflop == 'true' || needs.verify.outputs.import_mw3 == 'true') && '0' || '1' }}
           persist-credentials: false
-          lfs: true
+          lfs: false
+
+      - name: Prepare deployment log directory
+        run: |
+          mkdir -p .local
+          test -d .local && test -w .local
 
       - name: Set up Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '22.20.0'
           cache: npm
-          cache-dependency-path: apps/frontend/package-lock.json
+          cache-dependency-path: |
+            apps/frontend/package-lock.json
+            apps/mcp/package-lock.json
 
       - name: Install dependencies
+        if: needs.verify.outputs.needs_frontend_deps == 'true'
         run: npm ci
 
+      - name: Install MCP runtime dependencies for the composed API Worker
+        if: needs.verify.outputs.needs_mcp_deps == 'true' || needs.verify.outputs.deploy_api == 'true'
+        working-directory: apps/mcp
+        run: npm ci --ignore-scripts
+
       - name: Restore exact reviewed Git LFS payload
+        if: needs.verify.outputs.import_preflop == 'true' || needs.verify.outputs.publish_postflop == 'true' || needs.verify.outputs.import_mw3 == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          node scripts/restore-reviewed-preflop.mjs
-          node scripts/restore-reviewed-stage3.mjs
+          set -euo pipefail
+          auth="$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 | tr -d '\n')"
+          git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic $auth"
+          lfs_status=0
+          if [[ "${{ needs.verify.outputs.import_preflop }}" == 'true' || "${{ needs.verify.outputs.publish_postflop }}" == 'true' ]]; then
+            git lfs pull --include='artifacts/preflop/**,artifacts/postflop/**' || lfs_status=$?
+          else
+            git lfs pull --include='artifacts/postflop/mw3-*' || lfs_status=$?
+          fi
+          if ! git config --local --unset-all http.https://github.com/.extraheader; then
+            echo '::error::Could not remove temporary GitHub checkout credentials'
+            exit 1
+          fi
+          unset GITHUB_TOKEN auth
+          if [[ "$lfs_status" -ne 0 ]]; then
+            exit "$lfs_status"
+          fi
+          if [[ "${{ needs.verify.outputs.import_preflop }}" == 'true' || "${{ needs.verify.outputs.publish_postflop }}" == 'true' ]]; then
+            node scripts/restore-reviewed-preflop.mjs
+            node scripts/restore-reviewed-stage3.mjs
+          fi
 
       - name: Fetch this run's validated delivery SQL
+        if: needs.verify.outputs.import_preflop == 'true'
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: reviewed-preflop-${{ github.sha }}
           path: apps/frontend/.local/reviewed-preflop
 
       - name: Recheck delivery against this exact checkout
+        if: needs.verify.outputs.import_preflop == 'true'
         env:
           NODE_OPTIONS: --max-old-space-size=2048
         run: node scripts/verify-reviewed-preflop.mjs --check-bundle --out .local/reviewed-preflop
@@ -198,6 +393,7 @@ jobs:
       # Add only accepted immutable MW3 hashes. Verify all current rows before
       # the first write and all headers/parts before either runtime is activated.
       - name: Import exact reviewed MW3 data and require full D1 readback
+        if: needs.verify.outputs.import_mw3 == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -208,6 +404,7 @@ jobs:
       # Execute only the reviewed additive ranked schema, never all pending
       # account/postflop migrations. Re-running a main deployment is safe.
       - name: Apply exact ranked schema
+        if: needs.verify.outputs.apply_ranked_schema == 'true'
         working-directory: apps/backend
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -217,6 +414,7 @@ jobs:
 
       # Additive only: never run all pending account/postflop migrations.
       - name: Apply exact FastFold schema
+        if: needs.verify.outputs.apply_fastfold_schema == 'true'
         working-directory: apps/backend
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -226,6 +424,7 @@ jobs:
 
       # Independent human season: apply only this reviewed additive schema.
       - name: Apply exact six-human ranked schema
+        if: needs.verify.outputs.apply_human_schema == 'true'
         working-directory: apps/backend
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -235,6 +434,7 @@ jobs:
 
       # Additive profile storage only; never apply all pending migrations.
       - name: Apply exact postflop profile schema
+        if: needs.verify.outputs.apply_profile_schema == 'true'
         working-directory: apps/backend
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -243,6 +443,7 @@ jobs:
         run: npx --yes wrangler@4.147.0 d1 execute reysonai --remote --config wrangler.jsonc --file migrations/0012_postflop_profile_policies.sql --yes
 
       - name: Deploy ranked API before enabling the client
+        if: needs.verify.outputs.deploy_api == 'true'
         working-directory: apps/backend
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -253,6 +454,7 @@ jobs:
           node --input-type=module -e "import { readFileSync } from 'node:fs'; if (!/Current Version ID:\\s*[0-9a-f-]{36}/i.test(readFileSync('../frontend/.local/ranked-api-deployment.log', 'utf8'))) throw new Error('No positive ranked API deployment confirmation; do not enable client');"
 
       - name: Require live authoritative ranked readiness
+        if: needs.verify.outputs.fastfold_predeploy == 'true'
         run: |
           node --input-type=module <<'NODE'
           const origin = 'https://app.reysonai.com';
@@ -302,13 +504,16 @@ jobs:
           NODE
 
       - name: Require live FastFold API and compatible published data before client
+        if: needs.verify.outputs.fastfold_predeploy == 'true'
         working-directory: apps/backend
         run: node --experimental-strip-types scripts/verify-fastfold-readiness.mjs --configured --predeploy-compatible
 
       - name: Build
+        if: needs.verify.outputs.deploy_frontend == 'true'
         run: npm run build
 
       - name: Deploy Worker
+        if: needs.verify.outputs.deploy_frontend == 'true'
         # npx's cache leaves reviewed package/lockfile bytes unchanged; the
         # Wrangler action installs into this package when Wrangler is absent.
         env:
@@ -324,6 +529,7 @@ jobs:
       # One file contains ONLY 0003's idempotent schema + the preflop snapshot;
       # never invoke bare publish:d1, migrations apply, or whole-DB rollback.
       - name: Import reviewed preflop snapshot into D1
+        if: needs.verify.outputs.import_preflop == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -335,12 +541,14 @@ jobs:
       # The new client has already passed compatible-data integrity checks and
       # supports both previous and compact reason formats.
       - name: Require live FastFold release gate after reviewed import
+        if: needs.verify.outputs.fastfold_postimport == 'true'
         working-directory: apps/backend
         run: node --experimental-strip-types scripts/verify-fastfold-readiness.mjs --configured
 
       # Tracked postflop policies depend on the exact reviewed preflop snapshot.
       # Publish only after its import and strict source-identity gate succeed.
       - name: Publish postflop policies into D1
+        if: needs.verify.outputs.publish_postflop == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -351,12 +559,13 @@ jobs:
       # 32 pinned HTTP manifests and every part; transport availability alone
       # does not establish that the browser's source identity is compatible.
       - name: Require live MW3 payloads and actual consumer source identities
+        if: needs.verify.outputs.mw3_live == 'true'
         env:
           NODE_OPTIONS: --max-old-space-size=2048
         run: node scripts/mw3-production-delivery.mjs live
 
       - name: Retain MW3 delivery plan, recovery reference and exact outcomes
-        if: always()
+        if: always() && needs.verify.outputs.import_mw3 == 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: mw3-delivery-outcome-${{ github.sha }}-${{ github.run_attempt }}
@@ -366,7 +575,7 @@ jobs:
           retention-days: 30
 
       - name: Retain preflop recovery reference and import outcome
-        if: always()
+        if: always() && needs.verify.outputs.import_preflop == 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: preflop-delivery-outcome-${{ github.sha }}-${{ github.run_attempt }}
