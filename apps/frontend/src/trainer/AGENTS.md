@@ -3,6 +3,7 @@
 ## Trainer home compact cards (2026-10-11)
 - The Trainer home uses three concise equal-width horizontal mode cards on desktop (Ranked Human FastFold β, Agent, Drills), reflowing to two columns and then one column without phone overflow; primary/secondary controls remain accessible at 44px or larger.
 - Show only the server-confirmed current Ranked tier and rating on this home. Do not render the seven-tier ladder or infer rank; preserve the separate leaderboard and gameplay rank tiers.
+- Keep all mode artwork vertically aligned and bounded. On Trainer home only, show three centered Agent faces with labels that stay visible and static; hover and keyboard focus must not fan, enlarge, clip or glow them. Keep the Drill deck inside the same compact visual row.
 - Keep readiness/auth/resume state and four-language copy truthful. This home-only layout direction does not change the ranked service-site preview, gameplay, scoring, auth, or history.
 
 - Scope (2026-09-27): a preflop drill over the saved RFI (`opening-ranges.json`) and open-response (`preflop-ranges.json`) spots only. Grade from the saved frequencies; never invent a strategy or reuse another spot's frequencies. Flop drills wait for the postflop engine work.

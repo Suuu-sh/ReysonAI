@@ -1,5 +1,6 @@
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -75,6 +76,19 @@ test("trainer home presents ranked, Agent and drill modes as compact cards with 
   assert.match(html, /Watch|観戦/);
   assert.match(html, /Open drills|ドリルを開く/);
   assert.match(html, /New drill|新しいドリル/);
+});
+
+test("trainer home Agent and drill artwork stays bounded on hover and keyboard focus", async () => {
+  const css = await readFile(new URL("../src/trainer/trainer.css", import.meta.url), "utf8");
+  assert.match(css, /\.trainer-home \.agent-lineup \{[^}]*display: flex;[^}]*height: 76px;[^}]*overflow: hidden;/s);
+  assert.match(css, /\.trainer-home \.agent-lineup \.agent-table-face \{[^}]*position: static;[^}]*opacity: 1;[^}]*transform: none;[^}]*transition: none;/s);
+  assert.match(css, /\.trainer-home \.agent-lineup \.agent-table-face\.is-near,\s*\.trainer-home \.agent-lineup \.agent-table-face\.is-front \{ transform: none; \}/);
+  assert.match(css, /\.trainer-home \.agent-lineup \.agent-table-face:not\(\.is-near\):not\(\.is-front\) \{ display: none; \}/);
+  assert.match(css, /\.trainer-home \.mode-block\.is-agent:is\(:hover, :focus-within\) \.agent-lineup \.agent-table-face,\s*\.trainer-home \.mode-block\.is-agent:is\(:hover, :focus-within\) \.agent-lineup \.agent-table-face\.is-front \{[^}]*transform: none;[^}]*animation: none;/s);
+  assert.match(css, /\.trainer-home \.agent-lineup \.agent-table-face\.is-front > :first-child,\s*\.trainer-home \.mode-block\.is-agent:is\(:hover, :focus-within\) \.agent-lineup \.agent-table-face\.is-front > :first-child \{ filter: none; animation: none; \}/);
+  assert.match(css, /\.trainer-home \.drill-deck-card \{ box-sizing: border-box; width: 44px; height: 56px;[^}]*transition: none; \}/);
+  assert.match(css, /\.trainer-home \.drill-deck-card \{[^}]*transform: translate\(calc\(-50% \+ var\(--k\) \* 14px\), -50%\) rotate\(calc\(var\(--k\) \* 3deg\)\)/s);
+  assert.match(css, /\.trainer-home \.mode-block\.is-drills:is\(:hover, :focus-within\) \.drill-deck-card \{ transform: translate\(calc\(-50% \+ var\(--k\) \* 14px\), -50%\) rotate\(calc\(var\(--k\) \* 3deg\)\); box-shadow: none; \}/);
 });
 
 test("sessions page keeps its session-total stats", () => {
