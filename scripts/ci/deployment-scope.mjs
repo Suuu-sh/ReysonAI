@@ -12,6 +12,50 @@ const MAIN_DEPLOY_EVENTS = new Set(['push', 'workflow_dispatch']);
 const RUNS_PER_PAGE = 100;
 const MAX_RUN_HISTORY_RESULTS = 1000;
 const MAX_RUN_HISTORY_PAGES = MAX_RUN_HISTORY_RESULTS / RUNS_PER_PAGE;
+// Recovery trusts only the reviewed workflow versions whose step provenance is
+// understood. These are workflow Git blob IDs, never run- or commit-SHA bypasses.
+const CODE_ONLY_RECOVERY_WORKFLOW_BLOB_SHA = 'd88a7f2730db03150e1f1423e2505c69ec60f157';
+const RECOVERY_WORKFLOW_BLOB_SHAS = new Set([
+  '2646a37763da1b7756e6ab6664ac4336366130514',
+  '2dccb006451c6491fbb9906445d4effa0571248b',
+  CODE_ONLY_RECOVERY_WORKFLOW_BLOB_SHA,
+]);
+const REMOTE_DATA_OPERATION_STEP_NAMES = [
+  'Import exact reviewed MW3 data and require full D1 readback',
+  'Apply exact ranked schema',
+  'Apply exact FastFold schema',
+  'Apply exact six-human ranked schema',
+  'Apply exact postflop profile schema',
+  'Require live authoritative ranked readiness',
+  'Require live FastFold API and compatible published data before client',
+  'Import reviewed preflop snapshot into D1',
+  'Require live FastFold release gate after reviewed import',
+  'Publish postflop policies into D1',
+  'Require live MW3 payloads and actual consumer source identities',
+];
+const RECOVERY_SAFE_JOB_NAMES = new Set([
+  'Classify reviewed code and data inputs',
+  'Verify reviewed preflop snapshot',
+  DEPLOY_JOB_NAME,
+]);
+const FULL_DEPLOYMENT_STEP_NAMES = [
+  'Validate deployment secrets',
+  'Restore exact reviewed Git LFS payload',
+  'Import exact reviewed MW3 data and require full D1 readback',
+  'Apply exact ranked schema',
+  'Apply exact FastFold schema',
+  'Apply exact six-human ranked schema',
+  'Apply exact postflop profile schema',
+  'Deploy ranked API before enabling the client',
+  'Require live authoritative ranked readiness',
+  'Require live FastFold API and compatible published data before client',
+  'Build',
+  'Deploy Worker',
+  'Import reviewed preflop snapshot into D1',
+  'Require live FastFold release gate after reviewed import',
+  'Publish postflop policies into D1',
+  'Require live MW3 payloads and actual consumer source identities',
+];
 const DATA_ROOTS = ['artifacts/', 'configs/', 'apps/frontend/scripts/data/'];
 const REVIEW_RECEIPTS = [
   'configs/multiway-preflop-stage2.review.json',
@@ -388,6 +432,10 @@ function isForceInput(event) {
   return event?.inputs?.force_data_release === true || event?.inputs?.force_data_release === 'true';
 }
 
+function isCodeOnlyRecoveryInput(event) {
+  return event?.inputs?.code_only_recovery === true || event?.inputs?.code_only_recovery === 'true';
+}
+
 function githubRepository(value) {
   if (typeof value !== 'string' || !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(value)) throw new Error('invalid GITHUB_REPOSITORY');
   return value;
@@ -449,18 +497,359 @@ export async function latestDeploymentRun({ repository, currentRunId, fetcher = 
   return null;
 }
 
-export async function classifyEvent({ repoRoot, eventName, ref, sha, repository, runId, runAttempt = '1', event, fetcher = fetch }) {
+async function recoveryJson(fetcher, url, label) {
+  const response = await fetcher(url, {
+    headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'ReysonAI-code-only-recovery' },
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!response?.ok) throw new Error(label + ' unavailable (' + (response?.status ?? 'no response') + ')');
+  const body = await response.json();
+  if (!body || typeof body !== 'object' || Array.isArray(body)) throw new Error(label + ' response is malformed');
+  return body;
+}
+
+function assertRecoveryRunRecord(run, workflowId) {
+  if (!run || !Number.isSafeInteger(run.id) || run.id < 1 ||
+      !Number.isSafeInteger(run.run_number) || run.run_number < 1 ||
+      !Number.isSafeInteger(run.run_attempt) || run.run_attempt < 1 ||
+      !SHA_RE.test(run.head_sha ?? '') || run.workflow_id !== workflowId ||
+      !isDeploymentWorkflowPath(run.path) || run.head_branch !== 'main' ||
+      !MAIN_DEPLOY_EVENTS.has(run.event) || typeof run.status !== 'string') {
+    throw new Error('Actions history contains malformed or unsupported deployment workflow provenance');
+  }
+  if (run.status === 'completed' &&
+      !['success', 'failure', 'cancelled', 'timed_out', 'action_required', 'neutral', 'skipped', 'startup_failure'].includes(run.conclusion)) {
+    throw new Error('Actions history contains an unknown completed workflow conclusion');
+  }
+}
+
+async function recoveryWorkflowRuns({ fetcher, repository }) {
+  const runs = [];
+  let expectedTotal = null;
+  let complete = false;
+  for (let page = 1; page <= MAX_RUN_HISTORY_PAGES; page += 1) {
+    const url = 'https://api.github.com/repos/' + repository + '/actions/workflows/' +
+      encodeURIComponent(WORKFLOW_ID) + '/runs?branch=main&per_page=' + RUNS_PER_PAGE + '&page=' + page;
+    const body = await recoveryJson(fetcher, url, 'GitHub Actions deployment history');
+    if (!Array.isArray(body.workflow_runs) || !Number.isSafeInteger(body.total_count) || body.total_count < 0) {
+      throw new Error('GitHub Actions deployment history response is malformed');
+    }
+    if (body.total_count >= MAX_RUN_HISTORY_RESULTS) {
+      throw new Error('GitHub Actions deployment history reached the ' + MAX_RUN_HISTORY_RESULTS +
+        '-run API result limit; code-only recovery is disabled until lineage can be proven');
+    }
+    if (expectedTotal === null) expectedTotal = body.total_count;
+    else if (body.total_count !== expectedTotal) throw new Error('GitHub Actions deployment history changed while it was read');
+    if (body.workflow_runs.length > RUNS_PER_PAGE) throw new Error('GitHub Actions history page exceeds its requested size');
+    runs.push(...body.workflow_runs);
+    if (body.workflow_runs.length < RUNS_PER_PAGE) {
+      complete = true;
+      break;
+    }
+  }
+  if (!complete || runs.length !== expectedTotal) {
+    throw new Error('GitHub Actions deployment history is truncated or incomplete');
+  }
+  return runs;
+}
+
+async function recoveryJobs({ fetcher, repository, runId }) {
+  const jobs = [];
+  let expectedTotal = null;
+  let complete = false;
+  for (let page = 1; page <= MAX_RUN_HISTORY_PAGES; page += 1) {
+    const url = 'https://api.github.com/repos/' + repository + '/actions/runs/' +
+      encodeURIComponent(runId) + '/jobs?per_page=' + RUNS_PER_PAGE + '&page=' + page;
+    const body = await recoveryJson(fetcher, url, 'Actions job history for run ' + runId);
+    if (!Array.isArray(body.jobs) || !Number.isSafeInteger(body.total_count) || body.total_count < 0) {
+      throw new Error('Actions job history response for run ' + runId + ' is malformed');
+    }
+    if (body.total_count >= MAX_RUN_HISTORY_RESULTS) throw new Error('Actions job history is unexpectedly truncated');
+    if (expectedTotal === null) expectedTotal = body.total_count;
+    else if (body.total_count !== expectedTotal) throw new Error('Actions job history changed while it was read');
+    if (body.jobs.length > RUNS_PER_PAGE) throw new Error('Actions job page exceeds its requested size');
+    jobs.push(...body.jobs);
+    if (body.jobs.length < RUNS_PER_PAGE) {
+      complete = true;
+      break;
+    }
+  }
+  if (!complete || jobs.length !== expectedTotal) throw new Error('Actions job history is truncated or incomplete');
+  const ids = new Set();
+  const names = new Set();
+  for (const job of jobs) {
+    if (!job || !Number.isSafeInteger(job.id) || job.id < 1 || typeof job.name !== 'string' ||
+        typeof job.status !== 'string' || !(job.conclusion === null || typeof job.conclusion === 'string') ||
+        !Array.isArray(job.steps) || ids.has(job.id) || names.has(job.name)) {
+      throw new Error('Actions job history contains malformed or duplicate job evidence');
+    }
+    ids.add(job.id);
+    names.add(job.name);
+    for (const step of job.steps) {
+      if (!step || typeof step.name !== 'string' || typeof step.status !== 'string' ||
+          !(step.conclusion === null || typeof step.conclusion === 'string')) {
+        throw new Error('Actions job history contains malformed step evidence');
+      }
+    }
+  }
+  return jobs;
+}
+
+function recoveryWorkflowBlob(repoRoot, sha) {
+  ensureCommit(repoRoot, sha);
+  const blob = runGit(repoRoot, ['rev-parse', sha + ':' + WORKFLOW_PATH], { encoding: 'utf8' }).trim();
+  if (!SHA_RE.test(blob)) throw new Error('deployment workflow blob identity is invalid at ' + sha);
+  return blob;
+}
+
+function requireRecoveryAncestor(repoRoot, ancestor, head) {
+  ensureCommit(repoRoot, ancestor);
+  ensureCommit(repoRoot, head);
+  try {
+    runGit(repoRoot, ['merge-base', '--is-ancestor', ancestor, head]);
+  } catch (error) {
+    if (error?.status === 1) throw new Error('Actions run commit is not an ancestor of the exact current main head');
+    throw error;
+  }
+}
+
+function successfulFullDeployment(run, jobs) {
+  if (run.status !== 'completed' || run.conclusion !== 'success') return false;
+  const verify = jobs.find(job => job.name === 'Verify reviewed preflop snapshot');
+  const deploy = jobs.find(job => job.name === DEPLOY_JOB_NAME);
+  const scopeJobs = jobs.filter(job => job.name === 'Classify reviewed code and data inputs');
+  if (!verify || verify.status !== 'completed' || verify.conclusion !== 'success' ||
+      !deploy || deploy.status !== 'completed' || deploy.conclusion !== 'success' || scopeJobs.length > 1) return false;
+  if (scopeJobs.length === 1 && (scopeJobs[0].status !== 'completed' || scopeJobs[0].conclusion !== 'success')) return false;
+  const stepsByName = new Map();
+  for (const step of deploy.steps) {
+    if (stepsByName.has(step.name)) return false;
+    stepsByName.set(step.name, step);
+  }
+  return FULL_DEPLOYMENT_STEP_NAMES.every(name => {
+    const step = stepsByName.get(name);
+    return step?.status === 'completed' && step.conclusion === 'success';
+  });
+}
+
+function assertSafeInterveningRun(run, jobs) {
+  if (run.status !== 'completed') throw new Error('An intervening main workflow run is still active');
+  if (jobs.length === 0) {
+    if (run.conclusion !== 'cancelled') throw new Error('A zero-job run has an unsupported conclusion');
+    return;
+  }
+  if (jobs.some(job => !RECOVERY_SAFE_JOB_NAMES.has(job.name) || job.status !== 'completed')) {
+    throw new Error('An intervening run has unknown or incomplete workflow jobs');
+  }
+  const deploy = jobs.find(job => job.name === DEPLOY_JOB_NAME);
+  if (!deploy) throw new Error('An intervening run has no deployment-job evidence');
+  if ((deploy.conclusion === 'skipped' || deploy.conclusion === 'cancelled') && deploy.steps.length === 0) return;
+  if (deploy.conclusion === 'success') {
+    throw new Error('An intervening deployment succeeded but is not a complete full-deployment baseline');
+  }
+  throw new Error('An intervening deployment job started or has an unknown outcome');
+}
+
+function completedStepMap(job) {
+  const steps = new Map();
+  for (const step of job.steps) {
+    if (steps.has(step.name)) return null;
+    steps.set(step.name, step);
+  }
+  return steps;
+}
+
+function successfulCodeOnlyRecovery(run, jobs) {
+  if (run.event !== 'workflow_dispatch' || run.status !== 'completed' || run.conclusion !== 'success') return false;
+  const scopeJobs = jobs.filter(job => job.name === 'Classify reviewed code and data inputs');
+  const verifyJobs = jobs.filter(job => job.name === 'Verify reviewed preflop snapshot');
+  const deployJobs = jobs.filter(job => job.name === DEPLOY_JOB_NAME);
+  if (scopeJobs.length !== 1 || scopeJobs[0].status !== 'completed' || scopeJobs[0].conclusion !== 'success' ||
+      verifyJobs.length !== 1 || verifyJobs[0].status !== 'completed' || verifyJobs[0].conclusion !== 'success' || deployJobs.length > 1) return false;
+  const verifySteps = completedStepMap(verifyJobs[0]);
+  const remoteFlagsGuard = verifySteps?.get('Keep code-only recovery free of remote data changes');
+  if (!remoteFlagsGuard || remoteFlagsGuard.status !== 'completed' || remoteFlagsGuard.conclusion !== 'success') return false;
+  if (deployJobs.length === 0) return true;
+
+  const deploy = deployJobs[0];
+  if (deploy.status !== 'completed' || deploy.conclusion !== 'success') return false;
+  const deploySteps = completedStepMap(deploy);
+  if (!deploySteps || deploySteps.get('Validate deployment secrets')?.conclusion !== 'success') return false;
+  for (const name of REMOTE_DATA_OPERATION_STEP_NAMES) {
+    const step = deploySteps.get(name);
+    if (step?.status !== 'completed' || step.conclusion !== 'skipped') return false;
+  }
+  const apiDeploy = deploySteps.get('Deploy ranked API before enabling the client');
+  const apiHeadGuard = deploySteps.get('Recheck main head before code-only API deployment');
+  const workerDeploy = deploySteps.get('Deploy Worker');
+  const workerHeadGuard = deploySteps.get('Recheck main head before code-only Worker deployment');
+  if (!apiDeploy || !apiHeadGuard || !workerDeploy || !workerHeadGuard) return false;
+  if (apiDeploy.status !== 'completed' || workerDeploy.status !== 'completed' ||
+      apiHeadGuard.status !== 'completed' || workerHeadGuard.status !== 'completed') return false;
+  if (apiDeploy.conclusion === 'success' && apiHeadGuard.conclusion !== 'success') return false;
+  if (apiDeploy.conclusion === 'skipped' && apiHeadGuard.conclusion !== 'skipped') return false;
+  if (workerDeploy.conclusion === 'success' && workerHeadGuard.conclusion !== 'success') return false;
+  if (workerDeploy.conclusion === 'skipped' && workerHeadGuard.conclusion !== 'skipped') return false;
+  return apiDeploy.conclusion === 'success' || workerDeploy.conclusion === 'success';
+}
+
+export async function latestFullDeploymentForCodeOnlyRecovery({
+  repoRoot, repository, currentRunId, runAttempt = '1', sha, fetcher = fetch,
+  supportedWorkflowBlobShas = RECOVERY_WORKFLOW_BLOB_SHAS,
+}) {
+  const safeRepo = githubRepository(repository);
+  const attempt = Number(runAttempt);
+  if (!Number.isInteger(attempt) || attempt !== 1) throw new Error('code-only recovery does not support workflow reruns');
+  if (!SHA_RE.test(sha ?? '')) throw new Error('code-only recovery requires an exact commit SHA');
+  const currentId = Number(currentRunId);
+  if (!Number.isSafeInteger(currentId) || currentId < 1) throw new Error('code-only recovery requires a valid current run ID');
+  const trustedWorkflowBlobs = supportedWorkflowBlobShas instanceof Set ?
+    supportedWorkflowBlobShas : new Set(supportedWorkflowBlobShas ?? []);
+
+  const workflowUrl = 'https://api.github.com/repos/' + safeRepo + '/actions/workflows/' + encodeURIComponent(WORKFLOW_ID);
+  const workflow = await recoveryJson(fetcher, workflowUrl, 'deployment workflow metadata');
+  if (!Number.isSafeInteger(workflow.id) || workflow.id < 1 || workflow.path !== WORKFLOW_PATH || workflow.state !== 'active') {
+    throw new Error('current deployment workflow identity is unsupported');
+  }
+  const currentWorkflowBlob = recoveryWorkflowBlob(repoRoot, sha);
+  if (!trustedWorkflowBlobs.has(currentWorkflowBlob)) throw new Error('current deployment workflow revision is unsupported');
+
+  const refUrl = 'https://api.github.com/repos/' + safeRepo + '/git/ref/heads/main';
+  const branchRef = await recoveryJson(fetcher, refUrl, 'current main branch ref');
+  if (branchRef.ref !== 'refs/heads/main' || branchRef.object?.type !== 'commit' || branchRef.object?.sha !== sha) {
+    throw new Error('workflow SHA is not the exact current main head');
+  }
+
+  const currentUrl = 'https://api.github.com/repos/' + safeRepo + '/actions/runs/' + encodeURIComponent(currentId);
+  const currentRun = await recoveryJson(fetcher, currentUrl, 'current workflow run metadata');
+  assertRecoveryRunRecord(currentRun, workflow.id);
+  if (currentRun.id !== currentId || currentRun.event !== 'workflow_dispatch' ||
+      currentRun.head_branch !== 'main' || currentRun.head_sha !== sha || currentRun.run_attempt !== 1 ||
+      currentRun.status !== 'in_progress' || !isDeploymentWorkflowPath(currentRun.path)) {
+    throw new Error('current run does not prove an exact first-attempt main workflow_dispatch');
+  }
+
+  const history = await recoveryWorkflowRuns({ fetcher, repository: safeRepo });
+  const runIds = new Set();
+  const runNumbers = new Set();
+  for (const run of history) {
+    if (!run || !Number.isSafeInteger(run.id) || !Number.isSafeInteger(run.run_number) ||
+        runIds.has(run.id) || runNumbers.has(run.run_number)) {
+      throw new Error('Actions history contains duplicate or malformed run identifiers');
+    }
+    runIds.add(run.id);
+    runNumbers.add(run.run_number);
+  }
+  const currentRows = history.filter(run => run.id === currentId);
+  if (currentRows.length !== 1) throw new Error('current recovery run is missing or duplicated in complete Actions history');
+  const listedCurrent = currentRows[0];
+  for (const key of ['workflow_id', 'path', 'run_number', 'run_attempt', 'event', 'head_branch', 'head_sha', 'status', 'conclusion']) {
+    if (listedCurrent[key] !== currentRun[key]) throw new Error('current run metadata changed between Actions API views');
+  }
+  if (history.some(run => run.run_number > currentRun.run_number)) {
+    throw new Error('a newer main workflow run exists alongside the recovery run');
+  }
+
+  const ordered = [...history].sort((a, b) => b.run_number - a.run_number);
+  for (const run of ordered) {
+    if (run.id === currentId) continue;
+    if (run.run_number >= currentRun.run_number) throw new Error('main workflow run order is ambiguous');
+    assertRecoveryRunRecord(run, workflow.id);
+    if (run.run_attempt !== 1) throw new Error('intervening workflow reruns are unsupported for recovery');
+    if (run.status !== 'completed') throw new Error('an intervening main workflow run is still active');
+    requireRecoveryAncestor(repoRoot, run.head_sha, sha);
+    const workflowBlob = recoveryWorkflowBlob(repoRoot, run.head_sha);
+    if (!trustedWorkflowBlobs.has(workflowBlob)) throw new Error('intervening deployment workflow revision is unsupported');
+    const jobs = await recoveryJobs({ fetcher, repository: safeRepo, runId: run.id });
+    if (jobs.some(job => !RECOVERY_SAFE_JOB_NAMES.has(job.name))) {
+      throw new Error('an intervening run contains an unknown job');
+    }
+    const deployJobs = jobs.filter(job => job.name === DEPLOY_JOB_NAME);
+    if (jobs.length === 0) {
+      assertSafeInterveningRun(run, jobs);
+      continue;
+    }
+    if (deployJobs.length > 1) throw new Error('an intervening run has ambiguous deployment-job evidence');
+    const deploy = deployJobs[0];
+    if (deploy?.status === 'completed' && deploy.conclusion === 'success') {
+      if (successfulFullDeployment(run, jobs)) return run;
+      if (successfulCodeOnlyRecovery(run, jobs)) continue;
+      throw new Error('a production deployment started without complete successful full-deployment or code-only evidence');
+    }
+    if (successfulCodeOnlyRecovery(run, jobs)) continue;
+    assertSafeInterveningRun(run, jobs);
+  }
+  throw new Error('no successful full Actions deployment baseline is present in complete supported history');
+}
+
+async function codeOnlyRecoveryPlan({ repoRoot, repository, runId, runAttempt, sha, fetcher, supportedWorkflowBlobShas }) {
+  const baseline = await latestFullDeploymentForCodeOnlyRecovery({
+    repoRoot, repository, currentRunId: runId, runAttempt, sha, fetcher, supportedWorkflowBlobShas,
+  });
+  requireRecoveryAncestor(repoRoot, baseline.head_sha, sha);
+  const before = fingerprintsAtCommit(repoRoot, baseline.head_sha);
+  const after = fingerprintsAtCommit(repoRoot, sha);
+  const changed = changedGroups(before, after);
+  const changedDataOrSchema = changed.filter(group => group !== 'review_receipt');
+  if (changedDataOrSchema.length) {
+    throw new Error('data or schema fingerprints changed since the successful full deployment: ' + changedDataOrSchema.join(', '));
+  }
+  const paths = changedPaths(repoRoot, baseline.head_sha, sha);
+  const sourceChanges = changedReviewedSourcePaths(repoRoot, baseline.head_sha, sha, paths);
+  const plan = emptyPlan('Actions lineage is complete and data/schema fingerprints match the full deployment baseline');
+  plan.lineage_known = true;
+  plan.release_safe = true;
+  plan.baseline_run_id = String(baseline.id);
+  plan.baseline_sha = baseline.head_sha;
+  plan.input_hashes = JSON.stringify(after);
+  addCodeScopes(plan, paths);
+  requireReviewedSourceValidation(plan, sourceChanges);
+  // Recovery can deploy changed code, but it never schedules remote data checks
+  // or any import, schema, publish, or remote-readiness operation.
+  plan.mode = 'manual-code-only-recovery';
+  return plan;
+}
+
+function codeOnlyRecoveryRejectedPlan(reason) {
+  const plan = fullValidationPlan(reason);
+  plan.mode = 'manual-code-only-recovery-rejected';
+  plan.mw3_live = false;
+  plan.fastfold_predeploy = false;
+  plan.fastfold_postimport = false;
+  return plan;
+}
+
+export async function classifyEvent({
+  repoRoot, eventName, ref, sha, repository, runId, runAttempt = '1', event, fetcher = fetch,
+  supportedWorkflowBlobShas = RECOVERY_WORKFLOW_BLOB_SHAS,
+}) {
+  const codeOnlyRecovery = eventName === 'workflow_dispatch' && isCodeOnlyRecoveryInput(event);
   const attempt = Number(runAttempt);
   if (!Number.isInteger(attempt) || attempt < 1) {
-    return fullValidationPlan('invalid workflow run attempt; production writes are disabled');
+    return codeOnlyRecovery ? codeOnlyRecoveryRejectedPlan('invalid workflow run attempt; code-only recovery is disabled') :
+      fullValidationPlan('invalid workflow run attempt; production writes are disabled');
   }
   if (attempt > 1) {
+    if (codeOnlyRecovery) return codeOnlyRecoveryRejectedPlan(`workflow attempt ${attempt} is a rerun; code-only recovery is disabled`);
     const plan = fullValidationPlan(`workflow attempt ${attempt} is a rerun; production writes are disabled`);
     plan.mode = 'rerun-verification-only';
     return plan;
   }
 
   const force = eventName === 'workflow_dispatch' && isForceInput(event);
+  if (codeOnlyRecovery) {
+    if (force) {
+      return codeOnlyRecoveryRejectedPlan('force_data_release and code_only_recovery cannot be selected together');
+    }
+    try {
+      return await codeOnlyRecoveryPlan({
+        repoRoot, repository, runId, runAttempt: String(attempt), sha, fetcher,
+        supportedWorkflowBlobShas,
+      });
+    } catch (error) {
+      return codeOnlyRecoveryRejectedPlan('code-only recovery proof failed (' + error.message + '); production changes are disabled');
+    }
+  }
   if (force) {
     const plan = fullValidationPlan('manual force_data_release input', { lineageKnown: true, releaseAllowed: true });
     plan.mode = 'manual-full-release';

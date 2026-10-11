@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
@@ -538,4 +538,454 @@ test('schema-only migrations keep backend checks without frontend install, LFS o
   assert.equal(plan.verify_preflop, false);
   assert.equal(plan.verify_postflop, false);
   assert.equal(plan.verify_mw3, false);
+});
+
+const RECOVERY_WORKFLOW_PATH = '.github/workflows/deploy-worker.yml';
+const RECOVERY_WORKFLOW_ID = 374187090;
+const RECOVERY_DEPLOY_JOB = 'Deploy authoritative ranked API, compatible client and reviewed preflop data';
+const RECOVERY_VERIFY_JOB = 'Verify reviewed preflop snapshot';
+const RECOVERY_SCOPE_JOB = 'Classify reviewed code and data inputs';
+const RECOVERY_FULL_STEP_NAMES = [
+  'Validate deployment secrets',
+  'Restore exact reviewed Git LFS payload',
+  'Import exact reviewed MW3 data and require full D1 readback',
+  'Apply exact ranked schema',
+  'Apply exact FastFold schema',
+  'Apply exact six-human ranked schema',
+  'Apply exact postflop profile schema',
+  'Deploy ranked API before enabling the client',
+  'Require live authoritative ranked readiness',
+  'Require live FastFold API and compatible published data before client',
+  'Build',
+  'Deploy Worker',
+  'Import reviewed preflop snapshot into D1',
+  'Require live FastFold release gate after reviewed import',
+  'Publish postflop policies into D1',
+  'Require live MW3 payloads and actual consumer source identities',
+];
+const RECOVERY_WRITE_FLAGS = [
+  'data_release', 'import_preflop', 'publish_postflop', 'import_mw3',
+  'apply_ranked_schema', 'apply_fastfold_schema', 'apply_human_schema', 'apply_profile_schema', 'apply_mw3_schema',
+  'mw3_live', 'fastfold_predeploy', 'fastfold_postimport',
+];
+
+function recoveryRun(overrides = {}) {
+  return {
+    id: 100, workflow_id: RECOVERY_WORKFLOW_ID, run_number: 1, run_attempt: 1,
+    path: `${RECOVERY_WORKFLOW_PATH}@main`, head_branch: 'main', event: 'push',
+    status: 'completed', conclusion: 'success', head_sha: '',
+    created_at: '2026-10-10T12:00:00Z', updated_at: '2026-10-10T12:00:00Z', ...overrides,
+  };
+}
+
+function recoveryStep(name, conclusion = 'success') {
+  return { name, status: 'completed', conclusion };
+}
+
+function recoveryJob(id, name, conclusion = 'success', steps = []) {
+  return { id, name, status: 'completed', conclusion, steps };
+}
+
+function recoveryFullJobs(firstId = 1000) {
+  return [
+    recoveryJob(firstId, RECOVERY_SCOPE_JOB),
+    recoveryJob(firstId + 1, RECOVERY_VERIFY_JOB),
+    recoveryJob(firstId + 2, RECOVERY_DEPLOY_JOB, 'success', RECOVERY_FULL_STEP_NAMES.map(name => recoveryStep(name))),
+  ];
+}
+
+function recoverySafeJobs(firstId, deployConclusion) {
+  return [
+    recoveryJob(firstId, RECOVERY_SCOPE_JOB),
+    recoveryJob(firstId + 1, RECOVERY_VERIFY_JOB),
+    recoveryJob(firstId + 2, RECOVERY_DEPLOY_JOB, deployConclusion),
+  ];
+}
+
+function codeOnlyFixture(t) {
+  const root = repository(t);
+  const files = baseFiles();
+  files[RECOVERY_WORKFLOW_PATH] = 'name: supported recovery workflow\n';
+  files['apps/backend/migrations/0010_fastfold.sql'] = 'CREATE TABLE fastfold (id TEXT);\n';
+  files['apps/backend/migrations/0011_human_ranked.sql'] = 'CREATE TABLE human_ranked (id TEXT);\n';
+  files['apps/backend/migrations/0012_postflop_profile_policies.sql'] = 'CREATE TABLE postflop_profiles (id TEXT);\n';
+  files['apps/backend/scripts/sql/mw3-schema.sql'] = 'CREATE TABLE mw3_schema (id TEXT);\n';
+  files['artifacts/preflop/demo.json'] = '{"version":1}\n';
+  files['configs/other-reviewed-data.json'] = '{"version":1}\n';
+  files['apps/backend/src/fastfold.ts'] = 'export const sourceVersion = 1;\n';
+  const base = commit(root, files);
+  const head = commit(root, { 'apps/backend/src/fastfold.ts': 'export const sourceVersion = 2;\n' });
+  const supportedBlob = git(root, ['rev-parse', `${head}:${RECOVERY_WORKFLOW_PATH}`]);
+
+  const baseline = recoveryRun({ id: 101, run_number: 1, head_sha: base });
+  const cancelledWithoutJobs = recoveryRun({
+    id: 102, run_number: 2, head_sha: base, conclusion: 'cancelled',
+  });
+  const cancelledBeforeDeploy = recoveryRun({
+    id: 103, run_number: 3, head_sha: head, conclusion: 'cancelled',
+  });
+  const deploySkipped = recoveryRun({ id: 104, run_number: 4, head_sha: head });
+  const current = recoveryRun({
+    id: 105, run_number: 5, head_sha: head,
+    event: 'workflow_dispatch', status: 'in_progress', conclusion: null,
+  });
+  const runs = [current, deploySkipped, cancelledBeforeDeploy, cancelledWithoutJobs, baseline];
+  const jobs = {
+    101: recoveryFullJobs(1000),
+    102: [],
+    103: recoverySafeJobs(2000, 'cancelled'),
+    104: recoverySafeJobs(3000, 'skipped'),
+  };
+  return { root, base, head, supportedBlob, baseline, current, runs, jobs };
+}
+
+function recoveryFetcher(fixture, {
+  runs = fixture.runs,
+  jobs = fixture.jobs,
+  currentRun = runs.find(run => run.id === fixture.current.id),
+  refSha = fixture.head,
+  historyTotalCount = runs.length,
+  jobTotalCounts = {},
+  badUrl = null,
+  historyResponse = null,
+  workflowMetadata = { id: RECOVERY_WORKFLOW_ID, path: RECOVERY_WORKFLOW_PATH, state: 'active' },
+} = {}) {
+  return async url => {
+    const parsed = new URL(url);
+    if (badUrl && badUrl(parsed)) return { ok: false, status: 503, json: async () => ({}) };
+    if (parsed.pathname.endsWith(`/actions/workflows/${RECOVERY_WORKFLOW_PATH.split('/').at(-1)}`) && !parsed.search) {
+      return { ok: true, json: async () => workflowMetadata };
+    }
+    if (parsed.pathname.endsWith('/git/ref/heads/main')) {
+      return { ok: true, json: async () => ({ ref: 'refs/heads/main', object: { type: 'commit', sha: refSha } }) };
+    }
+    const currentMatch = /\/actions\/runs\/(\d+)$/.exec(parsed.pathname);
+    if (currentMatch) return { ok: true, json: async () => currentRun };
+    if (parsed.pathname.endsWith(`/actions/workflows/${RECOVERY_WORKFLOW_PATH.split('/').at(-1)}/runs`)) {
+      const page = Number(parsed.searchParams.get('page') ?? '1');
+      const offset = (page - 1) * 100;
+      return { ok: true, json: async () => historyResponse ?? ({
+        workflow_runs: runs.slice(offset, offset + 100), total_count: historyTotalCount,
+      }) };
+    }
+    const jobsMatch = /\/actions\/runs\/(\d+)\/jobs$/.exec(parsed.pathname);
+    if (jobsMatch) {
+      const id = jobsMatch[1];
+      const page = Number(parsed.searchParams.get('page') ?? '1');
+      const allJobs = jobs[id] ?? [];
+      const offset = (page - 1) * 100;
+      return { ok: true, json: async () => ({
+        jobs: allJobs.slice(offset, offset + 100),
+        total_count: jobTotalCounts[id] ?? allJobs.length,
+      }) };
+    }
+    throw new Error(`unexpected recovery API request ${url}`);
+  };
+}
+
+async function classifyCodeOnlyRecovery(fixture, overrides = {}) {
+  const runs = overrides.runs ?? fixture.runs;
+  return classifyEvent({
+    repoRoot: fixture.root,
+    eventName: overrides.eventName ?? 'workflow_dispatch',
+    ref: overrides.ref ?? 'refs/heads/main',
+    sha: overrides.sha ?? fixture.head,
+    repository: 'Suuu-sh/ReysonAI',
+    runId: String(overrides.runId ?? fixture.current.id),
+    runAttempt: String(overrides.runAttempt ?? '1'),
+    event: overrides.event ?? { inputs: { code_only_recovery: true } },
+    fetcher: overrides.fetcher ?? recoveryFetcher(fixture, overrides),
+    supportedWorkflowBlobShas: overrides.supportedWorkflowBlobShas ?? new Set([fixture.supportedBlob]),
+  });
+}
+
+function assertCodeOnlyRejected(plan) {
+  assert.equal(plan.mode, 'manual-code-only-recovery-rejected');
+  assert.equal(plan.lineage_known, false);
+  assert.equal(plan.release_safe, false);
+  assert.equal(plan.deploy_api, false);
+  assert.equal(plan.deploy_frontend, false);
+  for (const key of RECOVERY_WRITE_FLAGS) assert.equal(plan[key], false, `${key} must remain false`);
+}
+
+test('code-only recovery accepts complete lineage and keeps all remote data operations disabled', async t => {
+  const fixture = codeOnlyFixture(t);
+  const plan = await classifyCodeOnlyRecovery(fixture);
+  assert.equal(plan.mode, 'manual-code-only-recovery');
+  assert.equal(plan.lineage_known, true);
+  assert.equal(plan.release_safe, true);
+  assert.equal(plan.baseline_run_id, String(fixture.baseline.id));
+  assert.equal(plan.baseline_sha, fixture.base);
+  assert.equal(plan.deploy_api, true);
+  assert.equal(plan.verify_backend, true);
+  assert.equal(plan.verify_preflop, true);
+  assert.equal(plan.verify_postflop, true);
+  assert.equal(plan.verify_mw3, true);
+  assert.equal(plan.needs_frontend_deps, true);
+  for (const key of RECOVERY_WRITE_FLAGS) assert.equal(plan[key], false, `${key} must remain false`);
+});
+
+test('code-only recovery accepts a newer proven full deployment as its baseline', async t => {
+  const fixture = codeOnlyFixture(t);
+  const external = recoveryRun({ id: 106, run_number: 5, head_sha: fixture.head, event: 'workflow_dispatch' });
+  const current = { ...fixture.current, run_number: 6 };
+  const runs = [current, external, ...fixture.runs.slice(1)];
+  const jobs = { ...fixture.jobs, 106: recoveryFullJobs(6000) };
+  const plan = await classifyCodeOnlyRecovery(fixture, {
+    runs, jobs, currentRun: current,
+    fetcher: recoveryFetcher(fixture, { runs, jobs, currentRun: current }),
+  });
+  assert.equal(plan.mode, 'manual-code-only-recovery');
+  assert.equal(plan.baseline_run_id, '106');
+  assert.equal(plan.baseline_sha, fixture.head);
+  for (const key of RECOVERY_WRITE_FLAGS) assert.equal(plan[key], false, `${key} must remain false`);
+});
+
+test('code-only recovery allows receipt-only renewal while preserving data fingerprints', async t => {
+  const fixture = codeOnlyFixture(t);
+  const next = commit(fixture.root, {
+    'configs/multiway-preflop-stage2.review.json': JSON.stringify({
+      sources: [{ path: 'apps/backend/src/fastfold.ts' }], renewal: 2,
+    }) + '\n',
+  });
+  const current = { ...fixture.current, head_sha: next };
+  const runs = fixture.runs.map(run => run.id === fixture.current.id ? current : run);
+  const plan = await classifyCodeOnlyRecovery(fixture, {
+    sha: next, runs, currentRun: current,
+    fetcher: recoveryFetcher(fixture, { runs, currentRun: current, refSha: next }),
+  });
+  assert.equal(plan.mode, 'manual-code-only-recovery');
+  assert.equal(plan.release_safe, true);
+  for (const key of RECOVERY_WRITE_FLAGS) assert.equal(plan[key], false, `${key} must remain false`);
+});
+
+test('every data and schema fingerprint must match the successful baseline', async t => {
+  const dataGroups = [
+    ['preflop', 'artifacts/preflop/demo.json'],
+    ['postflop', 'artifacts/postflop/hu-demo.sql'],
+    ['mw3', 'artifacts/postflop/mw3-demo.sql'],
+    ['mw3_schema', 'apps/backend/scripts/sql/mw3-schema.sql'],
+    ['ranked_schema', 'apps/backend/migrations/0009_ranked.sql'],
+    ['fastfold_schema', 'apps/backend/migrations/0010_fastfold.sql'],
+    ['human_schema', 'apps/backend/migrations/0011_human_ranked.sql'],
+    ['profile_schema', 'apps/backend/migrations/0012_postflop_profile_policies.sql'],
+    ['full', 'configs/other-reviewed-data.json'],
+  ];
+  for (const [group, path] of dataGroups) {
+    const fixture = codeOnlyFixture(t);
+    const next = commit(fixture.root, { [path]: `changed for ${group}\n` });
+    const current = { ...fixture.current, head_sha: next };
+    const runs = fixture.runs.map(run => run.id === fixture.current.id ? current : run);
+    const plan = await classifyCodeOnlyRecovery(fixture, {
+      sha: next, runs, currentRun: current,
+      fetcher: recoveryFetcher(fixture, { runs, currentRun: current, refSha: next }),
+    });
+    assertCodeOnlyRejected(plan);
+    assert.match(plan.reason, /data or schema fingerprints changed/);
+  }
+});
+
+test('code-only recovery rejects missing, stale, malformed, or incomplete lineage evidence', async t => {
+  const fixture = codeOnlyFixture(t);
+  const scenarios = [
+    ['main advanced beyond the requested SHA', opts => ({ ...opts, refSha: fixture.base })],
+    ['current run omitted from complete history', opts => ({ ...opts, runs: opts.runs.filter(run => run.id !== fixture.current.id), historyTotalCount: opts.runs.length - 1 })],
+    ['history pagination is truncated', opts => ({ ...opts, historyTotalCount: opts.runs.length + 1 })],
+    ['history hit the API result cap', opts => ({ ...opts, historyTotalCount: 1000 })],
+    ['no full successful baseline', opts => ({ ...opts, runs: opts.runs.filter(run => run.id !== 101), historyTotalCount: opts.runs.length - 1 })],
+    ['duplicate run number', opts => ({ ...opts, runs: opts.runs.map(run => run.id === 104 ? { ...run, run_number: 2 } : run) })],
+    ['current run duplicated', opts => ({ ...opts, runs: [...opts.runs, fixture.current], historyTotalCount: opts.runs.length + 1 })],
+    ['history response is malformed', opts => ({ ...opts, historyResponse: { workflow_runs: [] } })],
+    ['history API unavailable', opts => ({ ...opts, badUrl: parsed => parsed.pathname.endsWith('/runs') })],
+    ['job evidence is truncated', opts => ({ ...opts, jobTotalCounts: { 101: fixture.jobs[101].length + 1 } })],
+    ['job API unavailable', opts => ({ ...opts, badUrl: parsed => /\/actions\/runs\/\d+\/jobs$/.test(parsed.pathname) })],
+  ];
+  for (const [label, transform] of scenarios) {
+    const opts = transform({ runs: structuredClone(fixture.runs) });
+    const plan = await classifyCodeOnlyRecovery(fixture, { ...opts, fetcher: recoveryFetcher(fixture, opts) });
+    assertCodeOnlyRejected(plan);
+    assert.ok(plan.reason, label);
+  }
+});
+
+test('code-only recovery rejects incorrect current-run identity and unsupported workflow revisions', async t => {
+  const fixture = codeOnlyFixture(t);
+  const scenarios = [
+    ['wrong event', { currentRun: { ...fixture.current, event: 'push' } }],
+    ['wrong run id', { runId: 999 }],
+    ['workflow API returned wrong id', { workflowMetadata: { id: RECOVERY_WORKFLOW_ID + 1, path: RECOVERY_WORKFLOW_PATH, state: 'active' } }],
+    ['workflow API returned disabled workflow', { workflowMetadata: { id: RECOVERY_WORKFLOW_ID, path: RECOVERY_WORKFLOW_PATH, state: 'disabled_manually' } }],
+    ['wrong branch', { currentRun: { ...fixture.current, head_branch: 'codex/other' } }],
+    ['wrong workflow id', { currentRun: { ...fixture.current, workflow_id: RECOVERY_WORKFLOW_ID + 1 } }],
+    ['wrong workflow path', { currentRun: { ...fixture.current, path: '.github/workflows/other.yml@main' } }],
+    ['rerun', { currentRun: { ...fixture.current, run_attempt: 2 } }],
+    ['wrong exact SHA', { currentRun: { ...fixture.current, head_sha: fixture.base } }],
+    ['unsupported workflow blob', { supportedWorkflowBlobShas: new Set() }],
+    ['rerun attempt input', { runAttempt: 2 }],
+    ['invalid attempt input', { runAttempt: 0 }],
+  ];
+  for (const [label, overrides] of scenarios) {
+    const current = overrides.currentRun ?? fixture.current;
+    const runs = fixture.runs.map(run => run.id === fixture.current.id ? current : run);
+    const fetcher = recoveryFetcher(fixture, { ...overrides, runs, currentRun: current });
+    const plan = await classifyCodeOnlyRecovery(fixture, { ...overrides, runs, fetcher });
+    assertCodeOnlyRejected(plan);
+    assert.ok(plan.reason, label);
+  }
+});
+
+test('code-only recovery rejects unrelated commits and unknown workflow provenance in history', async t => {
+  const fixture = codeOnlyFixture(t);
+  const tree = git(fixture.root, ['rev-parse', `${fixture.base}^{tree}`]);
+  const orphan = execFileSync('git', ['-C', fixture.root, 'commit-tree', tree, '-m', 'unrelated history fixture'], { encoding: 'utf8' }).trim();
+  const scenarios = [
+    ['non-ancestor run SHA', runs => runs.map(run => run.id === 103 ? { ...run, head_sha: orphan } : run)],
+    ['active intervening run', runs => runs.map(run => run.id === 103 ? { ...run, status: 'in_progress', conclusion: null } : run)],
+    ['unknown workflow id in history', runs => runs.map(run => run.id === 103 ? { ...run, workflow_id: RECOVERY_WORKFLOW_ID + 1 } : run)],
+    ['unknown path in history', runs => runs.map(run => run.id === 103 ? { ...run, path: '.github/workflows/unknown.yml@main' } : run)],
+    ['unsupported run attempt in history', runs => runs.map(run => run.id === 103 ? { ...run, run_attempt: 2 } : run)],
+    ['unknown completed conclusion', runs => runs.map(run => run.id === 103 ? { ...run, conclusion: 'unrecognized' } : run)],
+  ];
+  for (const [label, mutate] of scenarios) {
+    const runs = mutate(structuredClone(fixture.runs));
+    const plan = await classifyCodeOnlyRecovery(fixture, { runs, fetcher: recoveryFetcher(fixture, { runs }) });
+    assertCodeOnlyRejected(plan);
+    assert.ok(plan.reason, label);
+  }
+
+  git(fixture.root, ['reset', '--hard', fixture.base]);
+  const untrustedWorkflowCommit = commit(fixture.root, { [RECOVERY_WORKFLOW_PATH]: 'name: unapproved workflow revision\n' });
+  const safeHead = commit(fixture.root, {
+    [RECOVERY_WORKFLOW_PATH]: 'name: supported recovery workflow\n',
+    'apps/backend/src/fastfold.ts': 'export const sourceVersion = 2;\n',
+  });
+  const current = { ...fixture.current, head_sha: safeHead };
+  const runs = fixture.runs.map(run => {
+    if (run.id === 103) return { ...run, head_sha: untrustedWorkflowCommit };
+    if (run.id === 104) return { ...run, head_sha: safeHead };
+    if (run.id === fixture.current.id) return current;
+    return run;
+  });
+  const unsupportedIntermediate = await classifyCodeOnlyRecovery(fixture, {
+    sha: safeHead, runs, currentRun: current,
+    fetcher: recoveryFetcher(fixture, { runs, currentRun: current, refSha: safeHead }),
+  });
+  assertCodeOnlyRejected(unsupportedIntermediate);
+  assert.match(unsupportedIntermediate.reason, /workflow revision is unsupported/);
+});
+
+test('code-only recovery rejects partial or incompletely evidenced deployments', async t => {
+  const fixture = codeOnlyFixture(t);
+  const scenarios = [
+    ['deployment started before cancellation', jobs => ({ ...jobs, 103: recoverySafeJobs(2000, 'cancelled').map(job =>
+      job.name === RECOVERY_DEPLOY_JOB ? { ...job, steps: [recoveryStep('Validate deployment secrets')] } : job) })],
+    ['failed deployment', jobs => ({ ...jobs, 103: recoverySafeJobs(2000, 'failure') })],
+    ['successful but not full deployment', jobs => ({ ...jobs, 103: [
+      recoveryJob(2000, RECOVERY_SCOPE_JOB), recoveryJob(2001, RECOVERY_VERIFY_JOB),
+      recoveryJob(2002, RECOVERY_DEPLOY_JOB, 'success', [recoveryStep('Build')]),
+    ] })],
+    ['unknown job in history', jobs => ({ ...jobs, 103: [...recoverySafeJobs(2000, 'cancelled'), recoveryJob(2003, 'Unexpected job')] })],
+    ['new external run is still in progress', jobs => jobs],
+  ];
+  for (const [label, mutateJobs] of scenarios) {
+    let runs = structuredClone(fixture.runs);
+    let jobs = structuredClone(fixture.jobs);
+    if (label === 'new external run is still in progress') {
+      const active = recoveryRun({ id: 106, run_number: 5, head_sha: fixture.head, status: 'in_progress', conclusion: null });
+      const current = { ...fixture.current, run_number: 6 };
+      runs = [current, active, ...runs.slice(1)];
+    }
+    jobs = mutateJobs(jobs);
+    const current = runs.find(run => run.id === fixture.current.id);
+    const plan = await classifyCodeOnlyRecovery(fixture, { runs, fetcher: recoveryFetcher(fixture, { runs, jobs, currentRun: current }) });
+    assertCodeOnlyRejected(plan);
+    assert.ok(plan.reason, label);
+  }
+});
+
+test('default dispatch remains fail-closed and conflicting recovery inputs cannot deploy or write', async t => {
+  const fixture = codeOnlyFixture(t);
+  let recoveryApiCalled = false;
+  const failureFetcher = async url => {
+    if (url.endsWith('/git/ref/heads/main') || /\/actions\/runs\/\d+$/.test(new URL(url).pathname)) recoveryApiCalled = true;
+    return { ok: false, status: 503, json: async () => ({}) };
+  };
+  const defaultPlan = await classifyEvent({
+    repoRoot: fixture.root, eventName: 'workflow_dispatch', ref: 'refs/heads/main', sha: fixture.head,
+    repository: 'Suuu-sh/ReysonAI', runId: '999', event: { inputs: { code_only_recovery: false, force_data_release: false } },
+    fetcher: failureFetcher,
+  });
+  assert.equal(recoveryApiCalled, false);
+  assert.equal(defaultPlan.release_safe, false);
+  assert.equal(defaultPlan.deploy_api, false);
+  assert.equal(defaultPlan.deploy_frontend, false);
+  assert.notEqual(defaultPlan.mode, 'manual-code-only-recovery-rejected');
+  for (const key of RECOVERY_WRITE_FLAGS.slice(0, 9)) assert.equal(defaultPlan[key], false, `${key} must remain false`);
+
+  const conflict = await classifyCodeOnlyRecovery(fixture, {
+    event: { inputs: { code_only_recovery: true, force_data_release: true } },
+    fetcher: async () => { throw new Error('conflicting inputs must be rejected before API lookup'); },
+  });
+  assertCodeOnlyRejected(conflict);
+});
+
+test('workflow gates recovery inputs, remote operations, and deployment freshness checks', () => {
+  const workflow = readFileSync(new URL('../../.github/workflows/deploy-worker.yml', import.meta.url), 'utf8');
+  assert.match(workflow, /code_only_recovery:[\s\S]*?type: boolean[\s\S]*?default: false/);
+  assert.match(workflow, /fetch-depth: \$\{\{ github\.event_name == 'workflow_dispatch' && inputs\.code_only_recovery == true && '0' \|\| '1' \}\}/);
+  assert.match(workflow, /Keep code-only recovery free of remote data changes/);
+  assert.match(workflow, /Recheck main head before code-only API deployment/);
+  assert.match(workflow, /Recheck main head before code-only Worker deployment/);
+  assert.match(workflow, /Code-only recovery unexpectedly enabled/);
+});
+
+function successfulCodeOnlyJobs(firstId, deployment = 'api') {
+  const remoteSteps = [
+    'Import exact reviewed MW3 data and require full D1 readback',
+    'Apply exact ranked schema',
+    'Apply exact FastFold schema',
+    'Apply exact six-human ranked schema',
+    'Apply exact postflop profile schema',
+    'Require live authoritative ranked readiness',
+    'Require live FastFold API and compatible published data before client',
+    'Import reviewed preflop snapshot into D1',
+    'Require live FastFold release gate after reviewed import',
+    'Publish postflop policies into D1',
+    'Require live MW3 payloads and actual consumer source identities',
+  ];
+  const verify = recoveryJob(firstId, RECOVERY_VERIFY_JOB, 'success', [
+    recoveryStep('Keep code-only recovery free of remote data changes'),
+  ]);
+  const scope = recoveryJob(firstId + 1, RECOVERY_SCOPE_JOB);
+  if (deployment === 'none') return [scope, verify];
+  const api = deployment === 'api';
+  const worker = deployment === 'worker';
+  const steps = [
+    recoveryStep('Validate deployment secrets'),
+    ...remoteSteps.map(name => recoveryStep(name, 'skipped')),
+    recoveryStep('Recheck main head before code-only API deployment', api ? 'success' : 'skipped'),
+    recoveryStep('Deploy ranked API before enabling the client', api ? 'success' : 'skipped'),
+    recoveryStep('Recheck main head before code-only Worker deployment', worker ? 'success' : 'skipped'),
+    recoveryStep('Deploy Worker', worker ? 'success' : 'skipped'),
+  ];
+  return [scope, verify, recoveryJob(firstId + 2, RECOVERY_DEPLOY_JOB, 'success', steps)];
+}
+
+test('later recovery accepts a prior successful code-only run only with explicit no-data evidence', async t => {
+  for (const deployment of ['api', 'worker', 'none']) {
+    await t.test(`${deployment} deployment`, async t2 => {
+      const fixture = codeOnlyFixture(t2);
+      const prior = recoveryRun({ id: 104, run_number: 4, head_sha: fixture.head, event: 'workflow_dispatch' });
+      const current = { ...fixture.current, run_number: 5 };
+      const runs = [current, prior, ...fixture.runs.slice(2)];
+      const jobs = { ...fixture.jobs, 104: successfulCodeOnlyJobs(4000, deployment) };
+      const plan = await classifyCodeOnlyRecovery(fixture, {
+        runs, jobs, currentRun: current,
+        fetcher: recoveryFetcher(fixture, { runs, jobs, currentRun: current }),
+      });
+      assert.equal(plan.mode, 'manual-code-only-recovery');
+      assert.equal(plan.baseline_run_id, String(fixture.baseline.id));
+      for (const key of RECOVERY_WRITE_FLAGS) assert.equal(plan[key], false, `${key} must remain false`);
+    });
+  }
 });

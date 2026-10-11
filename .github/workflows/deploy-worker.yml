@@ -56,6 +56,11 @@ on:
         required: false
         type: boolean
         default: false
+      code_only_recovery:
+        description: 'Prove Actions lineage and unchanged data/schema before deploying code only.'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -104,7 +109,7 @@ jobs:
       - name: Check out commit metadata and pointers only
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          fetch-depth: 1
+          fetch-depth: ${{ github.event_name == 'workflow_dispatch' && inputs.code_only_recovery == true && '0' || '1' }}
           persist-credentials: false
           lfs: false
 
@@ -168,6 +173,32 @@ jobs:
         if: needs.scope.result != 'success'
         working-directory: .
         run: exit 1
+
+      - name: Keep code-only recovery free of remote data changes
+        if: needs.scope.outputs.mode == 'manual-code-only-recovery'
+        working-directory: .
+        env:
+          DATA_RELEASE: ${{ needs.scope.outputs.data_release }}
+          IMPORT_PREFLOP: ${{ needs.scope.outputs.import_preflop }}
+          PUBLISH_POSTFLOP: ${{ needs.scope.outputs.publish_postflop }}
+          IMPORT_MW3: ${{ needs.scope.outputs.import_mw3 }}
+          APPLY_RANKED_SCHEMA: ${{ needs.scope.outputs.apply_ranked_schema }}
+          APPLY_FASTFOLD_SCHEMA: ${{ needs.scope.outputs.apply_fastfold_schema }}
+          APPLY_HUMAN_SCHEMA: ${{ needs.scope.outputs.apply_human_schema }}
+          APPLY_PROFILE_SCHEMA: ${{ needs.scope.outputs.apply_profile_schema }}
+          APPLY_MW3_SCHEMA: ${{ needs.scope.outputs.apply_mw3_schema }}
+          MW3_LIVE: ${{ needs.scope.outputs.mw3_live }}
+          FASTFOLD_PREDEPLOY: ${{ needs.scope.outputs.fastfold_predeploy }}
+          FASTFOLD_POSTIMPORT: ${{ needs.scope.outputs.fastfold_postimport }}
+        run: |
+          for flag in DATA_RELEASE IMPORT_PREFLOP PUBLISH_POSTFLOP IMPORT_MW3 \
+            APPLY_RANKED_SCHEMA APPLY_FASTFOLD_SCHEMA APPLY_HUMAN_SCHEMA APPLY_PROFILE_SCHEMA APPLY_MW3_SCHEMA \
+            MW3_LIVE FASTFOLD_PREDEPLOY FASTFOLD_POSTIMPORT; do
+            if [[ "${!flag}" != 'false' ]]; then
+              echo "::error::Code-only recovery unexpectedly enabled $flag=${!flag}"
+              exit 1
+            fi
+          done
 
       - name: Check out exact workflow revision
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -442,6 +473,29 @@ jobs:
           WRANGLER_SEND_METRICS: 'false'
         run: npx --yes wrangler@4.147.0 d1 execute reysonai --remote --config wrangler.jsonc --file migrations/0012_postflop_profile_policies.sql --yes
 
+      - name: Recheck main head before code-only API deployment
+        if: needs.verify.outputs.mode == 'manual-code-only-recovery' && needs.verify.outputs.deploy_api == 'true'
+        working-directory: .
+        env:
+          EXPECTED_MAIN_SHA: ${{ github.sha }}
+        run: |
+          node --input-type=module <<'NODE'
+          const expected = process.env.EXPECTED_MAIN_SHA;
+          const repository = process.env.GITHUB_REPOSITORY;
+          if (!/^[0-9a-f]{40}$/i.test(expected ?? '') || !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository ?? '')) {
+            throw new Error('Expected main SHA or repository identity is invalid');
+          }
+          const response = await fetch(`https://api.github.com/repos/${repository}/git/ref/heads/main`, {
+            headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'ReysonAI-code-only-recovery' },
+            signal: AbortSignal.timeout(10000),
+          });
+          if (!response.ok) throw new Error(`Could not recheck main head (${response.status})`);
+          const ref = await response.json();
+          if (ref.ref !== 'refs/heads/main' || ref.object?.type !== 'commit' || ref.object?.sha !== expected) {
+            throw new Error('main moved after code-only recovery classification; refusing API deployment');
+          }
+          NODE
+
       - name: Deploy ranked API before enabling the client
         if: needs.verify.outputs.deploy_api == 'true'
         working-directory: apps/backend
@@ -511,6 +565,29 @@ jobs:
       - name: Build
         if: needs.verify.outputs.deploy_frontend == 'true'
         run: npm run build
+
+      - name: Recheck main head before code-only Worker deployment
+        if: needs.verify.outputs.mode == 'manual-code-only-recovery' && needs.verify.outputs.deploy_frontend == 'true'
+        working-directory: .
+        env:
+          EXPECTED_MAIN_SHA: ${{ github.sha }}
+        run: |
+          node --input-type=module <<'NODE'
+          const expected = process.env.EXPECTED_MAIN_SHA;
+          const repository = process.env.GITHUB_REPOSITORY;
+          if (!/^[0-9a-f]{40}$/i.test(expected ?? '') || !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository ?? '')) {
+            throw new Error('Expected main SHA or repository identity is invalid');
+          }
+          const response = await fetch(`https://api.github.com/repos/${repository}/git/ref/heads/main`, {
+            headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'ReysonAI-code-only-recovery' },
+            signal: AbortSignal.timeout(10000),
+          });
+          if (!response.ok) throw new Error(`Could not recheck main head (${response.status})`);
+          const ref = await response.json();
+          if (ref.ref !== 'refs/heads/main' || ref.object?.type !== 'commit' || ref.object?.sha !== expected) {
+            throw new Error('main moved after code-only recovery classification; refusing Worker deployment');
+          }
+          NODE
 
       - name: Deploy Worker
         if: needs.verify.outputs.deploy_frontend == 'true'
