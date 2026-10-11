@@ -55,6 +55,28 @@ test('daily start quota and abandoned expiry are server enforced',withFixture(as
  assert.equal((await f.call('matches',{consent:true})).status,429);
  assert.equal((await (await f.call('profile')).json()).state.remaining,0);
 }));
+test('start quota is isolated by owner and resets on the UTC day boundary',withFixture(async f=>{
+ const currentDay='2026-10-11',previousDay='2026-10-10',fixedNow=Date.UTC(2026,9,11,0,0,0);
+ f.sqlite.prepare('INSERT INTO account_users VALUES (?,?,?,?)').run('other','google-other','other@example.invalid',0);
+ f.sqlite.prepare('INSERT INTO ranked_players(user_id,public_name) VALUES (?,?)').run('user','Player owner');
+ f.sqlite.prepare('INSERT INTO ranked_players(user_id,public_name) VALUES (?,?)').run('other','Player other');
+ const addExpired=(userId,day,slot)=>f.sqlite.prepare("INSERT INTO ranked_matches(id,user_id,day,slot,started_at,expires_at,status,questions_json) VALUES (?,?,?,?,?,?,'expired','[]')")
+  .run(`${userId}-${day}-${slot}`,userId,day,slot,0,0);
+ for(let slot=1;slot<=3;slot++){addExpired('user',previousDay,slot);addExpired('other',currentDay,slot);}
+ f.sqlite.prepare('UPDATE account_sessions SET expires_at=? WHERE user_id=?').run(Math.floor(fixedNow/1000)+3600,'user');
+ const realNow=Date.now;
+ Date.now=()=>fixedNow;
+ try {
+  const response=await f.call('matches',{consent:true});
+  assert.equal(response.status,200);
+  const {match,state}=await response.json();
+  assert.equal(match.expiresAt,fixedNow+3600000);
+  assert.equal(state.remaining,2);
+  assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM ranked_matches WHERE user_id=? AND day=?').get('user',currentDay).n,1);
+  assert.equal(f.sqlite.prepare('SELECT slot,status FROM ranked_matches WHERE user_id=? AND day=?').get('user',currentDay).slot,1);
+  assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM ranked_matches WHERE user_id=? AND day=?').get('other',currentDay).n,3);
+ } finally {Date.now=realNow;}
+}));
 test('global positions and Legend are assigned before top-100 pagination',withFixture(async f=>{
  for(let i=0;i<102;i++) {
   const id=i===101?'user':`p${i.toString().padStart(3,'0')}`;
