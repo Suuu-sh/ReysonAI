@@ -43,7 +43,6 @@ import { continuationCopy } from "./continuation-copy.ts";
 import { chooseContinuationAction, continuationLiveSeats, continuationRootForSelection } from "./continuation-flow.ts";
 import { continuationRangeBreakdown, continuationUnreachableCopy, useContinuationUiRuntime, withContinuationAvailability } from "./continuation-ranges.ts";
 import { limpActionTransition, responseActionTransition, rewindActionBlockTransition } from "./action-path.ts";
-import { displayModes } from "./display-mode.ts";
 import { displayModeKey } from "../profile.ts";
 import { useDetailedReasons } from "./detailed-reasons.ts";
 import { localizedPreflopReason, localizedFactLabel, localizedEquityNote } from "./english-reasons.ts";
@@ -1028,7 +1027,6 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
             {settingsOpen && <button type="button" className="settings-backdrop" aria-label="閉じる" onClick={() => setSettingsOpen(false)} />}
             <div className="settings-body">
               <ul><li>{formatLabel("table", format.table)} · Open {formatLabel("openSize", format.openSize)}</li><li>レーキ {formatLabel("rake", format.rake)}</li></ul>
-              <div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div>
             </div>
           </RangeContextCard>}
           expanded
@@ -1071,7 +1069,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
           {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand!} model={focusedEntry.model!} isOpening={focusedEntry.kind === "opening"} isLimpResponse={focusedEntry.kind === "limp_response"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} isContinuation={focusedEntry.kind === "bounded"} extra={focusedEntry.kind === "bounded" ? continuationRangeBreakdown(focusedEntry.spot!) : extendedBreakdown(focusedEntry.kind, focusedEntry.spot!, focusedEntry.hand!)} spot={focusedEntry.spot!} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
         </div>
       </>}
-      {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
+      {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} displayMode={displayMode} onDisplayModeChange={changeDisplayMode} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
       {flopActive && flopDialogOpen && <FlopCardDialog cards={flopCards} profile={opponentProfile} seat={flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? undefined : effectiveOpponentSeat}
         positions={{ ip: flopContext!.ip ?? null, oop: flopContext!.oop ?? null }} onClose={() => setFlopDialogOpen(false)}
         onApply={(cards, seat, profile) => {

@@ -1,5 +1,5 @@
 import { useAgentHistorySession } from "./history-session.ts";
-import { POSITIONS } from "./preflop.ts";
+import { POSITIONS, type Position } from "./preflop.ts";
 import { GameplayDetails, GamePanel } from "./GameplayDetails.tsx";
 import { StyleAvatar } from "./StyleAvatar.tsx";
 import { OpponentProfile, profileCopy as profileText, type OpponentProfileData } from "./OpponentProfile.tsx";
@@ -17,6 +17,7 @@ import { spotById } from "../../scripts/postflop-ai/spots.ts";
 import { localized, translateProductCopy } from "../i18n.ts";
 import { AGENT_TABLE, GUEST_AGENT, agentTableById } from "./characters.ts";
 import { categoryName, playHand, type HandResult, type LogEntry } from "./hand.ts";
+import { currentHandCategory } from "./hand-presentation.ts";
 import { productLocale } from "../locale.ts";
 import { LoadingDots, LoadingInline } from "../components/Loading.tsx";
 import { AgentAvatar } from "./AgentAvatar.tsx";
@@ -35,6 +36,14 @@ const BLINDS: Record<string, number> = { SB: 0.5, BB: 1 };
 // Seats sit in slots 0-5 clockwise from the bottom centre; agent.css places the seats and chips.
 const SPEEDS = { normal: 700, fast: 280 } as const;
 type Speed = keyof typeof SPEEDS;
+const agentAutoSkipCopy = (english: string, japanese: string, chinese: string, spanish: string) => {
+  switch (productLocale()) {
+    case "ja": return japanese;
+    case "zh-CN": return chinese;
+    case "es": return spanish;
+    default: return english;
+  }
+};
 
 // Prefs moved from evionai: to reysonai: keys with the rename; the old key is still read.
 const readPref = <T,>(key: string, fallback: T): T => { try { const v = localStorage.getItem(key) ?? localStorage.getItem(key.replace(/^reysonai:/, "evionai:")); return v == null ? fallback : JSON.parse(v); } catch { return fallback; } };
@@ -46,7 +55,7 @@ const signed = (points: number) => `${points > 0 ? "+" : ""}${points.toLocaleStr
 
 export function actionLabel(entry: { action: string; to?: number; amountBb?: number; allIn?: boolean }) {
   const { action, to } = entry;
-  const amount = to ? ` ${bb(to)}` : "";
+  const amount = to ? ` ${bb(to)}BB` : "";
   if (action === "fold") return localized("Fold", "フォールド");
   if (action === "check") return localized("Check", "チェック");
   if (action === "call") return `${localized("Call", "コール")}${amount}${entry.allIn && entry.amountBb != null ? ` (${localized("All-in", "オールイン")})` : ""}`;
@@ -64,8 +73,8 @@ export function actionLabel(entry: { action: string; to?: number; amountBb?: num
 }
 // A size token may address an effective all-in. Never show its unplayed nominal
 // percentage under the actual all-in amount; legacy options have no allIn flag.
-export function AgentActionSizeHint({ option }: { option: { key: string; allIn?: boolean } }) {
-  return !option.allIn && /^bet\d+$/.test(option.key) ? <small>{option.key.slice(3)}%</small> : null;
+export function AgentActionSizeHint({ option }: { option: { key: string; to?: number; allIn?: boolean } }) {
+  return !option.allIn && option.to != null && /^bet\d+$/.test(option.key) ? <small>{option.key.slice(3)}%</small> : null;
 }
 // Raises and bets read as street totals; a call reads as the chips it adds.
 function asDisplayed(entries: LogEntry[], entry: LogEntry) {
@@ -92,7 +101,7 @@ function chipState(revealed: LogEntry[], street: string) {
   return { committed, front };
 }
 
-type HistoryItem = { no: number; winners: string; mine: number | null; showdown: boolean; cards: string[]; resultBb: number | null; log: LogEntry[]; board: string[]; nameOf: (position: string) => string };
+type HistoryItem = { no: number; winners: string; mine: number | null; showdown: boolean; cards: string[]; resultBb: number | null; log: LogEntry[]; board: string[]; nameOf: (position: string) => string; showdownPlayers: { position: string; name: string; cards: string[]; won: boolean; handName?: string }[] };
 
 export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = false, exitDisabled = false, handoffKey, onHandBoundary, waitingHeader, waitingSidebar, mw3Client = mw3DeliveryClient }: { tableId: string; watch?: boolean; onExit: () => void; waitingMode?: boolean; exitDisabled?: boolean; handoffKey?: string; onHandBoundary?: () => void; waitingHeader?: ReactNode; waitingSidebar?: ReactNode; mw3Client?: Mw3DeliveryClient }) {
   const historySession = useAgentHistorySession(!watch && !waitingMode);
@@ -106,6 +115,8 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
   const [shown, setShown] = useState(0);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [speed, setSpeed] = useState<Speed>(() => readPref("reysonai:agent-speed", "normal"));
+  const [autoSkipAfterFold, setAutoSkipAfterFold] = useState(() => readPref<boolean>("reysonai:agent-auto-skip-after-fold", false));
+  const [autoSkippedHand, setAutoSkippedHand] = useState<number | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [compact, setCompact] = useState(() => window.matchMedia?.("(max-width: 650px)").matches ?? false);
   useEffect(() => { const media = window.matchMedia?.("(max-width: 650px)"); if (!media) return; const update = () => setCompact(media.matches); media.addEventListener("change", update); return () => media.removeEventListener("change", update); }, []);
@@ -190,6 +201,15 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
   const pending = result?.status === "awaiting" && allShown ? result.pending! : null;
   const humanFolded = humanPos != null && log.some(entry => entry.pos === humanPos && entry.action === "fold");
 
+  // Once the player's fold is recorded, reveal the rest of this hand at once.
+  // The normal result timer still handles the advance, so hand/history recording
+  // remains on the same completed-hand path as a manually watched hand.
+  useEffect(() => {
+    if (!autoSkipAfterFold || watch || waitingMode || handoffKey || !humanFolded || result?.status !== "done" || unavailable) return;
+    setShown(log.length);
+    setAutoSkippedHand(session.handNo);
+  }, [autoSkipAfterFold, watch, waitingMode, handoffKey, humanFolded, result?.status, unavailable, log.length, session.handNo]);
+
   // The street on screen: deal it as soon as its first action is next (or the human is asked on it).
   const upcoming = pending?.street ?? (shown < log.length && shown > 0 ? log[shown]?.street : null);
   const lastStreet = revealed.at(-1)?.street ?? "preflop";
@@ -214,8 +234,16 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
     if (!done || recorded.current === session.handNo) return;
     recorded.current = session.handNo;
     if (humanPos && !waitingMode) saveAgentHand(handRecord(result!, tableId, humanPos, Date.now(), { session: historySession.entry, handNo: session.handNo + 1, names: Object.fromEntries(POSITIONS.map(pos => [pos, nameOf(pos)])) }));
+    const showdown = Boolean(result!.showdown);
+    // Only expose cards for seats that reached an actual showdown. In particular, folded
+    // opponents' dealt cards remain private even though the deterministic result has them.
+    const folded = new Set<Position>(revealed.filter(entry => entry.action === "fold").map(entry => entry.pos));
+    const showdownPlayers = showdown ? Object.entries(result!.holeCards).filter(([pos, cards]) => !folded.has(pos as Position) && cards.length === 2).map(([pos, cards]) => ({
+      position: pos, name: nameOf(pos), cards: [...cards], won: Boolean(result!.winners?.includes(pos as any)),
+      handName: result!.handRanks?.[pos] == null ? undefined : handName(result!.handRanks[pos]),
+    })) : [];
     setHistory(current => [{ no: session.handNo + 1, winners: (result!.winners ?? []).map(nameOf).join(" / "),
-      nameOf, log: [...revealed], board: [...boardCards], resultBb: humanPos && Number.isFinite(result!.returns![humanPos]) ? result!.returns![humanPos] : null, cards: humanPos ? [...(result!.holeCards[humanPos] ?? [])] : [], mine: humanPos && Number.isFinite(result!.returns![humanPos]) ? toPoints(result!.returns![humanPos]) : null, showdown: Boolean(result!.showdown) }, ...current].slice(0, 30));
+      nameOf, log: [...revealed], board: [...boardCards], resultBb: humanPos && Number.isFinite(result!.returns![humanPos]) ? result!.returns![humanPos] : null, cards: humanPos ? [...(result!.holeCards[humanPos] ?? [])] : [], mine: humanPos && Number.isFinite(result!.returns![humanPos]) ? toPoints(result!.returns![humanPos]) : null, showdown, showdownPlayers }, ...current].slice(0, 30));
   }, [done, humanPos, session.handNo, result, tableId, nameOf]);
 
   const act = (key: string) => setHumanActions(current => [...current, key]);
@@ -223,7 +251,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
     if (!result || result.status !== "done") return;
     if (handoffKey) return;
     setSession(current => finishHand(current, result.returns!));
-    setHumanActions([]); setShown(0);
+    setHumanActions([]); setShown(0); setAutoSkippedHand(null);
   }, [result, handoffKey]);
   const skip = () => setShown(log.length);
 
@@ -232,14 +260,18 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
   const showdown = done && Boolean(result?.showdown);
   useEffect(() => {
     if (!done) return;
+    // Turning the preference off during the result hold stops this automatic
+    // advance; the explicit next-hand action remains available instead.
+    if (autoSkippedHand === session.handNo && !autoSkipAfterFold) return;
     if (handoffKey) {
       const key = `${session.handNo}:${handoffKey}`;
       if (acceptedBoundary.current !== key) { acceptedBoundary.current = key; boundary.current?.(); }
       return;
     }
-    const timer = window.setTimeout(nextHand, showdown ? (speed === "fast" ? 2500 : 3500) : speed === "fast" ? 300 : 600);
+    const resultHold = autoSkippedHand === session.handNo ? 150 : showdown ? (speed === "fast" ? 2500 : 3500) : speed === "fast" ? 300 : 600;
+    const timer = window.setTimeout(nextHand, resultHold);
     return () => window.clearTimeout(timer);
-  }, [done, showdown, nextHand, speed, handoffKey, session.handNo]);
+  }, [done, showdown, nextHand, speed, handoffKey, session.handNo, autoSkippedHand, autoSkipAfterFold]);
 
   // Keyboard: 1-9 pick an action, Enter / Space deal the next hand, S skips.
   useEffect(() => {
@@ -278,6 +310,9 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
             onClick={() => { setSpeed(value); writePref("reysonai:agent-speed", value); }}>
             {value === "fast" && <Lightning size={12} weight="fill" />}{value === "fast" ? localized("Fast", "速い") : localized("Normal", "ふつう")}</button>)}
         </div>
+        {!watch && !waitingMode && !handoffKey && <button type="button" className={`agent-toggle${autoSkipAfterFold ? " is-on" : ""}`} aria-pressed={autoSkipAfterFold}
+          onClick={() => { const next = !autoSkipAfterFold; setAutoSkipAfterFold(next); writePref("reysonai:agent-auto-skip-after-fold", next); }}>
+          {agentAutoSkipCopy("Auto-skip after fold", "フォールド後に自動スキップ", "弃牌后自动跳过", "Omitir automáticamente tras retirarte")}: {autoSkipAfterFold ? agentAutoSkipCopy("On", "オン", "开启", "Activado") : agentAutoSkipCopy("Off", "オフ", "关闭", "Desactivado")}</button>}
         {liveRead && <button type="button" className="agent-toggle" onClick={() => setStyleOpen(true)}><ChartBar size={13} weight="bold" />{localized("Play style", "プレイスタイル")}</button>}
         <span className="agent-rule" tabIndex={0}><Info size={13} />{mw3Text.beta}
           <span className="agent-rule-tip" role="tooltip">{mw3Text.rule}</span></span>
@@ -325,10 +360,12 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
               const won = done && result?.winners?.includes(pos);
               // Spectators see every hand, like a broadcast; players only see a showdown.
               const showCards = isHuman || watch || (done && result?.showdown && !folded);
+              const currentRank = isHuman && boardCards.length >= 3 ? currentHandCategory(result?.holeCards[pos] ?? [], boardCards) : null;
               const delta = done ? toPoints(result!.returns![pos] ?? 0) : null;
               const stack = done ? 100 + (result!.returns![pos] ?? 0) : 100 - (chips.committed[pos] ?? 0);
               return <PokerSeat key={index} slot={slotIndex} human={isHuman} folded={folded} won={Boolean(won)} acting={actingPos === pos}
                 cards={result?.holeCards[pos] ?? []} showCards={Boolean(showCards)} handKey={session.handNo}
+                holeLabel={currentRank == null ? undefined : <span className="agent-current-handname">{handName(currentRank)}</span>}
                 avatar={character ? waitingMode ? <StyleAvatar id="balanced" color={character.color} size={50} dim={folded}/> : <AgentAvatar id={character.id} color={character.color} size={50} state={won ? "win" : folded ? "fold" : "idle"} /> : undefined}
                 onProfile={character ? () => setOpponentProfile({name:character.name.en, avatar:<AgentAvatar id={character.id} color={character.color} size={64}/>, kind:"agent", type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado"), description:profileText("Saved balanced AI estimate. Agent codenames do not change policies.", "保存済みのバランス型AI推定。Agent名で方針は変わりません。", "已保存的平衡AI估计。Agent名称不会改变策略。", "Estimación IA equilibrada guardada. Los nombres Agent no cambian la política.")}) : undefined}
                 profileLabel={character ? `${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}` : undefined} fullName={character?.name.en}
@@ -358,6 +395,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
             </>
             : done ? <>
               <p className="agent-summary">{myDelta == null ? winnerLine : <>{localized("This hand", "このハンド")} <b className={myDelta > 0 ? "up" : myDelta < 0 ? "down" : ""}>{signed(myDelta)}</b></>}</p>
+              {autoSkippedHand === session.handNo && !autoSkipAfterFold && <button type="button" className="agent-next" onClick={nextHand}>{agentAutoSkipCopy("Next hand", "次のハンド", "下一手", "Siguiente mano")}</button>}
             </>
             : <>
               <p className="agent-summary">{humanFolded ? localized("You folded — watch the rest or skip.", "降りました。続きを観戦するか、スキップできます。")
@@ -368,7 +406,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
         </footer>
       </section>
 
-      <GameplayDetails profileSwitches={session.seats.filter(seat => seat.kind === "agent").map(seat => { const character = characterFor(seat.agentId); if (!character) return null; return <button type="button" className="agent-mini-profile" key={character.id} aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en,avatar:<AgentAvatar id={character.id} color={character.color} size={64}/>,kind:"agent",type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado")})}><AgentAvatar id={character.id} color={character.color} size={32}/></button>; })} currentCards={humanPos ? result?.holeCards[humanPos] : []} history={history.map(item => ({id:item.no,cards:item.cards,resultBb:item.resultBb,details:<HandLog entries={item.log} nameOf={item.nameOf} board={item.board}/>}))} requestedPanel={styleOpen ? "tools" : null} onClose={() => setStyleOpen(false)} profile={opponentProfile && <OpponentProfile profile={opponentProfile} onClose={() => setOpponentProfile(null)} />}>
+      <GameplayDetails profileSwitches={session.seats.filter(seat => seat.kind === "agent").map(seat => { const character = characterFor(seat.agentId); if (!character) return null; return <button type="button" className="agent-mini-profile" key={character.id} aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en,avatar:<AgentAvatar id={character.id} color={character.color} size={64}/>,kind:"agent",type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado")})}><AgentAvatar id={character.id} color={character.color} size={32}/></button>; })} currentCards={humanPos ? result?.holeCards[humanPos] : []} history={history.map(item => ({id:item.no,cards:item.cards,resultBb:item.resultBb,board:item.board,showdown:item.showdown,showdownPlayers:item.showdownPlayers,details:<HandLog entries={item.log} nameOf={item.nameOf} board={item.board}/>}))} requestedPanel={styleOpen ? "tools" : null} onClose={() => setStyleOpen(false)} profile={opponentProfile && <OpponentProfile profile={opponentProfile} onClose={() => setOpponentProfile(null)} />}>
         {waitingMode && <GamePanel id="queue" label={profileText("Queue / rank", "待機 / ランク", "队列 / 评分", "Cola / rango")}>{waitingSidebar}</GamePanel>}
         <GamePanel id="session" label={profileText(waitingMode ? "Agents" : "Session", waitingMode ? "Agent" : "セッション", waitingMode ? "Agent" : "会话", waitingMode ? "Agents" : "Sesión")}>
         {waitingMode && <section className="agent-panel"><h3>{profileText("Practice Agents", "練習相手のAgent", "练习Agent", "Agents de práctica")}</h3>{table.agents.map(character => <div className="ff-opponent" key={character.id}><button type="button" className="agent-mini-profile" aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en,kind:"agent",type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado"),avatar:<StyleAvatar id="balanced" color={character.color} size={64}/>})}><StyleAvatar id="balanced" color={character.color} size={32}/></button><div><strong>{character.name.en}</strong><small>{profileText("Balanced · preflop", "バランス型・プリフロップ", "平衡型 · 翻牌前", "Equilibrado · preflop")}</small></div></div>)}</section>}

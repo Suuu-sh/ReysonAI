@@ -59,7 +59,7 @@ export function StyleMap(props: Props) {
         <span className="play-style-map-center" aria-hidden="true" title={props.baseline} />
         {point ? <>
           <svg className="play-style-map-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line x1="50" y1="50" x2={point.x} y2={point.y} pathLength="1" /></svg>
-          <span className={`play-style-map-point${point.y > 70 ? " label-above" : ""}${point.x < 25 ? " label-left" : point.x > 75 ? " label-right" : ""}`} role="img" aria-label={`${you}: ${point.description}${point.provisional ? `; ${provisional}` : ""}`}
+          <span className={`play-style-map-point${point.y > 55 ? " label-above" : ""}${point.x < 25 ? " label-left" : point.x > 75 ? " label-right" : ""}`} role="img" aria-label={`${you}: ${point.description}${point.provisional ? `; ${provisional}` : ""}`}
             style={{ left: `${point.x}%`, top: `${point.y}%`, "--style": point.style.color } as CSSProperties}>
             {point.style.id === "collecting" ? <i /> : <StyleAvatar id={point.style.id} color={point.style.color} size={36} />}<b>{you}{point.provisional ? ` · ${provisional}` : ""}</b>
           </span>

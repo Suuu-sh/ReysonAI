@@ -1,28 +1,28 @@
 # Backend boundaries and incremental DDD plan
 
-This describes the backend at `main` commit `7158301dafd2021d982540c7ae809515bafd262c` and the first incremental boundary extraction. It is intentionally a map of the code that exists, not a target-wide folder migration.
+This describes the backend at `main` commit `d72714a7b776b65e612082de88182b0a255b6eb1` and the first incremental boundary extraction. It is intentionally a map of the code that exists, not a target-wide folder migration.
 
 ## Current bounded contexts and state owners
 
 | Context | Main code | State and boundary |
 | --- | --- | --- |
-| Published strategy data | `src/preflop-datasets.ts`, `src/postflop.ts`, `src/mw3-transport.ts` | Published D1 tables are read models. Preflop files under the frontend are canonical; D1 stores ordered text parts. Postflop policy/report payloads and MW3 approved delivery are also read from D1. |
+| Published strategy data | `src/domain/published-dataset.ts`, `src/application/published-datasets.ts`, `src/infrastructure/d1-published-dataset-repository.ts`, `src/preflop-datasets.ts`, `src/postflop.ts`, `src/mw3-transport.ts` | Published D1 tables are read models. Preflop files under the frontend are canonical; D1 stores ordered text parts. The Worker edge cache wraps the public dataset route; postflop policy/report payloads and MW3 approved delivery are also read from D1. |
 | Identity and account sync | `src/account.ts`, `src/native-account.ts` | D1 owns Google subject identity, browser/native sessions, OAuth attempts and account snapshots. The browser's verified session selects the account row; `expectedOwner` is only a stale-client assertion. Snapshot updates use a version compare-and-swap. Native exchange/cancel state changes use D1 batches. |
 | Rated quiz | `src/ranked.ts`, `src/ranked-history.ts`, `shared/ranked-rules.ts` | D1 owns players, match questions, submissions and ratings. Finalization is coordinated by the match-status conditional update and `ranked_finalize` trigger. `ranked-history.ts` is a cross-context read model. |
 | Agent practice | `src/fastfold-dispatch.ts`, `src/fastfold-do.ts`, `src/fastfold.ts` | The Durable Object serializes the session entry point. D1 remains authoritative for session state, replay receipts/results and aggregates; strategy inputs are read from published D1/R2 data. A session CAS commits a request receipt, result and aggregate changes together. |
 | Human competition | `src/fastfold-do.ts`, `src/human-rank.ts`, `src/multiplayer-engine.ts` | The Durable Object serializes requests and owns alarm scheduling; D1 rows plus the human-ranked triggers own player/table transitions and settlement. A history GET is read-only and must not sweep state or schedule an alarm. |
-| Solution delivery | `src/index.ts`, `src/postflop-runtime-config.ts` | The Worker composition root routes public reads, applies CORS/cache behavior, and serves immutable R2 solution artifacts plus D1-backed published data. Runtime config is a static, byte-stable contract. |
+| Solution and MCP delivery | `src/worker.ts`, `src/index.ts`, `src/postflop-runtime-config.ts` | `worker.ts` composes the MCP adapter and API Worker paths. `index.ts` routes API reads, applies public edge caching and CORS, and serves immutable R2 solution artifacts plus D1-backed published data. Runtime config is a static, byte-stable contract. |
 
-The present route modules often combine HTTP parsing, orchestration and SQL. Pure helpers already exist in places, but dependency direction is not consistent yet: `index.ts` composes routes, while route modules can still call D1 directly. Cloudflare Worker and Durable Object bindings belong at the outside edge; D1 and R2 are adapters, not domain state owners for the game rules.
+The present route modules often combine HTTP parsing, orchestration and SQL. Pure helpers already exist in places, but dependency direction is not consistent yet: `worker.ts` composes MCP and API adapters, `index.ts` composes API routes and public cache behavior, while route modules can still call D1 directly. Cloudflare Worker and Durable Object bindings belong at the outside edge; D1 and R2 are adapters, not domain state owners for the game rules.
 
 ## First vertical slice: published preflop datasets
 
 The dataset boundary is narrow but shared: the public HTTP route serves it, and Ranked reads the same immutable datasets to create and grade matches. Ranked previously constructed a fake `/v1/preflop/datasets/<name>` path and called the HTTP route. The extraction removes that route dependency while leaving the public route as the compatibility adapter.
 
 ```text
-index.ts / routeRanked
-        │
-        ├── routePreflopDatasets (HTTP status/body/ETag mapping)
+worker.ts
+  └── index.ts (API routing, public edge cache and CORS)
+        └── routePreflopDatasets (HTTP status/body/ETag mapping)
         │        └── application: listPublishedDatasets / readPublishedDataset
         │                       └── port: PublishedDatasetReader
         │                                   └── infrastructure: D1PublishedDatasetReader
@@ -32,7 +32,7 @@ index.ts / routeRanked
 
 The extracted boundary is in `src/domain/published-dataset.ts`, `src/application/published-datasets.ts`, and `src/infrastructure/d1-published-dataset-repository.ts`. `src/preflop-datasets.ts` remains the public presentation adapter. The use case validates a published name, distinguishes a missing dataset from incomplete parts, and concatenates stored text without parsing or re-serializing it. The D1 adapter retains the existing list query, metadata-first read order, and ordered-parts query.
 
-The existing contract is held by Worker tests for accepted/encoded names, malformed paths, status/error mapping, exact ETag matching, cache and CORS headers, and raw Unicode/whitespace delivery. The use case tests cover missing, skipped, duplicate and non-zero-first parts. The adapter test applies migration `0003_preflop.sql` to an isolated in-memory SQLite database and checks the actual SQL order and text reconstruction.
+The existing contract is held by Worker tests for accepted/encoded names, malformed paths, status/error mapping, exact ETag matching, raw Unicode/whitespace delivery, CORS, and edge cache behavior. The public catalog uses `max-age=60, s-maxage=60`; dataset bodies use `max-age=300, s-maxage=300`, including normalized browser TTLs on cache hits. Errors and conditional 304 responses are not stored in the Cache API. The use case tests cover missing, skipped, duplicate and non-zero-first parts. The adapter test applies migration `0003_preflop.sql` to an isolated in-memory SQLite database and checks the actual SQL order and text reconstruction.
 
 ## Invariants to keep at their boundaries
 

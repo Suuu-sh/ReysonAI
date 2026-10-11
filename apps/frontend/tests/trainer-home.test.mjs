@@ -1,5 +1,6 @@
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -53,9 +54,46 @@ test("ranked emblem keeps its tier but omits match history for empty and populat
       onOpenDrills() {}, onCreate() {}, onStartReview() {}, onResume() {}, onStartRanked() {}, onOpenRanking() {},
     }));
     assert.match(html, /class="ranked-tier-name"/);
+    assert.match(html, /class="ranked-current"/);
+    assert.doesNotMatch(html, /rank-ladder|Rank tiers and rating thresholds|昇格レート/);
     assert.doesNotMatch(html, /まだ試合なし|No matches yet|Last match|直近5試合|ranked-pips/);
     assert.doesNotMatch(html, /New season · server confirmed · no daily start limit|新シーズン・サーバー確定・開始回数の制限なし/);
   }
+});
+
+test("trainer home presents ranked, Agent and drill modes as compact cards with their existing actions", () => {
+  const html = renderToStaticMarkup(createElement(TrainerHome, {
+    drills: [], reviewCount: 0, rank: { rating: 1200, peak: 1250 }, rankedReady: true,
+    onOpenDrills() {}, onCreate() {}, onStartReview() {}, onResume() {}, onStartRanked() {}, onOpenRanking() {}, onStartAgent() {},
+  }));
+  assert.equal((html.match(/class="mode-block/g) ?? []).length, 3);
+  assert.match(html, /対人FastFold β/);
+  assert.match(html, /Agent戦/);
+  assert.match(html, /ドリル/);
+  assert.match(html, /Join human queue|対人待機へ/);
+  assert.match(html, /Leaderboard|ランキング/);
+  assert.match(html, /Sit down|着席する/);
+  assert.match(html, /Watch|観戦/);
+  assert.match(html, /Open drills|ドリルを開く/);
+  assert.match(html, /New drill|新しいドリル/);
+});
+
+test("trainer home Agent and drill artwork stays bounded on hover and keyboard focus", async () => {
+  const css = await readFile(new URL("../src/trainer/trainer.css", import.meta.url), "utf8");
+  assert.match(css, /\.trainer-home \.mode-block\.is-ranked \.mode-eyebrow,\s*\.trainer-home \.mode-block\.is-ranked \.mode-body > h3 \{ justify-self: center; text-align: center; \}/);
+  assert.match(css, /\.trainer-home \.agent-lineup \{[^}]*display: flex;[^}]*height: 76px;[^}]*overflow: hidden;/s);
+  assert.match(css, /\.trainer-home \.agent-lineup \.agent-table-face \{[^}]*position: static;[^}]*opacity: 1;[^}]*transform: none;[^}]*transition: none;/s);
+  assert.match(css, /\.trainer-home \.agent-lineup \.agent-table-face\.is-near,\s*\.trainer-home \.agent-lineup \.agent-table-face\.is-front \{ transform: none; \}/);
+  assert.match(css, /\.trainer-home \.agent-lineup \.agent-table-face:not\(\.is-near\):not\(\.is-front\) \{ display: none; \}/);
+  assert.match(css, /\.trainer-home \.mode-block\.is-agent:is\(:hover, :focus-within\) \.agent-lineup \.agent-table-face,\s*\.trainer-home \.mode-block\.is-agent:is\(:hover, :focus-within\) \.agent-lineup \.agent-table-face\.is-front \{[^}]*transform: none;[^}]*animation: none;/s);
+  assert.match(css, /\.trainer-home \.agent-lineup \.agent-table-face\.is-front > :first-child,\s*\.trainer-home \.mode-block\.is-agent:is\(:hover, :focus-within\) \.agent-lineup \.agent-table-face\.is-front > :first-child \{ filter: none; animation: none; \}/);
+  assert.match(css, /\.trainer-home \.drill-deck \{ position: static; display: flex; align-items: center; justify-content: center; gap: 8px; height: 76px; min-height: 76px; overflow: hidden; \}/);
+  assert.match(css, /\.trainer-home \.drill-deck-card \{ position: static; box-sizing: border-box; flex: 0 0 44px; width: 44px; height: 56px; padding: 4px; transform: none; transition: none; z-index: auto; box-shadow: none; \}/);
+  assert.match(css, /\.trainer-home \.drill-deck-card:nth-child\(2\) \{ z-index: auto; \}/);
+  assert.match(css, /\.trainer-home \.drill-deck-card b \{ font-size: 14px; line-height: 1; \}/);
+  assert.match(css, /\.trainer-home \.drill-deck-card i \{ display: block; width: auto; height: auto; min-width: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; font-size: 20px; line-height: 1; \}/);
+  assert.match(css, /\.trainer-home \.mode-block\.is-drills:is\(:hover, :focus-within\) \.drill-deck-card,\s*\.trainer-home \.mode-block\.is-drills:is\(:hover, :focus-within\) \.drill-deck-card:hover,\s*\.trainer-home \.mode-block\.is-drills \.drill-deck-card:hover \{ position: static; transform: none; box-shadow: none; z-index: auto; \}/);
+  assert.match(css, /@media \(max-width: 700px\) \{ \.trainer-home \.drill-deck \{ height: 64px; min-height: 64px; \} \}/);
 });
 
 test("sessions page keeps its session-total stats", () => {

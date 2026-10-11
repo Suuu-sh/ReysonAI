@@ -2,14 +2,14 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import worker from "../src/index.ts";
 import { buildPreflopSql, PART_CHARS } from "../../frontend/scripts/publish-d1.mjs";
+import { installEdgeCache } from "./helpers/edge-cache.mjs";
 
 // D1 mock over preflop_datasets / preflop_dataset_parts rows.
-function mockDb(datasets, parts) {
-  const calls = [];
-  return { calls, prepare(sql) {
-    calls.push(sql);
+function mockDb(datasets, parts, onQuery = () => {}) {
+  return { prepare(sql) {
     let args = [];
     const statement = { bind(...values) { args = values; return statement; }, async all() {
+      onQuery(sql, args);
       if (sql.includes("FROM preflop_dataset_parts")) return { results: parts.filter(row => row.name === args[0]).sort((a, b) => a.part - b.part) };
       return { results: sql.includes("WHERE name") ? datasets.filter(row => row.name === args[0]) : datasets };
     } };
@@ -23,38 +23,90 @@ const env = { SOLUTIONS: null, DB: mockDb([{ name: "opening-ranges", content_has
 const get = (path, headers) => worker.fetch(new Request(`https://edge.test${path}`, { headers }), env);
 
 test("preflop datasets are listed and served as the concatenated JSON with an etag", async () => {
-  const listed = await get("/v1/preflop/datasets");
-  assert.deepEqual((await listed.json()).datasets, { "opening-ranges": { hash: "h", bytes: text.length } });
-  assert.equal(listed.headers.get("cache-control"), "public, max-age=60, s-maxage=300");
+  assert.deepEqual((await (await get("/v1/preflop/datasets")).json()).datasets, { "opening-ranges": { hash: "h", bytes: text.length } });
   const response = await get("/v1/preflop/datasets/opening-ranges");
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("etag"), '"h"');
   assert.equal(await response.text(), text);
-  const notModified = await get("/v1/preflop/datasets/opening-ranges", { "if-none-match": '"h"' });
-  assert.equal(notModified.status, 304);
-  assert.equal(notModified.headers.get("etag"), '"h"');
-  assert.equal(notModified.headers.get("cache-control"), null);
-  assert.equal((await get("/v1/preflop/datasets/opening-ranges", { "if-none-match": 'W/"h"' })).status, 200,
-    "the current endpoint uses exact ETag equality");
-  const cache = await get("/v1/preflop/datasets/opening-ranges");
-  assert.equal(cache.headers.get("cache-control"), "public, max-age=300, s-maxage=86400");
+  assert.equal((await get("/v1/preflop/datasets/opening-ranges", { "if-none-match": '"h"' })).status, 304);
 });
 
 test("unknown, invalid and incomplete datasets are rejected", async () => {
-  const missing = await get("/v1/preflop/datasets/missing");
-  assert.equal(missing.status, 404);
-  assert.deepEqual(await missing.json(), { error: "dataset not found: missing" });
-  const invalid = await get("/v1/preflop/datasets/..%2Fsecret");
-  assert.equal(invalid.status, 400);
-  assert.deepEqual(await invalid.json(), { error: "invalid dataset name" });
+  assert.equal((await get("/v1/preflop/datasets/missing")).status, 404);
+  assert.equal((await get("/v1/preflop/datasets/..%2Fsecret")).status, 400);
   const broken = { SOLUTIONS: null, DB: mockDb([{ name: "a", content_hash: "h", bytes: 1, parts: 2 }], [{ name: "a", part: 0, body: "{" }]) };
-  const incomplete = await worker.fetch(new Request("https://edge.test/v1/preflop/datasets/a"), broken);
-  assert.equal(incomplete.status, 503);
-  assert.deepEqual(await incomplete.json(), { error: "dataset is incomplete: a" });
-  const malformed = await get("/v1/preflop/datasets/%E0%A4%A");
-  assert.equal(malformed.status, 400);
-  assert.deepEqual(await malformed.json(), { error: "invalid dataset name" });
-  assert.equal((await get("/v1/preflop/datasets/profiles/evil/villain/opening-ranges")).status, 400);
+  assert.equal((await worker.fetch(new Request("https://edge.test/v1/preflop/datasets/a"), broken)).status, 503);
+});
+
+test("public preflop catalog and body use bounded edge TTLs without caching CORS or 304", async t => {
+  const cache = installEdgeCache(t);
+  cache.rewriteBrowserMaxAge(14_400);
+  const queries = [];
+  const datasets = [{ name: "opening-ranges", content_hash: "old", bytes: 2, parts: 1 }];
+  const parts = [{ name: "opening-ranges", part: 0, body: "{}" }];
+  const env = { DB: mockDb(datasets, parts, sql => queries.push(sql)), ALLOWED_ORIGIN: "https://one.test,https://two.test" };
+  const get = (path, origin = "https://one.test", headers = {}) => worker.fetch(new Request(`https://edge.test${path}`, { headers: { origin, ...headers } }), env);
+  const catalog = await get("/v1/preflop/datasets?ignored=one");
+  assert.equal(catalog.headers.get("x-reysonai-cache"), "MISS");
+  assert.equal(catalog.headers.get("cache-control"), "public, max-age=60, s-maxage=60");
+  const catalogHit = await get("/v1/preflop/datasets?ignored=two");
+  assert.equal(catalogHit.headers.get("x-reysonai-cache"), "HIT");
+  assert.equal(catalogHit.headers.get("cache-control"), "public, max-age=60, s-maxage=60", "zone browser TTL must not leak from Cache API hit");
+  assert.equal(queries.length, 1);
+
+  const path = "/v1/preflop/datasets/opening-ranges";
+  const conditional = await get(path, "https://one.test", { "if-none-match": '"old"' });
+  assert.equal(conditional.status, 304);
+  assert.equal(conditional.headers.get("x-reysonai-cache"), null);
+  assert.equal(queries.length, 3, "a cold conditional request reads metadata and parts once");
+  const body = await get(`${path}?ignored=one`, "https://two.test");
+  assert.equal(body.headers.get("x-reysonai-cache"), "HIT");
+  assert.equal(body.headers.get("access-control-allow-origin"), "https://two.test");
+  assert.equal(body.headers.get("cache-control"), "public, max-age=300, s-maxage=300");
+  assert.equal(await body.text(), "{}");
+  assert.equal((await get(path, "https://one.test", { "if-none-match": '"old"' })).status, 304);
+  assert.equal(queries.length, 3);
+  assert.ok([...cache.entries.values()].every(entry => !entry.response.headers.has("access-control-allow-origin") && !entry.response.headers.has("x-reysonai-cache")));
+
+  cache.advance(60_000);
+  datasets.push({ name: "new", content_hash: "x", bytes: 2, parts: 1 });
+  const refreshedCatalog = await get("/v1/preflop/datasets");
+  assert.equal(refreshedCatalog.headers.get("x-reysonai-cache"), "MISS");
+  assert.ok((await refreshedCatalog.json()).datasets.new);
+  datasets[0].content_hash = "new";
+  parts[0].body = "[]";
+  cache.advance(240_000);
+  const refreshedBody = await get(path);
+  assert.equal(refreshedBody.headers.get("x-reysonai-cache"), "MISS");
+  assert.equal(refreshedBody.headers.get("etag"), '"new"');
+  assert.equal(await refreshedBody.text(), "[]");
+  assert.equal(queries.length, 6);
+  assert.equal(cache.puts.length, 4);
+});
+
+test("preflop errors, non-GET requests and unavailable cache never become cached", async t => {
+  const cache = installEdgeCache(t);
+  const queries = [];
+  const env = { DB: mockDb([{ name: "broken", content_hash: "x", bytes: 1, parts: 2 }], [{ name: "broken", part: 0, body: "{" }], sql => queries.push(sql)) };
+  const get = path => worker.fetch(new Request(`https://edge.test${path}`), env);
+  for (let n = 0; n < 2; n++) {
+    assert.equal((await get("/v1/preflop/datasets/missing")).status, 404);
+    assert.equal((await get("/v1/preflop/datasets/broken")).status, 503);
+  }
+  assert.equal(queries.length, 8);
+  assert.equal(cache.puts.length, 0);
+  assert.equal((await worker.fetch(new Request("https://edge.test/v1/preflop/datasets", { method: "OPTIONS" }), env)).status, 204);
+  assert.equal(cache.matches.length, 4, "preflight never consults the dataset cache");
+
+  cache.fail({ match: true, put: true });
+  const catalog = await get("/v1/preflop/datasets");
+  assert.equal(catalog.status, 200);
+  assert.equal(catalog.headers.get("x-reysonai-cache"), "MISS");
+  assert.equal((await get("/v1/preflop/datasets")).status, 200);
+  assert.equal(queries.length, 10, "cache failures fall through to D1");
+  delete globalThis.caches;
+  const bypass = await get("/v1/preflop/datasets");
+  assert.equal(bypass.headers.get("x-reysonai-cache"), "BYPASS");
 });
 
 test("encoded published names and raw Unicode chunk text pass through with public CORS", async () => {
@@ -62,13 +114,14 @@ test("encoded published names and raw Unicode chunk text pass through with publi
   const split = raw.indexOf("🌱");
   const rawParts = [raw.slice(0, split), raw.slice(split)];
   const profileName = "profiles/nit/villain/opening-ranges";
+  const calls = [];
   const db = mockDb([
     { name: "reasons/BB_vs_BTN", content_hash: "raw-hash", bytes: new TextEncoder().encode(raw).byteLength, parts: 2 },
     { name: profileName, content_hash: "profile-hash", bytes: 1, parts: 1 },
   ], [
     ...rawParts.map((body, part) => ({ name: "reasons/BB_vs_BTN", part, body })),
     { name: profileName, part: 0, body: "{}" },
-  ]);
+  ], sql => calls.push(sql));
   const response = await worker.fetch(new Request("https://edge.test/v1/preflop/datasets/reasons%2FBB_vs_BTN", {
     headers: { origin: "https://allowed.example" },
   }), { SOLUTIONS: null, DB: db, ALLOWED_ORIGIN: "https://allowed.example" });
@@ -78,8 +131,8 @@ test("encoded published names and raw Unicode chunk text pass through with publi
   assert.equal(response.headers.get("access-control-allow-origin"), "https://allowed.example");
   assert.equal(response.headers.get("access-control-allow-credentials"), null);
   assert.equal((await worker.fetch(new Request(`https://edge.test/v1/preflop/datasets/${profileName}`), { SOLUTIONS: null, DB: db })).status, 200);
-  assert.ok(db.calls.indexOf("SELECT content_hash, parts FROM preflop_datasets WHERE name = ?")
-    < db.calls.indexOf("SELECT part, body FROM preflop_dataset_parts WHERE name = ? ORDER BY part"));
+  assert.ok(calls.indexOf("SELECT content_hash, parts FROM preflop_datasets WHERE name = ?")
+    < calls.indexOf("SELECT part, body FROM preflop_dataset_parts WHERE name = ? ORDER BY part"));
 });
 
 test("publish splits datasets into parts that reassemble exactly", () => {

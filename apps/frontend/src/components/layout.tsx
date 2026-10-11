@@ -79,11 +79,8 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
         </div>
       </div>
       <nav id="main-navigation" className="header-nav" aria-label="メインナビゲーション">
-        {navigationGroups.map(group => (
-          <div className="header-nav-group" key={group.label}>
-            <span className="header-nav-group-label">{group.label}</span>
-            <div className="header-nav-items">
-              {group.items.map(({ Icon, name, status: pendingStatus }) => {
+        <div className="header-nav-items">
+          {navigationGroups.flatMap(group => group.items).map(({ Icon, name, status: pendingStatus }) => {
                 const status = pendingStatus;
                 const label = name === RANGE_SECTION ? localized("Range", name) : name === "プレー分析" ? localized("Stats", name) : name;
                 return (
@@ -101,17 +98,8 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
                   {status && <small>{status}</small>}
                 </button>
               );})}
-            </div>
-          </div>
-        ))}
-      </nav>
-      {profile ? <AccountMenu profile={profile} collapsed={visuallyCollapsed}
-        onNavigate={tab => onSectionChange(`${ACCOUNT_SECTION}#${tab}`)} onLogout={() => onSectionChange(LOGOUT_SECTION)} /> : (
-        <div className="header-meta">
-          <strong>Range Explorer</strong>
-          <small>READ-ONLY / v0.1</small>
         </div>
-      )}
+      </nav>
       <button
         type="button"
         className="sidebar-toggle"
@@ -123,6 +111,13 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
       >
         {visuallyCollapsed ? <CaretDoubleRight size={17} /> : <CaretDoubleLeft size={17} />}
       </button>
+      {profile ? <AccountMenu profile={profile} collapsed={visuallyCollapsed}
+        onNavigate={tab => onSectionChange(`${ACCOUNT_SECTION}#${tab}`)} onLogout={() => onSectionChange(LOGOUT_SECTION)} /> : (
+        <div className="header-meta">
+          <strong>Range Explorer</strong>
+          <small>READ-ONLY / v0.1</small>
+        </div>
+      )}
     </aside>
     <nav className="mobile-tab-bar" aria-label={localized("Main navigation", "メインナビゲーション")}>
       {[

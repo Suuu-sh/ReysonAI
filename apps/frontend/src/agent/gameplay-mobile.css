@@ -26,6 +26,22 @@
 .game-details-modal .agent-rule-tip { position: static; opacity: 1; transform: none; pointer-events: auto; width: auto; box-shadow: none; }
 .game-details-modal .agent-tools { align-items: start; }
 .game-selected-history { display: flex; align-items: center; gap: 4px; }
+.game-selected-history-summary { display: grid; gap: 10px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 6px; background: color-mix(in srgb, var(--surface) 75%, #fff 3%); }
+.game-selected-history-summary .game-selected-history { min-height: 28px; gap: 8px; }
+.game-selected-history-summary .game-selected-history > b { color: var(--text-subtle); font-size: 12px; }
+.game-selected-history-summary .game-selected-history > strong { margin-left: auto; font-size: 14px; font-variant-numeric: tabular-nums; }
+.game-history-board { display: flex; align-items: center; gap: 5px; padding-top: 8px; border-top: 1px solid var(--line); }
+.game-history-board > span { margin-right: auto; color: var(--text-subtle); font-size: 11px; font-weight: 700; }
+.game-showdown { display: grid; gap: 6px; padding-top: 8px; border-top: 1px solid var(--line); }
+.game-showdown h3 { margin: 0; color: var(--text-subtle); font-size: 11px; }
+.game-showdown ul { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.game-showdown li { display: grid; grid-template-columns: minmax(84px, 1fr) auto minmax(70px, 1fr); align-items: center; gap: 9px; padding: 5px 7px; border-left: 2px solid transparent; background: rgb(255 255 255 / 2%); font-size: 12px; }
+.game-showdown li.is-winner { border-left-color: #6fdc8c; background: rgb(111 220 140 / 7%); }
+.game-showdown-player { display: flex; align-items: baseline; gap: 5px; font-weight: 650; }
+.game-showdown-player small { color: var(--text-subtle); font-size: 10px; }
+.game-showdown-player b { color: #6fdc8c; font-size: 10px; }
+.game-showdown-cards { display: flex; gap: 3px; }
+.game-showdown li > strong { justify-self: end; color: var(--text-subtle); font-size: 11px; font-weight: 500; text-align: right; }
 .game-profile-modal { width: min(380px, calc(100vw - 24px)); }
 .game-profile-players { display: flex; flex-wrap: wrap; gap: 6px; }
 .game-profile-players button { min-width: 44px; }

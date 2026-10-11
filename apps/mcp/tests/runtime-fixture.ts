@@ -1,5 +1,6 @@
 // Test-only entry. NEVER deploy: administrative fixture setup exists only in an in-memory workerd test.
-import worker from '../src/index.ts';
+// Run the real OAuth/MCP runtime through the Cloudflare API composer's path dispatch.
+import worker from '../../backend/src/worker.ts';
 import { authorizationServer } from '../src/oauth.ts';
 import { configuration, type McpEnv } from '../src/config.ts';
 export default {
