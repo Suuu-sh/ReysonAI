@@ -443,8 +443,9 @@ test("hero range cells use one exact sharp-stop color layer with bottom reach an
   assert.ok(preflopHtml.includes(`background-image:linear-gradient(90deg, ${color("bet33")} 0% 100%);height:100%`), "preflop without reach metadata fills full height");
 
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  assert.match(css, /\.has-motion \.site-cell-fill-layer\.is-incoming\s*\{[^}]*animation: site-range-fill-in \.3s ease calc\(var\(--wave\) \* 8ms\) both/);
-  assert.match(css, /\.has-motion \.site-cell-fill-layer\.is-outgoing\s*\{[^}]*animation: site-range-fill-out \.3s ease calc\(var\(--wave\) \* 8ms\) both/);
+  assert.match(css, /\.has-motion \.site-cell-fill-layer\.is-incoming\s*\{[^}]*animation: site-range-fill-in \.38s ease calc\(var\(--wave\) \* 14ms\) both/);
+  assert.match(css, /\.has-motion \.site-cell-fill-layer\.is-outgoing\s*\{[^}]*animation: site-range-fill-out \.38s ease calc\(var\(--wave\) \* 14ms\) both/);
+  assert.equal(380 + 24 * 14, 716, "site fill wave matches the app's maximum 716ms timing");
   assert.doesNotMatch(css, /site-cell-fill-layer[^}]*transition:\s*(?:left|width|height|background-color)/);
   const cellRule = css.match(/\.site \.site-cell \{[^}]*\}/)?.[0] ?? "";
   assert.match(cellRule, /transition: transform \.18s[^}]*box-shadow \.18s/);
@@ -455,7 +456,7 @@ test("hero range cells use one exact sharp-stop color layer with bottom reach an
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
   assert.match(source, /const useBrowserLayoutEffect = typeof document === "undefined" \? useEffect : useLayoutEffect/);
   assert.match(source, /useBrowserLayoutEffect\(\(\) => \{\s*const previous = lastRange\.current/);
-  assert.match(source, /setTimeout\(\(\) => setPreviousRange\(current => current\?\.id === previous\.id \? null : current\), 520\)/);
+  assert.match(source, /setTimeout\(\(\) => setPreviousRange\(current => current\?\.id === previous\.id \? null : current\), 760\)/);
   assert.match(source, /if \(!motion\) \{ setPreviousRange\(null\); return; \}/);
   assert.match(source, /key=\{hand\} className=\{`site-cell/);
 });

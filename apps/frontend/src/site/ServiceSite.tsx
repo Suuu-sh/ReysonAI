@@ -160,7 +160,7 @@ export function RangeMatrix({ range, selected, onSelect }: { range: HeroRange; s
     if (!motion) { setPreviousRange(null); return; }
     if (previous.id === range.id) return;
     setPreviousRange(previous);
-    const timer = window.setTimeout(() => setPreviousRange(current => current?.id === previous.id ? null : current), 520);
+    const timer = window.setTimeout(() => setPreviousRange(current => current?.id === previous.id ? null : current), 760);
     return () => window.clearTimeout(timer);
   }, [range, motion]);
   const fills = useMemo(() => rangeCellFills(range), [range]);
