@@ -86,9 +86,13 @@ test("trainer home Agent and drill artwork stays bounded on hover and keyboard f
   assert.match(css, /\.trainer-home \.agent-lineup \.agent-table-face:not\(\.is-near\):not\(\.is-front\) \{ display: none; \}/);
   assert.match(css, /\.trainer-home \.mode-block\.is-agent:is\(:hover, :focus-within\) \.agent-lineup \.agent-table-face,\s*\.trainer-home \.mode-block\.is-agent:is\(:hover, :focus-within\) \.agent-lineup \.agent-table-face\.is-front \{[^}]*transform: none;[^}]*animation: none;/s);
   assert.match(css, /\.trainer-home \.agent-lineup \.agent-table-face\.is-front > :first-child,\s*\.trainer-home \.mode-block\.is-agent:is\(:hover, :focus-within\) \.agent-lineup \.agent-table-face\.is-front > :first-child \{ filter: none; animation: none; \}/);
-  assert.match(css, /\.trainer-home \.drill-deck-card \{ box-sizing: border-box; width: 44px; height: 56px;[^}]*transition: none; \}/);
-  assert.match(css, /\.trainer-home \.drill-deck-card \{[^}]*transform: translate\(calc\(-50% \+ var\(--k\) \* 14px\), -50%\) rotate\(calc\(var\(--k\) \* 3deg\)\)/s);
-  assert.match(css, /\.trainer-home \.mode-block\.is-drills:is\(:hover, :focus-within\) \.drill-deck-card \{ transform: translate\(calc\(-50% \+ var\(--k\) \* 14px\), -50%\) rotate\(calc\(var\(--k\) \* 3deg\)\); box-shadow: none; \}/);
+  assert.match(css, /\.trainer-home \.drill-deck \{ position: static; display: flex; align-items: center; justify-content: center; gap: 8px; height: 76px; min-height: 76px; overflow: hidden; \}/);
+  assert.match(css, /\.trainer-home \.drill-deck-card \{ position: static; box-sizing: border-box; flex: 0 0 44px; width: 44px; height: 56px; padding: 4px; transform: none; transition: none; z-index: auto; box-shadow: none; \}/);
+  assert.match(css, /\.trainer-home \.drill-deck-card:nth-child\(2\) \{ z-index: auto; \}/);
+  assert.match(css, /\.trainer-home \.drill-deck-card b \{ font-size: 14px; line-height: 1; \}/);
+  assert.match(css, /\.trainer-home \.drill-deck-card i \{ display: block; width: auto; height: auto; min-width: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; font-size: 20px; line-height: 1; \}/);
+  assert.match(css, /\.trainer-home \.mode-block\.is-drills:is\(:hover, :focus-within\) \.drill-deck-card,\s*\.trainer-home \.mode-block\.is-drills:is\(:hover, :focus-within\) \.drill-deck-card:hover,\s*\.trainer-home \.mode-block\.is-drills \.drill-deck-card:hover \{ position: static; transform: none; box-shadow: none; z-index: auto; \}/);
+  assert.match(css, /@media \(max-width: 700px\) \{ \.trainer-home \.drill-deck \{ height: 64px; min-height: 64px; \} \}/);
 });
 
 test("sessions page keeps its session-total stats", () => {
