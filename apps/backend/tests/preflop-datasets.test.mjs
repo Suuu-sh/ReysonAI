@@ -84,6 +84,67 @@ test("public preflop catalog and body use bounded edge TTLs without caching CORS
   assert.equal(cache.puts.length, 4);
 });
 
+test("conditional dataset GET uses weak tag comparison on MISS and HIT without another D1 read", async t => {
+  const cache = installEdgeCache(t);
+  const queries = [];
+  const env = { DB: mockDb([{ name: "opening-ranges", content_hash: "old", bytes: 2, parts: 1 }], [{ name: "opening-ranges", part: 0, body: "{}" }], sql => queries.push(sql)), ALLOWED_ORIGIN: "https://one.test" };
+  const path = "https://edge.test/v1/preflop/datasets/opening-ranges";
+  const get = condition => worker.fetch(new Request(path, { headers: { origin: "https://one.test", ...(condition ? { "if-none-match": condition } : {}) } }), env);
+  const miss = await get('W/"old"');
+  assert.equal(miss.status, 304);
+  assert.equal(miss.headers.get("etag"), '"old"');
+  assert.equal(miss.headers.get("cache-control"), "public, max-age=300, s-maxage=300");
+  assert.equal(miss.headers.get("access-control-allow-origin"), "https://one.test");
+  assert.equal(await miss.text(), "");
+  assert.equal(queries.length, 2);
+  assert.equal(cache.puts.length, 1, "the 200 representation, not the 304, is cached");
+
+  const cached = [...cache.entries.values()][0].response;
+  cached.headers.set("etag", 'W/"old"');
+  cached.headers.set("cache-control", "public, max-age=14400");
+  cached.headers.set("date", "Sun, 11 Oct 2026 00:00:00 GMT");
+  cached.headers.set("content-location", "/v1/preflop/datasets/opening-ranges");
+  cached.headers.set("expires", "Sun, 11 Oct 2026 00:05:00 GMT");
+  cached.headers.set("vary", "Accept-Encoding");
+  const hit = await get('"other", "old"');
+  assert.equal(hit.status, 304);
+  assert.equal(hit.headers.get("etag"), 'W/"old"');
+  assert.equal(hit.headers.get("cache-control"), "public, max-age=300, s-maxage=300");
+  assert.equal(hit.headers.get("date"), "Sun, 11 Oct 2026 00:00:00 GMT");
+  assert.equal(hit.headers.get("content-location"), "/v1/preflop/datasets/opening-ranges");
+  assert.equal(hit.headers.get("expires"), "Sun, 11 Oct 2026 00:05:00 GMT");
+  assert.equal(hit.headers.get("vary"), "Origin, Accept-Encoding");
+  assert.equal(hit.headers.get("x-reysonai-cache"), null);
+  assert.equal((await get("*")).status, 304);
+  assert.equal((await get('"other"')).status, 200);
+  assert.equal((await get('"old", junk')).status, 200);
+  assert.equal(queries.length, 2, "warm conditional and nonmatching requests do not query D1");
+});
+
+test("quoted commas in If-None-Match tags are not list separators", async () => {
+  const env = { DB: mockDb([{ name: "opening-ranges", content_hash: "old,part", bytes: 2, parts: 1 }], [{ name: "opening-ranges", part: 0, body: "{}" }]) };
+  const get = condition => worker.fetch(new Request("https://edge.test/v1/preflop/datasets/opening-ranges", { headers: { "if-none-match": condition } }), env);
+  assert.equal((await get('"other,tag", W/"old,part"')).status, 304);
+  assert.equal((await get('"old", "part"')).status, 200);
+});
+
+test("wildcard matches an existing catalog without an ETag", async t => {
+  const cache = installEdgeCache(t);
+  const queries = [];
+  const env = { DB: mockDb([{ name: "opening-ranges", content_hash: "h", bytes: 2, parts: 1 }], [], sql => queries.push(sql)) };
+  const get = condition => worker.fetch(new Request("https://edge.test/v1/preflop/datasets", { headers: { "if-none-match": condition } }), env);
+  for (let n = 0; n < 2; n++) {
+    const response = await get("*");
+    assert.equal(response.status, 304);
+    assert.equal(response.headers.get("etag"), null);
+    assert.equal(response.headers.get("cache-control"), "public, max-age=60, s-maxage=60");
+  }
+  assert.equal(queries.length, 1);
+  assert.equal(cache.puts.length, 1);
+  assert.equal((await get('"h"')).status, 200, "a list only matches an actual response ETag");
+  assert.equal(queries.length, 1);
+});
+
 test("preflop errors, non-GET requests and unavailable cache never become cached", async t => {
   const cache = installEdgeCache(t);
   const queries = [];

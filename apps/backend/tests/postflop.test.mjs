@@ -242,6 +242,11 @@ test("Brotli and identity flop cache variants stay separate, including condition
   assert.equal(brotliDecompressSync(Buffer.from(await br.arrayBuffer())).toString(), '{"saved":true}');
   const conditional = await get({ "accept-encoding": "br", "if-none-match": '"flop-body"' });
   assert.equal(conditional.status, 304);
+  assert.equal(conditional.headers.get("cache-control"), "public, max-age=300, s-maxage=86400");
+  assert.equal(conditional.headers.get("vary"), "Origin, accept-encoding");
+  assert.equal(conditional.headers.get("content-encoding"), null);
+  assert.equal(conditional.headers.get("content-length"), null);
+  assert.equal(await conditional.text(), "");
   assert.equal(queries.filter(sql => sql.includes("FROM postflop_flop_base_br")).length, 1);
   const brHit = await get({ "accept-encoding": "br" });
   assert.equal(brHit.headers.get("x-reysonai-cache"), "HIT");
