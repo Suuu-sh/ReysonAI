@@ -837,10 +837,15 @@
 .trainer-home .agent-lineup .agent-table-face.is-front > :first-child,
 .trainer-home .mode-block.is-agent:is(:hover, :focus-within) .agent-lineup .agent-table-face.is-front > :first-child { filter: none; animation: none; }
 .trainer-home .mode-block.is-agent:is(:hover, :focus-within) .agent-lineup .agent-table-face small { position: static; opacity: 1; transform: none; }
-.trainer-home .drill-deck { height: 76px; min-height: 76px; overflow: hidden; }
-.trainer-home .drill-deck-card { box-sizing: border-box; width: 44px; height: 56px; padding: 4px; transform: translate(calc(-50% + var(--k) * 14px), -50%) rotate(calc(var(--k) * 3deg)); transition: none; }
-.trainer-home .mode-block.is-drills:is(:hover, :focus-within) .drill-deck-card { transform: translate(calc(-50% + var(--k) * 14px), -50%) rotate(calc(var(--k) * 3deg)); box-shadow: none; }
-.trainer-home .mode-block.is-drills:is(:hover, :focus-within) .drill-deck-card:hover { transform: translate(calc(-50% + var(--k) * 14px), -50%) rotate(calc(var(--k) * 3deg)); }
+.trainer-home .drill-deck { position: static; display: flex; align-items: center; justify-content: center; gap: 8px; height: 76px; min-height: 76px; overflow: hidden; }
+.trainer-home .drill-deck-card { position: static; box-sizing: border-box; flex: 0 0 44px; width: 44px; height: 56px; padding: 4px; transform: none; transition: none; z-index: auto; box-shadow: none; }
+.trainer-home .drill-deck-card:nth-child(2) { z-index: auto; }
+.trainer-home .drill-deck-card b { font-size: 14px; line-height: 1; }
+.trainer-home .drill-deck-card i { display: block; width: auto; height: auto; min-width: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; font-size: 20px; line-height: 1; }
+.trainer-home .mode-block.is-drills:is(:hover, :focus-within) .drill-deck-card,
+.trainer-home .mode-block.is-drills:is(:hover, :focus-within) .drill-deck-card:hover,
+.trainer-home .mode-block.is-drills .drill-deck-card:hover { position: static; transform: none; box-shadow: none; z-index: auto; }
+@media (max-width: 700px) { .trainer-home .drill-deck { height: 64px; min-height: 64px; } }
 @media (max-width: 700px) {
   .trainer-home .mode-visual, .trainer-home .agent-lineup, .trainer-home .drill-deck { height: 64px; min-height: 64px; }
 }
