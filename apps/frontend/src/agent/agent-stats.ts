@@ -2,14 +2,15 @@
 // synced to the account when signed in, or kept in this browser as a guest. Separate from drill history.
 import type { HandResult, LogEntry } from "./hand.ts";
 import { decodeAgentHistory } from "./agent-history-codec.ts";
-import { accountStorage, AGENT_HANDS_KEY, LEGACY_AGENT_HANDS_KEY } from "../account/session.ts";
+import { accountSnapshot, accountStorage, AGENT_HANDS_KEY, LEGACY_AGENT_HANDS_KEY } from "../account/session.ts";
 
 const KEY = AGENT_HANDS_KEY;
 const LIMIT = 3000;
 const RAISES = new Set(["open", "raise", "three_bet", "squeeze", "four_bet", "all_in"]);
 
 export type AgentHandHistory = {
-  version: 1; handNo?: number; names?: Record<string, string>;
+  version: 1; handNo?: number; names?: Record<string, string>; reviewPolicyVersion?: 1;
+  reviewDecisions?: { logIndex: number; street: string; action: string; policy: Record<string, number>; source?: string }[];
   holeCards: Record<string, string[]>; board: string[]; log: LogEntry[];
   winners: string[]; returns: Record<string, number>; pot?: number; rake?: number; handRanks?: Record<string, number>;
 };
@@ -17,6 +18,8 @@ export type AgentHandHistory = {
 export type AgentHandRecord = {
   session?: { id: string; startedAt: number; endedAt?: number };
   history?: AgentHandHistory;
+  // A user's private review marker; it does not affect Agent gameplay or results.
+  bookmarked?: boolean;
   at: number; tableId: string; pos: string; returnBb: number;
   vpip: boolean; pfr: boolean;
   threeBetOpp: boolean; threeBet: boolean;
@@ -46,8 +49,62 @@ export function finishAgentHistorySession(id: string, endedAt = Date.now()) {
   try { storage()?.setItem(KEY, JSON.stringify(next)); if (typeof window !== "undefined" && window.dispatchEvent) window.dispatchEvent(new window.Event("reysonai:agent-history-changed")); } catch { /* preserve saved hands on quota failure */ }
 }
 
+export function setAgentHandBookmarked(selector: { sessionId?: string; handNo?: number; at?: number; tableId: string; pos: string }, bookmarked: boolean) {
+  const hands = loadAgentHands();
+  let changed = false;
+  const next = hands.map(hand => {
+    const matches = selector.sessionId
+      ? hand.session?.id === selector.sessionId && hand.history?.handNo === selector.handNo
+      : hand.at === selector.at && hand.tableId === selector.tableId && hand.pos === selector.pos;
+    // Only completed records with saved hand detail can be bookmarked.
+    if (!matches || !hand.history || hand.bookmarked === bookmarked) return hand;
+    changed = true;
+    return { ...hand, bookmarked };
+  });
+  if (!changed) return hands;
+  try {
+    const store = storage();
+    if (!store) return hands;
+    store.setItem(KEY, JSON.stringify(next));
+    const saved = loadAgentHands();
+    if (!saved.some(hand => {
+      const matches = selector.sessionId
+        ? hand.session?.id === selector.sessionId && hand.history?.handNo === selector.handNo
+        : hand.at === selector.at && hand.tableId === selector.tableId && hand.pos === selector.pos;
+      return matches && hand.bookmarked === bookmarked;
+    })) return hands;
+    if (typeof window !== "undefined") window.dispatchEvent(new window.Event("reysonai:agent-history-changed"));
+    return saved;
+  } catch { return hands; /* keep current view if persistence is unavailable */ }
+}
+
+// Enrich only the exact base record after lazy review computation. Read the current row before
+// writing so a later bookmark, session end or deletion is never overwritten/resurrected.
+export function saveAgentHandReview(selector: { sessionId: string; handNo: number }, reviewDecisions: AgentHandHistory["reviewDecisions"], expectedOwnerId: string | null) {
+  if ((accountSnapshot().user?.id ?? null) !== expectedOwnerId) return false;
+  const hands = loadAgentHands();
+  let changed = false;
+  const next = hands.map(hand => {
+    if (hand.session?.id !== selector.sessionId || hand.history?.handNo !== selector.handNo) return hand;
+    changed = true;
+    return { ...hand, history: { ...hand.history, reviewPolicyVersion: 1, ...(reviewDecisions?.length ? { reviewDecisions } : {}) } };
+  });
+  if (!changed) return false;
+  try {
+    const store = storage();
+    if (!store || (accountSnapshot().user?.id ?? null) !== expectedOwnerId) return false;
+    store.setItem(KEY, JSON.stringify(next));
+    if ((accountSnapshot().user?.id ?? null) !== expectedOwnerId) return false;
+    const saved = loadAgentHands();
+    const persisted = saved.some(hand => hand.session?.id === selector.sessionId && hand.history?.handNo === selector.handNo
+      && JSON.stringify(hand.history.reviewDecisions ?? []) === JSON.stringify(reviewDecisions ?? []));
+    if (persisted && typeof window !== "undefined") window.dispatchEvent(new window.Event("reysonai:agent-history-changed"));
+    return persisted;
+  } catch { return false; }
+}
+
 // The human's flags for one finished hand.
-export function handRecord(result: HandResult, tableId: string, pos: string, at = Date.now(), context: { handNo?: number; names?: Record<string, string>; session?: { id: string; startedAt: number } } = {}): AgentHandRecord {
+export function handRecord(result: HandResult, tableId: string, pos: string, at = Date.now(), context: { handNo?: number; names?: Record<string, string>; session?: { id: string; startedAt: number }; reviewDecisions?: AgentHandHistory["reviewDecisions"] } = {}): AgentHandRecord {
   if (result.status !== "done" || !result.returns || !Number.isFinite(result.returns[pos] ?? 0)) throw new Error("Cannot record an unfinished Agent hand");
   const preflop = result.log.filter(entry => entry.street === "preflop");
   const mine = preflop.filter(entry => entry.pos === pos);
@@ -66,7 +123,8 @@ export function handRecord(result: HandResult, tableId: string, pos: string, at 
   return {
     ...(context.session ? { session: { ...context.session } } : {}),
     history: {
-      version: 1, handNo: context.handNo, names: context.names,
+      version: 1, handNo: context.handNo, names: context.names, reviewPolicyVersion: 1,
+      ...(context.reviewDecisions?.length ? { reviewDecisions: context.reviewDecisions.map(decision => ({ ...decision, policy: { ...decision.policy } })) } : {}),
       // Persist only the human's cards and opponents actually exposed at showdown.
       // Folded opponents remain hidden even though the local engine dealt their cards.
       holeCards: Object.fromEntries(Object.entries(result.holeCards).filter(([seat]) =>
