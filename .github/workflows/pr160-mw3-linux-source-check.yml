@@ -5,14 +5,7 @@ name: PR160 integrated-source saved-byte diagnostic (CI only)
 # Only PR160 runs it. The PR-controlled harness gets contents:read, no secrets,
 # no persisted checkout credentials, and no user-authored values as shell code.
 on:
-  pull_request:
-    branches: [development]
-    paths:
-      - '.github/workflows/pr160-mw3-linux-source-check.yml'
-      - 'tools/pr160-linux-mw3-check.mjs'
-      - 'tools/pr160-linux-preflop-check.mjs'
-      - 'tools/pr160-linux-reproduce.sh'
-      - 'docs/qa/pr160-integrated-source-renewal-9374d90/**'
+  workflow_dispatch:
 
 permissions:
   contents: read
