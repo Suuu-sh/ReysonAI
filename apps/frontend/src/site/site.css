@@ -697,23 +697,6 @@
 .site-plan .site-button { width: 100%; margin-top: auto; }
 .site-pricing-note { max-width: none; margin: 24px auto 0; color: var(--subtle); font-size: 13px; }
 
-/* FAQ */
-.site-faq { border-top: 1px solid var(--line); }
-.site-faq-inner { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: var(--layout-gap); }
-.site-faq-list { padding: 0 24px; border: 1px solid var(--line-strong); border-radius: var(--panel-radius); background: var(--surface); }
-.site-faq details:last-child { border-bottom: 0; }
-.site-faq details { border-bottom: 1px solid var(--line-strong); }
-.site-faq summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px 0; font-size: 17px; font-weight: 600; list-style: none; cursor: pointer; transition: color .2s ease; }
-.site-faq summary::-webkit-details-marker { display: none; }
-.site-faq summary:hover { color: var(--pink-bright); }
-.site-faq summary span { position: relative; flex: 0 0 auto; width: 14px; height: 14px; }
-.site-faq summary span::before, .site-faq summary span::after { position: absolute; top: 6px; left: 0; width: 14px; height: 2px; border-radius: 1px; background: currentColor; content: ""; transition: transform .35s var(--ease); }
-.site-faq summary span::after { transform: rotate(90deg); }
-.site-faq details[open] summary span::after { transform: rotate(0); }
-.site-faq details p { max-width: 620px; padding-bottom: 24px; color: var(--muted); font-size: 16px; }
-.site-faq details::details-content { block-size: 0; overflow: clip; transition: block-size .45s var(--ease), content-visibility .45s allow-discrete; }
-.site-faq details[open]::details-content { block-size: auto; }
-
 /* Final */
 .site-final { padding: 64px 0 80px; border-top: 1px solid var(--line); text-align: center; }
 .site-final-inner { display: flex; flex-direction: column; align-items: center; }
@@ -821,7 +804,7 @@
   .site-how-steps li, .site-how-steps li:first-child { min-height: 0; padding-top: 0; opacity: 1; }
   .site-how-inline { position: relative; display: block; min-height: 340px; margin-top: 28px; padding: 28px 20px; overflow: hidden; border: 1px solid var(--line); border-radius: var(--panel-radius); background: var(--surface); }
   .site-how-inline .site-scene { height: auto; min-height: 282px; }
-  .site-drill-inner, .site-section-head, .site-pricing-head, .site-faq-inner, .site-feature, .site-feature.is-reversed { grid-template-columns: 1fr; gap: 28px; }
+  .site-drill-inner, .site-section-head, .site-pricing-head, .site-feature, .site-feature.is-reversed { grid-template-columns: 1fr; gap: 28px; }
   .site-feature { gap: 32px; }
   .site-audience-grid { grid-template-columns: 1fr; gap: 24px; }
   .site-persona-view { display: none; align-content: start; min-height: 0; padding: 26px 20px; }
@@ -836,7 +819,6 @@
   .site-header-inner { gap: 16px; }
   .site-header-actions { gap: 8px; }
   .site .site-cell { font-size: clamp(9px, 1.7vw, 12px); }
-  .site-faq-list { padding-inline: 18px; }
   .site-audience-note { margin-top: 16px; font-size: 12px; }
   .site-plans, .site-dash-body { grid-template-columns: 1fr; }
   .site-tiers { grid-template-columns: repeat(3, 1fr); }
@@ -1089,8 +1071,8 @@
 }
 
 /* Shrink real content instead of hiding overflow across service chapters. */
-.site :is(.site-wrap, .site-feature-copy, .site-section-head, .site-plan, .site-faq-inner, .site-footer-links) { min-width: 0; }
-.site :is(.site-points li, .site-plan p, .site-faq summary, .site-footer a) { overflow-wrap: anywhere; }
+.site :is(.site-wrap, .site-feature-copy, .site-section-head, .site-plan, .site-footer-links) { min-width: 0; }
+.site :is(.site-points li, .site-plan p, .site-footer a) { overflow-wrap: anywhere; }
 @media (max-width: 960px) {
   .site-persona-view, .site-persona-view > *, .site-persona-callout, .site-persona-detail-head > * { min-width: 0; max-width: 100%; }
   .site-persona-view .site-mini-matrix { grid-template-columns: repeat(13, minmax(0, 1fr)); }

@@ -78,16 +78,6 @@ export const ja: SiteCopy = {
     note: "アプローチの一般的な比較です。個々の製品の機能は異なり、変わることがあります。",
   },
   pricing: { title1: "まずは無料で。", title2: "Plusも1日約19円。", description: "Free／Plusで予定している機能分けです。現在のプレビューは利用できます。", note: "予定している機能分けです。Plusの有料利用と課金はまだ提供していません。現在のプレビュー利用は有料権利の提供を意味しません。", plans: [{ name: "Free", price: "¥0", cadence: "ずっと無料", description: "プリフロップ学習と簡易レポート。", features: ["プリフロップのレンジと理由", "プリフロップ練習", "簡易レポート"], action: "アプリを開く", href: "/analyze/ranges" as string | null, status: "提供中" }, { name: "Plus", price: "¥580", cadence: "/ 月", description: "Freeの全機能に、ポストフロップ学習と詳細分析を。", features: ["Freeの全機能", "ポストフロップのレンジ・理由・練習", "詳細な分析レポート"], action: "今後提供予定", href: null as string | null, status: "予定" }] },
-  faq: {
-    title: "よくある質問に、率直に。",
-    items: [
-      { question: "GTO Wizard との違いは？", answer: "GTO Wizard などは、ソルバーが計算した戦略を示す厳密な理論の基準です。ReysonAIは学習のためのAI推定を、解説、ドリル、ランク戦、練習の分析とあわせて提供します。詳しくは上の比較をご覧ください。" },
-      { question: "どのゲームに対応していますか？", answer: "6-maxキャッシュゲーム、100BB、アンティなしです。オープンは2.5BB（SBは3.5BB）。保存データのない局面は「未収録」と表示し、推測では埋めません。" },
-      { question: "アカウントは必要ですか？", answer: "不要です。プロフィールと練習履歴はこのブラウザーに保存されます。アカウント機能は予定しています。" },
-      { question: "ポストフロップにも対応していますか？", answer: "ポストフロップのレンジ・理由・練習はPlusで提供予定です。現在は対応するヘッズアップの流れでフロップからリバーまでの試験機能がありますが、有料利用権の提供は始まっていません。" },
-      { question: "料金はかかりますか？", answer: "現在のプレビューは無料です。Freeはプリフロップのレンジ・理由・練習と簡易レポート、Plusはそれらにポストフロップ学習と詳細な分析レポートを加える予定です。Plusは月額580円（30日換算で1日約19円）を予定していますが、課金はまだ始まっていません。" },
-    ],
-  },
   final: { title1: "次のセッションは、", title2: "ひとつのハンドから。", description: "アプリを開いて、局面を選び、ハンドをタップするだけ。", action: "ReysonAI を開く", note: "無料プレビュー · アカウント不要" },
-  footer: { tagline: "Don't just play. Understand the reason.", product: "プロダクト", open: "アプリを開く", how: "使い方", drill: "トレーニング", analysis: "分析", compare: "比較", pricing: "料金", faq: "よくある質問", legal: "規約", privacy: "プライバシーポリシー", terms: "利用規約", disclaimer: "ReysonAIはポーカーの戦略と学習のための情報を提供します。AIソリューションは推定であり、数学的な最適性やGTOソリューションとの同等性は保証されません。節度をもってお楽しみください。" },
+  footer: { tagline: "Don't just play. Understand the reason.", product: "プロダクト", open: "アプリを開く", how: "使い方", drill: "トレーニング", analysis: "分析", compare: "比較", pricing: "料金", legal: "規約", privacy: "プライバシーポリシー", terms: "利用規約", disclaimer: "ReysonAIはポーカーの戦略と学習のための情報を提供します。AIソリューションは推定であり、数学的な最適性やGTOソリューションとの同等性は保証されません。節度をもってお楽しみください。" },
 };
