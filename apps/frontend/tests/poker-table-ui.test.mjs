@@ -73,6 +73,10 @@ test('Agent auto-skip after fold is opt-in, persists, records the hand, and can 
   await until(()=>Boolean(doc.querySelector('.agent-result')));
   assert.ok(doc.querySelector('.game-history-hand'),'completed hand is recorded before advancing');
   assert.ok(JSON.parse(dom.window.localStorage.getItem('reysonai:agent-hands:v1'))?.length,'completed hand remains in saved history');
+  const bookmark=[...doc.querySelectorAll('button')].find(button=>button.textContent.includes('Review this hand'));
+  assert.ok(bookmark,'completed hands can be bookmarked before auto-advance');
+  await act(async()=>bookmark.click());
+  assert.equal(JSON.parse(dom.window.localStorage.getItem('reysonai:agent-hands:v1'))[0].bookmarked,true);
   await act(async()=>toggle().click());
   await act(async()=>new Promise(resolve=>setTimeout(resolve,500)));
   assert.match(doc.querySelector('.agent-title small').textContent,/#1/,'turning auto-skip off cancels its automatic advance');

@@ -1,6 +1,9 @@
 import type { AgentHandRecord } from "../agent/agent-stats.ts";
 import { PlayingCard } from "../components/PlayingCard.tsx";
 import { ffCopy as t, ffNumber } from "./fastfold-api.ts";
+import { useState } from "react";
+import { Bookmark } from "@phosphor-icons/react";
+import { setAgentHandBookmarked } from "../agent/agent-stats.ts";
 
 const handName = (category: number) => [
   t("High card", "ハイカード", "高牌", "Carta alta"), t("One pair", "ワンペア", "一对", "Pareja"),
@@ -21,12 +24,18 @@ function actionLabel(action: string) {
   return t("Raise", "レイズ", "加注", "Subir");
 }
 export function AgentHandHistory({ record }: { record: AgentHandRecord }) {
+  const [bookmarked, setBookmarked] = useState(Boolean(record.bookmarked));
   const history = record.history;
   if (!history) return null;
   const name = (seat: string) => `${history.names?.[seat] ?? seat}${history.names?.[seat] ? ` · ${seat}` : ""}`;
   return <section className="sessions-history">
-    <h2>{t("Hand history", "ハンド履歴", "手牌历史", "Historial de manos")}{history.handNo ? ` #${history.handNo}` : ""}</h2>
+    <div className="sessions-history-head"><h2>{t("Hand history", "ハンド履歴", "手牌历史", "Historial de manos")}{history.handNo ? ` #${history.handNo}` : ""}</h2><button type="button" className="config-edit" aria-pressed={bookmarked} onClick={() => {
+      const value = !bookmarked;
+      setAgentHandBookmarked({ ...(record.session ? { sessionId: record.session.id, handNo: history.handNo } : { at: record.at }), tableId: record.tableId, pos: record.pos }, value);
+      setBookmarked(value);
+    }}><Bookmark size={14} weight={bookmarked ? "fill" : "regular"} />{bookmarked ? t("Bookmarked", "復習に保存済み", "已收藏", "Guardada") : t("Bookmark for review", "復習用に保存", "收藏复习", "Guardar para revisar")}</button></div>
     <p className="sessions-source-note">{t("Only your cards and opponents revealed at showdown are saved. Folded opponents remain hidden.", "自分のカードとショーダウンで公開された相手のカードのみ保存します。フォールドした相手のカードは非公開です。", "仅保存你的牌与摊牌时公开的对手牌。弃牌对手的牌不公开。", "Solo se guardan tus cartas y las reveladas en showdown. Las cartas de rivales retirados siguen ocultas.")}</p>
+    <p className="sessions-source-note">{t("This is the recorded hand, not a solver review. Exact policy frequencies and replay seed were not saved, so policy comparison and replay are unavailable.", "これは実際のハンド記録です。ソルバー分析ではありません。正確な方針頻度とリプレイ用シードは保存されていないため、方針比較と再プレイには対応していません。", "这是已记录的手牌，不是求解器复盘。未保存精确策略频率或重放种子，因此无法比较策略或重放。", "Esta es la mano registrada, no un análisis de solver. No se guardaron frecuencias exactas ni la semilla, por lo que no se puede comparar la política ni reproducirla.")}</p>
     <dl className="sessions-flags">{Object.entries(history.holeCards).map(([seat, hole]) => <div key={seat}><dt translate="no">{name(seat)}</dt><dd>{cards(hole)}{history.handRanks?.[seat] != null && <small> · {handName(history.handRanks[seat])}</small>}</dd></div>)}</dl>
     {streets.map((street, index) => {
       const log = history.log.filter(entry => entry.street === street);

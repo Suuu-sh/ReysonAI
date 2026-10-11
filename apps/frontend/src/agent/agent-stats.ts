@@ -17,6 +17,8 @@ export type AgentHandHistory = {
 export type AgentHandRecord = {
   session?: { id: string; startedAt: number; endedAt?: number };
   history?: AgentHandHistory;
+  // A user's private review marker; it does not affect Agent gameplay or results.
+  bookmarked?: boolean;
   at: number; tableId: string; pos: string; returnBb: number;
   vpip: boolean; pfr: boolean;
   threeBetOpp: boolean; threeBet: boolean;
@@ -44,6 +46,25 @@ export function finishAgentHistorySession(id: string, endedAt = Date.now()) {
   const next = hands.map(hand => hand.session?.id === id && hand.session.endedAt == null
     ? { ...hand, session: { ...hand.session, endedAt: Math.max(endedAt, hand.session.startedAt, hand.at) } } : hand);
   try { storage()?.setItem(KEY, JSON.stringify(next)); if (typeof window !== "undefined" && window.dispatchEvent) window.dispatchEvent(new window.Event("reysonai:agent-history-changed")); } catch { /* preserve saved hands on quota failure */ }
+}
+
+export function setAgentHandBookmarked(selector: { sessionId?: string; handNo?: number; at?: number; tableId: string; pos: string }, bookmarked: boolean) {
+  const hands = loadAgentHands();
+  let changed = false;
+  const next = hands.map(hand => {
+    const matches = selector.sessionId
+      ? hand.session?.id === selector.sessionId && hand.history?.handNo === selector.handNo
+      : hand.at === selector.at && hand.tableId === selector.tableId && hand.pos === selector.pos;
+    // Only completed records with saved hand detail can be bookmarked.
+    if (!matches || !hand.history || hand.bookmarked === bookmarked) return hand;
+    changed = true;
+    return { ...hand, bookmarked };
+  });
+  if (changed) {
+    try { storage()?.setItem(KEY, JSON.stringify(next)); } catch { /* keep current view if persistence is unavailable */ }
+    if (typeof window !== "undefined") window.dispatchEvent(new window.Event("reysonai:agent-history-changed"));
+  }
+  return next;
 }
 
 // The human's flags for one finished hand.

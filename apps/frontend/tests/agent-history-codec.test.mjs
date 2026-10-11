@@ -12,3 +12,9 @@ test('oversized detailed history encoding never trims records, logs or cards to 
  const rows=Array.from({length:3000},(_,at)=>({...summary,at,session:{id:'entry-a',startedAt:0},history:{version:1,holeCards:{BTN:['Ad','8c']},board:[],log:[{street:'preflop',pos:'BTN',action:'open',pot:4,source:'x'.repeat(200)}],winners:['BTN'],returns:{BTN:1}}}));
  const wire=encodeAgentHistoryForAccount(rows);assert.ok(new TextEncoder().encode(JSON.stringify(wire)).byteLength>500000);assert.deepEqual(decodeAgentHistory(wire),rows);assert.equal(wire.records.length,3000);
 });
+test('bookmarked summaries compact and roundtrip while pre-bookmark histories remain unchanged',()=>{
+ const rows=[summary,{...summary,bookmarked:true},{...summary,bookmarked:false}];
+ const wire=encodeAgentHistoryForAccount(rows);
+ assert.deepEqual(wire.records[0].length,9);assert.equal(wire.records[1][9],true);assert.equal(wire.records[2][9],false);
+ assert.deepEqual(decodeAgentHistory(wire),rows);
+});
