@@ -10,6 +10,7 @@ const RAISES = new Set(["open", "raise", "three_bet", "squeeze", "four_bet", "al
 
 export type AgentHandHistory = {
   version: 1; handNo?: number; names?: Record<string, string>;
+  reviewDecisions?: { logIndex: number; street: string; action: string; policy: Record<string, number>; source?: string }[];
   holeCards: Record<string, string[]>; board: string[]; log: LogEntry[];
   winners: string[]; returns: Record<string, number>; pot?: number; rake?: number; handRanks?: Record<string, number>;
 };
@@ -88,6 +89,7 @@ export function handRecord(result: HandResult, tableId: string, pos: string, at 
     ...(context.session ? { session: { ...context.session } } : {}),
     history: {
       version: 1, handNo: context.handNo, names: context.names,
+      ...(result.reviewDecisions?.length ? { reviewDecisions: result.reviewDecisions.map(decision => ({ ...decision, policy: { ...decision.policy } })) } : {}),
       // Persist only the human's cards and opponents actually exposed at showdown.
       // Folded opponents remain hidden even though the local engine dealt their cards.
       holeCards: Object.fromEntries(Object.entries(result.holeCards).filter(([seat]) =>

@@ -15,6 +15,8 @@ const handName = (category: number) => [
 const streets = ["preflop", "flop", "turn", "river"];
 const labels = () => [t("Preflop", "プリフロップ", "翻牌前", "Preflop"), t("Flop", "フロップ", "翻牌", "Flop"), t("Turn", "ターン", "转牌", "Turn"), t("River", "リバー", "河牌", "River")];
 const cards = (values: string[]) => <span className="sessions-cards">{values.map((card, index) => <PlayingCard variant="text" card={card} key={`${card}-${index}`} />)}</span>;
+const policyLabel = (policy: Record<string, number>) => Object.entries(policy).filter(([, frequency]) => frequency > 0)
+  .sort((a, b) => b[1] - a[1]).map(([action, frequency]) => `${actionLabel(action)} ${Math.round(frequency * 100)}%`).join(" · ") || "—";
 function actionLabel(action: string) {
   if (action === "fold") return t("Fold", "フォールド", "弃牌", "Retirarse");
   if (action === "check") return t("Check", "チェック", "过牌", "Pasar");
@@ -35,13 +37,17 @@ export function AgentHandHistory({ record }: { record: AgentHandRecord }) {
       setBookmarked(value);
     }}><Bookmark size={14} weight={bookmarked ? "fill" : "regular"} />{bookmarked ? t("Bookmarked", "復習に保存済み", "已收藏", "Guardada") : t("Bookmark for review", "復習用に保存", "收藏复习", "Guardar para revisar")}</button></div>
     <p className="sessions-source-note">{t("Only your cards and opponents revealed at showdown are saved. Folded opponents remain hidden.", "自分のカードとショーダウンで公開された相手のカードのみ保存します。フォールドした相手のカードは非公開です。", "仅保存你的牌与摊牌时公开的对手牌。弃牌对手的牌不公开。", "Solo se guardan tus cartas y las reveladas en showdown. Las cartas de rivales retirados siguen ocultas.")}</p>
-    <p className="sessions-source-note">{t("This is the recorded hand, not a solver review. Exact policy frequencies and replay seed were not saved, so policy comparison and replay are unavailable.", "これは実際のハンド記録です。ソルバー分析ではありません。正確な方針頻度とリプレイ用シードは保存されていないため、方針比較と再プレイには対応していません。", "这是已记录的手牌，不是求解器复盘。未保存精确策略频率或重放种子，因此无法比较策略或重放。", "Esta es la mano registrada, no un análisis de solver. No se guardaron frecuencias exactas ni la semilla, por lo que no se puede comparar la política ni reproducirla.")}</p>
+    <p className="sessions-source-note">{t("Your recorded actions are shown with exact saved policy frequencies only where the engine exposed that decision. No EV is inferred. Older or unsupported decisions remain unavailable; replay is unavailable because no seed was saved.", "選んだアクションと、エンジンが取得できた場合のみ保存済み方針の正確な頻度を表示します。EVは推定しません。旧記録や未対応の判断は確認できず、シード未保存のため再プレイもできません。", "显示你的行动；仅当引擎提供时显示已保存策略的精确频率。不推算EV。旧记录或不支持的决策不可用；未保存种子，因此无法重放。", "Se muestran tus acciones y las frecuencias exactas guardadas solo cuando el motor las expuso. No se infiere EV. Las decisiones antiguas o no compatibles no están disponibles; no se puede reproducir sin semilla.")}</p>
     <dl className="sessions-flags">{Object.entries(history.holeCards).map(([seat, hole]) => <div key={seat}><dt translate="no">{name(seat)}</dt><dd>{cards(hole)}{history.handRanks?.[seat] != null && <small> · {handName(history.handRanks[seat])}</small>}</dd></div>)}</dl>
     {streets.map((street, index) => {
       const log = history.log.filter(entry => entry.street === street);
       if (!log.length) return null;
       return <div key={street} className="sessions-saved-street"><h3>{labels()[index]} {index > 0 && cards(history.board.slice(0, index + 2))}</h3>
-        <div className="sessions-table-scroll"><table className="leaderboard-table sessions-table"><thead><tr><th>{t("Player", "プレイヤー", "玩家", "Jugador")}</th><th>{t("Action", "アクション", "行动", "Acción")}</th><th>{t("Pot", "ポット", "底池", "Bote")}</th></tr></thead><tbody>{log.map((entry, i) => <tr key={i}><td translate="no">{name(entry.pos)}</td><td>{actionLabel(entry.action)}{entry.to != null ? ` ${ffNumber(entry.to)} bb` : ""}</td><td>{ffNumber(entry.pot)} bb</td></tr>)}</tbody></table></div>
+        <div className="sessions-table-scroll"><table className="leaderboard-table sessions-table"><thead><tr><th>{t("Player", "プレイヤー", "玩家", "Jugador")}</th><th>{t("Action", "アクション", "行动", "Acción")}</th><th>{t("Saved policy", "保存済み方針", "已保存策略", "Política guardada")}</th><th>{t("Pot", "ポット", "底池", "Bote")}</th></tr></thead><tbody>{log.map((entry, i) => {
+          const decision = history.reviewDecisions?.find(item => item.logIndex === history.log.indexOf(entry));
+          const comparison = entry.pos !== record.pos ? "—" : decision ? policyLabel(decision.policy) : history.reviewDecisions?.length ? t("Unavailable for this decision", "この判断では利用できません", "此决策不可用", "No disponible para esta decisión") : t("Not saved in this history", "この履歴には未保存", "此历史未保存", "No guardada en este historial");
+          return <tr key={i}><td translate="no">{name(entry.pos)}</td><td>{actionLabel(entry.action)}{entry.to != null ? ` ${ffNumber(entry.to)} bb` : ""}</td><td>{comparison}</td><td>{ffNumber(entry.pot)} bb</td></tr>;
+        })}</tbody></table></div>
       </div>;
     })}
     {history.board.length > 0 && <p>{t("Board", "ボード", "公共牌", "Mesa")} · {cards(history.board)}</p>}
