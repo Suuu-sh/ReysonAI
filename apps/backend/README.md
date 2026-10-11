@@ -44,6 +44,11 @@ Solution全体JSONは互換用に残しますが、通常のリクエストご�
 - `GET /v1/preflop/datasets` データセット名とハッシュの一覧
 - `GET /v1/preflop/datasets/<name>` JSON 本文（例: `opening-ranges`, `reasons/BB_vs_BTN`）。ETag 付き
 
+公開 GET の成功本文だけを Workers Cache API に保存します。一覧は edge TTL 60 秒、個別本文は 300 秒です。
+ポストフロップの `dataset_versions` ハッシュも edge TTL 60 秒で読み取りキャッシュし、既存の本文キャッシュはハッシュ別（フロップは Brotli / identity 別）のままです。
+Cache API が利用できない・失敗した場合は D1 から通常どおり返します。キャッシュはデータセンター単位で、発行直後の反映は最大 TTL 分遅れる場合があります。
+公開成功レスポンスの `X-ReysonAI-Cache` は `HIT` / `MISS` / `BYPASS` を示します。CORS は毎リクエスト適用し、認証・エラー応答は保存しません。
+
 ## 公開ポストフロップ計算設定（version 1）
 
 `GET /v1/postflop/runtime-config?version=1` は、公開 Web が既に使用している計算設定と固定参照表のみを返します。
