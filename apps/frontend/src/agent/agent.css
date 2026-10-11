@@ -42,7 +42,7 @@
 .agent-stage { display: grid; grid-template-rows: 1fr auto; gap: 8px; min-width: 0; }
 
 .agent-felt-wrap { display: grid; place-items: center; padding: 74px 96px 112px; }
-.agent-felt { position: relative; width: min(100%, 720px); aspect-ratio: 2.05; border-radius: 999px;
+.agent-felt { position: relative; width: min(100%, 820px); aspect-ratio: 2.05; border-radius: 999px;
   background: radial-gradient(ellipse at 50% 40%, color-mix(in srgb, var(--table-theme) 14%, #10161a) 0%, #0b1013 60%, #07090b 100%);
   box-shadow: 0 0 0 9px #141519, 0 0 0 10px color-mix(in srgb, var(--table-theme) 30%, #26272e), inset 0 0 0 1px rgb(255 255 255 / 4%), inset 0 0 90px rgb(0 0 0 / 60%), 0 40px 90px -30px #000; }
 .agent-felt::before { position: absolute; inset: 0; border-radius: inherit; content: "";
@@ -77,10 +77,10 @@
 
 .agent-chip { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px 2px 3px; border-radius: 999px; background: rgb(0 0 0 / 50%); font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; transform: translate(-50%, -50%); animation: agent-chip-in .3s ease both; }
 /* Seat and chip slots (x%, y% of the felt), clockwise from the bottom centre. */
-.agent-seat.slot-0 { left: 50%; top: 103%; } .agent-seat.slot-1 { left: 1%; top: 72%; } .agent-seat.slot-2 { left: 15%; top: 2%; }
-.agent-seat.slot-3 { left: 50%; top: -7%; } .agent-seat.slot-4 { left: 85%; top: 2%; } .agent-seat.slot-5 { left: 99%; top: 72%; }
-.agent-chip.slot-0 { left: 50%; top: 66%; } .agent-chip.slot-1 { left: 21%; top: 63%; } .agent-chip.slot-2 { left: 28%; top: 30%; }
-.agent-chip.slot-3 { left: 50%; top: 24%; } .agent-chip.slot-4 { left: 72%; top: 30%; } .agent-chip.slot-5 { left: 79%; top: 63%; }
+.agent-seat.slot-0 { left: 50%; top: 103%; } .agent-seat.slot-1 { left: 0%; top: 72%; } .agent-seat.slot-2 { left: 11%; top: 2%; }
+.agent-seat.slot-3 { left: 50%; top: -8%; } .agent-seat.slot-4 { left: 89%; top: 2%; } .agent-seat.slot-5 { left: 100%; top: 72%; }
+.agent-chip.slot-0 { left: 50%; top: 79%; } .agent-chip.slot-1 { left: 22%; top: 68%; } .agent-chip.slot-2 { left: 25%; top: 28%; }
+.agent-chip.slot-3 { left: 50%; top: 16%; } .agent-chip.slot-4 { left: 75%; top: 28%; } .agent-chip.slot-5 { left: 78%; top: 68%; }
 .agent-chip i { width: 12px; height: 12px; border: 2px solid var(--accent); border-radius: 50%; background: #0d0d10; box-shadow: inset 0 0 0 2px rgb(240 96 158 / 35%); }
 
 .agent-seat { position: absolute; z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 4px; transform: translate(-50%, -50%); transition: opacity .3s ease; }
@@ -105,11 +105,15 @@
 .agent-dots i:nth-child(3) { animation-delay: .3s; }
 .agent-bubble { position: absolute; top: 50%; left: calc(100% - 4px); z-index: 4; padding: 3px 9px; border-radius: 4px; letter-spacing: .02em; background: #2c2c33; font-size: 11px; font-weight: 800; white-space: nowrap; transform: translateY(-50%); animation: agent-bubble-in .2s ease both; box-shadow: 0 6px 14px rgb(0 0 0 / 40%); }
 .agent-seat.slot-4 .agent-bubble, .agent-seat.slot-5 .agent-bubble { right: calc(100% - 4px); left: auto; }
+/* Keep top-row action labels in the outside lanes instead of across the neighboring seat. */
+.agent-seat.slot-2 .agent-bubble { right: calc(100% - 4px); left: auto; }
+.agent-seat.slot-3 .agent-bubble { top: calc(100% + 6px); left: 50%; transform: translateX(-50%); }
 .agent-bubble.tone-fold { color: var(--text-muted); }
 .agent-bubble.tone-check { background: #34343c; }
 .agent-bubble.tone-call { background: #3a9fb4; color: #fff; }
 .agent-bubble.tone-raise { background: #d9477f; color: #fff; }
 .agent-seat:not(.slot-2):not(.slot-3):not(.slot-4) .agent-plate ~ .agent-handname { margin-top: 6px; }
+.agent-current-handname { margin: -1px 0 2px; padding: 1px 7px; border: 1px solid rgb(255 255 255 / 12%); border-radius: 3px; background: rgb(0 0 0 / 38%); color: #ddd7d2; font-size: 10px; font-weight: 700; line-height: 15px; white-space: nowrap; }
 .agent-handname { padding: 1px 8px; border-radius: 999px; background: rgb(0 0 0 / 55%); color: var(--text-muted); font-size: 11px; font-weight: 700; }
 .agent-handname.is-win { background: rgb(246 195 74 / 18%); color: #f6c34a; }
 .agent-delta { font-size: 13px; font-weight: 900; font-variant-numeric: tabular-nums; animation: agent-rise .5s ease both; }
@@ -173,7 +177,7 @@
   .agent-layout { height: 100%; min-height: 0; grid-template-columns: minmax(0, 1fr) clamp(220px, 24vw, 280px); align-items: stretch; }
   .agent-stage { min-height: 0; grid-template-rows: minmax(0, 1fr) auto; }
   .agent-felt-wrap { min-height: 0; padding: clamp(46px, 9vh, 74px) clamp(56px, 8vw, 96px) clamp(72px, 13vh, 112px); }
-  .agent-felt { width: min(100%, 720px, calc((100dvh - 330px) * 2.05)); }
+  .agent-felt { width: min(100%, 820px, calc((100dvh - 330px) * 2.05)); }
   .agent-side { min-height: 0; align-content: start; overflow-y: auto; scrollbar-width: thin; padding-right: 2px; }
   .agent-log .agent-log-body { max-height: none; }
 }
@@ -324,8 +328,8 @@
 .play-style-map-point .style-unit { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--style) 60%, transparent)); }
 .play-style-map-point i { position: relative; display: block; width: 12px; height: 12px; border: 2px solid #fff; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgb(240 96 158 / 22%), 0 2px 8px #000; }
 .play-style-map-point i::after { position: absolute; inset: -2px; border: 1.5px solid var(--accent); border-radius: 50%; content: ""; opacity: 0; }
-.play-style-map-point b { position: absolute; top: 18px; left: 50%; padding: 1px 7px; border: 1px solid color-mix(in srgb, var(--style) 55%, var(--line-strong)); border-radius: 999px; background: #21171d; color: #fff; font-size: 10px; font-weight: 700; white-space: nowrap; transform: translateX(-50%); }
-.play-style-map-point.label-above b { top: auto; bottom: 18px; }
+.play-style-map-point b { position: absolute; top: 40px; left: 50%; padding: 1px 7px; border: 1px solid color-mix(in srgb, var(--style) 55%, var(--line-strong)); border-radius: 999px; background: #21171d; color: #fff; font-size: 10px; font-weight: 700; white-space: nowrap; transform: translateX(-50%); }
+.play-style-map-point.label-above b { top: auto; bottom: 40px; }
 .play-style-map-wait { position: absolute; z-index: 2; top: 50%; left: 50%; padding: 3px 10px; border: 1px solid var(--line-strong); border-radius: 999px; background: #141418; color: var(--text-muted); font-size: 11px; white-space: nowrap; transform: translate(-50%, -50%); }
 .play-style-map-x { grid-column: 2; display: flex; justify-content: space-between; color: var(--text-subtle); font-size: 10px; font-weight: 700; }
 
@@ -372,7 +376,7 @@
   .agent-layout { height: 100%; min-height: 0; align-items: stretch; }
   .agent-stage { min-height: 0; grid-template-rows: minmax(0, 1fr) auto; }
   .agent-felt-wrap { min-height: 0; padding: clamp(56px, 8dvh, 74px) 96px clamp(84px, 11dvh, 112px); }
-  .agent-felt { width: min(100%, 720px, calc((100dvh - 32px - 60px - 200px - clamp(140px, 19dvh, 186px)) * 2.05)); }
+  .agent-felt { width: min(100%, 820px, calc((100dvh - 32px - 60px - 200px - clamp(140px, 19dvh, 186px)) * 2.05)); }
   .agent-side { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
   .agent-side > .agent-panel { flex: none; }
   .agent-side > .agent-log { flex: 1 1 auto; min-height: 0; grid-template-rows: auto minmax(0, 1fr); }

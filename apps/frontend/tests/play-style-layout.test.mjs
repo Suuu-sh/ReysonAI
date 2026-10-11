@@ -51,3 +51,11 @@ test("shared map frame stays shrinkable with a readable plot and the compact ros
   assert.match(css, /\.style-roster-compact \{ grid-template-columns: repeat\(4, minmax\(0, 1fr\)\)/);
   assert.match(css, /\.style-roster-compact li \{ min-width: 0; overflow-wrap: anywhere;/);
 });
+
+test("style-map point labels clear the avatar above and below", async () => {
+  const css = await readFile(new URL("../src/agent/agent.css", import.meta.url), "utf8");
+  const source = await readFile(new URL("../src/agent/StyleMap.tsx", import.meta.url), "utf8");
+  assert.match(css, /\.play-style-map-point b \{[^}]*top: 40px;/);
+  assert.match(css, /\.play-style-map-point\.label-above b \{ top: auto; bottom: 40px; \}/);
+  assert.match(source, /point\.y > 55 \? " label-above"/);
+});
