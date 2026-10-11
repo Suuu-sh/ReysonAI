@@ -78,16 +78,6 @@ export const zh: SiteCopy = {
     note: "这是对不同方法的一般性比较，各产品功能可能不同且会变化。",
   },
   pricing: { title1: "免费开始。", title2: "Plus每天约19日元。", description: "这是Free／Plus计划中的功能划分；当前预览仍可使用。", note: "这是计划中的功能划分。Plus付费使用和计费尚未开放；当前预览不代表已授予付费权益。", plans: [{ name: "Free", price: "¥0", cadence: "永久免费", description: "翻前学习和基础报告。", features: ["翻前范围和原因", "翻前练习", "基础报告"], action: "打开应用", href: "/analyze/ranges" as string | null, status: "已开放" }, { name: "Plus", price: "¥580", cadence: "/ 月（日元）", description: "Free全部功能，加上翻后学习和详细分析。", features: ["Free全部功能", "翻后范围、原因和练习", "详细分析报告"], action: "未来推出", href: null as string | null, status: "计划中" }] },
-  faq: {
-    title: "常见问题，直接解答。",
-    items: [
-      { question: "与GTO Wizard有何区别？", answer: "GTO Wizard等应用展示求解器计算的策略，是精确理论的参考。ReysonAI提供供学习使用的AI估算，并配有解释、练习、排位赛和练习分析。详见上方对比。" },
-      { question: "支持哪些游戏？", answer: "6人桌现金局，100BB，无前注。开池为2.5BB，小盲位为3.5BB。没有已保存数据的局面会标注为未收录，绝不凭空补全。" },
-      { question: "需要账户吗？", answer: "不需要。你的资料和练习记录保存在此浏览器中。账户功能在计划中。" },
-      { question: "支持翻牌后吗？", answer: "翻后范围、原因和练习计划在Plus提供。当前应用有从翻牌到河牌的受支持单挑路线试验功能，但付费权益尚未开放。" },
-      { question: "如何收费？", answer: "当前预览免费。Free计划提供翻前范围、原因、练习和基础报告；Plus增加翻后学习及详细分析报告。Plus预计每月580日元（按30天计算每天约19日元），计费尚未开始。" },
-    ],
-  },
   final: { title1: "下一次练习，", title2: "从一手牌开始。", description: "打开应用，选择局面，点击一手牌。", action: "打开ReysonAI", note: "免费预览 · 无需账户" },
-  footer: { tagline: "Don't just play. Understand the reason.", product: "产品", open: "打开应用", how: "使用方法", drill: "训练", analysis: "分析", compare: "对比", pricing: "价格", faq: "常见问题", legal: "法律条款", privacy: "隐私政策", terms: "使用条款", disclaimer: "ReysonAI提供扑克策略和学习信息。AI方案属于估算，不保证数学最优，也不保证等同于GTO解。请理性游戏。" },
+  footer: { tagline: "Don't just play. Understand the reason.", product: "产品", open: "打开应用", how: "使用方法", drill: "训练", analysis: "分析", compare: "对比", pricing: "价格", legal: "法律条款", privacy: "隐私政策", terms: "使用条款", disclaimer: "ReysonAI提供扑克策略和学习信息。AI方案属于估算，不保证数学最优，也不保证等同于GTO解。请理性游戏。" },
 };
