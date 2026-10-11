@@ -981,16 +981,6 @@ function Pricing() {
   </section>;
 }
 
-function Faq() {
-  const { copy: c } = useSite();
-  return <section className="site-section site-faq" id="faq" aria-labelledby="site-faq-title">
-    <div className="site-wrap site-faq-inner">
-      <h2 id="site-faq-title" data-reveal>{c.faq.title}</h2>
-      <div className="site-faq-list" data-reveal>{c.faq.items.map(item => <details key={item.question} name="site-faq"><summary>{item.question}<span aria-hidden="true" /></summary><p>{item.answer}</p></details>)}</div>
-    </div>
-  </section>;
-}
-
 const fan: [string, Suit][] = [["A", "s"], ["K", "h"], ["Q", "c"], ["J", "d"], ["T", "s"]];
 
 function FinalCta() {
@@ -1014,7 +1004,7 @@ function Footer() {
         <div><Brand /><p>{c.footer.tagline}</p></div>
         <div className="site-footer-links">
           <div><span>{c.footer.product}</span><a href={appHref}>{c.footer.open}</a><a href="#how">{c.footer.how}</a><a href="#drill">{c.footer.drill}</a><a href="#analysis">{c.footer.analysis}</a></div>
-          <div><span>ReysonAI</span><a href="#compare">{c.footer.compare}</a><a href="#pricing">{c.footer.pricing}</a><a href="#faq">{c.footer.faq}</a></div>
+          <div><span>ReysonAI</span><a href="#compare">{c.footer.compare}</a><a href="#pricing">{c.footer.pricing}</a></div>
           <div><span>{c.footer.legal}</span><a href="/privacy">{c.footer.privacy}</a><a href="/terms">{c.footer.terms}</a></div>
         </div>
       </div>
@@ -1085,7 +1075,7 @@ export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; on
       <a className="site-skip" href="#site-main">{copy.common.skip}</a>
       <Header />
       <Reveal>
-        <main id="site-main"><Hero /><div className="site-after-cover"><Audience /><HowItWorks /><TrainingTrack /><Analysis /><Compare /><Pricing /><Faq /><FinalCta /></div></main>
+        <main id="site-main"><Hero /><div className="site-after-cover"><Audience /><HowItWorks /><TrainingTrack /><Analysis /><Compare /><Pricing /><FinalCta /></div></main>
         <Footer />
       </Reveal>
       <MobileCta />
