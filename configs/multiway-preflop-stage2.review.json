@@ -10300,8 +10300,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 18213,
-      "sha256": "3a9243cb6d964fb0201a5d51c6bd31a65c3d4352dea59e3a6d07345d3dcb7df9"
+      "bytes": 28899,
+      "sha256": "1af5358720d63ea0f72c4dd7363b8484ff2de07f44bb909f24fa813b6977fac8"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -10475,13 +10475,13 @@
     },
     {
       "path": "apps/frontend/scripts/lib/reviewed-preflop.mjs",
-      "bytes": 11232,
-      "sha256": "2a8f47f783266bb37c98c3865e14182d4b80551a849c3aa1a80d36f0f5ba9230"
+      "bytes": 11311,
+      "sha256": "b95c7235a5be1b666c1270708536182775b4e7ee7b75beb567a1a578a627450b"
     },
     {
       "path": "apps/frontend/scripts/lib/reviewed-stage3.mjs",
-      "bytes": 5130,
-      "sha256": "445d91c9bf8a99c826acf1010d4a895ebb7db4bc8343482bae2335ec3e098da5"
+      "bytes": 5209,
+      "sha256": "d287283ad2c338ef9ad3c08833b0d62a48e9121140de64ae7a33c4cd7b9e6b9c"
     },
     {
       "path": "apps/frontend/scripts/lib/stage3-artifacts.mjs",
@@ -11272,9 +11272,19 @@
       "path": "configs/typescript-policy-source.review.json",
       "bytes": 259714,
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
+    },
+    {
+      "path": "scripts/ci/deployment-scope.mjs",
+      "bytes": 27090,
+      "sha256": "6a957cf9bb50c5f3e7376b46b8436f453b33f49c6362c3078083531c28a9cb20"
+    },
+    {
+      "path": "scripts/ci/deployment-scope.test.mjs",
+      "bytes": 26179,
+      "sha256": "0ea4a667de19104e7b6367a725ed1e8778b79e7b977e83773b41efb14fbf2c55"
     }
   ],
-  "content_sha256": "1d451526d21e88b8df0a940956510ffef960db7c592a251e364117341bc66958",
+  "content_sha256": "6dfd02793e70517c11003d3b5f5be8729ff77be4d2d4327611f4d2753c6ee1c7",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -11406,6 +11416,51 @@
       "numerical_artifacts_unchanged": true,
       "archive_record_unchanged": true,
       "executable_sql_changed": false
+    }
+  },
+  "ci_efficiency_source_renewal": {
+    "status": "mechanically-rebound-pending-exact-head-ci-and-independent-review",
+    "base_candidate_sha": "0f63a809656c5357ef4048a3e5bfeaf276a6eb4d",
+    "scope": "Mechanical source-only binding update for CI scope classification and deployment verification. It keeps reviewed payload identity and existing review decisions intact; it does not grant data reapproval or production authorization.",
+    "changed_source_paths": [
+      ".github/workflows/deploy-worker.yml",
+      "apps/frontend/scripts/lib/reviewed-preflop.mjs",
+      "apps/frontend/scripts/lib/reviewed-stage3.mjs",
+      "scripts/ci/deployment-scope.mjs",
+      "scripts/ci/deployment-scope.test.mjs"
+    ],
+    "changed_delivery_code_paths": [],
+    "verification_paths": [
+      "apps/frontend/tests/mw3-production-delivery.test.mjs",
+      "apps/frontend/tests/preflop-workflow.test.mjs",
+      "apps/frontend/tests/ranked-workflow.test.mjs"
+    ],
+    "source_records": {
+      "stage2_count": 198,
+      "stage2_content_sha256": "238766e57a27b8996b30c6c0cd9897f83e8a54076995f6db9a34ac55018c1c35",
+      "stage2_deploy_workflow": {
+        "path": ".github/workflows/deploy-worker.yml",
+        "bytes": 28655,
+        "sha256": "133d91a92bb000619d69af5278cbf74be135e9bdcf371eb125d549f21ee69c12"
+      }
+    },
+    "preserved": {
+      "stage2_artifacts_archive_fingerprint_counts_review": {
+        "artifacts": true,
+        "archive": true,
+        "source_fingerprint": true,
+        "counts": true,
+        "review": true
+      },
+      "stage3_artifacts_archive_fingerprint_counts_review": {
+        "artifacts": true,
+        "archive": true,
+        "source_fingerprint": true,
+        "counts": true,
+        "review": true
+      },
+      "no_strategy_data_regeneration": true,
+      "no_production_d1_access": true
     }
   }
 }

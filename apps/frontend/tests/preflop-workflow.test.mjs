@@ -15,13 +15,39 @@ test("PR verification has no production credentials or strategy-generation comma
 test("main deployment requires verification and deploys compatible client before data", () => {
   const deployment = workflow.slice(workflow.indexOf("  deploy:"));
   assert.match(deployment, /needs: verify/);
-  assert.match(deployment, /github\.ref == 'refs\/heads\/main' && github\.event_name != 'pull_request'/);
+  assert.match(deployment, /github\.ref == 'refs\/heads\/main'/);
+  assert.match(deployment, /github\.event_name != 'pull_request'/);
+  assert.match(deployment, /github\.run_attempt == 1/);
+  assert.match(deployment, /needs\.verify\.outputs\.release_safe == 'true'/);
+  const prepareLogs = deployment.indexOf('      - name: Prepare deployment log directory');
+  const firstRemoteMutation = Math.min(
+    ...['Apply exact ranked schema', 'Apply exact FastFold schema', 'Apply exact six-human ranked schema',
+      'Apply exact postflop profile schema', 'Import exact reviewed MW3 data and require full D1 readback',
+      'Deploy ranked API before enabling the client', 'Deploy Worker']
+      .map(name => deployment.indexOf(`      - name: ${name}`)).filter(index => index >= 0),
+  );
+  assert.ok(prepareLogs >= 0 && prepareLogs < firstRemoteMutation);
+  const logPreparation = deployment.slice(prepareLogs, deployment.indexOf('      - name: ', prepareLogs + 1));
+  assert.match(logPreparation, /mkdir -p \.local/);
+  assert.match(logPreparation, /test -d \.local && test -w \.local/);
+  const fastfoldRuntime = workflow.slice(workflow.indexOf('      - name: Verify continuous FastFold authentication'));
+  assert.match(fastfoldRuntime, /if: needs\.scope\.outputs\.verify_backend == 'true'/);
+  assert.doesNotMatch(fastfoldRuntime.split('\n')[1], /event_name/);
   assert.ok(deployment.indexOf("deploy --config wrangler.jsonc") < deployment.indexOf("import-reviewed-preflop.mjs --remote"));
   assert.match(deployment, /--check-bundle/);
   assert.match(workflow, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/);
   assert.match(workflow, /apps\/backend\/migrations\/0003_preflop.sql/);
   assert.match(workflow, /configs\/\*\*/);
 });
+test('failed-job-only reruns cannot deploy using stale release-safe outputs', () => {
+  const deployment = workflow.slice(workflow.indexOf('  deploy:'));
+  const jobIf = deployment.slice(deployment.indexOf('    if: >-'), deployment.indexOf('    runs-on:'));
+  assert.match(jobIf, /github\.run_attempt == 1/);
+  assert.match(jobIf, /needs\.verify\.outputs\.release_safe == 'true'/);
+  const staleOutputs = { runAttempt: 2, releaseSafe: 'true', deployApi: 'true' };
+  assert.equal(staleOutputs.runAttempt === 1 && staleOutputs.releaseSafe === 'true' && staleOutputs.deployApi === 'true', false);
+});
+
 test("production entry point is pinned, explicit, main-only, preflop-only and has no rewind/retry", () => {
   assert.match(importer, /process\.argv\[2\] !== "--remote"/);
   assert.match(importer, /GITHUB_REF !== "refs\/heads\/main"/);
@@ -47,4 +73,20 @@ test("postflop publication waits for reviewed preflop import and the strict rele
   const check = verification.split(/\n      - name: /).find(step => step.startsWith("Check postflop policy delivery\n"));
   assert.match(check, /--only postflop --require-all/);
   assert.doesNotMatch(check, /--execute|secrets\./);
+});
+
+test("backend lockfile changes are covered by the main deploy workflow trigger", () => {
+  const pushPaths = workflow.slice(workflow.indexOf("  push:"), workflow.indexOf("  pull_request:"));
+  assert.ok(pushPaths.includes("apps/backend/package-lock.json"));
+});
+
+test("backend verification installs composed API MCP dependencies before FastFold runtime tests", () => {
+  const verification = workflow.slice(workflow.indexOf("  verify:"), workflow.indexOf("  deploy:"));
+  const install = verification.indexOf("      - name: Install MCP runtime dependencies for backend verification");
+  const runtime = verification.indexOf("      - name: Verify continuous FastFold authentication, replay and atomic settlement");
+  assert.ok(install >= 0 && install < runtime);
+  const step = verification.slice(install, verification.indexOf("      - name: ", install + 1));
+  assert.match(step, /if: needs\.scope\.outputs\.verify_backend == 'true'/);
+  assert.match(step, /working-directory: apps\/mcp/);
+  assert.match(step, /npm ci --ignore-scripts/);
 });
