@@ -8,12 +8,16 @@ export function installEdgeCache(t) {
   let now = 0;
   let failMatch = false;
   let failPut = false;
+  let browserMaxAge = null;
   Object.defineProperty(globalThis, "caches", { configurable: true, value: { default: {
     async match(key) {
       matches.push(key.url);
       if (failMatch) throw new Error("cache match failed");
       const entry = entries.get(key.url);
-      return entry && entry.expires > now ? entry.response.clone() : undefined;
+      if (!entry || entry.expires <= now) return undefined;
+      const hit = entry.response.clone();
+      if (browserMaxAge !== null) hit.headers.set("cache-control", (hit.headers.get("cache-control") ?? "").replace(/max-age=\d+/, `max-age=${browserMaxAge}`));
+      return hit;
     },
     async put(key, response) {
       puts.push(key.url);
@@ -25,5 +29,5 @@ export function installEdgeCache(t) {
     },
   } } });
   t.after(() => { if (original) Object.defineProperty(globalThis, "caches", original); else delete globalThis.caches; });
-  return { entries, matches, puts, advance(ms) { now += ms; }, fail({ match = false, put = false }) { failMatch = match; failPut = put; } };
+  return { entries, matches, puts, advance(ms) { now += ms; }, rewriteBrowserMaxAge(value) { browserMaxAge = value; }, fail({ match = false, put = false }) { failMatch = match; failPut = put; } };
 }

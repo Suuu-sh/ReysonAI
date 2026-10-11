@@ -40,6 +40,7 @@ test("unknown, invalid and incomplete datasets are rejected", async () => {
 
 test("public preflop catalog and body use bounded edge TTLs without caching CORS or 304", async t => {
   const cache = installEdgeCache(t);
+  cache.rewriteBrowserMaxAge(14_400);
   const queries = [];
   const datasets = [{ name: "opening-ranges", content_hash: "old", bytes: 2, parts: 1 }];
   const parts = [{ name: "opening-ranges", part: 0, body: "{}" }];
@@ -48,7 +49,9 @@ test("public preflop catalog and body use bounded edge TTLs without caching CORS
   const catalog = await get("/v1/preflop/datasets?ignored=one");
   assert.equal(catalog.headers.get("x-reysonai-cache"), "MISS");
   assert.equal(catalog.headers.get("cache-control"), "public, max-age=60, s-maxage=60");
-  assert.equal((await get("/v1/preflop/datasets?ignored=two")).headers.get("x-reysonai-cache"), "HIT");
+  const catalogHit = await get("/v1/preflop/datasets?ignored=two");
+  assert.equal(catalogHit.headers.get("x-reysonai-cache"), "HIT");
+  assert.equal(catalogHit.headers.get("cache-control"), "public, max-age=60, s-maxage=60", "zone browser TTL must not leak from Cache API hit");
   assert.equal(queries.length, 1);
 
   const path = "/v1/preflop/datasets/opening-ranges";
