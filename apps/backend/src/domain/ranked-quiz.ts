@@ -1,6 +1,7 @@
 import { RANKED_LENGTH } from '../../../shared/ranked-rules.ts';
 
 export type RankedQuestion = { spotId: string; hand: string; mix: Record<string, number> };
+export type WeightedRankedQuestion = RankedQuestion & { weight: number };
 
 const primary = (mix: Record<string, number>) => Object.entries(mix).sort((a,b)=>b[1]-a[1])[0][0];
 const grid = [...'AKQJT98765432'];
@@ -24,6 +25,14 @@ export function questionPool(source:{spots:Array<{id:string;hands:Array<Record<s
       const edge=[[-1,0],[1,0],[0,-1],[0,1]].some(([dr,dc])=>r+dr>=0&&r+dr<13&&c+dc>=0&&c+dc<13&&byHand.has(hands[(r+dr)*13+c+dc])&&primary(byHand.get(hands[(r+dr)*13+c+dc])!.mix)!==main);
       return {...q,weight:Math.max(...Object.values(q.mix))<.95?4:edge?3:main==='fold'?.15:.6};
     });
+  });
+}
+
+export function sampleRankedQuestions(pool: WeightedRankedQuestion[], random: () => number): RankedQuestion[] {
+  return Array.from({length:RANKED_LENGTH},()=>{
+    let pick=random()*pool.reduce((sum,q)=>sum+q.weight,0);
+    const q=pool.find(v=>(pick-=v.weight)<0)??pool.at(-1)!;
+    return {spotId:q.spotId,hand:q.hand,mix:q.mix};
   });
 }
 

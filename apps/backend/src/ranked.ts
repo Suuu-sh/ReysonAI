@@ -1,9 +1,11 @@
 import { accountTransport, digest, type AccountEnv } from './account.ts';
 import { readPublishedDataset } from './application/published-datasets.ts';
 import { finalizeRankedMatch, type RankedMatchRecord, type RankedPlayerRecord } from './application/ranked-finalization.ts';
+import { startRankedMatch } from './application/ranked-match-start.ts';
 import { D1PublishedDatasetReader } from './infrastructure/d1-published-dataset-repository.ts';
 import { D1RankedFinalizationRepository } from './infrastructure/d1-ranked-finalization-repository.ts';
-import { questionPool } from './domain/ranked-quiz.ts';
+import { D1RankedMatchStartRepository } from './infrastructure/d1-ranked-match-start-repository.ts';
+import { questionPool, sampleRankedQuestions } from './domain/ranked-quiz.ts';
 import type { D1Database } from './postflop.ts';
 import { RANKED_LENGTH, RANKED_DAILY_LIMIT, START_RATING, LEADERBOARD_MIN_MATCHES, displayTier } from '../../shared/ranked-rules.ts';
 
@@ -23,6 +25,7 @@ export async function routeRanked(request:Request,env:RankedEnv):Promise<Respons
   const db=env.DB as D1Database,now=Date.now(),day=new Date(now).toISOString().slice(0,10);
   const query=async<T>(sql:string,...args:unknown[])=>(await db.prepare(sql).bind(...args).all<T>()).results;
   const publishedDatasets=new D1PublishedDatasetReader(db);
+  const rankedMatchStarts=new D1RankedMatchStartRepository(db);
   if(['/v1/ranked/status','/v1/ranked/profile'].includes(url.pathname)&&request.method==='GET') {
     try {
       await query('SELECT id FROM account_users LIMIT 1');
@@ -71,15 +74,12 @@ export async function routeRanked(request:Request,env:RankedEnv):Promise<Respons
       const sources=await Promise.all(['opening-ranges','preflop-ranges'].map(name=>readPublishedDataset(publishedDatasets,name)));
       if(sources.some(source=>source.kind!=='published'||!source.text)) return reply({error:'ranked_dataset_unavailable'},503);
       const pool=sources.flatMap((source,i)=>source.kind==='published'?questionPool(JSON.parse(source.text),i?'response':'open'):[]).flat();
-      const questions=Array.from({length:RANKED_LENGTH},()=>{let pick=random()*pool.reduce((sum,q)=>sum+q.weight,0);const q=pool.find(v=>(pick-=v.weight)<0)??pool.at(-1)!;return {spotId:q.spotId,hand:q.hand,mix:q.mix};});
-      await query('INSERT OR IGNORE INTO ranked_players(user_id,public_name) VALUES (?,?)',user,`Player ${crypto.randomUUID().slice(0,8)}`);
-      await query("UPDATE ranked_matches SET status='expired' WHERE user_id=? AND status='active' AND expires_at<=?",user,now);
-      const [existing]=await query<Match>("SELECT * FROM ranked_matches WHERE user_id=? AND status='active'",user);
-      if(existing) return reply({match:{id:existing.id,questions:JSON.parse(existing.questions_json),expiresAt:existing.expires_at},state:await state()});
-      const id=crypto.randomUUID();
-      const inserted=await query<Match>(`INSERT OR IGNORE INTO ranked_matches(id,user_id,day,slot,started_at,expires_at,questions_json) SELECT ?,?,?,COUNT(*)+1,?,?,? FROM ranked_matches WHERE user_id=? AND day=? HAVING COUNT(*)<? RETURNING *`,id,user,day,now,now+3600000,JSON.stringify(questions),user,day,RANKED_DAILY_LIMIT);
-      const [match]=inserted.length?inserted:await query<Match>("SELECT * FROM ranked_matches WHERE user_id=? AND status='active'",user);
-      if(!match) return reply({error:'daily_limit'},429);
+      const questions=sampleRankedQuestions(pool,random);
+      const started=await startRankedMatch(rankedMatchStarts,{
+        userId:user,day,now,publicName:`Player ${crypto.randomUUID().slice(0,8)}`,questions,dailyLimit:RANKED_DAILY_LIMIT,
+      },()=>crypto.randomUUID());
+      if(started.kind==='daily_limit') return reply({error:'daily_limit'},429);
+      const match=started.match;
       return reply({match:{id:match.id,questions:JSON.parse(match.questions_json),expiresAt:match.expires_at},state:await state()});
     }
     const finish=path.match(/^matches\/([a-f0-9-]{36})\/finish$/);

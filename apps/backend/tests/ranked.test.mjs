@@ -7,6 +7,7 @@ import { gradeRanked, questionPool } from '../src/domain/ranked-quiz.ts';
 import { digest } from '../src/account.ts';
 import worker from '../src/index.ts';
 import './ranked-finalization.test.mjs';
+import './ranked-match-start.test.mjs';
 const token='a'.repeat(64);
 async function fixture() {
  const sqlite=new DatabaseSync(':memory:');sqlite.exec('PRAGMA foreign_keys=ON');
