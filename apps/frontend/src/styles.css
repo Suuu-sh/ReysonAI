@@ -106,7 +106,7 @@ small, .muted { color: var(--text-muted); font-size: 12px; line-height: 1.7; }
 .header-nav button.active { background: var(--surface-hover); color: var(--text); font-weight: 600; }
 .header-nav button.active > svg { color: var(--accent); }
 .header-nav button.active::before { content: none; }
-.app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav button.active::before { left: -7px; }
+.app-sidebar.is-collapsed .header-nav button.active::before { left: -7px; }
 .sidebar-backdrop { display: none; }
 .header-meta { display: grid; gap: 2px; margin-top: auto; padding: 10px; border: 0; background: transparent; color: var(--text-subtle); text-align: left; white-space: nowrap; }
 .header-meta strong { font-size: 11px; font-weight: 650; }
@@ -116,12 +116,12 @@ small, .muted { color: var(--text-muted); font-size: 12px; line-height: 1.7; }
 .app-language-switch button[aria-pressed="true"] { border-color: var(--accent); background: var(--surface-accent); color: var(--text); font-weight: 700; }
 .onboarding-language { justify-content: flex-end; padding: 0; margin-top: -2px; }
 .onboarding-language button { flex: 0 0 auto; min-width: 48px; }
-.app-sidebar.is-collapsed:not(.is-hover-expanded) { flex-basis: 64px; width: 64px; align-items: center; gap: 22px; padding: 14px 7px 12px; }
-.app-sidebar.is-collapsed:not(.is-hover-expanded) .sidebar-heading { min-height: 34px; height: 34px; justify-content: center; }
-.app-sidebar.is-collapsed:not(.is-hover-expanded) .brand-copy, .app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav button > span, .app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav button > small, .app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav a > span, .app-sidebar.is-collapsed:not(.is-hover-expanded) .header-meta { display: none; }
-.app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav { width: 100%; flex: 1; }
-.app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav button, .app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav a { justify-content: center; padding: 9px 8px; }
-.app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav button > svg, .app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav a > svg { flex-basis: 18px; }
+.app-sidebar.is-collapsed { flex-basis: 64px; width: 64px; align-items: center; gap: 22px; padding: 14px 7px 12px; }
+.app-sidebar.is-collapsed .sidebar-heading { min-height: 34px; height: 34px; justify-content: center; }
+.app-sidebar.is-collapsed .brand-copy, .app-sidebar.is-collapsed .header-nav button > span, .app-sidebar.is-collapsed .header-nav button > small, .app-sidebar.is-collapsed .header-nav a > span, .app-sidebar.is-collapsed .header-meta { display: none; }
+.app-sidebar.is-collapsed .header-nav { width: 100%; flex: 1; }
+.app-sidebar.is-collapsed .header-nav button, .app-sidebar.is-collapsed .header-nav a { justify-content: center; padding: 9px 8px; }
+.app-sidebar.is-collapsed .header-nav button > svg, .app-sidebar.is-collapsed .header-nav a > svg { flex-basis: 18px; }
 
 main { display: flex; flex: 1; flex-direction: column; min-width: 0; padding: 12px 14px; }
 
@@ -245,7 +245,7 @@ th small { display: block; }
 @media (max-width: 1199px) and (min-width: 1050px) {
   .brand { font-size: 20px; }
   .brand > svg { width: 23px; }
-  .app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav button.active::before { left: -4px; }
+  .app-sidebar.is-collapsed .header-nav button.active::before { left: -4px; }
   main { padding: 10px; }
   .settings.matchup-settings { grid-template-columns: minmax(145px, 1fr) minmax(175px, 1.6fr) auto; gap: 8px; }
   .settings > div + div { padding-left: 8px; }
