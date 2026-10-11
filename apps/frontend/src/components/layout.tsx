@@ -105,13 +105,6 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
           </div>
         ))}
       </nav>
-      {profile ? <AccountMenu profile={profile} collapsed={visuallyCollapsed}
-        onNavigate={tab => onSectionChange(`${ACCOUNT_SECTION}#${tab}`)} onLogout={() => onSectionChange(LOGOUT_SECTION)} /> : (
-        <div className="header-meta">
-          <strong>Range Explorer</strong>
-          <small>READ-ONLY / v0.1</small>
-        </div>
-      )}
       <button
         type="button"
         className="sidebar-toggle"
@@ -123,6 +116,13 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
       >
         {visuallyCollapsed ? <CaretDoubleRight size={17} /> : <CaretDoubleLeft size={17} />}
       </button>
+      {profile ? <AccountMenu profile={profile} collapsed={visuallyCollapsed}
+        onNavigate={tab => onSectionChange(`${ACCOUNT_SECTION}#${tab}`)} onLogout={() => onSectionChange(LOGOUT_SECTION)} /> : (
+        <div className="header-meta">
+          <strong>Range Explorer</strong>
+          <small>READ-ONLY / v0.1</small>
+        </div>
+      )}
     </aside>
     <nav className="mobile-tab-bar" aria-label={localized("Main navigation", "メインナビゲーション")}>
       {[
