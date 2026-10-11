@@ -80,18 +80,8 @@ export const en = {
     note: "A general comparison of approaches; individual products vary and change.",
   },
   pricing: { title1: "Start free.", title2: "Plus for about $0.12 a day.", description: "Planned Free / Plus feature split; the current preview remains available.", note: "This is the planned feature split. Plus paid access and billing are not live; current preview access does not establish a paid entitlement.", plans: [{ name: "Free", price: "$0", cadence: "forever", description: "Preflop learning and basic reports.", features: ["Preflop ranges and reasons", "Preflop practice", "Basic reports"], action: "Open the app", href: "/analyze/ranges" as string | null, status: "Available" }, { name: "Plus", price: "$3.70", cadence: "/ month · approx.", description: "All Free features, plus postflop learning and deeper analysis.", features: ["Everything in Free", "Postflop ranges, reasons and practice", "Detailed analysis reports"], action: "Coming later", href: null as string | null, status: "Planned" }] },
-  faq: {
-    title: "Questions, answered plainly.",
-    items: [
-      { question: "How is it different from GTO Wizard?", answer: "GTO Wizard and similar apps show solver-computed strategies and are the reference for exact theory. ReysonAI shows AI estimates designed for learning, with explanations, drills, ranked matches and analysis of your practice. See the comparison above." },
-      { question: "Which games does it cover?", answer: "6-max cash games at 100BB with no ante. Opens are 2.5BB, or 3.5BB from the small blind. Spots without saved data are shown as unrecorded, never guessed." },
-      { question: "Do I need an account?", answer: "No. Your profile and practice history are saved in this browser. Accounts are planned." },
-      { question: "Does it cover postflop?", answer: "Postflop ranges, reasons and practice are planned for Plus. The current app has an experimental trial for supported heads-up paths from flop to river; it is not a live paid entitlement." },
-      { question: "What does it cost?", answer: "The current preview is free. The planned Free tier covers preflop ranges, reasons, practice and basic reports; Plus adds postflop learning and detailed analysis reports. Plus is planned at about US$3.70/month (about US$0.12/day on a 30-day basis), but billing is not live. USD is an approximate conversion and may change." },
-    ],
-  },
   final: { title1: "Your next session", title2: "starts with one hand.", description: "Open the app, pick a spot, tap a hand.", action: "Open ReysonAI", note: "Free preview · No account required" },
-  footer: { tagline: "Don't just play. Understand the reason.", product: "Product", open: "Open the app", how: "How it works", drill: "Training", analysis: "Analysis", compare: "Compare", pricing: "Pricing", faq: "FAQ", legal: "Legal", privacy: "Privacy Policy", terms: "Terms of Use", disclaimer: "ReysonAI provides poker strategy and educational information. AI Solutions are estimates and are not guaranteed to be mathematically optimal or equivalent to GTO solutions. Please play responsibly." },
+  footer: { tagline: "Don't just play. Understand the reason.", product: "Product", open: "Open the app", how: "How it works", drill: "Training", analysis: "Analysis", compare: "Compare", pricing: "Pricing", legal: "Legal", privacy: "Privacy Policy", terms: "Terms of Use", disclaimer: "ReysonAI provides poker strategy and educational information. AI Solutions are estimates and are not guaranteed to be mathematically optimal or equivalent to GTO solutions. Please play responsibly." },
 };
 
 export type SiteCopy = typeof en;
