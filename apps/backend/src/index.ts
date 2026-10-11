@@ -100,9 +100,43 @@ export default {
   },
 };
 
-function notModified(request: Request, response: Response): Response | null {
+function weakTagMatch(condition: string, etag: string): boolean {
+  const current = /^(?:W\/)?("[\x21\x23-\x7e\x80-\uffff]*")$/.exec(etag)?.[1];
+  if (!current) return false;
+  let index = 0;
+  let matched = false;
+  let sawTag = false;
+  while (true) {
+    while (condition[index] === " " || condition[index] === "\t") index++;
+    if (index === condition.length) return sawTag && matched;
+    if (condition[index] === ",") { index++; continue; }
+    if (condition.slice(index, index + 2) === "W/") index += 2;
+    if (condition[index] !== '"') return false;
+    const start = index++;
+    while (index < condition.length && condition[index] !== '"') {
+      const code = condition.charCodeAt(index++);
+      if (code < 0x21 || code === 0x7f) return false;
+    }
+    if (condition[index++] !== '"') return false;
+    sawTag = true;
+    if (condition.slice(start, index) === current) matched = true;
+    while (condition[index] === " " || condition[index] === "\t") index++;
+    if (index === condition.length) return matched;
+    if (condition[index++] !== ",") return false;
+  }
+}
+
+function notModified(request: Request, response: Response, cacheControl?: string): Response | null {
   const etag = response.headers.get("etag");
-  return etag && request.headers.get("if-none-match") === etag ? new Response(null, { status: 304, headers: { etag } }) : null;
+  const condition = request.headers.get("if-none-match");
+  if (response.status !== 200 || condition === null || !(/^[ \t]*\*[ \t]*$/.test(condition) || (etag && weakTagMatch(condition, etag)))) return null;
+  const headers = new Headers();
+  for (const name of ["date", "content-location", "etag", "vary", "cache-control", "expires"]) {
+    const value = response.headers.get(name);
+    if (value !== null) headers.set(name, value);
+  }
+  if (cacheControl) headers.set("cache-control", cacheControl);
+  return new Response(null, { status: 304, headers });
 }
 
 async function route(request: Request, env: Env, url: URL): Promise<Response> {
@@ -137,7 +171,7 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
     if (version && variant) keyParams.set("enc", brotli ? "br" : "id");
     const key = version ? new Request(`${url.origin}${url.pathname}?${keyParams}`) : null;
     const hit = key ? await cacheMatch(cache, key) : undefined;
-    if (hit) return notModified(request, hit) ?? withCacheStatus(hit, "HIT", POSTFLOP_CACHE_CONTROL);
+    if (hit) return notModified(request, hit, POSTFLOP_CACHE_CONTROL) ?? withCacheStatus(hit, "HIT", POSTFLOP_CACHE_CONTROL);
     const { status, body, text, bytes, etag } = await routePostflop(env.DB, url.pathname, url.searchParams);
     if (status !== 200) {
       if (url.pathname === "/v1/postflop/profile-policy") return new Response(JSON.stringify(body), { status, headers: JSON_HEADERS });
@@ -168,7 +202,7 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
     const cacheControl = url.pathname === "/v1/preflop/datasets" ? PREFLOP_CATALOG_CACHE_CONTROL : PREFLOP_BODY_CACHE_CONTROL;
     const key = new Request(`${url.origin}/__reysonai_cache/v1/preflop${url.pathname}`);
     const hit = await cacheMatch(cache, key);
-    if (hit) return notModified(request, hit) ?? withCacheStatus(hit, "HIT", cacheControl);
+    if (hit) return notModified(request, hit, cacheControl) ?? withCacheStatus(hit, "HIT", cacheControl);
     const { status, body, text, etag } = await routePreflopDatasets(env.DB, url.pathname);
     if (status !== 200) return errorResponse(status, String((body as JsonRecord).error ?? "error"));
     const response = text == null ? json(body, { cacheControl })
