@@ -8,6 +8,7 @@ import { spotArtifacts } from "../../frontend/scripts/postflop-ai/publish-d1.mjs
 import { postflopResponse } from "../../frontend/scripts/postflop-ai/local-view.mjs";
 import { boards } from "../../frontend/scripts/postflop-ai/inputs.mjs";
 import { spotById } from "../../frontend/scripts/postflop-ai/spots.ts";
+import { installEdgeCache } from "./helpers/edge-cache.mjs";
 
 // In-memory D1 answering the worker's queries: WHERE spot_id = ?.
 function mockDb(tables, onQuery = () => {}) {
@@ -161,13 +162,98 @@ test("only profile-policy uses the profile dataset version and caches successful
   assert.equal(queries.filter(({ sql }) => sql.includes("FROM postflop_profile_policies")).length, 1);
   assert.equal((await get(profilePath(profileParams({ stage: "later" })), "https://one.test")).status, 404);
   assert.equal((await get(profilePath(profileParams({ profile: "invalid" })), "https://one.test")).status, 400);
-  assert.equal(puts.length, 1, "misses and invalid requests are not cached");
-  assert.ok(puts[0].includes("dataset=profiles-hash"));
+  assert.equal(puts.length, 2, "profile version metadata and its successful policy are cached");
+  assert.ok(puts.some(key => key.includes("dataset=profiles-hash")));
   assert.equal((await get("/v1/postflop/spots", "https://one.test")).status, 200);
   assert.equal((await get(`/v1/postflop/flop?spot=${spot.id}&flop=Ac7d2h`, "https://one.test")).status, 404);
+  assert.equal(puts.length, 5, "three version metadata rows and two successful responses are cached");
+  assert.equal(puts.filter(key => key.includes("/__reysonai_cache/v1/postflop-dataset-version/")).length, 3);
   assert.ok(matched.some(key => key.includes("/v1/postflop/spots?") && key.includes("dataset=balanced-hash")));
   assert.ok(matched.some(key => key.includes("/v1/postflop/flop?") && key.includes("dataset=flop-hash&enc=id")));
   assert.deepEqual(queries.filter(({ sql }) => sql.includes("FROM dataset_versions")).map(({ args }) => args[0]), ["postflop-profiles", "postflop", "flop-base"]);
+});
+
+test("postflop version metadata expires after 60s and a republish changes the body cache key", async t => {
+  const cache = installEdgeCache(t);
+  const queries = [];
+  const tables = {
+    dataset_versions: [{ name: "postflop", content_hash: "old-version" }],
+    postflop_policies: [{ spot_id: spot.id, stage: "flop", policy_hash: "old-policy" }],
+  };
+  const env = { DB: mockDb(tables, (sql, args) => queries.push({ sql, args })) };
+  const get = (origin = "https://edge.test", suffix = "") => worker.fetch(new Request(`${origin}/v1/postflop/spots${suffix}`), env);
+  const first = await get();
+  assert.equal(first.headers.get("x-reysonai-cache"), "MISS");
+  assert.equal((await first.json()).spots[spot.id].flop, "old-policy");
+  assert.equal((await get("https://edge.test", "?dataset=forged&enc=br")).headers.get("x-reysonai-cache"), "HIT", "client query cannot override internal cache selectors");
+  assert.equal(queries.length, 2);
+  assert.ok(cache.puts.some(key => key.includes("/__reysonai_cache/v1/postflop-dataset-version/postflop")));
+  assert.equal((await get("https://other.test")).headers.get("x-reysonai-cache"), "MISS", "cache keys are scoped to the request origin");
+  assert.equal(queries.length, 4);
+
+  tables.dataset_versions[0].content_hash = "new-version";
+  tables.postflop_policies[0].policy_hash = "new-policy";
+  assert.equal((await (await get()).json()).spots[spot.id].flop, "old-policy", "metadata remains fresh before expiry");
+  cache.advance(60_000);
+  const republished = await get();
+  assert.equal(republished.headers.get("x-reysonai-cache"), "MISS");
+  assert.equal((await republished.json()).spots[spot.id].flop, "new-policy");
+  assert.equal((await get()).headers.get("x-reysonai-cache"), "HIT");
+  assert.deepEqual(queries.filter(({ sql }) => sql.includes("FROM dataset_versions")).map(({ args }) => args[0]), ["postflop", "postflop", "postflop"]);
+  assert.equal(queries.filter(({ sql }) => sql.includes("FROM postflop_policies")).length, 3);
+  assert.ok(cache.puts.some(key => key.includes("dataset=new-version")));
+});
+
+test("postflop cache failures and absence fall through to D1", async t => {
+  const cache = installEdgeCache(t);
+  const queries = [];
+  const env = { DB: mockDb({ dataset_versions: [{ name: "postflop", content_hash: "h" }], postflop_policies: [] }, sql => queries.push(sql)) };
+  const get = () => worker.fetch(new Request("https://edge.test/v1/postflop/spots"), env);
+  cache.fail({ match: true, put: true });
+  for (let i = 0; i < 2; i++) {
+    const response = await get();
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("x-reysonai-cache"), "MISS");
+  }
+  assert.equal(queries.length, 4);
+  delete globalThis.caches;
+  const bypass = await get();
+  assert.equal(bypass.status, 200);
+  assert.equal(bypass.headers.get("x-reysonai-cache"), "BYPASS");
+  assert.equal(queries.length, 5, "no cache API means no version lookup and one body query");
+});
+
+test("Brotli and identity flop cache variants stay separate, including conditional hits", async t => {
+  const cache = installEdgeCache(t);
+  const queries = [];
+  const packed = brotliCompressSync("{\"saved\":true}");
+  const env = { DB: mockDb({
+    dataset_versions: [{ name: "flop-base", content_hash: "flop-version" }],
+    postflop_flop_base_br: [{ spot_id: spot.id, flop_key: "Ac7d2h", part: 0, parts: 1, content_hash: "flop-body", body: [...packed] }],
+  }, sql => queries.push(sql)) };
+  const get = headers => worker.fetch(new Request(`https://edge.test/v1/postflop/flop?spot=${spot.id}&flop=Ac7d2h`, { headers }), env);
+  const br = await get({ "accept-encoding": "br" });
+  assert.equal(br.headers.get("x-reysonai-cache"), "MISS");
+  assert.equal(br.headers.get("content-encoding"), "br");
+  assert.equal(brotliDecompressSync(Buffer.from(await br.arrayBuffer())).toString(), '{"saved":true}');
+  const conditional = await get({ "accept-encoding": "br", "if-none-match": '"flop-body"' });
+  assert.equal(conditional.status, 304);
+  assert.equal(queries.filter(sql => sql.includes("FROM postflop_flop_base_br")).length, 1);
+  const brHit = await get({ "accept-encoding": "br" });
+  assert.equal(brHit.headers.get("x-reysonai-cache"), "HIT");
+  assert.equal(brHit.headers.get("content-encoding"), "br");
+  const plain = await get({});
+  if (plain.status === 200) {
+    assert.equal(plain.headers.get("x-reysonai-cache"), "MISS");
+    assert.equal(plain.headers.get("content-encoding"), null);
+    assert.equal(await plain.text(), '{"saved":true}');
+    const plainHit = await get({});
+    assert.equal(plainHit.headers.get("x-reysonai-cache"), "HIT");
+    assert.equal(await plainHit.text(), '{"saved":true}');
+    assert.ok(cache.puts.some(key => key.includes("enc=br")));
+    assert.ok(cache.puts.some(key => key.includes("enc=id")));
+  } else assert.equal(plain.status, 406);
+  assert.equal(queries.filter(sql => sql.includes("FROM dataset_versions")).length, 1);
 });
 
 const local = existsSync(new URL(`../../frontend/.local/postflop-ai/${spot.slug}-policy.json`, import.meta.url));
