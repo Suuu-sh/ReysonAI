@@ -192,7 +192,7 @@ test("review snapshots preserve the exact saved preflop frequencies for the huma
     const action = pending.pending.options[0]?.key;
     if (!action) continue;
     const next = playHand({ seed, human: "BTN", humanActions: [action], agents, postflop: noPostflop });
-    const decision = exactAgentReview(next.log, next.holeCards, next.board, "BTN")[0];
+    const decision = exactAgentReview(next.log, next.holeCards, "BTN")[0];
     if (decision) captured = { action, decision };
   }
   assert.ok(captured, "fixture includes a saved preflop strategy row");
@@ -206,7 +206,7 @@ test("review leaves a no-data fallback explicitly unavailable", () => {
   const seed = "review-no-policy", pending = playHand({ seed, human: "BTN", agents, postflop: noPostflop });
   if (pending.status !== "awaiting" || pending.pending.street !== "preflop") return;
   const next = playHand({ seed, human: "BTN", humanActions: [pending.pending.options[0].key], agents, postflop: noPostflop });
-  assert.deepEqual(exactAgentReview(next.log, next.holeCards, next.board, "BTN", undefined, () => undefined), []);
+  assert.deepEqual(exactAgentReview(next.log, next.holeCards, "BTN", undefined, () => undefined), []);
 });
 
 test("session: button moves each hand and points use 1BB = 100", () => {

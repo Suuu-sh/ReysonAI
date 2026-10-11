@@ -237,8 +237,8 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
     if (!done || recorded.current === session.handNo) return;
     recorded.current = session.handNo;
     if (humanPos && !waitingMode) {
-      const reviewDecisions = exactAgentReview(result!.log, result!.holeCards, result!.board, humanPos, mw3Client.supportsSpot, undefined, id => kits.get(id));
-      const saved = saveAgentHand(handRecord(result!, tableId, humanPos, Date.now(), { session: historySession.entry, handNo: session.handNo + 1, names: Object.fromEntries(POSITIONS.map(pos => [pos, nameOf(pos)])), reviewDecisions }));
+      const reviewDecisions = !watch && !handoffKey ? exactAgentReview(result!.log, result!.holeCards, humanPos, mw3Client.supportsSpot) : undefined;
+      const saved = saveAgentHand(handRecord(result!, tableId, humanPos, Date.now(), { session: historySession.entry, handNo: session.handNo + 1, names: Object.fromEntries(POSITIONS.map(pos => [pos, nameOf(pos)])), ...(reviewDecisions ? { reviewDecisions } : {}) }));
       setBookmarked(Boolean(saved.find(hand => hand.session?.id === historySession.entry.id && hand.history?.handNo === session.handNo + 1)?.bookmarked));
     }
     const showdown = Boolean(result!.showdown);
@@ -251,7 +251,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
     })) : [];
     setHistory(current => [{ no: session.handNo + 1, winners: (result!.winners ?? []).map(nameOf).join(" / "),
       nameOf, log: [...revealed], board: [...boardCards], resultBb: humanPos && Number.isFinite(result!.returns![humanPos]) ? result!.returns![humanPos] : null, cards: humanPos ? [...(result!.holeCards[humanPos] ?? [])] : [], mine: humanPos && Number.isFinite(result!.returns![humanPos]) ? toPoints(result!.returns![humanPos]) : null, showdown, showdownPlayers }, ...current].slice(0, 30));
-  }, [done, humanPos, session.handNo, result, tableId, nameOf, kits, mw3Client]);
+  }, [done, humanPos, session.handNo, result, tableId, nameOf, watch, waitingMode, handoffKey]);
 
   const act = (key: string) => setHumanActions(current => [...current, key]);
   const nextHand = useCallback(() => {
