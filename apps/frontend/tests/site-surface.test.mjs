@@ -766,3 +766,9 @@ test("mobile audience shows all three level choices without a swipe row", () => 
   assert.match(css, /\.site-persona-list \.site-persona-level \{[^}]*white-space: normal;[^}]*overflow-wrap: anywhere;/);
   assert.doesNotMatch(css, /\.site-persona-list,\s*\.site-how-steps/);
 });
+
+test("mobile sticky CTA is hidden on desktop and styled at phone widths", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /\.site-mobile-cta \{ display: none; \}/);
+  assert.match(css, /@media \(max-width: 720px\)[\s\S]*?\.site-mobile-cta \{[^}]*display: flex;/);
+});
