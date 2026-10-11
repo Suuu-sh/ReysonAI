@@ -759,6 +759,21 @@ for (const locale of ["en", "ja"]) {
 }
 
 
+test("GTO identity FAQ is removed in every locale while other questions and legal copy remain", () => {
+  const removedQuestions = { en: "Is this GTO?", ja: "これはGTOですか？", es: "¿Esto es GTO?", "zh-CN": "这是GTO吗？" };
+  for (const locale of ["en", "ja", "es", "zh-CN"]) {
+    const html = render(locale);
+    const faq = html.match(/<section class="site-section site-faq"[\s\S]*?<\/section>/)?.[0];
+    assert.ok(faq, `${locale} FAQ renders`);
+    assert.ok(!faq.includes(removedQuestions[locale]), `${locale} removed its GTO identity question`);
+    assert.equal((faq.match(/<details\b/g) ?? []).length, copies[locale].faq.items.length);
+    for (const { question } of copies[locale].faq.items) assert.ok(faq.includes(escapeText(question)), `${locale} retains: ${question}`);
+    assert.ok(html.includes(escapeText(copies[locale].footer.disclaimer)), `${locale} retains footer disclaimer`);
+  }
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /:focus-visible/);
+});
+
 test("mobile audience shows all three level choices without a swipe row", () => {
   const css = readFileSync(new URL("../src/site/site-mobile.css", import.meta.url), "utf8");
   assert.match(css, /\.site-persona-list \{[^}]*width: 100%;[^}]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
