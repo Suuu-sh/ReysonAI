@@ -136,7 +136,7 @@
 /* The hero uses the actual saved range, not a screenshot or ornamental grid. */
 .site-matrix-scroll { max-width: 100%; padding: 3px; margin: -3px; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
 .site .site-matrix { display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: 2px; min-width: 316px; aspect-ratio: 1; }
-.site .site-cell { position: relative; display: grid; place-items: center; min-width: 0; overflow: hidden; border-radius: var(--control-radius); background: var(--fold); color: #9c9ca8; font-size: clamp(10px, .9vw, 13px); font-weight: 600; letter-spacing: -.02em; line-height: 1; transition: background-color .5s ease calc(var(--wave) * 22ms), color .5s ease calc(var(--wave) * 22ms), transform .18s var(--ease), box-shadow .18s ease; }
+.site .site-cell { position: relative; display: grid; place-items: center; min-width: 0; overflow: hidden; border-radius: var(--control-radius); background: var(--fold); color: #9c9ca8; font-size: clamp(10px, .9vw, 13px); font-weight: 600; letter-spacing: -.02em; line-height: 1; transition: transform .18s var(--ease), box-shadow .18s ease; }
 .site .site-cell.is-raise { color: #fff; }
 .site .site-cell.is-unreachable { background: repeating-linear-gradient(135deg, #141418, #141418 4px, #1b1b20 4px, #1b1b20 6px); color: var(--subtle); }
 .site .site-cell.is-limp, .site .site-cell.is-all_in, .site .site-cell.is-call, .site .site-cell.is-postflop { color: #fff; }
@@ -144,8 +144,11 @@
 .site .site-cell.is-selected { z-index: 3; outline: 2px solid var(--ink); outline-offset: 1px; }
 .has-motion .site-cell { animation: site-cell-in .6s var(--ease) both; animation-delay: calc(var(--wave) * 24ms + .45s); }
 .site-cell-fill { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-.site-cell-fill span { position: absolute; bottom: 0; display: block; }
-.has-motion .site-cell-fill span { transition: left .42s var(--ease) calc(var(--wave) * 22ms), width .42s var(--ease) calc(var(--wave) * 22ms), height .42s var(--ease) calc(var(--wave) * 22ms), background-color .42s ease calc(var(--wave) * 22ms), opacity .42s ease calc(var(--wave) * 22ms); }
+.site-cell-fill-layer { position: absolute; inset: auto 0 0; display: block; background-repeat: no-repeat; pointer-events: none; }
+@keyframes site-range-fill-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes site-range-fill-out { from { opacity: 1; } to { opacity: 0; } }
+.has-motion .site-cell-fill-layer.is-incoming { animation: site-range-fill-in .22s ease calc(var(--wave) * 8ms) both; }
+.has-motion .site-cell-fill-layer.is-outgoing { animation: site-range-fill-out .22s ease calc(var(--wave) * 8ms) both; }
 .site-cell-label { position: relative; z-index: 1; text-shadow: 0 1px 2px #09090bcc; }
 .site-legend { display: flex; gap: 16px; margin-top: 12px; color: var(--muted); font-size: 12px; }
 .site-legend span, .site-mini-legend span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
@@ -606,7 +609,6 @@
   .site-hero-range .site-matrix { height: auto; aspect-ratio: 1; min-width: 0; }
   .has-motion .site-hero-range { animation: none; }
   .has-motion .site-hero-range .site-cell { animation: none; }
-  .has-motion .site-hero-range .site-cell-fill span { transition: none; }
   .site-hero-range .site-legend { display: none; }
   .site-hero h1 { margin: 0; padding: 0; text-shadow: 0 2px 16px #09090b; }
   .site-hero-opening { color: var(--ink); font-size: clamp(30px, 9.2vw, 48px); }

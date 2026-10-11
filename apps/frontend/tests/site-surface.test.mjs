@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { readFileSync } from "node:fs";
-import { createElement } from "react";
+import { act, createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { createRoot } from "react-dom/client";
+import { JSDOM } from "jsdom";
 import { createServer } from "vite";
 
 test("scrolly audience starts at the section edge instead of centering in its scroll spacer", () => {
@@ -392,7 +394,7 @@ test("saved postflop previews retain canonical board-specific weighted mixes, re
   assert.match(source, /combosOf\(row\.hand\)\.filter\(combo => !blocked\.has\(combo\[0\]\) && !blocked\.has\(combo\[1\]\)\)/);
 });
 
-test("hero range cells map action shares to exact widths and reach to common bottom fill without mutating input", async () => {
+test("hero range cells use one exact sharp-stop color layer with bottom reach and no zero-share nodes", async () => {
   const { RangeMatrix } = await server.ssrLoadModule("/src/site/ServiceSite.tsx");
   const { color } = await server.ssrLoadModule("/src/components/action-format.ts");
   const actions = ["check", "bet33", "bet75", "bet125"];
@@ -416,19 +418,15 @@ test("hero range cells map action shares to exact widths and reach to common bot
     const markup = cell(hand);
     assert.ok(markup, `${hand} cell renders`);
     assert.match(markup, /class="site-cell-fill" aria-hidden="true"/);
-    const fills = new Map([...markup.matchAll(/<span data-action="([^"]+)" style="([^"]+)"><\/span>/g)].map(([, action, style]) => [action, style]));
-    assert.equal(fills.size, 10, `${hand} keeps stable action layers between ranges`);
-    if (reach === 0) {
-      for (const [action, style] of fills) assert.match(style, /opacity:0$/, `${hand}/${action} zero-reach layer stays hidden`);
-    } else {
-      for (const [index, [action, width]] of shares.entries()) {
-        const left = shares.slice(0, index).reduce((sum, [, part]) => sum + part, 0);
-        assert.equal(fills.get(action), `left:${left}%;width:${width}%;height:${reach * 100}%;background:${color(action)};opacity:1`, `${hand}/${action} exact share and common reach height`);
-      }
-      const positive = new Set(shares.map(([action]) => action));
-      for (const [action, style] of fills) {
-        if (!positive.has(action)) assert.match(style, /width:0%;.*opacity:0$/, `${hand}/${action} zero-share layer stays hidden`);
-      }
+    const fills = [...markup.matchAll(/class="site-cell-fill-layer[^"]*" style="([^"]+)"/g)].map(([, style]) => style);
+    if (reach === 0 || shares.length === 0) assert.equal(fills.length, 0, `${hand} has no zero-reach/zero-share color layer`);
+    else {
+      assert.equal(fills.length, 1, `${hand} has one compact resting fill layer`);
+      const wave = markup.match(/style="--wave:(\d+);/)?.[1];
+      let left = 0;
+      const expectedStops = [...shares].sort(([a], [b]) => ["all_in", "allin", "raise", "bet125", "bet75", "bet33", "limp", "call", "check", "fold"].indexOf(a) - ["all_in", "allin", "raise", "bet125", "bet75", "bet33", "limp", "call", "check", "fold"].indexOf(b))
+        .map(([action, width]) => { const start = left; left += width; return `${color(action)} ${start}% ${left}%`; }).join(", ");
+      assert.equal(fills[0], `--wave:${wave};background-image:linear-gradient(90deg, ${expectedStops});height:${reach * 100}%`, `${hand} preserves exact sharp-stop shares and bottom reach height`);
     }
     assert.match(markup, /site-cell-label/);
   };
@@ -442,11 +440,71 @@ test("hero range cells map action shares to exact widths and reach to common bot
 
   const preflop = { ...range, stage: "opening", reach: undefined, hands: Object.fromEntries(matrixHands.map(hand => [hand, { check: 0, bet33: hand === "AA" ? 100 : 0, bet75: 0, bet125: 0 }])) };
   const preflopHtml = renderToStaticMarkup(createElement(RangeMatrix, { range: preflop, selected: "AA", onSelect() {} }));
-  assert.ok(preflopHtml.includes(`left:0%;width:100%;height:100%;background:${color("bet33")}`), "preflop without reach metadata fills full height");
+  assert.ok(preflopHtml.includes(`background-image:linear-gradient(90deg, ${color("bet33")} 0% 100%);height:100%`), "preflop without reach metadata fills full height");
 
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  assert.match(css, /\.has-motion \.site-cell-fill span\s*\{[^}]*transition: left \.42s[^}]*width \.42s[^}]*height \.42s[^}]*opacity \.42s/);
-  assert.match(css, /@media screen and \(max-width: 720px\)[\s\S]*?\.has-motion \.site-hero-range \.site-cell-fill span \{ transition: none; \}/);
+  assert.match(css, /\.has-motion \.site-cell-fill-layer\.is-incoming\s*\{[^}]*animation: site-range-fill-in \.22s ease calc\(var\(--wave\) \* 8ms\) both/);
+  assert.match(css, /\.has-motion \.site-cell-fill-layer\.is-outgoing\s*\{[^}]*animation: site-range-fill-out \.22s ease calc\(var\(--wave\) \* 8ms\) both/);
+  assert.doesNotMatch(css, /site-cell-fill-layer[^}]*transition:\s*(?:left|width|height|background-color)/);
+  const cellRule = css.match(/\.site \.site-cell \{[^}]*\}/)?.[0] ?? "";
+  assert.match(cellRule, /transition: transform \.18s[^}]*box-shadow \.18s/);
+  assert.doesNotMatch(cellRule, /transition:[^}]*\b(?:background-color|color)\b/);
+  const mobileCss = css.slice(css.indexOf("@media screen and (max-width: 720px)"));
+  assert.doesNotMatch(mobileCss, /site-cell-fill-layer[^}]*animation:\s*none/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.site \*, \.site \*::before, \.site \*::after \{ animation: none !important/);
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.match(source, /const useBrowserLayoutEffect = typeof document === "undefined" \? useEffect : useLayoutEffect/);
+  assert.match(source, /useBrowserLayoutEffect\(\(\) => \{\s*const previous = lastRange\.current/);
+  assert.match(source, /setTimeout\(\(\) => setPreviousRange\(current => current\?\.id === previous\.id \? null : current\), 420\)/);
+  assert.match(source, /if \(!motion\) \{ setPreviousRange\(null\); return; \}/);
+  assert.match(source, /key=\{hand\} className=\{`site-cell/);
+});
+
+test("range fill crossfade stays bounded, preserves the focused cell, and clears when reduced motion turns on", async () => {
+  const dom = new JSDOM('<div id="root"></div>', { url: "http://localhost/", pretendToBeVisual: true });
+  const old = Object.fromEntries(["window", "document", "navigator", "Element", "HTMLElement", "Node", "IntersectionObserver", "ResizeObserver", "requestAnimationFrame", "cancelAnimationFrame", "IS_REACT_ACT_ENVIRONMENT"].map(key => [key, globalThis[key]]));
+  const listeners = new Set();
+  const media = new Map();
+  const mediaQuery = query => {
+    if (!media.has(query)) {
+      const targetListeners = query === "(prefers-reduced-motion: reduce)" ? listeners : new Set();
+      media.set(query, { matches: query === "(max-width: 720px)", media: query, addEventListener: (_type, listener) => targetListeners.add(listener), removeEventListener: (_type, listener) => targetListeners.delete(listener) });
+    }
+    return media.get(query);
+  };
+  const reduced = mediaQuery("(prefers-reduced-motion: reduce)");
+  dom.window.matchMedia = mediaQuery;
+  class VisibleObserver { constructor(callback) { this.callback = callback; } observe(target) { this.callback([{ isIntersecting: true, target }], this); } disconnect() {} unobserve() {} }
+  try {
+    for (const [key, value] of Object.entries({ window: dom.window, document: dom.window.document, navigator: dom.window.navigator, Element: dom.window.Element, HTMLElement: dom.window.HTMLElement, Node: dom.window.Node, IntersectionObserver: VisibleObserver, ResizeObserver: class { observe() {} disconnect() {} }, requestAnimationFrame: dom.window.requestAnimationFrame.bind(dom.window), cancelAnimationFrame: dom.window.cancelAnimationFrame.bind(dom.window), IS_REACT_ACT_ENVIRONMENT: true })) Object.defineProperty(globalThis, key, { configurable: true, writable: true, value });
+    dom.window.IntersectionObserver = VisibleObserver;
+    const rootNode = dom.window.document.getElementById("root"), root = createRoot(rootNode);
+    try {
+      await act(async () => { root.render(createElement(ServiceSite, { locale: "en", onLocaleChange() {} })); });
+      const focusedCell = [...rootNode.querySelectorAll(".site-cell")].find(button => button.getAttribute("aria-label").startsWith("A5o:"));
+      assert.ok(focusedCell);
+      focusedCell.focus();
+      await act(async () => { await new Promise(resolve => setTimeout(resolve, 1050)); });
+      assert.strictEqual(rootNode.querySelector('[aria-label^="A5o:"]'), focusedCell, "hand buttons keep their identity across the tour update");
+      assert.strictEqual(dom.window.document.activeElement, focusedCell, "focus stays on the same hand button");
+      const layers = rootNode.querySelectorAll(".site-cell-fill-layer");
+      assert.ok(layers.length > 0 && layers.length <= 338, `only current+previous positive cell layers are mounted (${layers.length})`);
+      assert.ok(rootNode.querySelectorAll(".site-cell-fill-layer.is-outgoing").length > 0, "previous fill is present during its crossfade");
+      reduced.matches = true;
+      await act(async () => { for (const listener of listeners) listener({ matches: true }); });
+      assert.doesNotMatch(rootNode.querySelector(".site")?.className ?? "", /has-motion/);
+      assert.equal(rootNode.querySelectorAll(".site-cell-fill-layer.is-outgoing").length, 0, "live reduced-motion toggle drops the previous snapshot immediately");
+      assert.ok(rootNode.querySelectorAll(".site-cell-fill-layer").length <= 169, "reduced-motion leaves only current layers");
+    } finally {
+      await act(async () => root.unmount());
+    }
+  } finally {
+    dom.window.close();
+    for (const [key, value] of Object.entries(old)) {
+      if (value === undefined) delete globalThis[key];
+      else Object.defineProperty(globalThis, key, { configurable: true, writable: true, value });
+    }
+  }
 });
 
 test("the service site keeps a single locale selector in the persistent header actions", () => {
@@ -647,6 +705,7 @@ for (const locale of ["en", "ja"]) {
     const cells = html.match(/<button\b[^>]*class="site-cell [^"]*"[^>]*>[\s\S]*?<\/button>/g) ?? [];
     assert.equal(cells.length, 169);
     assert.equal(cells.filter(cell => cell.includes('aria-pressed="true"')).length, 1);
+    assert.ok((hero.match(/class="site-cell-fill-layer/g) ?? []).length <= 169, "resting hero uses at most one color layer per cell");
     assert.doesNotMatch(hero, /site-explorer-bar|site-segment/);
     assert.doesNotMatch(html, /reysonai:site-preview-display-mode:v1/);
     assert.match(html, /class="site-cell-fill" aria-hidden="true"/);
