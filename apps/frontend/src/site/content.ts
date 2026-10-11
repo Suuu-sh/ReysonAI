@@ -83,7 +83,6 @@ export const en = {
   faq: {
     title: "Questions, answered plainly.",
     items: [
-      { question: "Is this GTO?", answer: "No. ReysonAI shows AI-estimated ranges for learning. They are not solver output and are not guaranteed to be mathematically optimal." },
       { question: "How is it different from GTO Wizard?", answer: "GTO Wizard and similar apps show solver-computed strategies and are the reference for exact theory. ReysonAI shows AI estimates designed for learning, with explanations, drills, ranked matches and analysis of your practice. See the comparison above." },
       { question: "Which games does it cover?", answer: "6-max cash games at 100BB with no ante. Opens are 2.5BB, or 3.5BB from the small blind. Spots without saved data are shown as unrecorded, never guessed." },
       { question: "Do I need an account?", answer: "No. Your profile and practice history are saved in this browser. Accounts are planned." },

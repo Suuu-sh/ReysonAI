@@ -81,7 +81,6 @@ export const es: SiteCopy = {
   faq: {
     title: "Preguntas con respuestas claras.",
     items: [
-      { question: "¿Esto es GTO?", answer: "No. ReysonAI muestra rangos estimados por IA para aprender. No son resultados de un solver ni se garantiza que sean matemáticamente óptimos." },
       { question: "¿En qué se diferencia de GTO Wizard?", answer: "GTO Wizard y apps similares muestran estrategias calculadas por un solver y son la referencia para la teoría exacta. ReysonAI ofrece estimaciones de IA para aprender, con explicaciones, ejercicios, clasificatorias y análisis de tu práctica. Consulta la comparativa anterior." },
       { question: "¿Qué juegos incluye?", answer: "Cash de 6 jugadores con 100BB y sin ante. Las aperturas son a 2.5BB, o a 3.5BB desde la ciega pequeña. Las situaciones sin datos guardados se indican como no registradas, nunca se inventan." },
       { question: "¿Necesito una cuenta?", answer: "No. Tu perfil y tu historial de práctica se guardan en este navegador. Las cuentas están previstas." },
