@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
@@ -14,6 +14,15 @@ const workflowRun = (overrides = {}) => {
   run.updated_at ??= run.created_at;
   return run;
 };
+
+function assertBackendVerificationDependencies() {
+  const workflow = readFileSync(new URL('../../.github/workflows/deploy-worker.yml', import.meta.url), 'utf8');
+  const conditions = [...workflow.matchAll(/^      - name: Install dependencies\n        if: ([^\n]+)\n        run: npm ci$/gm)]
+    .map(([, condition]) => condition);
+  assert.equal(conditions.length, 2);
+  assert.equal(conditions[0], "needs.scope.outputs.needs_frontend_deps == 'true' || needs.scope.outputs.verify_backend == 'true'");
+  assert.equal(conditions[1], "needs.verify.outputs.needs_frontend_deps == 'true'");
+}
 
 function git(root, args) {
   return execFileSync('git', ['-C', root, ...args], { encoding: 'utf8' }).trim();
@@ -516,7 +525,33 @@ test('standalone scope paths keep code-only changes apart from data roots', () =
 });
 
 
-test('schema-only migrations keep backend checks without frontend install, LFS or Worker deploy', async t => {
+test('backend-only verification installs frontend test dependencies without enabling frontend build or data work', async t => {
+  const root = repository(t);
+  const base = commit(root, baseFiles());
+  const head = commit(root, {
+    'apps/backend/tests/fastfold-do.test.mjs': 'test("fastfold", () => {});\n',
+    'apps/backend/tests/human-rank-do.test.mjs': 'test("human rank", () => {});\n',
+  });
+  const plan = await classifyEvent({
+    repoRoot: root, eventName: 'push', ref: 'refs/heads/main', sha: head,
+    repository: 'Suuu-sh/ReysonAI', runId: '200', fetcher: successFetcher(workflowRun({ head_sha: base })),
+  });
+  assert.equal(plan.lineage_known, true);
+  assert.equal(plan.release_safe, true);
+  assert.equal(plan.verify_backend, true);
+  assert.equal(plan.needs_frontend_deps, false);
+  assert.equal(plan.verify_frontend, false);
+  assert.equal(plan.deploy_frontend, false);
+  assert.equal(plan.deploy_api, false);
+  assert.equal(plan.verify_data, false);
+  assert.equal(plan.data_release, false);
+  assert.equal(plan.import_preflop, false);
+  assert.equal(plan.publish_postflop, false);
+  assert.equal(plan.import_mw3, false);
+  assertBackendVerificationDependencies();
+});
+
+test('schema-only migrations install backend verify dependencies without frontend build, LFS or Worker deploy', async t => {
   const root = repository(t);
   const base = commit(root, baseFiles());
   const head = commit(root, { 'apps/backend/migrations/0009_ranked.sql': 'CREATE TABLE ranked (id TEXT, version INTEGER);\n' });
@@ -538,4 +573,7 @@ test('schema-only migrations keep backend checks without frontend install, LFS o
   assert.equal(plan.verify_preflop, false);
   assert.equal(plan.verify_postflop, false);
   assert.equal(plan.verify_mw3, false);
+  assert.equal(plan.verify_frontend, false);
+  assert.equal(plan.deploy_api, false);
+  assertBackendVerificationDependencies();
 });
