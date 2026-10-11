@@ -822,3 +822,25 @@
   .trainer-home .is-ranked:not(.is-coming-soon) .ranked-emblem-badge { transform: scale(.85); }
   .trainer-home .is-ranked:not(.is-coming-soon) .mode-actions { grid-template-columns: 1fr 1fr; }
 }
+
+/* Trainer home artwork stays centered and bounded; unlike gameplay, it does not fan out on focus/hover. */
+.trainer-home .mode-visual { box-sizing: border-box; height: 76px; min-height: 76px; padding: 0 8px; }
+.trainer-home .agent-lineup { position: relative; display: flex; align-items: center; justify-content: center; gap: 8px; height: 76px; min-height: 76px; overflow: hidden; }
+.trainer-home .agent-lineup .agent-table-face { position: static; display: grid; flex: 0 0 48px; width: 48px; height: auto; justify-items: center; gap: 2px; opacity: 1; transform: none; transition: none; }
+.trainer-home .agent-lineup .agent-table-face.is-near,
+.trainer-home .agent-lineup .agent-table-face.is-front { transform: none; }
+.trainer-home .agent-lineup .agent-table-face:not(.is-near):not(.is-front) { display: none; }
+.trainer-home .agent-lineup .agent-table-face .agent-unit { width: 42px; height: 42px; }
+.trainer-home .agent-lineup .agent-table-face small { position: static; display: block; inset: auto; color: var(--text-subtle); font-size: 8px; line-height: 1; opacity: 1; transform: none; transition: none; }
+.trainer-home .mode-block.is-agent:is(:hover, :focus-within) .agent-lineup .agent-table-face,
+.trainer-home .mode-block.is-agent:is(:hover, :focus-within) .agent-lineup .agent-table-face.is-front { opacity: 1; transform: none; filter: none; animation: none; }
+.trainer-home .agent-lineup .agent-table-face.is-front > :first-child,
+.trainer-home .mode-block.is-agent:is(:hover, :focus-within) .agent-lineup .agent-table-face.is-front > :first-child { filter: none; animation: none; }
+.trainer-home .mode-block.is-agent:is(:hover, :focus-within) .agent-lineup .agent-table-face small { position: static; opacity: 1; transform: none; }
+.trainer-home .drill-deck { height: 76px; min-height: 76px; overflow: hidden; }
+.trainer-home .drill-deck-card { box-sizing: border-box; width: 44px; height: 56px; padding: 4px; transform: translate(calc(-50% + var(--k) * 14px), -50%) rotate(calc(var(--k) * 3deg)); transition: none; }
+.trainer-home .mode-block.is-drills:is(:hover, :focus-within) .drill-deck-card { transform: translate(calc(-50% + var(--k) * 14px), -50%) rotate(calc(var(--k) * 3deg)); box-shadow: none; }
+.trainer-home .mode-block.is-drills:is(:hover, :focus-within) .drill-deck-card:hover { transform: translate(calc(-50% + var(--k) * 14px), -50%) rotate(calc(var(--k) * 3deg)); }
+@media (max-width: 700px) {
+  .trainer-home .mode-visual, .trainer-home .agent-lineup, .trainer-home .drill-deck { height: 64px; min-height: 64px; }
+}
