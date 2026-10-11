@@ -79,10 +79,8 @@ small, .muted { color: var(--text-muted); font-size: 12px; line-height: 1.7; }
 .brand small { display: block; margin-top: 4px; font-size: 9px; font-weight: 400; color: var(--text-muted); }
 .sidebar-toggle { display: flex; flex: 0 0 32px; align-items: center; justify-content: center; width: 100%; height: 32px; padding: 0; border-color: transparent; background: transparent; color: var(--text-muted); }
 .sidebar-toggle:hover { background: var(--surface-hover); color: var(--text); }
-.header-nav { display: flex; flex: 1; flex-direction: column; justify-content: flex-start; gap: 22px; min-width: 0; }
-.header-nav-group { display: grid; gap: 7px; min-width: 0; }
-.header-nav-group-label { padding: 0 10px; color: var(--text-subtle); font-size: 10px; font-weight: 600; letter-spacing: .12em; white-space: nowrap; }
-.header-nav-items { display: grid; gap: 4px; }
+.header-nav { display: flex; flex: 1; flex-direction: column; justify-content: flex-start; min-width: 0; }
+.header-nav-items { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .header-nav button, .header-nav a {
   display: flex;
   align-items: center;
@@ -121,9 +119,7 @@ small, .muted { color: var(--text-muted); font-size: 12px; line-height: 1.7; }
 .app-sidebar.is-collapsed:not(.is-hover-expanded) { flex-basis: 64px; width: 64px; align-items: center; gap: 22px; padding: 14px 7px 12px; }
 .app-sidebar.is-collapsed:not(.is-hover-expanded) .sidebar-heading { min-height: 34px; height: 34px; justify-content: center; }
 .app-sidebar.is-collapsed:not(.is-hover-expanded) .brand-copy, .app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav button > span, .app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav button > small, .app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav a > span, .app-sidebar.is-collapsed:not(.is-hover-expanded) .header-meta { display: none; }
-.app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav { width: 100%; flex: 1; gap: 22px; }
-.app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav-group { gap: 7px; }
-.app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav-group-label { visibility: hidden; }
+.app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav { width: 100%; flex: 1; }
 .app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav button, .app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav a { justify-content: center; padding: 9px 8px; }
 .app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav button > svg, .app-sidebar.is-collapsed:not(.is-hover-expanded) .header-nav a > svg { flex-basis: 18px; }
 

@@ -79,11 +79,8 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
         </div>
       </div>
       <nav id="main-navigation" className="header-nav" aria-label="メインナビゲーション">
-        {navigationGroups.map(group => (
-          <div className="header-nav-group" key={group.label}>
-            <span className="header-nav-group-label">{group.label}</span>
-            <div className="header-nav-items">
-              {group.items.map(({ Icon, name, status: pendingStatus }) => {
+        <div className="header-nav-items">
+          {navigationGroups.flatMap(group => group.items).map(({ Icon, name, status: pendingStatus }) => {
                 const status = pendingStatus;
                 const label = name === RANGE_SECTION ? localized("Range", name) : name === "プレー分析" ? localized("Stats", name) : name;
                 return (
@@ -101,9 +98,7 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
                   {status && <small>{status}</small>}
                 </button>
               );})}
-            </div>
-          </div>
-        ))}
+        </div>
       </nav>
       <button
         type="button"
