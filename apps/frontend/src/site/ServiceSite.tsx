@@ -1,6 +1,6 @@
 import { shouldPinCover, questionMaskEdge } from "./cover-pin.ts";
 import { PlayingCard, type CardSuit as Suit } from "../components/PlayingCard.tsx";
-import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { BrandIcon } from "../components/BrandIcon.tsx";
 import { ArrowRight, Check, List, X } from "@phosphor-icons/react";
 import { TierEmblem, tierColor } from "../trainer/RankEmblem.tsx";
@@ -17,6 +17,7 @@ import { TIERS, LEGEND_TOP_N } from "../../../shared/ranked-rules.ts";
 
 const SiteContext = createContext<{ locale: SiteLocale; copy: SiteCopy; onLocaleChange: (locale: SiteLocale) => void; motion: boolean; appHref: string }>({ locale: "en", copy: en, onLocaleChange: () => {}, motion: false, appHref: "/analyze/ranges" });
 const useSite = () => useContext(SiteContext);
+const useBrowserLayoutEffect = typeof document === "undefined" ? useEffect : useLayoutEffect;
 
 type Action = "raise" | "call" | "fold";
 type RangeMode = "opening" | "response";
@@ -112,6 +113,29 @@ const stripAggression = ["all_in", "allin", "raise", "bet125", "bet75", "bet33",
 
 const initialRangeIndex = heroRanges.findIndex(range => range.id === "BTN_open");
 
+type CellFill = { backgroundImage: string; height: string };
+
+function cellFill(range: HeroRange, hand: string): CellFill | null {
+  const reach = range.stage === "postflop" ? range.reach?.[hand] ?? 0 : 1;
+  if (range.unreachable.includes(hand) || reach <= 0) return null;
+  const values = range.hands[hand] ?? {};
+  let left = 0;
+  const stops = range.actions
+    .filter(action => (values[action] ?? 0) > 0)
+    .sort((a, b) => stripAggression.indexOf(a) - stripAggression.indexOf(b))
+    .map(action => {
+      const width = (values[action] ?? 0) * (range.stage === "postflop" ? 100 : 1);
+      const start = left;
+      left += width;
+      return `${actionColor(action)} ${start}% ${left}%`;
+    });
+  return stops.length ? { backgroundImage: `linear-gradient(90deg, ${stops.join(", ")})`, height: `${reach * 100}%` } : null;
+}
+
+function rangeCellFills(range: HeroRange | null): Map<string, CellFill | null> | null {
+  return range ? new Map(cells.map(({ hand }) => [hand, cellFill(range, hand)])) : null;
+}
+
 function heroActionLabels(copy: SiteCopy, range: HeroRange): Record<string, string> {
   const raise = range.stage === "response" ? copy.common.threeBet : range.stage === "threeBet" ? "4bet" : copy.common.raise;
   return { check: copy.preview.check, bet33: `${copy.preview.bet} 33%`, bet75: `${copy.preview.bet} 75%`, bet125: `${copy.preview.bet} 125%`, raise, all_in: "allin", call: copy.common.call, limp: `${copy.common.call} 1BB`, fold: copy.common.fold };
@@ -125,9 +149,22 @@ function rangeAccessibleContext(copy: SiteCopy, range: HeroRange) {
 }
 
 export function RangeMatrix({ range, selected, onSelect }: { range: HeroRange; selected: string; onSelect: (hand: string) => void }) {
-  const { copy } = useSite();
+  const { copy, motion } = useSite();
   const postflop = range.stage === "postflop";
   const actionLabels = heroActionLabels(copy, range);
+  const [previousRange, setPreviousRange] = useState<HeroRange | null>(null);
+  const lastRange = useRef(range);
+  useBrowserLayoutEffect(() => {
+    const previous = lastRange.current;
+    lastRange.current = range;
+    if (!motion) { setPreviousRange(null); return; }
+    if (previous.id === range.id) return;
+    setPreviousRange(previous);
+    const timer = window.setTimeout(() => setPreviousRange(current => current?.id === previous.id ? null : current), 420);
+    return () => window.clearTimeout(timer);
+  }, [range, motion]);
+  const fills = useMemo(() => rangeCellFills(range), [range]);
+  const previousFills = useMemo(() => rangeCellFills(previousRange), [previousRange]);
   return <section className="site-matrix-scroll" aria-label={`${rangeAccessibleContext(copy, range)} ${copy.preview.scrollLabel}`}>
     <fieldset className="site-matrix"><legend className="site-visually-hidden">{copy.preview.matrixLabel}</legend>
       {cells.map(({ hand, wave }) => {
@@ -136,19 +173,16 @@ export function RangeMatrix({ range, selected, onSelect }: { range: HeroRange; s
         const unreachable = range.unreachable.includes(hand);
         const action = range.actions.reduce((best, candidate) => values[candidate] > values[best] ? candidate : best, postflop ? range.actions[0] : "fold");
         const mixed = range.actions.filter(option => values[option] > 0).sort((a, b) => stripAggression.indexOf(a) - stripAggression.indexOf(b));
-        const reach = postflop ? range.reach?.[hand] ?? 0 : 1;
-        let left = 0;
-        const fills = stripAggression.map(option => {
-          const width = values[option] ?? 0;
-          const fill = <span key={option} data-action={option} style={{ left: `${left}%`, width: `${width}%`, height: `${reach * 100}%`, background: actionColor(option), opacity: !unreachable && reach > 0 && width > 0 ? 1 : 0 }} />;
-          left += width;
-          return fill;
-        });
+        const currentFill = fills?.get(hand);
+        const previousFill = previousFills?.get(hand);
         const breakdown = unreachable ? copy.preview.unreachable : mixed.map(option => `${actionLabels[option]} ${values[option]}%`).join(" / ");
         return <button type="button" key={hand} className={`site-cell ${unreachable ? "is-unreachable" : `is-${action}${postflop ? " is-postflop" : ""}`}${selected === hand ? " is-selected" : ""}`}
           style={{ "--wave": wave, "--hero-action-color": actionColor(action) } as CSSProperties}
           aria-label={`${hand}: ${breakdown}`} aria-pressed={selected === hand} title={`${range.id} · ${hand} · ${breakdown}`} onClick={() => onSelect(hand)}>
-          <span className="site-cell-label">{hand}</span><span className="site-cell-fill" aria-hidden="true">{fills}</span>
+          <span className="site-cell-label">{hand}</span><span className="site-cell-fill" aria-hidden="true">
+            {previousRange && previousFill && <span key={previousRange.id} className="site-cell-fill-layer is-outgoing" style={{ "--wave": wave, ...previousFill } as CSSProperties} />}
+            {currentFill && <span key={range.id} className={`site-cell-fill-layer${previousRange ? " is-incoming" : ""}`} style={{ "--wave": wave, ...currentFill } as CSSProperties} />}
+          </span>
         </button>;
       })}
     </fieldset>
