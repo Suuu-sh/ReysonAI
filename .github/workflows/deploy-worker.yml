@@ -186,7 +186,7 @@ jobs:
             apps/mcp/package-lock.json
 
       - name: Install dependencies
-        if: needs.scope.outputs.needs_frontend_deps == 'true'
+        if: needs.scope.outputs.needs_frontend_deps == 'true' || needs.scope.outputs.verify_backend == 'true'
         run: npm ci
 
       - name: Install MCP runtime dependencies for backend verification
