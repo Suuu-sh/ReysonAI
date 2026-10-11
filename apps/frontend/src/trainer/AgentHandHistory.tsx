@@ -33,8 +33,9 @@ export function AgentHandHistory({ record }: { record: AgentHandRecord }) {
   return <section className="sessions-history">
     <div className="sessions-history-head"><h2>{t("Hand history", "ハンド履歴", "手牌历史", "Historial de manos")}{history.handNo ? ` #${history.handNo}` : ""}</h2><button type="button" className="config-edit" aria-pressed={bookmarked} onClick={() => {
       const value = !bookmarked;
-      setAgentHandBookmarked({ ...(record.session ? { sessionId: record.session.id, handNo: history.handNo } : { at: record.at }), tableId: record.tableId, pos: record.pos }, value);
-      setBookmarked(value);
+      const saved = setAgentHandBookmarked({ ...(record.session ? { sessionId: record.session.id, handNo: history.handNo } : { at: record.at }), tableId: record.tableId, pos: record.pos }, value);
+      const current = saved.find(hand => record.session ? hand.session?.id === record.session.id && hand.history?.handNo === history.handNo : hand.at === record.at && hand.tableId === record.tableId && hand.pos === record.pos);
+      setBookmarked(Boolean(current?.bookmarked));
     }}><Bookmark size={14} weight={bookmarked ? "fill" : "regular"} />{bookmarked ? t("Bookmarked", "復習に保存済み", "已收藏", "Guardada") : t("Bookmark for review", "復習用に保存", "收藏复习", "Guardar para revisar")}</button></div>
     <p className="sessions-source-note">{t("Only your cards and opponents revealed at showdown are saved. Folded opponents remain hidden.", "自分のカードとショーダウンで公開された相手のカードのみ保存します。フォールドした相手のカードは非公開です。", "仅保存你的牌与摊牌时公开的对手牌。弃牌对手的牌不公开。", "Solo se guardan tus cartas y las reveladas en showdown. Las cartas de rivales retirados siguen ocultas.")}</p>
     <p className="sessions-source-note">{t("Your recorded actions are shown with exact saved policy frequencies only where the engine exposed that decision. No EV is inferred. Older or unsupported decisions remain unavailable; replay is unavailable because no seed was saved.", "選んだアクションと、エンジンが取得できた場合のみ保存済み方針の正確な頻度を表示します。EVは推定しません。旧記録や未対応の判断は確認できず、シード未保存のため再プレイもできません。", "显示你的行动；仅当引擎提供时显示已保存策略的精确频率。不推算EV。旧记录或不支持的决策不可用；未保存种子，因此无法重放。", "Se muestran tus acciones y las frecuencias exactas guardadas solo cuando el motor las expuso. No se infiere EV. Las decisiones antiguas o no compatibles no están disponibles; no se puede reproducir sin semilla.")}</p>
@@ -45,7 +46,7 @@ export function AgentHandHistory({ record }: { record: AgentHandRecord }) {
       return <div key={street} className="sessions-saved-street"><h3>{labels()[index]} {index > 0 && cards(history.board.slice(0, index + 2))}</h3>
         <div className="sessions-table-scroll"><table className="leaderboard-table sessions-table"><thead><tr><th>{t("Player", "プレイヤー", "玩家", "Jugador")}</th><th>{t("Action", "アクション", "行动", "Acción")}</th><th>{t("Saved policy", "保存済み方針", "已保存策略", "Política guardada")}</th><th>{t("Pot", "ポット", "底池", "Bote")}</th></tr></thead><tbody>{log.map((entry, i) => {
           const decision = history.reviewDecisions?.find(item => item.logIndex === history.log.indexOf(entry));
-          const comparison = entry.pos !== record.pos ? "—" : decision ? policyLabel(decision.policy) : history.reviewDecisions?.length ? t("Unavailable for this decision", "この判断では利用できません", "此决策不可用", "No disponible para esta decisión") : t("Not saved in this history", "この履歴には未保存", "此历史未保存", "No guardada en este historial");
+          const comparison = entry.pos !== record.pos ? "—" : decision ? policyLabel(decision.policy) : history.reviewPolicyVersion === 1 ? t("Unavailable for this decision", "この判断では利用できません", "此决策不可用", "No disponible para esta decisión") : t("Not saved in this history", "この履歴には未保存", "此历史未保存", "No guardada en este historial");
           return <tr key={i}><td translate="no">{name(entry.pos)}</td><td>{actionLabel(entry.action)}{entry.to != null ? ` ${ffNumber(entry.to)} bb` : ""}</td><td>{comparison}</td><td>{ffNumber(entry.pot)} bb</td></tr>;
         })}</tbody></table></div>
       </div>;

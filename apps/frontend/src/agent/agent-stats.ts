@@ -9,7 +9,7 @@ const LIMIT = 3000;
 const RAISES = new Set(["open", "raise", "three_bet", "squeeze", "four_bet", "all_in"]);
 
 export type AgentHandHistory = {
-  version: 1; handNo?: number; names?: Record<string, string>;
+  version: 1; handNo?: number; names?: Record<string, string>; reviewPolicyVersion?: 1;
   reviewDecisions?: { logIndex: number; street: string; action: string; policy: Record<string, number>; source?: string }[];
   holeCards: Record<string, string[]>; board: string[]; log: LogEntry[];
   winners: string[]; returns: Record<string, number>; pot?: number; rake?: number; handRanks?: Record<string, number>;
@@ -61,11 +61,21 @@ export function setAgentHandBookmarked(selector: { sessionId?: string; handNo?: 
     changed = true;
     return { ...hand, bookmarked };
   });
-  if (changed) {
-    try { storage()?.setItem(KEY, JSON.stringify(next)); } catch { /* keep current view if persistence is unavailable */ }
+  if (!changed) return hands;
+  try {
+    const store = storage();
+    if (!store) return hands;
+    store.setItem(KEY, JSON.stringify(next));
+    const saved = loadAgentHands();
+    if (!saved.some(hand => {
+      const matches = selector.sessionId
+        ? hand.session?.id === selector.sessionId && hand.history?.handNo === selector.handNo
+        : hand.at === selector.at && hand.tableId === selector.tableId && hand.pos === selector.pos;
+      return matches && hand.bookmarked === bookmarked;
+    })) return hands;
     if (typeof window !== "undefined") window.dispatchEvent(new window.Event("reysonai:agent-history-changed"));
-  }
-  return next;
+    return saved;
+  } catch { return hands; /* keep current view if persistence is unavailable */ }
 }
 
 // The human's flags for one finished hand.
@@ -88,7 +98,7 @@ export function handRecord(result: HandResult, tableId: string, pos: string, at 
   return {
     ...(context.session ? { session: { ...context.session } } : {}),
     history: {
-      version: 1, handNo: context.handNo, names: context.names,
+      version: 1, handNo: context.handNo, names: context.names, reviewPolicyVersion: 1,
       ...(result.reviewDecisions?.length ? { reviewDecisions: result.reviewDecisions.map(decision => ({ ...decision, policy: { ...decision.policy } })) } : {}),
       // Persist only the human's cards and opponents actually exposed at showdown.
       // Folded opponents remain hidden even though the local engine dealt their cards.

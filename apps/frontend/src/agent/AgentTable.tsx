@@ -402,8 +402,8 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
               <p className="agent-summary">{myDelta == null ? winnerLine : <>{localized("This hand", "このハンド")} <b className={myDelta > 0 ? "up" : myDelta < 0 ? "down" : ""}>{signed(myDelta)}</b></>}</p>
               {!watch && !waitingMode && humanPos && <button type="button" className="agent-skip" aria-pressed={bookmarked} onClick={() => {
                 const value = !bookmarked;
-                setAgentHandBookmarked({ sessionId: historySession.entry.id, handNo: session.handNo + 1, tableId, pos: humanPos }, value);
-                setBookmarked(value);
+                const saved = setAgentHandBookmarked({ sessionId: historySession.entry.id, handNo: session.handNo + 1, tableId, pos: humanPos }, value);
+                setBookmarked(Boolean(saved.find(hand => hand.session?.id === historySession.entry.id && hand.history?.handNo === session.handNo + 1)?.bookmarked));
               }}><Bookmark size={14} weight={bookmarked ? "fill" : "regular"} />{bookmarked ? agentAutoSkipCopy("Bookmarked for review", "復習用に保存済み", "已加入复习", "Guardada para revisar") : agentAutoSkipCopy("Review this hand", "このハンドを復習", "复习这手", "Revisar esta mano")}</button>}
               {autoSkippedHand === session.handNo && !autoSkipAfterFold && <button type="button" className="agent-next" onClick={nextHand}>{agentAutoSkipCopy("Next hand", "次のハンド", "下一手", "Siguiente mano")}</button>}
             </>
