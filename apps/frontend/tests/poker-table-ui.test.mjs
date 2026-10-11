@@ -62,6 +62,36 @@ test('waiting Agent holds a reserved hand at completion without saving local his
  let loads=0;const unapprovedMw3={supportsSpot:()=>false,load:async()=>{loads++;throw Error('Unapproved HU fixture must not load MW3');}};
  let boundaries=0;await agentFixture(async({dom,render,until})=>{assert.equal(dom.window.document.querySelector('.agent-standings'),null);await act(async()=>render({handoffKey:'real-reservation',onHandBoundary:()=>boundaries++}));await act(async()=>dom.window.document.querySelector('.agent-act.tone-fold').click());const trigger=dom.window.document.querySelector('.agent-profile-trigger');await act(async()=>trigger.click());await until(()=>Boolean(dom.window.document.querySelector('.agent-result')));await until(()=>boundaries===1);assert.ok(dom.window.document.querySelector('.agent-profile-block'),'profile does not interrupt handoff');assert.ok(dom.window.document.querySelector('.game-profile-modal[aria-modal=true]'));assert.match(dom.window.document.querySelector('.agent-title small').textContent,/#1/);await act(async()=>new Promise(r=>setTimeout(r,800)));assert.equal(boundaries,1);assert.match(dom.window.document.querySelector('.agent-title small').textContent,/#1/);const keys=Object.keys(dom.window.localStorage);assert.ok(!keys.some(key=>/agent-hands/.test(key)));assert.equal(dom.window.document.querySelector('.style-card'),null);assert.equal(loads,0);},{waitingMode:true,mw3Client:unapprovedMw3});
 });
+test('Agent auto-skip after fold is opt-in, persists, records the hand, and can be stopped before auto-advance',async()=>{
+ await agentFixture(async({dom,until})=>{
+  const doc=dom.window.document;
+  const toggle=()=>doc.querySelector('.agent-toggle[aria-pressed]');
+  assert.ok(toggle());assert.equal(toggle().getAttribute('aria-pressed'),'false');
+  await act(async()=>toggle().click());
+  assert.equal(JSON.parse(dom.window.localStorage.getItem('reysonai:agent-auto-skip-after-fold')),true);
+  await act(async()=>doc.querySelector('.agent-act.tone-fold').click());
+  await until(()=>Boolean(doc.querySelector('.agent-result')));
+  assert.ok(doc.querySelector('.game-history-hand'),'completed hand is recorded before advancing');
+  assert.ok(JSON.parse(dom.window.localStorage.getItem('reysonai:agent-hands:v1'))?.length,'completed hand remains in saved history');
+  await act(async()=>toggle().click());
+  await act(async()=>new Promise(resolve=>setTimeout(resolve,500)));
+  assert.match(doc.querySelector('.agent-title small').textContent,/#1/,'turning auto-skip off cancels its automatic advance');
+  assert.ok(doc.querySelector('.agent-next'),'manual next-hand action is available');
+  await act(async()=>doc.querySelector('.agent-next').click());
+  await until(()=>/#2/.test(doc.querySelector('.agent-title small').textContent));
+ },{watch:false});
+});
+test('Agent auto-skip advances automatically after recording the folded hand',async()=>{
+ await agentFixture(async({dom,until})=>{
+  const doc=dom.window.document, toggle=doc.querySelector('.agent-toggle[aria-pressed]');
+  await act(async()=>toggle.click());
+  await act(async()=>doc.querySelector('.agent-act.tone-fold').click());
+  await until(()=>/#2/.test(doc.querySelector('.agent-title small').textContent));
+  assert.ok(doc.querySelector('.game-history-hand'),'the folded hand is retained in recent history');
+  assert.ok(JSON.parse(dom.window.localStorage.getItem('reysonai:agent-hands:v1'))?.length,'stats are saved before the next hand starts');
+  assert.equal(JSON.parse(dom.window.localStorage.getItem('reysonai:agent-auto-skip-after-fold')),true,'preference persists');
+ },{watch:false});
+});
 
 test('shared sidebar profile keeps four-language honesty and unavailable samples without modal semantics',()=>{
  const dom=new JSDOM('',{url:'http://localhost'});const oldWindow=globalThis.window;globalThis.window=dom.window;

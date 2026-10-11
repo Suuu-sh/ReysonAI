@@ -106,6 +106,8 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
   const [shown, setShown] = useState(0);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [speed, setSpeed] = useState<Speed>(() => readPref("reysonai:agent-speed", "normal"));
+  const [autoSkipAfterFold, setAutoSkipAfterFold] = useState(() => readPref<boolean>("reysonai:agent-auto-skip-after-fold", false));
+  const [autoSkippedHand, setAutoSkippedHand] = useState<number | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [compact, setCompact] = useState(() => window.matchMedia?.("(max-width: 650px)").matches ?? false);
   useEffect(() => { const media = window.matchMedia?.("(max-width: 650px)"); if (!media) return; const update = () => setCompact(media.matches); media.addEventListener("change", update); return () => media.removeEventListener("change", update); }, []);
@@ -190,6 +192,15 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
   const pending = result?.status === "awaiting" && allShown ? result.pending! : null;
   const humanFolded = humanPos != null && log.some(entry => entry.pos === humanPos && entry.action === "fold");
 
+  // Once the player's fold is recorded, reveal the rest of this hand at once.
+  // The normal result timer still handles the advance, so hand/history recording
+  // remains on the same completed-hand path as a manually watched hand.
+  useEffect(() => {
+    if (!autoSkipAfterFold || watch || waitingMode || !humanFolded || result?.status !== "done" || unavailable) return;
+    setShown(log.length);
+    setAutoSkippedHand(session.handNo);
+  }, [autoSkipAfterFold, watch, waitingMode, humanFolded, result?.status, unavailable, log.length, session.handNo]);
+
   // The street on screen: deal it as soon as its first action is next (or the human is asked on it).
   const upcoming = pending?.street ?? (shown < log.length && shown > 0 ? log[shown]?.street : null);
   const lastStreet = revealed.at(-1)?.street ?? "preflop";
@@ -223,7 +234,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
     if (!result || result.status !== "done") return;
     if (handoffKey) return;
     setSession(current => finishHand(current, result.returns!));
-    setHumanActions([]); setShown(0);
+    setHumanActions([]); setShown(0); setAutoSkippedHand(null);
   }, [result, handoffKey]);
   const skip = () => setShown(log.length);
 
@@ -232,14 +243,18 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
   const showdown = done && Boolean(result?.showdown);
   useEffect(() => {
     if (!done) return;
+    // Turning the preference off during the result hold stops this automatic
+    // advance; the explicit next-hand action remains available instead.
+    if (autoSkippedHand === session.handNo && !autoSkipAfterFold) return;
     if (handoffKey) {
       const key = `${session.handNo}:${handoffKey}`;
       if (acceptedBoundary.current !== key) { acceptedBoundary.current = key; boundary.current?.(); }
       return;
     }
-    const timer = window.setTimeout(nextHand, showdown ? (speed === "fast" ? 2500 : 3500) : speed === "fast" ? 300 : 600);
+    const resultHold = autoSkippedHand === session.handNo ? 150 : showdown ? (speed === "fast" ? 2500 : 3500) : speed === "fast" ? 300 : 600;
+    const timer = window.setTimeout(nextHand, resultHold);
     return () => window.clearTimeout(timer);
-  }, [done, showdown, nextHand, speed, handoffKey, session.handNo]);
+  }, [done, showdown, nextHand, speed, handoffKey, session.handNo, autoSkippedHand, autoSkipAfterFold]);
 
   // Keyboard: 1-9 pick an action, Enter / Space deal the next hand, S skips.
   useEffect(() => {
@@ -278,6 +293,9 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
             onClick={() => { setSpeed(value); writePref("reysonai:agent-speed", value); }}>
             {value === "fast" && <Lightning size={12} weight="fill" />}{value === "fast" ? localized("Fast", "速い") : localized("Normal", "ふつう")}</button>)}
         </div>
+        {!watch && !waitingMode && <button type="button" className={`agent-toggle${autoSkipAfterFold ? " is-on" : ""}`} aria-pressed={autoSkipAfterFold}
+          onClick={() => { const next = !autoSkipAfterFold; setAutoSkipAfterFold(next); writePref("reysonai:agent-auto-skip-after-fold", next); }}>
+          {localized("Auto-skip after fold", "フォールド後に自動スキップ")}: {autoSkipAfterFold ? localized("On", "オン") : localized("Off", "オフ")}</button>}
         {liveRead && <button type="button" className="agent-toggle" onClick={() => setStyleOpen(true)}><ChartBar size={13} weight="bold" />{localized("Play style", "プレイスタイル")}</button>}
         <span className="agent-rule" tabIndex={0}><Info size={13} />{mw3Text.beta}
           <span className="agent-rule-tip" role="tooltip">{mw3Text.rule}</span></span>
@@ -358,6 +376,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
             </>
             : done ? <>
               <p className="agent-summary">{myDelta == null ? winnerLine : <>{localized("This hand", "このハンド")} <b className={myDelta > 0 ? "up" : myDelta < 0 ? "down" : ""}>{signed(myDelta)}</b></>}</p>
+              {autoSkippedHand === session.handNo && !autoSkipAfterFold && <button type="button" className="agent-next" onClick={nextHand}>{localized("Next hand", "次のハンド")}</button>}
             </>
             : <>
               <p className="agent-summary">{humanFolded ? localized("You folded — watch the rest or skip.", "降りました。続きを観戦するか、スキップできます。")
