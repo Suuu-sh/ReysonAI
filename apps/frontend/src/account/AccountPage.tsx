@@ -4,13 +4,16 @@ import type { Profile } from "../profile.ts";
 import { AuthPanel } from "./AuthPanel.tsx";
 import { accountSnapshot } from "./session.ts";
 import { Check, CreditCard, DownloadSimple, Palette, SignOut, Sparkle, Translate, UserCircle } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar } from "../components/layout.tsx";
 import { levels, loadProfile, saveProfile } from "../profile.ts";
 import { localized, productLocale, LOCALES, selectProductLocale } from "../i18n.ts";
 import { SITE_COPY } from "../site/locales.ts";
 import { exportLocalData, loadAppearance, loadDisplayMode, practiceKeys, saveAppearance, saveDisplayMode } from "./preferences.ts";
 import { ACCOUNT_SECTION } from "./AccountMenu.tsx";
+import { ProfileAvatar, PROFILE_AVATARS, profileAvatar, type ProfileAvatarId } from "./ProfileAvatar.tsx";
+import { humanRequest } from "../trainer/human-api.ts";
+import { ffCopy } from "../trainer/fastfold-api.ts";
 
 
 const t = (ja: string, en: string) => localized(en, ja);
@@ -40,8 +43,39 @@ function SettingRow({ title, description, children }: { title: string; descripti
 function AccountTab({ profile, onProfileSaved }: { profile: Profile | null; onProfileSaved: (profile: Profile | null) => void }) {
   const [nickname, setNickname] = useState(profile?.nickname ?? "");
   const [level, setLevel] = useState(profile?.level ?? "intermediate");
+  const [avatar, setAvatar] = useState<ProfileAvatarId>(profileAvatar(profile?.avatar));
+  const [publicReady, setPublicReady] = useState(false);
+  const [publicError, setPublicError] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const dirty = nickname.trim() !== (profile?.nickname ?? "") || level !== profile?.level;
+  const signedIn = Boolean(accountSnapshot().user?.verified);
+  const avatarChanged = avatar !== profileAvatar(profile?.avatar);
+  const dirty = nickname.trim() !== (profile?.nickname ?? "") || level !== profile?.level || avatarChanged;
+  useEffect(() => {
+    if (!signedIn) return;
+    let cancelled = false;
+    humanRequest<{ profile: { avatar: string } | null }>("public-profile").then(result => {
+      if (cancelled) return;
+      const remote = profileAvatar(result.profile?.avatar);
+      setPublicReady(true);
+      setPublicError(false);
+      setAvatar(remote);
+      if (remote !== profileAvatar(profile?.avatar) && profile) onProfileSaved(saveProfile({ nickname: profile.nickname, level: profile.level, avatar: remote }));
+    }).catch(() => { if (!cancelled) { setPublicReady(false); setPublicError(true); } });
+    return () => { cancelled = true; };
+  }, [signedIn]);
+  const save = async () => {
+    if (saving) return;
+    setSaving(true); setPublicError(false);
+    try {
+      if (signedIn && avatarChanged) {
+        if (!publicReady) { setPublicError(true); return; }
+        await humanRequest("public-profile", { avatar });
+      }
+      onProfileSaved(saveProfile({ nickname, level, avatar })); setSaved(true);
+    } catch { setPublicError(true); }
+    finally { setSaving(false); }
+  };
   const keys = practiceKeys();
   const download = () => {
     const blob = new Blob([JSON.stringify(exportLocalData(), null, 2)], { type: "application/json" });
@@ -59,13 +93,23 @@ function AccountTab({ profile, onProfileSaved }: { profile: Profile | null; onPr
           <input value={nickname} maxLength={20} placeholder={t("ゲスト", "Guest")} onChange={event => { setNickname(event.target.value); setSaved(false); }} />
         </label>
       </div>
+      <SettingRow title={ffCopy("Profile icon", "プロフィールアイコン", "个人头像", "Icono de perfil")} description={signedIn
+        ? ffCopy("Choose a built-in icon shared with your public Ranked profile.", "対人ランクの公開プロフィールと共通の内蔵アイコンを選びます。", "选择与公开排位资料共用的内置图标。", "Elige un icono integrado compartido con tu perfil público de Ranked.")
+        : ffCopy("Guest icons stay in this browser; sign in to use one on a public Ranked profile.", "ゲストのアイコンはこのブラウザだけに保存されます。公開ランクプロフィールで使うにはログインしてください。", "访客头像仅保存在此浏览器；登录后才能用于公开排位资料。", "Los iconos de invitado solo se guardan en este navegador; inicia sesión para usarlos en Ranked.")}>
+        <div className="account-avatar-choice" role="radiogroup" aria-label={ffCopy("Profile icon", "プロフィールアイコン", "个人头像", "Icono de perfil")}>
+          {PROFILE_AVATARS.map((id, index) => <button type="button" role="radio" key={id} aria-checked={avatar === id} aria-label={[
+            ffCopy("Person", "人物", "人物", "Persona"), ffCopy("Spade", "スペード", "黑桃", "Pica"), ffCopy("Diamond", "ダイヤ", "方块", "Diamante"), ffCopy("Club", "クラブ", "梅花", "Trébol"), ffCopy("Heart", "ハート", "红心", "Corazón"), ffCopy("Star", "星", "星星", "Estrella"), ffCopy("Moon", "月", "月亮", "Luna"), ffCopy("Bolt", "稲妻", "闪电", "Rayo")][index]} disabled={signedIn && !publicReady} onClick={() => { setAvatar(id); setSaved(false); }}><ProfileAvatar avatar={id} size={30} /></button>)}
+        </div>
+      </SettingRow>
+      {signedIn && <p className="account-avatar-hint">{ffCopy("Saving a new icon creates your public Ranked player profile if you have not joined yet.", "未参加の場合、アイコンを保存すると対人ランクの公開プレイヤープロフィールが作成されます。", "如果尚未参加，保存图标会创建公开排位玩家资料。", "Si aún no participas, guardar el icono creará tu perfil público de Ranked.")}</p>}
+      {publicError && <p role="alert" className="account-avatar-error">{ffCopy("Ranked profile unavailable. Icon changes cannot be saved right now.", "公開ランクプロフィールを利用できません。現在アイコンの変更は保存できません。", "公开排位资料不可用。目前无法保存头像更改。", "Perfil público no disponible. No se pueden guardar cambios de icono ahora.")}</p>}
       <SettingRow title={t("レベル", "Level")} description={t("レンジ表の見せ方の初期値が変わります", "Sets the default range display")}>
         <Choice label={t("レベル", "Level")} value={level} onChange={value => { setLevel(value); setSaved(false); }}
           options={levels.map(item => ({ value: item.value, label: item.label }))} />
       </SettingRow>
       <footer>
         {saved && <span className="account-saved"><Check size={14} weight="bold" />{t("保存しました", "Saved")}</span>}
-        <button type="button" className="account-primary" disabled={!dirty} onClick={() => { onProfileSaved(saveProfile({ nickname, level })); setSaved(true); }}>{t("保存", "Save")}</button>
+        <button type="button" className="account-primary" disabled={!dirty || saving} onClick={() => void save()}>{t("保存", "Save")}</button>
       </footer>
     </section>
     <AuthPanel onChanged={() => onProfileSaved(loadProfile())} />

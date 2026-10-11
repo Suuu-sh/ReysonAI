@@ -17,7 +17,7 @@ export type FastFoldActionStats = { hands: number; window: 'recent_100'; coverag
 export type FastFoldState = { rating: number; peak: number; hands: number; netBb: number; bbPer100: number | null; provisional: boolean; uncertainty: number | null; active: FastFoldSession | null; recent: FastFoldResult[]; actionStats?: FastFoldActionStats };
 export type FastFoldProfile = { enabled: boolean; season: string; publicName: string | null; serverNow: number; state: FastFoldState };
 export type FastFoldResponse = { session: FastFoldSession | null; state: FastFoldState; serverNow: number; lastResult?: FastFoldResult };
-export type FastFoldRow = { id: string; name: string; rating: number; hands: number; bbPer100: number | null; place: number | null; self: boolean; provisional: boolean };
+export type FastFoldRow = { id: string; name: string; avatar?: string; rating: number; hands: number; bbPer100: number | null; place: number | null; self: boolean; provisional: boolean };
 export class FastFoldError extends Error { constructor(public code: string, public status: number) { super(code); } }
 export async function fastFoldRequest<T>(path: string, body?: unknown): Promise<T> {
   const response = await fetch(`${accountApiBase(import.meta.env ?? {})}/v1/fastfold/${path}`, { credentials: 'include', cache: 'no-store', ...(body === undefined ? {} : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }) });

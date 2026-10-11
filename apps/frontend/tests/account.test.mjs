@@ -20,7 +20,8 @@ const profile = { nickname: "Yu", level: "intermediate", updatedAt: "2026-09-27T
 
 test("account menu chip shows the profile and keeps the menu closed until opened", () => {
   const html = renderToStaticMarkup(createElement(AccountMenu, { profile, onNavigate() {}, onLogout() {} }));
-  assert.match(html, /class="account-avatar">Y</);
+  assert.match(html, /class="profile-avatar /);
+  assert.doesNotMatch(html, />G<|>Y</);
   assert.match(html, /aria-haspopup="menu" aria-expanded="false"/);
   assert.doesNotMatch(html, /account-popover/);
 });
@@ -116,5 +117,22 @@ test("local logout removes only the profile by default", async () => {
     clearProfile();
     assert.equal(store.getItem("reysonai:profile:v1"), null);
     assert.equal(store.getItem("reysonai.trainer.answers"), "[]");
+  });
+});
+
+
+test("avatar presets render consistently and profile edits preserve the selected icon", async () => {
+  const { ProfileAvatar } = await server.ssrLoadModule("/src/account/ProfileAvatar.tsx");
+  const { saveProfile, loadProfile } = await server.ssrLoadModule("/src/profile.ts");
+  const spade = renderToStaticMarkup(createElement(ProfileAvatar, { avatar: "spade", size: 28 }));
+  assert.match(spade, /profile-avatar/);
+  assert.equal(spade, renderToStaticMarkup(createElement(ProfileAvatar, { avatar: "spade", size: 28 })));
+  assert.equal(renderToStaticMarkup(createElement(ProfileAvatar, { avatar: "invalid" })), renderToStaticMarkup(createElement(ProfileAvatar, { avatar: "person" })));
+  withLocalStorage(store => {
+    saveProfile({ nickname: "Yu", level: "intermediate", avatar: "spade" });
+    saveProfile({ nickname: "Yuki", level: "beginner" });
+    assert.equal(loadProfile().avatar, "spade");
+    store.setItem("reysonai:profile:v1", JSON.stringify({ nickname: "Old", level: "intermediate", avatar: "not-allowed", updatedAt: "x" }));
+    assert.equal(loadProfile().avatar, "person");
   });
 });
