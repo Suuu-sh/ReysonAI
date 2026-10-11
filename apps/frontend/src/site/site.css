@@ -145,6 +145,7 @@
 .has-motion .site-cell { animation: site-cell-in .6s var(--ease) both; animation-delay: calc(var(--wave) * 24ms + .45s); }
 .site-cell-fill { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .site-cell-fill span { position: absolute; bottom: 0; display: block; }
+.has-motion .site-cell-fill span { transition: left .42s var(--ease) calc(var(--wave) * 22ms), width .42s var(--ease) calc(var(--wave) * 22ms), height .42s var(--ease) calc(var(--wave) * 22ms), background-color .42s ease calc(var(--wave) * 22ms), opacity .42s ease calc(var(--wave) * 22ms); }
 .site-cell-label { position: relative; z-index: 1; text-shadow: 0 1px 2px #09090bcc; }
 .site-legend { display: flex; gap: 16px; margin-top: 12px; color: var(--muted); font-size: 12px; }
 .site-legend span, .site-mini-legend span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
@@ -605,6 +606,7 @@
   .site-hero-range .site-matrix { height: auto; aspect-ratio: 1; min-width: 0; }
   .has-motion .site-hero-range { animation: none; }
   .has-motion .site-hero-range .site-cell { animation: none; }
+  .has-motion .site-hero-range .site-cell-fill span { transition: none; }
   .site-hero-range .site-legend { display: none; }
   .site-hero h1 { margin: 0; padding: 0; text-shadow: 0 2px 16px #09090b; }
   .site-hero-opening { color: var(--ink); font-size: clamp(30px, 9.2vw, 48px); }
