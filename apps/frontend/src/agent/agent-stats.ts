@@ -2,7 +2,7 @@
 // synced to the account when signed in, or kept in this browser as a guest. Separate from drill history.
 import type { HandResult, LogEntry } from "./hand.ts";
 import { decodeAgentHistory } from "./agent-history-codec.ts";
-import { accountStorage, AGENT_HANDS_KEY, LEGACY_AGENT_HANDS_KEY } from "../account/session.ts";
+import { accountSnapshot, accountStorage, AGENT_HANDS_KEY, LEGACY_AGENT_HANDS_KEY } from "../account/session.ts";
 
 const KEY = AGENT_HANDS_KEY;
 const LIMIT = 3000;
@@ -76,6 +76,31 @@ export function setAgentHandBookmarked(selector: { sessionId?: string; handNo?: 
     if (typeof window !== "undefined") window.dispatchEvent(new window.Event("reysonai:agent-history-changed"));
     return saved;
   } catch { return hands; /* keep current view if persistence is unavailable */ }
+}
+
+// Enrich only the exact base record after lazy review computation. Read the current row before
+// writing so a later bookmark, session end or deletion is never overwritten/resurrected.
+export function saveAgentHandReview(selector: { sessionId: string; handNo: number }, reviewDecisions: AgentHandHistory["reviewDecisions"], expectedOwnerId: string | null) {
+  if ((accountSnapshot().user?.id ?? null) !== expectedOwnerId) return false;
+  const hands = loadAgentHands();
+  let changed = false;
+  const next = hands.map(hand => {
+    if (hand.session?.id !== selector.sessionId || hand.history?.handNo !== selector.handNo) return hand;
+    changed = true;
+    return { ...hand, history: { ...hand.history, reviewPolicyVersion: 1, ...(reviewDecisions?.length ? { reviewDecisions } : {}) } };
+  });
+  if (!changed) return false;
+  try {
+    const store = storage();
+    if (!store || (accountSnapshot().user?.id ?? null) !== expectedOwnerId) return false;
+    store.setItem(KEY, JSON.stringify(next));
+    if ((accountSnapshot().user?.id ?? null) !== expectedOwnerId) return false;
+    const saved = loadAgentHands();
+    const persisted = saved.some(hand => hand.session?.id === selector.sessionId && hand.history?.handNo === selector.handNo
+      && JSON.stringify(hand.history.reviewDecisions ?? []) === JSON.stringify(reviewDecisions ?? []));
+    if (persisted && typeof window !== "undefined") window.dispatchEvent(new window.Event("reysonai:agent-history-changed"));
+    return persisted;
+  } catch { return false; }
 }
 
 // The human's flags for one finished hand.

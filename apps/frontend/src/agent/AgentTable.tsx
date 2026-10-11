@@ -23,7 +23,8 @@ import { LoadingDots, LoadingInline } from "../components/Loading.tsx";
 import { AgentAvatar } from "./AgentAvatar.tsx";
 import { createAgent, makePostflopKit, type PostflopKit } from "./policy.ts";
 import { createSession, finishHand, handSeed, seatPositions, toPoints, type Session } from "./session.ts";
-import { handRecord, loadAgentHands, saveAgentHand, setAgentHandBookmarked } from "./agent-stats.ts";
+import { handRecord, loadAgentHands, saveAgentHand, saveAgentHandReview, setAgentHandBookmarked } from "./agent-stats.ts";
+import { accountSnapshot } from "../account/session.ts";
 import { exactAgentReview } from "./agent-review.ts";
 import { playerRead } from "./player-read.ts";
 import { PlayStyleCard, PlayStyleDashboard } from "./PlayStyleDashboard.tsx";
@@ -237,9 +238,17 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
     if (!done || recorded.current === session.handNo) return;
     recorded.current = session.handNo;
     if (humanPos && !waitingMode) {
-      const reviewDecisions = !watch && !handoffKey ? exactAgentReview(result!.log, result!.holeCards, humanPos, mw3Client.supportsSpot) : undefined;
-      const saved = saveAgentHand(handRecord(result!, tableId, humanPos, Date.now(), { session: historySession.entry, handNo: session.handNo + 1, names: Object.fromEntries(POSITIONS.map(pos => [pos, nameOf(pos)])), ...(reviewDecisions ? { reviewDecisions } : {}) }));
+      const record = handRecord(result!, tableId, humanPos, Date.now(), { session: historySession.entry, handNo: session.handNo + 1, names: Object.fromEntries(POSITIONS.map(pos => [pos, nameOf(pos)])) });
+      const saved = saveAgentHand(record);
       setBookmarked(Boolean(saved.find(hand => hand.session?.id === historySession.entry.id && hand.history?.handNo === session.handNo + 1)?.bookmarked));
+      if (!watch && !handoffKey) {
+        const expectedOwnerId = accountSnapshot().user?.id ?? null;
+        const selector = { sessionId: historySession.entry.id, handNo: session.handNo + 1 };
+        void import("./agent-review.ts").then(({ exactAgentReview }) => {
+          const reviewDecisions = exactAgentReview(result!.log, result!.holeCards, humanPos, mw3Client.supportsSpot);
+          saveAgentHandReview(selector, reviewDecisions, expectedOwnerId);
+        }).catch(() => { /* keep the immediately saved history; comparison remains unavailable */ });
+      }
     }
     const showdown = Boolean(result!.showdown);
     // Only expose cards for seats that reached an actual showdown. In particular, folded
