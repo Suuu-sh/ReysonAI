@@ -22,12 +22,13 @@ export function PokerChip({ slot, amount }: { slot: number; amount: ReactNode })
   return <span className={`agent-chip slot-${slot}`}><i aria-hidden="true" />{amount}</span>;
 }
 
-export function PokerSeat({ slot, human, folded, won, acting, cards, showCards, handKey, avatar, name, stack, position, bubble, children, onProfile, profileLabel, fullName }: {
+export function PokerSeat({ slot, human, folded, won, acting, cards, showCards, handKey, avatar, name, stack, position, bubble, holeLabel, children, onProfile, profileLabel, fullName }: {
   slot: number; human?: boolean; folded?: boolean; won?: boolean; acting?: boolean; cards: string[]; showCards: boolean; handKey: string | number;
-  avatar?: ReactNode; name: ReactNode; stack?: ReactNode; position: string; bubble?: ReactNode; children?: ReactNode; onProfile?: () => void; profileLabel?: string; fullName?: string;
+  avatar?: ReactNode; name: ReactNode; stack?: ReactNode; position: string; bubble?: ReactNode; holeLabel?: ReactNode; children?: ReactNode; onProfile?: () => void; profileLabel?: string; fullName?: string;
 }) {
   return <div className={`agent-seat slot-${slot}${human ? " is-human" : ""}${folded ? " is-folded" : ""}${won ? " is-winner" : ""}${acting ? " is-acting" : ""}`}>
     <div className="agent-hole">{cards.map((card, i) => <PlayingCard variant="agent" key={`${handKey}-${i}`} card={card} hidden={!showCards} size={human ? "is-hero" : ""} />)}</div>
+    {holeLabel}
     <div className="agent-plate">
       <div className="agent-avatar">
         {onProfile && <button type="button" className="agent-profile-trigger" onClick={onProfile} aria-label={profileLabel} title={profileLabel} />}

@@ -5,7 +5,7 @@ import { PlayingCard } from "../components/PlayingCard.tsx";
 import { profileCopy as t } from "./OpponentProfile.tsx";
 import "./gameplay-mobile.css";
 
-export type TableHistoryHand = { id: string | number; cards?: string[]; resultBb: number | null; details?: ReactNode };
+export type TableHistoryHand = { id: string | number; cards?: string[]; resultBb: number | null; details?: ReactNode; board?: string[]; showdownPlayers?: { position: string; name: string; cards: string[]; won: boolean; handName?: string }[]; showdown?: boolean };
 /** Presentation only. Neither opening details nor a profile pauses the mounted game. */
 export function GamePanel({ id, children }: { id: string; label: string; children: ReactNode; mobileOnly?: boolean }) {
   return <div className="game-detail-panel" data-panel={id}>{children}</div>;
@@ -40,7 +40,15 @@ export function GameplayDetails({ profile, children, requestedPanel, onClose, cu
         {profileSwitches && <div className="game-profile-players" role="group" aria-label={t("Players", "プレイヤー", "玩家", "Personas")}>{profileSwitches}</div>}
       </> : <>
         <header className="game-modal-header"><h2 id={`${uid}-details`}>{active === "history" ? t("Hand history", "ハンド履歴", "手牌历史", "Historial de manos") : t("Session, rank and controls", "セッション・ランク・設定", "会话、评分与设置", "Sesión, rango y controles")}</h2><button type="button" onClick={close}>{t("Close", "閉じる", "关闭", "Cerrar")}</button></header>
-        {chosen && <section className="game-selected-history"><b>#{chosen.id}</b>{chosen.cards?.map((card, i) => <PlayingCard variant="agent" card={card} size="is-history" key={i}/>)}{chosen.resultBb != null && <strong>{chosen.resultBb > 0 ? "+" : ""}{Number(chosen.resultBb.toFixed(2))} bb</strong>}</section>}
+        {chosen && <section className="game-selected-history-summary">
+          <div className="game-selected-history"><b>#{chosen.id}</b>{chosen.cards?.map((card, i) => <PlayingCard variant="agent" card={card} size="is-history" key={i}/>)}{chosen.resultBb != null && <strong className={chosen.resultBb > 0 ? "up" : chosen.resultBb < 0 ? "down" : ""}>{chosen.resultBb > 0 ? "+" : ""}{Number(chosen.resultBb.toFixed(2))} bb</strong>}</div>
+          {chosen.board?.length ? <div className="game-history-board"><span>{t("Board", "ボード", "公共牌", "Mesa")}</span>{chosen.board.map((card, i) => <PlayingCard variant="agent" card={card} size="is-history" key={`${card}-${i}`}/>)}</div> : null}
+          {chosen.showdown && chosen.showdownPlayers?.length ? <section className="game-showdown"><h3>{t("Showdown", "ショーダウン", "摊牌", "Showdown")}</h3><ul>{chosen.showdownPlayers.map(player => <li className={player.won ? "is-winner" : ""} key={player.position}>
+            <span className="game-showdown-player">{player.name}<small>{player.position}</small>{player.won && <b>{t("Winner", "勝者", "赢家", "Ganador")}</b>}</span>
+            <span className="game-showdown-cards">{player.cards.map((card, i) => <PlayingCard variant="agent" card={card} size="is-history" key={`${card}-${i}`}/>)}</span>
+            {player.handName && <strong>{player.handName}</strong>}
+          </li>)}</ul></section> : null}
+        </section>}
         {chosen?.details}{(active === "history" ? historyPanels.filter(panel => selected == null || panel.props.id === "recent") : otherPanels).map(panel => <div key={panel.props.id}>{panel}</div>)}
       </>}
     </Dialog>, document.body)}
