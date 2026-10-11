@@ -40,6 +40,9 @@ test("settings page has account, subscription, appearance and language tabs", ()
   assert.match(html, /<header class="account-heading trainer-home-head"><h1 class="trainer-home-eyebrow">SETTINGS<\/h1><\/header>/);
   assert.match(html, /value="Yu"/);
   assert.match(html, /Googleでログイン/); // account creation is gated until the backend is configured
+  assert.doesNotMatch(html, /練習データ|データを書き出す|Export data|reysonai-practice-/);
+  const source = readFileSync(new URL("../src/account/AccountPage.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /exportLocalData|DownloadSimple|new Blob|link\.click\(\)|reysonai-practice-/);
 });
 
 test("subscription shows the ¥580 Plus plan without a live purchase", () => {
@@ -75,16 +78,16 @@ function withLocalStorage(run) {
   }
 }
 
-test("practice export and cleanup preserve profile, appearance and unrelated data", () => {
+test("removing practice export leaves stored data and explicit logout cleanup intact", () => {
   withLocalStorage(store => {
     store.setItem("reysonai.trainer.answers", JSON.stringify([{ hand: "AA" }]));
     store.setItem("reysonai.trainer.draft", "legacy draft");
     store.setItem("reysonai:profile:v1", "profile");
     store.setItem("reysonai:appearance:v1", "appearance");
     store.setItem("other-app", "untouched");
-    assert.deepEqual(prefs.exportLocalData().data, {
-      "reysonai.trainer.answers": [{ hand: "AA" }], "reysonai.trainer.draft": "legacy draft",
-    });
+    assert.equal(prefs.exportLocalData, undefined);
+    assert.deepEqual(prefs.practiceKeys().sort(), ["reysonai.trainer.answers", "reysonai.trainer.draft"]);
+    assert.equal(store.getItem("reysonai.trainer.answers"), '[{"hand":"AA"}]');
     prefs.clearPracticeData();
     assert.deepEqual(prefs.practiceKeys(), []);
     assert.equal(store.getItem("reysonai:profile:v1"), "profile");

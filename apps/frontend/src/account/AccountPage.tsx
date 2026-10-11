@@ -3,13 +3,13 @@ import type { ReactNode } from "react";
 import type { Profile } from "../profile.ts";
 import { AuthPanel } from "./AuthPanel.tsx";
 import { accountSnapshot } from "./session.ts";
-import { Check, CreditCard, DownloadSimple, Palette, SignOut, Sparkle, Translate, UserCircle } from "@phosphor-icons/react";
+import { Check, CreditCard, Palette, SignOut, Sparkle, Translate, UserCircle } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { Sidebar } from "../components/layout.tsx";
 import { levels, loadProfile, saveProfile } from "../profile.ts";
 import { localized, productLocale, LOCALES, selectProductLocale } from "../i18n.ts";
 import { SITE_COPY } from "../site/locales.ts";
-import { exportLocalData, loadAppearance, loadDisplayMode, practiceKeys, saveAppearance, saveDisplayMode } from "./preferences.ts";
+import { loadAppearance, loadDisplayMode, saveAppearance, saveDisplayMode } from "./preferences.ts";
 import { ACCOUNT_SECTION } from "./AccountMenu.tsx";
 import { ProfileAvatar, PROFILE_AVATARS, profileAvatar, type ProfileAvatarId } from "./ProfileAvatar.tsx";
 import { humanRequest } from "../trainer/human-api.ts";
@@ -76,14 +76,6 @@ function AccountTab({ profile, onProfileSaved }: { profile: Profile | null; onPr
     } catch { setPublicError(true); }
     finally { setSaving(false); }
   };
-  const keys = practiceKeys();
-  const download = () => {
-    const blob = new Blob([JSON.stringify(exportLocalData(), null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = Object.assign(document.createElement("a"), { href: url, download: `reysonai-practice-${new Date().toISOString().slice(0, 10)}.json` });
-    link.click();
-    URL.revokeObjectURL(url);
-  };
   return <>
     <section className="account-card">
       <header><h2>{t("プロフィール", "Profile")}</h2></header>
@@ -113,12 +105,6 @@ function AccountTab({ profile, onProfileSaved }: { profile: Profile | null; onPr
       </footer>
     </section>
     <AuthPanel onChanged={() => onProfileSaved(loadProfile())} />
-    <section className="account-card">
-      <header><h2>{t("練習データ", "Practice data")}</h2></header>
-      <SettingRow title={t("データを書き出す", "Export data")} description={t(`ドリル・セッション・回答履歴（${keys.length}項目）をJSONで保存します`, `Save drills, sessions and answers (${keys.length} items) as JSON`)}>
-        <button type="button" className="account-secondary" onClick={download} disabled={!keys.length}><DownloadSimple size={14} />{t("書き出す", "Export")}</button>
-      </SettingRow>
-    </section>
   </>;
 }
 
