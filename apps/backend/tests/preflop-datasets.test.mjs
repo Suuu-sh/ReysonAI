@@ -128,6 +128,23 @@ test("quoted commas in If-None-Match tags are not list separators", async () => 
   assert.equal((await get('"old", "part"')).status, 200);
 });
 
+test("wildcard matches an existing catalog without an ETag", async t => {
+  const cache = installEdgeCache(t);
+  const queries = [];
+  const env = { DB: mockDb([{ name: "opening-ranges", content_hash: "h", bytes: 2, parts: 1 }], [], sql => queries.push(sql)) };
+  const get = condition => worker.fetch(new Request("https://edge.test/v1/preflop/datasets", { headers: { "if-none-match": condition } }), env);
+  for (let n = 0; n < 2; n++) {
+    const response = await get("*");
+    assert.equal(response.status, 304);
+    assert.equal(response.headers.get("etag"), null);
+    assert.equal(response.headers.get("cache-control"), "public, max-age=60, s-maxage=60");
+  }
+  assert.equal(queries.length, 1);
+  assert.equal(cache.puts.length, 1);
+  assert.equal((await get('"h"')).status, 200, "a list only matches an actual response ETag");
+  assert.equal(queries.length, 1);
+});
+
 test("preflop errors, non-GET requests and unavailable cache never become cached", async t => {
   const cache = installEdgeCache(t);
   const queries = [];
