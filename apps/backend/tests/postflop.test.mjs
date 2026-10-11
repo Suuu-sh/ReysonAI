@@ -175,6 +175,7 @@ test("only profile-policy uses the profile dataset version and caches successful
 
 test("postflop version metadata expires after 60s and a republish changes the body cache key", async t => {
   const cache = installEdgeCache(t);
+  cache.rewriteBrowserMaxAge(14_400);
   const queries = [];
   const tables = {
     dataset_versions: [{ name: "postflop", content_hash: "old-version" }],
@@ -185,7 +186,9 @@ test("postflop version metadata expires after 60s and a republish changes the bo
   const first = await get();
   assert.equal(first.headers.get("x-reysonai-cache"), "MISS");
   assert.equal((await first.json()).spots[spot.id].flop, "old-policy");
-  assert.equal((await get("https://edge.test", "?dataset=forged&enc=br")).headers.get("x-reysonai-cache"), "HIT", "client query cannot override internal cache selectors");
+  const hit = await get("https://edge.test", "?dataset=forged&enc=br");
+  assert.equal(hit.headers.get("x-reysonai-cache"), "HIT", "client query cannot override internal cache selectors");
+  assert.equal(hit.headers.get("cache-control"), "public, max-age=300, s-maxage=86400", "zone browser TTL must not leak from Cache API hit");
   assert.equal(queries.length, 2);
   assert.ok(cache.puts.some(key => key.includes("/__reysonai_cache/v1/postflop-dataset-version/postflop")));
   assert.equal((await get("https://other.test")).headers.get("x-reysonai-cache"), "MISS", "cache keys are scoped to the request origin");
@@ -225,6 +228,7 @@ test("postflop cache failures and absence fall through to D1", async t => {
 
 test("Brotli and identity flop cache variants stay separate, including conditional hits", async t => {
   const cache = installEdgeCache(t);
+  cache.rewriteBrowserMaxAge(14_400);
   const queries = [];
   const packed = brotliCompressSync("{\"saved\":true}");
   const env = { DB: mockDb({
@@ -242,6 +246,7 @@ test("Brotli and identity flop cache variants stay separate, including condition
   const brHit = await get({ "accept-encoding": "br" });
   assert.equal(brHit.headers.get("x-reysonai-cache"), "HIT");
   assert.equal(brHit.headers.get("content-encoding"), "br");
+  assert.equal(brHit.headers.get("cache-control"), "public, max-age=300, s-maxage=86400");
   const plain = await get({});
   if (plain.status === 200) {
     assert.equal(plain.headers.get("x-reysonai-cache"), "MISS");
