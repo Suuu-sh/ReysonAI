@@ -1,6 +1,6 @@
 # Backend boundaries and incremental DDD plan
 
-This describes the backend at `main` commit `5484bc960e1c359bb201868cae34e0ec9e2aec0a` and the first three incremental boundary extractions. It is intentionally a map of the code that exists, not a target-wide folder migration.
+This maps the backend from `main` commit `5484bc960e1c359bb201868cae34e0ec9e2aec0a`. The first two slices are merged there; this change adds the third. It is intentionally a map of the code that exists, not a target-wide folder migration.
 
 ## Current bounded contexts and state owners
 
