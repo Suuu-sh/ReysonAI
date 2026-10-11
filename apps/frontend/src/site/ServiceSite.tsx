@@ -160,7 +160,7 @@ export function RangeMatrix({ range, selected, onSelect }: { range: HeroRange; s
     if (!motion) { setPreviousRange(null); return; }
     if (previous.id === range.id) return;
     setPreviousRange(previous);
-    const timer = window.setTimeout(() => setPreviousRange(current => current?.id === previous.id ? null : current), 420);
+    const timer = window.setTimeout(() => setPreviousRange(current => current?.id === previous.id ? null : current), 520);
     return () => window.clearTimeout(timer);
   }, [range, motion]);
   const fills = useMemo(() => rangeCellFills(range), [range]);
@@ -235,7 +235,7 @@ function DesktopExplorer() {
     if (!isTouring || !visible) return;
     const timer = window.setInterval(() => {
       setRangeIndex(current => pickNextRangeIndex(current, heroRanges.length, previewRanges.tour.length));
-    }, 1000);
+    }, 1500);
     return () => window.clearInterval(timer);
   }, [isTouring, visible]);
 
@@ -279,7 +279,7 @@ function MobileExplorer() {
     if (!isTouring || !visible) return;
     const timer = window.setInterval(() => {
       setRangeIndex(current => pickNextRangeIndex(current, heroRanges.length, previewRanges.tour.length));
-    }, 1000);
+    }, 1500);
     return () => window.clearInterval(timer);
   }, [isTouring, visible]);
 
