@@ -81,7 +81,6 @@ export const zh: SiteCopy = {
   faq: {
     title: "常见问题，直接解答。",
     items: [
-      { question: "这是GTO吗？", answer: "不是。ReysonAI展示的是供学习使用的AI估算范围。它们不是求解器输出，也不保证数学最优。" },
       { question: "与GTO Wizard有何区别？", answer: "GTO Wizard等应用展示求解器计算的策略，是精确理论的参考。ReysonAI提供供学习使用的AI估算，并配有解释、练习、排位赛和练习分析。详见上方对比。" },
       { question: "支持哪些游戏？", answer: "6人桌现金局，100BB，无前注。开池为2.5BB，小盲位为3.5BB。没有已保存数据的局面会标注为未收录，绝不凭空补全。" },
       { question: "需要账户吗？", answer: "不需要。你的资料和练习记录保存在此浏览器中。账户功能在计划中。" },
