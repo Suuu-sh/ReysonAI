@@ -41,7 +41,6 @@ on:
       - '.github/workflows/deploy-worker.yml'
   pull_request:
     branches:
-      - development
       - main
       - codex/fix/pr44_frozen_loading/01a11189
   workflow_dispatch:

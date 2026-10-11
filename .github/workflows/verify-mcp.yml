@@ -1,7 +1,7 @@
 name: Verify authenticated free MCP
 on:
   pull_request:
-    branches: [development, main]
+    branches: [main]
     paths: ['apps/mcp/**', 'apps/backend/src/index.ts', 'apps/backend/src/worker.ts', 'apps/backend/src/account.ts', 'apps/backend/migrations/0007_accounts.sql', 'apps/frontend/src/estimated/**', 'apps/frontend/tsconfig.json', 'apps/frontend/tsconfig.worker.json', '.github/workflows/verify-mcp.yml']
   push:
     branches: ['feat/authenticated-free-mcp']
