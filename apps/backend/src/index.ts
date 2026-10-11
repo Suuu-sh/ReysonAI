@@ -71,6 +71,9 @@ type JsonRecord = Record<string, unknown>;
 const JSON_HEADERS = {
   "content-type": "application/json; charset=utf-8",
 };
+const POSTFLOP_CACHE_CONTROL = "public, max-age=300, s-maxage=86400";
+const PREFLOP_CATALOG_CACHE_CONTROL = "public, max-age=60, s-maxage=60";
+const PREFLOP_BODY_CACHE_CONTROL = "public, max-age=300, s-maxage=300";
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -120,45 +123,58 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
   if (url.pathname.startsWith("/v1/postflop/") && request.method === "GET") {
     // Views are deterministic per published dataset, so cache them at the edge under the
     // dataset hash: a republish changes the key instead of waiting for entries to expire.
-    const cache = (globalThis as { caches?: { default?: EdgeCache } }).caches?.default;
+    const cache = edgeCache();
     const versionName = url.pathname === "/v1/postflop/flop" ? "flop-base"
       : url.pathname === "/v1/postflop/profile-policy" ? "postflop-profiles" : "postflop";
-    const version = cache ? await datasetVersion(env.DB, versionName) : null;
+    const version = cache ? await datasetVersion(env.DB, cache, url.origin, versionName) : null;
     // Flop bases are served as stored Brotli; clients without br get a decompressed variant, cached apart.
     const brotli = /\bbr\b/.test(request.headers.get("accept-encoding") ?? "");
-    const variant = versionName === "flop-base" ? `&enc=${brotli ? "br" : "id"}` : "";
-    const key = version ? new Request(`${url.origin}${url.pathname}?${url.searchParams}&dataset=${version}${variant}`) : null;
-    const hit = key ? await cache!.match(key) : undefined;
-    if (hit) return notModified(request, hit) ?? hit;
+    const variant = versionName === "flop-base";
+    const keyParams = new URLSearchParams(url.searchParams);
+    keyParams.delete("dataset");
+    keyParams.delete("enc");
+    if (version) keyParams.set("dataset", version);
+    if (version && variant) keyParams.set("enc", brotli ? "br" : "id");
+    const key = version ? new Request(`${url.origin}${url.pathname}?${keyParams}`) : null;
+    const hit = key ? await cacheMatch(cache, key) : undefined;
+    if (hit) return notModified(request, hit) ?? withCacheStatus(hit, "HIT", POSTFLOP_CACHE_CONTROL);
     const { status, body, text, bytes, etag } = await routePostflop(env.DB, url.pathname, url.searchParams);
     if (status !== 200) {
       if (url.pathname === "/v1/postflop/profile-policy") return new Response(JSON.stringify(body), { status, headers: JSON_HEADERS });
       return errorResponse(status, String((body as JsonRecord).error ?? "error"));
     }
     if (bytes) {
-      const headers: Record<string, string> = { "content-type": "application/json", vary: "accept-encoding", "cache-control": "public, max-age=300, s-maxage=86400", ...(etag ? { etag } : {}) };
+      const headers: Record<string, string> = { "content-type": "application/json", vary: "accept-encoding", "cache-control": POSTFLOP_CACHE_CONTROL, ...(etag ? { etag } : {}) };
       let flop: Response;
       if (brotli) flop = new Response(bytes as unknown as BodyInit, { status: 200, headers: { ...headers, "content-encoding": "br" }, encodeBody: "manual" } as ResponseInit);
       else {
         try { flop = new Response(new Blob([bytes as unknown as BlobPart]).stream().pipeThrough(new DecompressionStream("brotli" as CompressionFormat)), { status: 200, headers }); }
         catch { return errorResponse(406, "This flop base is served as Brotli; send accept-encoding: br"); }
       }
-      if (key) await cache!.put(key, flop.clone());
-      return notModified(request, flop) ?? flop;
+      if (key) await cachePut(cache, key, flop);
+      return notModified(request, flop) ?? withCacheStatus(flop, key ? "MISS" : "BYPASS", POSTFLOP_CACHE_CONTROL);
     }
-    const response = text == null ? json(body, { cacheControl: "public, max-age=300, s-maxage=86400" })
-      : new Response(text, { status: 200, headers: { ...JSON_HEADERS, "cache-control": "public, max-age=300, s-maxage=86400" } });
-    if (key) await cache!.put(key, response.clone());
-    return response;
+    const response = text == null ? json(body, { cacheControl: POSTFLOP_CACHE_CONTROL })
+      : new Response(text, { status: 200, headers: { ...JSON_HEADERS, "cache-control": POSTFLOP_CACHE_CONTROL } });
+    if (key) await cachePut(cache, key, response);
+    return withCacheStatus(response, key ? "MISS" : "BYPASS", POSTFLOP_CACHE_CONTROL);
   }
 
   // Preflop datasets live in D1, not in the R2 solution manifest, so they route before it.
   if ((url.pathname === "/v1/preflop/datasets" || url.pathname.startsWith("/v1/preflop/datasets/")) && request.method === "GET") {
+    // These public responses have no request-specific body. Cache before CORS is applied
+    // by fetch(), and ignore query strings just as routePreflopDatasets does.
+    const cache = edgeCache();
+    const cacheControl = url.pathname === "/v1/preflop/datasets" ? PREFLOP_CATALOG_CACHE_CONTROL : PREFLOP_BODY_CACHE_CONTROL;
+    const key = new Request(`${url.origin}/__reysonai_cache/v1/preflop${url.pathname}`);
+    const hit = await cacheMatch(cache, key);
+    if (hit) return notModified(request, hit) ?? withCacheStatus(hit, "HIT", cacheControl);
     const { status, body, text, etag } = await routePreflopDatasets(env.DB, url.pathname);
     if (status !== 200) return errorResponse(status, String((body as JsonRecord).error ?? "error"));
-    if (text == null) return json(body, { cacheControl: "public, max-age=60, s-maxage=300" });
-    if (etag && request.headers.get("if-none-match") === etag) return new Response(null, { status: 304, headers: { etag } });
-    return new Response(text, { status: 200, headers: { ...JSON_HEADERS, etag: etag ?? "", "cache-control": "public, max-age=300, s-maxage=86400" } });
+    const response = text == null ? json(body, { cacheControl })
+      : new Response(text, { status: 200, headers: { ...JSON_HEADERS, ...(etag ? { etag } : {}), "cache-control": cacheControl } });
+    await cachePut(cache, key, response);
+    return notModified(request, response) ?? withCacheStatus(response, cache ? "MISS" : "BYPASS", cacheControl);
   }
 
   if (!url.pathname.startsWith("/v1/preflop/")) {
@@ -256,15 +272,44 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
 }
 
 type EdgeCache = { match(key: Request): Promise<Response | undefined>; put(key: Request, response: Response): Promise<void> };
-const datasetCaches = new Map<string, { at: number; hash: string | null }>();
 
-async function datasetVersion(db: D1Database | undefined, name: string): Promise<string | null> {
+function edgeCache(): EdgeCache | undefined {
+  return (globalThis as { caches?: { default?: EdgeCache } }).caches?.default;
+}
+
+function withCacheStatus(response: Response, status: "HIT" | "MISS" | "BYPASS", cacheControl: string): Response {
+  const headers = new Headers(response.headers);
+  headers.set("x-reysonai-cache", status);
+  // Cache API hits can inherit the zone's longer Browser Cache TTL. Normalize
+  // the public response without changing the stored entry or its edge TTL.
+  headers.set("cache-control", cacheControl);
+  return new Response(response.body, { status: response.status, headers, ...(headers.has("content-encoding") ? { encodeBody: "manual" } : {}) } as ResponseInit);
+}
+
+async function cacheMatch(cache: EdgeCache | undefined, key: Request): Promise<Response | undefined> {
+  try { return await cache?.match(key); }
+  catch { return undefined; }
+}
+
+async function cachePut(cache: EdgeCache | undefined, key: Request, response: Response): Promise<void> {
+  if (!cache || response.status !== 200) return;
+  try { await cache.put(key, response.clone()); }
+  catch { /* Edge cache is an optimization; never change the D1 response. */ }
+}
+
+async function datasetVersion(db: D1Database | undefined, cache: EdgeCache, origin: string, name: string): Promise<string | null> {
   if (!db) return null;
-  const cached = datasetCaches.get(name);
-  if (cached && Date.now() - cached.at < 60_000) return cached.hash;
+  const key = new Request(`${origin}/__reysonai_cache/v1/postflop-dataset-version/${encodeURIComponent(name)}`);
+  const cached = await cacheMatch(cache, key);
+  if (cached) {
+    try {
+      const value: unknown = await cached.json();
+      if (isRecord(value) && typeof value.hash === "string" && value.hash) return value.hash;
+    } catch { /* Re-read D1 if a cache entry is malformed. */ }
+  }
   const { results } = await db.prepare("SELECT content_hash FROM dataset_versions WHERE name = ?").bind(name).all<{ content_hash: string }>();
   const hash = results[0]?.content_hash ?? null;
-  datasetCaches.set(name, { at: Date.now(), hash });
+  if (hash) await cachePut(cache, key, new Response(JSON.stringify({ hash }), { headers: { ...JSON_HEADERS, "cache-control": "public, max-age=60, s-maxage=60" } }));
   return hash;
 }
 

@@ -31,10 +31,10 @@ after(async () => {
   }
 });
 
-test("collapsed sidebar hover is temporary, touch-safe, and separate from the persistent bottom toggle", async () => {
+test("collapsed sidebar stays collapsed on pointer entry and uses the persistent bottom toggle", async () => {
   const styles = readFileSync(new URL("../src/styles.css", import.meta.url), "utf8");
-  assert.match(styles, /\.app-sidebar\.is-collapsed:not\(\.is-hover-expanded\) \{ flex-basis: 64px;/);
-  assert.match(styles, /\.app-sidebar\.is-collapsed:not\(\.is-hover-expanded\) \.header-nav button > span/);
+  assert.match(styles, /\.app-sidebar\.is-collapsed \{ flex-basis: 64px;[^}]*gap: 22px; padding: 14px 7px 12px;/);
+  assert.doesNotMatch(styles, /is-hover-expanded/);
   assert.match(styles, /@media \(max-width: 650px\) \{\s*\.app-sidebar, \.app-sidebar\.is-collapsed, \.sidebar-backdrop \{ display: none; \}/);
   let fineHover = true;
   dom.window.matchMedia = query => ({
@@ -62,7 +62,7 @@ test("collapsed sidebar hover is temporary, touch-safe, and separate from the pe
     assert.equal(toggle.getAttribute("aria-expanded"), "false");
     assert.match(toggle.getAttribute("aria-label"), /Expand sidebar|サイドバーを展開/);
     assert.equal(toggle.title, toggle.getAttribute("aria-label"));
-    assert.equal(sidebar.lastElementChild, toggle, "persistent toggle stays at the bottom of the sidebar");
+    assert.equal(toggle.nextElementSibling, container.querySelector(".account-menu, .header-meta"), "persistent toggle stays immediately above the account area");
     assert.equal(navigation.compareDocumentPosition(toggle) & dom.window.Node.DOCUMENT_POSITION_FOLLOWING, dom.window.Node.DOCUMENT_POSITION_FOLLOWING);
 
     const pointer = async (type, pointerType) => act(async () => {
@@ -72,42 +72,32 @@ test("collapsed sidebar hover is temporary, touch-safe, and separate from the pe
     });
 
     await pointer("pointerover", "mouse");
-    assert.ok(sidebar.classList.contains("is-hover-expanded"), "fine-pointer hover temporarily expands the sidebar");
-    assert.equal(dom.window.localStorage.getItem(COLLAPSE_KEY), "1", "hover does not overwrite the saved collapsed preference");
-    assert.equal(toggle.getAttribute("aria-expanded"), "true", "accessibility state follows the temporarily expanded appearance");
-    assert.match(toggle.getAttribute("aria-label"), /Collapse sidebar|サイドバーを折りたたむ/);
-    assert.equal(toggle.title, toggle.getAttribute("aria-label"));
-    const expandedChevron = toggle.querySelector("svg").outerHTML;
-    assert.notEqual(expandedChevron, "", "expanded toggle has its chevron");
-    await pointer("pointerout", "mouse");
-    assert.equal(sidebar.classList.contains("is-hover-expanded"), false, "leaving restores the saved collapsed appearance");
-    assert.ok(sidebar.classList.contains("is-collapsed"));
+    assert.equal(sidebar.classList.contains("is-hover-expanded"), false, "mouse pointer entry never expands the sidebar");
+    assert.equal(dom.window.localStorage.getItem(COLLAPSE_KEY), "1", "pointer entry preserves the saved collapsed preference");
     assert.equal(toggle.getAttribute("aria-expanded"), "false");
-    assert.match(toggle.getAttribute("aria-label"), /Expand sidebar|サイドバーを展開/);
-    assert.notEqual(toggle.querySelector("svg").outerHTML, expandedChevron, "chevron returns to the collapsed direction");
-
+    await pointer("pointerout", "mouse");
     await pointer("pointerover", "touch");
-    assert.equal(sidebar.classList.contains("is-hover-expanded"), false, "touch pointers do not activate hover expansion");
+    assert.equal(sidebar.classList.contains("is-hover-expanded"), false, "touch pointer entry also leaves it collapsed");
     await pointer("pointerout", "touch");
 
     await pointer("pointerover", "mouse");
     await act(async () => toggle.click());
-    assert.equal(dom.window.localStorage.getItem(COLLAPSE_KEY), "1", "clicking while hover-expanded persists collapsed and clears temporary expansion");
-    assert.equal(sidebar.classList.contains("is-collapsed"), true);
+    assert.equal(dom.window.localStorage.getItem(COLLAPSE_KEY), "0", "manual toggle expands and persists the choice");
+    assert.equal(sidebar.classList.contains("is-collapsed"), false);
     assert.equal(sidebar.classList.contains("is-hover-expanded"), false);
-    assert.equal(toggle.getAttribute("aria-expanded"), "false");
+    assert.equal(toggle.getAttribute("aria-expanded"), "true");
     await pointer("pointerout", "mouse");
-    assert.equal(sidebar.classList.contains("is-collapsed"), true, "pointer leave keeps the newly saved collapsed preference");
-    assert.equal(dom.window.localStorage.getItem(COLLAPSE_KEY), "1");
+    assert.equal(sidebar.classList.contains("is-collapsed"), false, "pointer leave keeps the manually expanded preference");
+    assert.equal(dom.window.localStorage.getItem(COLLAPSE_KEY), "0");
 
     await act(async () => toggle.click());
-    assert.equal(dom.window.localStorage.getItem(COLLAPSE_KEY), "0", "normal collapsed click persists expansion");
-    assert.equal(sidebar.classList.contains("is-collapsed"), false);
-    assert.equal(toggle.getAttribute("aria-expanded"), "true");
-    assert.match(toggle.getAttribute("aria-label"), /Collapse sidebar|サイドバーを折りたたむ/);
+    assert.equal(dom.window.localStorage.getItem(COLLAPSE_KEY), "1", "manual toggle persists collapse");
+    assert.equal(sidebar.classList.contains("is-collapsed"), true);
+    assert.equal(toggle.getAttribute("aria-expanded"), "false");
+    assert.match(toggle.getAttribute("aria-label"), /Expand sidebar|サイドバーを展開/);
     await act(async () => toggle.click());
-    assert.ok(sidebar.classList.contains("is-collapsed"));
-    assert.equal(dom.window.localStorage.getItem(COLLAPSE_KEY), "1");
+    assert.equal(sidebar.classList.contains("is-collapsed"), false);
+    assert.equal(dom.window.localStorage.getItem(COLLAPSE_KEY), "0");
   } finally {
     await act(async () => root.unmount());
   }

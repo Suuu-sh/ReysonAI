@@ -40,7 +40,7 @@ test('drill/review/draft exact logs, resume and list Back survive mode switching
 });
 test('ranked loads only with authenticated readiness; local data never substitutes; paging appends confirmed IDs',async()=>{
  let calls=0;await harness(({dom})=>assert.match(dom.window.document.body.textContent,/verified sign-in/),async()=>{calls++;return Response.json({});});assert.equal(calls,0);
- const fetched=[];await harness(async({dom,click})=>{assert.equal(fetched.length,3);assert.ok(fetched.every(r=>r.opts.credentials==='include'&&r.opts.cache==='no-store'&&!r.url.includes('user_id')));await click('Ranked');const rows=[...dom.window.document.querySelectorAll('tbody tr')];assert.equal(rows.length,3);assert.deepEqual(rows.map(row=>row.children[2].textContent),['Human FastFold','Legacy Agent ranked','Legacy ranked quiz']);const status=[...dom.window.document.querySelectorAll('.sessions-ranked-status > div')];assert.equal(status.length,3);assert.deepEqual(status.map(row=>row.children[0].textContent),['Human FastFold','Legacy Agent ranked','Legacy ranked quiz']);assert.ok(status.every(row=>row.textContent.includes('1 loaded')));await click('Human FastFold · Load older results');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,4);assert.equal(dom.window.document.body.textContent.includes('Human FastFold · Load older results'),false);await click('Human FastFold');assert.match(dom.window.document.body.textContent,/Server-confirmed personal result/);assert.match(dom.window.document.body.textContent,/1,000 → 1,001/);},async(url,opts)=>{fetched.push({url,opts});const q=new URL(url).searchParams,season=q.get('season');return Response.json({season,items:[{id:season+(q.has('cursor')?'-older':''),at:at-1000,beforeRating:1000,afterRating:1001,hero:'BTN',netBb:2,heroCards:['As','Kd'],board:[],log:null,answered:20,accuracy:.75}],nextCursor:season==='human-fastfold-v1'&&!q.has('cursor')?'cursor-one':null});},{rankedReady:true,rankedOwner:'owner-A'});
+ const fetched=[];await harness(async({dom,click})=>{assert.equal(fetched.length,3);assert.ok(fetched.every(r=>r.opts.credentials==='include'&&r.opts.cache==='no-store'&&!r.url.includes('user_id')));await click('Ranked');const rows=[...dom.window.document.querySelectorAll('tbody tr')];assert.equal(rows.length,3);assert.deepEqual(rows.map(row=>row.children[2].textContent),['Human FastFold','Legacy Agent ranked','Legacy ranked quiz']);assert.equal(dom.window.document.querySelector('.sessions-ranked-status'),null);await click('Human FastFold · Load older results');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,4);assert.equal(dom.window.document.body.textContent.includes('Human FastFold · Load older results'),false);await click('Human FastFold');assert.match(dom.window.document.body.textContent,/Server-confirmed personal result/);assert.match(dom.window.document.body.textContent,/1,000 → 1,001/);},async(url,opts)=>{fetched.push({url,opts});const q=new URL(url).searchParams,season=q.get('season');return Response.json({season,items:[{id:season+(q.has('cursor')?'-older':''),at:at-1000,beforeRating:1000,afterRating:1001,hero:'BTN',netBb:2,heroCards:['As','Kd'],board:[],log:null,answered:20,accuracy:.75}],nextCursor:season==='human-fastfold-v1'&&!q.has('cursor')?'cursor-one':null});},{rankedReady:true,rankedOwner:'owner-A'});
 });
 test('sign-out masks ranked results immediately and discards late responses',async()=>{
  const pending=[];await harness(async({dom,root})=>{await act(async()=>root.render(React.createElement(SessionPage,{...props,rankedReady:false,rankedOwner:null})));assert.match(dom.window.document.body.textContent,/verified sign-in/);await act(async()=>pending.forEach(([season,done])=>done(Response.json({season,items:[{id:'private-owner-A',at,beforeRating:1000,afterRating:900}],nextCursor:null}))));assert.doesNotMatch(dom.window.document.body.textContent,/private-owner-A|900/);},url=>new Promise(done=>pending.push([new URL(url).searchParams.get('season'),done])),{rankedReady:true,rankedOwner:'owner-A'});
@@ -89,4 +89,20 @@ test('session closure updates an already-mounted Sessions list without reload', 
   await act(async()=>finishAgentHistorySession('navigation-entry',at+1000));assert.equal(dom.window.document.querySelectorAll('tbody tr').length,0);
   await click('Completed');assert.equal(dom.window.document.querySelectorAll('tbody tr').length,1);
  },undefined,{},saved);
+});
+
+test('ranked fetched-count summaries disappear in every locale, but loading and retries remain', async () => {
+ for (const locale of ['en', 'ja', 'zh-CN', 'es']) {
+  const pending = [];
+  await harness(async ({dom}) => {
+   assert.equal(dom.window.document.querySelectorAll('.sessions-ranked-status [role="status"]').length, 3);
+   await act(async () => pending.forEach(([season, done]) => done(Response.json({season, items: [], nextCursor: null}))));
+   assert.equal(dom.window.document.querySelector('.sessions-ranked-status'), null);
+   assert.doesNotMatch(dom.window.document.body.textContent, /件取得済み|条已加载|cargados|\d+ loaded/);
+  }, url => new Promise(done => pending.push([new URL(url).searchParams.get('season'), done])), {rankedReady: true, rankedOwner: 'owner-A'}, [hand], locale);
+  await harness(async ({dom}) => {
+   assert.equal(dom.window.document.querySelectorAll('.sessions-ranked-status [role="alert"]').length, 3);
+   assert.equal(dom.window.document.querySelectorAll('.sessions-ranked-status button').length, 3);
+  }, async () => { throw Error('offline'); }, {rankedReady: true, rankedOwner: 'owner-A'}, [hand], locale);
+ }
 });

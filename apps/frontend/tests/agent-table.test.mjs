@@ -6,10 +6,12 @@ import { loadInputs, artifactPaths } from "../scripts/postflop-ai/inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "../scripts/postflop-ai/generate.mjs";
 import { spotById } from "../scripts/postflop-ai/spots.ts";
 import { playHand, postflopSpotFor } from "../src/agent/hand.ts";
+import { currentHandCategory } from "../src/agent/hand-presentation.ts";
 import { createAgent, makePostflopKit } from "../src/agent/policy.ts";
 import { applyPreflop, handClass, nextActor, preflopOptions, startPreflop } from "../src/agent/preflop.ts";
 import { createSession, finishHand, handSeed, seatPositions, toPoints } from "../src/agent/session.ts";
 import { AGENT_TABLES } from "../src/agent/characters.ts";
+import { readFileSync } from "node:fs";
 
 const datasets = Object.fromEntries(["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "limp-responses"]
   .map(name => [name, dataset(name)]));
@@ -32,6 +34,23 @@ const postflop = id => {
 const noPostflop = () => null;
 const agents = createAgent();
 const sum = values => Object.values(values).reduce((total, value) => total + value, 0);
+
+test("agent action buttons show actual BB amounts and don't label effective all-ins as percentage bets", () => {
+  const source = readFileSync(new URL("../src/agent/AgentTable.tsx", import.meta.url), "utf8");
+  assert.match(source, /const amount = to \? ` \$\{bb\(to\)\}BB` : ""/);
+  assert.match(source, /!option\.allIn && option\.to != null && \/\^bet\\d\+\$\//);
+});
+
+test("current hero hand category follows only the revealed board", () => {
+  const hole = ["8s", "8h"];
+  assert.equal(currentHandCategory(hole, []), null);
+  assert.equal(currentHandCategory(hole, ["9h", "5h", "Jd"]), 1); // flop: one pair
+  assert.equal(currentHandCategory(hole, ["9h", "5h", "Jd", "Ts"]), 1); // turn: one pair
+  assert.equal(currentHandCategory(hole, ["9h", "5h", "Jd", "Ts", "Qh"]), 4); // river: 8-9-T-J-Q straight
+  assert.equal(currentHandCategory(hole, ["2c", "3d", "4s"]), 1);
+  assert.equal(currentHandCategory(hole, ["2c", "3d", "4s", "5c"]), 1);
+  assert.equal(currentHandCategory(hole, ["2c", "3d", "4s", "5c", "6d"]), 4); // straight appears only after river is revealed
+});
 
 test("same seed and human actions replay the same hand", () => {
   for (let i = 0; i < 20; i++) {

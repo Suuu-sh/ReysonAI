@@ -122,13 +122,6 @@ function AppearanceTab() {
       <Choice label={t("レンジの表示", "Range display")} value={displayMode} onChange={value => { setDisplayMode(value); saveDisplayMode(value); }}
         options={[{ value: "simple", label: t("シンプル", "Simple"), hint: t("主な行動だけ", "Main action") }, { value: "standard", label: t("スタンダード", "Standard"), hint: t("頻度も表示", "With frequencies") }]} />
     </SettingRow>
-    <SettingRow title={t("レンジ表のスタイル", "Range grid style")} description={t("セルの塗り方を切り替えます", "How each hand cell is filled")}>
-      <Choice label={t("レンジ表のスタイル", "Range grid style")} value={appearance.matrix} onChange={matrix => update({ matrix })}
-        options={[
-          { value: "original", label: t("オリジナル", "Original"), hint: t("主な行動の色＋頻度バー", "Main action + mix bar"), preview: <span className="account-matrix-preview original" aria-hidden="true"><i /></span> },
-          { value: "classic", label: t("古典的", "Classic"), hint: t("頻度の比率で塗り分け", "Filled by frequency"), preview: <span className="account-matrix-preview classic" aria-hidden="true"><i /></span> },
-        ]} />
-    </SettingRow>
     <SettingRow title={t("カードの色", "Card colors")} description={t("トレーナーのカード", "Trainer cards")}>
       <Choice label={t("カードの色", "Card colors")} value={appearance.cards} onChange={cards => update({ cards })}
         options={[
@@ -177,7 +170,7 @@ export function AccountPage({ profile, tab = "profile", onSectionChange, onEditP
     <Sidebar activeSection={ACCOUNT_SECTION} onSectionChange={onSectionChange} profile={profile} onEditProfile={onEditProfile} onLogout={onLogout} />
     <main className="account-page">
       <div className="account-layout">
-        <header className="account-heading"><h1>{t("設定", "Settings")}</h1></header>
+        <header className="account-heading trainer-home-head"><h1 className="trainer-home-eyebrow">SETTINGS</h1></header>
         <nav className="account-tabs" aria-label={t("設定の項目", "Settings sections")}>
           {ACCOUNT_TABS.map(({ value, Icon, ja, en, shortJa, shortEn }) => <button type="button" key={value} aria-current={active === value ? "page" : undefined} aria-label={t(ja, en)}
             className={active === value ? "on" : ""} onClick={() => onSectionChange(`${ACCOUNT_SECTION}#${value}`)}>

@@ -17,7 +17,8 @@ export function reviewedStage3SourcePaths(root = STAGE3_REPOSITORY) {
   const found = new Set(["apps/frontend/package.json", "apps/frontend/package-lock.json", ".gitattributes", ".gitignore",
     ".github/workflows/deploy-worker.yml", "apps/frontend/scripts/package-reviewed-stage3.py",
     "configs/multiway-preflop-stage2.review.json", "configs/multiway-preflop-stage3.json",
-    "apps/frontend/tests/fixtures/stage3-legacy-baseline.json"]);
+    "apps/frontend/tests/fixtures/stage3-legacy-baseline.json", "scripts/ci/deployment-scope.mjs",
+    "scripts/ci/deployment-scope.test.mjs"]);
   function visit(path) {
     if (found.has(path)) return;
     if (path.startsWith("../") || path.startsWith("/")) throw new Error("Stage 3 review source escapes repository");
