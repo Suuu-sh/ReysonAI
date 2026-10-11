@@ -24,7 +24,7 @@ import { AgentAvatar } from "./AgentAvatar.tsx";
 import { createAgent, makePostflopKit, type PostflopKit } from "./policy.ts";
 import { createSession, finishHand, handSeed, seatPositions, toPoints, type Session } from "./session.ts";
 import { handRecord, loadAgentHands, saveAgentHand, setAgentHandBookmarked } from "./agent-stats.ts";
-import { exactPreflopReview } from "./agent-review.ts";
+import { exactAgentReview } from "./agent-review.ts";
 import { playerRead } from "./player-read.ts";
 import { PlayStyleCard, PlayStyleDashboard } from "./PlayStyleDashboard.tsx";
 import "./agent.css";
@@ -237,7 +237,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
     if (!done || recorded.current === session.handNo) return;
     recorded.current = session.handNo;
     if (humanPos && !waitingMode) {
-      const reviewDecisions = exactPreflopReview(result!.log, result!.holeCards, humanPos, mw3Client.supportsSpot);
+      const reviewDecisions = exactAgentReview(result!.log, result!.holeCards, result!.board, humanPos, mw3Client.supportsSpot, undefined, id => kits.get(id));
       const saved = saveAgentHand(handRecord(result!, tableId, humanPos, Date.now(), { session: historySession.entry, handNo: session.handNo + 1, names: Object.fromEntries(POSITIONS.map(pos => [pos, nameOf(pos)])), reviewDecisions }));
       setBookmarked(Boolean(saved.find(hand => hand.session?.id === historySession.entry.id && hand.history?.handNo === session.handNo + 1)?.bookmarked));
     }
@@ -251,7 +251,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
     })) : [];
     setHistory(current => [{ no: session.handNo + 1, winners: (result!.winners ?? []).map(nameOf).join(" / "),
       nameOf, log: [...revealed], board: [...boardCards], resultBb: humanPos && Number.isFinite(result!.returns![humanPos]) ? result!.returns![humanPos] : null, cards: humanPos ? [...(result!.holeCards[humanPos] ?? [])] : [], mine: humanPos && Number.isFinite(result!.returns![humanPos]) ? toPoints(result!.returns![humanPos]) : null, showdown, showdownPlayers }, ...current].slice(0, 30));
-  }, [done, humanPos, session.handNo, result, tableId, nameOf]);
+  }, [done, humanPos, session.handNo, result, tableId, nameOf, kits, mw3Client]);
 
   const act = (key: string) => setHumanActions(current => [...current, key]);
   const nextHand = useCallback(() => {

@@ -10,7 +10,7 @@ import { currentHandCategory } from "../src/agent/hand-presentation.ts";
 import { createAgent, makePostflopKit } from "../src/agent/policy.ts";
 import { applyPreflop, handClass, nextActor, preflopOptions, startPreflop } from "../src/agent/preflop.ts";
 import { createSession, finishHand, handSeed, seatPositions, toPoints } from "../src/agent/session.ts";
-import { exactPreflopReview } from "../src/agent/agent-review.ts";
+import { exactAgentReview } from "../src/agent/agent-review.ts";
 import { AGENT_TABLES } from "../src/agent/characters.ts";
 import { readFileSync } from "node:fs";
 
@@ -192,7 +192,7 @@ test("review snapshots preserve the exact saved preflop frequencies for the huma
     const action = pending.pending.options[0]?.key;
     if (!action) continue;
     const next = playHand({ seed, human: "BTN", humanActions: [action], agents, postflop: noPostflop });
-    const decision = exactPreflopReview(next.log, next.holeCards, "BTN")[0];
+    const decision = exactAgentReview(next.log, next.holeCards, next.board, "BTN")[0];
     if (decision) captured = { action, decision };
   }
   assert.ok(captured, "fixture includes a saved preflop strategy row");
@@ -206,7 +206,7 @@ test("review leaves a no-data fallback explicitly unavailable", () => {
   const seed = "review-no-policy", pending = playHand({ seed, human: "BTN", agents, postflop: noPostflop });
   if (pending.status !== "awaiting" || pending.pending.street !== "preflop") return;
   const next = playHand({ seed, human: "BTN", humanActions: [pending.pending.options[0].key], agents, postflop: noPostflop });
-  assert.deepEqual(exactPreflopReview(next.log, next.holeCards, "BTN", undefined, () => undefined), []);
+  assert.deepEqual(exactAgentReview(next.log, next.holeCards, next.board, "BTN", undefined, () => undefined), []);
 });
 
 test("session: button moves each hand and points use 1BB = 100", () => {
