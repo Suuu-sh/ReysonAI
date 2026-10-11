@@ -36,6 +36,7 @@ test("settings page has account, subscription, appearance and language tabs", ()
   const html = renderToStaticMarkup(createElement(AccountPage, { profile, tab: "account", onSectionChange() {}, onProfileSaved() {} }));
   for (const label of ["アカウント", "サブスクリプション", "外観", "言語"]) assert.match(html, new RegExp(`aria-label="${label}" class="(on)?">`));
   assert.match(html, /class="account-tab-short" aria-hidden="true">プラン</); // short label so four tabs fit on phones
+  assert.match(html, /<header class="account-heading trainer-home-head"><h1 class="trainer-home-eyebrow">SETTINGS<\/h1><\/header>/);
   assert.match(html, /value="Yu"/);
   assert.match(html, /Googleでログイン/); // account creation is gated until the backend is configured
 });

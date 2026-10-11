@@ -22,7 +22,7 @@ async function consentCallback(response,denied=false){
  assert.ok(match,'consent completion link missing');
  return new URL(match[1].replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(+n)));
 }
-const bindings={MCP_ENABLED:'true',MCP_ACCESS_MODE:'authenticated_free',MCP_ORIGIN:origin,MCP_ALLOWED_ORIGINS:app,AUTH_ENABLED:'true',AUTH_APP_URL:app};
+const bindings={MCP_ENABLED:'true',MCP_ACCESS_MODE:'authenticated_free',MCP_ORIGIN:origin,MCP_ALLOWED_ORIGINS:app,AUTH_ENABLED:'true',AUTH_APP_URL:app,ALLOWED_ORIGIN:app};
 
 async function seedPublishedPolicyFixture(db){
  const migration=async path=>db.exec((await readFile(path,'utf8')).replace(/^--.*$/mg,'').split('\n').filter(Boolean).join(' '));
@@ -50,7 +50,7 @@ async function seedPublishedPolicyFixture(db){
 test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolation and revocation', async t=>{
  await mkdir('.local/tests',{recursive:true});
  await build({entryPoints:['tests/runtime-fixture.ts'],outfile:'.local/tests/worker.mjs',bundle:true,format:'esm',platform:'browser',target:'es2022',conditions:['workerd','worker','browser'],external:['cloudflare:workers','node:*'],logLevel:'silent'});
- const mf=new Miniflare(convertV4MiniflareOptions({modules:true,scriptPath:'.local/tests/worker.mjs',compatibilityDate:'2026-10-07',compatibilityFlags:['nodejs_compat'],bindings,kvNamespaces:['OAUTH_KV'],d1Databases:['DB'],outboundService:()=>new Response('unexpected outbound fetch',{status:502})}));
+ const mf=new Miniflare(convertV4MiniflareOptions({modules:true,scriptPath:'.local/tests/worker.mjs',compatibilityDate:'2026-09-22',bindings,kvNamespaces:['OAUTH_KV'],d1Databases:['DB'],outboundService:()=>new Response('unexpected outbound fetch',{status:502})}));
  try{
  const db=await mf.getD1Database('DB');
  await db.exec((await readFile('../backend/migrations/0007_accounts.sql','utf8')).replace(/^--.*$/mg,'').split('\n').filter(Boolean).join(' '));
@@ -61,6 +61,21 @@ test('workerd OAuth PKCE consent, strict MCP auth, private tools, account isolat
   await db.prepare('INSERT INTO account_sessions(token_hash,user_id,expires_at) VALUES (?,?,?)').bind(digest(sessions[user]),user,Math.floor(Date.now()/1000)+3600).run();
  }
  const call=(path,options={})=>mf.dispatchFetch(origin+path,{...options,redirect:'manual',headers:{host:new URL(origin).host,...options.headers}});
+ await t.test('API Worker dispatches MCP before generic CORS and keeps API health behavior',async()=>{
+  const preflight=await call('/mcp',{method:'OPTIONS',headers:{origin:app}});
+  assert.equal(preflight.status,204);assert.equal(preflight.headers.get('access-control-allow-origin'),app);
+  assert.match(preflight.headers.get('access-control-allow-headers')??'',/MCP-Protocol-Version/i);
+  const denied=await call('/mcp',{method:'OPTIONS',headers:{origin:'https://evil.test'}});
+  assert.equal(denied.status,403);assert.equal((await denied.json()).error,'invalid_origin');
+  const metadata=await (await call('/.well-known/oauth-authorization-server')).json();
+  assert.equal(metadata.issuer,origin);assert.equal(metadata.authorization_endpoint,origin+'/oauth/mcp/authorize');
+  const health=await call('/health',{headers:{origin:app}});
+  assert.equal(health.status,200);assert.deepEqual(await health.json(),{status:'ok',service:'reysonai-api'});
+  assert.equal(health.headers.get('access-control-allow-origin'),app);
+  const apiPreflight=await call('/health',{method:'OPTIONS',headers:{origin:app}});
+  assert.equal(apiPreflight.status,204);assert.equal(apiPreflight.headers.get('access-control-allow-origin'),app);
+  assert.doesNotMatch(apiPreflight.headers.get('access-control-allow-headers')??'',/MCP-Protocol-Version/i);
+ });
  const client=await (await call('/__fixture/client')).json();assert.ok(client.clientId);
  const requestAuth=async({scopes=scope,user='alice',changes={}}={})=>{
   const verifier=randomBytes(32).toString('base64url');const challenge=createHash('sha256').update(verifier).digest('base64url');

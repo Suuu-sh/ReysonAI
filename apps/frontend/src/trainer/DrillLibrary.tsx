@@ -2,7 +2,7 @@ import { ffCopy as ff } from "./fastfold-api.ts";
 import type { CSSProperties } from "react";
 import type { AnswerEntry, Drill, DrillDraft, DrillDrafts, TrainerSettings } from "./types.ts";
 import { displayDrillName } from "./drill-store.ts";
-import { RankBadge, RankLadder, tierColor } from "./RankBadge.tsx";
+import { RankBadge, tierColor } from "./RankBadge.tsx";
 import { ArrowClockwise, ArrowLeft, Eye, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
 import { ModeBlock } from "./ModeBlock.tsx";
 import { AGENT_TABLE } from "../agent/characters.ts";
@@ -10,7 +10,7 @@ import { AgentAvatar } from "../agent/AgentAvatar.tsx";
 import { loadAgentHands, summarizeAgentHands } from "../agent/agent-stats.ts";
 import { DIFFICULTY_OPTIONS, POSITIONS, spotsForSettings } from "./trainer-data.ts";
 import { drillStats } from "./drill-store.ts";
-import { LEGEND, RANKED_DAILY_LIMIT, RANKED_LENGTH, TIERS, TIER_EN, tierFor } from "./rank-store.ts";
+import { RANKED_DAILY_LIMIT, RANKED_LENGTH, TIER_EN, tierFor } from "./rank-store.ts";
 import { localized } from "../locale.ts";
 
 type RankSummary = { rating: number; peak: number; active?: unknown };
@@ -183,43 +183,9 @@ export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit
   </div>;
 }
 
-// Live ranked emblem: the tier badge inside a progress ring toward the next tier. The arc draws in
-// on load; on hover the badge lifts and floats and the next tier peeks in.
-function RankedEmblem({ tier }: { tier: ReturnType<typeof tierFor> }) {
-  const radius = 54, length = 2 * Math.PI * radius;
-  return <div className="ranked-emblem-wrap">
-    <div className="ranked-emblem" style={{ "--arc": length, "--arc-fill": length * tier.progress } as CSSProperties}>
-      <svg className="ranked-ring" viewBox="0 0 128 128" aria-hidden="true">
-        <circle cx="64" cy="64" r={radius} className="track" />
-        <circle cx="64" cy="64" r={radius} className="arc" strokeDasharray={`${length * tier.progress} ${length}`} />
-        <g className="ticks">{Array.from({ length: 24 }, (_, i) => <line key={i} x1="64" y1="3" x2="64" y2={i % 6 === 0 ? 9 : 6} transform={`rotate(${i * 15} 64 64)`} className="tick" />)}</g>
-      </svg>
-      <span className="ranked-emblem-badge"><RankBadge name={tier.name} size={64} /></span>
-      {tier.next && <span className="ranked-emblem-next" title={localized(`Next: ${(TIER_EN as Readonly<Record<string, string>>)[tier.next.name]}`, `次: ${tier.next.name}`)}><RankBadge name={tier.next.name} size={30} /></span>}
-    </div>
-    <div className="ranked-emblem-info">
-      <span className="ranked-tier-name">{localized((TIER_EN as Readonly<Record<string, string>>)[tier.name], tier.name)}</span>
-    </div>
-  </div>;
-}
-
-// Legend stays in the middle; on hover the other tiers slide out from behind it, strongest first,
-// alternating right and left (master right, diamond left, platinum right, ...), balanced 3 + 3.
-const fanOffset = (strength: number) => strength === 0 ? 0 : strength % 2 ? (strength + 1) / 2 : -strength / 2;
-function RankFan() {
-  const names = [...TIERS.slice(-2).map(tier => tier.name), LEGEND];
-  const last = names.length - 1;
-  return <div className="rank-fan" aria-hidden="true">
-    {names.map((name, index) => <span key={name} className={`rank-fan-item${index === last ? " is-front" : ""}`}
-      style={{ "--k": fanOffset(last - index), "--d": last - index, zIndex: index + 1 } as CSSProperties}>
-      <RankBadge name={name} size={64} />
-    </span>)}
-  </div>;
-}
-
 function RankedComingSoon() {
   return <ModeBlock theme="#b7a0db" className="is-ranked is-coming-soon" visualClass="ranked-visual" label={localized("Ranked matches", "ランク戦")}
-    visual={<RankFan />}
+    visual={<span className="ranked-locked-icon" aria-hidden="true"><Trophy size={34} /></span>}
     eyebrow="RANKED"
     title={localized("Ranked matches", "ランク戦")}
     status={localized("Sign in · server availability required", "ログイン・サーバー準備が必要")}
@@ -230,7 +196,7 @@ function RankedCard({ rank, busy, draft, onStart, onOpenRanking }: { rank: RankS
   const tier = tierFor(rank.rating);
   const canStart = !busy;
   return <ModeBlock theme={tierColor(tier.name)} className={`is-ranked${draft ? " in-progress" : ""}`} visualClass="ranked-visual" label={localized("Ranked matches", "ランク戦")}
-    visual={<RankedEmblem tier={tier} />}
+    visual={<div className="ranked-current"><RankBadge name={tier.name} size={48} /><span className="ranked-tier-name">{localized((TIER_EN as Readonly<Record<string, string>>)[tier.name], tier.name)}</span><strong>{rank.rating.toLocaleString()}</strong><small>{localized("rating", "レート")}</small></div>}
     eyebrow={`RANKED · ${localized("Server ranked", "サーバー集計")}`}
     title={ff("Human FastFold β", "対人FastFold β", "真人FastFold β", "FastFold humano β")}
     description={ff("Six people must join before a ranked hand starts. Practice against unrated Agents while waiting.", "人間6人が揃ってからランク戦を開始。待つ間はランク非加算のAgent戦。", "六人到齐后开始排位。等待时可练习不计分的Agent对局。", "La mano clasificatoria empieza con seis personas. Mientras esperas, practica con Agents sin puntuación.")}
@@ -239,8 +205,7 @@ function RankedCard({ rank, busy, draft, onStart, onOpenRanking }: { rank: RankS
         <Play size={14} weight="fill" />{draft ? ff("Open human queue", "対人待機を開く", "打开真人队列", "Abrir cola humana") : ff("Join human queue", "対人待機へ", "加入真人队列", "Unirse a cola humana")}
       </button>
       <button type="button" className="mode-secondary" onClick={onOpenRanking}><Trophy size={15} />{localized("Leaderboard", "ランキング")}</button>
-    </>}
-    foot={<RankLadder rating={rank.rating} />}>
+    </>}>
   </ModeBlock>;
 }
 

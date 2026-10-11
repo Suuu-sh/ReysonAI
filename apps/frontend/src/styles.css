@@ -432,8 +432,6 @@ tbody tr:hover { background: var(--surface-hover); }
 
 .onboarding-language select { max-width: 150px; min-height: 34px; font-size: 12px; }
 
-/* Range cells use a bottom-anchored band whose height represents actual node reach. */
-.cell-fill { display: flex; }
-[data-matrix="classic"] .matrix button:not(.unreachable-hand) { background: #1c1c21 !important; }
-[data-matrix="classic"] .cell-fill { position: absolute; top: auto; right: 0; bottom: 0; left: 0; z-index: 0; display: flex; }
-[data-matrix="classic"] .cell-fill span { height: 100%; flex: 0 0 auto; }
+/* Range cells show action frequencies with bottom-anchored node reach. */
+.cell-fill { position: absolute; right: 0; bottom: 0; left: 0; z-index: 0; display: flex; }
+.cell-fill span { height: 100%; flex: 0 0 auto; }

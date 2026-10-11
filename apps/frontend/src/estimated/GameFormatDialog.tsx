@@ -3,6 +3,8 @@ import type { FormatKey, GameFormat } from "./game-formats.ts";
 import type { ProfileKey, ProfileLevel, TableProfile } from "./table-profile.ts";
 import { ArrowLeft, CaretRight, LockSimple, X } from "@phosphor-icons/react";
 import { useState } from "react";
+import { displayModes } from "./display-mode.ts";
+import { translateProductCopy } from "../i18n.ts";
 import { Dialog } from "../components/Dialog.tsx";
 import { detailedFormatFields, formatOptions, gameFormatFields, isBuilt, optionAvailable } from "./game-formats.ts";
 import { DEFAULT_PROFILE, LEVEL_LABELS, PROFILE_LABELS, PROFILE_LEVELS } from "./table-profile.ts";
@@ -45,7 +47,7 @@ export function AdvancedSettingsPage({ format, onChange }: { format: GameFormat;
   </div>;
 }
 
-export function GameFormatDialog({ format, tableProfile = DEFAULT_PROFILE, onSave, onClose }: { format: GameFormat; tableProfile?: TableProfile; onSave: (format: GameFormat, profile: TableProfile) => void; onClose: () => void }) {
+export function GameFormatDialog({ format, tableProfile = DEFAULT_PROFILE, displayMode, onDisplayModeChange, onSave, onClose }: { format: GameFormat; tableProfile?: TableProfile; displayMode?: string; onDisplayModeChange?: (mode: string) => void; onSave: (format: GameFormat, profile: TableProfile) => void; onClose: () => void }) {
   const [draft, setDraft] = useState(format);
   const [profileDraft, setProfileDraft] = useState(tableProfile);
   const [page, setPage] = useState("game");
@@ -59,6 +61,12 @@ export function GameFormatDialog({ format, tableProfile = DEFAULT_PROFILE, onSav
       </div>
       {page === "game" ? <>
         <FormatFields fields={gameFormatFields} draft={draft} onChange={setDraft} />
+        {onDisplayModeChange && <fieldset className="format-field">
+          <legend>{translateProductCopy("表示モード")}</legend>
+          <div className="format-options">
+            {displayModes.map(mode => <button type="button" key={mode.value} className={`format-option${displayMode === mode.value ? " selected" : ""}`} aria-pressed={displayMode === mode.value} onClick={() => onDisplayModeChange(mode.value)}>{translateProductCopy(mode.label)}</button>)}
+          </div>
+        </fieldset>}
         <button type="button" className="modal-settings-link" onClick={() => setPage("advanced")}>
           <span>より詳細な設定</span><CaretRight size={15} aria-hidden="true" />
         </button>

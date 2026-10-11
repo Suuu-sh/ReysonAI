@@ -38,3 +38,10 @@ test("ante lives on its own detailed settings page and unsupported ante ranges s
   assert.match(html, /disabled=""[^>]*title="レンジ表を準備中">[\s\S]*?アンティあり/);
   assert.match(html, /現在選べるレンジはアンティなしのみです/);
 });
+
+test("range display mode is available inside the game settings dialog", () => {
+  const html = renderToStaticMarkup(createElement(GameFormatDialog, { format: formats.defaultFormat, displayMode: "simple", onDisplayModeChange() {}, onSave() {}, onClose() {} }));
+  assert.match(html, /<legend>表示モード<\/legend>/);
+  assert.match(html, /aria-pressed="true"[^>]*>シンプル<\/button>/);
+  assert.match(html, /aria-pressed="false"[^>]*>スタンダード<\/button>/);
+});
