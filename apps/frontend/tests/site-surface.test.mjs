@@ -271,9 +271,9 @@ test("the range tour randomly selects saved spots, pauses offscreen, yields to i
   assert.match(explorer, /if \(!isTouring \|\| !visible\) return/);
   assert.match(explorer, /window\.clearInterval\(timer\)/);
   assert.match(explorer, /setRangeIndex\(current => pickNextRangeIndex\(current, heroRanges.length, previewRanges.tour.length\)\)/);
-  assert.match(explorer, /\}, 1000\)/);
+  assert.match(explorer, /\}, 1500\)/);
   const mobile = source.split("function MobileExplorer() {")[1].split("function Header()")[0];
-  assert.match(mobile, /\}, 1000\)/);
+  assert.match(mobile, /\}, 1500\)/);
   assert.match(mobile, /if \(!isTouring \|\| !visible\) return/);
   assert.match(mobile, /setRangeIndex\(current => pickNextRangeIndex\(current, heroRanges.length, previewRanges.tour.length\)\)/);
   assert.match(mobile, /<RangeMatrix range=\{range\}/);
@@ -443,8 +443,8 @@ test("hero range cells use one exact sharp-stop color layer with bottom reach an
   assert.ok(preflopHtml.includes(`background-image:linear-gradient(90deg, ${color("bet33")} 0% 100%);height:100%`), "preflop without reach metadata fills full height");
 
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  assert.match(css, /\.has-motion \.site-cell-fill-layer\.is-incoming\s*\{[^}]*animation: site-range-fill-in \.22s ease calc\(var\(--wave\) \* 8ms\) both/);
-  assert.match(css, /\.has-motion \.site-cell-fill-layer\.is-outgoing\s*\{[^}]*animation: site-range-fill-out \.22s ease calc\(var\(--wave\) \* 8ms\) both/);
+  assert.match(css, /\.has-motion \.site-cell-fill-layer\.is-incoming\s*\{[^}]*animation: site-range-fill-in \.3s ease calc\(var\(--wave\) \* 8ms\) both/);
+  assert.match(css, /\.has-motion \.site-cell-fill-layer\.is-outgoing\s*\{[^}]*animation: site-range-fill-out \.3s ease calc\(var\(--wave\) \* 8ms\) both/);
   assert.doesNotMatch(css, /site-cell-fill-layer[^}]*transition:\s*(?:left|width|height|background-color)/);
   const cellRule = css.match(/\.site \.site-cell \{[^}]*\}/)?.[0] ?? "";
   assert.match(cellRule, /transition: transform \.18s[^}]*box-shadow \.18s/);
@@ -455,7 +455,7 @@ test("hero range cells use one exact sharp-stop color layer with bottom reach an
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
   assert.match(source, /const useBrowserLayoutEffect = typeof document === "undefined" \? useEffect : useLayoutEffect/);
   assert.match(source, /useBrowserLayoutEffect\(\(\) => \{\s*const previous = lastRange\.current/);
-  assert.match(source, /setTimeout\(\(\) => setPreviousRange\(current => current\?\.id === previous\.id \? null : current\), 420\)/);
+  assert.match(source, /setTimeout\(\(\) => setPreviousRange\(current => current\?\.id === previous\.id \? null : current\), 520\)/);
   assert.match(source, /if \(!motion\) \{ setPreviousRange\(null\); return; \}/);
   assert.match(source, /key=\{hand\} className=\{`site-cell/);
 });
@@ -484,7 +484,7 @@ test("range fill crossfade stays bounded, preserves the focused cell, and clears
       const focusedCell = [...rootNode.querySelectorAll(".site-cell")].find(button => button.getAttribute("aria-label").startsWith("A5o:"));
       assert.ok(focusedCell);
       focusedCell.focus();
-      await act(async () => { await new Promise(resolve => setTimeout(resolve, 1050)); });
+      await act(async () => { await new Promise(resolve => setTimeout(resolve, 1600)); });
       assert.strictEqual(rootNode.querySelector('[aria-label^="A5o:"]'), focusedCell, "hand buttons keep their identity across the tour update");
       assert.strictEqual(dom.window.document.activeElement, focusedCell, "focus stays on the same hand button");
       const layers = rootNode.querySelectorAll(".site-cell-fill-layer");
