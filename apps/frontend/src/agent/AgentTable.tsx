@@ -1,5 +1,5 @@
 import { useAgentHistorySession } from "./history-session.ts";
-import { POSITIONS } from "./preflop.ts";
+import { POSITIONS, type Position } from "./preflop.ts";
 import { GameplayDetails, GamePanel } from "./GameplayDetails.tsx";
 import { StyleAvatar } from "./StyleAvatar.tsx";
 import { OpponentProfile, profileCopy as profileText, type OpponentProfileData } from "./OpponentProfile.tsx";
@@ -17,6 +17,7 @@ import { spotById } from "../../scripts/postflop-ai/spots.ts";
 import { localized, translateProductCopy } from "../i18n.ts";
 import { AGENT_TABLE, GUEST_AGENT, agentTableById } from "./characters.ts";
 import { categoryName, playHand, type HandResult, type LogEntry } from "./hand.ts";
+import { currentHandCategory } from "./hand-presentation.ts";
 import { productLocale } from "../locale.ts";
 import { LoadingDots, LoadingInline } from "../components/Loading.tsx";
 import { AgentAvatar } from "./AgentAvatar.tsx";
@@ -54,7 +55,7 @@ const signed = (points: number) => `${points > 0 ? "+" : ""}${points.toLocaleStr
 
 export function actionLabel(entry: { action: string; to?: number; amountBb?: number; allIn?: boolean }) {
   const { action, to } = entry;
-  const amount = to ? ` ${bb(to)}` : "";
+  const amount = to ? ` ${bb(to)}BB` : "";
   if (action === "fold") return localized("Fold", "フォールド");
   if (action === "check") return localized("Check", "チェック");
   if (action === "call") return `${localized("Call", "コール")}${amount}${entry.allIn && entry.amountBb != null ? ` (${localized("All-in", "オールイン")})` : ""}`;
@@ -72,8 +73,8 @@ export function actionLabel(entry: { action: string; to?: number; amountBb?: num
 }
 // A size token may address an effective all-in. Never show its unplayed nominal
 // percentage under the actual all-in amount; legacy options have no allIn flag.
-export function AgentActionSizeHint({ option }: { option: { key: string; allIn?: boolean } }) {
-  return !option.allIn && /^bet\d+$/.test(option.key) ? <small>{option.key.slice(3)}%</small> : null;
+export function AgentActionSizeHint({ option }: { option: { key: string; to?: number; allIn?: boolean } }) {
+  return !option.allIn && option.to != null && /^bet\d+$/.test(option.key) ? <small>{option.key.slice(3)}%</small> : null;
 }
 // Raises and bets read as street totals; a call reads as the chips it adds.
 function asDisplayed(entries: LogEntry[], entry: LogEntry) {
@@ -100,7 +101,7 @@ function chipState(revealed: LogEntry[], street: string) {
   return { committed, front };
 }
 
-type HistoryItem = { no: number; winners: string; mine: number | null; showdown: boolean; cards: string[]; resultBb: number | null; log: LogEntry[]; board: string[]; nameOf: (position: string) => string };
+type HistoryItem = { no: number; winners: string; mine: number | null; showdown: boolean; cards: string[]; resultBb: number | null; log: LogEntry[]; board: string[]; nameOf: (position: string) => string; showdownPlayers: { position: string; name: string; cards: string[]; won: boolean; handName?: string }[] };
 
 export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = false, exitDisabled = false, handoffKey, onHandBoundary, waitingHeader, waitingSidebar, mw3Client = mw3DeliveryClient }: { tableId: string; watch?: boolean; onExit: () => void; waitingMode?: boolean; exitDisabled?: boolean; handoffKey?: string; onHandBoundary?: () => void; waitingHeader?: ReactNode; waitingSidebar?: ReactNode; mw3Client?: Mw3DeliveryClient }) {
   const historySession = useAgentHistorySession(!watch && !waitingMode);
@@ -233,8 +234,16 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
     if (!done || recorded.current === session.handNo) return;
     recorded.current = session.handNo;
     if (humanPos && !waitingMode) saveAgentHand(handRecord(result!, tableId, humanPos, Date.now(), { session: historySession.entry, handNo: session.handNo + 1, names: Object.fromEntries(POSITIONS.map(pos => [pos, nameOf(pos)])) }));
+    const showdown = Boolean(result!.showdown);
+    // Only expose cards for seats that reached an actual showdown. In particular, folded
+    // opponents' dealt cards remain private even though the deterministic result has them.
+    const folded = new Set<Position>(revealed.filter(entry => entry.action === "fold").map(entry => entry.pos));
+    const showdownPlayers = showdown ? Object.entries(result!.holeCards).filter(([pos, cards]) => !folded.has(pos as Position) && cards.length === 2).map(([pos, cards]) => ({
+      position: pos, name: nameOf(pos), cards: [...cards], won: Boolean(result!.winners?.includes(pos as any)),
+      handName: result!.handRanks?.[pos] == null ? undefined : handName(result!.handRanks[pos]),
+    })) : [];
     setHistory(current => [{ no: session.handNo + 1, winners: (result!.winners ?? []).map(nameOf).join(" / "),
-      nameOf, log: [...revealed], board: [...boardCards], resultBb: humanPos && Number.isFinite(result!.returns![humanPos]) ? result!.returns![humanPos] : null, cards: humanPos ? [...(result!.holeCards[humanPos] ?? [])] : [], mine: humanPos && Number.isFinite(result!.returns![humanPos]) ? toPoints(result!.returns![humanPos]) : null, showdown: Boolean(result!.showdown) }, ...current].slice(0, 30));
+      nameOf, log: [...revealed], board: [...boardCards], resultBb: humanPos && Number.isFinite(result!.returns![humanPos]) ? result!.returns![humanPos] : null, cards: humanPos ? [...(result!.holeCards[humanPos] ?? [])] : [], mine: humanPos && Number.isFinite(result!.returns![humanPos]) ? toPoints(result!.returns![humanPos]) : null, showdown, showdownPlayers }, ...current].slice(0, 30));
   }, [done, humanPos, session.handNo, result, tableId, nameOf]);
 
   const act = (key: string) => setHumanActions(current => [...current, key]);
@@ -351,10 +360,12 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
               const won = done && result?.winners?.includes(pos);
               // Spectators see every hand, like a broadcast; players only see a showdown.
               const showCards = isHuman || watch || (done && result?.showdown && !folded);
+              const currentRank = isHuman && boardCards.length >= 3 ? currentHandCategory(result?.holeCards[pos] ?? [], boardCards) : null;
               const delta = done ? toPoints(result!.returns![pos] ?? 0) : null;
               const stack = done ? 100 + (result!.returns![pos] ?? 0) : 100 - (chips.committed[pos] ?? 0);
               return <PokerSeat key={index} slot={slotIndex} human={isHuman} folded={folded} won={Boolean(won)} acting={actingPos === pos}
                 cards={result?.holeCards[pos] ?? []} showCards={Boolean(showCards)} handKey={session.handNo}
+                holeLabel={currentRank == null ? undefined : <span className="agent-current-handname">{handName(currentRank)}</span>}
                 avatar={character ? waitingMode ? <StyleAvatar id="balanced" color={character.color} size={50} dim={folded}/> : <AgentAvatar id={character.id} color={character.color} size={50} state={won ? "win" : folded ? "fold" : "idle"} /> : undefined}
                 onProfile={character ? () => setOpponentProfile({name:character.name.en, avatar:<AgentAvatar id={character.id} color={character.color} size={64}/>, kind:"agent", type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado"), description:profileText("Saved balanced AI estimate. Agent codenames do not change policies.", "保存済みのバランス型AI推定。Agent名で方針は変わりません。", "已保存的平衡AI估计。Agent名称不会改变策略。", "Estimación IA equilibrada guardada. Los nombres Agent no cambian la política.")}) : undefined}
                 profileLabel={character ? `${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}` : undefined} fullName={character?.name.en}
@@ -395,7 +406,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
         </footer>
       </section>
 
-      <GameplayDetails profileSwitches={session.seats.filter(seat => seat.kind === "agent").map(seat => { const character = characterFor(seat.agentId); if (!character) return null; return <button type="button" className="agent-mini-profile" key={character.id} aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en,avatar:<AgentAvatar id={character.id} color={character.color} size={64}/>,kind:"agent",type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado")})}><AgentAvatar id={character.id} color={character.color} size={32}/></button>; })} currentCards={humanPos ? result?.holeCards[humanPos] : []} history={history.map(item => ({id:item.no,cards:item.cards,resultBb:item.resultBb,details:<HandLog entries={item.log} nameOf={item.nameOf} board={item.board}/>}))} requestedPanel={styleOpen ? "tools" : null} onClose={() => setStyleOpen(false)} profile={opponentProfile && <OpponentProfile profile={opponentProfile} onClose={() => setOpponentProfile(null)} />}>
+      <GameplayDetails profileSwitches={session.seats.filter(seat => seat.kind === "agent").map(seat => { const character = characterFor(seat.agentId); if (!character) return null; return <button type="button" className="agent-mini-profile" key={character.id} aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en,avatar:<AgentAvatar id={character.id} color={character.color} size={64}/>,kind:"agent",type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado")})}><AgentAvatar id={character.id} color={character.color} size={32}/></button>; })} currentCards={humanPos ? result?.holeCards[humanPos] : []} history={history.map(item => ({id:item.no,cards:item.cards,resultBb:item.resultBb,board:item.board,showdown:item.showdown,showdownPlayers:item.showdownPlayers,details:<HandLog entries={item.log} nameOf={item.nameOf} board={item.board}/>}))} requestedPanel={styleOpen ? "tools" : null} onClose={() => setStyleOpen(false)} profile={opponentProfile && <OpponentProfile profile={opponentProfile} onClose={() => setOpponentProfile(null)} />}>
         {waitingMode && <GamePanel id="queue" label={profileText("Queue / rank", "待機 / ランク", "队列 / 评分", "Cola / rango")}>{waitingSidebar}</GamePanel>}
         <GamePanel id="session" label={profileText(waitingMode ? "Agents" : "Session", waitingMode ? "Agent" : "セッション", waitingMode ? "Agent" : "会话", waitingMode ? "Agents" : "Sesión")}>
         {waitingMode && <section className="agent-panel"><h3>{profileText("Practice Agents", "練習相手のAgent", "练习Agent", "Agents de práctica")}</h3>{table.agents.map(character => <div className="ff-opponent" key={character.id}><button type="button" className="agent-mini-profile" aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en,kind:"agent",type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado"),avatar:<StyleAvatar id="balanced" color={character.color} size={64}/>})}><StyleAvatar id="balanced" color={character.color} size={32}/></button><div><strong>{character.name.en}</strong><small>{profileText("Balanced · preflop", "バランス型・プリフロップ", "平衡型 · 翻牌前", "Equilibrado · preflop")}</small></div></div>)}</section>}
