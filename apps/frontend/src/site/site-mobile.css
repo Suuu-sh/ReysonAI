@@ -1,7 +1,6 @@
 /* Phone layout for the service site. Loaded after site.css; desktop rules stay untouched. */
 
 .site .site-nav-lang { display: none; }
-.site-mobile-cta { display: none; }
 
 @media (max-width: 720px) {
   .site { --section-space: 56px; --layout-gap: 20px; }
@@ -83,22 +82,4 @@
   .site-footer-links > div:last-child > span:first-child { display: none; }
   .site-footer { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 
-  /* Bottom action bar, shown between the hero and the closing CTA. */
-  .site-mobile-cta {
-    position: fixed; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); left: 12px; z-index: 40;
-    display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px;
-    border: 1px solid var(--line-strong); border-radius: calc(var(--panel-radius) + 4px);
-    background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 18px 40px -16px #000;
-    opacity: 0; visibility: hidden; transform: translateY(16px);
-    transition: opacity .3s ease, transform .4s var(--ease), visibility 0s .4s;
-  }
-  .site-mobile-cta.is-shown { opacity: 1; visibility: visible; transform: none; transition: opacity .3s ease, transform .4s var(--ease), visibility 0s; }
-  .site-header.is-open ~ .site-mobile-cta { opacity: 0; visibility: hidden; }
-  .site-mobile-cta small { flex: 1; min-width: 0; color: var(--muted); font-size: 11px; line-height: 1.4; }
-  .site-mobile-cta .site-button { flex: 0 0 auto; min-height: 44px; padding-inline: 16px; font-size: 14px; }
-}
-
-@media (max-width: 720px) and (prefers-reduced-motion: reduce) {
-  .site-mobile-cta, .site-mobile-cta.is-shown { transition: none; transform: none; }
 }
