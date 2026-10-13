@@ -273,7 +273,6 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, r
     <header className="trainer-home-head stats-page-head">
       <div><h1 className="trainer-home-eyebrow">STATS</h1>
         <p>{view === "agent" ? "Agent卓での収支と、Agentが読んでいるあなたの打ち方を振り返ります。" : view === "ranked" ? localized("Review server-confirmed ranked results separately from drills.", "サーバーで確定したランク戦の結果を、ドリルと分けて振り返ります。") : localized("Compare drill choices with the saved ranges for the same questions.", "ドリルでの選び方を、同じ問題の保存済みレンジと比べて振り返ります。")}</p></div>
-      <button type="button" className="mode-primary analysis-start" onClick={onStart}>練習する<ArrowRight size={15} /></button>
     </header>
     <div className="stats-toolbar">
       <div className="stats-seg" role="group" aria-label="分析の対象">
