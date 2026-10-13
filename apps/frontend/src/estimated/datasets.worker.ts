@@ -1,0 +1,31 @@
+export { opponentProfileDatasetName } from "./opponent-profiles.ts";
+import type { OpeningDataset, ResponseDataset, ThreeBetDataset, FourBetDataset, FiveBetDataset, LimpDataset, LimpDeepDataset, MultiwayDataset, Multiway2Dataset, ColdThreeBetDataset, ColdFourBetDataset, SqueezeDataset, ContinuationDataset } from "./preflop-types.ts";
+import type { CallEquityTable } from "./call-ev.ts";
+type DatasetMap = {
+    "opening-ranges": OpeningDataset;
+    "preflop-ranges": ResponseDataset;
+    "three-bet-responses": ThreeBetDataset;
+    "four-bet-responses": FourBetDataset;
+    "five-bet-responses": FiveBetDataset;
+    "limp-responses": LimpDataset;
+    "limp-deep-responses": LimpDeepDataset;
+    "multiway-responses": MultiwayDataset;
+    "multiway2-responses": Multiway2Dataset;
+    "cold-three-bet-responses": ColdThreeBetDataset;
+    "cold-four-bet-responses": ColdFourBetDataset;
+    "squeeze-responses": SqueezeDataset;
+    "continuation-responses": ContinuationDataset;
+    "call-equities": CallEquityTable;
+    "hand-strength": {
+        equity: Record<string, number>;
+    };
+    "table-profile-adjustments": typeof import("./table-profile-adjustments.json");
+};
+export declare const APP_DATASETS: string[];
+export declare function dataset<Name extends keyof DatasetMap>(name: Name): DatasetMap[Name];
+export declare function dataset<T = unknown>(name: string): T;
+export declare function loadDataset<Name extends keyof DatasetMap>(name: Name): Promise<DatasetMap[Name]>;
+export declare function loadDataset<T = unknown>(name: string): Promise<T>;
+export declare const preloadDatasets: (names: string[]) => Promise<unknown[]>;
+export declare function hasDataset(name: string): boolean;
+export declare function datasetNames(): Promise<string[]>;

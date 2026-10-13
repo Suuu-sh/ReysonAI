@@ -170,6 +170,32 @@ test("preflop errors, non-GET requests and unavailable cache never become cached
   assert.equal(bypass.headers.get("x-reysonai-cache"), "BYPASS");
 });
 
+test("encoded published names and raw Unicode chunk text pass through with public CORS", async () => {
+  const raw = '{ \n  "note": "あいうえお 🌱", "decimal": 1.00 }\t\n';
+  const split = raw.indexOf("🌱");
+  const rawParts = [raw.slice(0, split), raw.slice(split)];
+  const profileName = "profiles/nit/villain/opening-ranges";
+  const calls = [];
+  const db = mockDb([
+    { name: "reasons/BB_vs_BTN", content_hash: "raw-hash", bytes: new TextEncoder().encode(raw).byteLength, parts: 2 },
+    { name: profileName, content_hash: "profile-hash", bytes: 1, parts: 1 },
+  ], [
+    ...rawParts.map((body, part) => ({ name: "reasons/BB_vs_BTN", part, body })),
+    { name: profileName, part: 0, body: "{}" },
+  ], sql => calls.push(sql));
+  const response = await worker.fetch(new Request("https://edge.test/v1/preflop/datasets/reasons%2FBB_vs_BTN", {
+    headers: { origin: "https://allowed.example" },
+  }), { SOLUTIONS: null, DB: db, ALLOWED_ORIGIN: "https://allowed.example" });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("etag"), '"raw-hash"');
+  assert.equal(await response.text(), raw);
+  assert.equal(response.headers.get("access-control-allow-origin"), "https://allowed.example");
+  assert.equal(response.headers.get("access-control-allow-credentials"), null);
+  assert.equal((await worker.fetch(new Request(`https://edge.test/v1/preflop/datasets/${profileName}`), { SOLUTIONS: null, DB: db })).status, 200);
+  assert.ok(calls.indexOf("SELECT content_hash, parts FROM preflop_datasets WHERE name = ?")
+    < calls.indexOf("SELECT part, body FROM preflop_dataset_parts WHERE name = ? ORDER BY part"));
+});
+
 test("publish splits datasets into parts that reassemble exactly", () => {
   const sql = buildPreflopSql({ "reasons/BB_vs_BTN": text });
   assert.match(sql, /INSERT INTO preflop_datasets .*'reasons\/BB_vs_BTN', '[0-9a-f]{64}', \d+, 2\);/);

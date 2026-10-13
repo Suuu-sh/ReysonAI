@@ -25,7 +25,6 @@ import { createAgent, makePostflopKit, type PostflopKit } from "./policy.ts";
 import { createSession, finishHand, handSeed, seatPositions, toPoints, type Session } from "./session.ts";
 import { handRecord, loadAgentHands, saveAgentHand, saveAgentHandReview, setAgentHandBookmarked } from "./agent-stats.ts";
 import { accountSnapshot } from "../account/session.ts";
-import { exactAgentReview } from "./agent-review.ts";
 import { playerRead } from "./player-read.ts";
 import { PlayStyleCard, PlayStyleDashboard } from "./PlayStyleDashboard.tsx";
 import "./agent.css";
