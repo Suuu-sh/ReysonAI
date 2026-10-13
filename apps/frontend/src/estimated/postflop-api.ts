@@ -16,8 +16,8 @@ export function postflopUrl(route: PostflopRoute, params: URLSearchParams | Reco
   const search = new URLSearchParams(params);
   const sizing = normalizeSizing(search.get("sizing"));
   if (search.has("sizing") && sizing === "multi") search.delete("sizing");
-  if (base && sizing === "single") {
-    throw Object.assign(new Error("Single Size の方針はまだ配信されていません。"), { code: "SINGLE_SIZE_UNAVAILABLE" });
+  if (sizing === "single" && search.has("opponentProfile") && search.get("opponentProfile") !== "standard") {
+    throw new Error("Single-size policies support the standard profile only");
   }
   // Standard routes must never receive profile options: an older worker could
   // silently answer with standard data. Profile artifacts have their own route.

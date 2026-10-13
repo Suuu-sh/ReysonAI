@@ -157,9 +157,16 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
   if (url.pathname.startsWith("/v1/postflop/") && request.method === "GET") {
     // Views are deterministic per published dataset, so cache them at the edge under the
     // dataset hash: a republish changes the key instead of waiting for entries to expire.
-    const cache = edgeCache();
+    const spotRoute = url.pathname === "/v1/postflop/spot";
+    const sizing = url.searchParams.get("sizing");
+    const invalidSizing = spotRoute && (url.searchParams.getAll("sizing").length > 1
+      || (sizing !== null && sizing !== "multi" && sizing !== "single"));
+    const single = spotRoute && !invalidSizing && sizing === "single";
+    // Invalid selectors must reach validation, never a previously cached response.
+    const cache = invalidSizing ? undefined : edgeCache();
     const versionName = url.pathname === "/v1/postflop/flop" ? "flop-base"
-      : url.pathname === "/v1/postflop/profile-policy" ? "postflop-profiles" : "postflop";
+      : url.pathname === "/v1/postflop/profile-policy" ? "postflop-profiles"
+      : single ? "postflop-single" : "postflop";
     const version = cache ? await datasetVersion(env.DB, cache, url.origin, versionName) : null;
     // Flop bases are served as stored Brotli; clients without br get a decompressed variant, cached apart.
     const brotli = /\bbr\b/.test(request.headers.get("accept-encoding") ?? "");
@@ -174,7 +181,7 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
     if (hit) return notModified(request, hit, POSTFLOP_CACHE_CONTROL) ?? withCacheStatus(hit, "HIT", POSTFLOP_CACHE_CONTROL);
     const { status, body, text, bytes, etag } = await routePostflop(env.DB, url.pathname, url.searchParams);
     if (status !== 200) {
-      if (url.pathname === "/v1/postflop/profile-policy") return new Response(JSON.stringify(body), { status, headers: JSON_HEADERS });
+      if (url.pathname === "/v1/postflop/profile-policy" || single) return new Response(JSON.stringify(body), { status, headers: JSON_HEADERS });
       return errorResponse(status, String((body as JsonRecord).error ?? "error"));
     }
     if (bytes) {

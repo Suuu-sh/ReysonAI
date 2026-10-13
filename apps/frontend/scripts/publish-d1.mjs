@@ -9,14 +9,14 @@ import { execFileSync } from "node:child_process";
 import { closeSync, openSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { buildSql as buildPostflopSql, publishableProfiles, publishableSpots } from "./postflop-ai/publish-d1.mjs";
+import { buildSql as buildPostflopSql, publishableProfiles, publishableSingleSpots, publishableSpots } from "./postflop-ai/publish-d1.mjs";
 import { publishableFlopBases, flopBaseSqlLines } from "./postflop-ai/flop-base-d1.mjs";
 import { ESTIMATED_DIR, preflopDatasetEntries, preflopSqlChunks } from "./lib/preflop-sql.mjs";
 export { ESTIMATED_DIR, PART_CHARS, preflopDatasets, buildPreflopSql, preflopDatasetEntries, preflopSqlChunks } from "./lib/preflop-sql.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 
-async function main(argv) {
+export async function main(argv) {
   const arg = name => { const index = argv.indexOf(name); return index >= 0 ? argv[index + 1] : undefined; };
   const only = arg("--only");
   if (only && !["preflop", "postflop", "flop-base"].includes(only)) throw new Error("--only must be preflop, postflop or flop-base");
@@ -43,8 +43,9 @@ async function main(argv) {
     if (!only || only === "postflop") {
       const spots = publishableSpots(console.log, { requireAll: argv.includes("--require-all") });
       const profiles = publishableProfiles(console.log, { requireAll: argv.includes("--require-all") });
-      writeFileSync(descriptor, buildPostflopSql(spots, undefined, undefined, profiles));
-      console.log(`${spots.length} postflop spots; ${profiles.length * 4} profile policy rows`);
+      const singles = publishableSingleSpots(console.log);
+      writeFileSync(descriptor, buildPostflopSql(spots, undefined, undefined, profiles, singles));
+      console.log(`${spots.length} postflop spots; ${profiles.length * 4} profile policy rows; ${singles.length} single-size spots`);
     }
   } finally { closeSync(descriptor); }
   if (!only || only === "flop-base") {

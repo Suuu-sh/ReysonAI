@@ -307,10 +307,12 @@ test("local Single Size query and cache are separate; omitted/explicit Multi Siz
     assert.equal(await loadPostflopSpot(spot, undefined, { sizing: "single" }, ""), single);
     assert.notEqual(single, multi);
     assert.deepEqual(urls, [`/local-postflop-spot?spot=${spot}`, `/local-postflop-spot?spot=${spot}&sizing=single`]);
-    await assert.rejects(loadPostflopSpot(spot, undefined, { sizing: "single" }, "https://api.example.test"),
-      { code: "SINGLE_SIZE_UNAVAILABLE", message: "Single Size の方針はまだ配信されていません。" });
-    assert.throws(() => postflopUrl("spot", { spot, sizing: "single" }, "https://api.example.test"), { code: "SINGLE_SIZE_UNAVAILABLE" });
+    const published = await loadPostflopSpot(spot, undefined, { sizing: "single" }, "https://api.example.test");
+    assert.equal(published.sizing, "single");
+    assert.equal(postflopUrl("spot", { spot, sizing: "single" }, "https://api.example.test"),
+      `https://api.example.test/v1/postflop/spot?spot=${spot}&sizing=single`);
     await assert.rejects(loadPostflopSpot(spot, undefined, { sizing: "invalid" }, ""), /Invalid postflop sizing/);
-    assert.equal(urls.length, 2, "published single and invalid sizing must not issue a request");
+    assert.deepEqual(urls, [`/local-postflop-spot?spot=${spot}`, `/local-postflop-spot?spot=${spot}&sizing=single`,
+      `https://api.example.test/v1/postflop/spot?spot=${spot}&sizing=single`], "invalid sizing must not issue a request");
   } finally { globalThis.fetch = originalFetch; }
 });

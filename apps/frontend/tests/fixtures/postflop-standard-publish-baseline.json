@@ -1,0 +1,97 @@
+{
+  "publishedAt": "2026-10-14T00:00:00.000Z",
+  "revision": "single-size-standard-regression",
+  "published": [
+    {
+      "spot": {
+        "id": "baseline_spot",
+        "slug": "baseline-srp-v1",
+        "kind": "srp",
+        "tree": "oop_checks",
+        "ip": "BTN",
+        "oop": "BB",
+        "potBb": 5.5,
+        "stackBb": 97.5,
+        "note": "it's"
+      },
+      "candidate": {
+        "metadata": {
+          "policy_hash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        },
+        "policy": {
+          "check": 100
+        }
+      },
+      "laterCandidate": {
+        "metadata": {
+          "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "policy": {
+          "check": 100
+        }
+      },
+      "report": {
+        "kind": "ai_estimate_not_gto"
+      }
+    }
+  ],
+  "profiles": [
+    {
+      "profile": "nit",
+      "spot": {
+        "id": "baseline_spot",
+        "slug": "baseline-srp-v1",
+        "kind": "srp",
+        "tree": "oop_checks",
+        "ip": "BTN",
+        "oop": "BB",
+        "potBb": 5.5,
+        "stackBb": 97.5,
+        "note": "it's"
+      },
+      "opponentSeat": "ip",
+      "flop": {
+        "villain": {
+          "metadata": {
+            "policy_hash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          "policy": {
+            "check": 100
+          }
+        },
+        "exploit": {
+          "metadata": {
+            "policy_hash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          },
+          "policy": {
+            "check": 100
+          }
+        }
+      },
+      "later": {
+        "villain": {
+          "metadata": {
+            "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "policy": {
+            "check": 100
+          }
+        },
+        "exploit": {
+          "metadata": {
+            "policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "policy": {
+            "check": 100
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "empty": "-- No publishable postflop artifacts; no database changes.\n",
+    "standard": "-- spot-scoped postflop upsert; preserves every unmentioned spot and profile.\nDELETE FROM postflop_policies WHERE spot_id = 'baseline_spot';\nDELETE FROM postflop_reports WHERE spot_id = 'baseline_spot';\nDELETE FROM postflop_reasons WHERE spot_id = 'baseline_spot';\nDELETE FROM postflop_spots WHERE spot_id = 'baseline_spot';\nINSERT INTO postflop_spots (spot_id, slug, kind, tree, ip, oop, pot_bb, stack_bb, spot_json) VALUES ('baseline_spot', 'baseline-srp-v1', 'srp', 'oop_checks', 'BTN', 'BB', 5.5, 97.5, '{\"id\":\"baseline_spot\",\"slug\":\"baseline-srp-v1\",\"kind\":\"srp\",\"tree\":\"oop_checks\",\"ip\":\"BTN\",\"oop\":\"BB\",\"potBb\":5.5,\"stackBb\":97.5,\"note\":\"it''s\"}');\nINSERT INTO postflop_policies (spot_id, stage, policy_hash, metadata_json, policy_json) VALUES ('baseline_spot', 'flop', 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', '{\"policy_hash\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\"}', '{\"metadata\":{\"policy_hash\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\"},\"policy\":{\"check\":100}}');\nINSERT INTO postflop_policies (spot_id, stage, policy_hash, metadata_json, policy_json) VALUES ('baseline_spot', 'later', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', '{\"policy_hash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}', '{\"metadata\":{\"policy_hash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"policy\":{\"check\":100}}');\nINSERT INTO postflop_reports (spot_id, payload_json) VALUES ('baseline_spot', '{\"kind\":\"ai_estimate_not_gto\"}');\nDELETE FROM dataset_versions WHERE name = 'postflop';\nINSERT INTO dataset_versions (name, content_hash, published_at, detail_json) VALUES ('postflop', 'e71d0b23c74b1a4fdf10bb1d2a58ad21c07ce7b5db32e09ef9cddfcb9a9b0bb1', '2026-10-14T00:00:00.000Z', '{\"mode\":\"spot-upsert\",\"publication_revision\":\"single-size-standard-regression\",\"touched_spots\":{\"baseline_spot\":{\"flop\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"later\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}');\n",
+    "profiles": "-- spot-scoped postflop upsert; preserves every unmentioned spot and profile.\nDELETE FROM postflop_profile_policies WHERE profile = 'nit' AND spot_id = 'baseline_spot' AND opponent_seat = 'ip';\nINSERT INTO postflop_profile_policies (profile, spot_id, opponent_seat, role, stage, metadata_json, policy_json, published_at) VALUES ('nit', 'baseline_spot', 'ip', 'villain', 'flop', '{\"policy_hash\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"opponent_seat\":\"ip\"}', '{\"check\":100}', '2026-10-14T00:00:00.000Z');\nINSERT INTO postflop_profile_policies (profile, spot_id, opponent_seat, role, stage, metadata_json, policy_json, published_at) VALUES ('nit', 'baseline_spot', 'ip', 'villain', 'later', '{\"policy_hash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"opponent_seat\":\"ip\"}', '{\"check\":100}', '2026-10-14T00:00:00.000Z');\nINSERT INTO postflop_profile_policies (profile, spot_id, opponent_seat, role, stage, metadata_json, policy_json, published_at) VALUES ('nit', 'baseline_spot', 'ip', 'exploit', 'flop', '{\"policy_hash\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"opponent_seat\":\"ip\"}', '{\"check\":100}', '2026-10-14T00:00:00.000Z');\nINSERT INTO postflop_profile_policies (profile, spot_id, opponent_seat, role, stage, metadata_json, policy_json, published_at) VALUES ('nit', 'baseline_spot', 'ip', 'exploit', 'later', '{\"policy_hash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"opponent_seat\":\"ip\"}', '{\"check\":100}', '2026-10-14T00:00:00.000Z');\nDELETE FROM dataset_versions WHERE name = 'postflop-profiles';\nINSERT INTO dataset_versions (name, content_hash, published_at, detail_json) VALUES ('postflop-profiles', '9ca502e6dd6a7f020b4b917f332e65d77d55ac0c5e1e2c3ce9cfd26d7d9566c5', '2026-10-14T00:00:00.000Z', '{\"kind\":\"ai_estimate_not_gto\",\"mode\":\"profile-spot-upsert\",\"publication_revision\":\"single-size-standard-regression\",\"touched_profiles\":{\"nit\":{\"spots\":1,\"policies\":4},\"station\":{\"spots\":0,\"policies\":0},\"lag\":{\"spots\":0,\"policies\":0},\"maniac\":{\"spots\":0,\"policies\":0}},\"policies\":4}');\n",
+    "combined": "-- spot-scoped postflop upsert; preserves every unmentioned spot and profile.\nDELETE FROM postflop_policies WHERE spot_id = 'baseline_spot';\nDELETE FROM postflop_reports WHERE spot_id = 'baseline_spot';\nDELETE FROM postflop_reasons WHERE spot_id = 'baseline_spot';\nDELETE FROM postflop_spots WHERE spot_id = 'baseline_spot';\nINSERT INTO postflop_spots (spot_id, slug, kind, tree, ip, oop, pot_bb, stack_bb, spot_json) VALUES ('baseline_spot', 'baseline-srp-v1', 'srp', 'oop_checks', 'BTN', 'BB', 5.5, 97.5, '{\"id\":\"baseline_spot\",\"slug\":\"baseline-srp-v1\",\"kind\":\"srp\",\"tree\":\"oop_checks\",\"ip\":\"BTN\",\"oop\":\"BB\",\"potBb\":5.5,\"stackBb\":97.5,\"note\":\"it''s\"}');\nINSERT INTO postflop_policies (spot_id, stage, policy_hash, metadata_json, policy_json) VALUES ('baseline_spot', 'flop', 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', '{\"policy_hash\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\"}', '{\"metadata\":{\"policy_hash\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\"},\"policy\":{\"check\":100}}');\nINSERT INTO postflop_policies (spot_id, stage, policy_hash, metadata_json, policy_json) VALUES ('baseline_spot', 'later', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', '{\"policy_hash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}', '{\"metadata\":{\"policy_hash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"policy\":{\"check\":100}}');\nINSERT INTO postflop_reports (spot_id, payload_json) VALUES ('baseline_spot', '{\"kind\":\"ai_estimate_not_gto\"}');\nDELETE FROM postflop_profile_policies WHERE profile = 'nit' AND spot_id = 'baseline_spot' AND opponent_seat = 'ip';\nINSERT INTO postflop_profile_policies (profile, spot_id, opponent_seat, role, stage, metadata_json, policy_json, published_at) VALUES ('nit', 'baseline_spot', 'ip', 'villain', 'flop', '{\"policy_hash\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"opponent_seat\":\"ip\"}', '{\"check\":100}', '2026-10-14T00:00:00.000Z');\nINSERT INTO postflop_profile_policies (profile, spot_id, opponent_seat, role, stage, metadata_json, policy_json, published_at) VALUES ('nit', 'baseline_spot', 'ip', 'villain', 'later', '{\"policy_hash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"opponent_seat\":\"ip\"}', '{\"check\":100}', '2026-10-14T00:00:00.000Z');\nINSERT INTO postflop_profile_policies (profile, spot_id, opponent_seat, role, stage, metadata_json, policy_json, published_at) VALUES ('nit', 'baseline_spot', 'ip', 'exploit', 'flop', '{\"policy_hash\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"opponent_seat\":\"ip\"}', '{\"check\":100}', '2026-10-14T00:00:00.000Z');\nINSERT INTO postflop_profile_policies (profile, spot_id, opponent_seat, role, stage, metadata_json, policy_json, published_at) VALUES ('nit', 'baseline_spot', 'ip', 'exploit', 'later', '{\"policy_hash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"opponent_seat\":\"ip\"}', '{\"check\":100}', '2026-10-14T00:00:00.000Z');\nDELETE FROM dataset_versions WHERE name = 'postflop';\nINSERT INTO dataset_versions (name, content_hash, published_at, detail_json) VALUES ('postflop', 'e71d0b23c74b1a4fdf10bb1d2a58ad21c07ce7b5db32e09ef9cddfcb9a9b0bb1', '2026-10-14T00:00:00.000Z', '{\"mode\":\"spot-upsert\",\"publication_revision\":\"single-size-standard-regression\",\"touched_spots\":{\"baseline_spot\":{\"flop\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"later\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}');\nDELETE FROM dataset_versions WHERE name = 'postflop-profiles';\nINSERT INTO dataset_versions (name, content_hash, published_at, detail_json) VALUES ('postflop-profiles', '9ca502e6dd6a7f020b4b917f332e65d77d55ac0c5e1e2c3ce9cfd26d7d9566c5', '2026-10-14T00:00:00.000Z', '{\"kind\":\"ai_estimate_not_gto\",\"mode\":\"profile-spot-upsert\",\"publication_revision\":\"single-size-standard-regression\",\"touched_profiles\":{\"nit\":{\"spots\":1,\"policies\":4},\"station\":{\"spots\":0,\"policies\":0},\"lag\":{\"spots\":0,\"policies\":0},\"maniac\":{\"spots\":0,\"policies\":0}},\"policies\":4}');\n"
+  }
+}

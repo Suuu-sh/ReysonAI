@@ -7,6 +7,7 @@ import { hasPostflopDeal } from "./range-support.mjs";
 import { createHash, randomUUID } from "node:crypto";
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 import { artifactPaths, config, loadInputs, readArtifact, root, boards, laterSizingHash } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate, sha as policySha } from "./generate.mjs";
 import { generationInputOptions } from "./generation-options.mjs";
@@ -27,16 +28,17 @@ function jsonValue(value, label) {
 }
 
 // Artifacts of one spot, or null with a reason when it is not publishable.
-export function spotArtifacts(spot) {
+export function spotArtifacts(spot, { sizing = "multi", inputsFor = loadInputs, read = readArtifact } = {}) {
   if (!spot.reachable) return { skip: "unreachable" };
   let inputs, candidate, laterCandidate;
   try {
-    inputs = loadInputs(spot.id);
+    inputs = inputsFor(spot.id, { sizing });
     candidate = loadCandidate(inputs);
     laterCandidate = loadLaterCandidate(inputs, candidate);
   } catch (error) { return { skip: error.message }; }
+  if (sizing === "single" && !laterCandidate) return { skip: "single-size spot requires its own later policy" };
   if (spot.history && !laterCandidate) return { skip: "new HU spot requires its own later policy" };
-  const report = readArtifact(spot, "report");
+  const report = read(spot, "report", { sizing });
   if (!isFreshSimulationReport(inputs, candidate, laterCandidate, report)) return { skip: "report missing, stale or incomplete" };
   // These are the adopted development-v7 policies, not the abandoned v10 experiment.
   // Retain the actual generator attribution; an independent reviewer is not a generator.
@@ -63,7 +65,7 @@ export function isFreshSimulationReport(inputs, candidate, laterCandidate, repor
       candidate.metadata.spot !== inputs.spot.id || candidate.metadata.tree !== inputs.spot.tree ||
       candidate.metadata.source_hash !== inputs.fingerprint || !isHash(candidate.metadata.policy_hash) ||
       candidate.metadata.policy_hash !== policySha(candidate.policy) || hasActionModelMarker(candidate.metadata)) return false;
-  if (inputs.spot.history && !laterCandidate) return false;
+  if ((inputs.spot.history || inputs.sizing === "single") && !laterCandidate) return false;
   if (laterCandidate && (!laterCandidate.policy || !laterCandidate.metadata ||
       laterCandidate.metadata.kind !== "ai_estimate_not_gto" || laterCandidate.metadata.config_version !== config.version ||
       laterCandidate.metadata.spot !== inputs.spot.id || laterCandidate.metadata.source_hash !== inputs.fingerprint ||
@@ -96,11 +98,12 @@ export function isFreshSimulationReport(inputs, candidate, laterCandidate, repor
   return expected.size === 0;
 }
 
-export function buildSql(published, publishedAt = new Date().toISOString(), publicationRevision = randomUUID(), profiles = []) {
+export function buildSql(published, publishedAt = new Date().toISOString(), publicationRevision = randomUUID(), profiles = [], singles = []) {
   // Missing local artifacts must never erase an unrelated published spot.
-  if (!published.length && !profiles.length) return "-- No publishable postflop artifacts; no database changes.\n";
+  if (!published.length && !profiles.length && !singles.length) return "-- No publishable postflop artifacts; no database changes.\n";
   if (new Set(published.map(item => item.spot.id)).size !== published.length) throw new Error("Duplicate published postflop spot");
   if (new Set(profiles.map(item => `${item.profile}|${item.spot.id}`)).size !== profiles.length) throw new Error("Duplicate published postflop profile/spot");
+  if (new Set(singles.map(item => item.spot.id)).size !== singles.length) throw new Error("Duplicate published single-size postflop spot");
   const lines = ["-- spot-scoped postflop upsert; preserves every unmentioned spot and profile."];
   for (const { spot, candidate, laterCandidate, report } of published) {
     const id = quote(spot.id);
@@ -149,6 +152,25 @@ export function buildSql(published, publishedAt = new Date().toISOString(), publ
     lines.push("DELETE FROM dataset_versions WHERE name = 'postflop-profiles';");
     lines.push(`INSERT INTO dataset_versions (name, content_hash, published_at, detail_json) VALUES ('postflop-profiles', ${quote(sha(JSON.stringify({ publicationRevision, publishedAt, profiles: profileHashes })))}, ${quote(publishedAt)}, ${jsonValue(profileDetail, "profile dataset detail")});`);
   }
+  // Keep single-size writes and version identity entirely separate from the
+  // standard catalog and profile statement sequence above.
+  if (singles.length) {
+    const singleHashes = {};
+    for (const { spot, candidate, laterCandidate, report } of singles) {
+      if (!candidate || !laterCandidate || !report) throw new Error(`${spot.id}: incomplete single-size publication unit`);
+      const id = quote(spot.id);
+      for (const table of ["postflop_single_policies", "postflop_single_reports"]) {
+        lines.push(`DELETE FROM ${table} WHERE spot_id = ${id};`);
+      }
+      for (const [stage, item] of [["flop", candidate], ["later", laterCandidate]]) {
+        lines.push(`INSERT INTO postflop_single_policies (spot_id, stage, policy_hash, metadata_json, policy_json) VALUES (${id}, '${stage}', ${quote(item.metadata.policy_hash)}, ${jsonValue(item.metadata, `${spot.id} single ${stage} metadata`)}, ${jsonValue(item, `${spot.id} single ${stage} policy`)});`);
+      }
+      lines.push(`INSERT INTO postflop_single_reports (spot_id, payload_json) VALUES (${id}, ${jsonValue(report, `${spot.id} single report`)});`);
+      singleHashes[spot.id] = { flop: candidate.metadata.policy_hash, later: laterCandidate.metadata.policy_hash };
+    }
+    lines.push("DELETE FROM dataset_versions WHERE name = 'postflop-single';");
+    lines.push(`INSERT INTO dataset_versions (name, content_hash, published_at, detail_json) VALUES ('postflop-single', ${quote(sha(JSON.stringify({ publicationRevision, publishedAt, hashes: singleHashes })))}, ${quote(publishedAt)}, ${jsonValue({ mode: "spot-upsert", publication_revision: publicationRevision, touched_spots: singleHashes }, "single dataset detail")});`);
+  }
   return `${lines.join("\n")}\n`;
 }
 
@@ -166,6 +188,25 @@ export function publishableSpots(log = console.log, { requireAll = false } = {})
     if (requireAll && !result.laterCandidate) throw new Error(`${spot.id} has no turn/river policy`);
     published.push(result);
     log(`publish ${spot.id}${result.laterCandidate ? " +later" : ""}`);
+  }
+  return published;
+}
+
+// A canonical single flop candidate opts a spot into publication. Absence is
+// preparing, not a failure; any present unit must pass every identity/report gate.
+export function publishableSingleSpots(log = console.log, { spots = POSTFLOP_SPOTS,
+  hasCandidate = spot => existsSync(artifactPaths(spot, { sizing: "single" }).candidate),
+  artifactsFor = spotArtifacts } = {}) {
+  const published = [];
+  for (const spot of spots) {
+    if (!hasCandidate(spot)) continue;
+    try {
+      const result = artifactsFor(spot, { sizing: "single" });
+      if (result.skip) throw new Error(result.skip);
+      if (!result.candidate || !result.laterCandidate || !result.report) throw new Error("incomplete single-size publication unit");
+      published.push(result);
+      log(`publish single ${spot.id} +later`);
+    } catch (error) { throw new Error(`${spot.id} single-size is not publishable: ${error.message}`, { cause: error }); }
   }
   return published;
 }
@@ -269,4 +310,13 @@ function itemOpponentSeat({ flop, later, opponentSeat }) {
     throw new Error("Profile publication requires one verified opponent seat per unit");
   }
   return selected;
+}
+
+// Compatibility CLI entry point. Do not await the dynamic import at module scope:
+// the shared CLI imports this module, so awaiting it would deadlock that cycle.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  import("../publish-d1.mjs").then(({ main }) => main(process.argv.slice(2))).catch(error => {
+    console.error(error);
+    process.exitCode = 1;
+  });
 }

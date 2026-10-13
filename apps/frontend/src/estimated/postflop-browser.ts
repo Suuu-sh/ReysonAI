@@ -121,9 +121,6 @@ export function loadPostflopSpot(spotId: string, signal?: AbortSignal, options: 
   try {
     normalized = normalizedInputOptions(options);
     sizing = normalizeSizing(options.sizing);
-    if (apiBase && sizing === "single") {
-      throw Object.assign(new Error("Single Size の方針はまだ配信されていません。"), { code: "SINGLE_SIZE_UNAVAILABLE" });
-    }
     params = { spot: spotId };
     if (sizing === "single") params.sizing = sizing;
     // Table-only changes reuse the saved standard policies. The compute input
@@ -144,12 +141,16 @@ export function loadPostflopSpot(spotId: string, signal?: AbortSignal, options: 
     const publishedProfile = Boolean(apiBase && normalized.opponentProfile !== "standard");
     const loadLocalOrStandard = () => fetch(postflopUrl("spot", params, apiBase), { signal: new AbortController().signal })
       .then(async response => {
+        if (sizing === "single" && response.status === 404) {
+          throw Object.assign(new Error("Single Size の方針が保存されていません。"), { code: "SINGLE_SIZE_MISSING" });
+        }
         const body = await response.json() as PostflopSource & { error?: string; code?: string; state?: string };
         if (!response.ok) throw Object.assign(new Error(body.error || "ポストフロップ候補を読み込めませんでした。"),
           { code: body.code ?? (normalized.opponentProfile !== "standard" && response.status === 404 ? "PROFILE_POLICY_MISSING" : undefined),
             state: body.state ?? (normalized.opponentProfile !== "standard" && response.status === 404 ? "not_generated" : undefined) });
         if (body.kind !== "ai_estimate_not_gto" || body.spot?.id !== spotId ||
-            !hasCandidate(body.candidate) || normalized.opponentProfile === "standard" && !body.report) {
+            !hasCandidate(body.candidate) || normalized.opponentProfile === "standard" && !body.report ||
+            sizing === "single" && body.sizing !== "single") {
           throw new Error("ポストフロップ候補の局面または形式が一致しません。");
         }
         if (normalized.opponentProfile !== "standard" && (!hasProfilePair(body.candidate) ||

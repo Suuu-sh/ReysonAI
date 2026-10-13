@@ -57,6 +57,123 @@ test("postflop routes validate the spot and serve no computed views", async () =
 });
 
 const spot = spotById("BTN_open_BB_call");
+
+const savedSpot = ' { "id": "BTN_open_BB_call" } ';
+const savedFlop = ' { "metadata": {"policy_hash":"saved"}, "policy": {"check":0.75} } ';
+const savedLater = '{ "policy": { "fold": 1 } }';
+const savedReport = ' {"note":"AI estimate, not GTO"} ';
+const savedEnvelope = (single = false, later = savedLater, report = savedReport) =>
+  `{"kind":"ai_estimate_not_gto","spot":${savedSpot},"candidate":${savedFlop},"laterCandidate":${later},"report":${report}${single ? ',"sizing":"single"' : ""}}`;
+const storedSizingTables = () => ({
+  postflop_spots: [{ spot_id: spot.id, spot_json: savedSpot }],
+  postflop_policies: [{ spot_id: spot.id, stage: "flop", policy_json: savedFlop }, { spot_id: spot.id, stage: "later", policy_json: savedLater }],
+  postflop_reports: [{ spot_id: spot.id, payload_json: savedReport }],
+  postflop_single_policies: [{ spot_id: spot.id, stage: "flop", policy_json: savedFlop }, { spot_id: spot.id, stage: "later", policy_json: savedLater }],
+  postflop_single_reports: [{ spot_id: spot.id, payload_json: savedReport }],
+});
+
+test("absent and explicit multi sizing preserve the exact standard SQL and response bytes", async () => {
+  for (const sizing of [null, "multi"]) {
+    const queries = [];
+    const env = { DB: mockDb(storedSizingTables(), (sql, args) => queries.push({ sql, args })) };
+    const params = new URLSearchParams({ spot: spot.id });
+    if (sizing !== null) params.set("sizing", sizing);
+    const response = await worker.fetch(new Request(`https://edge.test/v1/postflop/spot?${params}`), env);
+    assert.equal(response.status, 200);
+    assert.deepEqual(Buffer.from(await response.arrayBuffer()), Buffer.from(savedEnvelope()));
+    assert.deepEqual(queries, [
+      { sql: "SELECT spot_json FROM postflop_spots WHERE spot_id = ?", args: [spot.id] },
+      { sql: "SELECT stage, policy_json FROM postflop_policies WHERE spot_id = ?", args: [spot.id] },
+      { sql: "SELECT payload_json FROM postflop_reports WHERE spot_id = ?", args: [spot.id] },
+    ]);
+  }
+});
+
+test("single sizing passes through only its saved artifacts with the old envelope plus sizing", async () => {
+  for (const complete of [true, false]) {
+    const queries = [];
+    const tables = storedSizingTables();
+    // Standard rows and another spot must never leak into the Single envelope.
+    tables.postflop_policies[0].policy_json = '{"wrong_standard":true}';
+    tables.postflop_single_policies.unshift({ spot_id: "different_spot", stage: "flop", policy_json: '{"wrong_spot":true}' });
+    if (!complete) {
+      tables.postflop_single_policies = tables.postflop_single_policies.filter(row => row.stage !== "later");
+      tables.postflop_single_reports = [];
+    }
+    const env = { DB: mockDb(tables, (sql, args) => queries.push({ sql, args })) };
+    const response = await worker.fetch(new Request(`https://edge.test/v1/postflop/spot?spot=${spot.id}&sizing=single`), env);
+    assert.equal(response.status, 200);
+    const expected = savedEnvelope(true, complete ? savedLater : "null", complete ? savedReport : "null");
+    assert.deepEqual(Buffer.from(await response.arrayBuffer()), Buffer.from(expected));
+    assert.deepEqual(Object.keys(JSON.parse(expected)), ["kind", "spot", "candidate", "laterCandidate", "report", "sizing"]);
+    assert.deepEqual(queries, [
+      { sql: "SELECT spot_json FROM postflop_spots WHERE spot_id = ?", args: [spot.id] },
+      { sql: "SELECT stage, policy_json FROM postflop_single_policies WHERE spot_id = ?", args: [spot.id] },
+      { sql: "SELECT payload_json FROM postflop_single_reports WHERE spot_id = ?", args: [spot.id] },
+    ]);
+  }
+});
+
+test("a missing single flop returns the structured 404 without standard fallback", async () => {
+  for (const tables of [{}, { ...storedSizingTables(), postflop_single_policies: [{ spot_id: spot.id, stage: "later", policy_json: savedLater }] }]) {
+    const queries = [];
+    const response = await worker.fetch(new Request(`https://edge.test/v1/postflop/spot?spot=${spot.id}&sizing=single`),
+      { DB: mockDb(tables, sql => queries.push(sql)) });
+    assert.equal(response.status, 404);
+    assert.equal(await response.text(), '{"error":"No single-size policy","code":"SINGLE_SIZE_MISSING"}');
+    assert.equal(response.headers.get("cache-control"), null);
+    assert.ok(!queries.some(sql => /FROM postflop_(policies|reports)\b/.test(sql)));
+  }
+});
+
+test("invalid or duplicate sizing bypasses stale cache entries and returns 400 without D1 reads", async t => {
+  const cache = installEdgeCache(t);
+  const db = mockDb({}, () => assert.fail("invalid sizing must not query D1"));
+  for (const selector of ["sizing=", "sizing=Single", "sizing=unknown", "sizing=single&sizing=single", "sizing=multi&sizing=single", "sizing=multi&sizing=multi"]) {
+    const path = `https://edge.test/v1/postflop/spot?spot=${spot.id}&${selector}`;
+    // Simulate an old successful response for the exact invalid selector.
+    cache.entries.set(`${path}&dataset=standard-version`, { response: new Response(savedEnvelope()), expires: Infinity });
+    const response = await worker.fetch(new Request(path), { DB: db });
+    assert.equal(response.status, 400, selector);
+    assert.equal(response.headers.get("cache-control"), null);
+  }
+  assert.deepEqual(cache.matches, []);
+  assert.deepEqual(cache.puts, []);
+});
+
+test("single cache uses its independent dataset revision and republish never changes multi keys", async t => {
+  const cache = installEdgeCache(t);
+  const queries = [];
+  const tables = { ...storedSizingTables(), dataset_versions: [
+    { name: "postflop", content_hash: "standard-version" },
+    { name: "postflop-single", content_hash: "single-version-a" },
+  ] };
+  const env = { DB: mockDb(tables, (sql, args) => queries.push({ sql, args })) };
+  const get = suffix => worker.fetch(new Request(`https://edge.test/v1/postflop/spot?spot=${spot.id}${suffix}`), env);
+  const multi = await get("");
+  assert.equal(multi.headers.get("x-reysonai-cache"), "MISS");
+  assert.equal(await multi.text(), savedEnvelope());
+  const single = await get("&sizing=single");
+  assert.equal(single.headers.get("x-reysonai-cache"), "MISS");
+  assert.equal(await single.text(), savedEnvelope(true));
+  assert.equal((await get("&sizing=single")).headers.get("x-reysonai-cache"), "HIT");
+  const multiKey = `https://edge.test/v1/postflop/spot?spot=${spot.id}&dataset=standard-version`;
+  assert.ok(cache.puts.includes(multiKey));
+  assert.ok(cache.puts.some(key => key.includes("sizing=single&dataset=single-version-a")));
+  assert.deepEqual(queries.filter(({ sql }) => sql.includes("FROM dataset_versions")).map(({ args }) => args[0]), ["postflop", "postflop-single"]);
+  tables.dataset_versions[1].content_hash = "single-version-b";
+  tables.postflop_single_policies[0].policy_json = '{"new_single":true}';
+  cache.advance(60_000);
+  const republished = await get("&sizing=single");
+  assert.equal(republished.headers.get("x-reysonai-cache"), "MISS");
+  assert.deepEqual((await republished.json()).candidate, { new_single: true });
+  assert.equal((await get("&sizing=single")).headers.get("x-reysonai-cache"), "HIT");
+  const unchangedMulti = await get("");
+  assert.equal(unchangedMulti.headers.get("x-reysonai-cache"), "HIT");
+  assert.equal(await unchangedMulti.text(), savedEnvelope());
+  assert.equal(cache.puts.filter(key => key === multiKey).length, 1);
+});
+
 const profileParams = overrides => new URLSearchParams({ profile: "nit", spot: spot.id, opponentSeat: "ip", role: "villain", stage: "flop", ...overrides });
 const profilePath = params => `/v1/postflop/profile-policy?${params}`;
 

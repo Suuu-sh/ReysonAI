@@ -74,7 +74,8 @@ test('the 255 adopted development policy/report files retain their exact raw byt
   // Filename + NUL + raw bytes + NUL, sorted by filename. Independently computed
   // from 7c2fe16c20c0c5bcf2777ccd0d84572a41880cd5; no numerical regeneration.
   const directory=new URL('../scripts/data/postflop-ai/policies/',import.meta.url);
-  const files=readdirSync(directory).filter(file=>file.endsWith('.json')).sort();
+  // Single artifacts are a separate dataset, outside the adopted Multi byte gate.
+  const files=readdirSync(directory).filter(file=>file.endsWith('.json')&&!/-single-(?:policy|later-policy|report)\.json$/.test(file)).sort();
   assert.equal(files.length,255);
   const digest=createHash('sha256');
   for(const file of files)digest.update(file).update('\0').update(readFileSync(new URL(file,directory))).update('\0');

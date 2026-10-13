@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
@@ -52,8 +52,9 @@ test('every current backend migration, including ranked_finalize, prepares as in
         if (statement.trim()) db.exec(statement);
       }
     }
-    assert.equal(db.prepare("SELECT COUNT(*) AS count FROM sqlite_schema WHERE type = 'table' AND name NOT LIKE 'sqlite_%'").get().count, 28);
+    assert.equal(db.prepare("SELECT COUNT(*) AS count FROM sqlite_schema WHERE type = 'table' AND name NOT LIKE 'sqlite_%'").get().count, 30);
     assert.equal(db.prepare("SELECT COUNT(*) AS count FROM sqlite_schema WHERE type = 'table' AND name = 'postflop_profile_policies'").get().count, 1);
+    assert.equal(db.prepare("SELECT COUNT(*) AS count FROM sqlite_schema WHERE type = 'table' AND name IN ('postflop_single_policies', 'postflop_single_reports')").get().count, 2);
     assert.equal(db.prepare("SELECT COUNT(*) AS count FROM sqlite_schema WHERE type = 'trigger' AND name = 'ranked_finalize'").get().count, 1);
     db.exec(UNRELATED_SEED);
     assert.deepEqual(db.prepare('PRAGMA foreign_key_check').all(), []);
@@ -61,4 +62,55 @@ test('every current backend migration, including ranked_finalize, prepares as in
     db.exec("UPDATE ranked_matches SET status = 'complete', after_rating = 1300 WHERE id = 'trigger-probe'");
     assert.deepEqual({ ...db.prepare("SELECT rating, peak, matches FROM ranked_players WHERE user_id = 'local-user'").get() }, { rating: 1300, peak: 1300, matches: 2 });
   } finally { db.close(); }
+});
+
+test('single-size migration is additive, idempotent and enforces its exact independent schema', () => {
+  const db = new DatabaseSync(':memory:');
+  const migration = readFileSync(new URL('../../backend/migrations/0013_postflop_single_size.sql', import.meta.url), 'utf8');
+  try {
+    assert.match(migration, /AI 推定・GTO ではない/);
+    assert.match(migration, /Single Size（1 ボード分類 1 サイズ）/);
+    assert.match(migration, /publish-d1\.mjs が spot 単位で置換/);
+    assert.doesNotMatch(migration, /\b(?:DROP|DELETE|UPDATE|ALTER|INSERT|REPLACE)\b/i);
+    assert.equal((migration.match(/CREATE TABLE IF NOT EXISTS/g) ?? []).length, 2);
+    for (const name of ['0001_postflop.sql', '0002_postflop_reports.sql']) {
+      db.exec(readFileSync(new URL(`../../backend/migrations/${name}`, import.meta.url), 'utf8'));
+    }
+    db.exec("INSERT INTO postflop_policies VALUES ('standard', 'flop', 'unchanged', '{}', '{}'); INSERT INTO postflop_reports VALUES ('standard', '{}'); INSERT INTO dataset_versions VALUES ('postflop', 'unchanged', 'saved', '{}')");
+    const original = ['postflop_policies', 'postflop_reports', 'dataset_versions'].map(table => db.prepare(`SELECT * FROM ${table}`).all());
+    db.exec(migration);
+    assert.deepEqual(db.prepare('PRAGMA table_info(postflop_single_policies)').all().map(row => [row.name, row.type, row.notnull, row.pk]), [
+      ['spot_id', 'TEXT', 1, 1], ['stage', 'TEXT', 1, 2], ['policy_hash', 'TEXT', 1, 0], ['metadata_json', 'TEXT', 1, 0], ['policy_json', 'TEXT', 1, 0],
+    ]);
+    assert.deepEqual(db.prepare('PRAGMA table_info(postflop_single_reports)').all().map(row => [row.name, row.type, row.notnull, row.pk]), [
+      ['spot_id', 'TEXT', 0, 1], ['payload_json', 'TEXT', 1, 0],
+    ]);
+    db.exec("INSERT INTO postflop_single_policies VALUES ('single', 'flop', 'hash', '{}', '{}'); INSERT INTO postflop_single_policies VALUES ('single', 'later', 'later-hash', '{}', '{}'); INSERT INTO postflop_single_reports VALUES ('single', '{}')");
+    assert.throws(() => db.exec("INSERT INTO postflop_single_policies VALUES ('single', 'turn', 'hash', '{}', '{}')"), /CHECK constraint failed/);
+    assert.throws(() => db.exec("INSERT INTO postflop_single_policies VALUES ('single', 'flop', 'hash', '{}', '{}')"), /UNIQUE constraint failed/);
+    assert.throws(() => db.exec("INSERT INTO postflop_single_policies VALUES ('another', 'flop', NULL, '{}', '{}')"), /NOT NULL constraint failed/);
+    assert.throws(() => db.exec("INSERT INTO postflop_single_reports VALUES ('single', '{}')"), /UNIQUE constraint failed/);
+    assert.throws(() => db.exec("INSERT INTO postflop_single_reports VALUES ('another', NULL)"), /NOT NULL constraint failed/);
+    db.exec(migration);
+    assert.equal(db.prepare('SELECT COUNT(*) AS count FROM postflop_single_policies').get().count, 2);
+    assert.equal(db.prepare('SELECT COUNT(*) AS count FROM postflop_single_reports').get().count, 1);
+    assert.deepEqual(['postflop_policies', 'postflop_reports', 'dataset_versions'].map(table => db.prepare(`SELECT * FROM ${table}`).all()), original);
+  } finally { db.close(); }
+});
+
+test('CI applies only exact additive single-size schema immediately after 0012 and before API deploy', () => {
+  const workflow = readFileSync(new URL('../../../.github/workflows/deploy-worker.yml', import.meta.url), 'utf8');
+  assert.ok(workflow.includes("'apps/backend/migrations/0013_postflop_single_size.sql'"));
+  assert.match(workflow, /# Additive single-size storage only/);
+  const previous = workflow.indexOf('- name: Apply exact postflop profile schema');
+  const step = workflow.indexOf('- name: Apply exact postflop single-size schema');
+  const next = workflow.indexOf('\n      - name:', previous + 1);
+  assert.ok(previous >= 0 && step === next + '\n      '.length);
+  const command = workflow.slice(step, workflow.indexOf('\n      - name:', step + 1));
+  assert.match(command, /working-directory: apps\/backend/);
+  assert.match(command, /d1 execute reysonai --remote --config wrangler\.jsonc --file migrations\/0013_postflop_single_size\.sql --yes/);
+  assert.doesNotMatch(command, /migrations apply|publish:d1/);
+  for (const name of ['Deploy ranked API before enabling the client', 'Publish postflop policies into D1', 'Deploy Worker']) {
+    assert.ok(workflow.indexOf(`- name: ${name}`) > step);
+  }
 });

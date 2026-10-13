@@ -33,6 +33,7 @@ on:
       - 'apps/backend/migrations/0010_fastfold.sql'
       - 'apps/backend/migrations/0011_human_ranked.sql'
       - 'apps/backend/migrations/0012_postflop_profile_policies.sql'
+      - 'apps/backend/migrations/0013_postflop_single_size.sql'
       - 'apps/backend/scripts/**'
       - 'apps/shared/**'
       - 'configs/**'
@@ -441,6 +442,15 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           WRANGLER_SEND_METRICS: 'false'
         run: npx --yes wrangler@4.147.0 d1 execute reysonai --remote --config wrangler.jsonc --file migrations/0012_postflop_profile_policies.sql --yes
+
+      # Additive single-size storage only
+      - name: Apply exact postflop single-size schema
+        working-directory: apps/backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: npx --yes wrangler@4.147.0 d1 execute reysonai --remote --config wrangler.jsonc --file migrations/0013_postflop_single_size.sql --yes
 
       - name: Deploy ranked API before enabling the client
         if: needs.verify.outputs.deploy_api == 'true'
