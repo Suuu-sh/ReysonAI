@@ -1,5 +1,5 @@
 import type { Drill, PracticeSession, DrillDrafts, SessionRow, TrainerSpot } from "./types.ts";
-import { PlayingCard } from "../components/PlayingCard.tsx";
+import { SessionCards } from "./SessionCards.tsx";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, ClockCounterClockwise, Play } from "@phosphor-icons/react";
 import { RESULT_LABELS, spotById, spotTitle } from "./trainer-data.ts";
@@ -23,11 +23,6 @@ const durationLabel = (durationMs: number | null) => {
 
 function actionLabel(spot: TrainerSpot | undefined, key: string) {
   return spot?.actions.find(action => action.key === key)?.label ?? key;
-}
-
-function Cards({ cards }: { cards: string[] }) {
-  return <span className="sessions-cards">{cards.map((card, index) =>
-    <PlayingCard key={`${card}-${index}`} card={card} variant="text" />)}</span>;
 }
 
 export function displaySessionName(session: SessionRow) {
@@ -63,7 +58,7 @@ function PracticeDetail({ session, onBack, onResume }: { session: SessionRow; on
           return <tr key={index}>
             <td className="sessions-index">{index + 1}</td>
             <td>{spot ? spotTitle(spot) : hand.spotId}</td>
-            <td><div className="sessions-hand"><strong>{hand.hand}</strong><Cards cards={hand.cards ?? []} /></div></td>
+            <td><div className="sessions-hand"><strong>{hand.hand}</strong><SessionCards cards={hand.cards ?? []} /></div></td>
             <td><strong>{actionLabel(spot, hand.action)}</strong>{Number.isFinite(chosenFrequency) && <small>{t("Choice frequency", "選択頻度", "选择频率", "Frecuencia elegida")} {Math.round(chosenFrequency! * 100)}%</small>}</td>
             <td><span className={`sessions-result result-${hand.result}`}>{RESULT_LABELS[hand.result]}</span></td>
             <td>{hand.best ? actionLabel(spot, hand.best) : "—"}{Number.isFinite(bestFrequency) && <small>{Math.round(bestFrequency! * 100)}%</small>}</td>
@@ -105,7 +100,7 @@ function SavedHandDetail({ row, onBack }: { row: Exclude<HistoryRow, { mode: "dr
       {!row.session && <dl className="sessions-flags">{([ ["VPIP", row.record.vpip], ["PFR", row.record.pfr], ["3bet", row.record.threeBet], [t("Showdown", "ショーダウン", "摊牌", "Showdown"), row.record.showdown] ] as [string, boolean][]).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{typeof value !== "boolean" ? "—" : value ? t("Yes", "あり", "是", "Sí") : t("No", "なし", "否", "No")}</dd></div>)}</dl>}
     </> : row.season === "quiz-v1" ? <p className="sessions-source-note">{t("Saved ranked quiz summary", "保存済みランククイズ集計", "已保存排位答题摘要", "Resumen guardado del cuestionario")} · {row.record.answered} · {rowAccuracy(row)}. {t("Per-question history is not returned by this history API.", "この履歴APIでは問題ごとの履歴を返していません。", "此历史API不返回逐题日志。", "Esta API no devuelve el historial por pregunta.")}</p> : <section className="sessions-history">
       <h2>{t("Recorded hand", "保存されたハンド", "已保存手牌", "Mano registrada")}</h2>
-      <div><Cards cards={ranked?.heroCards ?? []} /> · <Cards cards={ranked?.board ?? []} /></div>
+      <div><SessionCards cards={ranked?.heroCards ?? []} /> · <SessionCards cards={ranked?.board ?? []} /></div>
       <p className="sessions-source-note">{t("Server-confirmed personal result. Unknown cards and missing action logs remain unknown. Seasons are kept separate; this record does not imply a saved session.", "サーバーが確定した本人の結果です。不明なカードや未保存のアクションは不明のまま表示します。シーズンは別枠で、保存されたセッションがあるとは解釈しません。", "服务器确认的本人结果。未知牌面及缺失日志保持未知。各赛季分开，此记录不代表已保存会话。", "Resultado personal confirmado por el servidor. Cartas y acciones ausentes siguen desconocidas. Las temporadas se separan; este registro no implica una sesión guardada.")}</p>
       {ranked?.log?.length ? <ol className="sessions-action-log">{ranked.log.map((entry, index) => <li key={index}>{entry.pos} · {entry.street} · {entry.action}</li>)}</ol> : <p>{t("Action log not saved", "アクション履歴なし", "未保存行动日志", "Sin registro de acciones")}</p>}
     </section>}
