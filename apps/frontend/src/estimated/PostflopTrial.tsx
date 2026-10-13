@@ -373,7 +373,7 @@ export function StreetCardDialog({ usedCards = [], street, currentCard = "", onA
   </Dialog>;
 }
 
-export function PostflopTrial({ context, cards, actions = [], turnCard = "", turnActions = [], riverCard = "", riverActions = [], displayMode = "standard", tableProfile, opponentProfile = "standard", opponentSeat = "ip", onOpponentProfileChange }: { tableProfile?: InputOptions["tableProfile"]; opponentProfile?: InputOpponentProfile; opponentSeat?: PlayerRole; onOpponentProfileChange?: (profile: InputOpponentProfile) => void; context: NonNullable<ReturnType<typeof completedFlopContext>>; cards: string[]; actions?: string[]; turnCard?: string; turnActions?: string[]; riverCard?: string; riverActions?: string[]; displayMode?: string }) {
+export function PostflopTrial({ forcedCheck = false, context, cards, actions = [], turnCard = "", turnActions = [], riverCard = "", riverActions = [], displayMode = "standard", tableProfile, opponentProfile = "standard", opponentSeat = "ip", onOpponentProfileChange }: { tableProfile?: InputOptions["tableProfile"]; opponentProfile?: InputOpponentProfile; opponentSeat?: PlayerRole; onOpponentProfileChange?: (profile: InputOpponentProfile) => void; forcedCheck?: boolean; context: NonNullable<ReturnType<typeof completedFlopContext>>; cards: string[]; actions?: string[]; turnCard?: string; turnActions?: string[]; riverCard?: string; riverActions?: string[]; displayMode?: string }) {
   const [betSizing, setBetSizing] = useState(loadBetSizing);
   // Single-size policies exist for the standard profile only; Multi keeps the original request identity.
   const sizing = opponentProfile === "standard" ? betSizing : "multi";
@@ -457,7 +457,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     if (!postflopSource || !postflopDatasets) { setStatus("loading"); return undefined; }
     const controller = new AbortController();
     setStatus("loading");
-    (adjustedInputOptions(options) ? Promise.resolve(null) : loadPostflopFlop(spotId, board, controller.signal)).then(base => {
+    (sizing === "single" || adjustedInputOptions(options) ? Promise.resolve(null) : loadPostflopFlop(spotId, board, controller.signal)).then(base => {
       if (controller.signal.aborted) return null;
       setFlopBaseState({ spot: spotId, board, base });
       return deferPostflopCalculation(() => computeBoard({ ...options, spotId, board, history: actions, datasets: postflopDatasets,
@@ -502,6 +502,15 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const aggregates = useMemo(() => current && !current.unavailable ? matrixFor(current) : null, [current]);
   const totals = useMemo(() => current && !current.unavailable ? rangeTotals(current) : null, [current]);
   const matrixNode = useMemo(() => current ? { actingPosition: current.seat } : null, [current]);
+  // The OOP caller always checks the flop in this tree. Its range there equals its range facing the
+  // first IP bet (the forced check removes nothing), so show those rows as a 100% check table.
+  const forcedRows = useMemo(() => {
+    if (!forcedCheck || actions.length || data?.requestKey !== requestKey || data?.board !== board) return null;
+    const facing = Object.entries(data.nodes).find(([node, view]) => /^bb_vs_\d+$/.test(node) && !view.unavailable)?.[1];
+    return facing ? withoutUnusedActions({ seat: facing.seat, actions: ["check"], rows: facing.rows.map(row => ({ ...row, mix: { check: 100 },
+      combos: row.combos.map(combo => ({ ...combo, mix: { check: 100 } })) })) }) : null;
+  }, [forcedCheck, actions.length, data, requestKey, board]);
+  const forcedAggregates = useMemo(() => forcedRows ? matrixFor(forcedRows) : null, [forcedRows]);
   const chosen = aggregates?.get(selectedHand);
   const laterLabels = labelsFor(later?.node, decisionLabelsOf(later));
   const laterLabelKey = JSON.stringify(laterLabels);
@@ -623,7 +632,17 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
         {!decision.node && start && later?.node && !sourcePreparing && laterStatus === "loading" && <PostflopLoading title={english ? "Loading local later-street estimate" : "後続ストリートの候補を読み込み中"} />}
         {!decision.node && start && later?.node && laterStatusKey === requestKey && !sourcePreparing && laterStatus === "error" && !(sizing === "single" && sourceError) && <Panel><StatusState title={english ? "Cannot show the local later-street estimate" : "後続ストリートの候補を表示できません"} tone="error">{laterError}</StatusState></Panel>}
         {current?.unavailable && <ProfilePolicyPreparing onRestoreStandard={onOpponentProfileChange ? () => onOpponentProfileChange("standard") : undefined} />}
-        {current && !current.unavailable && aggregates && <div className="postflop-range-layout">
+        {forcedRows && forcedAggregates && <div className="postflop-range-layout">
+          <StrategyMatrix node={{ actingPosition: forcedRows.seat }} title={`${forcedRows.seat} · ${english ? "Flop first action · range" : "フロップ最初の判断 · レンジ"}`} ariaLabel={english ? `${forcedRows.seat} flop range` : `${forcedRows.seat}のフロップレンジ`}
+            aggregates={forcedAggregates} actions={["check"]} actionLabels={{ check: english ? "Check" : "チェック" }} simplified={displayMode === "simple"}
+            boardCards={board ?? undefined} selected={selectedHand} onSelect={setSelectedHand} unreachableReason="元のプリフロップ頻度0%またはボードで到達不能、推奨なし" />
+          <div className="postflop-side">
+            <Panel className="postflop-hand-detail">
+              <StatusState title={english ? `${forcedRows.seat} checks every hand` : `${forcedRows.seat}は全ハンドでチェック`}>{english ? `As the preflop caller, ${forcedRows.seat} does not lead (donk) here; ${context.ip} acts next.` : `プリフロップのコール側なので、${forcedRows.seat}はここでは先にベット（ドンクベット）しません。次は${context.ip}の判断です。`}</StatusState>
+            </Panel>
+          </div>
+        </div>}
+        {!forcedRows && current && !current.unavailable && aggregates && <div className="postflop-range-layout">
           <StrategyMatrix node={matrixNode} title={`${nodeTitle(decision.node, context)} · ${english ? "range" : "レンジ"}`} ariaLabel={english ? `${current.seat} flop range` : `${current.seat}のフロップレンジ`}
             aggregates={aggregates} actions={current.actions as string[]} actionLabels={labels} simplified={displayMode === "simple"}
             boardCards={board ?? undefined}
