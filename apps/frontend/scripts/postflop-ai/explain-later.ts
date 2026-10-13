@@ -198,8 +198,10 @@ function detailsFor(hero: readonly number[], villains: WeightedCombo[], board: r
     let response: { item: EvaluatedCombo; fold: number; cont: number }[];
     try {
       response = evaluated.map(item => {
-        let mix = laterPolicyMix(policy, responseNode, item.combo, board,
-          lineFor(decision.previousAggressor, lineRole), { requireSavedPolicy });
+        let mix = computed && computed.defence.inputs.sizing === "single"
+          ? computed.defence.baseMix(computed.table, board, responseNode, item.combo)
+          : laterPolicyMix(policy, responseNode, item.combo, board,
+            lineFor(decision.previousAggressor, lineRole), { requireSavedPolicy });
         if (computed) mix = computed.defence.mix(computed.table, board, responseNode, item.combo, mix);
         return { item, fold: mix.fold / 100, cont: 1 - mix.fold / 100 };
       });
@@ -279,7 +281,8 @@ export function explainLaterCombo({ flop, flopActions = "", turn, turnActions = 
   });
   const heroDefence = heroTable && { requirement: defence.requirement(heroTable, board, boardContext.decision.node),
     facts: defence.facts(heroTable, board, boardContext.decision.node, hero,
-      laterPolicyMix(laterRules, boardContext.decision.node, hero, board, boardContext.decision.line, { requireSavedPolicy })) };
+      inputs.sizing === "single" ? defence.baseMix(heroTable, board, boardContext.decision.node, hero)
+        : laterPolicyMix(laterRules, boardContext.decision.node, hero, board, boardContext.decision.line, { requireSavedPolicy })) };
   const bettingFacts = heroTable && defence.bettingFacts(heroTable, board, boardContext.decision.node, hero);
   const result = detailsFor(hero, villains, board, laterRules, {
     ...boardContext.decision, street, previousAggressor: boardContext.previousAggressor,

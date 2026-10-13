@@ -66,7 +66,8 @@ export function rangeFactsFor({ inputs, flopPolicy, laterPolicy = null, board, t
     for (const item of heroItems) {
       const w = heroDense[comboId(item.combo[0], item.combo[1])];
       if (!(w > 0)) continue;
-      const base = line === null ? policyMix(flopPolicy, node, item.combo, board, { requireSavedPolicy })
+      const base = inputs.sizing === "single" ? defence.baseMix(table, board, node, item.combo)
+        : line === null ? policyMix(flopPolicy, node, item.combo, board, { requireSavedPolicy })
         : laterPolicyMix(laterPolicy!, node, item.combo, board, line, { requireSavedPolicy });
       const mix = defence.mix(table, board, node, item.combo, base);
       const tier = tierOf(item.combo, board);

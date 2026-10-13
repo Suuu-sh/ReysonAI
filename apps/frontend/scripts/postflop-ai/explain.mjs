@@ -118,7 +118,8 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
     let response;
     try {
       response = villains.map(item => {
-        const base = policyMix(policy, responseNode, item.combo, flop, { requireSavedPolicy });
+        const base = table && inputs.sizing === "single" ? defence.baseMix(table, flop, responseNode, item.combo)
+          : policyMix(policy, responseNode, item.combo, flop, { requireSavedPolicy });
         const mix = table ? defence.mix(table, flop, responseNode, item.combo, base) : base;
         const fold = mix.fold / 100;
         return { item, fold, cont: 1 - fold };
@@ -166,7 +167,8 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
       if (answer) vsResponse(answer, "raise", ["raise"]);
     }
     if (table) {
-      defenceFacts = defence.facts(table, flop, node, hero, policyMix(policy, node, hero, flop, { requireSavedPolicy }));
+      defenceFacts = defence.facts(table, flop, node, hero, inputs.sizing === "single"
+        ? defence.baseMix(table, flop, node, hero) : policyMix(policy, node, hero, flop, { requireSavedPolicy }));
       bettingFacts = defence.bettingFacts(table, flop, node, hero);
     }
   }

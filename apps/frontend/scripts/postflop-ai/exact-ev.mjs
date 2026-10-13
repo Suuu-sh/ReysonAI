@@ -114,6 +114,17 @@ export function exactActionEv({ spot, defence, rootPath, finals, expectedNode, h
   const mixerOf = entry => {
     if (entry.mixer) return entry.mixer;
     const { table, board, node } = entry, tiers = tierArray(board), baseByTier = [];
+    // Single first decisions are combo-specific, not tier constants. Use the same
+    // effective map as self-play/reach, without applying its betting cap twice.
+    if (defence.inputs.sizing === "single" && node.endsWith("_first")) {
+      const byCombo = new Map();
+      return entry.mixer = (combo, id) => {
+        if (tiers[id] === NONE) return null;
+        if (!byCombo.has(id)) byCombo.set(id, defence.mix(table, board, node, combo,
+          defence.baseMix(table, board, node, combo)));
+        return byCombo.get(id);
+      };
+    }
     const baseOf = (combo, id) => {
       const tier = tiers[id];
       if (tier === NONE) return null;

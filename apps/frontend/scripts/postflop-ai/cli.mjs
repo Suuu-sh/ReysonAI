@@ -97,6 +97,7 @@ async function runSpot(spotId) {
       loadInputs(spotId, inputOptions).fingerprint !== inputs.fingerprint) throw new Error("Audit source, inputs or policy/report bytes changed during execution");
   const message = [`PASS: ${result.checkedCombos} expanded combo decisions, ${result.resultCount} comparisons, fixed-seed replay.`,
     `Advisory EV warnings: ${result.warnings.length}${result.warnings.length ? `; ${result.warnings.slice(0, 5).join(" | ")}` : ""}`,
+    ...(sizing === "single" && result.warnings.length ? ["Single Size warning list:", ...result.warnings.map(warning => `- ${warning}`)] : []),
     "AI estimate only; human review required before any publication."].join("\n");
   const log = `[${spotId}] ${message}\n`;
   const proof = { schema_version: 1, spot: spotId, scope: "Actual fixed-seed CLI audit; independent review and all-board acceptance remain separate",

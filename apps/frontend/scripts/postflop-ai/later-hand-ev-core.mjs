@@ -139,7 +139,9 @@ function computeNodeMonteCarloRaw({ key, street, history, turnHistory = [], expe
   const defence = defenceFor(inputs, flopPolicy, laterPolicy);
   const nodeTable = replayDecision(inputs, currentBoard, { flop: flopPath.actions,
     turn: street === "river" ? turnHistory : history, river: street === "river" ? history : [] });
-  const mixAtNode = combo => defence.mix(nodeTable, currentBoard, decision.node, combo, laterMix(decision.node, combo, currentBoard, decision.line));
+  const mixAtNode = combo => defence.mix(nodeTable, currentBoard, decision.node, combo,
+    inputs.sizing === "single" ? defence.baseMix(nodeTable, currentBoard, decision.node, combo)
+      : laterMix(decision.node, combo, currentBoard, decision.line));
   const ranges = {};
   for (const seat of [actor, opponent]) ranges[seat] = defence.rangeItems(nodeTable, currentBoard, seat);
   const actorRange = ranges[actor];

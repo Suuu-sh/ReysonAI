@@ -48,8 +48,10 @@ function sampler(items) {
 // Plays the rest of the hand with the selected action forced at `history.length`.
 // Returns the acting player's incremental net from this decision; earlier chips are sunk.
 export function playFromNode({ hands, flop, runout, history, forced, policy, laterPolicy = referenceLaterPolicy(), random,
-  spot = spotById(), tree = spot.tree ?? "oop_checks", defence = null }) {
+  spot = spotById(), tree = spot.tree ?? "oop_checks", defence = null, inputs = null }) {
   if (typeof random !== "function") throw new Error("Invalid flop EV simulation context");
+  // Legacy no-model Multi simulations remain raw policy self-play.
+  if (!defence && inputs?.sizing === "single") defence = defenceFor(inputs, policy, laterPolicy);
   const start = flopState(tree, history);
   if (!start.node) throw new Error("No decision after this flop history");
   const actor = spot[start.role];
@@ -100,8 +102,9 @@ export function computeNodeMonteCarlo({ board, history, inputs, flopPolicy, late
   const defence = defenceFor(inputs, flopPolicy, laterPolicy);
   let nodeTable = null;
   const nodeMix = combo => {
-    const base = policyMix(flopPolicy, state.node, combo, board.cards);
     nodeTable ??= replayOrNull(inputs, board.cards, { flop: history }) ?? false;
+    const base = nodeTable && inputs.sizing === "single" ? defence.baseMix(nodeTable, board.cards, state.node, combo)
+      : policyMix(flopPolicy, state.node, combo, board.cards);
     return nodeTable ? defence.mix(nodeTable, board.cards, state.node, combo, base) : base;
   };
   const setup = nodeSetup(history, inputs, flopPolicy, board.cards, spot.tree, defence);
@@ -165,7 +168,7 @@ export function computeNodeMonteCarlo({ board, history, inputs, flopPolicy, late
       const values = uncertainty ? {} : null;
       for (const action of actions) {
         const value = playFromNode({ hands, flop: board.cards, runout, history, forced: action,
-          policy: flopPolicy, laterPolicy, random: rng(streamSeed), spot, tree: spot.tree, defence });
+          policy: flopPolicy, laterPolicy, random: rng(streamSeed), spot, tree: spot.tree, defence, inputs });
         if (value === null) { neverReached = true; break; }
         sums[action] += value;
         mixEv += comboMix[action] / 100 * value;

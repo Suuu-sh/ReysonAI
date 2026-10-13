@@ -34,6 +34,8 @@ export function scaleLaterPath<T extends WeightedCombo>(items: T[], role: Player
 // The flop view of any valid three-card board: every node of the spot's tree, one row per hand
 // class. A facing node is shown after the canonical line that reaches it (historyFor, smallest bet).
 export function flopNodes(inputs: Inputs, policy: FlopPolicy, boardCards: readonly number[], history: string[] | null = null): StrategyNodes {
+  // Combo-id tie breaking is board-coordinate specific in Single mode.
+  if (inputs.sizing === "single") return flopNodesCanonical(inputs, policy, boardCards, history);
   const canonical = canonicalFlop(boardCards);
   const nodes = flopNodesCanonical(inputs, policy, canonical.cards, history);
   return remapFlopNodes(nodes, canonical.fromCanonical);
@@ -53,7 +55,8 @@ export function flopNodesCanonical(inputs: Inputs, policy: FlopPolicy, boardCard
     const table = replayOrNull(inputs, boardCards, { flop: path });
     const reach = table ? defence.rangeOf(table, boardCards, seat) : null;
     const mixOf = (combo: readonly number[]): ActionMix => {
-      const base = policyMix(policy, node, combo, boardCards, { requireSavedPolicy });
+      const base = table && inputs.sizing === "single" ? defence.baseMix(table, boardCards, node, combo)
+        : policyMix(policy, node, combo, boardCards, { requireSavedPolicy });
       return table ? defence.mix(table, boardCards, node, combo, base) : base;
     };
     const rows = inputs.seatRows[seat].map(row => {
@@ -128,7 +131,8 @@ export function laterMixRows({ actor, role, board, node, line, inputs, flopPolic
       if (!item.weight) continue;
       const rawTier = handTier(item.combo, board);
       const tier = rawTier === "draw" && node.startsWith("river_") ? "medium" : rawTier;
-      let mix = laterPolicyMix(laterPolicy, node, item.combo, board, line, { requireSavedPolicy });
+      let mix = table && inputs.sizing === "single" ? defence.baseMix(table, board, node, item.combo)
+        : laterPolicyMix(laterPolicy, node, item.combo, board, line, { requireSavedPolicy });
       if (table) mix = defence.mix(table, board, node, item.combo, mix);
       detail.push({ cards: item.combo.map(cardText).join(""), tier, weight: item.weight,
         mix: Object.fromEntries(actions.map(action => [action, mix[action] / 100])) });

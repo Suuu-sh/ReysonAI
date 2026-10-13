@@ -51,7 +51,8 @@ function contextFor(inputs: Inputs, policy: FlopPolicy, board: readonly number[]
     const after = replayOrNull(inputs, board, { flop: [...history, action] });
     try {
       responses[action] = villains.map(item => {
-        const base = policyMix(policy, responseNode, item.combo, board, { requireSavedPolicy });
+        const base = after && inputs.sizing === "single" ? defence.baseMix(after, board, responseNode, item.combo)
+          : policyMix(policy, responseNode, item.combo, board, { requireSavedPolicy });
         return { ...item, fold: (after ? defence.mix(after, board, responseNode, item.combo, base) : base).fold / 100 };
       });
     } catch (error) {
@@ -87,9 +88,8 @@ export function flopUiComboFactsCanonical({ boardCards, node, cards, history, pr
     actions[action] = { foldShare: rounded(total ? folded / total : 0) };
   }
   const requireSavedPolicy = Boolean(inputs.opponentProfile && inputs.opponentProfile !== "standard");
-  const base = table || requireSavedPolicy
-    ? policyMix(policy, node, hero, boardCards, { requireSavedPolicy })
-    : null;
+  const base = table && inputs.sizing === "single" ? defence.baseMix(table, boardCards, node, hero)
+    : table || requireSavedPolicy ? policyMix(policy, node, hero, boardCards, { requireSavedPolicy }) : null;
   const facing = table ? defence.facts(table, boardCards, node, hero, base) : null;
   const betting = table ? defence.bettingFacts(table, boardCards, node, hero) : null;
   const profileReference = requireSavedPolicy
@@ -148,6 +148,7 @@ export function flopBetTableCanonical({ boardCards, node, cards, history, prev =
 
 export function flopBetTable(options: FlopFactOptions) {
   const one = (cards: string | undefined) => {
+    if (options.inputs.sizing === "single") return flopBetTableCanonical({ ...options, cards });
     const canonical = canonicalFlop(options.boardCards);
     return flopBetTableCanonical({ ...options, boardCards: canonical.cards, cards: comboKey(cards, canonical.toCanonical) });
   };
@@ -159,6 +160,7 @@ export function flopBetTable(options: FlopFactOptions) {
 }
 
 export function flopUiComboFacts(options: FlopFactOptions) {
+  if (options.inputs.sizing === "single") return flopUiComboFactsCanonical(options);
   const canonical = canonicalFlop(options.boardCards);
   const cards = comboKey(options.cards, canonical.toCanonical);
   const facts = flopUiComboFactsCanonical({ ...options, boardCards: canonical.cards, cards });

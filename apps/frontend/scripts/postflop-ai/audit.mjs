@@ -1,5 +1,5 @@
 import { boards, config, laterSizingHash, seatRange } from "./inputs.mjs";
-import { DEFENCE_VERSION } from "./defence.ts";
+import { DEFENCE_VERSION, SINGLE_DEFENCE_VERSION } from "./defence.ts";
 import { NODES, nodeRole, policyMix, referencePolicyFor, treeNodes, validatePolicy } from "./policy.ts";
 import { PROFILES, SIMULATION_VERSION, simulate } from "./simulation.mjs";
 import { sha } from "./generate.mjs";
@@ -9,7 +9,8 @@ import { checkFlopBalance, checkLaterBalance } from "./balance.mjs";
 export function auditExperiment(inputs, candidate, report, laterCandidate = null, { replay: providedReplay } = {}) {
   // Validation-only v7 boundary: reject the separate v10 experiment before
   // policy expansion, balance checks or simulation. Numerical audit is unchanged.
-  if (DEFENCE_VERSION !== 7 || report?.defence_version !== DEFENCE_VERSION ||
+  const defenceVersion = inputs.sizing === "single" ? SINGLE_DEFENCE_VERSION : DEFENCE_VERSION;
+  if (DEFENCE_VERSION !== 7 || report?.defence_version !== defenceVersion ||
       (report != null && Object.hasOwn(report, "action_model_version"))) {
     throw new Error("Candidate or simulation report has an incompatible execution contract");
   }
@@ -67,7 +68,9 @@ export function auditExperiment(inputs, candidate, report, laterCandidate = null
   }
   const replay = providedReplay ?? simulate(inputs, policy, config.samples_per_board_profile_seat, laterPolicy);
   if (JSON.stringify(replay) !== JSON.stringify(report)) throw new Error("Saved simulation report differs from fixed-seed replay");
-  const sanity = simulate(inputs, referencePolicyFor(spot.tree), 12, null, { computedDefence: false });
+  // The comparator is intentionally the unchanged Multi reference, not a Single policy.
+  const sanityInputs = inputs.sizing === "single" ? { ...inputs, sizing: "multi" } : inputs;
+  const sanity = simulate(sanityInputs, referencePolicyFor(spot.tree), 12, null, { computedDefence: false });
   if (sanity.results.some(row => row.delta_bb.mean !== 0)) throw new Error("Reference-vs-reference simulation drifted");
   return { checkedCombos: checked, resultCount: report.results.length, warnings };
 }

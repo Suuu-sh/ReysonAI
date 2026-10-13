@@ -386,7 +386,8 @@ function checkRequestedProfilePath(inputs, flop, later, request) {
     throw new Error("Requested path does not reach the pending decision (terminal, all-in, or legalized continuation)");
   }
   const requireSavedPolicy = profileMode(inputs);
-  const reached = seat => comboRange(inputs.seatRows[seat], "freq", board).map(item => {
+  const singleDefence = inputs.sizing === "single" ? defenceFor(inputs, flop, later) : null;
+  const reached = seat => singleDefence ? singleDefence.rangeItems(table, board, seat) : comboRange(inputs.seatRows[seat], "freq", board).map(item => {
     let weight = item.weight;
     for (const entry of table.log) {
       if (entry.seat !== seat || entry.action === null || !(weight > 0)) continue;
@@ -452,7 +453,8 @@ export function checkFlopBalance(inputs, flopPolicy, options = {}) {
     const table = replayOrNull(inputs, board.cards, { flop: history });
     const range = table ? defence.rangeItems(table, board.cards, seat)
       : scaleFlopPath(seatRange(inputs, seat, board.cards), role, state.steps, mixFor, board.cards);
-    const nodeMixFor = table ? (name, combo, cards) => defence.mix(table, cards, name, combo, mixFor(name, combo, cards)) : mixFor;
+    const nodeMixFor = table ? (name, combo, cards) => defence.mix(table, cards, name, combo, inputs.sizing === "single"
+      ? defence.baseMix(table, cards, name, combo) : mixFor(name, combo, cards)) : mixFor;
     const summary = summarize(range, NODES[node], nodeMixFor, tierFor, node, board.cards, null);
     addSummary(collection, node, board.id, NODES[node], summary, {}, flopMinimumDefense(node));
   }
@@ -496,7 +498,8 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, options = {})
   const mixFor = makeLaterMixReader(later, tierFor), collection = new Map(), baseCache = new Map();
   // Facing nodes are judged on the computed defence (defence.ts), not the tier mixes of the policy.
   const defence = defenceFor(inputs, flop, later);
-  const defended = (table, name, combo, cards, line) => defence.mix(table, cards, name, combo, mixFor(name, combo, cards, line));
+  const defended = (table, name, combo, cards, line) => defence.mix(table, cards, name, combo, inputs.sizing === "single"
+    ? defence.baseMix(table, cards, name, combo) : mixFor(name, combo, cards, line));
   const flopPaths = flopPathSamples(inputs.spot.tree), turnPaths = laterPathSamples("turn");
   const flopTableByPath = new Map(flopPaths.map(path => [path.actions.join(","), replayFlopPath(inputs, path)]));
   const turnHistoryByNode = firstHistoryByNode(streetHistories("turn"));

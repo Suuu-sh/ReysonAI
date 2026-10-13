@@ -1,4 +1,4 @@
-import { DEFENCE_VERSION } from "./defence.ts";
+import { DEFENCE_VERSION, SINGLE_DEFENCE_VERSION } from "./defence.ts";
 import { EVALUATOR_VERSION } from "../lib/equity.ts";
 import { hasPostflopDeal } from "./range-support.mjs";
 // SQL for the canonical local postflop artifacts in the reysonai D1 database (schema:
@@ -69,9 +69,10 @@ export function isFreshSimulationReport(inputs, candidate, laterCandidate, repor
       laterCandidate.metadata.spot !== inputs.spot.id || laterCandidate.metadata.source_hash !== inputs.fingerprint ||
       laterCandidate.metadata.flop_policy_hash !== candidate.metadata.policy_hash || !isHash(laterCandidate.metadata.policy_hash) ||
       laterCandidate.metadata.policy_hash !== policySha(laterCandidate.policy) || hasActionModelMarker(laterCandidate.metadata))) return false;
+  const defenceVersion = inputs.sizing === "single" ? SINGLE_DEFENCE_VERSION : DEFENCE_VERSION;
   if (!report || report.kind !== "ai_estimate_not_gto" || report.version !== 1 || report.spot !== inputs.spot.id ||
       report.policy_hash !== candidate.metadata.policy_hash || report.source_hash !== inputs.fingerprint ||
-      report.simulation_version !== SIMULATION_VERSION || hasActionModelMarker(report) || report.defence_version !== DEFENCE_VERSION ||
+      report.simulation_version !== SIMULATION_VERSION || hasActionModelMarker(report) || report.defence_version !== defenceVersion ||
       (Object.hasOwn(report, "evaluator_version") && report.evaluator_version !== EVALUATOR_VERSION) ||
       report.later_sizing_hash !== laterSizingHash() || report.seed !== config.seed ||
       report.samples_per_board_profile_seat !== config.samples_per_board_profile_seat ||
