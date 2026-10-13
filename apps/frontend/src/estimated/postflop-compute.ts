@@ -1,15 +1,17 @@
-import type { Candidate, InputOptions, Inputs, LaterPolicy, PostflopDatasets, StrategyNodes } from "../../scripts/postflop-ai/types.ts";
+import type { SizedInputs as Inputs, SizedInputOptions } from "../../scripts/postflop-ai/sizing.ts";
+import { validateSizingOptions } from "../../scripts/postflop-ai/sizing.ts";
+import type { Candidate, LaterPolicy, PostflopDatasets, StrategyNodes } from "../../scripts/postflop-ai/types.ts";
 import type { CandidateSource } from "../../scripts/postflop-ai/candidate-source.ts";
 import type { BalancedFlopBase } from "../../scripts/postflop-ai/flop-base-core.ts";
 import type { PlayerRole, BettingStep } from "../../scripts/postflop-ai/tree.ts";
 import type { LaterStreet } from "../../scripts/postflop-ai/later-tree.ts";
 export type ComboInput = { cards: string; weight: number };
-type ComputeSource = InputOptions & { spotId: string; datasets: PostflopDatasets; flopCandidate: CandidateSource; laterCandidate?: CandidateSource<LaterPolicy> | null; flopBase?: BalancedFlopBase | null };
+type ComputeSource = SizedInputOptions & { spotId: string; datasets: PostflopDatasets; flopCandidate: CandidateSource; laterCandidate?: CandidateSource<LaterPolicy> | null; flopBase?: BalancedFlopBase | null };
 type BoardRequest = ComputeSource & { board: string; history?: string[] | null };
 type ExplainRequest = BoardRequest & { node: string; cards?: string; combos?: ComboInput[]; prev?: string };
 type LaterRequest = ComputeSource & { flop: string; flopActions?: string; turn?: string; turnActions?: string; river?: string; riverActions?: string };
 type LaterExplainRequest = LaterRequest & { cards?: string; combos?: ComboInput[] };
-import { buildInputs } from "../../scripts/postflop-ai/browser-inputs.ts";
+import { buildInputs as buildBaseInputs } from "../../scripts/postflop-ai/browser-inputs.ts";
 import { resolveFlopCandidate, resolveLaterCandidate } from "../../scripts/postflop-ai/candidate-source.ts";
 import { flopBetTable, flopUiFacts } from "../../scripts/postflop-ai/flop-ui-facts.ts";
 import { explainLaterCombo, explainLaterCombos, laterExplainContext } from "../../scripts/postflop-ai/explain-later.ts";
@@ -20,6 +22,12 @@ import { laterDecision, laterStart, replayLater } from "./postflop-trial.ts";
 import { flopNodes, laterMixRows } from "../../scripts/postflop-ai/views.ts";
 import { canonicalFlop } from "../../scripts/postflop-ai/flop-isomorphism.ts";
 import { isFreshFlopBase, storedFlopNodes, storedFlopExplanation } from "../../scripts/postflop-ai/flop-base-core.ts";
+
+function buildInputs(spotId: string, datasets: PostflopDatasets, options: SizedInputOptions = {}): Inputs {
+  const sizing = validateSizingOptions(options);
+  const { sizing: _sizing, ...inputOptions } = options;
+  return { ...buildBaseInputs(spotId, datasets, inputOptions), sizing };
+}
 
 function policyForLater(inputs: Inputs, candidate: CandidateSource, laterCandidate?: CandidateSource<LaterPolicy> | null) {
   const flop = resolveFlopCandidate(inputs, candidate);

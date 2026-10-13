@@ -1,6 +1,6 @@
 import { adjustedInputOptions, finalizeInputs, inputStructureHash } from "./input-options.ts";
 import { profileArtifactKey } from "./candidate-source.ts";
-import { normalizeSizing } from "./sizing.ts";
+import { normalizeSizing, validateSizingOptions } from "./sizing.ts";
 import { multiwayInputData } from "./multiway-inputs.mjs";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, statSync } from "node:fs";
@@ -98,7 +98,7 @@ export function requireArtifact(spot, kind, options = {}) {
 }
 
 export function loadInputs(spotId = DEFAULT_SPOT_ID, options = {}) {
-  const sizing = normalizeSizing(options.sizing);
+  const sizing = validateSizingOptions(options);
   const base = loadBaseInputs(spotId, adjustedInputOptions(options));
   // Sizing selects an artifact, not a preflop range or source identity.
   return { ...finalizeInputs(base, options, read, sha, inputStructureHash(base, gameConfig, flopConfig(), sha)), sizing };

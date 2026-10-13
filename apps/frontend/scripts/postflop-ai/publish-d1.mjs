@@ -1,4 +1,5 @@
-import { DEFENCE_VERSION, SINGLE_DEFENCE_VERSION } from "./defence.ts";
+import { DEFENCE_VERSION } from "./defence.ts";
+import { SINGLE_DEFENCE_VERSION } from "./single-size-defence.ts";
 import { EVALUATOR_VERSION } from "../lib/equity.ts";
 import { hasPostflopDeal } from "./range-support.mjs";
 // SQL for the canonical local postflop artifacts in the reysonai D1 database (schema:

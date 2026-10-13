@@ -3,19 +3,16 @@ import type { OpeningSpot, ResponseDataset } from "../../src/estimated/preflop-t
 import type { TableAdjustments } from "../../src/estimated/table-profile.ts";
 import { adjustOpeningSpot, applyTableProfile, isDefaultProfile, normalizeProfile } from "../../src/estimated/table-profile.ts";
 import openingAdjustments from "../../src/estimated/table-profile-adjustments.json" with { type: "json" };
-import { normalizeSizing } from "./sizing.ts";
 
 type ReadDataset = (name: string) => SourceDataset | null | undefined;
-type BaseInputs = Omit<Inputs, "structure_hash" | "sizing">;
+type BaseInputs = Omit<Inputs, "structure_hash">;
 type Hash = (value: unknown) => string;
 const PROFILES = ["standard", "nit", "station", "lag", "maniac"];
 
 export function normalizedInputOptions(options: InputOptions = {}) {
-  const sizing = normalizeSizing(options.sizing);
   const tableProfile = normalizeProfile(options.tableProfile);
   const opponentProfile = options.opponentProfile ?? "standard";
   if (!PROFILES.includes(opponentProfile)) throw new Error(`Unknown opponent profile: ${opponentProfile}`);
-  if (sizing === "single" && opponentProfile !== "standard") throw new Error("Single-size policies support the standard profile only");
   if (options.opponentSeat !== undefined && options.opponentSeat !== "ip" && options.opponentSeat !== "oop") {
     throw new Error("opponentSeat must be ip or oop");
   }
@@ -106,7 +103,7 @@ function profileUnsupported(message: string): Error & { code: string; state: str
   return Object.assign(new Error(message), { code: "PROFILE_POLICY_MISSING", state: "not_generated" });
 }
 
-export function finalizeInputs(base: BaseInputs, options: InputOptions, read: ReadDataset, sha: Hash, structure_hash: string): Omit<Inputs, "sizing"> {
+export function finalizeInputs(base: BaseInputs, options: InputOptions, read: ReadDataset, sha: Hash, structure_hash: string): Inputs {
   const normalized = normalizedInputOptions(options);
   if (!adjustedInputOptions(options)) return { ...base, structure_hash };
   // The HU adjustment contract selects exactly two roles. Never collapse the

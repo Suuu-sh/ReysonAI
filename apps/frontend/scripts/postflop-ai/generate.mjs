@@ -9,9 +9,10 @@ import { artifactPaths, boards, config, readArtifact, requireArtifact, root, sea
 import { LATER_NODES, STREETS, openingActions, streetNodes } from "./later-tree.ts";
 import { boardHeight, boardTexture, LINES, parseCards, RUNOUT_TEXTURES, TIERS } from "./model.ts";
 import { handTier } from "./hu-hand-tier.ts";
-import { NODES, treeNodes, validatePolicy, validateSingleSizePolicy } from "./policy.ts";
+import { NODES, treeNodes, validatePolicy } from "./policy.ts";
 import { FLOP_BETS, facingNode, flopBetLabel, raiseDepth } from "./tree.ts";
-import { validateLaterPolicy, validateSingleSizeLaterPolicy } from "./later-policy.ts";
+import { validateLaterPolicy } from "./later-policy.ts";
+import { validateSingleSizePolicy, validateSingleSizeLaterPolicy } from "./single-size-policy.ts";
 import { normalizeSizing } from "./sizing.ts";
 import { normalizeGenerationOptions } from "./generation-options.mjs";
 import { isOpponentMode, matchesCandidateSource, profileArtifactKey, resolveFlopCandidate, resolveLaterCandidate } from "./candidate-source.ts";

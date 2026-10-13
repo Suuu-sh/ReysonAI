@@ -4,6 +4,7 @@ import test from "node:test";
 import { brotliCompressSync, brotliDecompressSync } from "node:zlib";
 import worker from "../src/index.ts";
 import { routePostflop } from "../src/postflop.ts";
+import { routePostflopSingle } from "../src/postflop-single.ts";
 import { spotArtifacts } from "../../frontend/scripts/postflop-ai/publish-d1.mjs";
 import { postflopResponse } from "../../frontend/scripts/postflop-ai/local-view.mjs";
 import { boards } from "../../frontend/scripts/postflop-ai/inputs.mjs";
@@ -139,6 +140,21 @@ test("invalid or duplicate sizing bypasses stale cache entries and returns 400 w
   }
   assert.deepEqual(cache.matches, []);
   assert.deepEqual(cache.puts, []);
+});
+
+test("single handler preserves DB, spot, sizing and missing-artifact validation order", async () => {
+  const path = "/v1/postflop/spot";
+  await assert.rejects(() => routePostflopSingle(undefined, path, new URLSearchParams("sizing=invalid")), /DB binding is not configured/);
+  const unreadDb = mockDb({}, () => assert.fail("validation must precede D1 reads"));
+  assert.deepEqual(await routePostflopSingle(unreadDb, path, new URLSearchParams("sizing=invalid")),
+    { status: 400, body: { error: "spot is required" } });
+  assert.deepEqual(await routePostflopSingle(unreadDb, path, new URLSearchParams(`spot=${spot.id}&sizing=single&sizing=single`)),
+    { status: 400, body: { error: "sizing must be multi or single" } });
+  const params = new URLSearchParams({ spot: spot.id, sizing: "single" });
+  assert.deepEqual(await routePostflopSingle(mockDb({}), path, params),
+    { status: 404, body: { error: "No single-size policy", code: "SINGLE_SIZE_MISSING" } });
+  assert.deepEqual(await routePostflopSingle(mockDb({ postflop_single_policies: storedSizingTables().postflop_single_policies }), path, params),
+    { status: 404, body: { error: `unpublished spot: ${spot.id}` } });
 });
 
 test("single cache uses its independent dataset revision and republish never changes multi keys", async t => {

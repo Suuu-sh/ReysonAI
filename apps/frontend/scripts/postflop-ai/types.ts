@@ -4,7 +4,6 @@ import type { BettingStep, FlopTree, PlayerRole } from "./tree.ts";
 import type { LaterStreet } from "./later-tree.ts";
 import type { Spot } from "./spots.ts";
 import type { WeightedCombo } from "../lib/equity.ts";
-import type { PostflopSizing } from "./sizing.ts";
 
 export type Position = "UTG" | "HJ" | "CO" | "BTN" | "SB" | "BB";
 export type PilotConfig = typeof pilotConfig;
@@ -42,11 +41,11 @@ export type MultiwayCatalog = { version: number; structural: number; reachable: 
 // profiles/<profile>/villain/<dataset>. No standard-range fallback is allowed.
 export type PostflopDatasets = Record<string, SourceDataset | MultiwayCatalog | undefined>;
 export type InputOpponentProfile = "standard" | "nit" | "station" | "lag" | "maniac";
-export type InputOptions = { sizing?: PostflopSizing; tableProfile?: Partial<TableProfile>; opponentProfile?: InputOpponentProfile; opponentSeat?: PlayerRole };
+export type InputOptions = { tableProfile?: Partial<TableProfile>; opponentProfile?: InputOpponentProfile; opponentSeat?: PlayerRole };
 export type InputAdjustment = { tableProfile: TableProfile; opponentProfile: InputOpponentProfile };
 export type RangeFactor = readonly [file: string, spotId: string, action: SourceAction];
 export type Inputs = { spot: Spot; opening?: SourceSpot; response?: SourceSpot; sources?: { dataset: string; spot: SourceSpot }[]; threeBet?: SourceSpot; threeBetResponse?: SourceSpot;
-  config: PilotConfig; sizing: PostflopSizing; fingerprint: string; structure_hash: string; profileSourceHash?: string; baselineFingerprint?: string; adjusted?: InputAdjustment;
+  config: PilotConfig; fingerprint: string; structure_hash: string; profileSourceHash?: string; baselineFingerprint?: string; adjusted?: InputAdjustment;
   tableProfile?: TableProfile; opponentProfile?: InputOpponentProfile; opponentSeat?: PlayerRole; seatRows: Record<string, FrequencyRow[]> };
 export type ReachStep = BettingStep & { canRaise?: boolean };
 export type StrategyCombo = { cards: string; tier: HandTier; weight: number; reachWeight?: number; mix: ActionMix };

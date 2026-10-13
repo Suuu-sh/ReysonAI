@@ -2,7 +2,7 @@ import { parentPort, workerData } from "node:worker_threads";
 import { handEvForBoard } from "./flop-hand-ev-core.mjs";
 import { simulate } from "./simulation.mjs";
 import { referenceLaterPolicy } from "./later-policy.ts";
-import { defenceFor } from "./defence.ts";
+import { sizedDefenceFor as defenceFor } from "./single-size-defence.ts";
 import { buildFlopBase } from "./flop-base-core.ts";
 import { releaseFlopUiFacts } from "./flop-ui-facts.ts";
 import { writeFlopBaseFile } from "./flop-base-files.mjs";

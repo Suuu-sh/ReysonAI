@@ -9,7 +9,8 @@ import { laterPolicyMix, referenceLaterTierMix, validateLaterPolicy } from "./la
 import { NODES, effectiveMix, nodeRole, policyMix, treeNodes, validatePolicy, withRaise } from "./policy.ts";
 import { FLOP_BETS, flopBetFraction, flopState, raiseDepth, treeHistories } from "./tree.ts";
 import { createTable, playFlop } from "./engine.ts";
-import { defenceFor, replayOrNull } from "./defence.ts";
+import { replayOrNull } from "./defence.ts";
+import { sizedDefenceFor as defenceFor } from "./single-size-defence.ts";
 
 const pct = value => `${(value * 100).toFixed(1)}%`;
 const mean = values => values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;

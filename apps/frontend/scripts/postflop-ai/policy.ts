@@ -1,7 +1,7 @@
-import type { ActionMix, FlopPolicy, FlopTexture, HandTier, OpponentProfile, ReachStep } from "./types.ts";
+import type { ActionMix, FlopPolicy, HandTier, OpponentProfile, ReachStep } from "./types.ts";
 import type { PlayerRole } from "./tree.ts";
 import type { WeightedCombo } from "../lib/equity.ts";
-import { flopTextureKeys, HEIGHTS, SHAPES, TEXTURES, TIERS } from "./model.ts";
+import { flopTextureKeys, TEXTURES, TIERS } from "./model.ts";
 import { handTier } from "./hu-hand-tier.ts";
 
 import { LATER_NODES } from "./later-tree.ts";
@@ -43,35 +43,11 @@ export function validatePolicy(policy: unknown, tree: string = DEFAULT_TREE): Fl
   return (policy as FlopPolicy);
 }
 
-// Pure lookup shared by real-board decisions and exhaustive texture-class validation.
-function resolveFlopPolicyRule(policy: FlopPolicy, node: string, tier: HandTier, keys: readonly (FlopTexture | "any")[]) {
-  let rule;
-  for (const key of keys) if ((rule = policy.rules.find(item => item.node === node && item.tier === tier && item.texture === key))) break;
-  return rule;
-}
-
-export function validateSingleSizePolicy(policy: unknown, tree: string = DEFAULT_TREE): FlopPolicy {
-  const validated = validatePolicy(policy, tree);
-  for (const node of treeNodes(tree).filter(name => name === "btn_first" || name === "oop_first")) {
-    for (const shape of SHAPES) for (const height of HEIGHTS) {
-      const texture: FlopTexture = `${shape}_${height}`;
-      // Match unchanged flopTextureKeys' specificity order without real boards.
-      const keys: (FlopTexture | "any")[] = [texture, shape, height, "any"];
-      const wagers = new Set<string>();
-      for (const tier of TIERS) {
-        const rule = resolveFlopPolicyRule(validated, node, tier, keys)!;
-        for (const action of NODES[node]) if (action !== "check" && rule.mix[action] > 0) wagers.add(action);
-      }
-      if (wagers.size > 1) throw new Error(`Single-size policy uses several bet sizes: ${node}/${texture}: ${[...wagers].sort().join(",")}`);
-    }
-  }
-  return validated;
-}
-
 export function policyMix(policy: FlopPolicy, node: string, hole: readonly number[], flop: readonly number[],
   { requireSavedPolicy = false }: { requireSavedPolicy?: boolean } = {}): ActionMix {
   const tier = handTier(hole, flop), keys = flopTextureKeys(flop), texture = keys[0];
-  const rule = resolveFlopPolicyRule(policy, node, tier, keys);
+  let rule;
+  for (const key of keys) if ((rule = policy.rules.find(item => item.node === node && item.tier === tier && item.texture === key))) break;
   if (!rule) {
     // Nodes added after a policy was saved (re-raises) use the reference mixes.
     if (raiseDepth(node) < 2 || policy === referenceAll) throw new Error(`Uncovered policy node: ${node}/${texture}/${tier}`);

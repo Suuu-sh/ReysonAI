@@ -7,7 +7,8 @@ import { laterPolicyMix, referenceLaterMix, referenceLaterPolicy, validateLaterP
 import { LATER_NODES } from "./later-tree.ts";
 import { boards, config, laterSizingHash, makeSampler, samplePair, seatRange } from "./inputs.mjs";
 import { spotById } from "./spots.ts";
-import { DEFENCE_VERSION, SINGLE_DEFENCE_VERSION, defenceFor } from "./defence.ts";
+import { DEFENCE_VERSION } from "./defence.ts";
+import { SINGLE_DEFENCE_VERSION, sizedDefenceFor as defenceFor } from "./single-size-defence.ts";
 
 const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 const round = value => Math.round(value * 100) / 100;

@@ -1,4 +1,6 @@
-import type { ActionMix, FlopPolicy, Inputs } from "./types.ts";
+import type { PostflopSizing } from "./sizing.ts";
+type Inputs = BaseInputs & { sizing?: PostflopSizing };
+import type { ActionMix, FlopPolicy, Inputs as BaseInputs } from "./types.ts";
 import type { WeightedCombo } from "../lib/equity.ts";
 import type { RankTable } from "./defence.ts";
 import type { Table } from "./engine.ts";
@@ -12,7 +14,8 @@ type Context = { defence: ReturnType<typeof defenceFor>; table: Table | null; vi
 // or independent 120-runout equity simulation: UI equity already comes from defence/betting.
 // Direct and stored paths use this same projection in canonical suit coordinates.
 import { canonicalFlop, cardIds, comboKey } from "./flop-isomorphism.ts";
-import { comboId, defenceFor, flopRunouts, rankTable, replayOrNull } from "./defence.ts";
+import { comboId, flopRunouts, rankTable, replayOrNull } from "./defence.ts";
+import { sizedDefenceFor as defenceFor } from "./single-size-defence.ts";
 import { equityVersus, indexOf, makeRange, weightOf } from "./range-equity.ts";
 import { seatRange } from "./browser-inputs.ts";
 import { NODES, policyMix, scaleByPath } from "./policy.ts";

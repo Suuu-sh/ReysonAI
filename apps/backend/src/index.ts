@@ -3,6 +3,7 @@ import { routeRanked } from "./ranked.ts";
 import { isNativeAccountRequest, routeNativeAccount } from "./native-account.ts";
 import { routeAccount, type AccountEnv } from "./account.ts";
 import { routePostflop, type D1Database } from "./postflop.ts";
+import { routePostflopSingle } from "./postflop-single.ts";
 import { routePreflopDatasets } from "./preflop-datasets.ts";
 import { POSTFLOP_RUNTIME_CONFIG_PATH, routePostflopRuntimeConfig } from "./postflop-runtime-config.ts";
 import { routeMw3Transport } from "./mw3-transport.ts";
@@ -179,7 +180,9 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
     const key = version ? new Request(`${url.origin}${url.pathname}?${keyParams}`) : null;
     const hit = key ? await cacheMatch(cache, key) : undefined;
     if (hit) return notModified(request, hit, POSTFLOP_CACHE_CONTROL) ?? withCacheStatus(hit, "HIT", POSTFLOP_CACHE_CONTROL);
-    const { status, body, text, bytes, etag } = await routePostflop(env.DB, url.pathname, url.searchParams);
+    const { status, body, text, bytes, etag } = await (single || invalidSizing
+      ? routePostflopSingle(env.DB, url.pathname, url.searchParams)
+      : routePostflop(env.DB, url.pathname, url.searchParams));
     if (status !== 200) {
       if (url.pathname === "/v1/postflop/profile-policy" || single) return new Response(JSON.stringify(body), { status, headers: JSON_HEADERS });
       return errorResponse(status, String((body as JsonRecord).error ?? "error"));

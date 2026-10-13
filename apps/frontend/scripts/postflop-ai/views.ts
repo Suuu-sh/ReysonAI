@@ -1,4 +1,6 @@
-import type { ActionMix, FlopPolicy, Inputs, LaterPolicy, PreviousLine, ReachStep, StrategyCombo, StrategyNode, StrategyNodes, StrategyRow } from "./types.ts";
+import type { PostflopSizing } from "./sizing.ts";
+type Inputs = BaseInputs & { sizing?: PostflopSizing };
+import type { ActionMix, FlopPolicy, Inputs as BaseInputs, LaterPolicy, PreviousLine, ReachStep, StrategyCombo, StrategyNode, StrategyNodes, StrategyRow } from "./types.ts";
 import type { PlayerRole } from "./tree.ts";
 import type { WeightedCombo } from "../lib/equity.ts";
 import type { ActionPaths } from "./engine.ts";
@@ -14,7 +16,8 @@ import { LATER_NODES } from "./later-tree.ts";
 import { laterPolicyMix } from "./later-policy.ts";
 import { NODES, nodeRole, policyMix, scaleByPath, treeNodes } from "./policy.ts";
 import { FLOP_BETS, flopState, historyFor, treeHistories } from "./tree.ts";
-import { comboId, defenceFor, replayOrNull } from "./defence.ts";
+import { comboId, replayOrNull } from "./defence.ts";
+import { sizedDefenceFor as defenceFor } from "./single-size-defence.ts";
 import { canonicalFlop, remapFlopNodes } from "./flop-isomorphism.ts";
 
 const cardText = (card: number): string => "23456789TJQKA"[card >> 2] + "cdhs"[card & 3];

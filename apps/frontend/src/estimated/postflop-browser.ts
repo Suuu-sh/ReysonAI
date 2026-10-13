@@ -1,8 +1,9 @@
 import type { BalancedFlopBase } from "../../scripts/postflop-ai/flop-base-core.ts";
-import type { Candidate, InputOptions, LaterPolicy, PostflopDatasets, SourceDataset, MultiwayCatalog } from "../../scripts/postflop-ai/types.ts";
+import type { Candidate, LaterPolicy, PostflopDatasets, SourceDataset, MultiwayCatalog } from "../../scripts/postflop-ai/types.ts";
 import type { CandidateSource } from "../../scripts/postflop-ai/candidate-source.ts";
 import { normalizedInputOptions } from "../../scripts/postflop-ai/input-options.ts";
-import { normalizeSizing } from "../../scripts/postflop-ai/sizing.ts";
+import { validateSizingOptions } from "../../scripts/postflop-ai/sizing.ts";
+import type { SizedInputOptions } from "../../scripts/postflop-ai/sizing.ts";
 import { spotById, type Spot } from "../../scripts/postflop-ai/spots.ts";
 export type PostflopSource = { kind: string; spot: Spot; candidate: CandidateSource; laterCandidate?: CandidateSource<LaterPolicy> | null;
   sizing?: "single"; report: Record<string, unknown> | null; laterPolicyError?: { error: string; code: string; state: "not_generated" } };
@@ -112,15 +113,15 @@ async function loadPublishedProfileSpot(spotId: string, profile: string, opponen
     ...(laterPolicyError ? { laterPolicyError } : {}) };
 }
 
-export function loadPostflopSpot(spotId: string, signal?: AbortSignal, options: InputOptions = {},
+export function loadPostflopSpot(spotId: string, signal?: AbortSignal, options: SizedInputOptions = {},
   apiBase = postflopApiBase()): Promise<PostflopSource | null> {
   if (signal?.aborted) return Promise.reject(abortError());
   let normalized: ReturnType<typeof normalizedInputOptions>;
-  let sizing: ReturnType<typeof normalizeSizing>;
+  let sizing: ReturnType<typeof validateSizingOptions>;
   let params: Record<string, string>;
   try {
+    sizing = validateSizingOptions(options);
     normalized = normalizedInputOptions(options);
-    sizing = normalizeSizing(options.sizing);
     params = { spot: spotId };
     if (sizing === "single") params.sizing = sizing;
     // Table-only changes reuse the saved standard policies. The compute input
@@ -216,8 +217,9 @@ async function readDataset(name: string, signal?: AbortSignal) {
   }
 }
 
-export async function loadPostflopDatasets(spot: Spot, signal?: AbortSignal, options: InputOptions = {}): Promise<PostflopDatasets> {
+export async function loadPostflopDatasets(spot: Spot, signal?: AbortSignal, options: SizedInputOptions = {}): Promise<PostflopDatasets> {
   if (signal?.aborted) throw abortError();
+  validateSizingOptions(options);
   const normalized = normalizedInputOptions(options);
   const names = datasetsNeededForSpot(spot);
   if (normalized.opponentProfile !== "standard") {

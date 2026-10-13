@@ -1,4 +1,6 @@
-import type { FlopPolicy, HandTier, Inputs, LaterPolicy, PreviousLine } from "./types.ts";
+import type { PostflopSizing } from "./sizing.ts";
+type Inputs = BaseInputs & { sizing?: PostflopSizing };
+import type { FlopPolicy, HandTier, Inputs as BaseInputs, LaterPolicy, PreviousLine } from "./types.ts";
 import type { PlayerRole } from "./tree.ts";
 import type { WeightedCombo } from "../lib/equity.ts";
 import type { Table } from "./engine.ts";
@@ -13,7 +15,8 @@ export type RangeFacts = { street: string; role: PlayerRole; pfr: PlayerRole | n
 import { comboRange } from "./browser-inputs.ts";
 import { TIERS } from "./model.ts";
 import { handTier } from "./hu-hand-tier.ts";
-import { comboId, defenceFor, replayOrNull } from "./defence.ts";
+import { comboId, replayOrNull } from "./defence.ts";
+import { sizedDefenceFor as defenceFor } from "./single-size-defence.ts";
 import { LATER_NODES, laterNodeRole } from "./later-tree.ts";
 import { laterPolicyMix } from "./later-policy.ts";
 import { NODES, nodeRole, policyMix } from "./policy.ts";

@@ -4,12 +4,13 @@ import childProcess from "node:child_process";
 import { syncBuiltinESMExports } from "node:module";
 import { join } from "node:path";
 import test from "node:test";
-import { normalizeSizing, POSTFLOP_SIZINGS } from "../scripts/postflop-ai/sizing.ts";
+import { normalizeSizing, POSTFLOP_SIZINGS, validateSizingOptions } from "../scripts/postflop-ai/sizing.ts";
 import { normalizedInputOptions } from "../scripts/postflop-ai/input-options.ts";
 import { artifactPaths, boards, config, loadInputs, readArtifact, requireArtifact, root, useArtifactSource } from "../scripts/postflop-ai/inputs.mjs";
 import { generate, generateLater, loadCandidate, loadLaterCandidate, promptFor, promptForLater, sha } from "../scripts/postflop-ai/generate.mjs";
-import { validatePolicy, validateSingleSizePolicy } from "../scripts/postflop-ai/policy.ts";
-import { validateLaterPolicy, validateSingleSizeLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
+import { validatePolicy } from "../scripts/postflop-ai/policy.ts";
+import { validateLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
+import { validateSingleSizePolicy, validateSingleSizeLaterPolicy } from "../scripts/postflop-ai/single-size-policy.ts";
 import { NODES, treeNodes } from "../scripts/postflop-ai/tree.ts";
 import { LATER_NODES, STREETS, streetNodes } from "../scripts/postflop-ai/later-tree.ts";
 import { TIERS } from "../scripts/postflop-ai/model.ts";
@@ -86,11 +87,15 @@ test("sizing defaults, strict invalid values and standard-only options preserve 
   assert.equal(normalizeSizing("single"), "single");
   for (const value of ["", "Single", "multi-size", 0, false, {}, []]) {
     assert.throws(() => normalizeSizing(value), /Invalid postflop sizing/);
-    assert.throws(() => normalizedInputOptions({ sizing: value }), /Invalid postflop sizing/);
+    assert.throws(() => validateSizingOptions({ sizing: value }), /Invalid postflop sizing/);
   }
   assert.deepEqual(normalizedInputOptions({ sizing: "single" }), normalizedInputOptions());
+  assert.throws(() => validateSizingOptions({ sizing: "single", opponentProfile: "unknown" }),
+    { message: "Unknown opponent profile: unknown" });
+  assert.throws(() => validateSizingOptions({ sizing: "single", tableProfile: { call: "invalid" }, opponentProfile: "unknown" }),
+    { message: "call must be one of low, normal, high" });
   for (const opponentProfile of ["nit", "station", "lag", "maniac"]) assert.throws(
-    () => normalizedInputOptions({ sizing: "single", opponentProfile }),
+    () => validateSizingOptions({ sizing: "single", opponentProfile }),
     { message: "Single-size policies support the standard profile only" });
 });
 

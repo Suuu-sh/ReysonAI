@@ -1,5 +1,6 @@
 import { boards, config, laterSizingHash, seatRange } from "./inputs.mjs";
-import { DEFENCE_VERSION, SINGLE_DEFENCE_VERSION } from "./defence.ts";
+import { DEFENCE_VERSION } from "./defence.ts";
+import { SINGLE_DEFENCE_VERSION } from "./single-size-defence.ts";
 import { NODES, nodeRole, policyMix, referencePolicyFor, treeNodes, validatePolicy } from "./policy.ts";
 import { PROFILES, SIMULATION_VERSION, simulate } from "./simulation.mjs";
 import { sha } from "./generate.mjs";

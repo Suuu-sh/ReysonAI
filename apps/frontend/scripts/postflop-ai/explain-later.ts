@@ -1,4 +1,6 @@
-import type { FlopPolicy, HandTier, Inputs, LaterPolicy, PreviousLine, RoleValues } from "./types.ts";
+import type { PostflopSizing } from "./sizing.ts";
+type Inputs = BaseInputs & { sizing?: PostflopSizing };
+import type { FlopPolicy, HandTier, Inputs as BaseInputs, LaterPolicy, PreviousLine, RoleValues } from "./types.ts";
 import type { PlayerRole } from "./tree.ts";
 import type { LaterStreet } from "./later-tree.ts";
 import type { ReachStep } from "./types.ts";
@@ -29,7 +31,8 @@ import { LATER_NODES, laterNodeRole } from "./later-tree.ts";
 import { laterPolicyMix, validateLaterPolicy } from "./later-policy.ts";
 import { flopState } from "./tree.ts";
 import { laterDecisionState as laterDecision, laterStart, replayLater } from "./street-state.mjs";
-import { defenceFor, isFacingNode, replayOrNull } from "./defence.ts";
+import { isFacingNode, replayOrNull } from "./defence.ts";
+import { sizedDefenceFor as defenceFor } from "./single-size-defence.ts";
 import { averageExplanationFacts } from "./explain-aggregate.ts";
 import { profileReferenceFacts } from "./profile-reference.ts";
 

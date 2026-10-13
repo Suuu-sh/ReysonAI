@@ -1,5 +1,5 @@
 import { allBoardIdentity, allBoardSummaryName, assertAllBoardRunIdentity, openBoardCheckpoints, writeImmutableAllBoardOutput } from "./all-board-checkpoints.mjs";
-import { defenceFor } from "./defence.ts";
+import { sizedDefenceFor as defenceFor } from "./single-size-defence.ts";
 import { hasPostflopDeal } from "./range-support.mjs";
 // Offline all-1,755-canonical-flop audit. Reads saved policies; never generates them.
 import { availableParallelism } from "node:os";

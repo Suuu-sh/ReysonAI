@@ -65,7 +65,7 @@ function randomFlop(random) {
 
 test("browser input projection is JSON-identical to loadInputs for SRP and 4bet spots", () => {
   for (const { spotId } of fixtures) {
-    assertJsonEqual(buildInputs(spotId, datasets), loadInputs(spotId), `${spotId} inputs`);
+    assertJsonEqual({ ...buildInputs(spotId, datasets), sizing: "multi" }, loadInputs(spotId), `${spotId} sized inputs`);
   }
 });
 

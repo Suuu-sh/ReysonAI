@@ -1,6 +1,6 @@
 import type { ActionMix, FlopPolicy, Inputs, LaterPolicy } from "./types.ts";
 import type { Table } from "./engine.ts";
-import { defenceFor } from "./defence.ts";
+import { sizedDefenceFor as defenceFor } from "./single-size-defence.ts";
 import { NODES, effectiveMix, withRaise } from "./policy.ts";
 import { LATER_NODES } from "./later-tree.ts";
 

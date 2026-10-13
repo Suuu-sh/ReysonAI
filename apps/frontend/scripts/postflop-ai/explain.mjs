@@ -6,7 +6,8 @@ import { parseCards } from "./model.ts";
 import { handTier } from "./hu-hand-tier.ts";
 import { NODES, policyMix, scaleByPath, treeNodes } from "./policy.ts";
 import { FLOP_BETS, facingNode, flopBetFraction, flopState, historyFor, nodeRole, otherRole, raiseDepth } from "./tree.ts";
-import { defenceFor, replayOrNull } from "./defence.ts";
+import { replayOrNull } from "./defence.ts";
+import { sizedDefenceFor as defenceFor } from "./single-size-defence.ts";
 import { averageExplanationFacts } from "./explain-aggregate.ts";
 import { profileReferenceFacts } from "./profile-reference.ts";
 
