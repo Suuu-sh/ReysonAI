@@ -1,5 +1,6 @@
 import { adjustedInputOptions, finalizeInputs, inputStructureHash } from "./input-options.ts";
 import { profileArtifactKey } from "./candidate-source.ts";
+import { normalizeSizing } from "./sizing.ts";
 import { multiwayInputData } from "./multiway-inputs.mjs";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, statSync } from "node:fs";
@@ -50,16 +51,24 @@ export const laterSizingHash = () => sha(Object.fromEntries(LATER_KEYS.map(key =
 // artifacts (hand EV) and the profile generation report stay local under .local/postflop-ai/.
 export const POLICY_DIR = "scripts/data/postflop-ai/policies";
 export const PROFILE_DIR = "scripts/data/postflop-ai/profiles";
-export function artifactPaths(spot, { profile = "standard", role } = {}) {
+export function artifactPaths(spot, { profile = "standard", role, sizing } = {}) {
+  sizing = normalizeSizing(sizing);
+  if (sizing === "single" && profile !== "standard") throw new Error("Single-size policies support the standard profile only");
   if (profile !== "standard") return Object.fromEntries(["candidate", "laterCandidate"].map(kind =>
     [kind, join(root, "scripts/data/postflop-ai", `${profileArtifactKey(spot, kind, profile, role)}.json`)]));
-  const base = join(root, POLICY_DIR, spot.slug), local = join(root, ".local/postflop-ai", spot.slug);
+  const suffix = sizing === "single" ? "-single" : "";
+  const base = join(root, POLICY_DIR, `${spot.slug}${suffix}`), local = join(root, ".local/postflop-ai", spot.slug);
   return { candidate: `${base}-policy.json`, laterCandidate: `${base}-later-policy.json`, report: `${base}-report.json`,
     handEv: `${local}-hand-ev.json`, laterHandEv: `${local}-later-hand-ev.json` };
 }
 
 // One parsed artifact of a spot (a key of artifactPaths), or null when it does not exist.
 export function readArtifact(spot, kind, options = {}) {
+  const sizing = normalizeSizing(options.sizing);
+  if (sizing === "single" && options.profile && options.profile !== "standard") throw new Error("Single-size policies support the standard profile only");
+  // Single-size delivery is not installed in the D1 adapter. Never resolve its
+  // request through the adapter's standard policy/report namespace.
+  if (source && sizing === "single") return null;
   if (options.profile && options.profile !== "standard") {
     if (!["candidate", "laterCandidate"].includes(kind)) throw new Error("Profile mode has no published simulation/EV artifacts");
     const key = profileArtifactKey(spot, kind, options.profile, options.role);
@@ -89,8 +98,10 @@ export function requireArtifact(spot, kind, options = {}) {
 }
 
 export function loadInputs(spotId = DEFAULT_SPOT_ID, options = {}) {
+  const sizing = normalizeSizing(options.sizing);
   const base = loadBaseInputs(spotId, adjustedInputOptions(options));
-  return finalizeInputs(base, options, read, sha, inputStructureHash(base, gameConfig, flopConfig(), sha));
+  // Sizing selects an artifact, not a preflop range or source identity.
+  return { ...finalizeInputs(base, options, read, sha, inputStructureHash(base, gameConfig, flopConfig(), sha)), sizing };
 }
 
 function loadBaseInputs(spotId, allowUnreachable = false) {

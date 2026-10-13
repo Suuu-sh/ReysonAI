@@ -2,9 +2,10 @@ import type { BalancedFlopBase } from "../../scripts/postflop-ai/flop-base-core.
 import type { Candidate, InputOptions, LaterPolicy, PostflopDatasets, SourceDataset, MultiwayCatalog } from "../../scripts/postflop-ai/types.ts";
 import type { CandidateSource } from "../../scripts/postflop-ai/candidate-source.ts";
 import { normalizedInputOptions } from "../../scripts/postflop-ai/input-options.ts";
+import { normalizeSizing } from "../../scripts/postflop-ai/sizing.ts";
 import { spotById, type Spot } from "../../scripts/postflop-ai/spots.ts";
 export type PostflopSource = { kind: string; spot: Spot; candidate: CandidateSource; laterCandidate?: CandidateSource<LaterPolicy> | null;
-  report: Record<string, unknown> | null; laterPolicyError?: { error: string; code: string; state: "not_generated" } };
+  sizing?: "single"; report: Record<string, unknown> | null; laterPolicyError?: { error: string; code: string; state: "not_generated" } };
 import multiwayCatalog from "../../scripts/data/hu-after-multiway-spots.json" with { type: "json" };
 import { dataset, loadDataset } from "./datasets.ts";
 import { postflopApiBase, postflopUrl } from "./postflop-api.ts";
@@ -115,10 +116,16 @@ export function loadPostflopSpot(spotId: string, signal?: AbortSignal, options: 
   apiBase = postflopApiBase()): Promise<PostflopSource | null> {
   if (signal?.aborted) return Promise.reject(abortError());
   let normalized: ReturnType<typeof normalizedInputOptions>;
+  let sizing: ReturnType<typeof normalizeSizing>;
   let params: Record<string, string>;
   try {
     normalized = normalizedInputOptions(options);
+    sizing = normalizeSizing(options.sizing);
+    if (apiBase && sizing === "single") {
+      throw Object.assign(new Error("Single Size の方針はまだ配信されていません。"), { code: "SINGLE_SIZE_UNAVAILABLE" });
+    }
     params = { spot: spotId };
+    if (sizing === "single") params.sizing = sizing;
     // Table-only changes reuse the saved standard policies. The compute input
     // options adjust their reach ranges, not their artifact identity.
     if (normalized.opponentProfile !== "standard") {
@@ -127,7 +134,7 @@ export function loadPostflopSpot(spotId: string, signal?: AbortSignal, options: 
       params.tableProfile = JSON.stringify(normalized.tableProfile);
     }
   } catch (error) { return Promise.reject(error); }
-  const key = `${apiBase ?? ""}|${spotId}|${JSON.stringify(normalized)}`;
+  const key = `${apiBase ?? ""}|${spotId}|${JSON.stringify(normalized)}${sizing === "single" ? "|single" : ""}`;
   let entry = spotRequests.get(key);
   if (!entry) {
     entry = { promise: Promise.resolve(null), settled: false };

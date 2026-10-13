@@ -15,6 +15,7 @@ import { flopNodes, laterMixRows } from "./views.ts";
 import { isOpponentMode, resolveFlopCandidate, resolveLaterCandidate } from "./candidate-source.ts";
 
 const adjustment = inputs => inputs.adjusted ? { adjusted: inputs.adjusted, structure_hash: inputs.structure_hash } : {};
+const sizingBody = inputs => inputs.sizing === "single" ? { sizing: "single" } : {};
 
 export function buildLocalBoard(boardId, inputs, candidate) {
   const board = parseFlopBoard(boardId);
@@ -24,7 +25,7 @@ export function buildLocalBoard(boardId, inputs, candidate) {
   const { spot } = inputs;
   const nodes = flopNodes(inputs, policy, board.cards);
   return { kind: "ai_estimate_not_gto", spot: spot.id, tree: spot.tree, ip: spot.ip, oop: spot.oop, pot_bb: spot.potBb, stack_bb: spot.stackBb, board: board.id, split: board.split, texture: boardTexture(board.cards),
-    source_hash: inputs.fingerprint, policy_hash: candidate.metadata.policy_hash, nodes, ...adjustment(inputs) };
+    source_hash: inputs.fingerprint, policy_hash: candidate.metadata.policy_hash, nodes, ...adjustment(inputs), ...sizingBody(inputs) };
 }
 
 export function explainLocalCombo(params, inputs, candidate) {
@@ -48,7 +49,7 @@ export function explainLocalCombo(params, inputs, candidate) {
     if (!/^([2-9TJQKA][cdhs]){2}$/.test(cards)) throw new Error("カードの形式が正しくありません。");
     explanation = { ...flopUiFacts({ ...options, cards }), ...flopBetTable({ ...options, cards }) };
   }
-  return { spot: inputs.spot.id, board: board.id, ...explanation, ...adjustment(inputs) };
+  return { spot: inputs.spot.id, board: board.id, ...explanation, ...adjustment(inputs), ...sizingBody(inputs) };
 }
 
 function policyForLater(inputs, candidate, laterCandidate) {
@@ -116,7 +117,7 @@ export function buildLaterView({ flop, flopActions = "", turn = "", turnActions 
     turnPreviousAggressor: start.lastAggressor, riverPreviousAggressor,
     paths: { flop: flopPath, turn: turnPath, river: riverPath } });
   return { kind: "ai_estimate_not_gto", street, node: decision.node, actor, line: decision.line,
-    texture: runoutTexture(currentBoard), pot_bb: decision.potBb, rows, ...adjustment(inputs) };
+    texture: runoutTexture(currentBoard), pot_bb: decision.potBb, rows, ...adjustment(inputs), ...sizingBody(inputs) };
 }
 
 export const LOCAL_POSTFLOP_ROUTES = ["/local-postflop-spot", "/local-postflop", "/local-postflop-explain", "/local-postflop-later",
@@ -134,6 +135,7 @@ export function postflopResponse(pathname, params) {
     }
     if (params.has("opponentProfile")) options.opponentProfile = params.get("opponentProfile");
     if (params.has("opponentSeat")) options.opponentSeat = params.get("opponentSeat");
+    if (params.has("sizing")) options.sizing = params.get("sizing");
     const inputs = loadInputs(params.get("spot") || DEFAULT_SPOT_ID, options);
     const candidate = loadCandidate(inputs);
     const laterRoute = ["/local-postflop-later", "/local-postflop-later-explain"].includes(pathname);
@@ -149,15 +151,15 @@ export function postflopResponse(pathname, params) {
       error.code = "LATER_POLICY_MISSING";
       throw error;
     }
-    const report = isOpponentMode(inputs) ? null : requireArtifact(inputs.spot, "report");
+    const report = isOpponentMode(inputs) ? null : requireArtifact(inputs.spot, "report", { sizing: inputs.sizing });
     // Table-adjusted views reuse the saved standard policy but must not claim
     // its report audited the adjusted ranges. Validate against original inputs.
-    const reportInputs = inputs.adjusted && inputs.baselineFingerprint ? loadInputs(inputs.spot.id) : inputs;
+    const reportInputs = inputs.adjusted && inputs.baselineFingerprint ? loadInputs(inputs.spot.id, { sizing: inputs.sizing }) : inputs;
     const currentReport = report && isFreshSimulationReport(reportInputs, candidate, laterCandidate, report);
     // Preserve the existing read-only legacy preview contract. Its recovered
     // defence-5 report is historical evidence, not current acceptance. New HU
     // histories always require the strict gate; publication uses it for all spots.
-    const preservedLegacyReport = report && !inputs.spot.history && report.source_hash === (inputs.baselineFingerprint ?? inputs.fingerprint) &&
+    const preservedLegacyReport = report && inputs.sizing !== "single" && !inputs.spot.history && report.source_hash === (inputs.baselineFingerprint ?? inputs.fingerprint) &&
       report.policy_hash === candidate.metadata.policy_hash && report.simulation_version === SIMULATION_VERSION &&
       report.spot === inputs.spot.id && report.results?.length === 72;
     if (report && !currentReport && !preservedLegacyReport) {
@@ -167,7 +169,7 @@ export function postflopResponse(pathname, params) {
       const optionalLater = laterCandidate;
       // Same body as the worker's /v1/postflop/spot: the artifacts the browser computes from.
       return { status: 200, body: { kind: "ai_estimate_not_gto", spot: inputs.spot, candidate,
-        laterCandidate: optionalLater, report,
+        laterCandidate: optionalLater, report, ...sizingBody(inputs),
         report_status: report ? (currentReport ? "current" : "preserved-historical") : "not-applicable",
         ...(laterPolicyError ? { laterPolicyError } : {}),
         ...adjustment(inputs), ...(inputs.adjusted ? { audit_scope: isOpponentMode(inputs) ? "structure_only_unpublished" : "standard_saved_ranges" } : {}) } };
@@ -189,7 +191,7 @@ export function postflopResponse(pathname, params) {
         }
         explanation = explainLaterCombos({ ...options, combos });
       } else explanation = explainLaterCombo({ ...options, cards: params.get("cards"), });
-      data = { spot: inputs.spot.id, ...explanation, ...adjustment(inputs) };
+      data = { spot: inputs.spot.id, ...explanation, ...adjustment(inputs), ...sizingBody(inputs) };
     }
     else if (pathname === "/local-postflop-later") {
       data = buildLaterView({
@@ -203,7 +205,8 @@ export function postflopResponse(pathname, params) {
     if (error.code === "PROFILE_POLICY_MISSING") return { status: 404, body: { error: error.message, code: error.code, state: "not_generated" } };
     const missingLaterPolicy = error.code === "LATER_POLICY_MISSING";
     return { status: error.code === "ENOENT" || missingLaterPolicy ? 404 : 409, body: { error: missingLaterPolicy ? error.message : error.code === "ENOENT"
-      ? "ローカルAI推定候補または監査レポートがありません。CLIで明示生成・監査してください。" : error.message } };
+      ? "ローカルAI推定候補または監査レポートがありません。CLIで明示生成・監査してください。" : error.message,
+      ...(missingLaterPolicy && params.get("sizing") === "single" ? { code: error.code } : {}) } };
   }
 }
 

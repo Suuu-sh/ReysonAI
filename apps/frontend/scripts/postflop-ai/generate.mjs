@@ -9,9 +9,10 @@ import { artifactPaths, boards, config, readArtifact, requireArtifact, root, sea
 import { LATER_NODES, STREETS, openingActions, streetNodes } from "./later-tree.ts";
 import { boardHeight, boardTexture, LINES, parseCards, RUNOUT_TEXTURES, TIERS } from "./model.ts";
 import { handTier } from "./hu-hand-tier.ts";
-import { NODES, treeNodes, validatePolicy } from "./policy.ts";
+import { NODES, treeNodes, validatePolicy, validateSingleSizePolicy } from "./policy.ts";
 import { FLOP_BETS, facingNode, flopBetLabel, raiseDepth } from "./tree.ts";
-import { validateLaterPolicy } from "./later-policy.ts";
+import { validateLaterPolicy, validateSingleSizeLaterPolicy } from "./later-policy.ts";
+import { normalizeSizing } from "./sizing.ts";
 import { normalizeGenerationOptions } from "./generation-options.mjs";
 import { isOpponentMode, matchesCandidateSource, profileArtifactKey, resolveFlopCandidate, resolveLaterCandidate } from "./candidate-source.ts";
 
@@ -25,12 +26,35 @@ export const DEFAULT_EFFORT = "max";
 export const resolveEffort = cliEffort => cliEffort || process.env.POSTFLOP_AI_EFFORT || DEFAULT_EFFORT;
 export const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
+function inputSizing(inputs) {
+  const sizing = normalizeSizing(inputs.sizing);
+  if (sizing === "single" && isOpponentMode(inputs)) throw new Error("Single-size policies support the standard profile only");
+  return sizing;
+}
+
+function assertSizingIdentity(candidate, sizing) {
+  const saved = candidate?.metadata?.sizing;
+  if (sizing === "single" ? saved !== "single" : saved !== undefined && saved !== "multi") {
+    throw new Error("AI policy sizing identity mismatch");
+  }
+}
+
+function selectedGenerationOptions(inputs, options) {
+  const sizing = normalizeSizing(options.sizing ?? inputs.sizing);
+  if (sizing === "single" && (isOpponentMode(inputs) || options.profile && options.profile !== "standard")) {
+    throw new Error("Single-size policies support the standard profile only");
+  }
+  return { ...normalizeGenerationOptions(options), sizing };
+}
+
 export function loadCandidate(inputs, role) {
+  const sizing = inputSizing(inputs);
   if (isOpponentMode(inputs) && role === undefined) return resolveFlopCandidate(inputs, {
     villain: loadCandidate(inputs, "villain"), exploit: loadCandidate(inputs, "exploit"),
   });
   if (!isOpponentMode(inputs) && role !== undefined) throw new Error("A generation role requires a nonstandard profile");
-  const candidate = requireArtifact(inputs.spot, "candidate", isOpponentMode(inputs) ? { profile: inputs.opponentProfile, role } : {});
+  const candidate = requireArtifact(inputs.spot, "candidate", isOpponentMode(inputs) ? { profile: inputs.opponentProfile, role, sizing } : { sizing });
+  assertSizingIdentity(candidate, sizing);
   if (isOpponentMode(inputs)) {
     assertProfileIdentity(inputs, candidate, role);
     if (candidate.metadata.tree !== inputs.spot.tree) throw new Error("Profile policy identity mismatch: tree");
@@ -40,7 +64,7 @@ export function loadCandidate(inputs, role) {
       (candidate.metadata.tree ?? "oop_checks") !== inputs.spot.tree) {
     throw new Error("AI policy source is stale; archive it and explicitly generate a new candidate");
   }
-  validatePolicy(candidate.policy, inputs.spot.tree);
+  (sizing === "single" ? validateSingleSizePolicy : validatePolicy)(candidate.policy, inputs.spot.tree);
   if (candidate.metadata.policy_hash !== sha(candidate.policy)) throw new Error("Saved AI policy hash does not match its content");
   return candidate;
 }
@@ -48,6 +72,7 @@ export function loadCandidate(inputs, role) {
 // Optional local later-street artifact. Missing means use the fixed reference, while
 // malformed/stale files are errors, never a silent fallback or a generation request.
 export function loadLaterCandidate(inputs, flopCandidate, role) {
+  const sizing = inputSizing(inputs);
   if (isOpponentMode(inputs) && role === undefined) {
     const flop = resolveFlopCandidate(inputs, flopCandidate);
     return resolveLaterCandidate(inputs, {
@@ -62,16 +87,22 @@ export function loadLaterCandidate(inputs, flopCandidate, role) {
     validatePolicy(flopCandidate.policy, inputs.spot.tree);
   }
   const candidate = isOpponentMode(inputs)
-    ? requireArtifact(inputs.spot, "laterCandidate", { profile: inputs.opponentProfile, role })
-    : readArtifact(inputs.spot, "laterCandidate");
-  if (!candidate) return null;
+    ? requireArtifact(inputs.spot, "laterCandidate", { profile: inputs.opponentProfile, role, sizing })
+    : readArtifact(inputs.spot, "laterCandidate", { sizing });
+  if (!candidate) {
+    if (sizing === "single") throw Object.assign(new Error(`${inputs.spot.slug}: single-size later policy is missing`), { code: "LATER_POLICY_MISSING" });
+    return null;
+  }
+  assertSizingIdentity(candidate, sizing);
+  assertSizingIdentity(flopCandidate, sizing);
+  if (sizing === "single") validateSingleSizePolicy(flopCandidate.policy, inputs.spot.tree);
   if (isOpponentMode(inputs)) assertProfileIdentity(inputs, candidate, role);
   if (!matchesCandidateSource(inputs, candidate) ||
       (isOpponentMode(inputs) && (candidate.metadata.config_version !== config.version || flopCandidate.metadata.config_version !== config.version)) ||
       !matchesCandidateSource(inputs, flopCandidate) ||
       flopCandidate.metadata.policy_hash !== sha(flopCandidate.policy) ||
       candidate.metadata.flop_policy_hash !== flopCandidate.metadata.policy_hash) throw new Error("Later AI policy source or flop policy is stale");
-  validateLaterPolicy(candidate.policy);
+  (sizing === "single" ? validateSingleSizeLaterPolicy : validateLaterPolicy)(candidate.policy);
   if (candidate.metadata.policy_hash !== sha(candidate.policy)) throw new Error("Saved later AI policy hash does not match its content");
   return candidate;
 }
@@ -161,7 +192,7 @@ const PROFILE_GUIDANCE = {
 // Also used before artifact lookup/provider invocation. Never author a profile
 // using a standard range, a composed role policy, or a mismatched input identity.
 function authoringOptions(inputs, options = {}) {
-  const selected = normalizeGenerationOptions(options);
+  const selected = selectedGenerationOptions(inputs, options);
   if (selected.profile === "standard") {
     if (inputs.adjusted) throw new Error("Standard policy authoring with adjusted inputs is not enabled");
     if (isOpponentMode(inputs)) throw new Error("Generation profile does not match input profile");
@@ -201,16 +232,25 @@ function profilePrompt(inputs, selected, baseline) {
 }
 
 export function promptFor(inputs, options = {}) {
-  const selected = normalizeGenerationOptions(options);
+  const selected = selectedGenerationOptions(inputs, options);
   if (selected.profile !== "standard") authoringOptions(inputs, selected);
-  const baseline = standardPromptFor(inputs);
+  let baseline = standardPromptFor(inputs);
+  if (selected.sizing === "single") {
+    const instruction = `SINGLE-SIZE MODE: for every *_first node and every one of the 12 shape_height board classes, choose exactly ONE bet size (one of ${FLOP_BETS.join("/")}) that the whole range uses on that class; every other bet size must be 0 for every tier on that class, after the most-specific-rule-wins resolution. Pick the size from range and nut advantage: small sizes on boards where the bettor has a big range advantage and few nut changes (dry, high, paired), large sizes where the bettor has the nut advantage on dynamic boards (wet, low connected). Prefer pure or near-pure mixes: most tiers should be 100% check or 100% the chosen bet, or a two-action split; never spread a tier over three actions. Facing nodes still need their fallback rules even for sizes never chosen.`;
+    baseline = baseline.replace("\nOutput exactly", `\n${instruction}\nOutput exactly`);
+  }
   return selected.profile === "standard" ? baseline : profilePrompt(inputs, selected, baseline);
 }
 
 export function promptForLater(inputs, options = {}) {
-  const selected = normalizeGenerationOptions(options);
+  const selected = selectedGenerationOptions(inputs, options);
   if (selected.profile !== "standard") authoringOptions(inputs, selected);
-  const baseline = standardPromptForLater(inputs);
+  let baseline = standardPromptForLater(inputs);
+  if (selected.sizing === "single") {
+    const sizes = STREETS.map(street => `${street}: ${openingActions(street).filter(action => action !== "check").join("/")}`).join("; ");
+    const instruction = `SINGLE-SIZE MODE: for every turn/river *_first node and every line x runout texture class, choose exactly ONE bet size (one of ${sizes}, including allin) that the whole range uses on that class; every other bet size must be 0 for every tier on that class, after the most-specific-rule-wins resolution (line+texture, then line, then texture, then fallback). Pick the size from range and nut advantage: small sizes when the bettor has a big range advantage and few nut changes, large sizes when the bettor has the nut advantage on dynamic runouts. Prefer pure or near-pure mixes: most tiers should be 100% check or 100% the chosen bet, or a two-action split; never spread a tier over three actions. Facing nodes still need their fallback rules even for sizes never chosen.`;
+    baseline = baseline.replace("\nOutput exactly", `\n${instruction}\nOutput exactly`);
+  }
   return selected.profile === "standard" ? baseline : profilePrompt(inputs, selected, baseline);
 }
 
@@ -312,6 +352,12 @@ function reuseProfileArtifact(inputs, selected, kind, path, load) {
     ? join(root, ".local/postflop-ai", `${profileArtifactKey(inputs.spot, kind, selected.profile, selected.role)}.json`) : null;
   if (selected.force || (!existsSync(path) && (!legacy || !existsSync(legacy)))) return null;
   const candidate = load();
+  if (selected.sizing === "single") {
+    const prompt = kind === "candidate" ? promptFor(inputs, selected) : promptForLater(inputs, selected);
+    if (candidate.metadata.source_hash !== inputs.fingerprint || candidate.metadata.prompt_hash !== sha(prompt)) {
+      throw new Error("Single-size candidate prompt or source is stale; archive it and explicitly generate a new candidate");
+    }
+  }
   if (selected.profile !== "standard" && candidate.metadata.source_hash !== inputs.fingerprint) throw new Error("Profile candidate input fingerprint is stale; use --force to overwrite");
   if (!existsSync(path)) {
     mkdirSync(dirname(path), { recursive: true });
@@ -322,19 +368,21 @@ function reuseProfileArtifact(inputs, selected, kind, path, load) {
 
 export async function generate(inputs, { model = resolveModel(), effort = resolveEffort(), generator = generatorFor(model), ...options } = {}) {
   const selected = authoringOptions(inputs, options);
+  const selectedInputs = { ...inputs, sizing: selected.sizing };
   const path = artifactPaths(inputs.spot, selected).candidate;
-  const reused = reuseProfileArtifact(inputs, selected, "candidate", path, () => loadCandidate(inputs, selected.role));
+  const reused = reuseProfileArtifact(inputs, selected, "candidate", path, () => loadCandidate(selectedInputs, selected.role));
   if (reused) return reused;
   providerOptions(model, effort);
   const prompt = promptFor(inputs, selected);
   let started = {};
-  const policy = validatePolicy(await generator(prompt, { model, effort, onThread: result => { started = result ?? {}; } }), inputs.spot.tree);
+  const policy = (selected.sizing === "single" ? validateSingleSizePolicy : validatePolicy)(await generator(prompt, { model, effort, onThread: result => { started = result ?? {}; } }), inputs.spot.tree);
   // Record what the app-server reports it used, when it says so; otherwise what was requested.
   if (started.model && started.model !== model) throw new Error(`Codex used ${started.model} instead of ${model}`);
   const usedEffort = started.reasoningEffort ?? effort;
   const candidate = { metadata: { kind: "ai_estimate_not_gto", scope: "12 representative flops; flop only; not published",
     spot: inputs.spot.id, tree: inputs.spot.tree, source_hash: inputs.fingerprint, structure_hash: inputs.structure_hash, policy_hash: sha(policy), config_version: config.version,
     model, reasoning_effort: usedEffort, prompt_hash: sha(prompt),
+    ...(selected.sizing === "single" ? { sizing: "single" } : {}),
     ...(selected.profile !== "standard" ? { profile: selected.profile, role: selected.role, opponent_seat: inputs.opponentSeat } : {}) }, policy };
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, `${JSON.stringify(candidate, null, 2)}\n`, { flag: selected.force ? "w" : "wx" });
@@ -370,6 +418,14 @@ function standardPromptForLater(inputs) {
 
 export async function generateLater(inputs, flopCandidate, { model = resolveModel(), effort = resolveEffort(), generator = generatorFor(model), ...options } = {}) {
   const selected = authoringOptions(inputs, options);
+  const selectedInputs = { ...inputs, sizing: selected.sizing };
+  assertSizingIdentity(flopCandidate, selected.sizing);
+  if (selected.sizing === "single") {
+    validateSingleSizePolicy(flopCandidate.policy, inputs.spot.tree);
+    if (!matchesCandidateSource(inputs, flopCandidate) || flopCandidate.metadata.policy_hash !== sha(flopCandidate.policy) ||
+        flopCandidate.metadata.config_version !== config.version || (flopCandidate.metadata.spot ?? inputs.spot.id) !== inputs.spot.id ||
+        (flopCandidate.metadata.tree ?? "oop_checks") !== inputs.spot.tree) throw new Error("Single-size flop candidate input or policy is stale");
+  }
   if (selected.profile !== "standard") {
     assertProfileIdentity(inputs, flopCandidate, selected.role);
     validatePolicy(flopCandidate.policy, inputs.spot.tree);
@@ -377,16 +433,17 @@ export async function generateLater(inputs, flopCandidate, { model = resolveMode
         flopCandidate.metadata.config_version !== config.version || flopCandidate.metadata.tree !== inputs.spot.tree) throw new Error("Profile flop candidate input or policy is stale");
   }
   const path = artifactPaths(inputs.spot, selected).laterCandidate;
-  const reused = reuseProfileArtifact(inputs, selected, "laterCandidate", path, () => loadLaterCandidate(inputs, flopCandidate, selected.role));
+  const reused = reuseProfileArtifact(inputs, selected, "laterCandidate", path, () => loadLaterCandidate(selectedInputs, flopCandidate, selected.role));
   if (reused) return reused;
   providerOptions(model, effort);
   const prompt = promptForLater(inputs, selected);
   let started = {};
-  const policy = validateLaterPolicy(await generator(prompt, { model, effort, onThread: result => { started = result ?? {}; } }));
+  const policy = (selected.sizing === "single" ? validateSingleSizeLaterPolicy : validateLaterPolicy)(await generator(prompt, { model, effort, onThread: result => { started = result ?? {}; } }));
   if (started.model && started.model !== model) throw new Error(`Codex used ${started.model} instead of ${model}`);
   const candidate = { metadata: { kind: "ai_estimate_not_gto", scope: "turn and river; not published",
     spot: inputs.spot.id, source_hash: inputs.fingerprint, structure_hash: inputs.structure_hash, flop_policy_hash: flopCandidate.metadata.policy_hash, policy_hash: sha(policy),
     config_version: config.version, model, reasoning_effort: started.reasoningEffort ?? effort, prompt_hash: sha(prompt),
+    ...(selected.sizing === "single" ? { sizing: "single" } : {}),
     ...(selected.profile !== "standard" ? { profile: selected.profile, role: selected.role, opponent_seat: inputs.opponentSeat } : {}) }, policy };
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, `${JSON.stringify(candidate, null, 2)}\n`, { flag: selected.force ? "w" : "wx" });

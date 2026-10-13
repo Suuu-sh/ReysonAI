@@ -1,4 +1,4 @@
-// npm run postflop-ai:<generate|generate-later|simulate|audit|hand-ev|spots> -- [--spot <id> | --all] [--samples N] [--model M] [--effort E] [--profile P --role villain|exploit] [--opponent-seat ip|oop] [--force]
+// npm run postflop-ai:<generate|generate-later|simulate|audit|hand-ev|spots> -- [--spot <id> | --all] [--sizing multi|single] [--samples N] [--model M] [--effort E] [--profile P --role villain|exploit] [--opponent-seat ip|oop] [--force]
 // Without --spot, the first pilot spot (BTN_open_BB_call) is used. --all runs every reachable
 // heads-up spot (single-raised and 3bet pots) in order; a failing spot is logged and skipped, then listed at the end.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -7,6 +7,7 @@ import { dirname, relative } from "node:path";
 import { auditExperiment } from "./audit.mjs";
 import { generate, generateLater, loadCandidate, loadLaterCandidate, resolveEffort, resolveModel } from "./generate.mjs";
 import { generationInputOptions, normalizeGenerationOptions } from "./generation-options.mjs";
+import { normalizeSizing } from "./sizing.ts";
 import { artifactPaths, config, loadInputs } from "./inputs.mjs";
 import { simulateParallel } from "./simulation-parallel.mjs";
 import { generateHandEv } from "./hand-ev.mjs";
@@ -17,12 +18,12 @@ import { assertSafeFile } from "./reviewed-postflop-archive.mjs";
 import { isFreshSimulationReport } from "./publish-d1.mjs";
 
 const COMMANDS = ["generate", "generate-later", "simulate", "audit", "hand-ev", "later-hand-ev", "spots"];
-const USAGE = "Usage: postflop-ai <generate|generate-later|simulate|audit|hand-ev|later-hand-ev|spots> [--spot <id> | --all] [--samples N] [--model M] [--effort E] [--profile P --role villain|exploit] [--opponent-seat ip|oop] [--force]";
+const USAGE = "Usage: postflop-ai <generate|generate-later|simulate|audit|hand-ev|later-hand-ev|spots> [--spot <id> | --all] [--sizing multi|single] [--samples N] [--model M] [--effort E] [--profile P --role villain|exploit] [--opponent-seat ip|oop] [--force]";
 const [command, ...rest] = process.argv.slice(2);
 if (!COMMANDS.includes(command)) throw new Error(USAGE);
 
 const options = { all: false };
-const allowed = { generate: ["spot", "all", "model", "effort", "profile", "role", "force", "opponent-seat"], "generate-later": ["spot", "all", "model", "effort", "profile", "role", "force", "opponent-seat"], simulate: ["spot", "all", "samples"], audit: ["spot", "all"],
+const allowed = { generate: ["spot", "all", "sizing", "model", "effort", "profile", "role", "force", "opponent-seat"], "generate-later": ["spot", "all", "sizing", "model", "effort", "profile", "role", "force", "opponent-seat"], simulate: ["spot", "all", "sizing", "samples"], audit: ["spot", "all", "sizing"],
   "hand-ev": ["spot", "all"], "later-hand-ev": ["spot", "all"], spots: [] }[command];
 for (let i = 0; i < rest.length; i++) {
   const flag = rest[i].replace(/^--/, "");
@@ -31,7 +32,9 @@ for (let i = 0; i < rest.length; i++) {
   if (rest[i + 1] === undefined || rest[i + 1].startsWith("--")) throw new Error(USAGE);
   options[flag] = rest[++i];
 }
-const generationOptions = ["generate", "generate-later"].includes(command) ? normalizeGenerationOptions({ ...options, opponentSeat: options["opponent-seat"] }) : {};
+const sizing = normalizeSizing(options.sizing);
+if (sizing === "single" && options.profile && options.profile !== "standard") throw new Error("Single-size policies support the standard profile only");
+const generationOptions = { ...(["generate", "generate-later"].includes(command) ? normalizeGenerationOptions({ ...options, opponentSeat: options["opponent-seat"] }) : {}), sizing };
 if (options.all && options.spot) throw new Error("Use either --spot or --all");
 const samplesOption = fallback => {
   const samples = options.samples === undefined ? fallback : Number(options.samples);
@@ -42,7 +45,8 @@ const samplesOption = fallback => {
 async function runSpot(spotId) {
   const startedAt = new Date().toISOString();
   const auditStart = command === "audit" ? captureAuditIdentity() : null;
-  const inputs = loadInputs(spotId, generationInputOptions(spotId, generationOptions.profile, generationOptions.opponentSeat));
+  const inputOptions = { ...generationInputOptions(spotId, generationOptions.profile, generationOptions.opponentSeat), sizing };
+  const inputs = loadInputs(spotId, inputOptions);
   const paths = artifactPaths(inputs.spot, generationOptions);
   if (command === "generate") {
     const model = resolveModel(options.model), effort = resolveEffort(options.effort);
@@ -90,22 +94,23 @@ async function runSpot(spotId) {
   const result = auditExperiment(inputs, candidate, savedReport, laterCandidate, { replay });
   const auditEnd = captureAuditIdentity();
   if (identityHash(auditStart) !== identityHash(auditEnd) || identityHash(artifactStart) !== identityHash(artifactRecords()) ||
-      loadInputs(spotId).fingerprint !== inputs.fingerprint) throw new Error("Audit source, inputs or policy/report bytes changed during execution");
+      loadInputs(spotId, inputOptions).fingerprint !== inputs.fingerprint) throw new Error("Audit source, inputs or policy/report bytes changed during execution");
   const message = [`PASS: ${result.checkedCombos} expanded combo decisions, ${result.resultCount} comparisons, fixed-seed replay.`,
     `Advisory EV warnings: ${result.warnings.length}${result.warnings.length ? `; ${result.warnings.slice(0, 5).join(" | ")}` : ""}`,
     "AI estimate only; human review required before any publication."].join("\n");
   const log = `[${spotId}] ${message}\n`;
   const proof = { schema_version: 1, spot: spotId, scope: "Actual fixed-seed CLI audit; independent review and all-board acceptance remain separate",
-    status: "pass", command: `node scripts/postflop-ai/cli.mjs audit --spot ${spotId}`, exit_code: 0,
+    status: "pass", command: `node scripts/postflop-ai/cli.mjs audit --spot ${spotId}${sizing === "single" ? " --sizing single" : ""}`, exit_code: 0,
     started_at: startedAt, completed_at: new Date().toISOString(), source_fingerprint: inputs.fingerprint,
     flop_policy_hash: candidate.metadata.policy_hash, later_policy_hash: laterCandidate?.metadata.policy_hash ?? null,
     artifact_sha256: artifactStart, checkedCombos: result.checkedCombos, comparisons: result.resultCount, warnings: result.warnings.length,
     fixed_seed_replay_pass: true, execution: { node_version: process.version, platform: process.platform, arch: process.arch },
     audit_identity: { start: auditStart, end: auditEnd, sha256: identityHash(auditStart) },
     log: { text: log, sha256: createHash("sha256").update(log).digest("hex") } };
-  const evidenceRelative = `apps/frontend/.local/postflop-ai/audit-evidence/${spotId}-replay-${Date.parse(startedAt)}.json`;
+  const evidenceName = `${spotId}${sizing === "single" ? "-single" : ""}-replay-${Date.parse(startedAt)}.json`;
+  const evidenceRelative = `apps/frontend/.local/postflop-ai/audit-evidence/${evidenceName}`;
   assertSafeFile(AUDIT_REPOSITORY, evidenceRelative, { missing: true });
-  const evidencePath = new URL(`../../.local/postflop-ai/audit-evidence/${spotId}-replay-${Date.parse(startedAt)}.json`, import.meta.url);
+  const evidencePath = new URL(`../../.local/postflop-ai/audit-evidence/${evidenceName}`, import.meta.url);
   mkdirSync(dirname(evidencePath.pathname), { recursive: true });
   assertSafeFile(AUDIT_REPOSITORY, evidenceRelative, { missing: true });
   writeFileSync(evidencePath, `${JSON.stringify(proof, null, 2)}\n`, { flag: "wx" });
@@ -123,7 +128,7 @@ if (command === "spots") {
 } else if (!options.all) {
   const spotId = options.spot ?? DEFAULT_SPOT_ID;
   spotById(spotId);
-  console.log(`[${spotId}] ${await runSpot(spotId)}`);
+  console.log(`[${spotId}${sizing === "single" ? "; sizing=single" : ""}] ${await runSpot(spotId)}`);
 } else {
   const profileMode = generationOptions.profile && generationOptions.profile !== "standard";
   const attempted = profileMode ? POSTFLOP_SPOTS : POSTFLOP_SPOTS.filter(item => item.reachable);
@@ -131,7 +136,7 @@ if (command === "spots") {
   for (const spot of attempted) {
     const started = Date.now();
     try {
-      console.log(`[${spot.id}] ${await runSpot(spot.id)} (${Math.round((Date.now() - started) / 1000)}s)`);
+      console.log(`[${spot.id}${sizing === "single" ? "; sizing=single" : ""}] ${await runSpot(spot.id)} (${Math.round((Date.now() - started) / 1000)}s)`);
     } catch (error) {
       // Standard registry reachability must not pre-skip profile-only callers.
       // Only explicit zero adjusted reach is skippable; missing sources/policies

@@ -1,5 +1,6 @@
 // The worker and local middleware expose only read-only artifacts: the spot policy and the canonical flop base.
 // Postflop EV is not part of the product (decision 2026-10-01).
+import { normalizeSizing } from "../../scripts/postflop-ai/sizing.ts";
 const LOCAL_PATHS = {
   spot: "/local-postflop-spot",
   flop: "/local-postflop-flop",
@@ -13,6 +14,11 @@ export const postflopApiBase = (): string | undefined =>
 
 export function postflopUrl(route: PostflopRoute, params: URLSearchParams | Record<string, string>, base = postflopApiBase()): string {
   const search = new URLSearchParams(params);
+  const sizing = normalizeSizing(search.get("sizing"));
+  if (search.has("sizing") && sizing === "multi") search.delete("sizing");
+  if (base && sizing === "single") {
+    throw Object.assign(new Error("Single Size の方針はまだ配信されていません。"), { code: "SINGLE_SIZE_UNAVAILABLE" });
+  }
   // Standard routes must never receive profile options: an older worker could
   // silently answer with standard data. Profile artifacts have their own route.
   if (base && route !== "profile-policy" && search.has("opponentProfile") && search.get("opponentProfile") !== "standard") {
