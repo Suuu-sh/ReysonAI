@@ -9,7 +9,7 @@ import { Sidebar } from "../components/layout.tsx";
 import { levels, loadProfile, saveProfile } from "../profile.ts";
 import { localized, productLocale, LOCALES, selectProductLocale } from "../i18n.ts";
 import { SITE_COPY } from "../site/locales.ts";
-import { exportLocalData, loadAppearance, loadDisplayMode, practiceKeys, saveAppearance, saveDisplayMode } from "./preferences.ts";
+import { exportLocalData, loadAppearance, loadBetSizing, loadDisplayMode, practiceKeys, saveAppearance, saveBetSizing, saveDisplayMode } from "./preferences.ts";
 import { ACCOUNT_SECTION } from "./AccountMenu.tsx";
 
 
@@ -110,6 +110,7 @@ function SubscriptionTab() {
 function AppearanceTab() {
   const [appearance, setAppearance] = useState(loadAppearance);
   const [displayMode, setDisplayMode] = useState(loadDisplayMode);
+  const [betSizing, setBetSizing] = useState(loadBetSizing);
   const update = (patch: Partial<ReturnType<typeof loadAppearance>>) => { const next = { ...appearance, ...patch }; setAppearance(next); saveAppearance(next); };
   const cardPreview = (colors: string[][]) => <span className="account-card-preview" aria-hidden="true">{colors.map(([suit, color]) => <i key={suit} style={{ background: color }}>{suit}</i>)}</span>;
   return <section className="account-card">
@@ -121,6 +122,10 @@ function AppearanceTab() {
     <SettingRow title={t("レンジの表示", "Range display")} description={t("レンジ分析を次に開いたときから反映", "Applies next time Range Analysis opens")}>
       <Choice label={t("レンジの表示", "Range display")} value={displayMode} onChange={value => { setDisplayMode(value); saveDisplayMode(value); }}
         options={[{ value: "simple", label: t("シンプル", "Simple"), hint: t("主な行動だけ", "Main action") }, { value: "standard", label: t("スタンダード", "Standard"), hint: t("頻度も表示", "With frequencies") }]} />
+    </SettingRow>
+    <SettingRow title={t("ベットサイズ", "Bet sizing")} description={t("ポストフロップのレンジ表。Single はボードごとにサイズを1つに絞ります", "Postflop ranges. Single uses one size per board")}>
+      <Choice label={t("ベットサイズ", "Bet sizing")} value={betSizing} onChange={value => { setBetSizing(value === "single" ? "single" : "multi"); saveBetSizing(value); }}
+        options={[{ value: "single", label: "Single Size", hint: t("サイズ1つ", "One size") }, { value: "multi", label: "Multi Size", hint: t("3サイズ", "Three sizes") }]} />
     </SettingRow>
     <SettingRow title={t("カードの色", "Card colors")} description={t("トレーナーのカード", "Trainer cards")}>
       <Choice label={t("カードの色", "Card colors")} value={appearance.cards} onChange={cards => update({ cards })}

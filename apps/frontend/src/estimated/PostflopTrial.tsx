@@ -26,6 +26,7 @@ import { computeBoard, computeExplain, computeLaterExplain, computeLaterRangeFac
 import { deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot, loadPostflopFlop } from "./postflop-browser.ts";
 import { continuationCopy, postflopAvailabilityError } from "./continuation-copy.ts";
 import { localized, productLocale } from "../i18n.ts";
+import { loadBetSizing, saveBetSizing } from "../account/preferences.ts";
 
 // Action labels with real amounts come from the replay (decisionOptions in postflop-trial.ts); these
 // plain labels are only the fallback (amount-free) for actions a decision does not carry.
@@ -214,6 +215,16 @@ function matrixFor(node: StrategyNode) {
   }]));
 }
 
+// Single Size: drop wager sizes the range never uses on this board, so only the chosen size is shown.
+export function withoutUnusedActions<View extends { rows: StrategyNode["rows"]; actions?: readonly string[] }>(view: View): View {
+  const keys = Object.keys(view.rows[0]?.mix ?? {});
+  const used = new Set(keys.filter(action => view.rows.some(row => row.reachable && (row.mix[action] ?? 0) > 0)));
+  if (used.size === keys.length || !used.size) return view;
+  const pick = (mix: ActionMix) => Object.fromEntries(Object.entries(mix).filter(([action]) => used.has(action))) as ActionMix;
+  return { ...view, ...(view.actions ? { actions: view.actions.filter(action => used.has(action)) } : {}),
+    rows: view.rows.map(row => ({ ...row, mix: pick(row.mix), combos: row.combos.map(combo => ({ ...combo, mix: pick(combo.mix) })) })) };
+}
+
 // A bet that commits the merge ratio of the stack plays as the all-in, so two actions can share
 // one label (e.g. river 125% and All-in at low SPR). Show them as one action with summed frequency.
 type LaterRow = StrategyNode["rows"][number];
@@ -363,7 +374,11 @@ export function StreetCardDialog({ usedCards = [], street, currentCard = "", onA
 }
 
 export function PostflopTrial({ context, cards, actions = [], turnCard = "", turnActions = [], riverCard = "", riverActions = [], displayMode = "standard", tableProfile, opponentProfile = "standard", opponentSeat = "ip", onOpponentProfileChange }: { tableProfile?: InputOptions["tableProfile"]; opponentProfile?: InputOpponentProfile; opponentSeat?: PlayerRole; onOpponentProfileChange?: (profile: InputOpponentProfile) => void; context: NonNullable<ReturnType<typeof completedFlopContext>>; cards: string[]; actions?: string[]; turnCard?: string; turnActions?: string[]; riverCard?: string; riverActions?: string[]; displayMode?: string }) {
-  const options = useMemo<InputOptions>(() => ({ tableProfile, opponentProfile, opponentSeat }), [tableProfile?.call, tableProfile?.three_bet, opponentProfile, opponentSeat]);
+  const [betSizing, setBetSizing] = useState(loadBetSizing);
+  // Single-size policies exist for the standard profile only; Multi keeps the original request identity.
+  const sizing = opponentProfile === "standard" ? betSizing : "multi";
+  const options = useMemo<InputOptions>(() => ({ tableProfile, opponentProfile, opponentSeat, ...(sizing === "single" ? { sizing } : {}) }), [tableProfile?.call, tableProfile?.three_bet, opponentProfile, opponentSeat, sizing]);
+  const restoreMultiSize = () => { saveBetSizing("multi"); setBetSizing("multi"); };
   const requestKey = JSON.stringify(options);
   const board = recognizedFlop(cards);
   const [selectedHand, setSelectedHand] = useState("AKo");
@@ -481,8 +496,9 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   }, [board, context.pilotAvailable, flopPath, later?.actor, later?.line, later?.node, later?.street,
     postflopDatasets, postflopSource, riverCard, riverPath, sourceError, spotId, turnCard, turnPath, sourcePreparing, options, requestKey]);
 
-  const current = decision.node && data?.requestKey === requestKey && postflopSource && postflopDatasets && data?.board === board && data.spot === spotId
+  const rawCurrent = decision.node && data?.requestKey === requestKey && postflopSource && postflopDatasets && data?.board === board && data.spot === spotId
     ? data.nodes[decision.node] ?? null : null;
+  const current = useMemo(() => rawCurrent && sizing === "single" ? withoutUnusedActions(rawCurrent) : rawCurrent, [rawCurrent, sizing]);
   const aggregates = useMemo(() => current && !current.unavailable ? matrixFor(current) : null, [current]);
   const totals = useMemo(() => current && !current.unavailable ? rangeTotals(current) : null, [current]);
   const matrixNode = useMemo(() => current ? { actingPosition: current.seat } : null, [current]);
@@ -490,8 +506,8 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const laterLabels = labelsFor(later?.node, decisionLabelsOf(later));
   const laterLabelKey = JSON.stringify(laterLabels);
   const laterCurrent = useMemo(() => later?.node && laterData?.requestKey === requestKey && postflopSource && postflopDatasets && laterData?.street === later!.street && laterData.node === later!.node &&
-    laterData.actor === later!.actor && laterData.line === later!.line ? mergeSameLabelActions(laterData, laterLabels) : null,
-  [laterData, later?.node, later?.street, later?.actor, later?.line, laterLabelKey, requestKey, postflopSource, postflopDatasets]);
+    laterData.actor === later!.actor && laterData.line === later!.line ? (sizing === "single" ? withoutUnusedActions(mergeSameLabelActions(laterData, laterLabels)) : mergeSameLabelActions(laterData, laterLabels)) : null,
+  [laterData, later?.node, later?.street, later?.actor, later?.line, laterLabelKey, requestKey, postflopSource, postflopDatasets, sizing]);
   const laterAggregates = useMemo(() => laterCurrent ? laterMatrixFor(laterCurrent) : null, [laterCurrent]);
   const laterChosen = laterAggregates?.get(selectedHand);
   const selectedLaterRow = laterCurrent?.rows.find(row => row.hand === selectedHand);
@@ -593,15 +609,19 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
       : !cards.every(Boolean) ? <Panel className="postflop-unavailable"><StatusState title={english ? "Select a flop" : "フロップを選択してください"}>{english ? "Open the flop cards in the action path and choose any three cards." : "上のアクション列にあるフロップカードを押して、任意の3枚を選んでください。"}</StatusState></Panel>
       : !board ? <Panel className="postflop-unavailable"><StatusState title={english ? "Invalid flop cards" : "フロップのカードが正しくありません"}>{english ? "Choose three distinct cards from the deck." : "重複しないカードを3枚選んでください。"}</StatusState></Panel>
       : <>
+        {sizing === "single" && sourceError && !sourcePreparing && <Panel className="postflop-profile-preparing">
+          <StatusState title={localized("No Single Size policy for this spot yet", "この局面の Single Size 方針はまだありません")}>{localized("Switch to Multi Size to see the three-size ranges.", "Multi Size に切り替えると、3サイズのレンジを表示します。")}</StatusState>
+          <button type="button" className="secondary-button" onClick={restoreMultiSize}>{localized("Use Multi Size", "Multi Size に戻す")}</button>
+        </Panel>}
         {(sourcePreparing || decision.node && statusKey === requestKey && status === "preparing" || later?.node && laterStatusKey === requestKey && laterStatus === "preparing") && <ProfilePolicyPreparing onRestoreStandard={onOpponentProfileChange ? () => onOpponentProfileChange("standard") : undefined} />}
         {decision.node && !sourcePreparing && status === "loading" && <PostflopLoading title="ローカル候補を読み込み中" />}
-        {decision.node && statusKey === requestKey && !sourcePreparing && status === "error" && <Panel><StatusState title="ローカル候補を表示できません" tone="error">{error}</StatusState></Panel>}
+        {decision.node && statusKey === requestKey && !sourcePreparing && status === "error" && !(sizing === "single" && sourceError) && <Panel><StatusState title="ローカル候補を表示できません" tone="error">{error}</StatusState></Panel>}
         {!decision.node && !start && <Panel><StatusState title={english ? "Flop action complete" : "フロップの判断終了"}>{decision.result}</StatusState></Panel>}
         {!decision.node && start && !turnCard && <Panel><StatusState title={english ? "Select a turn card" : "ターンを選択してください"}>{english ? "Choose a turn card in the action path above." : "上のアクション列にあるターンカードを押して、1枚選んでください。"}</StatusState></Panel>}
         {!decision.node && start && turnReplay && !later?.node && !riverCard && turnReplay.state.end && !["fold", "raise-fold"].includes(turnReplay.state.end.type) && turnReplay.stacks.ip > 0 && turnReplay.stacks.oop > 0 && <Panel><StatusState title={english ? "Select a river card" : "リバーを選択してください"}>{english ? "The turn action is complete. Choose one river card in the action path above." : "ターンの判断が終わりました。上のアクション列にあるリバーカードを押して、1枚選んでください。"}</StatusState></Panel>}
         {!decision.node && start && turnReplay && !later?.node && (turnReplay.end?.type === "fold" || turnReplay.end?.type === "raise-fold" || turnReplay.stacks.ip <= 0 || turnReplay.stacks.oop <= 0 || Boolean(riverReplay?.state.end)) && <Panel><StatusState title={english ? "Later-street action complete" : "後続ストリートの判断終了"}>{english ? "The action has ended; no later decision is available." : "フォールドまたはオールインでアクションが終了しました。後続の判断はありません。"}</StatusState></Panel>}
         {!decision.node && start && later?.node && !sourcePreparing && laterStatus === "loading" && <PostflopLoading title={english ? "Loading local later-street estimate" : "後続ストリートの候補を読み込み中"} />}
-        {!decision.node && start && later?.node && laterStatusKey === requestKey && !sourcePreparing && laterStatus === "error" && <Panel><StatusState title={english ? "Cannot show the local later-street estimate" : "後続ストリートの候補を表示できません"} tone="error">{laterError}</StatusState></Panel>}
+        {!decision.node && start && later?.node && laterStatusKey === requestKey && !sourcePreparing && laterStatus === "error" && !(sizing === "single" && sourceError) && <Panel><StatusState title={english ? "Cannot show the local later-street estimate" : "後続ストリートの候補を表示できません"} tone="error">{laterError}</StatusState></Panel>}
         {current?.unavailable && <ProfilePolicyPreparing onRestoreStandard={onOpponentProfileChange ? () => onOpponentProfileChange("standard") : undefined} />}
         {current && !current.unavailable && aggregates && <div className="postflop-range-layout">
           <StrategyMatrix node={matrixNode} title={`${nodeTitle(decision.node, context)} · ${english ? "range" : "レンジ"}`} ariaLabel={english ? `${current.seat} flop range` : `${current.seat}のフロップレンジ`}

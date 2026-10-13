@@ -37,6 +37,17 @@ export function saveDisplayMode(mode: string) {
   try { storage()?.setItem(displayModeKey, mode === "simple" ? "simple" : "standard"); } catch {}
 }
 
+// Postflop bet sizing: "multi" uses every configured size, "single" one size per board class.
+const SIZING_KEY = "reysonai:postflop-sizing:v1";
+
+export function loadBetSizing(): "multi" | "single" {
+  try { return storage()?.getItem(SIZING_KEY) === "single" ? "single" : "multi"; } catch { return "multi"; }
+}
+
+export function saveBetSizing(sizing: string) {
+  try { storage()?.setItem(SIZING_KEY, sizing === "single" ? "single" : "multi"); } catch {}
+}
+
 // Practice data lives under one prefix; used by data export and by log-out cleanup.
 const PRACTICE_PREFIX = "reysonai.trainer.";
 
