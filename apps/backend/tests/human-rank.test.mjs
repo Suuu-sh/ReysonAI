@@ -95,3 +95,29 @@ test('account/player deletion anonymizes every old/new table, preserves all-in c
  // Deleting only the season record is also safe, including the current actor.
  const g=await fixture();try{await g.six();g.sqlite.prepare('DELETE FROM human_rank_players WHERE user_id=?').run('U0');assert.equal((await g.state(1)).match.hand.pending.seat,1);for(const i of [1,2,3,4]){const m=(await g.state(i)).match;await g.call(i,'action',{tableId:m.id,version:m.version,actionId:crypto.randomUUID(),action:'fold'})}assert.equal(g.sqlite.prepare('SELECT COUNT(*) n FROM human_rank_results').get().n,5);assert.equal((await g.state(0)).phase,'out');assert.deepEqual(g.sqlite.prepare('PRAGMA foreign_key_check').all(),[]);}finally{g.close()}
 });
+
+
+test('public avatar preset is owned, validated, and shared in ranked responses', async()=>{const f=await fixture();try{
+ assert.equal((await f.call(0,'public-profile')).profile,null);
+ await f.call(0,'public-profile',{avatar:'spade',expectedUserId:'U1'},409);
+ assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM human_rank_players WHERE user_id=?').get('U0').n,0);
+ await f.call(0,'public-profile',{avatar:'../../bad'},400);
+ await f.call(0,'public-profile',{avatar:'spade',rating:9999},400);
+ const saved=await f.call(0,'public-profile',{avatar:'spade',expectedUserId:'U0'});
+ assert.equal(saved.profile.avatar,'spade');
+ assert.equal((await f.call(0,'public-profile')).profile.avatar,'spade');
+ assert.equal((await f.call(1,'public-profile')).profile,null);
+ await f.call(1,'public-profile',{avatar:'moon',expectedUserId:'U1'});
+ assert.equal((await f.call(0,'public-profile')).profile.avatar,'spade');
+ assert.equal(f.sqlite.prepare('SELECT rating,hands,phase FROM human_rank_players WHERE user_id=?').get('U0').rating,1000);
+ const publicId=saved.profile.id;
+ assert.equal((await f.call(1,'opponent?player='+publicId)).player.avatar,'spade');
+ const match=await f.six();
+ assert.equal(match.participants.find(p=>p.player.id===publicId).player.avatar,'spade');
+ const invalid=await worker.fetch(new Request(api+'public-profile',{method:'POST',headers:{origin:'https://evil.invalid',cookie:'reysonai-dev-session='+f.tokens[0],'content-type':'application/json'},body:JSON.stringify({avatar:'heart'})}),f.env);
+ assert.equal(invalid.status,403);
+ assert.equal((await f.call(0,'public-profile')).profile.avatar,'spade');
+ const status=await worker.fetch(new Request(api+'status',{headers:{origin}}),f.env);assert.equal(status.status,200);
+ f.sqlite.exec('ALTER TABLE human_rank_players DROP COLUMN avatar');
+ const oldSchema=await worker.fetch(new Request(api+'status',{headers:{origin}}),f.env);assert.equal(oldSchema.status,503);assert.equal((await oldSchema.json()).enabled,false);
+}finally{f.close()}});

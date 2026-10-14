@@ -20,7 +20,8 @@ const profile = { nickname: "Yu", level: "intermediate", updatedAt: "2026-09-27T
 
 test("account menu chip shows the profile and keeps the menu closed until opened", () => {
   const html = renderToStaticMarkup(createElement(AccountMenu, { profile, onNavigate() {}, onLogout() {} }));
-  assert.match(html, /class="account-avatar">Y</);
+  assert.match(html, /class="profile-avatar /);
+  assert.doesNotMatch(html, />G<|>Y</);
   assert.match(html, /aria-haspopup="menu" aria-expanded="false"/);
   assert.doesNotMatch(html, /account-popover/);
 });
@@ -39,6 +40,18 @@ test("settings page has account, subscription, appearance and language tabs", ()
   assert.match(html, /<header class="account-heading trainer-home-head"><h1 class="trainer-home-eyebrow">SETTINGS<\/h1><\/header>/);
   assert.match(html, /value="Yu"/);
   assert.match(html, /Googleでログイン/); // account creation is gated until the backend is configured
+  assert.doesNotMatch(html, /練習データ|データを書き出す|Export data|reysonai-practice-/);
+  const source = readFileSync(new URL("../src/account/AccountPage.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /exportLocalData|DownloadSimple|new Blob|link\.click\(\)|reysonai-practice-/);
+});
+
+test("public avatar saves are bound to the loaded account and missing profiles preserve the local avatar", () => {
+  const source = readFileSync(new URL("../src/account/AccountPage.tsx", import.meta.url), "utf8");
+  assert.match(source, /loadedAccountId = accountSnapshot\(\)\.user\?\.verified \? accountSnapshot\(\)\.user!\.id : null/);
+  assert.match(source, /expectedUserId: loadedAccountId/);
+  assert.match(source, /currentAccountId !== loadedAccountId/);
+  assert.match(source, /if \(!result\.profile\) \{ setPublicReady\(true\); setPublicError\(false\); return; \}/);
+  assert.ok(source.indexOf("if (!result.profile) { setPublicReady(true); setPublicError(false); return; }") < source.indexOf("setAvatar(remote)"));
 });
 
 test("subscription shows the ¥580 Plus plan without a live purchase", () => {
@@ -74,16 +87,16 @@ function withLocalStorage(run) {
   }
 }
 
-test("practice export and cleanup preserve profile, appearance and unrelated data", () => {
+test("removing practice export leaves stored data and explicit logout cleanup intact", () => {
   withLocalStorage(store => {
     store.setItem("reysonai.trainer.answers", JSON.stringify([{ hand: "AA" }]));
     store.setItem("reysonai.trainer.draft", "legacy draft");
     store.setItem("reysonai:profile:v1", "profile");
     store.setItem("reysonai:appearance:v1", "appearance");
     store.setItem("other-app", "untouched");
-    assert.deepEqual(prefs.exportLocalData().data, {
-      "reysonai.trainer.answers": [{ hand: "AA" }], "reysonai.trainer.draft": "legacy draft",
-    });
+    assert.equal(prefs.exportLocalData, undefined);
+    assert.deepEqual(prefs.practiceKeys().sort(), ["reysonai.trainer.answers", "reysonai.trainer.draft"]);
+    assert.equal(store.getItem("reysonai.trainer.answers"), '[{"hand":"AA"}]');
     prefs.clearPracticeData();
     assert.deepEqual(prefs.practiceKeys(), []);
     assert.equal(store.getItem("reysonai:profile:v1"), "profile");
@@ -116,5 +129,22 @@ test("local logout removes only the profile by default", async () => {
     clearProfile();
     assert.equal(store.getItem("reysonai:profile:v1"), null);
     assert.equal(store.getItem("reysonai.trainer.answers"), "[]");
+  });
+});
+
+
+test("avatar presets render consistently and profile edits preserve the selected icon", async () => {
+  const { ProfileAvatar } = await server.ssrLoadModule("/src/account/ProfileAvatar.tsx");
+  const { saveProfile, loadProfile } = await server.ssrLoadModule("/src/profile.ts");
+  const spade = renderToStaticMarkup(createElement(ProfileAvatar, { avatar: "spade", size: 28 }));
+  assert.match(spade, /profile-avatar/);
+  assert.equal(spade, renderToStaticMarkup(createElement(ProfileAvatar, { avatar: "spade", size: 28 })));
+  assert.equal(renderToStaticMarkup(createElement(ProfileAvatar, { avatar: "invalid" })), renderToStaticMarkup(createElement(ProfileAvatar, { avatar: "person" })));
+  withLocalStorage(store => {
+    saveProfile({ nickname: "Yu", level: "intermediate", avatar: "spade" });
+    saveProfile({ nickname: "Yuki", level: "beginner" });
+    assert.equal(loadProfile().avatar, "spade");
+    store.setItem("reysonai:profile:v1", JSON.stringify({ nickname: "Old", level: "intermediate", avatar: "not-allowed", updatedAt: "x" }));
+    assert.equal(loadProfile().avatar, "person");
   });
 });

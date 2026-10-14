@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { levelLabel } from "../profile.ts";
 import "./account.css";
+import { ProfileAvatar } from "./ProfileAvatar.tsx";
 import { localized } from "../i18n.ts";
 
 const t = (ja: string, en: string) => localized(en, ja);
@@ -53,7 +54,7 @@ export function AccountMenu({ profile, collapsed, onNavigate, onLogout }: { prof
     </div>, document.body)}
     <button type="button" ref={chipRef} className={`account-chip${open ? " open" : ""}`} aria-haspopup="menu" aria-expanded={open}
       aria-label={t("アカウント", "Account")} title={t("アカウント", "Account")} onClick={toggleMenu}>
-      <span className="account-avatar">{initialOf(profile)}</span>
+      <ProfileAvatar avatar={profile.avatar} />
       <span className="account-chip-text"><strong translate="no">{name}</strong><small>{levelLabel(profile?.level)} · Free</small></span>
     </button>
   </div>;
