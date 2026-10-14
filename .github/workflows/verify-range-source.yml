@@ -1,0 +1,38 @@
+name: Verify AI and GTO range source
+
+on:
+  pull_request:
+    branches: [development, main]
+    paths:
+      - 'apps/frontend/src/account/**'
+      - 'apps/frontend/src/components/StrategyMatrix.tsx'
+      - 'apps/frontend/src/estimated/RangeWorkspace.tsx'
+      - 'apps/frontend/src/gto/**'
+      - 'apps/frontend/scripts/import-gto-benchmark.mjs'
+      - 'apps/frontend/tests/gto-*.test.mjs'
+      - 'apps/frontend/tests/account*.test.mjs'
+      - 'apps/frontend/tests/classic-range-style.test.mjs'
+      - 'apps/frontend/package*.json'
+      - '.github/workflows/verify-range-source.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/frontend
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.20.0'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - run: npm ci
+      - name: Verify source selection, preferences and saved strategy rendering
+        run: node --test --test-force-exit --test-concurrency=1 tests/gto-*.test.mjs tests/account*.test.mjs tests/classic-range-style.test.mjs tests/strategy-matrix.test.mjs

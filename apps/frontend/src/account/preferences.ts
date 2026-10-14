@@ -11,7 +11,10 @@ const storage = () => { try { return typeof window === "undefined" ? null : acco
 const appearanceRecord = (): Record<string, unknown> => {
   try {
     const value: unknown = JSON.parse(storage()?.getItem(KEY) ?? "null");
-    return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
+    if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+    const record = value as Record<string, unknown>;
+    delete record.matrix;
+    return record;
   } catch { return {}; }
 };
 const sourceOf = (record: Record<string, unknown>): RangeSource => record.rangeSource === "gto" ? "gto" : "ai";
@@ -33,8 +36,12 @@ export function applyAppearance(appearance = loadAppearance()) {
 
 export function saveAppearance(appearance: ReturnType<typeof loadAppearance>) {
   const previous = appearanceRecord();
-  try { storage()?.setItem(KEY, JSON.stringify({ ...previous, ...appearance, rangeSource: sourceOf(previous) })); } catch {}
-  applyAppearance(appearance);
+  const next = {
+    cards: appearance.cards === "two" ? "two" : "four",
+    motion: appearance.motion === "reduce" ? "reduce" : "standard",
+  };
+  try { storage()?.setItem(KEY, JSON.stringify({ ...previous, ...next, rangeSource: sourceOf(previous) })); } catch {}
+  applyAppearance(next);
 }
 
 export function loadDisplayMode() {

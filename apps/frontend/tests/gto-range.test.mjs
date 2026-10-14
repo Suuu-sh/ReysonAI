@@ -49,3 +49,26 @@ test("range source defaults to AI, preserves appearance, and repairs corrupt rec
     assert.deepEqual(JSON.parse(values.get(key)), { cards: "two", motion: "reduce", rangeSource: "ai" });
   } finally { if (previous === undefined) delete globalThis.window; else globalThis.window = previous; }
 });
+
+
+test("appearance saves strip retired matrix from legacy records and input patches", () => {
+  const previousWindow = globalThis.window, previousDocument = globalThis.document;
+  const values = new Map();
+  const key = "reysonai:appearance:v1";
+  globalThis.window = { localStorage: { getItem: item => values.get(item) ?? null, setItem: (item, value) => values.set(item, value) }, dispatchEvent() {} };
+  globalThis.document = { documentElement: { dataset: { matrix: "classic" } } };
+  try {
+    values.set(key, JSON.stringify({ cards: "two", motion: "reduce", rangeSource: "gto", matrix: "classic" }));
+    saveAppearance({ cards: "four", motion: "standard", matrix: "classic" });
+    assert.deepEqual(JSON.parse(values.get(key)), { cards: "four", motion: "standard", rangeSource: "gto" });
+    assert.deepEqual(document.documentElement.dataset, { cards: "four", motion: "standard" });
+    values.set(key, JSON.stringify({ cards: "two", motion: "reduce", matrix: "classic" }));
+    saveRangeSource("gto");
+    assert.deepEqual(JSON.parse(values.get(key)), { cards: "two", motion: "reduce", rangeSource: "gto" });
+    saveRangeSource("ai");
+    assert.deepEqual(JSON.parse(values.get(key)), { cards: "two", motion: "reduce", rangeSource: "ai" });
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window; else globalThis.window = previousWindow;
+    if (previousDocument === undefined) delete globalThis.document; else globalThis.document = previousDocument;
+  }
+});

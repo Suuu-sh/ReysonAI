@@ -5,6 +5,7 @@ import { ActionBars, Panel, SectionHeading, StatusState } from "../components/pr
 import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
 import { RANGE_SECTION, Sidebar } from "../components/layout.tsx";
 import { productLocale } from "../locale.ts";
+import { loadDisplayMode } from "../account/preferences.ts";
 import { validateGtoBenchmark, type GtoNode } from "./benchmark.ts";
 import savedCalculation from "./benchmark-flop.json";
 import "./gto.css";
@@ -17,6 +18,7 @@ const calculation = (() => {
 const formatFrequency = (value: number) => pct(value);
 
 export function GtoRangeView({ profile, onEditProfile, onSectionChange }: { profile?: Profile | null; onEditProfile?: () => void; onSectionChange?: (section: string) => void }) {
+  const [displayMode] = useState(loadDisplayMode);
   const [nodeId, setNodeId] = useState<"bb-root" | "btn-after-check">("bb-root");
   const [selected, setSelected] = useState<string | null>(null);
   const benchmark = calculation.data;
@@ -61,8 +63,10 @@ export function GtoRangeView({ profile, onEditProfile, onSectionChange }: { prof
         </div>
         <div className={`gto-results${selected ? " has-selection" : ""}`}>
           <StrategyMatrix node={{ actingPosition: node.position }} title={nodeLabel(node)} ariaLabel={copy(`${node.position} saved flop range`, `${node.position} の保存済みフロップレンジ`, `${node.position} 已保存的翻牌范围`, `Rango de flop guardado de ${node.position}`)}
-            aggregates={aggregates} actions={["bet", "check"]} actionLabels={actionLabels} selected={selected} onSelect={setSelected}
-            footer={<p className="gto-matrix-note">{copy("Colors show action frequencies, not hand reach.", "色はアクション頻度を示し、ハンドの到達率ではありません。", "颜色表示行动频率，而非手牌到达率。", "Los colores muestran frecuencias de acción, no el alcance de la mano.")}</p>}
+            aggregates={aggregates} actions={["bet", "check"]} actionLabels={actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={setSelected}
+            footer={<p className="gto-matrix-note">{displayMode === "simple"
+              ? copy("Colors show each hand's main action, not hand reach.", "色は各ハンドの主なアクションを示し、ハンドの到達率ではありません。", "颜色表示每手牌的主要行动，而非手牌到达率。", "Los colores muestran la acción principal de cada mano, no su alcance.")
+              : copy("Colors show action frequencies, not hand reach.", "色はアクション頻度を示し、ハンドの到達率ではありません。", "颜色表示行动频率，而非手牌到达率。", "Los colores muestran frecuencias de acción, no el alcance de la mano.")}</p>}
             unreachableReason={copy("No saved positive-reach combo", "保存済みの正の到達重みを持つコンボなし", "没有已保存的正权重组合", "Sin combinaciones guardadas con peso positivo")} />
           <Panel className="gto-detail">
             <SectionHeading title={selected ? `${selected} · ${copy("saved frequencies", "保存済み頻度", "已保存频率", "Frecuencias guardadas")}` : copy("Select a hand", "ハンドを選択", "选择手牌", "Selecciona una mano")} />

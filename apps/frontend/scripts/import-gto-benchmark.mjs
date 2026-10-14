@@ -5,7 +5,6 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const DEFAULT_RESULTS_DIR = '/Users/yota/Documents/Codex/2026-10-14/reysonai-independent-solver-benchmark/results';
 const EXPECTED_UPSTREAM_SHA = '9d1509fe5077d019825f833eed04b16d342dfda1';
 const EXPECTED_UPSTREAM_URL = 'https://github.com/b-inary/postflop-solver';
 const CHIP_UNITS_PER_BB = 65_536;
@@ -157,13 +156,22 @@ async function validateInputFingerprints(results, projectRoot) {
   const inputs = results.configuration.input_ranges;
   const openingPath = path.join(projectRoot, 'apps/frontend/src/estimated/opening-ranges.json');
   const solutionPath = path.join(projectRoot, 'solutions/cash-6max-100bb-v1.json');
+  const sourcePaths = { BTN_open: 'apps/frontend/src/estimated/opening-ranges.json', BB_call: 'solutions/cash-6max-100bb-v1.json' };
+  for (const [key, sourcePath] of Object.entries(sourcePaths)) {
+    // Benchmark provenance may name its original checkout. Validate the source
+    // identity independently of that checkout's machine-specific absolute root.
+    const recordedPath = inputs[key]?.path?.replaceAll('\\', '/');
+    if (recordedPath !== sourcePath && !((path.posix.isAbsolute(recordedPath ?? '') || path.win32.isAbsolute(recordedPath ?? ''))
+      && recordedPath.endsWith(`/${sourcePath}`))) {
+      fail(`${key}: source path differs from benchmark input provenance`);
+    }
+  }
   const [openingBytes, solutionBytes] = await Promise.all([readFile(openingPath), readFile(solutionPath)]);
   const actualFileHashes = { BTN_open: sha256(openingBytes), BB_call: sha256(solutionBytes) };
-  const expectedPaths = { BTN_open: openingPath, BB_call: solutionPath };
-  for (const key of Object.keys(expectedPaths)) {
+  for (const key of Object.keys(sourcePaths)) {
     const input = inputs[key];
-    if (!input || input.path !== expectedPaths[key] || input.file_sha256 !== actualFileHashes[key]) {
-      fail(`${key}: source path/hash differs from benchmark input provenance`);
+    if (input.file_sha256 !== actualFileHashes[key]) {
+      fail(`${key}: source hash differs from benchmark input provenance`);
     }
   }
 
@@ -229,7 +237,10 @@ function verifyResults(results) {
     || inputs.BB_call?.node_id !== 'node-72f98d904c1d2d17') fail('saved input provenance/fingerprint metadata mismatch');
 }
 
-export async function buildBenchmarkDataset({ resultsDir = DEFAULT_RESULTS_DIR, projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..') } = {}) {
+export async function buildBenchmarkDataset({ resultsDir, projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..') } = {}) {
+  if (typeof resultsDir !== 'string' || resultsDir.trim() === '') {
+    fail('resultsDir is required: provide the completed benchmark results directory explicitly');
+  }
   const resultsPath = path.join(resultsDir, 'results.json');
   const resultsBytes = await readFile(resultsPath);
   const results = JSON.parse(resultsBytes.toString('utf8'));
@@ -329,7 +340,7 @@ export async function buildBenchmarkDataset({ resultsDir = DEFAULT_RESULTS_DIR, 
 async function main() {
   const scriptDir = path.dirname(fileURLToPath(import.meta.url));
   const projectRoot = path.resolve(scriptDir, '../../..');
-  const resultsDir = process.argv[2] ?? DEFAULT_RESULTS_DIR;
+  const resultsDir = process.argv[2];
   const outputPath = path.join(projectRoot, 'apps/frontend/src/gto/benchmark-flop.json');
   const data = await buildBenchmarkDataset({ resultsDir, projectRoot });
   await mkdir(path.dirname(outputPath), { recursive: true });
