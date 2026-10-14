@@ -9,7 +9,7 @@ import { Sidebar } from "../components/layout.tsx";
 import { levels, loadProfile, saveProfile } from "../profile.ts";
 import { localized, productLocale, LOCALES, selectProductLocale } from "../i18n.ts";
 import { SITE_COPY } from "../site/locales.ts";
-import { loadAppearance, loadDisplayMode, saveAppearance, saveDisplayMode } from "./preferences.ts";
+import { loadAppearance, loadDisplayMode, loadRangeSource, saveAppearance, saveDisplayMode, saveRangeSource } from "./preferences.ts";
 import { ACCOUNT_SECTION } from "./AccountMenu.tsx";
 import { ProfileAvatar, PROFILE_AVATARS, profileAvatar, type ProfileAvatarId } from "./ProfileAvatar.tsx";
 import { humanRequest } from "../trainer/human-api.ts";
@@ -17,6 +17,7 @@ import { ffCopy } from "../trainer/fastfold-api.ts";
 
 
 const t = (ja: string, en: string) => localized(en, ja);
+const sourceCopy = (ja: string, en: string, zh: string, es: string) => ({ ja, en, "zh-CN": zh, es })[productLocale()];
 export const ACCOUNT_TABS = [
   { value: "profile", Icon: UserCircle, ja: "アカウント", en: "Account" },
   { value: "subscription", Icon: CreditCard, ja: "サブスクリプション", en: "Subscription", shortJa: "プラン", shortEn: "Plan" },
@@ -146,6 +147,7 @@ function SubscriptionTab() {
 function AppearanceTab() {
   const [appearance, setAppearance] = useState(loadAppearance);
   const [displayMode, setDisplayMode] = useState(loadDisplayMode);
+  const [rangeSource, setRangeSource] = useState(loadRangeSource);
   const update = (patch: Partial<ReturnType<typeof loadAppearance>>) => { const next = { ...appearance, ...patch }; setAppearance(next); saveAppearance(next); };
   const cardPreview = (colors: string[][]) => <span className="account-card-preview" aria-hidden="true">{colors.map(([suit, color]) => <i key={suit} style={{ background: color }}>{suit}</i>)}</span>;
   return <section className="account-card">
@@ -157,6 +159,13 @@ function AppearanceTab() {
     <SettingRow title={t("レンジの表示", "Range display")} description={t("レンジ分析を次に開いたときから反映", "Applies next time Range Analysis opens")}>
       <Choice label={t("レンジの表示", "Range display")} value={displayMode} onChange={value => { setDisplayMode(value); saveDisplayMode(value); }}
         options={[{ value: "simple", label: t("シンプル", "Simple"), hint: t("主な行動だけ", "Main action") }, { value: "standard", label: t("スタンダード", "Standard"), hint: t("頻度も表示", "With frequencies") }]} />
+    </SettingRow>
+    <SettingRow title={sourceCopy("計算バージョン", "Calculation version", "计算版本", "Versión de cálculo")}
+      description={sourceCopy("レンジ分析のみ切り替えます。トレーナーと保存済み履歴は AI のままです。", "Changes Range Analysis only. Trainer and saved history remain AI-based.", "仅切换范围分析。训练器和已保存的历史记录仍使用 AI。", "Solo cambia el análisis de rangos. El entrenador y el historial guardado siguen usando IA.")}>
+      <Choice label={sourceCopy("計算バージョン", "Calculation version", "计算版本", "Versión de cálculo")}
+        value={rangeSource} onChange={value => { const next = value === "gto" ? "gto" : "ai"; setRangeSource(next); saveRangeSource(next); }}
+        options={[{ value: "ai", label: "AI", hint: sourceCopy("推定レンジ", "Estimated ranges", "估计范围", "Rangos estimados") },
+          { value: "gto", label: "GTO", hint: sourceCopy("保存済みフロップ計算", "Saved flop calculation", "已保存的翻牌计算", "Cálculo de flop guardado") }]} />
     </SettingRow>
     <SettingRow title={t("カードの色", "Card colors")} description={t("トレーナーのカード", "Trainer cards")}>
       <Choice label={t("カードの色", "Card colors")} value={appearance.cards} onChange={cards => update({ cards })}

@@ -23,7 +23,7 @@ test("legacy Original preferences cannot restore the removed renderer", async ()
     applyAppearance({ cards: "four", motion: "standard", matrix: "original" });
     assert.equal(document.documentElement.dataset.matrix, undefined);
     saveAppearance(loadAppearance());
-    assert.deepEqual(JSON.parse(window.localStorage.getItem("reysonai:appearance:v1")), { cards: "two", motion: "reduce" });
+    assert.deepEqual(JSON.parse(window.localStorage.getItem("reysonai:appearance:v1")), { cards: "two", motion: "reduce", rangeSource: "ai" });
     const { StrategyMatrix } = await server.ssrLoadModule("/src/components/StrategyMatrix.tsx");
     const html = renderToStaticMarkup(createElement(StrategyMatrix, {
       node: { actingPosition: "BTN" }, aggregates: new Map([["AA", { actions: { raise: .6, call: .4 }, comboCount: 6 }]]),
