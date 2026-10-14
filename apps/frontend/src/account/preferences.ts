@@ -3,18 +3,25 @@ import { accountStorage, accountSnapshot, exportAccountData } from "./session.ts
 import { displayModeKey } from "../profile.ts";
 
 const KEY = "reysonai:appearance:v1";
+export const RANGE_SOURCE_CHANGED = "reysonai:range-source-changed";
+export type RangeSource = "ai" | "gto";
 export const DEFAULT_APPEARANCE = Object.freeze({ cards: "four", motion: "standard" });
 
 const storage = () => { try { return typeof window === "undefined" ? null : accountStorage(); } catch { return null; } };
+const appearanceRecord = (): Record<string, unknown> => {
+  try {
+    const value: unknown = JSON.parse(storage()?.getItem(KEY) ?? "null");
+    return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
+  } catch { return {}; }
+};
+const sourceOf = (record: Record<string, unknown>): RangeSource => record.rangeSource === "gto" ? "gto" : "ai";
 
 export function loadAppearance() {
-  try {
-    const saved = JSON.parse(storage()?.getItem(KEY) ?? "null") ?? {};
-    return {
-      cards: saved.cards === "two" ? "two" : "four",
-      motion: saved.motion === "reduce" ? "reduce" : "standard",
-    };
-  } catch { return { ...DEFAULT_APPEARANCE }; }
+  const saved = appearanceRecord();
+  return {
+    cards: saved.cards === "two" ? "two" : "four",
+    motion: saved.motion === "reduce" ? "reduce" : "standard",
+  };
 }
 
 export function applyAppearance(appearance = loadAppearance()) {
@@ -25,7 +32,8 @@ export function applyAppearance(appearance = loadAppearance()) {
 }
 
 export function saveAppearance(appearance: ReturnType<typeof loadAppearance>) {
-  try { storage()?.setItem(KEY, JSON.stringify(appearance)); } catch {}
+  const previous = appearanceRecord();
+  try { storage()?.setItem(KEY, JSON.stringify({ ...previous, ...appearance, rangeSource: sourceOf(previous) })); } catch {}
   applyAppearance(appearance);
 }
 
@@ -35,6 +43,15 @@ export function loadDisplayMode() {
 
 export function saveDisplayMode(mode: string) {
   try { storage()?.setItem(displayModeKey, mode === "simple" ? "simple" : "standard"); } catch {}
+}
+
+export function loadRangeSource(): RangeSource {
+  return sourceOf(appearanceRecord());
+}
+
+export function saveRangeSource(source: RangeSource) {
+  try { storage()?.setItem(KEY, JSON.stringify({ ...appearanceRecord(), rangeSource: source === "gto" ? "gto" : "ai" })); } catch {}
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(RANGE_SOURCE_CHANGED));
 }
 
 // Practice data lives under one prefix; used by data export and by log-out cleanup.
