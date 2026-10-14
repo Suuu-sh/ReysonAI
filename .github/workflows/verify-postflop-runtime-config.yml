@@ -1,7 +1,7 @@
 name: Verify public postflop runtime config
 on:
   pull_request:
-    branches: [main, feat/native-google-session-bridge, codex/fix/pr44_frozen_loading/01a11189]
+    branches: [development, main, feat/native-google-session-bridge, codex/fix/pr44_frozen_loading/01a11189]
     paths:
       - 'apps/backend/**'
       - 'configs/**'
@@ -10,6 +10,10 @@ on:
       - 'apps/frontend/scripts/data/postflop-ai-pilot.json'
       - '.github/workflows/verify-postflop-runtime-config.yml'
   workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 permissions:
   contents: read
 jobs:

@@ -63,7 +63,13 @@ test("review source graphs follow static-literal dynamic imports and their recur
 test("Actions restores both reviewed archives before full verification and never authors Stage 3", () => {
   assert.match(workflow, /name: Verify reviewed preflop snapshot/);
   const verification = workflow.slice(workflow.indexOf("  verify:"), workflow.indexOf("  deploy:"));
-  assert.match(verification, /lfs: true/);
+  const lfsRestore = verification.slice(
+    verification.indexOf("      - name: Restore exact reviewed Git LFS payload"),
+    verification.indexOf("      - name: Verify immutable MW3 production contract"),
+  );
+  assert.ok(lfsRestore.includes("git lfs pull --include='artifacts/preflop/**,artifacts/postflop/**'"));
+  assert.ok(lfsRestore.includes("git config --local --unset-all http.https://github.com/.extraheader"));
+  assert.ok(lfsRestore.includes("node scripts/restore-reviewed-stage3.mjs"));
   assert.ok(verification.indexOf("restore-reviewed-preflop.mjs") < verification.indexOf("restore-reviewed-stage3.mjs"));
   assert.ok(verification.indexOf("restore-reviewed-stage3.mjs") < verification.indexOf("verify-reviewed-preflop.mjs"));
   assert.match(verification, /tests\/stage3-\*\.test\.mjs/);

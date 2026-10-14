@@ -99,13 +99,15 @@ test('account/player deletion anonymizes every old/new table, preserves all-in c
 
 test('public avatar preset is owned, validated, and shared in ranked responses', async()=>{const f=await fixture();try{
  assert.equal((await f.call(0,'public-profile')).profile,null);
+ await f.call(0,'public-profile',{avatar:'spade',expectedUserId:'U1'},409);
+ assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM human_rank_players WHERE user_id=?').get('U0').n,0);
  await f.call(0,'public-profile',{avatar:'../../bad'},400);
  await f.call(0,'public-profile',{avatar:'spade',rating:9999},400);
- const saved=await f.call(0,'public-profile',{avatar:'spade'});
+ const saved=await f.call(0,'public-profile',{avatar:'spade',expectedUserId:'U0'});
  assert.equal(saved.profile.avatar,'spade');
  assert.equal((await f.call(0,'public-profile')).profile.avatar,'spade');
  assert.equal((await f.call(1,'public-profile')).profile,null);
- await f.call(1,'public-profile',{avatar:'moon'});
+ await f.call(1,'public-profile',{avatar:'moon',expectedUserId:'U1'});
  assert.equal((await f.call(0,'public-profile')).profile.avatar,'spade');
  assert.equal(f.sqlite.prepare('SELECT rating,hands,phase FROM human_rank_players WHERE user_id=?').get('U0').rating,1000);
  const publicId=saved.profile.id;
@@ -115,4 +117,7 @@ test('public avatar preset is owned, validated, and shared in ranked responses',
  const invalid=await worker.fetch(new Request(api+'public-profile',{method:'POST',headers:{origin:'https://evil.invalid',cookie:'reysonai-dev-session='+f.tokens[0],'content-type':'application/json'},body:JSON.stringify({avatar:'heart'})}),f.env);
  assert.equal(invalid.status,403);
  assert.equal((await f.call(0,'public-profile')).profile.avatar,'spade');
+ const status=await worker.fetch(new Request(api+'status',{headers:{origin}}),f.env);assert.equal(status.status,200);
+ f.sqlite.exec('ALTER TABLE human_rank_players DROP COLUMN avatar');
+ const oldSchema=await worker.fetch(new Request(api+'status',{headers:{origin}}),f.env);assert.equal(oldSchema.status,503);assert.equal((await oldSchema.json()).enabled,false);
 }finally{f.close()}});

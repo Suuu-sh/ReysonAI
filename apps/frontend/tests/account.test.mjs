@@ -45,6 +45,15 @@ test("settings page has account, subscription, appearance and language tabs", ()
   assert.doesNotMatch(source, /exportLocalData|DownloadSimple|new Blob|link\.click\(\)|reysonai-practice-/);
 });
 
+test("public avatar saves are bound to the loaded account and missing profiles preserve the local avatar", () => {
+  const source = readFileSync(new URL("../src/account/AccountPage.tsx", import.meta.url), "utf8");
+  assert.match(source, /loadedAccountId = accountSnapshot\(\)\.user\?\.verified \? accountSnapshot\(\)\.user!\.id : null/);
+  assert.match(source, /expectedUserId: loadedAccountId/);
+  assert.match(source, /currentAccountId !== loadedAccountId/);
+  assert.match(source, /if \(!result\.profile\) \{ setPublicReady\(true\); setPublicError\(false\); return; \}/);
+  assert.ok(source.indexOf("if (!result.profile) { setPublicReady(true); setPublicError(false); return; }") < source.indexOf("setAvatar(remote)"));
+});
+
 test("subscription shows the ¥580 Plus plan without a live purchase", () => {
   const html = renderToStaticMarkup(createElement(AccountPage, { profile, tab: "subscription", onSectionChange() {}, onProfileSaved() {} }));
   assert.match(html, /Free/);

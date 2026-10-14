@@ -1,5 +1,6 @@
 import { LoadingInline } from '../components/Loading.tsx';
 import { ScorebarSkeleton } from './ScorebarSkeleton.tsx';
+import { RecentHandsContent } from "./RecentHandsContent.tsx";
 import { GameplayDetails, GamePanel } from "../agent/GameplayDetails.tsx";
 import { OpponentProfile, type OpponentProfileData } from "../agent/OpponentProfile.tsx";
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -153,6 +154,6 @@ export function FastFoldArena({ ready, view = "play", onBack, onWaiting = () => 
       {(hand.policyMissing || hand.pending?.notice) && <p className="agent-panel ff-policy-notice" role="status">{t('Saved policy is missing for this decision. Only the server’s available actions are offered; this is not a recommended strategy.', 'この判断の保存済み方針は未収録です。サーバーが提供できる操作のみであり、推奨戦略ではありません。', '该决策的已保存策略缺失。仅提供服务器可用行动，并非推荐策略。', 'Falta la política guardada para esta decisión. Solo se ofrecen acciones disponibles del servidor, no una estrategia recomendada.')}</p>}
           {last && <section className="ff-last" aria-live="polite"><span>{t('Last settled hand', '直前の確定ハンド', '上一手结算', 'Última mano liquidada')}</span><strong>{ffNumber(last.netBb, true)} bb</strong><b>{ffNumber(last.afterRating - last.beforeRating, true)} {t('rating', 'レート', '评分', 'puntos')}</b><small>{t('AI shadow: unavailable · applied penalty 0', 'AI shadow：未分析 · 適用減点 0', 'AI影子：未分析 · 已应用扣分0', 'IA paralelo: sin análisis · penalización aplicada 0')}</small></section>}
       <section className="agent-panel agent-log"><h3>{t('This hand', 'このハンド', '当前手牌', 'Esta mano')}</h3><ol className="ff-log agent-log-body" aria-label={t('Action history', 'アクション履歴', '行动历史', 'Historial de acciones')}>{hand.log.map((entry, index) => <li key={index}><b>{entry.pos}</b> {entry.street} · {ffAction(entry.action, entry.to)}</li>)}</ol></section>
-    </GamePanel><GamePanel id="recent" label={t("Recent hands", "最近のハンド", "最近手牌", "Manos recientes")}><section className="agent-panel"><h3>{t("Recent hands", "最近のハンド", "最近手牌", "Manos recientes")}</h3>{state?.recent.length ? state.recent.map(item => <p key={item.id}>{item.id} · {ffNumber(item.netBb,true)} bb</p>) : <p>{t("No completed hands yet", "完了したハンドはまだありません", "暂无已完成手牌", "Aún no hay manos terminadas")}</p>}</section></GamePanel></GameplayDetails></div> : profile ? rankSummary : null}
+    </GamePanel><GamePanel id="recent" label={t("Recent hands", "最近のハンド", "最近手牌", "Manos recientes")}><RecentHandsContent recent={state?.recent ?? []} /></GamePanel></GameplayDetails></div> : profile ? rankSummary : null}
   </div>;
 }

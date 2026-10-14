@@ -1,7 +1,7 @@
 name: Verify FastFold ranked core
 on:
   pull_request:
-    branches: [main, codex/fix/pr44_frozen_loading/01a11189]
+    branches: [development, main, codex/fix/pr44_frozen_loading/01a11189]
     paths:
       - 'apps/backend/**'
       - 'apps/shared/**'
@@ -33,6 +33,10 @@ on:
       - 'configs/**'
       - '.github/workflows/verify-fastfold.yml'
   workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 permissions:
   contents: read
 jobs:
@@ -47,6 +51,8 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '22.20.0'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
       - name: Install locked frontend test dependencies
         working-directory: apps/frontend
         run: npm ci

@@ -1,11 +1,15 @@
 name: Verify account authentication
 on:
   pull_request:
-    branches: [main, codex/fix/pr44_frozen_loading/01a11189]
+    branches: [development, main, codex/fix/pr44_frozen_loading/01a11189]
     paths:
       - 'apps/backend/**'
       - '.github/workflows/verify-native-accounts.yml'
   workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 permissions:
   contents: read
 jobs:

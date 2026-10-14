@@ -48,7 +48,8 @@ function AccountTab({ profile, onProfileSaved }: { profile: Profile | null; onPr
   const [publicError, setPublicError] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const signedIn = Boolean(accountSnapshot().user?.verified);
+  const loadedAccountId = accountSnapshot().user?.verified ? accountSnapshot().user!.id : null;
+  const signedIn = loadedAccountId !== null;
   const avatarChanged = avatar !== profileAvatar(profile?.avatar);
   const dirty = nickname.trim() !== (profile?.nickname ?? "") || level !== profile?.level || avatarChanged;
   useEffect(() => {
@@ -56,7 +57,10 @@ function AccountTab({ profile, onProfileSaved }: { profile: Profile | null; onPr
     let cancelled = false;
     humanRequest<{ profile: { avatar: string } | null }>("public-profile").then(result => {
       if (cancelled) return;
-      const remote = profileAvatar(result.profile?.avatar);
+      // A missing server profile is not an instruction to replace an imported
+      // local avatar with the default (or to create a profile on page load).
+      if (!result.profile) { setPublicReady(true); setPublicError(false); return; }
+      const remote = profileAvatar(result.profile.avatar);
       setPublicReady(true);
       setPublicError(false);
       setAvatar(remote);
@@ -69,8 +73,10 @@ function AccountTab({ profile, onProfileSaved }: { profile: Profile | null; onPr
     setSaving(true); setPublicError(false);
     try {
       if (signedIn && avatarChanged) {
-        if (!publicReady) { setPublicError(true); return; }
-        await humanRequest("public-profile", { avatar });
+        const currentAccountId = accountSnapshot().user?.verified ? accountSnapshot().user!.id : null;
+        if (!publicReady || !loadedAccountId || currentAccountId !== loadedAccountId) { setPublicError(true); return; }
+        await humanRequest("public-profile", { avatar, expectedUserId: loadedAccountId });
+        if ((accountSnapshot().user?.verified ? accountSnapshot().user!.id : null) !== loadedAccountId) { setPublicError(true); return; }
       }
       onProfileSaved(saveProfile({ nickname, level, avatar })); setSaved(true);
     } catch { setPublicError(true); }

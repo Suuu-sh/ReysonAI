@@ -1,7 +1,7 @@
 name: Verify three-player postflop contracts
 on:
   pull_request:
-    branches: [main, codex/multiway-postflop-stage1, codex/fix/pr44_frozen_loading/01a11189]
+    branches: [development, main, codex/multiway-postflop-stage1, codex/fix/pr44_frozen_loading/01a11189]
     paths:
       - 'apps/frontend/scripts/postflop-ai/**'
       - 'apps/frontend/scripts/lib/**'
@@ -53,6 +53,10 @@ on:
       - 'configs/cash-6max-100bb.json'
       - '.github/workflows/verify-mw3-contracts.yml'
   workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 permissions:
   contents: read
 jobs:

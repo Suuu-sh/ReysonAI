@@ -137,7 +137,9 @@ test('workflow verifies before writes, imports before activation, and accepts af
   const importer=workflow.indexOf('run: node scripts/mw3-production-delivery.mjs import');
   assert.ok(importer>0&&importer<workflow.indexOf('name: Deploy ranked API'));
   assert.ok(workflow.indexOf('run: node scripts/mw3-production-delivery.mjs live')>workflow.indexOf('name: Publish postflop policies into D1'));
-  assert.equal((workflow.match(/fetch-depth: 0/g)||[]).length,2);
+  assert.match(workflow,/fetch-depth: \$\{\{ \(needs\.scope\.outputs\.verify_preflop == 'true' \|\| needs\.scope\.outputs\.verify_postflop == 'true' \|\| needs\.scope\.outputs\.verify_mw3 == 'true'\) && '0' \|\| '1' \}\}/);
+  assert.match(workflow,/fetch-depth: \$\{\{ \(needs\.verify\.outputs\.import_preflop == 'true' \|\| needs\.verify\.outputs\.publish_postflop == 'true' \|\| needs\.verify\.outputs\.import_mw3 == 'true'\) && '0' \|\| '1' \}\}/);
+  assert.ok(workflow.includes("git lfs pull --include='artifacts/preflop/**,artifacts/postflop/**'"));
   const source=readFileSync(new URL('../scripts/mw3-production-delivery.mjs',import.meta.url),'utf8');
   assert.doesNotMatch(source,/DELETE FROM|INSERT OR REPLACE|migrations.*apply|time-travel.*restore/);
   assert.match(source,/buildMw3DeliverySql\(snapshot, review, deliveries\)/);
