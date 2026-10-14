@@ -1,3 +1,4 @@
+import { profileAvatar, type ProfileAvatarId } from "../../shared/profile-avatar.ts";
 import { accountSnapshot, accountStorage } from "./account/session.ts";
 import { LOCALE_KEY, productLocale, selectProductLocale, isProductLocale } from "./locale.ts";
 import { defaultModeForLevel } from "./estimated/display-mode.ts";
@@ -15,21 +16,21 @@ const storage = () => {
   try { return typeof window === "undefined" ? null : accountStorage(); } catch { return null; }
 };
 
-export interface Profile { nickname: string; level: string; updatedAt: string }
-export type ProfileDraft = { nickname?: string; level: string };
+export interface Profile { nickname: string; level: string; updatedAt: string; avatar?: ProfileAvatarId }
+export type ProfileDraft = { nickname?: string; level: string; avatar?: ProfileAvatarId };
 export function loadProfile(): Profile | null {
   try {
     const saved = JSON.parse(storage()?.getItem(profileKey) ?? "null");
     // The former 上級 level was merged into 中級.
     if (saved?.level === "advanced") saved.level = "intermediate";
-    return saved && levels.some(level => level.value === saved.level) ? saved : null;
+    return saved && levels.some(level => level.value === saved.level) ? { ...saved, avatar: profileAvatar(saved.avatar) } : null;
   } catch { return null; }
 }
 
-export function saveProfile({ nickname = "", level }: ProfileDraft) {
+export function saveProfile({ nickname = "", level, avatar }: ProfileDraft) {
   if (!levels.some(item => item.value === level)) throw new Error("レベルを選んでください。");
   const previousProfile = loadProfile();
-  const profile = { nickname: nickname.trim().slice(0, 20), level, updatedAt: new Date().toISOString() };
+  const profile = { nickname: nickname.trim().slice(0, 20), level, avatar: profileAvatar(avatar ?? previousProfile?.avatar), updatedAt: new Date().toISOString() };
   try {
     storage()?.setItem(profileKey, JSON.stringify(profile));
     if (!previousProfile || previousProfile.level !== level) {

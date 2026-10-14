@@ -1,4 +1,4 @@
-import { accountStorage, accountSnapshot, exportAccountData } from "./session.ts";
+import { accountStorage } from "./session.ts";
 // Local appearance preferences, applied to <html> data attributes so any page can style from them.
 import { displayModeKey } from "../profile.ts";
 
@@ -54,21 +54,13 @@ export function saveRangeSource(source: RangeSource) {
   if (typeof window !== "undefined") window.dispatchEvent(new Event(RANGE_SOURCE_CHANGED));
 }
 
-// Practice data lives under one prefix; used by data export and by log-out cleanup.
+// Practice data lives under one prefix; guest logout can optionally clear it.
 const PRACTICE_PREFIX = "reysonai.trainer.";
 
 export function practiceKeys() {
   const store = storage();
   if (!store) return [];
   return Array.from({ length: store.length }, (_, index) => store.key(index)).filter(key => key?.startsWith(PRACTICE_PREFIX)) as string[];
-}
-
-export function exportLocalData() {
-  if (accountSnapshot().user) return exportAccountData();
-  const store = storage();
-  const data: Record<string, unknown> = {};
-  for (const key of practiceKeys()) { try { data[key] = JSON.parse(store!.getItem(key)!); } catch { data[key] = store!.getItem(key)!; } }
-  return { app: "ReysonAI", exportedAt: new Date().toISOString(), data };
 }
 
 export function clearPracticeData() {

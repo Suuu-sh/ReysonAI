@@ -7,7 +7,7 @@ Ranked is server-confirmed alignment with the saved AI estimate, not GTO, EV, wi
 - Existing production Google cookie authentication and its secrets must work. `0007_accounts.sql` must already exist; this release does not bulk-apply older/native migrations.
 - Apply the additive, rerunnable `migrations/0009_ranked.sql`, deploy `src/index.ts`, then require `GET /v1/ranked/status` to return `enabled: true` before frontend publication. Missing schema or complete published `opening-ranges` / `preflop-ranges` inputs fails closed.
 - `RANKED_ENABLED=true` is set in production and loopback config. `AUTH_NATIVE_ENABLED=false` stays explicit in production; native authentication is not part of this release.
-- The workflow carries out the exact ranked migration and readiness gate. No remote migration/deployment was performed during implementation.
+- The production workflow carries out the ranked `0009` migration and readiness gate. Before deploying the API with shared human avatars, run `node apps/backend/scripts/ensure-human-avatar-schema.mjs` from the repository root. It reads the remote schema, applies only `0013_human_rank_avatar.sql` when the reviewed column is absent, and verifies the result; stop if it fails. No remote migration/deployment was performed during implementation.
 
 ## Rules and data boundary
 
