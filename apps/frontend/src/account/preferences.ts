@@ -1,20 +1,30 @@
-import { accountStorage, accountSnapshot, exportAccountData } from "./session.ts";
+import { accountStorage } from "./session.ts";
 // Local appearance preferences, applied to <html> data attributes so any page can style from them.
 import { displayModeKey } from "../profile.ts";
 
 const KEY = "reysonai:appearance:v1";
+export const RANGE_SOURCE_CHANGED = "reysonai:range-source-changed";
+export type RangeSource = "ai" | "gto";
 export const DEFAULT_APPEARANCE = Object.freeze({ cards: "four", motion: "standard" });
 
 const storage = () => { try { return typeof window === "undefined" ? null : accountStorage(); } catch { return null; } };
+const appearanceRecord = (): Record<string, unknown> => {
+  try {
+    const value: unknown = JSON.parse(storage()?.getItem(KEY) ?? "null");
+    if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+    const record = value as Record<string, unknown>;
+    delete record.matrix;
+    return record;
+  } catch { return {}; }
+};
+const sourceOf = (record: Record<string, unknown>): RangeSource => record.rangeSource === "gto" ? "gto" : "ai";
 
 export function loadAppearance() {
-  try {
-    const saved = JSON.parse(storage()?.getItem(KEY) ?? "null") ?? {};
-    return {
-      cards: saved.cards === "two" ? "two" : "four",
-      motion: saved.motion === "reduce" ? "reduce" : "standard",
-    };
-  } catch { return { ...DEFAULT_APPEARANCE }; }
+  const saved = appearanceRecord();
+  return {
+    cards: saved.cards === "two" ? "two" : "four",
+    motion: saved.motion === "reduce" ? "reduce" : "standard",
+  };
 }
 
 export function applyAppearance(appearance = loadAppearance()) {
@@ -25,8 +35,13 @@ export function applyAppearance(appearance = loadAppearance()) {
 }
 
 export function saveAppearance(appearance: ReturnType<typeof loadAppearance>) {
-  try { storage()?.setItem(KEY, JSON.stringify(appearance)); } catch {}
-  applyAppearance(appearance);
+  const previous = appearanceRecord();
+  const next = {
+    cards: appearance.cards === "two" ? "two" : "four",
+    motion: appearance.motion === "reduce" ? "reduce" : "standard",
+  };
+  try { storage()?.setItem(KEY, JSON.stringify({ ...previous, ...next, rangeSource: sourceOf(previous) })); } catch {}
+  applyAppearance(next);
 }
 
 export function loadDisplayMode() {
@@ -37,21 +52,22 @@ export function saveDisplayMode(mode: string) {
   try { storage()?.setItem(displayModeKey, mode === "simple" ? "simple" : "standard"); } catch {}
 }
 
-// Practice data lives under one prefix; used by data export and by log-out cleanup.
+export function loadRangeSource(): RangeSource {
+  return sourceOf(appearanceRecord());
+}
+
+export function saveRangeSource(source: RangeSource) {
+  try { storage()?.setItem(KEY, JSON.stringify({ ...appearanceRecord(), rangeSource: source === "gto" ? "gto" : "ai" })); } catch {}
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(RANGE_SOURCE_CHANGED));
+}
+
+// Practice data lives under one prefix; guest logout can optionally clear it.
 const PRACTICE_PREFIX = "reysonai.trainer.";
 
 export function practiceKeys() {
   const store = storage();
   if (!store) return [];
   return Array.from({ length: store.length }, (_, index) => store.key(index)).filter(key => key?.startsWith(PRACTICE_PREFIX)) as string[];
-}
-
-export function exportLocalData() {
-  if (accountSnapshot().user) return exportAccountData();
-  const store = storage();
-  const data: Record<string, unknown> = {};
-  for (const key of practiceKeys()) { try { data[key] = JSON.parse(store!.getItem(key)!); } catch { data[key] = store!.getItem(key)!; } }
-  return { app: "ReysonAI", exportedAt: new Date().toISOString(), data };
 }
 
 export function clearPracticeData() {

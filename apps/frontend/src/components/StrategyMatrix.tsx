@@ -19,7 +19,7 @@ const adjustedLabel = { add: "卓に合わせてオープンに追加", drop: "�
 
 // Frequency segments read from the most aggressive action on the left to the most passive on the right
 // (all-in, larger bets/raises, smaller bets, call, check, fold).
-const AGGRESSION = ["all_in", "allin", "raise", "bet125", "bet75", "bet33", "limp", "call", "check", "fold"];
+const AGGRESSION = ["all_in", "allin", "raise", "bet125", "bet75", "bet33", "bet", "limp", "call", "check", "fold"];
 // Sized raises (raise_2_5, raise_12, raise_ai, …) sit with "raise", larger sizes first.
 const rankOf = (action: string) => {
   if (action.startsWith("raise_")) {

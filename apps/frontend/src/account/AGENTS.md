@@ -1,5 +1,7 @@
 # Account menu and settings
 
+- Profile icon (2026-10-12): do not use the pink/purple initial circle. Use the same restrained, selectable built-in avatar preset for the sidebar, account settings, and server-public human-ranked player profile; guest choices stay browser-local, authenticated choices must be persisted under the player's server-owned public profile and account storage. No arbitrary image URLs or rank badges as free-form avatars.
+
 - On 2026-09-27 the user asked for an account menu (reference: a typical app account dropdown) with a subscription page, log out, language and appearance. The sidebar profile chip opens an upward menu (placed with fixed coordinates because the sidebar clips overflow): アカウント, サブスクリプション, 外観, 言語 (EN / 日本語 submenu), ログアウト.
 - Settings live under the アカウント section with tabs account / subscription / appearance / language (`アカウント#tab`).
 - Accounts and billing do not exist: sign-in stays a disabled 準備中 control, the Plus plan is read from `src/site/content*.ts` pricing at ¥580/month (about ¥19/day on a 30-day basis) and shown as planned with no working purchase button, and ログアウト only removes this browser's local profile (optionally also practice data under `reysonai.trainer.*`).

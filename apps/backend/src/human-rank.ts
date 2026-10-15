@@ -3,9 +3,10 @@ import type { D1Database } from './postflop.ts';
 import { createHand, applyAction, forfeit, legalActions, publicProjection, POSITIONS, type MultiplayerHand } from './multiplayer-engine.ts';
 import { cardText } from '../../frontend/scripts/postflop-ai/flop-isomorphism.ts';
 import { rankedHistory } from './ranked-history.ts';
+import { isProfileAvatar } from '../../shared/profile-avatar.ts';
 
 type Env=AccountEnv&{FASTFOLD_ENABLED?:string};
-type Player={user_id:string;public_id:string;public_name:string;phase:'out'|'queued'|'reserved'|'hand'|'break';version:number;lease_until:number;break_until:number|null;table_id:string|null;seat:number|null;accepted:number;rating:number;peak:number;hands:number;net_bb:number;rating_net_bb:number};
+type Player={user_id:string;public_id:string;public_name:string;avatar:string;phase:'out'|'queued'|'reserved'|'hand'|'break';version:number;lease_until:number;break_until:number|null;table_id:string|null;seat:number|null;accepted:number;rating:number;peak:number;hands:number;net_bb:number;rating_net_bb:number};
 type Private={users:(string|null)[];hand:MultiplayerHand|null};
 type Table={id:string;version:number;status:'reserved'|'active'|'done'|'cancelled';private_json:string;created_at:number;expires_at:number};
 export const HUMAN_SEASON='human-fastfold-v1';
@@ -54,7 +55,7 @@ export async function routeHumanRank(request:Request,env:Env):Promise<Response>{
  if(request.method==='POST'&&(!origins.includes(request.headers.get('origin')??'')||!/^application\/json(?:;|$)/i.test(request.headers.get('content-type')??'')))return reply({error:'invalid_origin_or_content_type'},403);
  let now=Date.now();const respond=(body:Record<string,unknown>,status=200)=>reply({...metadata,serverNow:now,...body},status);
  try{
-  await q(db,'SELECT user_id,public_id,phase,lease_until,break_until,table_id,seat,accepted,version,rating,peak,hands,net_bb,rating_net_bb,receipt_json FROM human_rank_players LIMIT 0');
+  await q(db,'SELECT user_id,public_id,avatar,phase,lease_until,break_until,table_id,seat,accepted,version,rating,peak,hands,net_bb,rating_net_bb,receipt_json FROM human_rank_players LIMIT 0');
   await q(db,'SELECT id,version,status,private_json,expires_at,receipt_json,settlement_json,departure_json FROM human_rank_tables LIMIT 0');
   await q(db,'SELECT user_id,action_id,request_json FROM human_rank_receipts LIMIT 0');await q(db,'SELECT table_id,user_id,net_cents,before_rating,after_rating,public_json FROM human_rank_results LIMIT 0');
   const triggers=await q<{name:string}>(db,"SELECT name FROM sqlite_master WHERE type='trigger' AND name IN ('human_rank_claim','human_rank_reserved','human_rank_activate','human_rank_phase','human_rank_player_receipt','human_rank_table_receipt','human_rank_settle','human_rank_aggregate','human_rank_departure','human_rank_delete')");if(triggers.length!==10)throw Error('human_rank_schema_unavailable');
@@ -66,7 +67,24 @@ export async function routeHumanRank(request:Request,env:Env):Promise<Response>{
   if(request.method==='GET')await sweepHumanRank(env,now);
   const player=async()=> (await q<Player>(db,'SELECT * FROM human_rank_players WHERE user_id=?',user.id))[0];
   const table=async(id:string)=> (await q<Table>(db,'SELECT * FROM human_rank_tables WHERE id=?',id))[0];
-  const publicPlayer=(p:Player)=>({id:p.public_id,name:p.public_name,rating:p.rating,hands:p.hands,style:'unknown',tendencyScope:'observed_only'});
+  const publicPlayer=(p:Player)=>({id:p.public_id,name:p.public_name,avatar:p.avatar,rating:p.rating,hands:p.hands,style:'unknown',tendencyScope:'observed_only'});
+  if(path==='public-profile'&&request.method==='GET'){
+   const p=await player();return respond({profile:p?{id:p.public_id,name:p.public_name,avatar:p.avatar}:null});
+  }
+  if(path==='public-profile'&&request.method==='POST'){
+   const body=await bounded(request);now=Date.now();
+   if(Object.keys(body).length!==2||!isProfileAvatar(body.avatar)||typeof body.expectedUserId!=='string'||!body.expectedUserId)return respond({error:'invalid_avatar'},400);
+   const [session]=await q<{id:string}>(db,'SELECT user_id id FROM account_sessions WHERE token_hash=? AND expires_at>?',await digest(cookie!),Math.floor(now/1000));
+   if(session?.id!==user.id)return respond({error:'sign_in_required'},401);
+   if(body.expectedUserId!==user.id)return respond({error:'profile_owner_mismatch'},409);
+   const [limit]=await q<{n:number}>(db,'INSERT INTO account_rate_limits VALUES (?,1,?) ON CONFLICT(bucket) DO UPDATE SET count=count+1 RETURNING count n',`human-profile:${user.id}:${Math.floor(now/60000)}`,Math.floor(now/1000)+120);
+   if(limit.n>20)return respond({error:'rate_limited'},429);
+   // An explicit public avatar save creates the player identity before their first match.
+   const id=crypto.randomUUID();
+   await q(db,'INSERT OR IGNORE INTO human_rank_players(user_id,public_id,public_name,avatar) VALUES (?,?,?,?)',user.id,id,`Player ${id.slice(0,8)}`,body.avatar);
+   await q(db,'UPDATE human_rank_players SET avatar=? WHERE user_id=?',body.avatar,user.id);
+   const p=await player();return respond({profile:{id:p.public_id,name:p.public_name,avatar:p.avatar}});
+  }
   const state=async()=>{
    const p=await player();const [count]=await q<{humans:number}>(db,"SELECT COUNT(*) humans FROM human_rank_players WHERE phase IN ('queued','reserved') AND lease_until>?",now);
    const recent=await q<{public_json:string}>(db,'SELECT public_json FROM human_rank_results WHERE user_id=? ORDER BY at DESC,rowid DESC LIMIT 100',user.id);

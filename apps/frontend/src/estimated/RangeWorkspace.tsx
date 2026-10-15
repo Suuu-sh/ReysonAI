@@ -25,6 +25,8 @@ import { stage3Copy } from "./stage3-copy.ts";
 import { chooseStage3Action, normalizeStage3Selection, stage3RootForSelection, stage3LiveSeats } from "./stage3-flow.ts";
 import { useStage3UiRuntime, withStage3Availability } from "./stage3-ranges.ts";
 import { accountStorage } from "../account/session.ts";
+import { loadRangeSource, RANGE_SOURCE_CHANGED } from "../account/preferences.ts";
+import { GtoRangeView } from "../gto/GtoRangeView.tsx";
 import { dataset as publishedDataset } from "./datasets.ts";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
@@ -1091,5 +1093,13 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
 }
 
 export function RangeWorkspace({ profile, onEditProfile, onSectionChange }: WorkspaceProps) {
-  return <EstimatedRanges profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} />;
+  const [rangeSource, setRangeSource] = useState(loadRangeSource);
+  useEffect(() => {
+    const update = () => setRangeSource(loadRangeSource());
+    window.addEventListener(RANGE_SOURCE_CHANGED, update);
+    return () => window.removeEventListener(RANGE_SOURCE_CHANGED, update);
+  }, []);
+  return rangeSource === "gto"
+    ? <GtoRangeView profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} />
+    : <EstimatedRanges profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} />;
 }
