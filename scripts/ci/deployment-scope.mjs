@@ -7,7 +7,26 @@ import { pathToFileURL } from 'node:url';
 const SHA_RE = /^[0-9a-f]{40}$/i;
 const WORKFLOW_PATH = '.github/workflows/deploy-worker.yml';
 const WORKFLOW_ID = 'deploy-worker.yml';
+const SCOPE_JOB_NAME = 'Classify reviewed code and data inputs';
+const VERIFY_JOB_NAME = 'Verify reviewed preflop snapshot';
 const DEPLOY_JOB_NAME = 'Deploy authoritative ranked API, compatible client and reviewed preflop data';
+const READ_ONLY_RANKED_READINESS_STEP = 'Require live authoritative ranked readiness';
+const EXPECTED_DEPLOYMENT_JOB_NAMES = new Set([SCOPE_JOB_NAME, VERIFY_JOB_NAME, DEPLOY_JOB_NAME]);
+const KNOWN_NON_WRITING_DEPLOY_STEPS = new Set([
+  'Set up job', 'Validate deployment secrets', 'Check out repository', 'Prepare deployment log directory',
+  'Set up Node.js', 'Install dependencies', 'Install MCP runtime dependencies for the composed API Worker',
+  'Restore exact reviewed Git LFS payload', 'Fetch this run\'s validated delivery SQL',
+  'Recheck delivery against this exact checkout', 'Post Set up Node.js', 'Post Check out repository', 'Complete job',
+]);
+const REQUIRED_SKIPPED_PRODUCTION_WRITE_STEPS = new Set([
+  'Import exact reviewed MW3 data and require full D1 readback',
+  'Apply exact ranked schema', 'Apply exact FastFold schema', 'Apply exact six-human ranked schema',
+  'Apply exact postflop profile schema', 'Deploy ranked API before enabling the client',
+  'Deploy Worker', 'Import reviewed preflop snapshot into D1', 'Publish postflop policies into D1',
+]);
+const OPTIONAL_NEW_PRODUCTION_WRITE_STEPS = new Set([
+  'Ensure exact human avatar schema and require D1 readback',
+]);
 const MAIN_DEPLOY_EVENTS = new Set(['push', 'workflow_dispatch']);
 const RUNS_PER_PAGE = 100;
 const MAX_RUN_HISTORY_RESULTS = 1000;
@@ -23,13 +42,14 @@ const MIGRATIONS = new Map([
   ['apps/backend/migrations/0010_fastfold.sql', 'fastfold_schema'],
   ['apps/backend/migrations/0011_human_ranked.sql', 'human_schema'],
   ['apps/backend/migrations/0012_postflop_profile_policies.sql', 'profile_schema'],
+  ['apps/backend/migrations/0013_human_rank_avatar.sql', 'human_avatar_schema'],
 ]);
-const HASH_GROUPS = ['preflop', 'postflop', 'mw3', 'mw3_schema', 'ranked_schema', 'fastfold_schema', 'human_schema', 'profile_schema', 'review_receipt', 'full'];
+const HASH_GROUPS = ['preflop', 'postflop', 'mw3', 'mw3_schema', 'ranked_schema', 'fastfold_schema', 'human_schema', 'human_avatar_schema', 'profile_schema', 'review_receipt', 'full'];
 const OUTPUT_KEYS = [
   'lineage_known', 'release_safe', 'verify_data', 'verify_preflop', 'verify_postflop', 'verify_mw3',
   'verify_backend', 'verify_frontend', 'needs_frontend_deps', 'needs_mcp_deps', 'deploy_api', 'deploy_frontend',
   'data_release', 'import_preflop', 'publish_postflop', 'import_mw3', 'apply_ranked_schema',
-  'apply_fastfold_schema', 'apply_human_schema', 'apply_profile_schema', 'apply_mw3_schema',
+  'apply_fastfold_schema', 'apply_human_schema', 'apply_human_avatar_schema', 'apply_profile_schema', 'apply_mw3_schema',
   'mw3_live', 'fastfold_predeploy', 'fastfold_postimport', 'mode', 'reason', 'baseline_run_id',
   'baseline_sha', 'input_hashes',
 ];
@@ -41,7 +61,7 @@ function emptyPlan(reason = 'no relevant changes') {
     needs_frontend_deps: false, needs_mcp_deps: false, deploy_api: false, deploy_frontend: false,
     data_release: false, import_preflop: false, publish_postflop: false, import_mw3: false,
     apply_ranked_schema: false, apply_fastfold_schema: false, apply_human_schema: false,
-    apply_profile_schema: false, apply_mw3_schema: false, mw3_live: false,
+    apply_human_avatar_schema: false, apply_profile_schema: false, apply_mw3_schema: false, mw3_live: false,
     fastfold_predeploy: false, fastfold_postimport: false, mode: 'no-op', reason,
     baseline_run_id: '', baseline_sha: '', input_hashes: '',
   };
@@ -161,7 +181,7 @@ function addCodeScopes(plan, paths) {
     if (dataPathChanged(path)) {
       plan.verify_data = true;
       const group = dataGroup(path);
-      if (!['ranked_schema', 'fastfold_schema', 'human_schema'].includes(group)) plan.needs_frontend_deps = true;
+      if (!['ranked_schema', 'fastfold_schema', 'human_schema', 'human_avatar_schema'].includes(group)) plan.needs_frontend_deps = true;
       if (group === 'preflop') plan.verify_preflop = true;
       else if (group === 'postflop' || group === 'profile_schema') plan.verify_postflop = true;
       else if (group === 'mw3' || group === 'mw3_schema') plan.verify_mw3 = true;
@@ -336,6 +356,7 @@ function applyDataChanges(plan, groups, allowed) {
   schemaOutput(plan, 'ranked_schema', groups.includes('ranked_schema'), allowed);
   schemaOutput(plan, 'fastfold_schema', groups.includes('fastfold_schema'), allowed);
   schemaOutput(plan, 'human_schema', groups.includes('human_schema'), allowed);
+  schemaOutput(plan, 'human_avatar_schema', groups.includes('human_avatar_schema'), allowed);
   schemaOutput(plan, 'profile_schema', groups.includes('profile_schema'), allowed);
   schemaOutput(plan, 'mw3_schema', groups.includes('mw3_schema'), allowed);
   plan.mw3_live ||= plan.import_mw3 || preflop;
@@ -444,6 +465,49 @@ export async function latestDeploymentRun({ repository, currentRunId, token, fet
     if (!deployJob) throw new Error(`deployment job is missing from main run ${run.id}`);
     if (deployJob.status === 'completed' && deployJob.conclusion === 'success' && run.conclusion === 'success') return run;
     if (deployJob.status === 'completed' && deployJob.conclusion === 'skipped' && run.run_attempt === 1) continue;
+    // A single named read-only readiness failure is safely recoverable only if
+    // this first attempt executed no unrecognized step successfully. Since every
+    // known D1/Worker write is intentionally absent from the benign allowlist,
+    // any executed write (or newly-added unknown step) keeps lineage fail-closed.
+    if (run.run_attempt === 1 && run.conclusion === 'failure' &&
+        deployJob.status === 'completed' && deployJob.conclusion === 'failure') {
+      const verifyJob = body.jobs.find(job => job?.name === VERIFY_JOB_NAME);
+      const steps = deployJob.steps;
+      const failedReadiness = Array.isArray(steps) ? steps.filter(step => step?.conclusion === 'failure') : [];
+      const stepNames = Array.isArray(steps) ? steps.map(step => step?.name) : [];
+      const uniqueNamedSteps = stepNames.every(name => typeof name === 'string' && name.length > 0) &&
+        new Set(stepNames).size === stepNames.length;
+      const requiredWritesSkipped = [...REQUIRED_SKIPPED_PRODUCTION_WRITE_STEPS].every(name => {
+        const matching = steps?.filter(step => step?.name === name) ?? [];
+        return matching.length === 1 && matching[0].status === 'completed' && matching[0].conclusion === 'skipped';
+      });
+      const optionalWritesSkipped = [...OPTIONAL_NEW_PRODUCTION_WRITE_STEPS].every(name => {
+        const matching = steps?.filter(step => step?.name === name) ?? [];
+        return matching.length === 0 || (matching.length === 1 && matching[0].status === 'completed' && matching[0].conclusion === 'skipped');
+      });
+      const onlyKnownReadOnlyExecution = Array.isArray(steps) && steps.every(step => {
+        if (step?.status !== 'completed') return false;
+        if (step?.conclusion === 'skipped') return true;
+        if (step?.conclusion === 'failure' && step?.name === READ_ONLY_RANKED_READINESS_STEP) return true;
+        return step?.conclusion === 'success' && KNOWN_NON_WRITING_DEPLOY_STEPS.has(step?.name);
+      });
+      const jobNames = body.jobs.map(job => job?.name);
+      const completeJobsPage = Number.isInteger(body.total_count)
+        ? body.total_count === body.jobs.length
+        : body.jobs.length < 100;
+      const completeUniqueJobList = completeJobsPage &&
+        body.jobs.length === EXPECTED_DEPLOYMENT_JOB_NAMES.size &&
+        jobNames.every(name => EXPECTED_DEPLOYMENT_JOB_NAMES.has(name)) && new Set(jobNames).size === jobNames.length;
+      const verifyJobs = body.jobs.filter(job => job?.name === VERIFY_JOB_NAME);
+      const scopeJobs = body.jobs.filter(job => job?.name === SCOPE_JOB_NAME);
+      const otherJobsSafe = completeUniqueJobList && verifyJobs.length === 1 && scopeJobs.length === 1 &&
+        verifyJobs[0].status === 'completed' && verifyJobs[0].conclusion === 'success' &&
+        scopeJobs[0].status === 'completed' && scopeJobs[0].conclusion === 'success';
+      if (verifyJob?.status === 'completed' && verifyJob.conclusion === 'success' &&
+          failedReadiness.length === 1 && failedReadiness[0].name === READ_ONLY_RANKED_READINESS_STEP &&
+          uniqueNamedSteps && requiredWritesSkipped && optionalWritesSkipped &&
+          onlyKnownReadOnlyExecution && otherJobsSafe) continue;
+    }
     throw new Error(`deployment job in latest main run ${run.id} is ${deployJob.status}/${deployJob.conclusion ?? 'unknown'}; production state may be partial`);
   }
   return null;
