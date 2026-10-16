@@ -18,7 +18,7 @@ type LocalEstimate = { scenario?: string; ranges: LocalRange[] };
 type LocalEstimateResponse = { error?: string; data?: LocalEstimate; pending?: boolean; cached?: boolean };
 type InlineFact = { key?: string; label: string; unit?: string; value: number | null | undefined };
 type WorkspaceActionBlock = Partial<Omit<ActionBlock, "key" | "kind">> & { key: string; kind: string; cards?: string[]; street?: string; potBb?: number; pending?: boolean; flopIndex?: number; laterIndex?: number };
-type EstimatedRangesProps = WorkspaceProps & { initialRangeType?: string; fourBet?: ReturnType<typeof loadFourBetDataset>; mw3Client?: typeof mw3DeliveryClient };
+type EstimatedRangesProps = WorkspaceProps & { rangeSource?: "ai" | "gto"; initialRangeType?: string; fourBet?: ReturnType<typeof loadFourBetDataset>; mw3Client?: typeof mw3DeliveryClient };
 type WorkspaceProps = { profile?: Profile | null; onEditProfile?: () => void; onSectionChange?: (section: string) => void };
 type ActionPathProps = RangeBuildState & { leading?: ReactNode; expanded?: boolean; blocks?: WorkspaceActionBlock[]; selectedRangeBlock?: string | null; onSelectRangeBlock?: (key: string | null) => void; onRewindActionBlock?: ((block: WorkspaceActionBlock) => void) | null; onEnterPostflop?: (() => void) | null; onOpenFlopCards?: () => void; onOpenLaterCard?: (street: string) => void; onFlopAction?: (block: WorkspaceActionBlock, action: string) => void; onLaterAction?: (block: WorkspaceActionBlock, action: string) => void; onAct?: (position: string, action: string) => void; onContinuationAction?: (action: string) => void; onColdAction?: (value: RangeUrlSelection["coldAction"]) => void; onSqueezeResponse?: (role: string, action: string) => void; onBoundedContinuation?: (block: WorkspaceActionBlock, action: string) => void; onStage3Action?: (block: WorkspaceActionBlock, action: string) => void; onFourBet?: () => void; onAllIn?: () => void; onShoveResponse?: (action: string) => void };
 import { stage3Copy } from "./stage3-copy.ts";
@@ -404,7 +404,7 @@ export function EstimatedRanges(props: EstimatedRangesProps) {
   return <EstimatedRangeSession key={navigation} {...props} />;
 }
 
-function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange, mw3Client = mw3DeliveryClient }: EstimatedRangesProps) {
+function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange, rangeSource = "ai", mw3Client = mw3DeliveryClient }: EstimatedRangesProps) {
   const [initialUrlState] = useState(() => readRangeUrl());
   const [initialSelection] = useState(() => initialUrlState ?? restoredSelection(initialRangeType));
   const [opponentProfile, setOpponentProfile] = useState<OpponentProfile>(initialSelection.opponentProfile);
@@ -997,7 +997,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
     if (profileChanged || seatChanged) { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); }
     return profileChanged || seatChanged;
   };
-  if (flopActive && !postflopAllowed) return <div className="shell">
+  if (flopActive && !postflopAllowed && rangeSource !== "gto") return <div className="shell">
     <Sidebar activeSection={RANGE_SECTION}
       onSectionChange={onSectionChange ?? (() => {})}
       profile={profile} onEditProfile={onEditProfile} />
@@ -1016,7 +1016,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
           leading={<RangeContextCard postflop={flopActive} settingsOpen={settingsOpen}
             boards={combinedBlocks.filter(block => block.kind === "board") as { key: string; street?: "flop" | "turn" | "river"; cards: string[] }[]}
             currentPotBb={currentBoardPotBb}
-            onEditBoard={street => street === "flop" ? setFlopDialogOpen(postflopAllowed) : setStreetCardDialog(postflopAllowed ? street as StreetCardDialogName : null)}
+            onEditBoard={street => street === "flop" ? setFlopDialogOpen(postflopAllowed || rangeSource === "gto") : setStreetCardDialog(postflopAllowed && rangeSource !== "gto" ? street as StreetCardDialogName : null)}
             onReset={resetPath}>
             <div className="settings-header">
               <button type="button" className="settings-toggle" aria-label="ゲーム設定を開閉" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(open => !open)}><DotsThreeVertical size={16} weight="bold" aria-hidden="true" /><strong>{formatLabel("game", format.game)}</strong><span>{formatLabel("stack", format.stack)}</span></button>
@@ -1036,9 +1036,9 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
           selectedRangeBlock={selectedRangeBlock}
           {...actionState}
           onRewindActionBlock={rewindToActionBlock}
-          onEnterPostflop={flopContext ? () => { setShowFlop(true); setFlopDialogOpen(postflopAllowed); setSelectedRangeBlock(null); } : null}
-          onOpenFlopCards={() => setFlopDialogOpen(postflopAllowed)}
-          onOpenLaterCard={street => setStreetCardDialog(postflopAllowed ? street as StreetCardDialogName : null)}
+          onEnterPostflop={flopContext ? () => { setShowFlop(true); setFlopDialogOpen(postflopAllowed || rangeSource === "gto"); setSelectedRangeBlock(null); } : null}
+          onOpenFlopCards={() => setFlopDialogOpen(postflopAllowed || rangeSource === "gto")}
+          onOpenLaterCard={street => setStreetCardDialog(postflopAllowed && rangeSource !== "gto" ? street as StreetCardDialogName : null)}
           onFlopAction={(block, action) => { setFlopActions(current => [...current.slice(0, block.flopIndex), action]); setSelectedRangeBlock(null); }}
           onLaterAction={(block, action) => {
             if (block.street === "turn") setTurnActions(current => [...current.slice(0, block.laterIndex), action]);
@@ -1061,7 +1061,15 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
         </Panel>
-        {flopActive ? (mw3ProfilePreparing ? <ProfilePolicyPreparing onRestoreStandard={() => setOpponentProfile("standard")} /> : flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? <Mw3PostflopTrial context={flopContext!} session={mw3Session} cards={flopCards} displayMode={displayMode} /> : <PostflopTrial context={flopContext!} tableProfile={tableProfile} opponentProfile={opponentProfile} opponentSeat={effectiveOpponentSeat} onOpponentProfileChange={setOpponentProfile} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} />) : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
+        {rangeSource === "gto" ? <GtoRangeView
+          available={Boolean(flopActive && isComparison && opener === "BTN" && hero === "BB" && callers.length === 1 && callers[0] === "BB" && foldedHero
+            && isDefaultProfile(tableProfile) && opponentProfile === "standard"
+            && flopContext?.ip === "BTN" && flopContext?.oop === "BB" && flopContext?.potBb === 5.5 && flopContext?.stackBb === 97.5
+            && flopCards.join(" ") === "Qs Jh 2h" && flopActions.length <= 1 && (flopActions.length === 0 || flopActions[0] === "check")
+            && !turnCard && turnActions.length === 0 && !riverCard && riverActions.length === 0)}
+          nodeId={flopActions.length === 1 ? "btn-after-check" : "bb-root"}
+          selected={selected} onSelect={setSelected} displayMode={displayMode} workspaceRake={formatLabel("rake", format.rake)}
+        /> : flopActive ? (mw3ProfilePreparing ? <ProfilePolicyPreparing onRestoreStandard={() => setOpponentProfile("standard")} /> : flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? <Mw3PostflopTrial context={flopContext!} session={mw3Session} cards={flopCards} displayMode={displayMode} /> : <PostflopTrial context={flopContext!} tableProfile={tableProfile} opponentProfile={opponentProfile} opponentSeat={effectiveOpponentSeat} onOpponentProfileChange={setOpponentProfile} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} />) : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length } as CSSProperties}>
           {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} actionLabels={entry.model.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} {...(entry.unreachableReason ? { unreachableReason: entry.unreachableReason } : {})} /> : entry.loading ? <RangeMatrixSkeleton key={entry.position} className="multiway-range-panel missing-range-panel" ariaLabel={`${entry.position}のレンジ`} title={entry.title} label={entry.statusDescription ?? ""} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
             {entry.retryContinuation && <button type="button" onClick={entry.retryStage3 ? stage3Runtime.retry : continuationRuntime.retry}>{continuationCopy("retry")}</button>}
@@ -1099,7 +1107,5 @@ export function RangeWorkspace({ profile, onEditProfile, onSectionChange }: Work
     window.addEventListener(RANGE_SOURCE_CHANGED, update);
     return () => window.removeEventListener(RANGE_SOURCE_CHANGED, update);
   }, []);
-  return rangeSource === "gto"
-    ? <GtoRangeView profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} />
-    : <EstimatedRanges profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} />;
+  return <EstimatedRanges profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} rangeSource={rangeSource} />;
 }

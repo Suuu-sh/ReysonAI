@@ -9,13 +9,15 @@ import { createServer } from "vite";
 import { color, pct } from "../src/components/action-format.ts";
 import { LOCALE_KEY } from "../src/locale.ts";
 import { displayModeKey } from "../src/profile.ts";
+import { defaultFormat } from "../src/estimated/game-formats.ts";
+import { DEFAULT_PROFILE } from "../src/estimated/table-profile.ts";
 
 const saved = JSON.parse(readFileSync(new URL("../src/gto/benchmark-flop.json", import.meta.url), "utf8"));
-let dom, server, GtoRangeView;
+let dom, server, GtoRangeView, viewRoot, activeMode, selectedHand, selectedNode, renderDirect;
 const globals = new Map();
 before(async () => {
   dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', { url: "http://reysonai.test/app" });
-  for (const name of ["window", "document", "Event", "IS_REACT_ACT_ENVIRONMENT"]) {
+  for (const name of ["window", "document", "Event", "HTMLElement", "IS_REACT_ACT_ENVIRONMENT"]) {
     globals.set(name, Object.getOwnPropertyDescriptor(globalThis, name));
     Object.defineProperty(globalThis, name, { configurable: true, writable: true, value: name === "IS_REACT_ACT_ENVIRONMENT" ? true : dom.window[name] });
   }
@@ -43,18 +45,20 @@ async function withView(mode, run, locale = "en") {
   window.localStorage.clear();
   window.localStorage.setItem(LOCALE_KEY, locale);
   if (mode !== null) window.localStorage.setItem(displayModeKey, mode);
-  const root = createRoot(document.getElementById("root"));
+  activeMode = mode === "simple" ? "simple" : "standard";
+  const root = createRoot(document.getElementById("root")); viewRoot = root;
+  selectedHand = null; selectedNode = "bb-root";
+  renderDirect = () => root.render(createElement(GtoRangeView, { available: true, nodeId: selectedNode, selected: selectedHand,
+    onSelect(hand) { selectedHand = hand; renderDirect(); }, displayMode: activeMode, workspaceRake: "5% · cap 3BB" }));
   try {
-    await act(async () => root.render(createElement(GtoRangeView)));
+    await act(async () => renderDirect());
     assert.equal(cells().length, 169);
     await run();
-  } finally { await act(async () => root.unmount()); }
+  } finally { await act(async () => root.unmount()); viewRoot = null; renderDirect = null; }
 }
 async function forEachSavedNode(run) {
-  const selectors = [...document.querySelectorAll(".gto-node-selector button")];
-  for (const [index, node] of saved.nodes.entries()) {
-    await click(selectors[index]);
-    assert.equal(selectors[index].getAttribute("aria-pressed"), "true");
+  for (const node of saved.nodes) {
+    await act(async () => { selectedNode = node.id; selectedHand = null; renderDirect(); });
     await run(node);
   }
 }
@@ -71,14 +75,14 @@ test("GTO standard renders saved mixes with Bet before Check in every node and d
       assert.deepEqual([...document.querySelectorAll(".legend > span")].map(item => item.textContent), ["Bet 2.75 BB (50% pot)", "Check"]);
       const entry = node.classes.find(item => item.frequencies.bet > 0.1 && item.frequencies.check > 0.1);
       await click(cell(entry.handClass));
-      assert.deepEqual([...document.querySelectorAll(".gto-detail .bar-row")].map(row => row.textContent),
+      assert.deepEqual([...document.querySelectorAll(".detail-column .bar-row")].map(row => row.textContent),
         [`Bet 2.75 BB (50% pot)${pct(entry.frequencies.bet)}`, `Check${pct(entry.frequencies.check)}`]);
       assert.deepEqual([...document.querySelectorAll(".gto-combo-list thead th")].map(item => item.textContent), ["Combo", "Bet 2.75 BB (50% pot)", "Check"]);
       const comboRows = node.combos.filter(combo => combo.handClass === entry.handClass && combo.reachWeight > 0).sort((a, b) => a.combo.localeCompare(b.combo));
       assert.deepEqual([...document.querySelectorAll(".gto-combo-list tbody tr")].map(row => [...row.children].map(item => item.textContent)),
         comboRows.map(combo => [combo.combo, pct(combo.frequencies.bet), pct(combo.frequencies.check)]));
     });
-    assert.match(document.querySelector(".gto-matrix-note").textContent, /action frequencies/);
+    assert.match(document.querySelector(".gto-scope").textContent, /action frequencies/i);
   });
 });
 
@@ -97,11 +101,11 @@ test("GTO honors the persisted Simple setting while preserving saved hand detail
       }
       const entry = node.classes.find(item => item.frequencies.bet > 0.1 && item.frequencies.check > 0.1);
       await click(cell(entry.handClass));
-      assert.equal(document.querySelectorAll(".gto-detail .bar-row").length, 2);
+      assert.equal(document.querySelectorAll(".detail-column .bar-row").length, 2);
       assert.equal(document.querySelectorAll(".gto-combo-list tbody tr").length, entry.comboCount);
     });
-    assert.match(document.querySelector(".gto-matrix-note").textContent, /main action/);
-    assert.match(document.querySelector(".gto-facts").textContent, /Qs Jh 2h/);
+    assert.match(document.querySelector(".gto-scope").textContent, /main action/i);
+    assert.match(document.querySelector(".gto-scope").textContent, /Qs Jh 2h/);
     assert.equal(window.localStorage.getItem(displayModeKey), "simple");
   });
 });
@@ -119,6 +123,7 @@ test("Settings buttons persist AI/GTO and Simple, and the source event switches 
   const { RangeWorkspace } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.tsx");
   const { AccountPage } = await server.ssrLoadModule("/src/account/AccountPage.tsx");
   const { RANGE_SOURCE_CHANGED } = await server.ssrLoadModule("/src/account/preferences.ts");
+  const { encodeRangeUrl, defaultRangeSelection } = await server.ssrLoadModule("/src/estimated/range-url.ts");
   window.localStorage.clear();
   window.sessionStorage.clear();
   window.localStorage.setItem(LOCALE_KEY, "en");
@@ -131,6 +136,7 @@ test("Settings buttons persist AI/GTO and Simple, and the source event switches 
   const settingsRoot = createRoot(settingsContainer);
   const rangeRoot = createRoot(document.getElementById("root"));
   const profile = { nickname: "Saved learner", level: "intermediate", updatedAt: "2026-10-14" };
+  window.history.replaceState({}, "", encodeRangeUrl({ ...defaultRangeSelection, selected: "AA" }));
   let events = 0;
   const sourceChanged = () => events++;
   window.addEventListener(RANGE_SOURCE_CHANGED, sourceChanged);
@@ -142,26 +148,111 @@ test("Settings buttons persist AI/GTO and Simple, and the source event switches 
     });
     assert.equal(document.querySelector(".gto-range-page"), null, "fresh workspace starts on AI");
     assert.equal(choice("Calculation version", "AI").getAttribute("aria-checked"), "true");
+    const sharedActionPath = document.querySelector(".action-path");
+    assert.equal(cell("AA").getAttribute("aria-pressed"), "true", "URL-seeded hand selection is active before switching");
     await click(choice("Calculation version", "GTO"));
+    assert.equal(document.querySelector(".action-path"), sharedActionPath, "source toggle preserves the same action-path DOM node");
     assert.equal(events, 1);
-    assert.ok(document.querySelector(".gto-range-page"));
+    assert.ok(document.querySelector(".estimate-settings"));
     assert.equal(JSON.parse(window.localStorage.getItem("reysonai:appearance:v1")).rangeSource, "gto");
-    const entry = saved.nodes[0].classes.find(item => item.frequencies.bet > 0.1 && item.frequencies.check > 0.1);
-    assert.equal(segments(entry.handClass).length, 2);
+    assert.ok(document.querySelector(".estimate-settings"));
+    assert.ok(document.querySelector(".settings-body") || document.querySelector(".settings-toggle"));
+    assert.equal(document.querySelector(".gto-node-selector"), null, "decision node follows the shared action path");
+    assert.equal(document.querySelector(".gto-range-page"), null, "GTO does not replace the workspace shell");
+    assert.match(document.body.textContent, /No saved GTO data for this selection/);
+    const selectorsBefore = document.querySelectorAll(".action-path").length;
+    assert.ok(document.querySelector(".missing-range-panel"));
     await click(choice("Range display", "Simple"));
     assert.equal(window.localStorage.getItem(displayModeKey), "simple");
-    assert.equal(segments(entry.handClass).length, 2, "Settings applies display mode when the range next opens");
+    assert.equal(document.querySelectorAll(".action-path").length, selectorsBefore, "source switching keeps the existing action-path layout mounted");
     await click(choice("Calculation version", "AI"));
     assert.equal(events, 2);
-    assert.equal(document.querySelector(".gto-range-page"), null);
+    assert.equal(document.querySelector(".action-path"), sharedActionPath);
+    assert.equal(cell("AA").getAttribute("aria-pressed"), "true", "selected AI hand survives source changes");
+    assert.equal(document.querySelector(".gto-range-content"), null);
     await click(choice("Calculation version", "GTO"));
     assert.equal(events, 3);
-    assert.equal(segments(entry.handClass).length, 1, "returning to GTO reads the saved Simple choice");
-    assert.match(document.querySelector(".gto-matrix-note").textContent, /main action/);
+    assert.ok(document.querySelector(".estimate-settings"));
+    assert.ok(document.querySelector(".missing-range-panel"), "unsupported GTO state does not fall back to AI data");
     assert.equal(window.localStorage.getItem(historyKey), history);
   } finally {
     window.removeEventListener(RANGE_SOURCE_CHANGED, sourceChanged);
     await act(async () => { settingsRoot.unmount(); rangeRoot.unmount(); });
     settingsContainer.remove();
   }
+});
+
+
+test("RangeWorkspace derives both saved nodes from the real URL action path and gates mismatches", async () => {
+  const { RangeWorkspace } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.tsx");
+  const { encodeRangeUrl, defaultRangeSelection } = await server.ssrLoadModule("/src/estimated/range-url.ts");
+  const { saveRangeSource } = await server.ssrLoadModule("/src/account/preferences.ts");
+  const buildUrl = overrides => encodeRangeUrl({
+    ...defaultRangeSelection, rangeType: "response", opener: "BTN", hero: "BB", callers: ["BB"], foldedHero: true,
+    format: { ...defaultFormat }, tableProfile: { ...DEFAULT_PROFILE }, opponentProfile: "standard",
+    showFlop: true, flopCards: ["Qs", "Jh", "2h"], flopActions: [], turnCard: "", turnActions: [], riverCard: "", riverActions: [],
+    ...overrides,
+  });
+  const scenarios = [
+    { node: saved.nodes[0], actions: [], title: /BB · first to act/ },
+    { node: saved.nodes[1], actions: ["check"], title: /BTN · after BB checks/ },
+  ];
+  const { AccountPage } = await server.ssrLoadModule("/src/account/AccountPage.tsx");
+  const settingsContainer = document.createElement("div");
+  document.body.append(settingsContainer);
+  const settingsRoot = createRoot(settingsContainer);
+  let rangeRoot;
+  try {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem(LOCALE_KEY, "en");
+    for (const scenario of scenarios) {
+      rangeRoot = createRoot(document.getElementById("root"));
+      window.history.replaceState({}, "", buildUrl({ flopActions: scenario.actions }));
+      saveRangeSource("gto");
+      await act(async () => {
+        settingsRoot.render(createElement(AccountPage, { tab: "appearance", onSectionChange() {}, onProfileSaved() {} }));
+        rangeRoot.render(createElement(RangeWorkspace));
+      });
+      assert.match(document.querySelector(".matrix-panel h2").textContent, scenario.title);
+      const entry = scenario.node.classes.find(item => item.frequencies.bet > 0.1 && item.frequencies.check > 0.1);
+      assert.deepEqual(segments(entry.handClass).map(segment => segment.style.width), [expectedWidth(entry.frequencies.bet), expectedWidth(entry.frequencies.check)]);
+      assert.ok(document.querySelectorAll(".action-path .action-seat").length > 0, "shared action path is rendered");
+      if (scenario.actions.length) {
+        assert.ok([...document.querySelectorAll(".action-path button.chosen")].some(button => button.textContent === "Check"),
+          "the saved node matches a Check action in the real action strip");
+      }
+      assert.equal(document.querySelector(".gto-node-selector"), null);
+      assert.equal(document.querySelector(".gto-range-page"), null);
+      await act(async () => rangeRoot.unmount());
+      rangeRoot = null;
+    }
+    const unsupported = [
+      buildUrl({ flopCards: ["As", "Kh", "7d"] }),
+      buildUrl({ flopActions: ["check"], turnCard: "2c", turnActions: ["check"] }),
+      buildUrl({ opener: "CO", callers: ["BB"] }),
+      buildUrl({ opponentProfile: "nit" }),
+      buildUrl({ tableProfile: { call: "low", three_bet: "normal" } }),
+    ];
+    for (const [index, url] of unsupported.entries()) {
+      rangeRoot = createRoot(document.getElementById("root"));
+      window.history.replaceState({}, "", url);
+      await act(async () => rangeRoot.render(createElement(RangeWorkspace)));
+      assert.match(document.body.textContent, /No saved GTO data for this selection/);
+      assert.equal(document.querySelector(".matrix-panel"), null, "unsupported GTO selection never falls back to AI or another saved node");
+      await act(async () => rangeRoot.unmount());
+      rangeRoot = null;
+    }
+  } finally {
+    await act(async () => { settingsRoot.unmount(); rangeRoot?.unmount(); });
+    settingsContainer.remove();
+  }
+});
+
+test("unsupported GTO selection shows no saved data without AI fallback", async () => {
+  const root = createRoot(document.getElementById("root"));
+  try { await act(async () => root.render(createElement(GtoRangeView, { available: false, nodeId: "bb-root", selected: null, onSelect() {}, displayMode: "standard", workspaceRake: "5% · cap 3BB" })));
+    assert.match(document.body.textContent, /No saved GTO data for this selection/);
+    assert.equal(cells().length, 0);
+  } finally { await act(async () => root.unmount()); }
 });
