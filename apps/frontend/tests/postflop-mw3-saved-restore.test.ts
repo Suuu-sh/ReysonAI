@@ -250,6 +250,19 @@ test('compact spot ledgers never retain policies/reports/tar/raw receipt/archive
   assert.doesNotMatch(source, /snapshots\.push|captures\.push/);
   assert.match(source, /finally \{ clearMw3ContractCache\(\); \}/);
 });
+test('compact saved ledger keeps current source pins separate from immutable historical records', async () => {
+  const fixture = await toySnapshot(), currentSources = [record('apps/frontend/scripts/source.ts', Buffer.from('current'))];
+  const ledger = compactMw3SavedSpot({ slug: 'synthetic-hj-btn-bb-mw3', archive: fixture.snapshot.manifest.archive.path,
+    manifest: fixture.snapshot.manifest.archive.path.replace(/\.tar\.gz$/, '.manifest.json'), receipt: 'configs/mw3-synthetic.review.json' },
+    fixture.snapshot, [record('archive.tar.gz', fixture.snapshot.compressed), record('manifest.json', fixture.snapshot.manifestBytes),
+      record('receipt.json', jsonBytes(fixture.receipt))].sort((a, b) => a.path < b.path ? -1 : 1), fixture.pins, currentSources);
+  assert.deepEqual(ledger.sources, fixture.snapshot.manifest.sources);
+  assert.deepEqual(ledger.currentSources, currentSources);
+  assert.throws(() => compactMw3SavedSpot({ slug: 'synthetic-hj-btn-bb-mw3', archive: fixture.snapshot.manifest.archive.path,
+    manifest: fixture.snapshot.manifest.archive.path.replace(/\.tar\.gz$/, '.manifest.json'), receipt: 'configs/mw3-synthetic.review.json' },
+    fixture.snapshot, [record('archive.tar.gz', fixture.snapshot.compressed), record('manifest.json', fixture.snapshot.manifestBytes),
+      record('receipt.json', jsonBytes(fixture.receipt))].sort((a, b) => a.path < b.path ? -1 : 1), fixture.pins, [...currentSources, currentSources[0]]), /duplicate|unsorted/);
+});
 
 test('contract cache release preserves returned witnesses and identical recomputation', () => {
   // Tiny legal geometry makes this a cache-lifetime unit test, not a real

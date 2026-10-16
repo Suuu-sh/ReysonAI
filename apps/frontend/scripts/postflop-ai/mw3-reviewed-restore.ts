@@ -136,6 +136,7 @@ const copyRecord = (row: any) : any => ({ path: row.path, bytes: row.bytes, sha2
 export function compactMw3SavedSpot(entry?: any, snapshot?: any, savedInputs?: any, pins?: any, currentSources?: any) : any {
   const manifest = assertMw3ArchiveManifest(snapshot.manifest);
   assertRecords(savedInputs, 'saved Mw3 input');
+  if (currentSources) assertRecords(currentSources, 'current Mw3 source');
   if (savedInputs.length !== 3 || !(snapshot.files instanceof Map) || snapshot.files.size !== 7) fail('Incomplete Mw3 saved ledger/file set');
   for (const item of manifest.artifacts) {
     const body = snapshot.files.get(item.path);
@@ -145,7 +146,7 @@ export function compactMw3SavedSpot(entry?: any, snapshot?: any, savedInputs?: a
   return { entry: Object.fromEntries(['slug', 'manifest', 'archive', 'receipt', 'sql'].filter((key: any) : any => Object.hasOwn(entry, key)).map((key: any) : any => [key, entry[key]])),
     spotId: manifest.spot.id, sourceTree: manifest.source_tree,
     savedInputs: savedInputs.map(copyRecord), sources: manifest.sources.map(copyRecord), inputs: manifest.inputs.map(copyRecord),
-    ...(currentSources ? { currentSources: assertRecords(currentSources, 'current Mw3 source').map(copyRecord) } : {}),
+    ...(currentSources ? { currentSources: currentSources.map(copyRecord) } : {}),
     artifacts: manifest.artifacts.map(copyRecord), pins: pins.map((pin: any) : any => Object.fromEntries(pinKeys.map((key: any) : any => [key, pin[key]]))) };
 }
 export function assertMw3SavedSourceTrees(root?: any, historicalTree?: any, committedTree?: any, records?: any, currentRecords?: any) : any {

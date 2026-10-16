@@ -45,7 +45,7 @@ export function fileRecord(root?: any, path?: any) : any {
   const body = readSafeFile(root, path, LIMITS.total);
   return { path, bytes: body.length, sha256: sha256(body) };
 }
-export function assertRecords(records?: any, label?: any, limit: any = LIMITS.total) : any {
+export function assertRecords(records?: any, label?: any, limit: any = LIMITS.total) : void {
   if (!Array.isArray(records) || records.length > LIMITS.files) fail(`Invalid ${label} records`);
   let previous = '', total = 0;
   for (const item of records) {
