@@ -216,7 +216,7 @@ test('skips only a first-attempt failure at the named read-only readiness gate a
   const previous = commit(root, baseFiles());
   const failed = workflowRun({ id: 101, head_sha: 'b'.repeat(40), conclusion: 'failure', updated_at: '2026-10-16T00:00:00Z' });
   const success = workflowRun({ id: 100, head_sha: previous, updated_at: '2026-10-15T00:00:00Z' });
-  const fetcher = async url => {
+  const fetcher = async (url: string) => {
     if (/\/actions\/workflows\/deploy-worker\.yml\/runs\?branch=main/.test(url)) {
       return { ok: true, json: async () => ({ workflow_runs: [failed, success] }) };
     }
@@ -267,7 +267,7 @@ test('does not skip readiness failures if any production deploy job ran or the f
     duplicateStep,
     inProgressStep,
   ]) {
-    const fetcher = async url => {
+    const fetcher = async (url: string) => {
       if (/\/actions\/workflows\/deploy-worker\.yml\/runs\?branch=main/.test(url)) return { ok: true, json: async () => ({ workflow_runs: [failed] }) };
       return { ok: true, json: async () => ({ total_count: 3, jobs: [
         { name: 'Classify reviewed code and data inputs', status: 'completed', conclusion: 'success' },
@@ -277,7 +277,7 @@ test('does not skip readiness failures if any production deploy job ran or the f
     };
     await assert.rejects(() => latestDeploymentRun({ repository: 'Suuu-sh/ReysonAI', currentRunId: '102', fetcher }), /production state may be partial|production deployment requires manual recovery/);
   }
-  const truncatedJobsFetcher = async url => {
+  const truncatedJobsFetcher = async (url: string) => {
     if (/\/actions\/workflows\/deploy-worker\.yml\/runs\?branch=main/.test(url)) return { ok: true, json: async () => ({ workflow_runs: [failed] }) };
     return { ok: true, json: async () => ({ total_count: 4, jobs: [
       { name: 'Classify reviewed code and data inputs', status: 'completed', conclusion: 'success' },
@@ -287,7 +287,7 @@ test('does not skip readiness failures if any production deploy job ran or the f
   };
   await assert.rejects(() => latestDeploymentRun({ repository: 'Suuu-sh/ReysonAI', currentRunId: '102', fetcher: truncatedJobsFetcher }), /production state may be partial|production deployment requires manual recovery/);
   for (const total_count of [null, '3', -1, 3.5]) {
-    const malformedCountFetcher = async url => {
+    const malformedCountFetcher = async (url: string) => {
       if (/\/actions\/workflows\/deploy-worker\.yml\/runs\?branch=main/.test(url)) return { ok: true, json: async () => ({ workflow_runs: [failed] }) };
       return { ok: true, json: async () => ({ total_count, jobs: [
         { name: 'Classify reviewed code and data inputs', status: 'completed', conclusion: 'success' },

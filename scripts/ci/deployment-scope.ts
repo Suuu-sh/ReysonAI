@@ -470,7 +470,7 @@ export async function latestDeploymentRun({ repository, currentRunId, token, fet
     if (!response?.ok) throw new Error(`deployment job history unavailable for run ${run.id} (${response?.status ?? 'no response'})`);
     const body = await response.json();
     if (!Array.isArray(body?.jobs)) throw new Error(`deployment job response for run ${run.id} is malformed`);
-    const deployJob = body.jobs.find((job?: any): any => job?.name === DEPLOY_JOB_NAME);
+    const deployJob = body.jobs.find((job: any): any => job?.name === DEPLOY_JOB_NAME);
     if (!deployJob) throw new Error(`deployment job is missing from main run ${run.id}`);
     if (deployJob.status === 'completed' && deployJob.conclusion === 'success' && run.conclusion === 'success') return run;
     if (deployJob.status === 'completed' && deployJob.conclusion === 'skipped' && run.run_attempt === 1) continue;
@@ -480,35 +480,35 @@ export async function latestDeploymentRun({ repository, currentRunId, token, fet
     // any executed write (or newly-added unknown step) keeps lineage fail-closed.
     if (run.run_attempt === 1 && run.conclusion === 'failure' &&
         deployJob.status === 'completed' && deployJob.conclusion === 'failure') {
-      const verifyJob = body.jobs.find(job => job?.name === VERIFY_JOB_NAME);
+      const verifyJob = body.jobs.find((job: any) => job?.name === VERIFY_JOB_NAME);
       const steps = deployJob.steps;
-      const failedReadiness = Array.isArray(steps) ? steps.filter(step => step?.conclusion === 'failure') : [];
-      const stepNames = Array.isArray(steps) ? steps.map(step => step?.name) : [];
-      const uniqueNamedSteps = stepNames.every(name => typeof name === 'string' && name.length > 0) &&
+      const failedReadiness = Array.isArray(steps) ? steps.filter((step: any) => step?.conclusion === 'failure') : [];
+      const stepNames = Array.isArray(steps) ? steps.map((step: any) => step?.name) : [];
+      const uniqueNamedSteps = stepNames.every((name: any) => typeof name === 'string' && name.length > 0) &&
         new Set(stepNames).size === stepNames.length;
       const requiredWritesSkipped = [...REQUIRED_SKIPPED_PRODUCTION_WRITE_STEPS].every(name => {
-        const matching = steps?.filter(step => step?.name === name) ?? [];
+        const matching = steps?.filter((step: any) => step?.name === name) ?? [];
         return matching.length === 1 && matching[0].status === 'completed' && matching[0].conclusion === 'skipped';
       });
       const optionalWritesSkipped = [...OPTIONAL_NEW_PRODUCTION_WRITE_STEPS].every(name => {
-        const matching = steps?.filter(step => step?.name === name) ?? [];
+        const matching = steps?.filter((step: any) => step?.name === name) ?? [];
         return matching.length === 0 || (matching.length === 1 && matching[0].status === 'completed' && matching[0].conclusion === 'skipped');
       });
-      const onlyKnownReadOnlyExecution = Array.isArray(steps) && steps.every(step => {
+      const onlyKnownReadOnlyExecution = Array.isArray(steps) && steps.every((step: any) => {
         if (step?.status !== 'completed') return false;
         if (step?.conclusion === 'skipped') return true;
         if (step?.conclusion === 'failure' && step?.name === READ_ONLY_RANKED_READINESS_STEP) return true;
         return step?.conclusion === 'success' && KNOWN_NON_WRITING_DEPLOY_STEPS.has(step?.name);
       });
-      const jobNames = body.jobs.map(job => job?.name);
+      const jobNames = body.jobs.map((job: any) => job?.name);
       const completeJobsPage = body.total_count === undefined
         ? body.jobs.length < 100
         : Number.isInteger(body.total_count) && body.total_count >= 0 && body.total_count === body.jobs.length;
       const completeUniqueJobList = completeJobsPage &&
         body.jobs.length === EXPECTED_DEPLOYMENT_JOB_NAMES.size &&
-        jobNames.every(name => EXPECTED_DEPLOYMENT_JOB_NAMES.has(name)) && new Set(jobNames).size === jobNames.length;
-      const verifyJobs = body.jobs.filter(job => job?.name === VERIFY_JOB_NAME);
-      const scopeJobs = body.jobs.filter(job => job?.name === SCOPE_JOB_NAME);
+        jobNames.every((name: string) => EXPECTED_DEPLOYMENT_JOB_NAMES.has(name)) && new Set(jobNames).size === jobNames.length;
+      const verifyJobs = body.jobs.filter((job: any) => job?.name === VERIFY_JOB_NAME);
+      const scopeJobs = body.jobs.filter((job: any) => job?.name === SCOPE_JOB_NAME);
       const otherJobsSafe = completeUniqueJobList && verifyJobs.length === 1 && scopeJobs.length === 1 &&
         verifyJobs[0].status === 'completed' && verifyJobs[0].conclusion === 'success' &&
         scopeJobs[0].status === 'completed' && scopeJobs[0].conclusion === 'success';
