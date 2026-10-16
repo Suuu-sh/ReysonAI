@@ -88,25 +88,35 @@
 .account-eyebrow { color: var(--accent-bright); font-size: 10px; font-weight: 800; letter-spacing: .1em; }
 
 /* Subscription */
-.account-plan-current { display: flex; align-items: center; justify-content: space-between; background: radial-gradient(130% 150% at 0% 0%, var(--surface-accent) 0%, var(--surface) 60%); }
-.account-plan-current h2 { margin: 2px 0; font-size: 22px; }
+.account-pill.accent { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent-bright); }
+.account-plan-current { display: flex; align-items: center; gap: 14px; padding: 16px 18px; background: radial-gradient(130% 150% at 0% 0%, var(--surface-accent) 0%, var(--surface) 60%); }
+.account-plan-current > div { flex: 1; min-width: 0; }
+.account-plan-current h2 { margin: 2px 0; font-size: 20px; }
 .account-plan-current p { margin: 0; color: var(--text-muted); font-size: 12px; }
+.account-plan-icon { display: grid; flex: 0 0 auto; place-items: center; width: 40px; height: 40px; border-radius: 10px; background: var(--surface-accent-strong); color: var(--accent-bright); }
+.account-section-title { margin: 8px 0 0; color: var(--text-muted); font-size: 12px; font-weight: 700; }
 .account-plans { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.account-plan { display: flex; flex-direction: column; gap: 8px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.account-plan { display: flex; flex-direction: column; gap: 10px; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.account-plan.current { border-color: color-mix(in srgb, #4fa865 45%, var(--line)); }
 .account-plan.upcoming { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 7%, var(--surface)), var(--surface) 55%); }
 .account-plan header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .account-plan h3 { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: 15px; }
 .account-plan h3 svg { color: var(--accent-bright); }
 .account-price { display: flex; align-items: baseline; gap: 6px; margin: 0; }
-.account-price strong { font-size: 26px; font-variant-numeric: tabular-nums; }
+.account-price strong { font-size: 28px; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .account-price small { color: var(--text-muted); font-size: 12px; }
-.account-plan-desc { margin: 0; color: var(--text-muted); font-size: 12px; }
-.account-plan ul { display: grid; gap: 6px; margin: 4px 0 8px; padding: 0; list-style: none; }
-.account-plan li { display: flex; align-items: center; gap: 7px; font-size: 12.5px; }
-.account-plan li svg { flex: 0 0 auto; color: #7fdca4; }
+.account-plan-desc { margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.6; }
+.account-plan ul { display: grid; gap: 8px; margin: 2px 0 6px; padding: 12px 0 0; border-top: 1px solid var(--line); list-style: none; }
+.account-plan li { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; line-height: 1.45; }
+.account-plan li svg { flex: 0 0 auto; margin-top: 2px; color: #7fdca4; }
 .account-plan.upcoming li svg { color: var(--accent-bright); }
-.account-plan > button { margin-top: auto; }
-.account-note { margin: 0; color: var(--text-subtle); font-size: 11px; line-height: 1.6; }
+/* Status row instead of a dead disabled button: same height in both cards so the footers line up. */
+.account-plan-status { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 36px; margin: auto 0 0; padding: 0 12px; border-radius: 8px; font-size: 12.5px; font-weight: 700; }
+.account-plan.current .account-plan-status { background: color-mix(in srgb, #4fa865 12%, transparent); color: #7fdca4; }
+.account-plan.upcoming .account-plan-status { border: 1px dashed color-mix(in srgb, var(--accent) 45%, var(--line)); color: var(--accent-soft); }
+.account-note { display: flex; align-items: flex-start; gap: 8px; margin: 2px 0 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--text-muted); font-size: 11.5px; line-height: 1.6; }
+.account-note svg { flex: 0 0 auto; margin-top: 2px; color: var(--text-subtle); }
+@media (max-width: 480px) { .account-plan-icon { display: none; } }
 
 /* Log-out dialog */
 .account-logout { display: grid; justify-items: start; gap: 10px; width: min(420px, 92vw); }
