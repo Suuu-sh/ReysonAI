@@ -75,7 +75,13 @@ test("GTO standard renders saved mixes with Bet before Check in every node and d
       assert.deepEqual([...document.querySelectorAll(".legend > span")].map(item => item.textContent), ["Bet 2.75 BB (50% pot)", "Check"]);
       const entry = node.classes.find(item => item.frequencies.bet > 0.1 && item.frequencies.check > 0.1);
       await click(cell(entry.handClass));
-      assert.deepEqual([...document.querySelectorAll(".detail-column .bar-row")].map(row => row.textContent),
+      assert.ok(document.querySelector(".postflop-range-layout .matrix-panel"), "GTO reuses the AI responsive postflop grid");
+      assert.ok(document.querySelector(".postflop-side .postflop-range-summary"), "GTO shows the shared entire-range summary");
+      assert.ok(document.querySelector(".postflop-side .postflop-hand-detail"), "GTO shows the shared hand-detail panel");
+      assert.ok(document.querySelector(".postflop-hand-detail .postflop-suit-picker"), "the shared combo picker appears in the hand detail");
+      assert.ok(document.querySelector(".postflop-hand-detail .postflop-suit-picker").compareDocumentPosition(document.querySelector(".postflop-hand-detail .bar-row")) & Node.DOCUMENT_POSITION_FOLLOWING,
+        "combo picker precedes action frequencies, matching AI postflop details");
+      assert.deepEqual([...document.querySelectorAll(".postflop-hand-detail .bar-row")].map(row => row.textContent),
         [`Bet 2.75 BB (50% pot)${pct(entry.frequencies.bet)}`, `Check${pct(entry.frequencies.check)}`]);
       const comboRows = node.combos.filter(combo => combo.handClass === entry.handClass && combo.reachWeight > 0).sort((a, b) => a.combo.localeCompare(b.combo));
       assert.equal(document.querySelectorAll(".postflop-suit-grid button").length, comboRows.length, "GTO uses the shared suit-combination picker");
@@ -99,7 +105,7 @@ test("GTO honors the persisted Simple setting while preserving saved hand detail
       }
       const entry = node.classes.find(item => item.frequencies.bet > 0.1 && item.frequencies.check > 0.1);
       await click(cell(entry.handClass));
-      assert.equal(document.querySelectorAll(".detail-column .bar-row").length, 2);
+      assert.equal(document.querySelectorAll(".postflop-hand-detail .bar-row").length, 2);
       assert.equal(document.querySelectorAll(".postflop-suit-grid button").length, entry.comboCount);
     });
     assert.match(document.querySelector(".gto-scope").textContent, /main action/i);
@@ -227,6 +233,21 @@ test("RangeWorkspace derives both saved nodes from the real URL action path and 
         await click([...document.querySelectorAll('[role="menu"] button')].find(button => button.textContent === "Check"));
         assert.match(document.body.textContent, /No saved GTO data for this selection/,
           "a second check is outside the fixed benchmark and never advances to fabricated data");
+        const historyNode = [...document.querySelectorAll(".action-seat-flop .action-seat-position")].at(-1);
+        await click(historyNode);
+        assert.match(document.querySelector(".matrix-panel h2").textContent, /BTN · after BB checks/,
+          "rewinding the unsupported second check returns to the saved BTN node");
+      } else {
+        const rootBlock = document.querySelector(".action-seat-flop.active");
+        await click(rootBlock.querySelector(".action-seat-select-trigger"));
+        await click([...document.querySelectorAll('[role="menu"] button')].find(button => button.textContent.includes("Bet 2.75 BB")));
+        assert.match(document.body.textContent, /No saved GTO data for this selection/,
+          "an unsaved bet shows unavailable data while preserving its action history");
+        assert.deepEqual([...document.querySelectorAll(".action-seat-flop .action-seat-position")].map(button => button.textContent), ["BB"],
+          "unsupported action history remains in the shared action strip");
+        await click(document.querySelector(".action-seat-flop .action-seat-position"));
+        assert.match(document.querySelector(".matrix-panel h2").textContent, /BB · first to act/,
+          "rewinding an unsupported bet returns to the saved BB root");
       }
       assert.equal(document.querySelector(".gto-node-selector"), null);
       assert.equal(document.querySelector(".gto-range-page"), null);
@@ -269,6 +290,51 @@ test("RangeWorkspace derives both saved nodes from the real URL action path and 
     await act(async () => rangeRoot.render(createElement(RangeWorkspace)));
     assert.match(document.querySelector(".matrix-panel h2").textContent, /BB · first to act/,
       "returning from settings restores the prior saved board and GTO decision from the session URL");
+    await act(async () => rangeRoot.unmount());
+    rangeRoot = null;
+
+    window.sessionStorage.clear();
+    window.history.replaceState({}, "", buildUrl({ flopActions: ["check"] }));
+    saveRangeSource("gto");
+    rangeRoot = createRoot(document.getElementById("root"));
+    await act(async () => rangeRoot.render(createElement(RangeWorkspace)));
+    assert.match(document.querySelector(".matrix-panel h2").textContent, /BTN · after BB checks/);
+    await act(async () => rangeRoot.unmount());
+    rangeRoot = null;
+    window.history.replaceState({}, "", "/app/settings");
+    saveRangeSource("ai");
+    window.history.replaceState({}, "", "/analyze/ranges");
+    rangeRoot = createRoot(document.getElementById("root"));
+    await act(async () => rangeRoot.render(createElement(RangeWorkspace)));
+    assert.deepEqual([...document.querySelectorAll('.action-seat[class*="action-seat-flop"] .action-seat-position')].map(button => button.textContent), ["BB", "BTN"],
+      "GTO BTN-after-BB-check maps to the AI's implicit BB-check path on a real settings roundtrip");
+    assert.equal(document.querySelector(".street-card-dialog"), null, "source change does not advance to or prompt for turn");
+    await act(async () => rangeRoot.unmount());
+    rangeRoot = null;
+    window.history.replaceState({}, "", "/app/settings");
+    saveRangeSource("gto");
+    window.history.replaceState({}, "", "/analyze/ranges");
+    rangeRoot = createRoot(document.getElementById("root"));
+    await act(async () => rangeRoot.render(createElement(RangeWorkspace)));
+    assert.match(document.querySelector(".matrix-panel h2").textContent, /BTN · after BB checks/,
+      "the AI implicit-check node maps back to the saved GTO BTN node");
+    await act(async () => rangeRoot.unmount());
+    rangeRoot = null;
+
+    window.history.replaceState({}, "", buildUrl({ flopActions: [] }));
+    saveRangeSource("gto");
+    rangeRoot = createRoot(document.getElementById("root"));
+    await act(async () => rangeRoot.render(createElement(RangeWorkspace)));
+    await act(async () => rangeRoot.unmount());
+    rangeRoot = null;
+    window.history.replaceState({}, "", "/app/settings");
+    saveRangeSource("ai");
+    window.history.replaceState({}, "", "/analyze/ranges");
+    rangeRoot = createRoot(document.getElementById("root"));
+    await act(async () => rangeRoot.render(createElement(RangeWorkspace)));
+    assert.deepEqual([...document.querySelectorAll('.action-seat[class*="action-seat-flop"] .action-seat-position')].map(button => button.textContent), ["BB"],
+      "GTO BB-root remains the selected actor when AI has no matching BB-root estimate");
+    assert.match(document.body.textContent, /No AI estimate for BB's first flop decision/);
     await act(async () => rangeRoot.unmount());
     rangeRoot = null;
   } finally {

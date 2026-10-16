@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { hands, pct } from "../data.ts";
+import { hands } from "../data.ts";
 import { ActionBars, Panel, SectionHeading, StatusState } from "../components/primitives.tsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
-import { ComboPicker } from "../estimated/PostflopTrial.tsx";
+import { ComboPicker, PostflopRangeSummary, suitLabels } from "../estimated/PostflopTrial.tsx";
 import { useState } from "react";
 import { productLocale } from "../locale.ts";
 import { validateGtoBenchmark } from "./benchmark.ts";
@@ -16,6 +16,7 @@ const calculation = (() => {
 })();
 
 type NodeId = "bb-root" | "btn-after-check";
+const actions = ["bet", "check"] as const;
 type Props = {
   available: boolean;
   nodeId: NodeId;
@@ -44,6 +45,7 @@ export function GtoRangeView({ available, nodeId, selected, onSelect, displayMod
   const combos = node?.combos
     .filter(item => item.handClass === selected && item.reachWeight > 0)
     .sort((a, b) => a.combo.localeCompare(b.combo)).map(item => ({ cards: item.combo, mix: { bet: item.frequencies.bet, check: item.frequencies.check } })) ?? [];
+  const selectedComboData = combos.find(combo => combo.cards === selectedCombo);
   const actionLabels = {
     check: copy("Check", "チェック", "过牌", "Pasar"),
     bet: copy("Bet 2.75 BB (50% pot)", "ベット 2.75 BB（ポット50%）", "下注 2.75 BB（底池50%）", "Apostar 2,75 BB (50 % del bote)"),
@@ -73,7 +75,13 @@ export function GtoRangeView({ available, nodeId, selected, onSelect, displayMod
     `BTN 2,5 BB → BB paga · Qs Jh 2h · 97,5 BB efectivos · bote 5,5 BB · rake guardado 0% (configuración actual: ${workspaceRake}). Rangos iniciales son estimaciones IA, no GTO preflop. Los colores muestran frecuencias, no alcance.`,
   );
 
-  return <div className="results estimate-results participant-results" aria-label={copy("Saved GTO range and selected hand", "保存済みGTOレンジと選択ハンド", "已保存GTO范围和所选手牌", "Rango GTO guardado y mano seleccionada")}>
+  const reachWeight = node.combos.reduce((sum, combo) => sum + combo.reachWeight, 0);
+  const summaryItems = actions.map(action => ({ action,
+    frequency: reachWeight ? node.combos.reduce((sum, combo) => sum + combo.reachWeight * combo.frequencies[action], 0) / reachWeight : 0,
+  }));
+  const comboCards = selectedComboData?.cards.match(/../g);
+
+  return <div className="postflop-range-layout" aria-label={copy("Saved GTO range and selected hand", "保存済みGTOレンジと選択ハンド", "已保存GTO范围和所选手牌", "Rango GTO guardado y mano seleccionada")}>
     <StrategyMatrix
       node={{ actingPosition: node.position }}
       title={title}
@@ -87,16 +95,22 @@ export function GtoRangeView({ available, nodeId, selected, onSelect, displayMod
       footer={<details className="gto-scope"><summary>{copy("Saved conditions", "保存条件", "已保存条件", "Condiciones guardadas")}</summary><p>{savedScope}</p></details>}
       unreachableReason={copy("No saved positive-reach combo", "正の到達重みを持つコンボなし", "没有已保存正权重组合", "Sin combinaciones guardadas con peso positivo")}
     />
-    <Panel className="detail-column postflop-hand-detail">
-      <SectionHeading title={selected ?? copy("Select a hand", "ハンドを選択", "选择手牌", "Selecciona una mano")} />
-      {!selected ? <p>{copy("Choose an available hand in the 13×13 range.", "13×13レンジから収録ハンドを選択してください。", "从13×13范围选择已收录手牌。", "Elige una mano disponible del rango 13×13.")}</p>
-        : !handClass ? <StatusState title={copy("Unavailable", "未収録", "不可用", "No disponible")}>{copy("No positive-reach combo was saved. This is not a 100% fold.", "正の到達重みを持つコンボはありません。フォールド100%を意味しません。", "没有保存正权重组合，不代表100%弃牌。", "No se guardó combo con alcance positivo; no significa retirarse al 100%.")}</StatusState>
-          : <>
-            <ActionBars items={[{ action: "bet", frequency: handClass.frequencies.bet }, { action: "check", frequency: handClass.frequencies.check }]} labels={actionLabels} />
-            <ComboPicker hand={selected!} combos={combos} actions={["bet", "check"]} labels={actionLabels}
-              selected={selectedCombo} onSelect={setSelectedCombo} missingReason={copy("Not saved", "未収録", "未保存", "No guardado")}
-              missingTitle={copy("This combo was not included in the saved benchmark", "このコンボは保存済みベンチマークに含まれません", "此组合不在已保存基准中", "Este combo no está incluido en la referencia guardada")} />
-          </>}
-    </Panel>
+    <div className="postflop-side">
+      <PostflopRangeSummary items={summaryItems} labels={actionLabels} actions={["bet", "check"]}
+        combos={node.combos.filter(combo => combo.reachWeight > 0).length} />
+      <Panel className="postflop-hand-detail">
+        {!selected ? <SectionHeading title={copy("Select a hand", "ハンドを選択", "选择手牌", "Selecciona una mano")} />
+          : !handClass ? <><SectionHeading title={selected} /><StatusState title={copy("Unavailable", "未収録", "不可用", "No disponible")}>{copy("No positive-reach combo was saved. This is not a 100% fold.", "正の到達重みを持つコンボはありません。フォールド100%を意味しません。", "没有保存正权重组合，不代表100%弃牌。", "No se guardó combo con alcance positivo; no significa retirarse al 100%.")}</StatusState></>
+            : <>
+              <div className="postflop-view-line static"><h3 className="postflop-view-title">
+                {comboCards ? comboCards.map(card => <span key={card} className={`suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>) : <>{selected}<small>{copy("Average", "平均", "平均", "Media")}</small></>}
+              </h3></div>
+              <ComboPicker hand={selected!} combos={combos} actions={actions} labels={actionLabels}
+                selected={selectedCombo} onSelect={setSelectedCombo} missingReason={copy("Not saved", "未収録", "未保存", "No guardado")}
+                missingTitle={copy("This combo was not included in the saved benchmark", "このコンボは保存済みベンチマークに含まれません", "此组合不在已保存基准中", "Este combo no está incluido en la referencia guardada")} />
+              <ActionBars items={actions.map(action => ({ action, frequency: selectedComboData?.mix[action] ?? handClass.frequencies[action] }))} labels={actionLabels} />
+            </>}
+      </Panel>
+    </div>
   </div>;
 }

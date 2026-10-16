@@ -144,6 +144,25 @@ function PostflopLoading({ title }: { title: string }) {
   </div>;
 }
 
+export function PostflopRangeSummary({ items, labels, actions, combos }: {
+  items: { action: string; frequency: number }[];
+  labels: Record<string, string>;
+  actions: readonly string[];
+  combos: number;
+}) {
+  const english = productLocale() !== "ja";
+  const mix = Object.fromEntries(items.map(item => [item.action, item.frequency]));
+  return <details className="panel postflop-range-summary">
+    <summary>
+      <span className="postflop-range-summary-title">{english ? "Entire range" : "レンジ全体"}</span>
+      <span className="postflop-range-summary-bar" style={{ background: mixGradient(mix, actions) }}
+        aria-label={items.map(item => `${labels[item.action]} ${Math.round(item.frequency * 100)}%`).join("、")} />
+    </summary>
+    <p>{english ? `Weighted average of ${combos} reachable combos.` : `到達可能な ${combos}コンボの加重平均です。`}</p>
+    <ActionBars items={items} labels={labels} />
+  </details>;
+}
+
 const suitOrder = ["s", "h", "d", "c"];
 const suitNames: Record<string, Record<string, string>> = {
   en: { s: "Spades", h: "Hearts", d: "Diamonds", c: "Clubs" },
@@ -609,15 +628,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
             boardCards={board ?? undefined}
             selected={selectedHand} onSelect={setSelectedHand} unreachableReason="元のプリフロップ頻度0%またはボードで到達不能、推奨なし" />
           <div className="postflop-side">
-          <details className="panel postflop-range-summary">
-            <summary>
-              <span className="postflop-range-summary-title">レンジ全体</span>
-              <span className="postflop-range-summary-bar" style={{ background: mixGradient(Object.fromEntries(totals!.items.map(item => [item.action, item.frequency])), current.actions) }}
-                aria-label={totals!.items.map(item => `${labels[item.action]} ${Math.round(item.frequency * 100)}%`).join("、")} />
-            </summary>
-            <p>到達可能な {totals!.combos}コンボの加重平均です。</p>
-            <ActionBars items={totals!.items} labels={labels} />
-          </details>
+          <PostflopRangeSummary items={totals!.items} labels={labels} actions={current.actions} combos={totals!.combos} />
           <Panel className="postflop-hand-detail">
             {chosen?.unreachable ? <><SectionHeading title={selectedHand} /><StatusState title="到達不能">元のプリフロップレンジに含まれないか、このボードで組み合わせがありません。</StatusState></>
               : chosen && view && <>
