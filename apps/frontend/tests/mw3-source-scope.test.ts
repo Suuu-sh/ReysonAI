@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
-import { collectMw3Snapshot, currentMw3ArchiveIdentity, sourcePathsFor } from '../scripts/postflop-ai/mw3-reviewed-snapshot.ts';
+import { collectMw3AcceptedSnapshot, currentMw3ArchiveIdentity, sourcePathsFor } from '../scripts/postflop-ai/mw3-reviewed-snapshot.ts';
 import { loadMw3Catalog } from '../scripts/postflop-ai/mw3-inputs.ts';
 import { mw3SourceDependencies, MW3_IMPORT_PARSER_RECORDS } from '../scripts/postflop-ai/mw3-source-dependencies.ts';
 
@@ -159,13 +159,16 @@ test('the TypeScript parser preserves the exact locked executable AST and byte-b
   assert.match(license.text, /Permission is hereby granted/);
 });
 
-test('official collection accepts the source inventory with all parser provenance and unchanged archive bytes', () => {
-  // Read/collect only: the reviewed saved fixtures are restored by MW3 CI before
-  // these tests. No recipe generation, receipt creation or output save occurs.
-  const snapshot = collectMw3Snapshot('CO_open_BTN_call_BB_call');
-  assert.deepEqual(snapshot.manifest.sources.map(row => row.path), sourcePathsFor(identities[0]));
+test('official collection preserves the accepted manifest provenance and archive bytes', () => {
+  // Read/collect only: keep immutable accepted source-tree/path/hash provenance;
+  // current TS compatibility is checked separately and never virtualized into it.
+  const snapshot = collectMw3AcceptedSnapshot('CO_open_BTN_call_BB_call');
+  const manifestPath = new URL('../../../artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.manifest.json', import.meta.url);
+  assert.deepEqual(snapshot.manifestBytes, readFileSync(manifestPath));
+  assert.equal(snapshot.manifest.source_tree, JSON.parse(readFileSync(manifestPath, 'utf8')).source_tree);
   const archive = readFileSync(new URL('../../../' + snapshot.manifest.archive.path, import.meta.url));
   assert.deepEqual(snapshot.compressed, archive);
+  assert.notDeepEqual(snapshot.manifest.sources.map(row => row.path), sourcePathsFor(identities[0]));
   for (const path of MW3_IMPORT_PARSER_RECORDS) assert.ok(snapshot.manifest.sources.some(row => row.path === path));
 });
 
