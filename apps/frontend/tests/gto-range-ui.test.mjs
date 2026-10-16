@@ -190,7 +190,7 @@ test("Settings buttons persist AI/GTO and Simple, and the source event switches 
 test("RangeWorkspace derives both saved nodes from the real URL action path and gates mismatches", async () => {
   const { RangeWorkspace } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.tsx");
   const { encodeRangeUrl, defaultRangeSelection } = await server.ssrLoadModule("/src/estimated/range-url.ts");
-  const { saveRangeSource } = await server.ssrLoadModule("/src/account/preferences.ts");
+  const { saveRangeSource, RANGE_SOURCE_CHANGED } = await server.ssrLoadModule("/src/account/preferences.ts");
   const buildUrl = overrides => encodeRangeUrl({
     ...defaultRangeSelection, rangeType: "response", opener: "BTN", hero: "BB", callers: ["BB"], foldedHero: true,
     format: { ...defaultFormat }, tableProfile: { ...DEFAULT_PROFILE }, opponentProfile: "standard",
@@ -254,6 +254,26 @@ test("RangeWorkspace derives both saved nodes from the real URL action path and 
       await act(async () => rangeRoot.unmount());
       rangeRoot = null;
     }
+
+    window.sessionStorage.clear();
+    window.sessionStorage.setItem("reysonai:estimated-workspace-url:v1", buildUrl({ flopActions: ["check"] }));
+    window.sessionStorage.setItem("reysonai:estimated-workspace-source:v1", "gto");
+    window.sessionStorage.setItem("reysonai:estimated-workspace-semantic-node:v1", "gto-btn-after-check");
+    window.history.replaceState({}, "", "/analyze/ranges");
+    saveRangeSource("gto");
+    rangeRoot = createRoot(document.getElementById("root"));
+    await act(async () => rangeRoot.render(createElement(RangeWorkspace)));
+    assert.match(document.querySelector(".matrix-panel h2").textContent, /BTN · after BB checks/);
+    saveRangeSource("ai");
+    await act(async () => window.dispatchEvent(new Event(RANGE_SOURCE_CHANGED)));
+    assert.deepEqual([...document.querySelectorAll('.action-seat[class*="action-seat-flop"] .action-seat-position')].map(button => button.textContent), ["BB", "BTN"],
+      "guest AI access policy does not remove the compatible shared action path");
+    assert.ok(document.querySelector(".postflop-gate"), "public GTO data switching to AI keeps the existing guest postflop sign-in policy");
+    assert.equal(document.querySelector(".matrix-panel"), null, "the guest AI gate does not reveal an AI matrix");
+    await act(async () => rangeRoot.unmount());
+    rangeRoot = null;
+    saveRangeSource("gto");
+
     const unsupported = [
       buildUrl({ flopCards: ["As", "Kh", "7d"] }),
       buildUrl({ flopActions: ["check"], turnCard: "2c", turnActions: ["check"] }),
@@ -352,7 +372,7 @@ test("RangeWorkspace derives both saved nodes from the real URL action path and 
     await act(async () => rangeRoot.render(createElement(RangeWorkspace)));
     assert.deepEqual([...document.querySelectorAll('.action-seat[class*="action-seat-flop"] .action-seat-position')].map(button => button.textContent), ["BB"],
       "GTO BB-root remains the selected actor when AI has no matching BB-root estimate");
-    assert.match(document.body.textContent, /No AI estimate for BB's first flop decision/);
+    assert.ok(document.querySelector(".postflop-gate"), "guest AI gate remains active for a GTO root with no AI equivalent");
     await act(async () => rangeRoot.unmount());
     rangeRoot = null;
 
@@ -373,10 +393,25 @@ test("RangeWorkspace derives both saved nodes from the real URL action path and 
     await act(async () => rangeRoot.render(createElement(RangeWorkspace)));
     assert.deepEqual([...document.querySelectorAll('.action-seat[class*="action-seat-flop"] .action-seat-position')].map(button => button.textContent), ["BB"],
       "GTO-only bet history remains visible in AI without entering the AI tree");
-    assert.match(document.body.textContent, /No matching AI estimate for this saved action history/);
+    assert.ok(document.querySelector(".postflop-gate"), "direct unsupported AI histories remain behind the guest gate");
     await click(document.querySelector('.action-seat[class*="action-seat-flop"] .action-seat-position'));
-    assert.match(document.body.textContent, /No AI estimate for BB's first flop decision/,
-      "rewinding GTO-only bet returns to explicit AI-unavailable root without passing bet50 to AI replay");
+    assert.ok(document.querySelector(".postflop-gate"),
+      "rewinding GTO-only bet remains subject to the guest AI gate");
+    await act(async () => rangeRoot.unmount());
+    rangeRoot = null;
+
+    window.sessionStorage.clear();
+    window.history.replaceState({}, "", buildUrl({ flopActions: ["bet50"] }));
+    saveRangeSource("ai");
+    rangeRoot = createRoot(document.getElementById("root"));
+    await act(async () => rangeRoot.render(createElement(RangeWorkspace)));
+    assert.deepEqual([...document.querySelectorAll('.action-seat[class*="action-seat-flop"] .action-seat-position')].map(button => button.textContent), ["BB"],
+      "direct AI URLs containing a GTO-only bet remain visible in the shared action path");
+    assert.ok(document.querySelector(".postflop-gate"), "the direct unsupported AI URL remains behind the guest gate");
+    assert.equal(document.querySelector(".matrix-panel"), null, "a direct unsupported AI URL does not enter AI replay or show fallback data");
+    await click(document.querySelector('.action-seat[class*="action-seat-flop"] .action-seat-position'));
+    assert.ok(document.querySelector(".postflop-gate"),
+      "rewinding the direct unsupported URL retains the guest AI gate rather than exposing AI data");
     await act(async () => rangeRoot.unmount());
     rangeRoot = null;
   } finally {

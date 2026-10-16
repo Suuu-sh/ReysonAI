@@ -451,11 +451,11 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const sourceChanged = previousRangeSource !== null && previousRangeSource !== rangeSource;
   const previousNode = explicitRangeUrl ? null : previousSemanticNode;
   const rawFlopActions = rawFlopActionsFromUrl(typeof window === "undefined" ? "" : window.location.search);
-  const originalFlopActions = (rangeSource === "gto" || previousRangeSource === "gto" ? rawFlopActions : null)
+  const originalFlopActions = (rangeSource === "gto" || previousRangeSource === "gto" || rawFlopActions?.includes("bet50") ? rawFlopActions : null)
     ?? initialUrlState?.flopActions ?? [];
   const gtoRootUnavailableInAi = rangeSource === "ai" && (useSourceTransition && previousRangeSource === "gto" && originalFlopActions.length === 0
     || previousNode === "gto-bb-root");
-  const gtoHistoryUnavailableInAi = rangeSource === "ai" && (useSourceTransition && previousRangeSource === "gto" && originalFlopActions.includes("bet50")
+  const gtoHistoryUnavailableInAi = rangeSource === "ai" && (originalFlopActions.includes("bet50")
     || previousNode === "gto-unsaved-history" && originalFlopActions.includes("bet50"));
   const transitionFlopActions = useSourceTransition && previousRangeSource === "gto" && rangeSource === "ai"
     ? originalFlopActions[0] === "check" ? originalFlopActions.slice(1) : originalFlopActions
@@ -1162,7 +1162,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
         </Panel>
-        {aiRootUnavailable ? <Panel className="multiway-range-panel missing-range-panel">
+        {flopActive && rangeSource !== "gto" && !postflopAllowed ? <PostflopSignIn account={account} onBack={() => setShowFlop(false)} /> : aiRootUnavailable ? <Panel className="multiway-range-panel missing-range-panel">
           <SectionHeading title={localized("No AI estimate for BB's first flop decision", "BBのフロップ初手にAI推定はありません")} />
           <StatusState>{localized("The selected GTO action node is preserved. This AI source has no matching range, so no substitute is shown.", "選択中のGTOアクションノードを保持しています。このAIデータソースに対応するレンジはなく、代替表示はしません。")}</StatusState>
         </Panel> : aiGtoHistoryUnavailable ? <Panel className="multiway-range-panel missing-range-panel">
@@ -1172,7 +1172,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
           available={gtoAvailable}
           nodeId={flopActions.length === 1 ? "btn-after-check" : "bb-root"}
           selected={selected} onSelect={setSelected} displayMode={displayMode} workspaceRake={formatLabel("rake", format.rake)}
-        /> : flopActive && !postflopAllowed ? <PostflopSignIn account={account} onBack={() => setShowFlop(false)} /> : flopActive ? (mw3ProfilePreparing ? <ProfilePolicyPreparing onRestoreStandard={() => setOpponentProfile("standard")} /> : flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? <Mw3PostflopTrial context={flopContext!} session={mw3Session} cards={flopCards} displayMode={displayMode} /> : <PostflopTrial context={flopContext!} tableProfile={tableProfile} opponentProfile={opponentProfile} opponentSeat={effectiveOpponentSeat} onOpponentProfileChange={setOpponentProfile} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} />) : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
+        /> : flopActive ? (mw3ProfilePreparing ? <ProfilePolicyPreparing onRestoreStandard={() => setOpponentProfile("standard")} /> : flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? <Mw3PostflopTrial context={flopContext!} session={mw3Session} cards={flopCards} displayMode={displayMode} /> : <PostflopTrial context={flopContext!} tableProfile={tableProfile} opponentProfile={opponentProfile} opponentSeat={effectiveOpponentSeat} onOpponentProfileChange={setOpponentProfile} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} />) : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length } as CSSProperties}>
           {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} actionLabels={entry.model.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} {...(entry.unreachableReason ? { unreachableReason: entry.unreachableReason } : {})} /> : entry.loading ? <RangeMatrixSkeleton key={entry.position} className="multiway-range-panel missing-range-panel" ariaLabel={`${entry.position}のレンジ`} title={entry.title} label={entry.statusDescription ?? ""} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
             {entry.retryContinuation && <button type="button" onClick={entry.retryStage3 ? stage3Runtime.retry : continuationRuntime.retry}>{continuationCopy("retry")}</button>}
