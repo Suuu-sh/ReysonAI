@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import type { Profile } from "../profile.ts";
 import { AuthPanel } from "./AuthPanel.tsx";
 import { accountSnapshot } from "./session.ts";
-import { Check, CreditCard, Palette, SignOut, Sparkle, Translate, UserCircle } from "@phosphor-icons/react";
+import { Check, CheckCircle, Clock, CreditCard, Info, Palette, SignOut, Sparkle, Translate, UserCircle } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { Sidebar } from "../components/layout.tsx";
 import { levels, loadProfile, saveProfile } from "../profile.ts";
@@ -117,30 +117,37 @@ function AccountTab({ profile, onProfileSaved }: { profile: Profile | null; onPr
 
 function SubscriptionTab() {
   const pricing = SITE_COPY[productLocale()].pricing;
+  const [free] = pricing.plans;
   return <>
     <section className="account-card account-plan-current">
+      <span className="account-plan-icon" aria-hidden="true"><CreditCard size={20} weight="duotone" /></span>
       <div>
         <span className="account-eyebrow">{t("現在のプラン", "Current plan")}</span>
-        <h2>Free</h2>
+        <h2>{free.name}</h2>
         <p>{t("公開中のプレビュー機能をすべて無料で使えます。", "All preview features are free to use.")}</p>
       </div>
       <span className="account-pill success">{t("利用中", "Active")}</span>
     </section>
+    <h2 className="account-section-title">{sourceCopy("プランを比較", "Compare plans", "比较方案", "Comparar planes")}</h2>
     <div className="account-plans">
-      {pricing.plans.map((plan, index) => <article key={plan.name} className={`account-plan${index === 0 ? " current" : " upcoming"}`}>
-        <header>
-          <h3>{index === 1 && <Sparkle size={15} weight="fill" />}{plan.name}</h3>
-          <span className="account-pill">{plan.status}</span>
-        </header>
-        <p className="account-price"><strong>{plan.price}</strong><small>{plan.cadence}</small></p>
-        <p className="account-plan-desc">{plan.description}</p>
-        <ul>{plan.features.map(feature => <li key={feature}><Check size={13} weight="bold" />{feature}</li>)}</ul>
-        <button type="button" className={index === 0 ? "account-secondary" : "account-primary"} disabled>
-          {index === 0 ? t("現在のプラン", "Current plan") : plan.action}
-        </button>
-      </article>)}
+      {pricing.plans.map((plan, index) => {
+        const current = index === 0;
+        return <article key={plan.name} className={`account-plan${current ? " current" : " upcoming"}`} aria-current={current ? "true" : undefined}>
+          <header>
+            <h3>{!current && <Sparkle size={15} weight="fill" />}{plan.name}</h3>
+            <span className={`account-pill${current ? " success" : " accent"}`}>{current ? t("利用中", "Active") : plan.status}</span>
+          </header>
+          <p className="account-price"><strong>{plan.price}</strong><small>{plan.cadence}</small></p>
+          <p className="account-plan-desc">{plan.description}</p>
+          <ul>{plan.features.map(feature => <li key={feature}><Check size={13} weight="bold" />{feature}</li>)}</ul>
+          <p className="account-plan-status">
+            {current ? <><CheckCircle size={15} weight="fill" />{sourceCopy("ご利用中のプランです", "You're on this plan", "你正在使用此方案", "Estás en este plan")}</>
+              : <><Clock size={15} weight="bold" />{plan.action}</>}
+          </p>
+        </article>;
+      })}
     </div>
-    <p className="account-note">{pricing.note}</p>
+    <p className="account-note"><Info size={14} weight="bold" aria-hidden="true" /><span>{pricing.note}</span></p>
   </>;
 }
 
