@@ -10300,8 +10300,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 28947,
-      "sha256": "9bf048aaf4eab4b8c808327a0eaaad94ad1a5f6db38cdf9632ce1105b730893e"
+      "bytes": 29062,
+      "sha256": "b5214593c59e8bd150fc9e984834fd638346bfce46057f1258ef63e0960f91bb"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -11275,16 +11275,16 @@
     },
     {
       "path": "scripts/ci/deployment-scope.mjs",
-      "bytes": 27090,
-      "sha256": "6a957cf9bb50c5f3e7376b46b8436f453b33f49c6362c3078083531c28a9cb20"
+      "bytes": 27274,
+      "sha256": "3c1d41ff2468010812bf2afac2719a54da26680a36f18058262ce83fc860b873"
     },
     {
       "path": "scripts/ci/deployment-scope.test.mjs",
-      "bytes": 28116,
-      "sha256": "04a44f7691946fe23c4c1a47decf373a2df755a60ddb0d210d3ed1a1c24044ce"
+      "bytes": 32682,
+      "sha256": "d71fca38d57a1116f6a9204499c3243e645577ebc81a73a972923cc9b55d155c"
     }
   ],
-  "content_sha256": "5b41151f3c56a5eb05913cdf7837bc9689bc2b2c933e9b2a7135cf2f9d51b8e5",
+  "content_sha256": "7afe397106559af5455a971739181d4bba2c1456be9bc49d2c95f344a1fd90a6",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -11462,5 +11462,61 @@
       "no_strategy_data_regeneration": true,
       "no_production_d1_access": true
     }
+  },
+  "independent_ci_lineage_source_review": {
+    "reviewer": "Independent Codex subagent /root/review_lineage_receipts",
+    "base_sha": "f402079ce522034beb075277731c6465994b96c9",
+    "head_sha": "025f83ca942807de94d09a0e83bc5bd5cf624762",
+    "scope": "Source/configuration CI deployment-lineage and read-only Actions history authorization only. Reviewed fail-closed baseline classification; no numerical, strategy-quality, dataset, production-readiness, or deployment approval.",
+    "approved_source_paths": [
+      ".github/workflows/deploy-worker.yml",
+      "scripts/ci/deployment-scope.mjs",
+      "scripts/ci/deployment-scope.test.mjs"
+    ],
+    "findings": 0,
+    "changed_sources": [
+      {
+        "path": ".github/workflows/deploy-worker.yml",
+        "before": {
+          "path": ".github/workflows/deploy-worker.yml",
+          "bytes": 28947,
+          "sha256": "9bf048aaf4eab4b8c808327a0eaaad94ad1a5f6db38cdf9632ce1105b730893e"
+        },
+        "after": {
+          "path": ".github/workflows/deploy-worker.yml",
+          "bytes": 29062,
+          "sha256": "b5214593c59e8bd150fc9e984834fd638346bfce46057f1258ef63e0960f91bb"
+        }
+      },
+      {
+        "path": "scripts/ci/deployment-scope.mjs",
+        "before": {
+          "path": "scripts/ci/deployment-scope.mjs",
+          "bytes": 27090,
+          "sha256": "6a957cf9bb50c5f3e7376b46b8436f453b33f49c6362c3078083531c28a9cb20"
+        },
+        "after": {
+          "path": "scripts/ci/deployment-scope.mjs",
+          "bytes": 27274,
+          "sha256": "3c1d41ff2468010812bf2afac2719a54da26680a36f18058262ce83fc860b873"
+        }
+      },
+      {
+        "path": "scripts/ci/deployment-scope.test.mjs",
+        "before": {
+          "path": "scripts/ci/deployment-scope.test.mjs",
+          "bytes": 28116,
+          "sha256": "04a44f7691946fe23c4c1a47decf373a2df755a60ddb0d210d3ed1a1c24044ce"
+        },
+        "after": {
+          "path": "scripts/ci/deployment-scope.test.mjs",
+          "bytes": 32682,
+          "sha256": "d71fca38d57a1116f6a9204499c3243e645577ebc81a73a972923cc9b55d155c"
+        }
+      }
+    ],
+    "canonical_collector": "apps/frontend/scripts/lib/reviewed-preflop.mjs reviewedSourcePaths/fileRecord",
+    "requested_model": "gpt-6-luna",
+    "runtime_model_attestation": "unavailable"
   }
 }
