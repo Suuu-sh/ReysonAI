@@ -26,6 +26,6 @@ export default {
     const headers = new Headers(request.headers);
     headers.set('host', headers.get('x-fixture-host') ?? new URL(request.url).host);
     headers.delete('x-fixture-host');
-    return worker.fetch(new Request(request, { headers }), env, ctx);
+    return worker.fetch(new Request(request, { headers }), env as Parameters<typeof worker.fetch>[1], ctx);
   },
 };

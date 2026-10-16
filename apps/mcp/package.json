@@ -7,7 +7,7 @@
     "node": ">=22.20.0"
   },
   "scripts": {
-    "test": "node --experimental-strip-types --test tests/*.test.mjs",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
     "typecheck": "tsc --noEmit",
     "build:check": "wrangler deploy --dry-run --config wrangler.test.jsonc --outdir .local/build"
   },

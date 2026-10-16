@@ -7,7 +7,7 @@ input_manifest="$script_dir/runtime-filesystem-json-inputs.json"
 expected_closure_sha256=c28d77a70470845f89c37e1659c8b9a9b4b84ad6f6bca669f2e1df5e32a70d1c
 expected_input_sha256=9d8b9152e41c62f119c52472e9762313447a08dffe62026a6d51da13193da179
 if [[ ${1:-} == --check-manifests ]]; then
-  node "$script_dir/verify-standard-output-parity-manifests.mjs" "$closure_manifest" "$input_manifest"
+  node "$script_dir/verify-standard-output-parity-manifests.ts" "$closure_manifest" "$input_manifest"
   exit 0
 fi
 repo_root=$(cd "${1:?Usage: bash reproduce-standard-output-parity.sh <repository-root> <output-directory>}" && pwd -P)
@@ -55,7 +55,7 @@ closure_sha256=$(shasum -a 256 "$closure_manifest" | awk '{print $1}')
 input_sha256=$(shasum -a 256 "$input_manifest" | awk '{print $1}')
 [[ "$closure_sha256" == "$expected_closure_sha256" ]]
 [[ "$input_sha256" == "$expected_input_sha256" ]]
-node "$script_dir/verify-standard-output-parity-manifests.mjs" "$closure_manifest" "$input_manifest" >/dev/null
+node "$script_dir/verify-standard-output-parity-manifests.ts" "$closure_manifest" "$input_manifest" >/dev/null
 
 # Verify all 70 source files against both the reviewed source commit and the
 # exact protected PR head, then apply only that closure to a separate checkout.
@@ -120,12 +120,12 @@ NODE
 PR123_SOURCE_COMMIT="$baseline_commit" PR123_SOURCE_TREE="$baseline_tree" \
 PR123_EXECUTION_TREE="$baseline_tree" PR123_RUNTIME_CLOSURE_SHA256="$closure_sha256" \
 PR123_FILESYSTEM_INPUTS_SHA256="$input_sha256" \
-  node --experimental-strip-types "$script_dir/standard-output-capture.mjs" \
+  node --experimental-strip-types "$script_dir/standard-output-capture.ts" \
   "$baseline_dir" baseline-7c2 "$output_dir/baseline.json"
 PR123_SOURCE_COMMIT="$source_commit" PR123_SOURCE_TREE="$source_tree" \
 PR123_EXECUTION_TREE="$candidate_tree" PR123_RUNTIME_CLOSURE_SHA256="$closure_sha256" \
 PR123_FILESYSTEM_INPUTS_SHA256="$input_sha256" \
-  node --experimental-strip-types "$script_dir/standard-output-capture.mjs" \
+  node --experimental-strip-types "$script_dir/standard-output-capture.ts" \
   "$candidate_dir" candidate-91109 "$output_dir/candidate.json"
 
 node - "$output_dir/baseline.json" "$output_dir/candidate.json" "$output_dir/canonical-outputs.json" <<'NODE'

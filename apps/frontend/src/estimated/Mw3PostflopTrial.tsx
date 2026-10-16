@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Panel, SectionHeading, StatusState } from "../components/primitives.tsx";
 import { productLocale } from "../i18n.ts";
-import { mw3DecisionView } from "../../scripts/postflop-ai/mw3-runtime.mjs";
+import { mw3DecisionView } from "../../scripts/postflop-ai/mw3-runtime.ts";
 import { deferPostflopCalculation, isAbortError } from "./postflop-browser.ts";
 import { isVerifiedMw3Kit, mw3DeliveryClient, type Mw3DeliveryClient, type Mw3Kit } from "./mw3-browser.ts";
 import { buildMw3RangeNavigation, type Mw3RangeSelection } from "./mw3-range-state.ts";

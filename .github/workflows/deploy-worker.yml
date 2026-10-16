@@ -33,6 +33,7 @@ on:
       - 'apps/backend/migrations/0010_fastfold.sql'
       - 'apps/backend/migrations/0011_human_ranked.sql'
       - 'apps/backend/migrations/0012_postflop_profile_policies.sql'
+      - 'apps/backend/migrations/0013_human_rank_avatar.sql'
       - 'apps/backend/scripts/**'
       - 'apps/shared/**'
       - 'configs/**'
@@ -93,6 +94,7 @@ jobs:
       apply_ranked_schema: ${{ steps.scope.outputs.apply_ranked_schema }}
       apply_fastfold_schema: ${{ steps.scope.outputs.apply_fastfold_schema }}
       apply_human_schema: ${{ steps.scope.outputs.apply_human_schema }}
+      apply_human_avatar_schema: ${{ steps.scope.outputs.apply_human_avatar_schema }}
       apply_profile_schema: ${{ steps.scope.outputs.apply_profile_schema }}
       apply_mw3_schema: ${{ steps.scope.outputs.apply_mw3_schema }}
       mw3_live: ${{ steps.scope.outputs.mw3_live }}
@@ -120,10 +122,10 @@ jobs:
         id: scope
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: node scripts/ci/deployment-scope.mjs
+        run: node scripts/ci/deployment-scope.ts
 
       - name: Test deployment scope decisions with synthetic Git data
-        run: node --test scripts/ci/deployment-scope.test.mjs
+        run: node --test scripts/ci/deployment-scope.test.ts scripts/ci/typescript-sources.test.ts
 
   verify:
     name: Verify reviewed preflop snapshot
@@ -149,6 +151,7 @@ jobs:
       apply_ranked_schema: ${{ needs.scope.outputs.apply_ranked_schema }}
       apply_fastfold_schema: ${{ needs.scope.outputs.apply_fastfold_schema }}
       apply_human_schema: ${{ needs.scope.outputs.apply_human_schema }}
+      apply_human_avatar_schema: ${{ needs.scope.outputs.apply_human_avatar_schema }}
       apply_profile_schema: ${{ needs.scope.outputs.apply_profile_schema }}
       apply_mw3_schema: ${{ needs.scope.outputs.apply_mw3_schema }}
       mw3_live: ${{ needs.scope.outputs.mw3_live }}
@@ -222,39 +225,39 @@ jobs:
             exit "$lfs_status"
           fi
           if [[ "${{ needs.scope.outputs.verify_preflop }}" == 'true' || "${{ needs.scope.outputs.verify_postflop }}" == 'true' ]]; then
-            node scripts/restore-reviewed-preflop.mjs
-            node scripts/restore-reviewed-stage3.mjs
+            node scripts/restore-reviewed-preflop.ts
+            node scripts/restore-reviewed-stage3.ts
           fi
 
       - name: Verify immutable MW3 production contract and exact accepted SQL
         if: needs.scope.outputs.verify_mw3 == 'true'
         run: |
-          node --test tests/mw3-production-delivery.test.mjs
-          node scripts/mw3-production-delivery.mjs verify
+          node --test tests/mw3-production-delivery.test.ts
+          node scripts/mw3-production-delivery.ts verify
 
       # Authoring and independent AI review happen locally, before commit.
       # CI must never generate strategies or update the review receipt.
       - name: Verify reviewed artifact and source hashes; serialize preflop only
         if: needs.scope.outputs.verify_preflop == 'true'
-        run: node scripts/verify-reviewed-preflop.mjs --out .local/reviewed-preflop
+        run: node scripts/verify-reviewed-preflop.ts --out .local/reviewed-preflop
 
       - name: Check continuation invariants and unchanged HU inputs
         if: needs.scope.outputs.verify_preflop == 'true' || needs.scope.outputs.verify_postflop == 'true'
-        run: node --test --test-force-exit --test-concurrency=1 tests/continuation-*.test.mjs tests/stage3-*.test.mjs tests/reviewed-preflop.test.mjs tests/preflop-delivery.test.mjs tests/preflop-workflow.test.mjs tests/ranked-workflow.test.mjs tests/preflop-local-d1.test.mjs tests/reviewed-preflop-archive.test.mjs tests/detailed-reasons.test.mjs
+        run: node --test --test-force-exit --test-concurrency=1 tests/continuation-*.test.ts tests/stage3-*.test.ts tests/reviewed-preflop.test.ts tests/preflop-delivery.test.ts tests/preflop-workflow.test.ts tests/ranked-workflow.test.ts tests/preflop-local-d1.test.ts tests/reviewed-preflop-archive.test.ts tests/detailed-reasons.test.ts
 
       - name: Verify authoritative ranked service without live credentials
         if: needs.scope.outputs.verify_backend == 'true'
         working-directory: apps/backend
-        run: node --experimental-strip-types --test tests/ranked.test.mjs
+        run: node --experimental-strip-types --test tests/ranked.test.ts
 
       - name: Verify continuous FastFold authentication, replay and atomic settlement
         if: needs.scope.outputs.verify_backend == 'true'
         working-directory: apps/backend
-        run: npx --yes --package=wrangler@4.147.0 --call 'node scripts/verify-fastfold-local-runtime.mjs --wrangler "$(command -v wrangler)"'
+        run: npx --yes --package=wrangler@4.147.0 --call 'node scripts/verify-fastfold-local-runtime.ts --wrangler "$(command -v wrangler)"'
 
       - name: Verify local D1 roundtrip, idempotency, isolation and failed-import rollback
         if: needs.scope.outputs.verify_preflop == 'true'
-        run: node scripts/verify-preflop-local-d1.mjs --sql .local/reviewed-preflop/preflop.sql --manifest .local/reviewed-preflop/delivery.json
+        run: node scripts/verify-preflop-local-d1.ts --sql .local/reviewed-preflop/preflop.sql --manifest .local/reviewed-preflop/delivery.json
 
       - name: Typecheck and build compatible client
         if: needs.scope.outputs.verify_frontend == 'true'
@@ -269,7 +272,7 @@ jobs:
       # Spot/profile-scoped SQL preserves every unmentioned history and profile.
       - name: Check postflop policy delivery
         if: needs.scope.outputs.verify_postflop == 'true'
-        run: node scripts/publish-d1.mjs --only postflop --require-all --out .local/postflop.sql
+        run: node scripts/publish-d1.ts --only postflop --require-all --out .local/postflop.sql
 
       - name: Retain exact validated delivery SQL
         if: needs.scope.outputs.verify_preflop == 'true'
@@ -378,8 +381,8 @@ jobs:
             exit "$lfs_status"
           fi
           if [[ "${{ needs.verify.outputs.import_preflop }}" == 'true' || "${{ needs.verify.outputs.publish_postflop }}" == 'true' ]]; then
-            node scripts/restore-reviewed-preflop.mjs
-            node scripts/restore-reviewed-stage3.mjs
+            node scripts/restore-reviewed-preflop.ts
+            node scripts/restore-reviewed-stage3.ts
           fi
 
       - name: Fetch this run's validated delivery SQL
@@ -393,7 +396,7 @@ jobs:
         if: needs.verify.outputs.import_preflop == 'true'
         env:
           NODE_OPTIONS: --max-old-space-size=2048
-        run: node scripts/verify-reviewed-preflop.mjs --check-bundle --out .local/reviewed-preflop
+        run: node scripts/verify-reviewed-preflop.ts --check-bundle --out .local/reviewed-preflop
 
       # Add only accepted immutable MW3 hashes. Verify all current rows before
       # the first write and all headers/parts before either runtime is activated.
@@ -404,7 +407,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           NODE_OPTIONS: --max-old-space-size=2048
           WRANGLER_SEND_METRICS: 'false'
-        run: node scripts/mw3-production-delivery.mjs import
+        run: node scripts/mw3-production-delivery.ts import
 
       # Execute only the reviewed additive ranked schema, never all pending
       # account/postflop migrations. Re-running a main deployment is safe.
@@ -436,6 +439,17 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           WRANGLER_SEND_METRICS: 'false'
         run: npx --yes wrangler@4.147.0 d1 execute reysonai --remote --config wrangler.jsonc --file migrations/0011_human_ranked.sql --yes
+
+      # This is the only reviewed additive avatar change. The helper checks the
+      # existing schema, applies 0013 only when absent, and requires D1 readback.
+      - name: Ensure exact human avatar schema and require D1 readback
+        if: needs.verify.outputs.apply_human_avatar_schema == 'true'
+        working-directory: apps/backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: node scripts/ensure-human-avatar-schema.ts
 
       # Additive profile storage only; never apply all pending migrations.
       - name: Apply exact postflop profile schema
@@ -511,7 +525,7 @@ jobs:
       - name: Require live FastFold API and compatible published data before client
         if: needs.verify.outputs.fastfold_predeploy == 'true'
         working-directory: apps/backend
-        run: node --experimental-strip-types scripts/verify-fastfold-readiness.mjs --configured --predeploy-compatible
+        run: node --experimental-strip-types scripts/verify-fastfold-readiness.ts --configured --predeploy-compatible
 
       - name: Build
         if: needs.verify.outputs.deploy_frontend == 'true'
@@ -540,7 +554,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           NODE_OPTIONS: --max-old-space-size=2048
           WRANGLER_SEND_METRICS: 'false'
-        run: node scripts/import-reviewed-preflop.mjs --remote
+        run: node scripts/import-reviewed-preflop.ts --remote
 
       # The exact source-identity gate runs after importing the reviewed snapshot.
       # The new client has already passed compatible-data integrity checks and
@@ -548,7 +562,7 @@ jobs:
       - name: Require live FastFold release gate after reviewed import
         if: needs.verify.outputs.fastfold_postimport == 'true'
         working-directory: apps/backend
-        run: node --experimental-strip-types scripts/verify-fastfold-readiness.mjs --configured
+        run: node --experimental-strip-types scripts/verify-fastfold-readiness.ts --configured
 
       # Tracked postflop policies depend on the exact reviewed preflop snapshot.
       # Publish only after its import and strict source-identity gate succeed.
@@ -558,7 +572,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           WRANGLER_SEND_METRICS: 'false'
-        run: node scripts/publish-d1.mjs --only postflop --require-all --out .local/postflop.sql --execute remote
+        run: node scripts/publish-d1.ts --only postflop --require-all --out .local/postflop.sql --execute remote
 
       # Final consumer acceptance uses the newly published preflop inputs, all
       # 32 pinned HTTP manifests and every part; transport availability alone
@@ -567,7 +581,7 @@ jobs:
         if: needs.verify.outputs.mw3_live == 'true'
         env:
           NODE_OPTIONS: --max-old-space-size=2048
-        run: node scripts/mw3-production-delivery.mjs live
+        run: node scripts/mw3-production-delivery.ts live
 
       - name: Retain MW3 delivery plan, recovery reference and exact outcomes
         if: always() && needs.verify.outputs.import_mw3 == 'true'

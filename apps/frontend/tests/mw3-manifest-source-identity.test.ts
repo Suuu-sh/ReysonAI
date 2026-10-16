@@ -1,0 +1,103 @@
+// Synthetic, isolated contract tests for the historical MW3 source adapter.
+// Every generated manifest/receipt/source here is test-only; no strategy
+// approval or production artifact is created.
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
+const ROOT = new URL('../../../', import.meta.url);
+const ADAPTER = 'apps/frontend/scripts/postflop-ai/mw3-manifest-source-identity.ts';
+const INVENTORY = 'configs/source-identity-mw3-typescript-archive.json';
+const REVIEW = 'configs/source-identity-mw3-typescript-archive.review.json';
+const EVIDENCE = 'apps/frontend/docs/mw3-source-identity/typescript-archive-sources-parity.json';
+const EXTRAS = [ADAPTER, INVENTORY, REVIEW, EVIDENCE,
+  'apps/frontend/docs/mw3-source-identity/typescript-executable-parity.json',
+  'apps/frontend/scripts/postflop-ai/flop-isomorphism.d.mts',
+  'apps/frontend/scripts/postflop-ai/later-policy.d.mts',
+  'apps/frontend/scripts/postflop-ai/mw3-typescript-source-identity-pairs.json',
+  'apps/frontend/scripts/postflop-ai/policy.d.mts', 'configs/source-identity-typescript.review.json'].sort();
+const RECIPE_PATHS = ['apps/frontend/scripts/data/mw3-authored/context-judgments.mjs', 'apps/frontend/scripts/data/mw3-authored/emit.mjs',
+  'apps/frontend/scripts/data/mw3-authored/registry.mjs', 'apps/frontend/scripts/data/mw3-co-btn-bb-authored.mjs'];
+const SPOTS = ['CO_open_BTN_call_BB_call', 'CO_open_BTN_call_SB_call', 'HJ_open_BTN_call_BB_call', 'HJ_open_BTN_call_SB_call',
+  'HJ_open_CO_call_BB_call', 'HJ_open_CO_call_BTN_call', 'HJ_open_CO_call_SB_call', 'UTG_open_BTN_call_BB_call', 'UTG_open_BTN_call_SB_call',
+  'UTG_open_CO_call_BB_call', 'UTG_open_CO_call_BTN_call', 'UTG_open_CO_call_SB_call', 'UTG_open_HJ_call_BB_call',
+  'UTG_open_HJ_call_BTN_call', 'UTG_open_HJ_call_CO_call', 'UTG_open_HJ_call_SB_call'];
+const sha = (value: string | Buffer) => createHash('sha256').update(value).digest('hex');
+const json = (value: unknown) => Buffer.from(JSON.stringify(value) + '\n');
+const put = (root: string, path: string, value: string | Buffer) => { mkdirSync(dirname(join(root, path)), { recursive: true }); writeFileSync(join(root, path), value); };
+
+function fixture(t: any) {
+  const root = mkdtempSync(join(tmpdir(), 'mw3-SYNTHETIC-archive-source-'));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const helper = readFileSync(new URL(`../../../${ADAPTER}`, import.meta.url)); put(root, ADAPTER, helper);
+  const recipeSources = new Map(RECIPE_PATHS.map(path => [path, `legacy recipe source ${path}\n`]));
+  const rows: any[] = RECIPE_PATHS.map((path, i) => {
+    const historicalBytes = Buffer.from(recipeSources.get(path)!), currentPath = path.replace(/\.mjs$/, '.ts'), currentBytes = Buffer.from(`current TS recipe ${i}\n`);
+    put(root, currentPath, currentBytes);
+    return { historical: { path, bytes: historicalBytes.length, sha256: sha(historicalBytes) },
+      current: { path: currentPath, bytes: currentBytes.length, sha256: sha(currentBytes) }, classification: 'typescript-source-parity' };
+  });
+  for (let i = 0; i < 148; i++) {
+    const path = `fixture/source-${String(i).padStart(3, '0')}.mjs`, body = Buffer.from(`source ${i}\n`), currentPath = `fixture/source-${String(i).padStart(3, '0')}.mjs`;
+    put(root, currentPath, body);
+    rows.push({ historical: { path, bytes: body.length, sha256: sha(body) }, current: { path: currentPath, bytes: body.length, sha256: sha(body) }, classification: 'exact-byte-identity' });
+  }
+  rows.sort((a, b) => a.historical.path.localeCompare(b.historical.path));
+  for (const path of EXTRAS.filter(path => ![ADAPTER, INVENTORY, REVIEW, EVIDENCE].includes(path))) put(root, path, `extra ${path}\n`);
+  const extra_current_sources = EXTRAS.filter(path => ![ADAPTER, INVENTORY, REVIEW, EVIDENCE].includes(path))
+    .map(path => { const body = readFileSync(join(root, path)); return { path, bytes: body.length, sha256: sha(body) }; });
+  const artifactRows = (spot: string) => Array.from({ length: 7 }, (_, i) => {
+    const sha256 = sha(`${spot} artifact ${i}`), kind = `artifact-${i}`;
+    return { path: `fixture/${spot}-${i}.json`, kind, spot, bytes: 1, sha256, entry: `objects/${sha256}` };
+  });
+  const accepted_manifests = SPOTS.map((spot, i) => {
+    const slug = `synthetic-${i}`, archive = { path: `artifacts/postflop/mw3-${slug}.tar.gz`, format: 'ustar+gzip-content-addressed-v1', bytes: 1, sha256: sha(`archive ${i}`) };
+    const artifacts = artifactRows(spot), manifest = { spot: { id: spot, slug }, archive, artifacts }, manifestBytes = json(manifest);
+    const receiptPath = `configs/mw3-${slug}.review.json`, receipt = Buffer.from(`receipt ${i}`); put(root, `artifacts/postflop/mw3-${slug}.manifest.json`, manifestBytes); put(root, archive.path, Buffer.from('a'));
+    put(root, receiptPath, receipt);
+    return { spot, manifest: { path: `artifacts/postflop/mw3-${slug}.manifest.json`, bytes: manifestBytes.length, sha256: sha(manifestBytes) },
+      receipt: { path: receiptPath, bytes: receipt.length, sha256: sha(receipt) }, archive, artifacts };
+  });
+  const archived_recipe_sources = RECIPE_PATHS.map(path => {
+    const source = recipeSources.get(path)!; return { path, source, bytes: Buffer.byteLength(source), sha256: sha(source) };
+  });
+  const inventory: any = { schema_version: 1, kind: 'mw3-typescript-archive-source-inventory', status: 'source-only-proposal', rows,
+    archived_recipe_sources, accepted_manifests, extra_current_sources };
+  const evidence = { kind: 'mw3-typescript-archive-source-parity', status: 'independently-reviewed', rows: rows.map(({ historical, current, classification }) => ({ historical, current, classification })) };
+  put(root, EVIDENCE, json(evidence));
+  put(root, INVENTORY, json(inventory));
+  const review = { schema_version: 1, kind: 'mw3-typescript-archive-source-compatibility-review', status: 'approved', scope: 'source-only-no-strategy-or-runtime-renewal',
+    baseline_commit: 'df2370690e9b3172f2c109f80113b320880f940a', source_head_sha: 'a'.repeat(40), reviewer: 'synthetic test only', requested_model: 'gpt-6.1-sol',
+    runtime_model_attestation: 'unavailable in synthetic fixture', inventory_sha256: sha(readFileSync(join(root, INVENTORY))), adapter_sha256: sha(helper),
+    evidence_sha256: sha(readFileSync(join(root, EVIDENCE))), source_count: 152, extra_current_paths: EXTRAS };
+  put(root, REVIEW, json(review));
+  return { root, inventory, rows, evidence, review, saveInventory: () => { put(root, INVENTORY, json(inventory)); review.inventory_sha256 = sha(readFileSync(join(root, INVENTORY))); put(root, REVIEW, json(review)); },
+    saveReview: () => put(root, REVIEW, json(review)), load: () => import(pathToFileURL(join(root, ADAPTER)).href) };
+}
+
+test('synthetic approved inventory maps exact historical manifest paths to current bytes', async t => {
+  const f = fixture(t), api = await f.load();
+  const sourceRows = f.rows.slice(0, 8), currentPaths = [...sourceRows.map(row => row.current.path), ...EXTRAS].sort();
+  const manifestSources = sourceRows.map(row => row.historical).sort((a, b) => a.path.localeCompare(b.path));
+  api.verifyMw3ArchivedSourceInventory(currentPaths, manifestSources);
+  assert.deepEqual([...api.mw3ArchivedRecipeSources('CO_open_BTN_call_BB_call', readFileSync(join(f.root, f.inventory.accepted_manifests[0].manifest.path))).keys()].sort(), [...RECIPE_PATHS].sort());
+  assert.doesNotMatch(readFileSync(new URL('../scripts/data/mw3-authored/registry.ts', import.meta.url), 'utf8'), /mw3ArchivedRecipeSources/);
+});
+
+for (const [name, mutate] of [
+  ['unknown current path', async (f, api) => assert.throws(() => api.verifyMw3ArchivedSourceInventory([...f.rows.slice(0, 1).map(r => r.current.path), ...EXTRAS, 'unreviewed/file.ts'], [f.rows[0].historical]), /source identity/)],
+  ['missing overlay dependency', async (f, api) => assert.throws(() => api.verifyMw3ArchivedSourceInventory(f.rows.slice(0, 1).map(r => r.current.path), [f.rows[0].historical]), /source identity/)],
+  ['changed current file', async (f, api) => { const row = f.rows[0]; put(f.root, row.current.path, 'mutated'); assert.throws(() => api.verifyMw3ArchivedSourceInventory([row.current.path, ...EXTRAS], [row.historical]), /source identity/); }],
+  ['changed historical record', async (f, api) => assert.throws(() => api.verifyMw3ArchivedSourceInventory([f.rows[0].current.path, ...EXTRAS], [{ ...f.rows[0].historical, sha256: '0'.repeat(64) }]), /source identity/)],
+  ['changed evidence', async (f, api) => { put(f.root, EVIDENCE, '{}\n'); assert.throws(() => api.verifyMw3ArchivedSourceInventory([f.rows[0].current.path, ...EXTRAS], [f.rows[0].historical]), /source identity/); }],
+  ['unapproved review', async (f, api) => { f.review.status = 'pending'; f.saveReview(); assert.throws(() => api.verifyMw3ArchivedSourceInventory([f.rows[0].current.path, ...EXTRAS], [f.rows[0].historical]), /source identity/); }],
+  ['eleventh current extra', async (f, api) => { f.review.extra_current_paths.push('unreviewed/extra.ts'); f.saveReview(); assert.throws(() => api.verifyMw3ArchivedSourceInventory([f.rows[0].current.path, ...EXTRAS], [f.rows[0].historical]), /source identity/); }],
+  ['changed pinned extra', async (f, api) => { const path = f.inventory.extra_current_sources[0].path; put(f.root, path, 'changed'); assert.throws(() => api.verifyMw3ArchivedSourceInventory([f.rows[0].current.path, ...EXTRAS], [f.rows[0].historical]), /source identity/); }],
+  ['changed recipe bytes', async (f, api) => { const bytes = readFileSync(join(f.root, f.inventory.accepted_manifests[0].manifest.path)); assert.throws(() => api.mw3ArchivedRecipeSources('CO_open_BTN_call_BB_call', Buffer.concat([bytes, Buffer.from('x')])), /source identity/); }],
+  ['unknown accepted manifest', async (f, api) => assert.throws(() => api.assertMw3AcceptedArchive('future_spot', Buffer.from('{}')), /source identity/)],
+  ['changed receipt bytes', async (f, api) => { const row = f.inventory.accepted_manifests[0]; put(f.root, row.receipt.path, 'changed'); assert.throws(() => api.assertMw3AcceptedArchive(row.spot, readFileSync(join(f.root, row.manifest.path))), /source identity/); }],
+  ['changed accepted artifact', async (f, api) => assert.throws(() => api.assertMw3AcceptedArtifactBytes('CO_open_BTN_call_BB_call', new Map([['unknown', Buffer.from('x')]])), /source identity/)],
+] as [string, (f: any, api: any) => Promise<void>][]) test(`synthetic archive adapter rejects ${name}`, async t => { const f = fixture(t), api = await f.load(); await mutate(f, api); });

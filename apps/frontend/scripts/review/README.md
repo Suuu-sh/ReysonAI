@@ -6,10 +6,10 @@
 ## 流れ
 
 ```text
-build-packets.mjs → .local/review/packets/<spot>.{blind,critique}.json   （レビュアーに渡す資料）
+build-packets.ts → .local/review/packets/<spot>.{blind,critique}.json   （レビュアーに渡す資料）
                   → .local/review/answer-key/<spot>.json                  （カナリアの正解。レビュアーには渡さない）
 各モデルで実行   → .local/review/results/<model>/<spot>.{blind,critique}.json
-score-reviews.mjs → .local/review/report.md                                （一致度・カナリア検出率・合意した指摘）
+score-reviews.ts → .local/review/report.md                                （一致度・カナリア検出率・合意した指摘）
 ```
 
 採用するのは「2つ以上のレビュアーが同じ方向の修正を提案し、修正後も `npm run build:estimates` の検証を通るもの」だけ。
@@ -46,7 +46,7 @@ critique の資料には、わざと壊した行を2つ混ぜる（例：強い�
 - 全データセットで `range-capped` / `over-segregated` を警告として表示する。警告は公開を止めず、他局面の修正は Claude の次回レビューで判断する。
 - 到達頻度×コンボ数で加重。到達レンジの上位10%（境界は按分）が、10%以上使う受け身アクションの2%未満しかない場合はキャップを警告する。
 - 単一アクション100%の到達コンボが85%超、かつ2アクション以上を各10%以上使う場合は分離しすぎを警告する。通常の fold/open 二択と、価格・勝率で決まる5betオールイン応答だけは後者を免除する（SBのリンプ付きオープンは免除しない）。
-- 強さは `scripts/generate-hand-strength.mjs` で一度計算した `src/estimated/hand-strength.json`（対ランダム、各30,000回、固定シード）を使う。局面固有の相手レンジへの勝率や均衡を証明するものではなく、レビューの目安。
+- 強さは `scripts/generate-hand-strength.ts` で一度計算した `src/estimated/hand-strength.json`（対ランダム、各30,000回、固定シード）を使う。局面固有の相手レンジへの勝率や均衡を証明するものではなく、レビューの目安。
 - SB_open の資料は open/limp/fold の3択を含める。BB_vs_SB_limp と SB_vs_BB_iso も生成対象にする。
 
 ## 出力形式

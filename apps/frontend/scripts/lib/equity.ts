@@ -31,7 +31,7 @@ export function seedFor(text: string) {
 export function combosOf(hand: string) {
   const a = RANKS.indexOf(hand[0]);
   const b = RANKS.indexOf(hand[1]);
-  const out = [];
+  const out: HoleCards[] = [];
   for (let s = 0; s < 4; s += 1) for (let t = 0; t < 4; t += 1) {
     if (hand.length === 2 ? s < t : hand[2] === "s" ? s === t : s !== t) out.push([a * 4 + s, b * 4 + t]);
   }
@@ -113,7 +113,7 @@ export function weightedRange(rows: readonly WeightedHand[]) {
 export function equityVsRange(hand: string, range: readonly WeightedCombo[], samples: number, random: RandomSource) {
   if (!range.length) return null;
   const mine = combosOf(hand);
-  const cumulative = [];
+  const cumulative: number[] = [];
   let sum = 0;
   for (const item of range) { sum += item.weight; cumulative.push(sum); }
   let wins = 0;
@@ -153,7 +153,7 @@ export function blockedShare(hand: string, range: readonly WeightedCombo[]) {
 export function equityVsRanges(hand: string, ranges: readonly (readonly WeightedCombo[])[], samples: number, random: RandomSource) {
   if (ranges.some(range => !range.length)) return null;
   const tables = ranges.map(range => {
-    const cumulative = [];
+    const cumulative: number[] = [];
     let sum = 0;
     for (const item of range) { sum += item.weight; cumulative.push(sum); }
     return { range, cumulative, sum };
@@ -169,7 +169,7 @@ export function equityVsRanges(hand: string, ranges: readonly (readonly Weighted
   for (let i = 0; i < samples; i += 1) {
     const [a, b] = mine[i % mine.length];
     const used = new Set([a, b]);
-    const villains = [];
+    const villains: HoleCards[] = [];
     for (const table of tables) {
       let combo;
       for (let tries = 0; tries < 50 && !combo; tries += 1) {

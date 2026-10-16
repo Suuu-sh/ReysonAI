@@ -95,7 +95,7 @@ function equityScan(range: WeightedRange, id: number, tables: readonly ScoreTabl
     return kernel.denominator[0] > 1e-12 ? kernel.numerator[0] / kernel.denominator[0] : null;
   }
   // Card removal is identical on every final board; filter once, in saved combo-id order.
-  const compatible = [], weights = [];
+  const compatible: number[] = [], weights: number[] = [];
   for (let i = 0; i < ids.length; i++) {
     if (lo[i] === c1 || lo[i] === c2 || hi[i] === c1 || hi[i] === c2) continue;
     compatible.push(ids[i]); weights.push(w[i]);

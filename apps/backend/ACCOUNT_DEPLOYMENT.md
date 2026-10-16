@@ -122,5 +122,5 @@ wrangler dev --local --config apps/backend/wrangler.local.jsonc --persist-to app
 `/health` is process readiness. `/v1/account/session` returns503 without dev secrets,
 or `{user:null}` once configured. D1 state stays under ignored backend `.wrangler`.
 Only account schema is initialized; unrelated published strategy datasets/R2 are not
-copied from production. `tests/account-local.test.mjs` verifies new loopback guards,
+copied from production. `tests/account-local.test.ts` verifies new loopback guards,
 production-flag rejection, separate cookie namespaces and anonymous denial.

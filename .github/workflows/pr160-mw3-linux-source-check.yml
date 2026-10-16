@@ -9,8 +9,8 @@ on:
     branches: [development]
     paths:
       - '.github/workflows/pr160-mw3-linux-source-check.yml'
-      - 'tools/pr160-linux-mw3-check.mjs'
-      - 'tools/pr160-linux-preflop-check.mjs'
+      - 'tools/pr160-linux-mw3-check.ts'
+      - 'tools/pr160-linux-preflop-check.ts'
       - 'tools/pr160-linux-reproduce.sh'
       - 'docs/qa/pr160-integrated-source-renewal-9374d90/**'
 
@@ -34,6 +34,16 @@ jobs:
           persist-credentials: false
           fetch-depth: 1
 
+      - name: Check out immutable historical diagnostic evidence
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: Suuu-sh/ReysonAI
+          ref: 5ba7b6c5b69a2b64d9b8fc063dd6b5b23082d662
+          path: historical-packet
+          fetch-depth: 1
+          persist-credentials: false
+          lfs: false
+
       - name: Check out exact current integration source and LFS archives
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -54,14 +64,20 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/pr160-source-7c979c8"
+          # Import only the bound evidence commit from the local checkout, not remote history.
+          git -C "$GITHUB_WORKSPACE/harness" -c protocol.file.allow=always fetch --no-tags --depth=1 \
+            "$GITHUB_WORKSPACE/historical-packet" 5ba7b6c5b69a2b64d9b8fc063dd6b5b23082d662
+          git -C "$GITHUB_WORKSPACE/harness" --no-replace-objects show \
+            5ba7b6c5b69a2b64d9b8fc063dd6b5b23082d662:docs/qa/pr160-integrated-source-renewal-9374d90/independent-codec.test.mjs \
+            > "$RUNNER_TEMP/pr160-source-7c979c8/independent-codec.test.mjs"
           printf '%s  %s\n' \
             '2f8a43cec4daba803f304ac07964f5fba1202d3894ef5e8293fa7c94c1dafe92' \
             "$GITHUB_WORKSPACE/harness/docs/qa/pr160-integrated-source-renewal-9374d90/pr160-integrated-source-review-9374d90.json" \
             'd4a90de81ac154224ee5f94bbfa7f6e6eff7bfa00ec8656d00d06d2f4cb94848' \
-            "$GITHUB_WORKSPACE/harness/docs/qa/pr160-integrated-source-renewal-9374d90/independent-codec.test.mjs" \
+            "$RUNNER_TEMP/pr160-source-7c979c8/independent-codec.test.mjs" \
             | sha256sum --check --status
           test ! -e "$GITHUB_WORKSPACE/reviewed-source/.pr160-independent-codec.test.mjs"
-          cp "$GITHUB_WORKSPACE/harness/docs/qa/pr160-integrated-source-renewal-9374d90/independent-codec.test.mjs" \
+          cp "$RUNNER_TEMP/pr160-source-7c979c8/independent-codec.test.mjs" \
             "$GITHUB_WORKSPACE/reviewed-source/.pr160-independent-codec.test.mjs"
           trap 'rm -f "$GITHUB_WORKSPACE/reviewed-source/.pr160-independent-codec.test.mjs"' EXIT
           cd "$GITHUB_WORKSPACE/reviewed-source"
@@ -79,7 +95,7 @@ jobs:
             "$GITHUB_WORKSPACE/reviewed-source" "$RUNNER_TEMP/pr160-source-7c979c8/mw3" \
             2>&1 | tee "$RUNNER_TEMP/pr160-source-7c979c8/mw3/run.log"
           node --experimental-strip-types --expose-gc \
-            "$GITHUB_WORKSPACE/harness/tools/pr160-linux-preflop-check.mjs" \
+            "$GITHUB_WORKSPACE/harness/tools/pr160-linux-preflop-check.ts" \
             "$GITHUB_WORKSPACE/reviewed-source" "$RUNNER_TEMP/pr160-source-7c979c8/preflop" \
             2>&1 | tee "$RUNNER_TEMP/pr160-source-7c979c8/preflop/run.log"
 

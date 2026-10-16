@@ -1,7 +1,7 @@
 """Author BB and SB estimates against a 2.5BB open and one 2.5BB cold caller.
 
 This is an authoring-time, hand-group frequency table, not a solver result.
-Only the staging directory used by build-estimates.mjs may be written.
+Only the staging directory used by build-estimates.ts may be written.
 """
 import json
 from call_policy import apply_call_policy

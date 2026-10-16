@@ -4,8 +4,8 @@ import type { WeightedCombo } from "../lib/equity.ts";
 import type { ActionPaths } from "./engine.ts";
 export type FlopHistoryView = StrategyNode & { node: string };
 // Range-weighted mix tables of the read-only postflop views. Pure and shared by the Node view
-// (local-view.mjs) and the browser compute layer (src/estimated/postflop-compute.ts) so both build
-// exactly the same rows. Facing decisions use the computed defence (defence.mjs); every other
+// (local-view.ts) and the browser compute layer (src/estimated/postflop-compute.ts) so both build
+// exactly the same rows. Facing decisions use the computed defence (defence.ts); every other
 // decision (checks, bets, raises) keeps the AI policy mix.
 import { comboRange } from "./browser-inputs.ts";
 import { TIERS } from "./model.ts";

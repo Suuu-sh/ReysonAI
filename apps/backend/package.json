@@ -5,11 +5,14 @@
   "type": "module",
   "scripts": {
     "check": "node --experimental-strip-types src/index.ts",
-    "test": "node --test tests/index.test.mjs tests/postflop.test.mjs tests/preflop-datasets.test.mjs tests/published-datasets.test.mjs tests/postflop-runtime-config.test.mjs",
-    "test:runtime-config": "node --experimental-strip-types --test --test-concurrency=1 tests/postflop-runtime-config.test.mjs tests/index.test.mjs",
-    "test:account": "node --experimental-strip-types --test tests/account.test.mjs",
-    "test:account-local": "node --experimental-strip-types --test tests/account-local.test.mjs",
-    "test:account-native": "node --experimental-strip-types --test --test-concurrency=1 tests/native-account.test.mjs",
-    "test:fastfold": "node --experimental-strip-types --test tests/fastfold.test.mjs tests/fastfold-release.test.mjs tests/fastfold-do.test.mjs"
+    "test": "node --test tests/index.test.ts tests/postflop.test.ts tests/preflop-datasets.test.ts tests/published-datasets.test.ts tests/postflop-runtime-config.test.ts",
+    "test:runtime-config": "node --experimental-strip-types --test --test-concurrency=1 tests/postflop-runtime-config.test.ts tests/index.test.ts",
+    "test:account": "node --experimental-strip-types --test tests/account.test.ts",
+    "test:account-local": "node --experimental-strip-types --test tests/account-local.test.ts",
+    "test:account-native": "node --experimental-strip-types --test --test-concurrency=1 tests/native-account.test.ts",
+    "test:fastfold": "node --experimental-strip-types --test tests/fastfold.test.ts tests/fastfold-release.test.ts tests/fastfold-do.test.ts"
+  },
+  "engines": {
+    "node": ">=22.20.0"
   }
 }

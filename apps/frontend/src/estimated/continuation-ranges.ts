@@ -90,7 +90,7 @@ export function createContinuationUiRuntime(datasets: UiDatasets): ContinuationU
   datasets = validatedSources(datasets);
   validateContinuationUiPayload(datasets['continuation-responses']);
   const model = createContinuationModel(datasets);
-  const sources = new Map<string, ContinuationUiSpot>(Object.entries(datasets).flatMap(([name, data]) => (data?.spots ?? []).map(spot => [`${name}/${spot.id}`, spot])));
+  const sources = new Map<string, ContinuationUiSpot>(Object.entries(datasets).flatMap(([name, data]) => (data?.spots ?? []).map(spot => [`${name}/${spot.id}`, spot] as const)));
   const cache = new Map<string, SelectionResult | TerminalResult>();
   function select(ref: RangeRef): SelectionResult {
     const key = `${ref.kind}/${ref.dataset ?? ''}/${ref.id}`;
@@ -115,7 +115,7 @@ export function createContinuationUiRuntime(datasets: UiDatasets): ContinuationU
         result = { status: 'saved', spot, node, model: { actions: displayActions, actionLabels: Object.fromEntries(displayActions.map(action => [action, label(action, size(action))])),
           aggregates: new Map(spot.hands.map(row => [row.hand, { hand: row.hand, comboCount: comboCount(row.hand),
             ...(context && !context.reach(row.hand) ? { unreachable: true, actions: {} }
-              : { actions: Object.fromEntries(displayActions.map(action => [action, row[action]! / 100])) }) }])) } };
+              : { actions: Object.fromEntries(displayActions.map(action => [action, row[action]! / 100])) }) }] as const)) } };
       }
     } catch (error) {
       if (!(error instanceof MissingContinuationSourceError)) throw error;
@@ -240,7 +240,7 @@ export function continuationSavedRange(ref: RangeRef, sources: Record<string, So
       return null;
     }
   }
-  const model: MatrixModel = { actions, actionLabels: Object.fromEntries(actions.map(key => [key,key === 'four_bet' ? '4bet' : key === 'all_in' ? 'All-in' : key])), aggregates: new Map(spot.hands.map(row => [row.hand,{hand:row.hand,comboCount:row.hand.length===2 ? 6 : row.hand.endsWith('s') ? 4 : 12,actions:Object.fromEntries(actions.map(key=>[key,Number(row[key as keyof typeof row])/100]))}])) };
+  const model: MatrixModel = { actions, actionLabels: Object.fromEntries(actions.map(key => [key,key === 'four_bet' ? '4bet' : key === 'all_in' ? 'All-in' : key])), aggregates: new Map(spot.hands.map(row => [row.hand,{hand:row.hand,comboCount:row.hand.length===2 ? 6 : row.hand.endsWith('s') ? 4 : 12,actions:Object.fromEntries(actions.map(key=>[key,Number(row[key as keyof typeof row])/100]))}] as const)) };
   for (const [hand, aggregate] of model.aggregates) {
     if (reach && reach(hand) === 0) model.aggregates.set(hand, { ...aggregate, unreachable: true, actions: {} });
   }

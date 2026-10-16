@@ -20,9 +20,9 @@ export type HandBlockers = {
 export type MadeContext = { rc: Int8Array; bc: Int8Array; boardRanks: number[]; score: number };
 // Hand-specific facts of one hole combo on a 3-5 card board: what the hand has made, which draws it holds,
 // the overcards and the blockers it carries. Pure and cheap (about a thousand 5-7 card evaluations per call),
-// browser and Node. The explanation copy and the shared role decision (hand-role.mjs) are built on these facts.
+// browser and Node. The explanation copy and the shared role decision (hand-role.ts) are built on these facts.
 //
-// Cards are 0-51 integers (rank * 4 + suit, rank 0 = deuce .. 12 = ace, suits c d h s) as in model.mjs.
+// Cards are 0-51 integers (rank * 4 + suit, rank 0 = deuce .. 12 = ace, suits c d h s) as in model.ts.
 //
 // Approximations (documented on purpose):
 //  - `strength` ranks the made hand against every two-card holding that fits the dead cards (uniform), so it
@@ -64,7 +64,7 @@ function madeHand(hole: readonly number[], board: readonly number[], cat: number
   const hr = [rankOf(hole[0]), rankOf(hole[1])].sort((a, b) => b - a);
   const pocket = hr[0] === hr[1];
   const topB = boardRanks[0];
-  const ranksByCount = (n: number) => { const out = []; for (let r = 12; r >= 0; r--) if (rc[r] === n) out.push(r); return out; };
+  const ranksByCount = (n: number) => { const out: number[] = []; for (let r = 12; r >= 0; r--) if (rc[r] === n) out.push(r); return out; };
   const made: MadeHand = { category: CATEGORIES[cat], kind: CATEGORIES[cat], usesHole: 0 };
   const holeMatches = hr.filter(r => bc[r] > 0);
   if (cat === 0) {
@@ -154,7 +154,7 @@ export function handFeatures(hole: readonly number[], board: readonly number[]) 
 
   // Standing against every holding that fits the dead cards, and the best straight any holding makes.
   const dead = new Set(all);
-  const rem = [];
+  const rem: number[] = [];
   for (let c = 0; c < 52; c++) if (!dead.has(c)) rem.push(c);
   const tally = Array.from({ length: 9 }, () => [0, 0]); // per category: [we beat them, they beat or tie us]
   const sub = { overpair: [0, 0], topPair: [0, 0], underpair: [0, 0], lower: [0, 0], set: [0, 0] }; // one-pair holdings by kind: [lose to us, beat or tie us]

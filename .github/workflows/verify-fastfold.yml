@@ -18,16 +18,16 @@ on:
       - 'apps/frontend/src/route.ts'
       - 'apps/frontend/scripts/postflop-ai/**'
       - 'apps/frontend/scripts/lib/**'
-      - 'apps/frontend/scripts/restore-reviewed-preflop.mjs'
+      - 'apps/frontend/scripts/restore-reviewed-preflop.ts'
       - 'apps/frontend/scripts/data/postflop-ai-pilot.json'
       - 'artifacts/preflop/stage2-reviewed.tar.gz'
-      - 'apps/frontend/tests/human-ranked-ui.test.mjs'
-      - 'apps/frontend/tests/poker-table-ui.test.mjs'
-      - 'apps/frontend/tests/fastfold-ui.test.mjs'
-      - 'apps/frontend/tests/fastfold-app-integration.test.mjs'
-      - 'apps/frontend/tests/ranked-ui.test.mjs'
-      - 'apps/frontend/tests/trainer-release-status.test.mjs'
-      - 'apps/frontend/tests/ranked-workflow.test.mjs'
+      - 'apps/frontend/tests/human-ranked-ui.test.ts'
+      - 'apps/frontend/tests/poker-table-ui.test.ts'
+      - 'apps/frontend/tests/fastfold-ui.test.ts'
+      - 'apps/frontend/tests/fastfold-app-integration.test.ts'
+      - 'apps/frontend/tests/ranked-ui.test.ts'
+      - 'apps/frontend/tests/trainer-release-status.test.ts'
+      - 'apps/frontend/tests/ranked-workflow.test.ts'
       - 'apps/frontend/package.json'
       - 'apps/frontend/package-lock.json'
       - 'configs/**'
@@ -61,13 +61,13 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Restore exact reviewed preflop fixtures for Agent bootstrap
         working-directory: apps/frontend
-        run: node scripts/restore-reviewed-preflop.mjs
+        run: node scripts/restore-reviewed-preflop.ts
       - name: Verify FastFold UI, readiness and ranked workflow
         working-directory: apps/frontend
-        run: node --experimental-strip-types --test tests/human-ranked-ui.test.mjs tests/poker-table-ui.test.mjs tests/fastfold-ui.test.mjs tests/fastfold-app-integration.test.mjs tests/ranked-ui.test.mjs tests/trainer-release-status.test.mjs tests/ranked-workflow.test.mjs
+        run: node --experimental-strip-types --test tests/human-ranked-ui.test.ts tests/poker-table-ui.test.ts tests/fastfold-ui.test.ts tests/fastfold-app-integration.test.ts tests/ranked-ui.test.ts tests/trainer-release-status.test.ts tests/ranked-workflow.test.ts
       - name: Verify authoritative FastFold replay and backend module
         working-directory: apps/backend
         run: |
-          node --experimental-strip-types --test tests/ranked-history.test.mjs
-          npx --yes --package=wrangler@4.147.0 --call 'node scripts/verify-fastfold-local-runtime.mjs --wrangler "$(command -v wrangler)"'
+          node --experimental-strip-types --test tests/ranked-history.test.ts
+          npx --yes --package=wrangler@4.147.0 --call 'node scripts/verify-fastfold-local-runtime.ts --wrangler "$(command -v wrangler)"'
           npm run check

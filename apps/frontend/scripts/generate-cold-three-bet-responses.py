@@ -6,7 +6,7 @@ Y folds → Y decides fold / call / 4bet. O and any seats after Y are still to a
 Spot id `{Y}_vs_{X}_3bet_{O}open`; 20 spots (X = HJ / CO / BTN / SB).
 
 This is an authoring-time, hand-group frequency table, not a solver result.
-Only the staging directory used by build-estimates.mjs may be written.
+Only the staging directory used by build-estimates.ts may be written.
 """
 import json
 import os

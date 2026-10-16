@@ -1,0 +1,797 @@
+import { fixtureValue } from "./fixture-value.ts";
+import assert from "node:assert/strict";
+import { after, before, test } from "node:test";
+import { fileURLToPath } from "node:url";
+import { readFileSync } from "node:fs";
+import { act, createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { createRoot } from "react-dom/client";
+import { JSDOM } from "jsdom";
+import { createServer } from "vite";
+
+test("scrolly audience starts at the section edge instead of centering in its scroll spacer", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /\.site-audience\.is-scrolly\s*\{[^}]*display: block;[^}]*height: 300vh/);
+  assert.match(css, /\.site-audience\.is-scrolly > \.site-wrap\s*\{[^}]*position: sticky; top: 0/);
+});
+
+test("phone hero uses an inert decorative chart behind centered copy and CTAs", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 720px)"));
+  assert.match(source, /className="site-hero-range" inert=\{decorative\} aria-hidden=\{decorative \|\| undefined\}/);
+  assert.match(source, /matchMedia\("\(max-width: 720px\)"\)/);
+  assert.match(source, /query\.removeEventListener\("change", sync\)/);
+  assert.match(mobile, /\.site-hero-copy \{[^}]*text-align: center;/);
+  assert.match(mobile, /\.site-hero-range \{ position: absolute;[^}]*pointer-events: none;/);
+  assert.match(mobile, /\.site-hero h1 \.site-hero-mark \{ color: #a8a8b3;/);
+  assert.match(mobile, /\.site-hero-opening \{ color: var\(--ink\);/);
+  assert.match(mobile, /\.site-hero-range \.site-matrix-scroll \{[^}]*margin: 0; padding: 0;/);
+  assert.match(mobile, /\.site-hero-actions \{ justify-content: center;/);
+  assert.match(mobile, /\.site-hero-range \.site-matrix \{ height: auto; aspect-ratio: 1;/);
+  assert.match(mobile, /\.has-motion \.site-hero-range \{ animation: none; \}/);
+  assert.match(mobile, /\.site-wrap\.site-hero-main \{[^}]*width: 100%; margin: 0; min-height: 0; aspect-ratio: 1; padding: 0;/);
+  assert.doesNotMatch(mobile.split("/* Compare")[0], /min-height: calc\(100svh - 64px\)/);
+});
+
+test("only the phone hero description is hidden, without removing locale copy or desktop presentation", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 720px)"));
+  assert.match(mobile, /\.site-hero-lead \{ display: none; \}/);
+  assert.doesNotMatch(css.split("@media screen and (max-width: 720px)")[0], /\.site-hero-lead[^}]*display: none/);
+  for (const locale of ["en", "ja", "es", "zh-CN"]) {
+    assert.ok(render(locale).includes(escapeText(copies[locale].hero.lead)));
+  }
+});
+
+test("phone cover fills remaining viewport without stretching or clipping the square range", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 720px)"));
+  assert.match(css, /\.site-cover-ending \{ display: none; \}/);
+  assert.match(mobile, /min-height: calc\(100svh - var\(--header-height\)\)/);
+  assert.match(mobile, /\.site-hero-stage \{ display: block; flex: none; width: 100%; aspect-ratio: 1; \}/);
+  assert.match(mobile, /\.site-cover-ending \{ display: flex; flex: 1; min-height: 156px;/);
+  assert.match(mobile, /env\(safe-area-inset-bottom\)/);
+  for (const locale of ["en", "ja", "es", "zh-CN"]) {
+    const html = render(locale);
+    for (const key of ["coverTitle", "coverSubtitle", "coverScroll"]) assert.ok(html.includes(escapeText(copies[locale].hero[key])));
+  }
+});
+
+test("non-cover phone chapters remain natural with no global pin or artificial hold", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /MobileHold|mobileHoldGeometry|data-hold-phase/);
+  assert.match(source, /running = auto && motion && visible && !scrolly && !phone/);
+  assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 640px\)"\)/);
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const chapters = css.slice(css.indexOf("/* Mobile chapters:"));
+  assert.match(chapters, /position: static; min-height: 0;/);
+  assert.match(chapters, /\.site-persona:not\(\.is-active\)[^}]*display: none/);
+  assert.doesNotMatch(css, /site-mobile-hold|--audience-track-height|--step-top/);
+});
+
+test("phone persona selectors precede one adjacent description and matching preview", () => {
+  const previousWindow = globalThis.window;
+  try {
+    globalThis.window = fixtureValue<typeof globalThis.window>({ matchMedia: () => ({ matches: true }), localStorage: { getItem: () => null } });
+    const html = render("ja");
+    const tabs = html.split('role="tablist"')[1].split('role="tabpanel"')[0];
+    assert.match(tabs, /aria-orientation="horizontal"/);
+    assert.equal((tabs.match(/role="tab"/g) ?? []).length, 3);
+    assert.doesNotMatch(tabs, /site-persona-body|site-persona-quote/);
+    const panel = html.split('role="tabpanel"')[1];
+    assert.ok(panel.indexOf('class="site-persona-selected-copy"') < panel.indexOf('class="site-persona-views"'));
+    assert.ok(panel.includes(escapeText(copies.ja.audience.items[0].body)));
+  } finally { globalThis.window = previousWindow; }
+});
+
+test("phone learner retains the full saved factual reason used on desktop", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.match(source, /<p className="site-persona-why"><span>\{c.preview.why\}<\/span>\{c.how.whyNote\}<\/p>/);
+  assert.doesNotMatch(source, /learnerWhyShort/);
+  for (const locale of ["en", "ja", "es", "zh-CN"]) assert.ok(render(locale).includes(escapeText(copies[locale].how.whyNote)));
+});
+
+test("phone question is erased top-down ahead of the pinned range", async () => {
+  const { shouldPinCover, questionMaskEdge } = await server.ssrLoadModule("/src/site/cover-pin.ts");
+  for (const footerTop of [454, 300, 65]) assert.equal(shouldPinCover(0, footerTop, 64), true);
+  assert.equal(shouldPinCover(-390, 64, 64), false);
+  assert.equal(shouldPinCover(-391, 63, 64), false);
+  assert.equal(questionMaskEdge(454, 454, 390), 56);
+  assert.equal(questionMaskEdge(464, 454, 390), 46);
+  assert.equal(questionMaskEdge(354, 454, 390), 156);
+  assert.equal(questionMaskEdge(510, 454, 390), 0);
+  assert.equal(questionMaskEdge(482, 454, 390), 28);
+  assert.equal(questionMaskEdge(0, 454, 390), 418);
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const cover = css.slice(css.indexOf("/* Only the square pins")).split("\n}\n")[0];
+  assert.match(cover, /site-cover-ending[^}]*mask-image: linear-gradient\(to bottom, transparent calc\(var\(--question-mask-edge, 0px\) - 28px\), #000 var\(--question-mask-edge, 0px\)\)/);
+  assert.match(cover, /site-after-cover[^}]*z-index: 1; background: var\(--bg\)/);
+  assert.doesNotMatch(cover, /height:|padding-bottom:|question-shift/);
+});
+
+test("only the long phone comparison Agent and ranked chapters use compact readable spacing", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const compact = css.slice(css.indexOf("/* Compact only the three long"));
+  assert.match(compact, /@media \(max-width: 560px\)/);
+  for (const name of ["site-ranked", "site-agent", "site-compare"]) assert.ok(compact.includes(name));
+  assert.match(compact, /tbody td \{ padding: 6px; font-size: 12px; line-height: 1.45/);
+  assert.doesNotMatch(compact, /overflow: hidden|max-height:|site-persona/);
+});
+
+test("intermediate two-column hero removes only its viewport spacer and never clips copy", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const intermediate = css.slice(css.indexOf("/* Intermediate two-column"));
+  assert.match(intermediate, /@media \(min-width: 961px\) and \(max-width: 1200px\)/);
+  assert.match(intermediate, /\.site-hero-main \{ min-height: 0; \}/);
+  assert.match(intermediate, /transform: none; padding: 24px/);
+  assert.doesNotMatch(intermediate, /overflow:|max-height:|aspect-ratio:|hero-range-size/);
+});
+
+test("only ReysonAI comparison cells stay continuously black while the section stays light", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /\.site-compare \{ background: var\(--paper\); color: var\(--paper-ink\); \}/);
+  const continuity = css.slice(css.indexOf("/* Keep only ReysonAI"));
+  assert.match(continuity, /thead th.is-us, \.site-compare tbody td.is-us \{ background: var\(--paper-ink\); border-top-color: var\(--paper-ink\); border-radius: 0;/);
+  assert.match(continuity, /inset: -12px 0; z-index: -1; background: var\(--paper-ink\)/);
+  assert.doesNotMatch(continuity, /grid-template|font-size|site-hero/);
+});
+
+test("every non-two-column width uses the same decorative square hero", () => {
+  const previousWindow = globalThis.window;
+  try {
+    for (const width of [560, 720, 721, 768, 960, 961]) {
+      globalThis.window = fixtureValue<typeof globalThis.window>({ matchMedia: query => ({ matches: query.includes("max-width") && width <= Number(query.match(/max-width: (\d+)/)[1]) }), localStorage: { getItem: () => null } });
+      const html = render("en");
+      assert.equal(html.includes('class="site-hero-range" inert="" aria-hidden="true"'), width <= 720);
+    }
+  } finally { globalThis.window = previousWindow; }
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /@media screen and \(max-width: 720px\)/);
+  assert.match(css, /\/\* Compact only the three long[^]*@media \(max-width: 560px\)/);
+});
+
+test("hero and shared English taglines use Understand the reason", () => {
+  for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
+    const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");
+    assert.match(content, /title2: "Understand the reason\."/);
+    assert.match(content, /tagline: "Don't just play\. Understand the reason\."/);
+    assert.doesNotMatch(content, /Understand why\./);
+  }
+});
+
+test("phone selected-hand panel stays compact without shrinking its action target", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 720px)"));
+  assert.match(mobile, /\.site-hero-detail \.site-hand \{ gap: 12px 16px; padding-block: 14px; \}/);
+  assert.match(mobile, /\.site-hero-deal \.site-card \{ --card-w: clamp\(36px, 10vw, 48px\); \}/);
+  assert.match(mobile, /\.site-hero-reason \.site-hand-link \{ min-height: 44px;/);
+  assert.match(mobile, /\.site-hero-summary \.site-hand-action\.is-spacer \{ display: none; \}/);
+});
+
+test("phones hide only the illustrative analysis dashboard, retaining explanatory content", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.match(css, /@media \(max-width: 560px\) \{\s*\/\*[^]*?\*\/\s*\.site-analysis \.site-dash \{ display: none; \}/);
+  const analysis = source.slice(source.indexOf("function Analysis()"), source.indexOf("function Compare()"));
+  assert.match(analysis, /c\.analysis\.description/);
+  assert.match(analysis, /c\.analysis\.points\.map/);
+  assert.match(analysis, /c\.analysis\.note/);
+  assert.match(analysis, /site-mock site-dash/);
+});
+
+test("analysis sample omits the play-style map and keeps the tendency summary", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const analysis = source.slice(source.indexOf("function Analysis()"), source.indexOf("function Compare()"));
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.doesNotMatch(analysis, /site-dash-map|site-style-map|site-style-marker/);
+  assert.match(analysis, /className="site-dash-tend"/);
+  assert.match(analysis, /c\.analysis\.tendencies/);
+  assert.match(css, /\.site-dash-body \{ display: grid; grid-template-columns: minmax\(0, 1fr\);/);
+  assert.doesNotMatch(css, /site-dash-map|site-style-map|site-style-marker/);
+});
+
+test("ranked preview mirrors human hand metrics, not legacy quiz scoring", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const ranked = source.slice(source.indexOf("function Ranked()"), source.indexOf("function AgentFeature()"));
+  assert.doesNotMatch(ranked, /matchLine|lastMatch|\.today|\.peak|site-rank-pips/);
+  for (const field of ["sample", "mode", "hands", "rewards", "note", "legendRule"]) assert.ok(ranked.includes(`c.ranked.${field}`));
+  assert.doesNotMatch(ranked, /site-rank-results|site-rank-queue|bb\/100|2 \/ 6/);
+  assert.match(source, /const tierMins = TIERS\.map/);
+  for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
+    const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");
+    const copy = content.slice(content.indexOf("  ranked: {"), content.indexOf("  agent: {"));
+    assert.doesNotMatch(copy, /matchLine|lastMatch|today:|peak:|80%|Elo|イロ/);
+    assert.match(copy, /FastFold β/);
+    assert.match(copy, /sample:/);
+  }
+});
+
+let server, ServiceSite, copies;
+before(async () => {
+  server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
+  ({ ServiceSite } = await server.ssrLoadModule("/src/site/ServiceSite.tsx"));
+  const { en } = await server.ssrLoadModule("/src/site/content.ts");
+  const { ja } = await server.ssrLoadModule("/src/site/content-ja.ts");
+  const { es } = await server.ssrLoadModule("/src/site/content-es.ts");
+  const { zh } = await server.ssrLoadModule("/src/site/content-zh.ts");
+  copies = { en, ja, es, "zh-CN": zh };
+});
+after(async () => { await server?.close(); });
+const render = locale => renderToStaticMarkup(createElement(ServiceSite, { locale, onLocaleChange() {} }));
+function renderAtHostname(locale, hostname) {
+  const previousWindow = globalThis.window;
+  globalThis.window = fixtureValue<typeof globalThis.window>({ location: { hostname } });
+  try {
+    return render(locale);
+  } finally {
+    if (previousWindow === undefined) delete fixtureValue<{ window?: typeof globalThis.window }>(globalThis).window;
+    else globalThis.window = previousWindow;
+  }
+}
+const escapeText = value => renderToStaticMarkup(createElement("span", null, value)).slice(6, -7);
+const preview = JSON.parse(readFileSync(new URL("../src/site/range-preview.json", import.meta.url), "utf8"));
+
+function renderWithMotionPreference(locale, reducedMotion) {
+  const previousWindow = globalThis.window;
+  const previousObserver = globalThis.IntersectionObserver;
+  globalThis.window = fixtureValue<typeof globalThis.window>({
+    matchMedia: query => ({ matches: query.includes("prefers-reduced-motion") && reducedMotion }),
+    localStorage: { getItem: () => null },
+  });
+  globalThis.IntersectionObserver = fixtureValue<typeof globalThis.IntersectionObserver>(class {});
+  try {
+    return render(locale);
+  } finally {
+    globalThis.window = previousWindow;
+    globalThis.IntersectionObserver = previousObserver;
+  }
+}
+
+test("responsive hero mounts one matrix without the removed phone detail or playback", () => {
+  const previousWindow = globalThis.window;
+  try {
+    globalThis.window = fixtureValue<typeof globalThis.window>({ matchMedia: query => ({ matches: query === "(max-width: 720px)" }), localStorage: { getItem: () => null } });
+    const mobile = render("ja");
+    assert.equal((mobile.match(/class="site-matrix"/g) ?? []).length, 1);
+    assert.match(mobile, /class="site-hero-range" inert="" aria-hidden="true"/);
+    assert.doesNotMatch(mobile, /class="site-hero-detail"|class="site-hero-playback"/);
+    assert.doesNotMatch(mobile.split("</section>")[0], /class="site-mini-legend"/);
+    delete fixtureValue<{ window?: typeof globalThis.window }>(globalThis).window;
+    const desktop = render("en");
+    assert.equal((desktop.match(/class="site-matrix"/g) ?? []).length, 1);
+    assert.match(desktop, /class="site-mini-legend"/);
+    assert.doesNotMatch(desktop, /class="site-hero-detail"|inert=""/);
+  } finally { globalThis.window = previousWindow; }
+});
+
+test("the range tour randomly selects saved spots, pauses offscreen, yields to interaction, and keeps playback intentional", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const explorer = source.split("function DesktopExplorer() {")[1].split("function MobileExplorer()")[0];
+  assert.match(explorer, /const isTouring = touring && motion/);
+  assert.match(explorer, /if \(!isTouring \|\| !visible\) return/);
+  assert.match(explorer, /window\.clearInterval\(timer\)/);
+  assert.match(explorer, /setRangeIndex\(current => pickNextRangeIndex\(current, heroRanges.length, previewRanges.tour.length\)\)/);
+  assert.match(explorer, /\}, 1500\)/);
+  const mobile = source.split("function MobileExplorer() {")[1].split("function Header()")[0];
+  assert.match(mobile, /\}, 1500\)/);
+  assert.match(mobile, /if \(!isTouring \|\| !visible\) return/);
+  assert.match(mobile, /setRangeIndex\(current => pickNextRangeIndex\(current, heroRanges.length, previewRanges.tour.length\)\)/);
+  assert.match(mobile, /<RangeMatrix range=\{range\}/);
+  assert.doesNotMatch(mobile, /nextMode|tourHands|BTN_open.*BB_vs_BTN/);
+  for (const event of ["pointerdown", "keydown"]) {
+    assert.ok(explorer.includes(`addEventListener("${event}", stop)`));
+    assert.ok(explorer.includes(`removeEventListener("${event}", stop)`));
+  }
+  assert.match(explorer, /onSelect=\{hand => \{ setTouring\(false\); setSelected\(hand\); \}\}/);
+  assert.doesNotMatch(explorer, /chooseMode|chooseDisplayMode|displayMode|site-explorer-bar|site-segment|localStorage/);
+  assert.match(explorer, /data-tour-running=\{isTouring && visible\}/);
+  assert.doesNotMatch(explorer, /site-tour-progress|key=\{`\$\{mode\}-\$\{selected\}-\$\{isTouring\}`\}/);
+});
+
+test("range categories get equal draw space and exclude the current saved table", async () => {
+  const { pickNextRangeIndex } = await server.ssrLoadModule("/src/site/range-tour.ts");
+  const pick = (current, category, within) => { const draws = [category, within]; return pickNextRangeIndex(current, 62, 50, () => draws.shift()); };
+  assert.equal(pick(0, 0, 0), 1);
+  assert.equal(pick(0, .499999, .999999), 49);
+  assert.equal(pick(0, .5, 0), 50);
+  assert.equal(pick(0, .999999, .999999), 61);
+  assert.equal(pick(50, .5, 0), 51);
+  for (let current = 0; current < 62; current++) for (const category of [0, .499999, .5, .999999]) for (const within of [0, .5, .999999]) {
+    const next = pick(current, category, within);
+    assert.notEqual(next, current);
+    assert.equal(next < 50, category < .5);
+  }
+});
+
+test("random tour picks never repeat immediately, and its fifty ranges preserve saved frequencies/reach", async () => {
+  const { pickNextRangeIndex } = await server.ssrLoadModule("/src/site/range-tour.ts");
+  assert.equal(pickNextRangeIndex(0, 1), 0);
+  for (let current = 0; current < 50; current++) for (const random of [0, .2, .5, .999999]) {
+    const next = pickNextRangeIndex(current, 50, 50, () => random);
+    assert.ok(next >= 0 && next < 50 && next !== current);
+  }
+  const sources = [
+    ["opening-ranges", "opening", "open"], ["preflop-ranges", "response", "three_bet"],
+    ["three-bet-responses", "threeBet", "four_bet"], ["four-bet-responses", "fourBet", "all_in"],
+  ];
+  assert.equal(preview.tour.length, 50);
+  const read = file => JSON.parse(readFileSync(new URL(`../src/estimated/${file}.json`, import.meta.url), "utf8")).spots;
+  for (const [file, stage, raiseAction] of sources) for (const spot of read(file)) {
+    const range = preview.tour.find(range => range.id === spot.id && range.stage === stage);
+    assert.ok(range);
+    assert.equal(Object.keys(range.hands).length, 169);
+    for (const row of spot.hands) assert.deepEqual(range.hands[row.hand], {
+      raise: raiseAction === "all_in" ? 0 : row[raiseAction], all_in: raiseAction === "all_in" ? row.all_in : 0,
+      call: row.call ?? 0, limp: row.limp ?? 0, fold: row.fold,
+    });
+    const previous = stage === "threeBet" ? read("opening-ranges").find(item => item.hero === spot.hero) : stage === "fourBet" ? read("preflop-ranges").find(item => item.id === spot.source_response_id) : null;
+    assert.deepEqual(range.unreachable, previous ? previous.hands.filter(row => (stage === "threeBet" ? row.open : row.three_bet) === 0).map(row => row.hand) : []);
+  }
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.match(source, /!unreachable && reach > 0/);
+  assert.doesNotMatch(source, /site-cell-mix/);
+  assert.match(source, /unreachable \? copy.preview.unreachable/);
+  assert.match(source, /actionColor\(action\)/);
+});
+
+test("saved postflop previews retain canonical board-specific weighted mixes, reach and real bet colors", async () => {
+  const snapshot = JSON.parse(readFileSync(new URL("../src/site/postflop-preview.json", import.meta.url), "utf8"));
+  const { loadInputs } = await import("../scripts/postflop-ai/inputs.ts");
+  const { validatePolicy } = await import("../scripts/postflop-ai/policy.ts");
+  const { parseFlopBoard } = await import("../scripts/postflop-ai/model.ts");
+  const { combosOf } = await import("../scripts/lib/equity.ts");
+  const policyArtifact = JSON.parse(readFileSync(new URL("../scripts/data/postflop-ai/policies/btn-bb-srp-v1-policy.json", import.meta.url), "utf8"));
+  const inputs = loadInputs(snapshot.spot), policy = validatePolicy(policyArtifact.policy, inputs.spot.tree);
+  const { flopNodes } = await server.ssrLoadModule("/scripts/postflop-ai/views.ts");
+  assert.equal(snapshot.source_hash, loadInputs(snapshot.spot).fingerprint);
+  assert.equal(snapshot.ranges.length, 12);
+  const { RangeMatrix, HeroActionLegend } = await server.ssrLoadModule("/src/site/ServiceSite.tsx");
+  let sourceZeroLegalClasses = 0;
+  for (const range of snapshot.ranges) {
+    const parsedBoard = parseFlopBoard(range.board);
+    const actualRows = flopNodes(inputs, policy, parsedBoard.cards)[range.id.split(":").at(-1)].rows;
+    const actualByHand = new Map(actualRows.map(row => [row.hand, row] as const));
+    assert.equal(Object.keys(range.hands).length, 169);
+    assert.equal(Object.keys(range.reach).length, 169);
+    assert.match(range.board, /^(?:[2-9TJQKA][cdhs]){3}$/);
+    assert.ok(["BTN", "BB"].includes(range.seat));
+    for (const [hand, mix] of Object.entries<Record<string, number>>(range.hands)) {
+      assert.ok(Number.isFinite(range.reach[hand]) && range.reach[hand] >= 0 && range.reach[hand] <= 1);
+      if (range.unreachable.includes(hand)) assert.equal(range.reach[hand], 0);
+      const sourceRow = actualByHand.get(hand), blocked = new Set(parsedBoard.cards);
+      const legalComboCount = combosOf(hand).filter(combo => !blocked.has(combo[0]) && !blocked.has(combo[1])).length;
+      const expectedReach = fixtureValue<{combos: Array<{reachWeight?:number;weight:number}>}>(sourceRow).combos.reduce<number>((sum, combo) => sum + (combo.reachWeight ?? combo.weight), 0) / legalComboCount;
+      assert.ok(Math.abs(range.reach[hand] - expectedReach) < 1e-12);
+      const positiveReachCombos = fixtureValue<{ combos: any }>(sourceRow).combos.filter(combo => (combo.reachWeight ?? combo.weight) > 0).length;
+      if (fixtureValue<{ comboCount: any }>(sourceRow).comboCount === 0 && legalComboCount > 0) {
+        sourceZeroLegalClasses++;
+        assert.equal(range.reach[hand], 0, `${range.board}/${range.id}/${hand} retains board-legal but source-zero combos in its denominator`);
+      } else if (positiveReachCombos > 0 && positiveReachCombos < legalComboCount) {
+        assert.ok(Math.abs(range.reach[hand] - fixtureValue<{ reachWeight: any }>(sourceRow).reachWeight / legalComboCount) < 1e-12, `${range.board}/${range.id}/${hand} includes source-zero combos in the board-legal denominator`);
+        assert.ok(Math.abs(range.reach[hand] - fixtureValue<{ reachWeight: any }>(sourceRow).reachWeight / positiveReachCombos) > 1e-12, `${range.board}/${range.id}/${hand} does not normalize only over positive-reach combos`);
+      }
+      assert.deepEqual(Object.keys(fixtureValue<Record<string, any>>(mix)), range.actions);
+      const total = Object.values<number>(fixtureValue<Record<string, any>>(mix)).reduce<number>((sum, value) => (sum as unknown as number) + (value as unknown as number), 0);
+      assert.ok(Math.abs((total as unknown as number) - (range.unreachable.includes(hand) ? 0 : 1)) < 1e-12);
+    }
+    const html = renderToStaticMarkup(createElement(RangeMatrix, { range, selected: "A5o", onSelect() {} }));
+    assert.equal((html.match(/class="site-cell /g) ?? []).length, 169);
+    assert.equal((html.match(/is-unreachable/g) ?? []).length, range.unreachable.length);
+    const context = renderToStaticMarkup(createElement(HeroActionLegend, { range }));
+    assert.match(context, /site-range-legend/);
+    assert.doesNotMatch(context, /site-card|BTN|BB|Flop|→/);
+    assert.ok(!context.includes(range.board));
+    assert.ok(html.includes(range.board), "board stays available to assistive technology");
+    assert.equal((context.match(/<i /g) ?? []).length, fixtureValue<{ length: any }>(range.actions.filter(action => Object.entries<Record<string, number>>(range.hands).some(([hand, mix]) => !range.unreachable.includes(hand) && mix[action] > 0))).length);
+  }
+  assert.ok(sourceZeroLegalClasses > 0, "at least one hand class has board-legal combos excluded by the source range");
+  const betting = snapshot.ranges.find(range => range.id.endsWith(":btn_first"));
+  assert.deepEqual(betting.actions, ["check", "bet33", "bet75", "bet125"]);
+  const source = readFileSync(new URL("../scripts/build-site-postflop-preview.ts", import.meta.url), "utf8");
+  assert.match(source, /flopNodes\(inputs, policy, parsed.cards\)/);
+  assert.match(source, /return \[row.hand, row.mix\]/);
+  assert.match(source, /!row.reachable/);
+  assert.match(source, /combosOf\(row\.hand\)\.filter\(combo => !blocked\.has\(combo\[0\]\) && !blocked\.has\(combo\[1\]\)\)/);
+});
+
+test("hero range cells use one exact sharp-stop color layer with bottom reach and no zero-share nodes", async () => {
+  const { RangeMatrix } = await server.ssrLoadModule("/src/site/ServiceSite.tsx");
+  const { color } = await server.ssrLoadModule("/src/components/action-format.ts");
+  const actions = ["check", "bet33", "bet75", "bet125"];
+  const ranks = [..."AKQJT98765432"];
+  const matrixHands = ranks.flatMap((first, row) => ranks.map((second, column) => row === column ? `${first}${second}` : row < column ? `${first}${second}s` : `${second}${first}o`));
+  const fixtures = {
+    AA: { check: 0, bet33: 1, bet75: 0, bet125: 0 },
+    KK: { check: .5, bet33: .5, bet75: 0, bet125: 0 },
+    QQ: { check: .3, bet33: .7, bet75: 0, bet125: 0 },
+    JJ: { check: .2, bet33: .5, bet75: .3, bet125: 0 },
+    TT: { check: .25, bet33: .25, bet75: .25, bet125: .25 },
+    "99": { check: 1, bet33: 0, bet75: 0, bet125: 0 },
+  };
+  const range = { id: "drawing-fixture", stage: "postflop", board: "As7d2c", seat: "BTN", history: [], actions,
+    hands: Object.fromEntries(matrixHands.map(hand => [hand, fixtures[hand] ?? { check: 0, bet33: 0, bet75: 0, bet125: 0 }])),
+    reach: { AA: 1, KK: .2, QQ: .7, JJ: 1, TT: .7, "99": 0 }, unreachable: [] };
+  const original = structuredClone(range);
+  const html = renderToStaticMarkup(createElement(RangeMatrix, { range, selected: "AA", onSelect() {} }));
+  const cell = hand => html.match(new RegExp(`<button type="button"[^>]*>\\s*<span class="site-cell-label">${hand}<\\/span>[\\s\\S]*?<\\/button>`))?.[0] ?? "";
+  const checkFill = (hand, reach, shares) => {
+    const markup = cell(hand);
+    assert.ok(markup, `${hand} cell renders`);
+    assert.match(markup, /class="site-cell-fill" aria-hidden="true"/);
+    const fills = [...markup.matchAll(/class="site-cell-fill-layer[^"]*" style="([^"]+)"/g)].map(([, style]) => style);
+    if (reach === 0 || shares.length === 0) assert.equal(fills.length, 0, `${hand} has no zero-reach/zero-share color layer`);
+    else {
+      assert.equal(fills.length, 1, `${hand} has one compact resting fill layer`);
+      const wave = markup.match(/style="--wave:(\d+);/)?.[1];
+      let left = 0;
+      const expectedStops = [...shares].sort(([a], [b]) => ["all_in", "allin", "raise", "bet125", "bet75", "bet33", "limp", "call", "check", "fold"].indexOf(a) - ["all_in", "allin", "raise", "bet125", "bet75", "bet33", "limp", "call", "check", "fold"].indexOf(b))
+        .map(([action, width]) => { const start = left; left += width; return `${color(action)} ${start}% ${left}%`; }).join(", ");
+      assert.equal(fills[0], `--wave:${wave};background-image:linear-gradient(90deg, ${expectedStops});height:${reach * 100}%`, `${hand} preserves exact sharp-stop shares and bottom reach height`);
+    }
+    assert.match(markup, /site-cell-label/);
+  };
+  checkFill("AA", 1, [["bet33", 100]]);
+  checkFill("KK", .2, [["bet33", 50], ["check", 50]]);
+  checkFill("QQ", .7, [["bet33", 70], ["check", 30]]);
+  checkFill("JJ", 1, [["bet75", 30], ["bet33", 50], ["check", 20]]);
+  checkFill("TT", .7, [["bet125", 25], ["bet75", 25], ["bet33", 25], ["check", 25]]);
+  checkFill("99", 0, []);
+  assert.deepEqual(range, original);
+
+  const preflop = { ...range, stage: "opening", reach: undefined, hands: Object.fromEntries(matrixHands.map(hand => [hand, { check: 0, bet33: hand === "AA" ? 100 : 0, bet75: 0, bet125: 0 }])) };
+  const preflopHtml = renderToStaticMarkup(createElement(RangeMatrix, { range: preflop, selected: "AA", onSelect() {} }));
+  assert.ok(preflopHtml.includes(`background-image:linear-gradient(90deg, ${color("bet33")} 0% 100%);height:100%`), "preflop without reach metadata fills full height");
+
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /\.has-motion \.site-cell-fill-layer\.is-incoming\s*\{[^}]*animation: site-range-fill-in \.38s ease calc\(var\(--wave\) \* 14ms\) both/);
+  assert.match(css, /\.has-motion \.site-cell-fill-layer\.is-outgoing\s*\{[^}]*animation: site-range-fill-out \.38s ease calc\(var\(--wave\) \* 14ms\) both/);
+  assert.equal(380 + 24 * 14, 716, "site fill wave matches the app's maximum 716ms timing");
+  assert.doesNotMatch(css, /site-cell-fill-layer[^}]*transition:\s*(?:left|width|height|background-color)/);
+  const cellRule = css.match(/\.site \.site-cell \{[^}]*\}/)?.[0] ?? "";
+  assert.match(cellRule, /transition: transform \.18s[^}]*box-shadow \.18s/);
+  assert.doesNotMatch(cellRule, /transition:[^}]*\b(?:background-color|color)\b/);
+  const mobileCss = css.slice(css.indexOf("@media screen and (max-width: 720px)"));
+  assert.doesNotMatch(mobileCss, /site-cell-fill-layer[^}]*animation:\s*none/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.site \*, \.site \*::before, \.site \*::after \{ animation: none !important/);
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.match(source, /const useBrowserLayoutEffect = typeof document === "undefined" \? useEffect : useLayoutEffect/);
+  assert.match(source, /useBrowserLayoutEffect\(\(\) => \{\s*const previous = lastRange\.current/);
+  assert.match(source, /setTimeout\(\(\) => setPreviousRange\(current => current\?\.id === previous\.id \? null : current\), 760\)/);
+  assert.match(source, /if \(!motion\) \{ setPreviousRange\(null\); return; \}/);
+  assert.match(source, /key=\{hand\} className=\{`site-cell/);
+});
+
+test("range fill crossfade stays bounded, preserves the focused cell, and clears when reduced motion turns on", async () => {
+  const dom = new JSDOM('<div id="root"></div>', { url: "http://localhost/", pretendToBeVisual: true });
+  const old = Object.fromEntries(["window", "document", "navigator", "Element", "HTMLElement", "Node", "IntersectionObserver", "ResizeObserver", "requestAnimationFrame", "cancelAnimationFrame", "IS_REACT_ACT_ENVIRONMENT"].map(key => [key, globalThis[key]]));
+  const listeners = new Set<(event: {matches: boolean}) => void>();
+  const media = new Map();
+  const mediaQuery = query => {
+    if (!media.has(query)) {
+      const targetListeners = query === "(prefers-reduced-motion: reduce)" ? listeners : new Set();
+      media.set(query, { matches: query === "(max-width: 720px)", media: query, addEventListener: (_type, listener) => targetListeners.add(listener), removeEventListener: (_type, listener) => targetListeners.delete(listener) });
+    }
+    return media.get(query);
+  };
+  const reduced = mediaQuery("(prefers-reduced-motion: reduce)");
+  dom.window.matchMedia = mediaQuery;
+  class VisibleObserver {
+declare callback: (...args: any[]) => void;
+ constructor(callback) { this.callback = callback; } observe(target) { this.callback([{ isIntersecting: true, target }], this); } disconnect() {} unobserve() {} }
+  try {
+    for (const [key, value] of Object.entries({ window: dom.window, document: dom.window.document, navigator: dom.window.navigator, Element: dom.window.Element, HTMLElement: dom.window.HTMLElement, Node: dom.window.Node, IntersectionObserver: VisibleObserver, ResizeObserver: class { observe() {} disconnect() {} }, requestAnimationFrame: dom.window.requestAnimationFrame.bind(dom.window), cancelAnimationFrame: dom.window.cancelAnimationFrame.bind(dom.window), IS_REACT_ACT_ENVIRONMENT: true })) Object.defineProperty(globalThis, key, { configurable: true, writable: true, value });
+    dom.window.IntersectionObserver = VisibleObserver;
+    const rootNode = dom.window.document.getElementById("root"), root = createRoot(rootNode);
+    try {
+      await act(async () => { root.render(createElement(ServiceSite, { locale: "en", onLocaleChange() {} })); });
+      const focusedCell = [...rootNode.querySelectorAll(".site-cell")].find(button => button.getAttribute("aria-label").startsWith("A5o:"));
+      assert.ok(focusedCell);
+      focusedCell.focus();
+      await act(async () => { await new Promise(resolve => setTimeout(resolve, 1600)); });
+      assert.strictEqual(rootNode.querySelector('[aria-label^="A5o:"]'), focusedCell, "hand buttons keep their identity across the tour update");
+      assert.strictEqual(dom.window.document.activeElement, focusedCell, "focus stays on the same hand button");
+      const layers = rootNode.querySelectorAll(".site-cell-fill-layer");
+      assert.ok(layers.length > 0 && layers.length <= 338, `only current+previous positive cell layers are mounted (${layers.length})`);
+      assert.ok(rootNode.querySelectorAll(".site-cell-fill-layer.is-outgoing").length > 0, "previous fill is present during its crossfade");
+      reduced.matches = true;
+      await act(async () => { for (const listener of listeners) listener({ matches: true }); });
+      assert.doesNotMatch(rootNode.querySelector(".site")?.className ?? "", /has-motion/);
+      assert.equal(rootNode.querySelectorAll(".site-cell-fill-layer.is-outgoing").length, 0, "live reduced-motion toggle drops the previous snapshot immediately");
+      assert.ok(rootNode.querySelectorAll(".site-cell-fill-layer").length <= 169, "reduced-motion leaves only current layers");
+    } finally {
+      await act(async () => root.unmount());
+    }
+  } finally {
+    dom.window.close();
+    for (const [key, value] of Object.entries(old)) {
+      if (value === undefined) delete globalThis[key];
+      else Object.defineProperty(globalThis, key, { configurable: true, writable: true, value });
+    }
+  }
+});
+
+test("the service site keeps a single locale selector in the persistent header actions", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const header = source.match(/function Header\(\)[\s\S]*?function emphasizeHeadlineReason/)?.[0] ?? "";
+  assert.equal((header.match(/className="site-lang"/g) ?? []).length, 1);
+  assert.doesNotMatch(header, /site-nav-lang/);
+});
+
+test("the hero key describes only used action colors, not the situation", async () => {
+  const { HeroActionLegend } = await server.ssrLoadModule("/src/site/ServiceSite.tsx");
+  const { color } = await server.ssrLoadModule("/src/components/action-format.ts");
+  const snapshot = JSON.parse(readFileSync(new URL("../src/site/postflop-preview.json", import.meta.url), "utf8"));
+  const range = snapshot.ranges.find(range => range.id.endsWith(":btn_first"));
+  const html = renderToStaticMarkup(createElement(HeroActionLegend, { range }));
+  for (const action of range.actions) if (Object.values<Record<string, number>>(range.hands).some(mix => (mix[action] as unknown as number) > 0)) assert.ok(html.includes(`background:${color(action)}`));
+  assert.match(html, /Bet 33%|Bet 75%|Bet 125%/);
+  assert.match(html, /Check/);
+  const opening = { ...preview.tour.find(range => range.id === "BTN_open"), actions: ["all_in", "raise", "call", "limp", "fold"] };
+  const preflop = renderToStaticMarkup(createElement(HeroActionLegend, { range: opening }));
+  assert.match(preflop, /Raise/);
+  assert.match(preflop, /Fold/);
+  assert.doesNotMatch(preflop, /Call|allin|5bet|BTN_open/);
+  const allinRange = { ...preview.tour.find(range => range.stage === "fourBet"), actions: ["all_in", "call", "fold"] };
+  const allin = renderToStaticMarkup(createElement(HeroActionLegend, { range: allinRange }));
+  assert.match(allin, />allin<\/span>/);
+  assert.doesNotMatch(allin, /5bet|100BB/);
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /PostflopRangeContext|site-range-board/);
+});
+
+test("pinned training slides stay visible and the hero matrix remains square", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /\.site \.site-matrix\s*\{[^}]*aspect-ratio: 1;/);
+  assert.match(css, /\.site-train\.is-scrolly \[data-reveal\]\s*\{[^}]*opacity: 1; transform: none;/);
+  assert.doesNotMatch(css, /site-tour-progress|@keyframes site-tour/);
+});
+
+test("pinned training rail follows native scroll continuously without easing between pages", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const railRule = css.match(/\.site-train\.is-scrolly \.site-train-rail\s*\{([^}]*)\}/)?.[1] ?? "";
+  assert.match(source, /const progress = span > 0 \? Math\.min\(Math\.max\(-rect\.top \/ span, 0\), 1\) : 0;/);
+  assert.match(source, /rail\.style\.transform = `translate3d\(\$\{-progress \* \(TRAIN_PAGES - 1\) \* 100 \/ TRAIN_PAGES\}%, 0, 0\)`;/);
+  assert.doesNotMatch(source, /Math\.floor\(progress \* TRAIN_PAGES\)/);
+  assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 600px\)"\)/);
+  assert.match(source, /if \(!motion\) \{ setScrolly\(false\); return; \}/);
+  assert.match(railRule, /display: flex; width: 300%; height: 100%;/);
+  assert.doesNotMatch(railRule, /transition:/);
+});
+
+test("the hero range fills its column without a separate action legend", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /\.site-hero\s*\{ padding: 0; \}/);
+  assert.match(css, /\.site-hero-main\s*\{[^}]*width: 100%; min-height: var\(--hero-height\); grid-template-columns: minmax\(0, 1fr\) var\(--hero-range-size\); align-items: center; gap: 0; padding: 0;/);
+  assert.match(css, /--header-height: 64px;/);
+  assert.match(css, /\.site-header\s*\{[^}]*height: var\(--header-height\);/);
+  assert.match(css, /--hero-height: calc\(100svh - var\(--header-height\)\); --hero-range-size: min\(var\(--hero-height\), calc\(100vw - min\(40vw, 480px\)\)\);/);
+  assert.match(css, /\.site-hero-copy\s*\{[^}]*align-self: center; transform: translateY\(28px\);/);
+  assert.doesNotMatch(css.split("@media screen and (max-width: 720px)")[0], /\.site-hero-range\s*\{[^}]*(?:max-width:|width: min\(|margin-top: -)/);
+  assert.match(css, /\.site-hero-main\s*\{ width: calc\(100% - var\(--page-gutter\) \* 2\); min-height: 0; grid-template-columns: 1fr;/);
+  for (const locale of ["en", "ja"]) {
+    const html = render(locale);
+    assert.doesNotMatch(html, /class="site-legend"/);
+    assert.match(html, /class="site-mini-legend"/);
+    assert.doesNotMatch(html, /class="site-hero-detail"|class="site-hero-playback"/);
+  }
+});
+
+test("production service-site app CTAs use the app host while previews keep their existing path", () => {
+  const production = renderAtHostname("en", "reysonai.com");
+  assert.equal((production.match(/href="https:\/\/app\.reysonai\.com"/g) ?? []).length, 6);
+  assert.doesNotMatch(production, /href="\/analyze\/ranges"/);
+
+  const previewSite = renderAtHostname("ja", "preview.local");
+  assert.equal((previewSite.match(/href="\/analyze\/ranges"/g) ?? []).length, 6);
+  assert.doesNotMatch(previewSite, /href="https:\/\/app\.reysonai\.com"/);
+});
+
+test("the chart minimum width wins over the fieldset reset and preserves mobile scrolling", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /\.site \.site-matrix\s*\{[^}]*min-width: 316px/);
+  assert.match(css, /\.site-matrix-scroll\s*\{[^}]*overflow-x: auto/);
+});
+
+test("sections use a wider shared canvas without empty full-screen minimums", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /--content-width: 1520px/);
+  assert.match(css, /--page-gutter: clamp\(16px, 2\.5vw, 40px\)/);
+  assert.match(css, /\.site-wrap\s*\{[^}]*width: min\(100% - var\(--page-gutter\) \* 2, var\(--content-width\)\)/);
+  assert.match(css, /\.site-section\s*\{[^}]*padding: var\(--section-space\)/);
+  assert.doesNotMatch(css, /\.site-section, \.site-final\s*\{[^}]*min-height:/);
+  assert.doesNotMatch(css.split("@media screen and (max-width: 720px)")[0], /\.site-hero\s*\{[^}]*min-height:/);
+  assert.match(css, /\.site-poker-table\s*\{[^}]*width: min\(100%, 760px\)/);
+  assert.match(css, /@media \(min-width: 961px\) and \(max-height: 740px\)/);
+  const tablet = css.split("@media (max-width: 960px)")[1].split("@media (max-width: 720px)")[0];
+  assert.match(tablet, /--section-space: 48px/);
+  assert.match(css, /\.site-train\.is-scrolly \.site-train-stage\s*\{[^}]*height: calc\(100vh - 64px\)/);
+});
+
+test("the sharp geometry is shared by controls and panels without reshaping poker objects", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /--panel-radius: 4px/);
+  assert.match(css, /--control-radius: 2px/);
+  assert.match(css, /\.site-explorer\s*\{[^}]*border-radius: var\(--panel-radius\)/);
+  assert.match(css, /\.site \.site-button\s*\{[^}]*border-radius: var\(--control-radius\)/);
+  assert.match(css, /\.site-card\s*\{[^}]*border-radius: calc\(var\(--card-w\) \* \.15\)/);
+  assert.match(css, /\.site-poker-disc\s*\{[^}]*border-radius: 50%/);
+});
+
+test("mobile scenes grow with their explanation and cards instead of clipping a fixed height", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const tablet = css.split("@media (max-width: 960px)")[1].split("@media (max-width: 720px)")[0];
+  assert.match(tablet, /\.site-how-inline\s*\{[^}]*min-height: 340px;[^}]*padding: 28px 20px/);
+  assert.doesNotMatch(tablet, /(?<!min-)height: 340px/);
+  assert.match(tablet, /\.site-how-inline \.site-scene\s*\{[^}]*height: auto/);
+  assert.match(tablet, /\.site-persona-view\s*\{[^}]*display: none/);
+  assert.match(tablet, /\.site-persona-view\.is-active\s*\{[^}]*display: grid/);
+  assert.match(tablet, /\.site-nav\s*\{[^}]*max-height: calc\(100dvh - 64px\);[^}]*overflow-y: auto/);
+  assert.match(tablet, /\.site \.site-lang, \.site \.site-button\.is-small\s*\{[^}]*min-height: 44px/);
+  assert.match(css, /\.site-dash-kpis\s*\{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+  assert.doesNotMatch(css, /\.site-dash-kpis[^}]*text-overflow: ellipsis/);
+  assert.match(css, /\.site-rank-card\s*\{[^}]*flex-wrap: wrap/);
+  assert.match(css, /\.site-mock\s*\{[^}]*min-width: 0/);
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 640px\)"\)/,
+    "persona pinning is desktop-only and enables a compact stage on short screens");
+  assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 600px\)"\)/,
+    "Training/Ranked pinning remains wide-screen-only");
+});
+
+test("comparison pins a full readable desktop stage and reveals rows from scroll, not highlighting", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const compare = source.split("function Compare() {")[1].split("function Pricing()")[0];
+  assert.match(compare, /if \(!motion\) \{ setScrolly\(false\)/);
+  assert.match(compare, /matchMedia\("\(min-width: 961px\) and \(min-height: 600px\)"\)/);
+  assert.match(compare, /Math\.min\(Math\.floor\(progress \* rowCount\) \+ 1, rowCount\)/);
+  assert.match(compare, /index < visibleRows \? "is-revealed"/);
+  assert.match(compare, /key=\{comparisonRowIds\[index\]\}/);
+  assert.doesNotMatch(compare, /key=\{row.label\}|is-current|activeRow/);
+  assert.match(compare, /cancelAnimationFrame\(frame\)/);
+  assert.match(css, /\.site-compare\.is-scrolly \.site-compare-stage\s*\{[^}]*position: sticky; top: 64px;[^}]*height: calc\(100vh - 64px\); padding-block: 24px/);
+  assert.match(css, /\.site-compare\.is-scrolly \.site-wrap\s*\{[^}]*height: 100%; grid-template-rows: auto minmax\(0, 1fr\) auto/);
+  assert.match(css, /\.has-motion \.site-compare\.is-scrolly \.site-compare-table tbody tr\s*\{[^}]*opacity: 0/);
+  assert.match(css, /\.has-motion \.site-compare\.is-scrolly \.site-compare-table tbody tr\.is-revealed\s*\{[^}]*opacity: 1/);
+  assert.doesNotMatch(css, /site-compare[^}]*is-current/);
+});
+
+test("mobile comparison pairs columns with one visible sticky heading instead of repeated labels", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const mobile = css.split("@media (max-width: 720px)")[1].split("@media (max-width: 560px)")[0];
+  assert.match(mobile, /\.site-compare tr\s*\{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+  assert.match(mobile, /\.site-compare tbody th\s*\{[^}]*grid-column: 1 \/ -1/);
+  assert.match(mobile, /\.site-compare thead\s*\{[^}]*position: sticky; top: 64px/);
+  assert.doesNotMatch(mobile, /\.site-compare thead\s*\{[^}]*display: none/);
+  assert.doesNotMatch(css, /content: attr\(data-label\)/);
+});
+
+for (const locale of ["en", "ja"]) {
+  test(`${locale}: the live decision studio keeps its English heading and matrix without the removed hand rail`, () => {
+    const html = render(locale);
+    const heading = html.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/)?.[0];
+    assert.ok(heading);
+    assert.match(heading, /id="site-hero-title"/);
+    assert.match(heading, /lang="en"/);
+    const headingText = heading.replace(/<[^>]+>/g, "");
+    for (const title of ["Don't just play.", "Understand the reason."]) assert.ok(headingText.includes(escapeText(title)));
+    assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
+    const main = html.indexOf('class="site-wrap site-hero-main"');
+    const range = html.indexOf('class="site-hero-range"');
+    assert.ok(main > 0 && range > main);
+    assert.doesNotMatch(html, /class="site-hero-detail"|class="site-hero-playback"|class="site-hero-deal"/);
+    assert.ok(html.includes(escapeText(copies[locale].preview.saved)));
+    assert.ok(html.includes(escapeText(copies[locale].preview.notGto)));
+    assert.ok(html.includes(escapeText(copies[locale].hero.lead)));
+    assert.match(html, /class="site-hero-secondary" href="#how"/);
+    assert.doesNotMatch(html, /class="site-explorer-body"|class="site-hero-product"/);
+  });
+
+  test(`${locale}: reduced motion exposes the complete manual preview without a nonfunctional playback button`, () => {
+    const html = renderWithMotionPreference(locale, true);
+    assert.doesNotMatch(html, /has-motion|class="site-tour-toggle"/);
+    assert.match(html, /data-tour-running="false"/);
+    assert.equal((html.match(/class="site-cell /g) ?? []).length, 169);
+    assert.ok(html.includes(escapeText(copies[locale].preview.notGto)));
+
+    const animated = renderWithMotionPreference(locale, false);
+    assert.match(animated, /has-motion/);
+    assert.match(animated, /data-tour-running="false"/);
+    assert.doesNotMatch(animated, /class="site-tour-toggle"|class="site-hero-detail"/);
+  });
+
+  test(`${locale}: the fixed Standard hero preview keeps selectors hidden and exposes every saved opening frequency`, () => {
+    const { common } = copies[locale];
+    const html = render(locale);
+    const hero = html.split('class="site-wrap site-hero-main"')[1].split('id="audience"')[0];
+    const cells = html.match(/<button\b[^>]*class="site-cell [^"]*"[^>]*>[\s\S]*?<\/button>/g) ?? [];
+    assert.equal(cells.length, 169);
+    assert.equal(cells.filter(cell => cell.includes('aria-pressed="true"')).length, 1);
+    assert.ok((hero.match(/class="site-cell-fill-layer/g) ?? []).length <= 169, "resting hero uses at most one color layer per cell");
+    assert.doesNotMatch(hero, /site-explorer-bar|site-segment/);
+    assert.doesNotMatch(html, /reysonai:site-preview-display-mode:v1/);
+    assert.match(html, /class="site-cell-fill" aria-hidden="true"/);
+    for (const [hand, values] of Object.entries(preview.opening)) {
+      const breakdown = [[common.raise, fixtureValue<{ open: any }>(values).open], [common.fold, fixtureValue<{ fold: any }>(values).fold]]
+        .filter(([, frequency]) => frequency > 0)
+        .map(([action, frequency]) => `${action} ${frequency}%`).join(" / ");
+      assert.ok(cells.some(cell => cell.includes(`aria-label="${escapeText(`${hand}: ${breakdown}`)}"`)), `${hand} retains its saved frequencies`);
+    }
+  });
+
+  test(`${locale}: compact comparison retains every original claim and disclaimer`, () => {
+    const comparison = render(locale).match(/<section class="site-section site-compare"[\s\S]*?<\/section>/)?.[0];
+    assert.ok(comparison);
+    assert.match(comparison, /<table>/);
+    assert.match(comparison, /id="compare"[^>]*>[\s\S]*class="site-compare-stage"/);
+    assert.equal((comparison.match(/id="compare"/g) ?? []).length, 1);
+    assert.doesNotMatch(comparison, /is-scrolly|is-revealed|<tr[^>]*aria-hidden/);
+    assert.equal((comparison.match(/scope="col"/g) ?? []).length, 2);
+    assert.equal((comparison.match(/scope="row"/g) ?? []).length, 7);
+    assert.doesNotMatch(comparison, /data-label=/);
+    const { compare } = copies[locale];
+    const text = [compare.description, compare.us, compare.them, compare.themNote, compare.note,
+      ...compare.rows.flatMap(row => [row.label, row.us, row.them])];
+    for (const value of text) {
+      const escaped = renderToStaticMarkup(createElement("span", null, value)).slice(6, -7);
+      assert.ok(comparison.includes(escaped), `retains: ${value}`);
+    }
+  });
+
+  test(`${locale}: Training links target the outer track, never the pinned slide`, () => {
+    const html = render(locale);
+    assert.equal((html.match(/id="drill"/g) ?? []).length, 1);
+    assert.match(html, /class="site-train" id="drill"/);
+    assert.doesNotMatch(html, /class="site-section site-drill" id="drill"/);
+    assert.match(html, /href="#drill"/);
+    assert.match(html, /class="site-section site-drill" aria-labelledby="site-drill-title"/);
+  });
+
+  test(`${locale}: visual polish preserves the saved chart and honest plan states`, () => {
+    const html = render(locale);
+    assert.equal((html.match(/class="site-cell /g) ?? []).length, 169);
+    assert.match(html, /aria-label="K7s: [^"]*100%"/);
+    assert.doesNotMatch(html, /class="site-hero-detail"/);
+    assert.match(html, /class="site-plan is-planned"/);
+    assert.match(html, /class="site-button is-disabled" aria-disabled="true"/);
+    assert.match(html, /href="\/analyze\/ranges"/);
+    assert.match(html, locale === "en" ? /Not a GTO solution/ : /GTOソリューションではありません/);
+  });
+}
+
+
+test("service FAQ section and dead FAQ links are absent in every locale", () => {
+  const faqHeadings = ["Questions, answered plainly.", "よくある質問に、率直に。", "Preguntas con respuestas claras.", "常见问题，直接解答。"];
+  for (const locale of ["en", "ja", "es", "zh-CN"]) {
+    const html = render(locale);
+    assert.doesNotMatch(html, /site-faq|site-faq-title|href="#faq"|id="faq"/);
+    assert.doesNotMatch(html, /<details\b|<summary\b/);
+    for (const heading of faqHeadings) assert.ok(!html.includes(heading), `${locale} omits: ${heading}`);
+    assert.ok(html.includes('class="site-section site-compare"'), `${locale} retains comparison`);
+    assert.ok(html.includes('class="site-section site-pricing"'), `${locale} retains pricing`);
+    assert.ok(html.includes(escapeText(copies[locale].footer.disclaimer)), `${locale} retains footer disclaimer`);
+    const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]));
+    for (const [, target] of html.matchAll(/href="#([^"]+)"/g)) assert.ok(ids.has(target), `${locale} anchor target exists: ${target}`);
+  }
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /#faq|function Faq/);
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.doesNotMatch(css, /site-faq/);
+  assert.match(css, /:focus-visible/);
+});
+
+test("mobile audience shows all three level choices without a swipe row", () => {
+  const css = readFileSync(new URL("../src/site/site-mobile.css", import.meta.url), "utf8");
+  assert.match(css, /\.site-persona-list \{[^}]*width: 100%;[^}]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.match(css, /\.site \.site-persona-list \.site-persona \{[^}]*min-width: 0;[^}]*min-height: 44px;/);
+  assert.match(css, /\.site-persona-list \.site-persona-level \{[^}]*white-space: normal;[^}]*overflow-wrap: anywhere;/);
+  assert.doesNotMatch(css, /\.site-persona-list,\s*\.site-how-steps/);
+});
+
+test("mobile sticky CTA is hidden on desktop and styled at phone widths", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /\.site-mobile-cta \{ display: none; \}/);
+  assert.match(css, /@media \(max-width: 720px\)[\s\S]*?\.site-mobile-cta \{[^}]*display: flex;/);
+});

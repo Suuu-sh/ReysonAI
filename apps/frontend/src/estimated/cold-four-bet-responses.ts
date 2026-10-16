@@ -78,7 +78,7 @@ export function validateColdFourBetDataset(data: ColdFourBetDataset, coldThreeBe
         !Array.isArray(spot.hands) || spot.hands.length !== hands.length) fail(`局面・サイズ: ${spot?.id ?? expected.id}`);
     const reachRows = expected.prior_action === null ? opening.hands : response.hands;
     const reachAction = expected.prior_action === null ? "open" : "three_bet";
-    const reach = new Map(reachRows.map(row => [row.hand, (row as FrequencyRow)[reachAction]]));
+    const reach = new Map(reachRows.map(row => [row.hand, (row as FrequencyRow)[reachAction]] as const));
     for (let j = 0; j < hands.length; j += 1) {
       const row = spot.hands[j];
       if (row?.hand !== hands[j] || Object.keys(row).length !== ROW_KEYS.length ||

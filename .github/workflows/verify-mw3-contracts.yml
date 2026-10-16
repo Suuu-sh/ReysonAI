@@ -15,41 +15,41 @@ on:
       - 'apps/shared/**'
       - '.gitattributes'
       - '.gitignore'
-      - 'apps/frontend/scripts/postflop-ai/gate-mw3-pilot.mjs'
-      - 'apps/frontend/scripts/postflop-ai/materialize-mw3-pilot.mjs'
-      - 'apps/frontend/scripts/postflop-ai/materialize-mw3-authored.mjs'
-      - 'apps/frontend/scripts/postflop-ai/gate-mw3-authored.mjs'
+      - 'apps/frontend/scripts/postflop-ai/gate-mw3-pilot.ts'
+      - 'apps/frontend/scripts/postflop-ai/materialize-mw3-pilot.ts'
+      - 'apps/frontend/scripts/postflop-ai/materialize-mw3-authored.ts'
+      - 'apps/frontend/scripts/postflop-ai/gate-mw3-authored.ts'
       - 'apps/frontend/scripts/data/mw3-authored/**'
       - 'apps/shared/mw3-approved.ts'
       - 'artifacts/postflop/mw3-*'
       - 'configs/mw3-*.review.json'
       - 'apps/frontend/docs/mw3-saved-restore.md'
       - 'apps/frontend/docs/qa/pr123-baseline-evidence/**'
-      - 'apps/frontend/tests/pr123-standard-output-parity-runner.test.mjs'
-      - 'apps/frontend/scripts/postflop-ai/model.mjs'
-      - 'apps/frontend/scripts/data/mw3-*.mjs'
-      - 'apps/frontend/scripts/lib/continuation-evaluator.mjs'
-      - 'apps/frontend/scripts/lib/equity.mjs'
+      - 'apps/frontend/tests/pr123-standard-output-parity-runner.test.ts'
+      - 'apps/frontend/scripts/postflop-ai/model.ts'
+      - 'apps/frontend/scripts/data/mw3-*.ts'
+      - 'apps/frontend/scripts/lib/continuation-evaluator.ts'
+      - 'apps/frontend/scripts/lib/equity.ts'
       - 'apps/frontend/src/estimated/**'
       - 'apps/frontend/src/agent/**'
-      - 'apps/frontend/tests/mw3-consumer-*.test.mjs'
-      - 'apps/frontend/tests/mw3-source-scope.test.mjs'
-      - 'apps/frontend/tests/mw3-local-d1.test.mjs'
-      - 'apps/frontend/tests/mw3-owned-process.test.mjs'
-      - 'apps/frontend/tests/mw3-api-lifecycle.test.mjs'
-      - 'apps/frontend/tests/mw3-wrangler-startup.test.mjs'
+      - 'apps/frontend/tests/mw3-consumer-*.test.ts'
+      - 'apps/frontend/tests/mw3-source-scope.test.ts'
+      - 'apps/frontend/tests/mw3-local-d1.test.ts'
+      - 'apps/frontend/tests/mw3-owned-process.test.ts'
+      - 'apps/frontend/tests/mw3-api-lifecycle.test.ts'
+      - 'apps/frontend/tests/mw3-wrangler-startup.test.ts'
       - 'apps/frontend/tests/fixtures/mw3-wrangler-4.147.0-launcher.cjs.txt'
-      - 'apps/frontend/tests/mw3-parent-boundary.test.mjs'
-      - 'apps/frontend/scripts/ci/mw3-*.mjs'
+      - 'apps/frontend/tests/mw3-parent-boundary.test.ts'
+      - 'apps/frontend/scripts/ci/mw3-*.ts'
       - 'apps/frontend/scripts/ci/postflop-command-supervisor.py'
-      - 'apps/frontend/scripts/verify-mw3-local-d1.mjs'
-      - 'apps/frontend/tests/helpers/mw3-consumer-fixture.mjs'
-      - 'apps/frontend/tests/helpers/mw3-saved-memory-fixture.mjs'
-      - 'apps/frontend/tests/postflop-mw3-*.test.mjs'
+      - 'apps/frontend/scripts/verify-mw3-local-d1.ts'
+      - 'apps/frontend/tests/helpers/mw3-consumer-fixture.ts'
+      - 'apps/frontend/tests/helpers/mw3-saved-memory-fixture.ts'
+      - 'apps/frontend/tests/postflop-mw3-*.test.ts'
       - 'apps/backend/src/mw3-*.ts'
       - 'apps/backend/src/index.ts'
       - 'apps/backend/scripts/sql/mw3-schema.sql'
-      - 'apps/backend/tests/mw3-*.test.mjs'
+      - 'apps/backend/tests/mw3-*.test.ts'
       - 'configs/cash-6max-100bb.json'
       - '.github/workflows/verify-mw3-contracts.yml'
   workflow_dispatch:
@@ -81,34 +81,34 @@ jobs:
         run: npm ci
       - name: Restore exact reviewed preflop fixtures for Agent bootstrap
         working-directory: apps/frontend
-        run: node scripts/restore-reviewed-preflop.mjs
+        run: node scripts/restore-reviewed-preflop.ts
       - name: Check offline command syntax without executing generation
         run: |
-          node --check apps/frontend/scripts/postflop-ai/gate-mw3-pilot.mjs
-          node --check apps/frontend/scripts/postflop-ai/materialize-mw3-pilot.mjs
-          node --check apps/frontend/scripts/postflop-ai/materialize-mw3-authored.mjs
-          node --check apps/frontend/scripts/postflop-ai/gate-mw3-authored.mjs
-          node --check apps/frontend/scripts/postflop-ai/mw3-snapshot-cli.mjs
-          node --check apps/frontend/scripts/postflop-ai/mw3-draft-pins.mjs
-          node --check apps/frontend/scripts/ci/mw3-registry-mode.mjs
-          node --check apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.mjs
-          node --check apps/frontend/scripts/verify-mw3-local-d1.mjs
-          node --check apps/frontend/scripts/ci/mw3-local-command.mjs
-          node --check apps/frontend/scripts/ci/mw3-api-oracle.mjs
-          node --check apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs
+          node --check apps/frontend/scripts/postflop-ai/gate-mw3-pilot.ts
+          node --check apps/frontend/scripts/postflop-ai/materialize-mw3-pilot.ts
+          node --check apps/frontend/scripts/postflop-ai/materialize-mw3-authored.ts
+          node --check apps/frontend/scripts/postflop-ai/gate-mw3-authored.ts
+          node --check apps/frontend/scripts/postflop-ai/mw3-snapshot-cli.ts
+          node --check apps/frontend/scripts/postflop-ai/mw3-draft-pins.ts
+          node --check apps/frontend/scripts/ci/mw3-registry-mode.ts
+          node --check apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.ts
+          node --check apps/frontend/scripts/verify-mw3-local-d1.ts
+          node --check apps/frontend/scripts/ci/mw3-local-command.ts
+          node --check apps/frontend/scripts/ci/mw3-api-oracle.ts
+          node --check apps/frontend/scripts/ci/mw3-local-d1-oracle.ts
           python3 -c "import ast,pathlib; ast.parse(pathlib.Path('apps/frontend/scripts/ci/postflop-command-supervisor.py').read_text())"
       - name: Verify inventory and restore only committed independently accepted MW3 bytes
-        run: node apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.mjs restore
+        run: node apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.ts restore
       - name: Test sequential saved-ledger memory boundary with synthetic bytes only
-        run: node --expose-gc apps/frontend/tests/helpers/mw3-saved-memory-fixture.mjs
+        run: node --expose-gc apps/frontend/tests/helpers/mw3-saved-memory-fixture.ts
       - name: Test isolated three-player engine, classifier, codecs and adapters
         env:
           NODE_OPTIONS: --max-old-space-size=512
-        run: node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.mjs apps/frontend/tests/mw3-consumer-*.test.mjs apps/frontend/tests/mw3-local-d1.test.mjs apps/frontend/tests/mw3-owned-process.test.mjs apps/frontend/tests/mw3-api-lifecycle.test.mjs apps/frontend/tests/mw3-wrangler-startup.test.mjs apps/frontend/tests/mw3-parent-boundary.test.mjs apps/frontend/tests/mw3-source-scope.test.mjs apps/frontend/tests/postflop-all-board-checkpoints.test.mjs apps/frontend/tests/postflop-all-board-lineage.test.mjs
+        run: node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.ts apps/frontend/tests/mw3-consumer-*.test.ts apps/frontend/tests/mw3-local-d1.test.ts apps/frontend/tests/mw3-owned-process.test.ts apps/frontend/tests/mw3-api-lifecycle.test.ts apps/frontend/tests/mw3-wrangler-startup.test.ts apps/frontend/tests/mw3-parent-boundary.test.ts apps/frontend/tests/mw3-source-scope.test.ts apps/frontend/tests/postflop-all-board-checkpoints.test.ts apps/frontend/tests/postflop-all-board-lineage.test.ts
       - name: Test unpublished, fail-closed three-player delivery boundary
-        run: node --experimental-strip-types --test apps/backend/tests/mw3-*.test.mjs
+        run: node --experimental-strip-types --test apps/backend/tests/mw3-*.test.ts
       - name: Test PR123 replay runner manifest integrity guard
-        run: node --test apps/frontend/tests/pr123-standard-output-parity-runner.test.mjs
+        run: node --test apps/frontend/tests/pr123-standard-output-parity-runner.test.ts
       # This workflow never compiles/authors saved candidates, runs the pilot gate,
       # uploads artifacts, edits receipts, imports D1 or deploys the product.
       # An empty saved inventory is explicit no-data; partial/invalid inputs fail.

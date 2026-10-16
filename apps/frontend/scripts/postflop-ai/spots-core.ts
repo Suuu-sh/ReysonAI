@@ -24,7 +24,7 @@ const responses = lookup("preflop-ranges");
 const threeBetResponses = lookup("three-bet-responses");
 const openingRanges = lookup("opening-ranges");
 const limpResponses = lookup("limp-responses");
-// The 4bet size comes from limp-responses; limp-deep-responses loads lazily (checked in inputs.mjs).
+// The 4bet size comes from limp-responses; limp-deep-responses loads lazily (checked in inputs.ts).
 const limpFourBetBb = limpResponses.spots.find(item => item.id === "BB_vs_SB_limp_reraise")?.four_bet_size_bb;
 
 
@@ -77,7 +77,7 @@ function describeThreeBetSpot(opener: Position, threeBettor: Position, response 
 
 // 4bet pot: O opens, X 3bets, O 4bets to the saved size, X calls. X is the caller, O the aggressor.
 // The call frequencies live in four-bet-responses.json, which the app loads lazily; they are
-// checked when the inputs are loaded (inputs.mjs), so `reachable` here covers O's 4bet and X's 3bet.
+// checked when the inputs are loaded (inputs.ts), so `reachable` here covers O's 4bet and X's 3bet.
 function describeFourBetSpot(opener: Position, threeBettor: Position, threeBetSpot = threeBetResponses.spots.find(item => item.opener === opener && item.three_bettor === threeBettor)) {
   if (!threeBetSpot) throw new Error(`Unsupported 4bet pot: ${opener} → ${threeBettor}`);
   const response = responses.spots.find(item => item.id === threeBetSpot.source_response_id);
@@ -92,7 +92,7 @@ function describeFourBetSpot(opener: Position, threeBettor: Position, threeBetSp
 }
 
 // Limped pots: SB completes to 1BB. Range factors are [file, spot id, action]; the seat's
-// flop weight is their product (inputs.mjs).
+// flop weight is their product (inputs.ts).
 type LimpDefinition = { id: string; caller: Position; aggressor: Position | null; sizeBb: number; lead?: FlopTree;
   slug: string; responseId: string; ranges: Record<string, RangeFactor[]> };
 const LIMPS: LimpDefinition[] = [

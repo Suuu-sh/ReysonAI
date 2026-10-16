@@ -1,0 +1,151 @@
+import { fixtureValue } from "./fixture-value.ts";
+import assert from "node:assert/strict";
+import { after, before, test } from "node:test";
+import { fileURLToPath } from "node:url";
+import { readFileSync } from "node:fs";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { createServer } from "vite";
+
+let server, AccountPage, LogoutDialog, AccountMenu, prefs;
+
+before(async () => {
+  server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
+  ({ AccountPage, LogoutDialog } = await server.ssrLoadModule("/src/account/AccountPage.tsx"));
+  ({ AccountMenu } = await server.ssrLoadModule("/src/account/AccountMenu.tsx"));
+  prefs = await server.ssrLoadModule("/src/account/preferences.ts");
+});
+after(async () => { await server?.close(); });
+
+const profile = { nickname: "Yu", level: "intermediate", updatedAt: "2026-09-27T00:00:00Z" };
+
+test("account menu chip shows the profile and keeps the menu closed until opened", () => {
+  const html = renderToStaticMarkup(createElement(AccountMenu, { profile, onNavigate() {}, onLogout() {} }));
+  assert.match(html, /class="profile-avatar /);
+  assert.doesNotMatch(html, />G<|>Y</);
+  assert.match(html, /aria-haspopup="menu" aria-expanded="false"/);
+  assert.doesNotMatch(html, /account-popover/);
+});
+
+test("account menu escapes sidebar clipping and keeps portal clicks inside the menu", () => {
+  const source = readFileSync(new URL("../src/account/AccountMenu.tsx", import.meta.url), "utf8");
+  assert.match(source, /open && createPortal\(<div ref=\{popoverRef\} className="account-popover"/);
+  assert.match(source, /<\/div>, document\.body\)/);
+  assert.match(source, /!rootRef\.current\?\.contains\(event\.target(?: as Node \| null)?\) && !popoverRef\.current\?\.contains\(event\.target(?: as Node \| null)?\)/);
+});
+
+test("settings page has account, subscription, appearance and language tabs", () => {
+  const html = renderToStaticMarkup(createElement(AccountPage, { profile, tab: "account", onSectionChange() {}, onProfileSaved() {} }));
+  for (const label of ["アカウント", "サブスクリプション", "外観", "言語"]) assert.match(html, new RegExp(`aria-label="${label}" class="(on)?">`));
+  assert.match(html, /class="account-tab-short" aria-hidden="true">プラン</); // short label so four tabs fit on phones
+  assert.match(html, /<header class="account-heading trainer-home-head"><h1 class="trainer-home-eyebrow">SETTINGS<\/h1><\/header>/);
+  assert.match(html, /value="Yu"/);
+  assert.match(html, /Googleでログイン/); // account creation is gated until the backend is configured
+  assert.doesNotMatch(html, /練習データ|データを書き出す|Export data|reysonai-practice-/);
+  const source = readFileSync(new URL("../src/account/AccountPage.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /exportLocalData|DownloadSimple|new Blob|link\.click\(\)|reysonai-practice-/);
+});
+
+test("public avatar saves are bound to the loaded account and missing profiles preserve the local avatar", () => {
+  const source = readFileSync(new URL("../src/account/AccountPage.tsx", import.meta.url), "utf8");
+  assert.match(source, /loadedAccountId = accountSnapshot\(\)\.user\?\.verified \? accountSnapshot\(\)\.user!\.id : null/);
+  assert.match(source, /expectedUserId: loadedAccountId/);
+  assert.match(source, /currentAccountId !== loadedAccountId/);
+  assert.match(source, /if \(!result\.profile\) \{ setPublicReady\(true\); setPublicError\(false\); return; \}/);
+  assert.ok(source.indexOf("if (!result.profile) { setPublicReady(true); setPublicError(false); return; }") < source.indexOf("setAvatar(remote)"));
+});
+
+test("subscription shows the ¥580 Plus plan without a live purchase", () => {
+  const html = renderToStaticMarkup(createElement(AccountPage, { profile, tab: "subscription", onSectionChange() {}, onProfileSaved() {} }));
+  assert.match(html, /Free/);
+  assert.match(html, /¥580/);
+  assert.match(html, /Planned|予定/);
+  assert.doesNotMatch(html, /¥680|provisional|仮案/);
+  assert.doesNotMatch(html, /<button[^>]*class="account-primary"(?![^>]*disabled)/);
+});
+
+test("appearance preferences normalise unknown values and log-out offers keeping practice data", () => {
+  assert.deepEqual(prefs.loadAppearance(), { cards: "four", motion: "standard" });
+  const html = renderToStaticMarkup(createElement(LogoutDialog, { onCancel() {}, onConfirm() {} }));
+  assert.match(html, /練習データ（ドリル・セッション・回答履歴）も削除する/);
+  assert.doesNotMatch(html, /checked=""/);
+});
+
+function withLocalStorage(run) {
+  const previous = globalThis.window;
+  const values = new Map();
+  const localStorage = {
+    get length() { return values.size; },
+    key: index => [...values.keys()][index] ?? null,
+    getItem: key => values.get(key) ?? null,
+    setItem: (key, value) => values.set(key, String(value)),
+    removeItem: key => values.delete(key),
+  };
+  globalThis.window = fixtureValue<typeof globalThis.window>({ localStorage });
+  try { run(localStorage); } finally {
+    if (previous === undefined) delete fixtureValue<{ window?: typeof globalThis.window }>(globalThis).window;
+    else globalThis.window = previous;
+  }
+}
+
+test("removing practice export leaves stored data and explicit logout cleanup intact", () => {
+  withLocalStorage(store => {
+    store.setItem("reysonai.trainer.answers", JSON.stringify([{ hand: "AA" }]));
+    store.setItem("reysonai.trainer.draft", "legacy draft");
+    store.setItem("reysonai:profile:v1", "profile");
+    store.setItem("reysonai:appearance:v1", "appearance");
+    store.setItem("other-app", "untouched");
+    assert.equal(prefs.exportLocalData, undefined);
+    assert.deepEqual(prefs.practiceKeys().sort(), ["reysonai.trainer.answers", "reysonai.trainer.draft"]);
+    assert.equal(store.getItem("reysonai.trainer.answers"), '[{"hand":"AA"}]');
+    prefs.clearPracticeData();
+    assert.deepEqual(prefs.practiceKeys(), []);
+    assert.equal(store.getItem("reysonai:profile:v1"), "profile");
+    assert.equal(store.getItem("reysonai:appearance:v1"), "appearance");
+    assert.equal(store.getItem("other-app"), "untouched");
+  });
+});
+
+test("appearance and range mode persist with invalid appearance values normalised", () => {
+  withLocalStorage(store => {
+    prefs.saveAppearance({ cards: "two", motion: "reduce", matrix: "classic" });
+    assert.deepEqual(prefs.loadAppearance(), { cards: "two", motion: "reduce" });
+    assert.equal(JSON.parse(store.getItem("reysonai:appearance:v1")).matrix, undefined);
+    store.setItem("reysonai:appearance:v1", JSON.stringify({ cards: "two", motion: "reduce" }));
+    assert.deepEqual(prefs.loadAppearance(), { cards: "two", motion: "reduce" });
+    store.setItem("reysonai:appearance:v1", JSON.stringify({ cards: "bad", motion: "bad", matrix: "bad" }));
+    assert.deepEqual(prefs.loadAppearance(), { cards: "four", motion: "standard" });
+    prefs.saveDisplayMode("simple");
+    assert.equal(prefs.loadDisplayMode(), "simple");
+    prefs.saveDisplayMode("bad");
+    assert.equal(prefs.loadDisplayMode(), "standard");
+  });
+});
+
+test("local logout removes only the profile by default", async () => {
+  const { clearProfile } = await server.ssrLoadModule("/src/profile.ts");
+  withLocalStorage(store => {
+    store.setItem("reysonai:profile:v1", "profile");
+    store.setItem("reysonai.trainer.answers", "[]");
+    clearProfile();
+    assert.equal(store.getItem("reysonai:profile:v1"), null);
+    assert.equal(store.getItem("reysonai.trainer.answers"), "[]");
+  });
+});
+
+
+test("avatar presets render consistently and profile edits preserve the selected icon", async () => {
+  const { ProfileAvatar } = await server.ssrLoadModule("/src/account/ProfileAvatar.tsx");
+  const { saveProfile, loadProfile } = await server.ssrLoadModule("/src/profile.ts");
+  const spade = renderToStaticMarkup(createElement(ProfileAvatar, { avatar: "spade", size: 28 }));
+  assert.match(spade, /profile-avatar/);
+  assert.equal(spade, renderToStaticMarkup(createElement(ProfileAvatar, { avatar: "spade", size: 28 })));
+  assert.equal(renderToStaticMarkup(createElement(ProfileAvatar, { avatar: "invalid" })), renderToStaticMarkup(createElement(ProfileAvatar, { avatar: "person" })));
+  withLocalStorage(store => {
+    saveProfile({ nickname: "Yu", level: "intermediate", avatar: "spade" });
+    saveProfile({ nickname: "Yuki", level: "beginner" });
+    assert.equal(loadProfile().avatar, "spade");
+    store.setItem("reysonai:profile:v1", JSON.stringify({ nickname: "Old", level: "intermediate", avatar: "not-allowed", updatedAt: "x" }));
+    assert.equal(loadProfile().avatar, "person");
+  });
+});

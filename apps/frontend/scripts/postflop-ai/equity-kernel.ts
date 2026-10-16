@@ -30,12 +30,12 @@ for (const [name, Type, length] of [
   bytes += Type.BYTES_PER_ELEMENT * length;
 }
 const uleb = (value: number) => {
-  const out = [];
+  const out: number[] = [];
   do { const byte = value & 127; value >>>= 7; out.push(byte | (value ? 128 : 0)); } while (value);
   return out;
 };
 const sleb = (value: number) => {
-  const out = [];
+  const out: number[] = [];
   for (;;) {
     const byte = value & 127; value >>= 7;
     const end = value === 0 && !(byte & 64) || value === -1 && Boolean(byte & 64);

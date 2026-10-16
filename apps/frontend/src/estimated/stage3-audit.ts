@@ -74,7 +74,7 @@ export function* iterateStage3Defense(data: Stage3Dataset, datasets: Stage3Sourc
   const records = new Map(data.spots.map(spot => [spot.id, spot]));
   const ctx = (node: Stage3Decision) => model.context(node, (records.get(node.id) ?? (node.reused
     ? model.sources.get(`${node.dataset}/${node.id}`) : model.resolveSpot(node))) as Stage3StoredSpot);
-  const events = [];
+  const events: { id: string; first: Stage3Decision; risk: number; pot: number }[] = [];
   for (const parent of stage3Decisions) {
     if (!data.metadata.families.includes(parent.family) || !records.has(parent.id)) continue;
     for (const action of ["squeeze", "four_bet", "all_in"]) {
@@ -135,7 +135,7 @@ export function auditStage3Estimates(data: Stage3Dataset, datasets: Stage3Source
       findings.push(...balance.findings); rangeBalance.push(balance);
     }
   }
-  const defense = [], defenseIds = new Set();
+  const defense: (Omit<Stage3DefenseEvent, "group"> & { marginalFoldProxy: number; marginalCapacityProxy: number; foldConfidence: NonNullable<Stage3EquityTable["joint_defense"]>[string]["fold"]; capacityConfidence: NonNullable<Stage3EquityTable["joint_defense"]>[string]["capacity"]; samples: number; confidence_delta: number; method: string; exact_legal_deals: number | null; capacitySaturated: boolean; responders: string[] })[] = [], defenseIds = new Set<string>();
   for (const item of iterateStage3Defense(data, datasets, equities)) {
     defenseIds.add(item.id);
     const { group, ...summary } = item;

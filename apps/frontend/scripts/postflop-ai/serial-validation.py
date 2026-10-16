@@ -26,7 +26,7 @@ import time
 import uuid
 
 BASE = ".local/postflop-ai/serial-validation"
-HELPER = "scripts/postflop-ai/serial-validation-proof.mjs"
+HELPER = "scripts/postflop-ai/serial-validation-proof.ts"
 CATALOG = "scripts/data/hu-after-multiway-spots.json"
 PHASES = ("simulate", "replay", "all-boards")
 MAX_BATCH = 4
@@ -357,9 +357,9 @@ def node_command(script, *args):
 
 def phase_command(phase, id):
     if phase in ("simulate", "replay"):
-        return node_command("scripts/postflop-ai/cli.mjs", "simulate" if phase == "simulate" else "audit", "--spot", id)
+        return node_command("scripts/postflop-ai/cli.ts", "simulate" if phase == "simulate" else "audit", "--spot", id)
     if phase == "all-boards":
-        return node_command("scripts/postflop-ai/audit-all-boards.mjs", "--spot", id, "--street", "all", "--workers", "1")
+        return node_command("scripts/postflop-ai/audit-all-boards.ts", "--spot", id, "--street", "all", "--workers", "1")
     raise Refusal("Unknown phase")
 
 

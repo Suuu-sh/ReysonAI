@@ -1,7 +1,7 @@
 import type { PostflopDatasets, Inputs, FlopPolicy, LaterPolicy, Candidate } from "../../scripts/postflop-ai/types.ts";
 // How an Reyson Agent picks its action. The balanced agent plays the saved frequencies exactly:
 // preflop the dataset row of its hand class (after the table rules in preflop.ts), postflop the
-// mix the AI-estimate candidate plays (policy + computed defence, as in simulation.mjs).
+// mix the AI-estimate candidate plays (policy + computed defence, as in simulation.ts).
 //
 // A5 hook: `ProfilePolicyRegistry` may return a profile-specific mix (opponent-adjusted range
 // tables, once they exist) for a decision. Without one the balanced mix is used. The agent never
