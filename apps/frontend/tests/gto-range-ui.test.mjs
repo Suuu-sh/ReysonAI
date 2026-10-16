@@ -79,7 +79,7 @@ test("GTO standard renders saved mixes with Bet before Check in every node and d
       assert.ok(document.querySelector(".postflop-side .postflop-range-summary"), "GTO shows the shared entire-range summary");
       assert.ok(document.querySelector(".postflop-side .postflop-hand-detail"), "GTO shows the shared hand-detail panel");
       assert.ok(document.querySelector(".postflop-hand-detail .postflop-suit-picker"), "the shared combo picker appears in the hand detail");
-      assert.ok(document.querySelector(".postflop-hand-detail .postflop-suit-picker").compareDocumentPosition(document.querySelector(".postflop-hand-detail .bar-row")) & Node.DOCUMENT_POSITION_FOLLOWING,
+      assert.ok(document.querySelector(".postflop-hand-detail .postflop-suit-picker").compareDocumentPosition(document.querySelector(".postflop-hand-detail .bar-row")) & window.Node.DOCUMENT_POSITION_FOLLOWING,
         "combo picker precedes action frequencies, matching AI postflop details");
       assert.deepEqual([...document.querySelectorAll(".postflop-hand-detail .bar-row")].map(row => row.textContent),
         [`Bet 2.75 BB (50% pot)${pct(entry.frequencies.bet)}`, `Check${pct(entry.frequencies.check)}`]);
