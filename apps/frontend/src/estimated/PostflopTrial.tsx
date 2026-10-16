@@ -158,12 +158,12 @@ function mixGradient(mix: ActionMix, actions: readonly string[]) {
   return stops.length ? `linear-gradient(90deg, ${stops.join(", ")})` : undefined;
 }
 
-function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missingReason, missingTitle }: { hand: string; combos: StrategyCombo[]; actions: readonly string[]; selected: string; onSelect: (value: string) => void; labels: Record<string, string>; missingReason?: string; missingTitle?: string }) {
+export function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missingReason, missingTitle }: { hand: string; combos: (Pick<StrategyCombo, "cards" | "mix"> & Partial<Pick<StrategyCombo, "tier">>)[]; actions: readonly string[]; selected: string; onSelect: (value: string) => void; labels: Record<string, string>; missingReason?: string; missingTitle?: string }) {
   if (!combos?.length) return null;
   const english = productLocale() !== "ja";
   const missing = missingReason ?? (english ? "Overlaps the board" : "ボードと重複");
   const missingDescription = missingTitle ?? (english ? "Unavailable because the cards overlap the board" : "ボードのカードと重なるため存在しません");
-  const tierName = (tier: string) => english
+  const tierName = (tier?: string) => !tier ? (english ? "Saved combo" : "保存済みコンボ") : english
     ? ({ monster: "Two pair or better with your own cards", strong: "Top pair or better", draw: "Draw", medium: "Weak pair", air: "Unpaired high cards" } as Record<string, string>)[tier]
     : tierLabels[tier];
   const pair = hand[0] === hand[1];
@@ -191,19 +191,19 @@ function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missin
               : `${hand[0]}${suitLabels[row]} ${hand[1]}${suitLabels[col]}：${tierName(combo.tier)}、${labels[top]} ${pct(combo.mix[top])}`}
             title={`${tierName(combo.tier)} · ${actions.map(action => `${labels[action]} ${pct(combo.mix[action])}`).join(" / ")}`}
             onClick={() => onSelect(selected === combo.cards ? "all" : combo.cards)}>
-            {combo.tier !== "air" && combo.tier !== "medium" && <i className={`postflop-tier-dot tier-${combo.tier}`} />}
+            {combo.tier && combo.tier !== "air" && combo.tier !== "medium" && <i className={`postflop-tier-dot tier-${combo.tier}`} />}
           </button>;
         })}
       </div>)}
     </div>
     <div className="postflop-suit-side">
       <button type="button" className={`postflop-suit-all${selected === "all" ? " selected" : ""}`} aria-pressed={selected === "all"} onClick={() => onSelect("all")}>{english ? "All combos (average)" : "すべて（平均）"}</button>
-      <ul className="postflop-tier-legend">
+      {combos.some(combo => combo.tier) && <ul className="postflop-tier-legend">
         <li><i className="postflop-tier-dot tier-monster" />{english ? "Two pair or better with your own cards" : "強い役"}</li>
         <li><i className="postflop-tier-dot tier-strong" />{english ? "Top pair or better" : "トップペア以上"}</li>
         <li><i className="postflop-tier-dot tier-draw" />{english ? "Draw" : "ドロー"}</li>
         <li><i className="postflop-suit-cell blocked" />{missing}</li>
-      </ul>
+      </ul>}
     </div>
   </div>;
 }

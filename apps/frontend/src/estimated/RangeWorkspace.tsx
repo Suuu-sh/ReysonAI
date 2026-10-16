@@ -117,6 +117,7 @@ const selectionStorageKey = "reysonai:estimated-selection:v1";
 const displayModeStorageKey = displayModeKey;
 const formatStorageKey = "reysonai:game-format:v1";
 const tableProfileStorageKey = "reysonai:table-profile:v1";
+const workspaceUrlStorageKey = "reysonai:estimated-workspace-url:v1";
 const openingModelFor = (spot: OpeningSpot) => markAdjustedModel(openingMatrixModel(spot), spot);
 // Postflop labels end in "(33%)"; show that part right-aligned so the amounts line up.
 function OptionLabel({ label }: { label: string }) {
@@ -391,6 +392,22 @@ function PostflopSignIn({ account, onBack }: { account: ReturnType<typeof useAcc
     backLabel={localized("Back to preflop ranges", "プリフロップのレンジに戻る")} /></div>;
 }
 
+function gtoFlopActionBlocks(actions: string[]): WorkspaceActionBlock[] {
+  const decision = (key: string, position: "BB" | "BTN", chosen: string | null, active: boolean, index: number): WorkspaceActionBlock => ({
+    key, kind: "flop", position, stack: "97.5", flopIndex: index, chosen, active,
+    options: active || chosen ? [
+      { action: "check", label: localized("Check", "チェック") },
+      { action: "bet50", label: localized("Bet 2.75 BB (50% pot)", "ベット 2.75 BB（ポット50%）") },
+    ] : [],
+  });
+  if (actions.length === 0) return [decision("gto-bb-root", "BB", null, true, 0)];
+  if (actions.length === 1 && actions[0] === "check") return [
+    decision("gto-bb-root", "BB", "check", false, 0),
+    decision("gto-btn-after-check", "BTN", null, true, 1),
+  ];
+  return actions.map((action, index) => decision(`gto-history-${index}`, index === 0 ? "BB" : "BTN", action, false, index));
+}
+
 // Query navigation is a fresh, validated range selection. Remounting the
 // session atomically restores all streets and cancels the old session's async
 // effects, so a late source response cannot write over Back/Forward navigation.
@@ -405,7 +422,19 @@ export function EstimatedRanges(props: EstimatedRangesProps) {
 }
 
 function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange, rangeSource = "ai", mw3Client = mw3DeliveryClient }: EstimatedRangesProps) {
-  const [initialUrlState] = useState(() => readRangeUrl());
+  const [initialUrlState] = useState(() => {
+    const current = readRangeUrl();
+    if (current || typeof window === "undefined" || window.location.pathname !== "/analyze/ranges" || window.location.search) return current;
+    try {
+      const savedUrl = window.sessionStorage.getItem(workspaceUrlStorageKey);
+      if (savedUrl) {
+        const url = new URL(savedUrl, window.location.origin);
+        window.history.replaceState(null, "", `${url.pathname}${url.search}`);
+        return readRangeUrl();
+      }
+    } catch {}
+    return null;
+  });
   const [initialSelection] = useState(() => initialUrlState ?? restoredSelection(initialRangeType));
   const [opponentProfile, setOpponentProfile] = useState<OpponentProfile>(initialSelection.opponentProfile);
   const [opponentSeat, setOpponentSeat] = useState<OpponentSeat | null>(initialSelection.opponentSeat);
@@ -754,27 +783,35 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   useEffect(() => {
     // Wait for dependent street resets before serializing a changed upstream path.
     if (flopChanged || turnChanged) return;
-    replaceRangeUrl(encodeRangeUrl({ rangeType, opener, hero, callers, foldedHero, pendingRaise,
+    const encoded = encodeRangeUrl({ rangeType, opener, hero, callers, foldedHero, pendingRaise,
       continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction,
       limpFourBetAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions, selected, format, tableProfile, opponentProfile, opponentSeat, showFlop: persistFlop,
-      flopCards, flopActions, turnCard, turnActions, riverCard, riverActions }, actionBlocks));
+      flopCards, flopActions, turnCard, turnActions, riverCard, riverActions }, actionBlocks);
+    replaceRangeUrl(encoded);
+    try { window.sessionStorage.setItem(workspaceUrlStorageKey, encoded); } catch {}
   }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse,
     coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions,
     selected, format, tableProfile, opponentProfile, opponentSeat, persistFlop, flopCards, flopActions, turnCard, turnActions,
     riverCard, riverActions, flopChanged, turnChanged, actionBlocks]);
   const flopBoard = recognizedFlop(flopCards);
-  const canEnterLaterStreets = Boolean(flopContext?.pilotAvailable && flopBoard && laterStart(flopActions, flopContext));
+  const gtoAvailable = Boolean(flopActive && isComparison && format.game === "cash" && format.table === "6max" && format.stack === 100 && format.openSize === 2.5 && !format.ante
+    && opener === "BTN" && hero === "BB" && callers.length === 1 && callers[0] === "BB" && foldedHero
+    && isDefaultProfile(tableProfile) && opponentProfile === "standard"
+    && flopContext?.ip === "BTN" && flopContext?.oop === "BB" && flopContext?.potBb === 5.5 && flopContext?.stackBb === 97.5
+    && flopCards.join(" ") === "Qs Jh 2h" && (flopActions.length === 0 || flopActions.length === 1 && flopActions[0] === "check")
+    && !turnCard && turnActions.length === 0 && !riverCard && riverActions.length === 0);
+  const canEnterLaterStreets = rangeSource !== "gto" && Boolean(flopContext?.pilotAvailable && flopBoard && laterStart(flopActions, flopContext));
   const laterBlocks = canEnterLaterStreets
     ? buildLaterActionBlocks({ flopActions, turnCard, turnActions, riverCard, riverActions }, flopContext)
     : [];
   const mw3PotBb = currentMw3PotBb(mw3Session.navigation);
   const hasPostflopProgress = Boolean(flopActions.length || turnCard || turnActions.length || riverCard || riverActions.length);
-  const currentBoardPotBb = !flopActive || !flopContext ? null
+  const currentBoardPotBb = rangeSource === "gto" ? (gtoAvailable ? flopContext!.potBb : null) : !flopActive || !flopContext ? null
     : flopContext.kind === "mw3_srp"
       ? Number.isFinite(mw3PotBb) ? mw3PotBb : hasPostflopProgress ? null : flopContext.potBb
       : !flopContext.pilotAvailable ? flopContext.potBb
         : currentPostflopPotBb({ flopActions, turnCard, turnActions, riverCard, riverActions }, flopContext);
-  const pendingStreetCard: StreetCardDialogName | null = flopActive ? (flopContext?.kind === "mw3_srp" ? mw3Session.navigation?.pendingStreet : (laterBlocks.find(block => block.kind === "board" && block.pending) as { street: StreetCardDialogName } | undefined)?.street) ?? null : null;
+  const pendingStreetCard: StreetCardDialogName | null = flopActive && rangeSource !== "gto" ? (flopContext?.kind === "mw3_srp" ? mw3Session.navigation?.pendingStreet : (laterBlocks.find(block => block.kind === "board" && block.pending) as { street: StreetCardDialogName } | undefined)?.street) ?? null : null;
   const previousPendingStreetCard = useRef<StreetCardDialogName | null>(null);
   useEffect(() => {
     const nextDialog = nextPendingStreetCardDialog(pendingStreetCard, previousPendingStreetCard.current);
@@ -786,7 +823,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
       ...(flopContext!.kind === "mw3_srp"
         ? mw3Session.navigation?.blocks ?? []
         : flopContext!.pilotAvailable && flopBoard
-          ? [...buildFlopActionBlocks(flopActions, flopContext).filter(block => !(canEnterLaterStreets && block.kind === "end")), ...laterBlocks]
+          ? [...(rangeSource === "gto" ? (gtoAvailable ? gtoFlopActionBlocks(flopActions) : []) : buildFlopActionBlocks(flopActions, flopContext).filter(block => !(canEnterLaterStreets && block.kind === "end"))), ...laterBlocks]
           : [])]
     : actionBlocks;
   const responseSpot = !isOpening && !isLimp && dataset && positions.indexOf(hero) > positions.indexOf(opener) ? findSpot(dataset!, opener, hero) : null;
@@ -1062,11 +1099,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
         />
         </Panel>
         {rangeSource === "gto" ? <GtoRangeView
-          available={Boolean(flopActive && isComparison && opener === "BTN" && hero === "BB" && callers.length === 1 && callers[0] === "BB" && foldedHero
-            && isDefaultProfile(tableProfile) && opponentProfile === "standard"
-            && flopContext?.ip === "BTN" && flopContext?.oop === "BB" && flopContext?.potBb === 5.5 && flopContext?.stackBb === 97.5
-            && flopCards.join(" ") === "Qs Jh 2h" && flopActions.length <= 1 && (flopActions.length === 0 || flopActions[0] === "check")
-            && !turnCard && turnActions.length === 0 && !riverCard && riverActions.length === 0)}
+          available={gtoAvailable}
           nodeId={flopActions.length === 1 ? "btn-after-check" : "bb-root"}
           selected={selected} onSelect={setSelected} displayMode={displayMode} workspaceRake={formatLabel("rake", format.rake)}
         /> : flopActive ? (mw3ProfilePreparing ? <ProfilePolicyPreparing onRestoreStandard={() => setOpponentProfile("standard")} /> : flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? <Mw3PostflopTrial context={flopContext!} session={mw3Session} cards={flopCards} displayMode={displayMode} /> : <PostflopTrial context={flopContext!} tableProfile={tableProfile} opponentProfile={opponentProfile} opponentSeat={effectiveOpponentSeat} onOpponentProfileChange={setOpponentProfile} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} />) : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
