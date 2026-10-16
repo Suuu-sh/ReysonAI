@@ -432,3 +432,23 @@ test("unsupported GTO selection shows no saved data without AI fallback", async 
     assert.equal(cells().length, 0);
   } finally { await act(async () => root.unmount()); }
 });
+
+test("a stale GTO semantic node does not replace a restored preflop AI range", async () => {
+  const { RangeWorkspace } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.tsx");
+  const { saveRangeSource } = await server.ssrLoadModule("/src/account/preferences.ts");
+  window.localStorage.clear();
+  window.sessionStorage.clear();
+  window.localStorage.setItem(LOCALE_KEY, "en");
+  window.sessionStorage.setItem("reysonai:estimated-workspace-url:v1",
+    "/analyze/ranges?gametype=cash-6max&depth=100&preflop_actions=F-F-F-R2.5-F&hand=AKo");
+  window.sessionStorage.setItem("reysonai:estimated-workspace-source:v1", "gto");
+  window.sessionStorage.setItem("reysonai:estimated-workspace-semantic-node:v1", "gto-bb-root");
+  window.history.replaceState({}, "", "/analyze/ranges");
+  saveRangeSource("ai");
+  const root = createRoot(fixtureValue(document.getElementById("root")));
+  try {
+    await act(async () => root.render(createElement(RangeWorkspace)));
+    assert.ok(document.querySelector(".matrix-panel"), "the restored preflop URL renders its ordinary AI ranges");
+    assert.doesNotMatch(document.body.textContent, /No AI estimate for BB's first flop decision|selected GTO action node is preserved/);
+  } finally { await act(async () => root.unmount()); }
+});
