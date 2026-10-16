@@ -70,6 +70,9 @@ jobs:
     name: Classify reviewed code and data inputs
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
     outputs:
       lineage_known: ${{ steps.scope.outputs.lineage_known }}
       release_safe: ${{ steps.scope.outputs.release_safe }}
@@ -115,6 +118,8 @@ jobs:
 
       - name: Classify code and data against the last successful production release
         id: scope
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: node scripts/ci/deployment-scope.mjs
 
       - name: Test deployment scope decisions with synthetic Git data

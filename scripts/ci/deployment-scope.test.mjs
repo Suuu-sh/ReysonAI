@@ -9,7 +9,7 @@ import { classifyChangedPaths, classifyEvent, changedGroups, fingerprintsAtCommi
 const workflowRun = (overrides = {}) => {
   const run = {
     id: 100, path: '.github/workflows/deploy-worker.yml@main', head_branch: 'main', event: 'push',
-    status: 'completed', conclusion: 'success', head_sha: '', created_at: '2026-10-10T12:00:00Z', ...overrides,
+    status: 'completed', conclusion: 'success', run_attempt: 1, head_sha: '', created_at: '2026-10-10T12:00:00Z', ...overrides,
   };
   run.updated_at ??= run.created_at;
   return run;
@@ -399,8 +399,8 @@ test('deployment history pages are combined before choosing the latest rerun act
   const pageTwoRerun = workflowRun({ id: 299, head_sha: 'a'.repeat(40), created_at: '2026-10-10T12:00:00Z', updated_at: '2026-10-10T13:10:00Z', run_attempt: 2, conclusion: 'failure' });
   await assert.rejects(latestDeploymentRun({ repository: 'Suuu-sh/ReysonAI', currentRunId: '300', fetcher: jobsFetcher({
     pages: { 1: [...unrelatedRuns, pageOneBaseline], 2: [pageTwoRerun] },
-    jobs: { '298': [{ name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'success' }] },
-  }) }), /latest main deployment run 299 is completed\/failure/);
+    jobs: { '299': [{ name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'skipped' }], '298': [{ name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'success' }] },
+  }) }), /deployment job/);
 });
 
 test('the 1,000-result Actions history cap fails closed instead of trusting a truncated page', async () => {
@@ -441,6 +441,73 @@ test('baseline must have a successful production deploy job, not just a successf
   assert.equal(found.id, 298);
 });
 
+test('completed first-attempt failed workflows with skipped deploy jobs are ignored before the successful baseline', async t => {
+  const root = repository(t);
+  const base = commit(root, baseFiles());
+  const head = commit(root, { 'apps/frontend/src/account/AccountPage.tsx': 'export const AccountPage = 2;\n' });
+  const run = (id, sha, created_at, overrides = {}) => workflowRun({ id, head_sha: sha, created_at, ...overrides });
+  const fetcher = jobsFetcher({
+    runs: [
+      run(299, head, '2026-10-10T12:59:00Z', { conclusion: 'failure' }),
+      run(298, head, '2026-10-10T12:58:00Z', { conclusion: 'cancelled' }),
+      run(297, base, '2026-10-10T12:57:00Z'),
+    ],
+    jobs: {
+      '299': [{ name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'skipped' }],
+      '298': [{ name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'skipped' }],
+      '297': [{ name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'success' }],
+    },
+  });
+  const found = await latestDeploymentRun({ repository: 'Suuu-sh/ReysonAI', currentRunId: '300', fetcher });
+  assert.equal(found.id, 297);
+  const plan = await classifyEvent({ repoRoot: root, eventName: 'push', ref: 'refs/heads/main', sha: head,
+    repository: 'Suuu-sh/ReysonAI', runId: '300', fetcher });
+  assert.equal(plan.release_safe, true);
+  assert.equal(plan.deploy_frontend, true);
+  assert.equal(plan.import_preflop, false);
+  assert.equal(plan.publish_postflop, false);
+  assert.equal(plan.import_mw3, false);
+});
+
+test('rerun skipped deploy remains blocked and authorization is sent on history and jobs requests', async () => {
+  const seen = [];
+  const fetcher = async (url, options) => {
+    seen.push(options.headers.Authorization);
+    if (url.includes('/workflows/')) return { ok: true, json: async () => ({ workflow_runs: [workflowRun({ id: 299, run_attempt: 2, conclusion: 'failure', head_sha: 'b'.repeat(40) })] }) };
+    return { ok: true, json: async () => ({ jobs: [{ name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'skipped' }] }) };
+  };
+  await assert.rejects(latestDeploymentRun({ repository: 'Suuu-sh/ReysonAI', currentRunId: '300', token: 'test-token', fetcher }), /deployment job in latest main run 299/);
+  assert.deepEqual(seen, ['Bearer test-token', 'Bearer test-token']);
+});
+
+test('successful workflow with missing deployment job fails closed', async () => {
+  await assert.rejects(latestDeploymentRun({ repository: 'Suuu-sh/ReysonAI', currentRunId: '300', fetcher: jobsFetcher({
+    runs: [workflowRun({ id: 299, head_sha: 'b'.repeat(40) })], jobs: { '299': [] },
+  }) }), /deployment job is missing/);
+});
+
+test('missing run_attempt does not prove a skipped deployment was a first attempt', async () => {
+  const run = workflowRun({ id: 299, head_sha: 'b'.repeat(40) });
+  delete run.run_attempt;
+  await assert.rejects(latestDeploymentRun({ repository: 'Suuu-sh/ReysonAI', currentRunId: '300', fetcher: jobsFetcher({
+    runs: [run], jobs: { '299': [{ name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'skipped' }] },
+  }) }), /deployment job in latest main run 299/);
+});
+
+test('scope workflow grants the history token only to its read-only classifier job', () => {
+  const workflow = readFileSync(new URL('../../.github/workflows/deploy-worker.yml', import.meta.url), 'utf8');
+  const scopeJob = workflow.split('\n  verify:')[0];
+  assert.match(scopeJob, /permissions:\n      actions: read\n      contents: read/);
+  assert.match(scopeJob, /GITHUB_TOKEN: \$\{\{ github\.token \}\}/);
+});
+
+test('failed workflow with a successful deploy job is not accepted as a baseline', async () => {
+  await assert.rejects(latestDeploymentRun({ repository: 'Suuu-sh/ReysonAI', currentRunId: '300', fetcher: jobsFetcher({
+    runs: [workflowRun({ id: 299, conclusion: 'failure', head_sha: 'b'.repeat(40) })],
+    jobs: { '299': [{ name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'success' }] },
+  }) }), /deployment job in latest main run 299/);
+});
+
 test('successful no-op workflow with no successful deploy job is not a release baseline', async () => {
   const found = await latestDeploymentRun({
     repository: 'Suuu-sh/ReysonAI', currentRunId: '300',
@@ -461,9 +528,9 @@ test('a newer failed main deployment blocks fallback to an older successful base
         run(299, '2026-10-10T12:59:00Z', { status: 'completed', conclusion: 'failure' }),
         run(298, '2026-10-10T12:58:00Z'),
       ],
-      jobs: { '298': [{ name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'success' }] },
+      jobs: { '299': [{ name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'failure' }], '298': [{ name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'success' }] },
     }),
-  }), /latest main deployment run 299 is completed\/failure/);
+  }), /deployment job/);
 
   const root = repository(t);
   const head = commit(root, baseFiles());
