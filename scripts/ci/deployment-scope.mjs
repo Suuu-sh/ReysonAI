@@ -401,14 +401,14 @@ function isDeploymentWorkflowPath(value) {
   return value === WORKFLOW_PATH || value.startsWith(`${WORKFLOW_PATH}@`);
 }
 
-export async function latestDeploymentRun({ repository, currentRunId, fetcher = fetch }) {
+export async function latestDeploymentRun({ repository, currentRunId, token, fetcher = fetch }) {
   const safeRepo = githubRepository(repository);
   const matches = [];
   let historyComplete = false;
   for (let page = 1; page <= MAX_RUN_HISTORY_PAGES; page += 1) {
     const url = `https://api.github.com/repos/${safeRepo}/actions/workflows/${WORKFLOW_ID}/runs?branch=main&per_page=${RUNS_PER_PAGE}&page=${page}`;
     const response = await fetcher(url, {
-      headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'ReysonAI-deployment-scope' },
+      headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'ReysonAI-deployment-scope', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       signal: AbortSignal.timeout(10000),
     });
     if (!response?.ok) throw new Error(`public GitHub Actions history unavailable (${response?.status ?? 'no response'})`);
@@ -430,26 +430,26 @@ export async function latestDeploymentRun({ repository, currentRunId, fetcher = 
   matches.sort((a, b) => String(latestActivity(b)).localeCompare(String(latestActivity(a))));
   for (const run of matches) {
     if (!SHA_RE.test(run.head_sha ?? '')) throw new Error(`latest main deployment run ${run.id} has no valid commit SHA`);
-    if (run.status !== 'completed' || run.conclusion !== 'success') {
+    if (run.status !== 'completed') {
       throw new Error(`latest main deployment run ${run.id} is ${run.status}/${run.conclusion ?? 'unknown'}; production state may be partial`);
     }
     const response = await fetcher(`https://api.github.com/repos/${safeRepo}/actions/runs/${encodeURIComponent(run.id)}/jobs?per_page=100`, {
-      headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'ReysonAI-deployment-scope' },
+      headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'ReysonAI-deployment-scope', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       signal: AbortSignal.timeout(10000),
     });
     if (!response?.ok) throw new Error(`deployment job history unavailable for run ${run.id} (${response?.status ?? 'no response'})`);
     const body = await response.json();
     if (!Array.isArray(body?.jobs)) throw new Error(`deployment job response for run ${run.id} is malformed`);
     const deployJob = body.jobs.find(job => job?.name === DEPLOY_JOB_NAME);
-    if (!deployJob) throw new Error(`deployment job is missing from successful main run ${run.id}`);
-    if (deployJob.status === 'completed' && deployJob.conclusion === 'success') return run;
-    if (deployJob.status === 'completed' && deployJob.conclusion === 'skipped') continue;
+    if (!deployJob) throw new Error(`deployment job is missing from main run ${run.id}`);
+    if (deployJob.status === 'completed' && deployJob.conclusion === 'success' && run.conclusion === 'success') return run;
+    if (deployJob.status === 'completed' && deployJob.conclusion === 'skipped' && run.run_attempt === 1) continue;
     throw new Error(`deployment job in latest main run ${run.id} is ${deployJob.status}/${deployJob.conclusion ?? 'unknown'}; production state may be partial`);
   }
   return null;
 }
 
-export async function classifyEvent({ repoRoot, eventName, ref, sha, repository, runId, runAttempt = '1', event, fetcher = fetch }) {
+export async function classifyEvent({ repoRoot, eventName, ref, sha, repository, runId, runAttempt = '1', event, token, fetcher = fetch }) {
   const attempt = Number(runAttempt);
   if (!Number.isInteger(attempt) || attempt < 1) {
     return fullValidationPlan('invalid workflow run attempt; production writes are disabled');
@@ -493,7 +493,7 @@ export async function classifyEvent({ repoRoot, eventName, ref, sha, repository,
   }
 
   try {
-    const baseline = await latestDeploymentRun({ repository, currentRunId: runId, fetcher });
+    const baseline = await latestDeploymentRun({ repository, currentRunId: runId, token, fetcher });
     if (!baseline) {
       return fullValidationPlan('latest main deployment is missing or not successful; production deployment requires manual recovery', {
         baselineRunId: Number.isInteger(baseline?.id) ? String(baseline.id) : '',
@@ -536,6 +536,7 @@ async function main() {
     repository: process.env.GITHUB_REPOSITORY ?? '',
     runId: process.env.GITHUB_RUN_ID ?? '',
     runAttempt: process.env.GITHUB_RUN_ATTEMPT ?? '1',
+    token: process.env.GITHUB_TOKEN,
     event,
   });
   outputPlan(plan, process.env.GITHUB_OUTPUT);
