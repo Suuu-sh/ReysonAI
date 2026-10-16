@@ -128,7 +128,7 @@ function SubscriptionTab() {
       </div>
       <span className="account-pill success">{t("利用中", "Active")}</span>
     </section>
-    <h2 className="account-section-title">{t("プランを比較", "Compare plans")}</h2>
+    <h2 className="account-section-title">{sourceCopy("プランを比較", "Compare plans", "比较方案", "Comparar planes")}</h2>
     <div className="account-plans">
       {pricing.plans.map((plan, index) => {
         const current = index === 0;
@@ -141,7 +141,7 @@ function SubscriptionTab() {
           <p className="account-plan-desc">{plan.description}</p>
           <ul>{plan.features.map(feature => <li key={feature}><Check size={13} weight="bold" />{feature}</li>)}</ul>
           <p className="account-plan-status">
-            {current ? <><CheckCircle size={15} weight="fill" />{t("ご利用中のプランです", "You're on this plan")}</>
+            {current ? <><CheckCircle size={15} weight="fill" />{sourceCopy("ご利用中のプランです", "You're on this plan", "你正在使用此方案", "Estás en este plan")}</>
               : <><Clock size={15} weight="bold" />{plan.action}</>}
           </p>
         </article>;
