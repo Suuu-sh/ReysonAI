@@ -1116,7 +1116,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
             </div>
             {settingsOpen && <button type="button" className="settings-backdrop" aria-label="閉じる" onClick={() => setSettingsOpen(false)} />}
             <div className="settings-body">
-              <ul><li>{formatLabel("table", format.table)} · Open {formatLabel("openSize", format.openSize)}</li><li>レーキ {formatLabel("rake", format.rake)}</li></ul>
+              <ul><li>{formatLabel("table", format.table)} · Open {formatLabel("openSize", format.openSize)}</li><li>レーキ {rangeSource === "gto" ? localized("0% · saved GTO", "0%・保存済みGTO") : formatLabel("rake", format.rake)}</li></ul>
             </div>
           </RangeContextCard>}
           expanded

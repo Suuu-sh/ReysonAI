@@ -152,6 +152,8 @@ test("Settings buttons persist AI/GTO and Simple, and the source event switches 
     });
     assert.equal(document.querySelector(".gto-range-page"), null, "fresh workspace starts on AI");
     assert.equal(choice("Calculation version", "AI").getAttribute("aria-checked"), "true");
+    await click(document.querySelector(".settings-toggle"));
+    assert.match(document.querySelector(".settings-body").textContent, /レーキ\s*5%/, "AI metadata continues to show the workspace rake");
     const sharedActionPath = document.querySelector(".action-path");
     assert.equal(cell("AA").getAttribute("aria-pressed"), "true", "URL-seeded hand selection is active before switching");
     await click(choice("Calculation version", "GTO"));
@@ -160,6 +162,7 @@ test("Settings buttons persist AI/GTO and Simple, and the source event switches 
     assert.ok(document.querySelector(".estimate-settings"));
     assert.equal(JSON.parse(window.localStorage.getItem("reysonai:appearance:v1")).rangeSource, "gto");
     assert.ok(document.querySelector(".estimate-settings"));
+    assert.match(document.querySelector(".settings-body").textContent, /レーキ\s*0%/, "GTO metadata identifies its saved zero-rake condition");
     assert.ok(document.querySelector(".settings-body") || document.querySelector(".settings-toggle"));
     assert.equal(document.querySelector(".gto-node-selector"), null, "decision node follows the shared action path");
     assert.equal(document.querySelector(".gto-range-page"), null, "GTO does not replace the workspace shell");
@@ -171,6 +174,7 @@ test("Settings buttons persist AI/GTO and Simple, and the source event switches 
     assert.equal(document.querySelectorAll(".action-path").length, selectorsBefore, "source switching keeps the existing action-path layout mounted");
     await click(choice("Calculation version", "AI"));
     assert.equal(events, 2);
+    assert.match(document.querySelector(".settings-body").textContent, /レーキ\s*5%/, "switching back to AI restores the workspace rake label");
     assert.equal(document.querySelector(".action-path"), sharedActionPath);
     assert.equal(cell("AA").getAttribute("aria-pressed"), "true", "selected AI hand survives source changes");
     assert.equal(document.querySelector(".gto-range-content"), null);
