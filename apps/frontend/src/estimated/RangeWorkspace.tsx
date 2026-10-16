@@ -120,6 +120,11 @@ const tableProfileStorageKey = "reysonai:table-profile:v1";
 const workspaceUrlStorageKey = "reysonai:estimated-workspace-url:v1";
 const workspaceSourceStorageKey = "reysonai:estimated-workspace-source:v1";
 const workspaceSemanticNodeStorageKey = "reysonai:estimated-workspace-semantic-node:v1";
+function rawFlopActionsFromUrl(search: string) {
+  const value = new URLSearchParams(search).get("flop_actions");
+  if (value === null) return null;
+  return value.split("-").filter(Boolean).map(token => token === "X" ? "check" : token === "B50" ? "bet50" : token === "C" ? "call" : token === "F" ? "fold" : token);
+}
 const openingModelFor = (spot: OpeningSpot) => markAdjustedModel(openingMatrixModel(spot), spot);
 // Postflop labels end in "(33%)"; show that part right-aligned so the amounts line up.
 function OptionLabel({ label }: { label: string }) {
@@ -407,7 +412,10 @@ function gtoFlopActionBlocks(actions: string[]): WorkspaceActionBlock[] {
     decision("gto-bb-root", "BB", "check", false, 0),
     decision("gto-btn-after-check", "BTN", null, true, 1),
   ];
-  return actions.map((action, index) => decision(`gto-history-${index}`, index === 0 ? "BB" : "BTN", action, false, index));
+  return actions.map((action, index) => decision(
+    index === 0 ? "gto-bb-root" : index === 1 && actions[0] === "check" ? "gto-btn-after-check" : `gto-history-${index}`,
+    index === 0 ? "BB" : "BTN", action, false, index,
+  ));
 }
 
 // Query navigation is a fresh, validated range selection. Remounting the
@@ -424,6 +432,8 @@ export function EstimatedRanges(props: EstimatedRangesProps) {
 }
 
 function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange, rangeSource = "ai", previousRangeSource = null, previousSemanticNode = null, mw3Client = mw3DeliveryClient }: EstimatedRangesProps) {
+  const [explicitRangeUrl] = useState(() => typeof window !== "undefined" && Boolean(window.location.search));
+  const useSourceTransition = previousRangeSource !== null && previousRangeSource !== rangeSource && !explicitRangeUrl;
   const [initialUrlState] = useState(() => {
     const current = readRangeUrl();
     if (current || typeof window === "undefined" || window.location.pathname !== "/analyze/ranges" || window.location.search) return current;
@@ -439,18 +449,24 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   });
   const [initialSelection] = useState(() => initialUrlState ?? restoredSelection(initialRangeType));
   const sourceChanged = previousRangeSource !== null && previousRangeSource !== rangeSource;
-  const originalFlopActions = initialUrlState?.flopActions ?? [];
-  const gtoRootUnavailableInAi = sourceChanged && rangeSource === "ai" && (previousRangeSource === "gto" && originalFlopActions.length === 0
-    || previousSemanticNode === "gto-bb-root");
-  const transitionFlopActions = sourceChanged && previousRangeSource === "gto" && rangeSource === "ai"
+  const previousNode = explicitRangeUrl ? null : previousSemanticNode;
+  const rawFlopActions = rawFlopActionsFromUrl(typeof window === "undefined" ? "" : window.location.search);
+  const originalFlopActions = (rangeSource === "gto" || previousRangeSource === "gto" ? rawFlopActions : null)
+    ?? initialUrlState?.flopActions ?? [];
+  const gtoRootUnavailableInAi = rangeSource === "ai" && (useSourceTransition && previousRangeSource === "gto" && originalFlopActions.length === 0
+    || previousNode === "gto-bb-root");
+  const gtoHistoryUnavailableInAi = rangeSource === "ai" && (useSourceTransition && previousRangeSource === "gto" && originalFlopActions.includes("bet50")
+    || previousNode === "gto-unsaved-history" && originalFlopActions.includes("bet50"));
+  const transitionFlopActions = useSourceTransition && previousRangeSource === "gto" && rangeSource === "ai"
     ? originalFlopActions[0] === "check" ? originalFlopActions.slice(1) : originalFlopActions
-    : sourceChanged && previousRangeSource === "ai" && rangeSource === "gto"
-      ? previousSemanticNode === "gto-bb-root" ? originalFlopActions : ["check", ...originalFlopActions]
+    : useSourceTransition && previousRangeSource === "ai" && rangeSource === "gto"
+      ? previousNode === "gto-bb-root" ? originalFlopActions : ["check", ...originalFlopActions]
       : originalFlopActions;
   const [aiRootUnavailable, setAiRootUnavailable] = useState(gtoRootUnavailableInAi);
-  const preserveGtoDecisionPath = rangeSource === "ai" && (aiRootUnavailable
-    || sourceChanged && previousRangeSource === "gto"
-    || previousSemanticNode === "gto-btn-after-check");
+  const [aiGtoHistoryUnavailable, setAiGtoHistoryUnavailable] = useState(gtoHistoryUnavailableInAi);
+  const preserveGtoDecisionPath = rangeSource === "ai" && (aiRootUnavailable || aiGtoHistoryUnavailable
+    || useSourceTransition && previousRangeSource === "gto"
+    || previousNode === "gto-btn-after-check");
   const [opponentProfile, setOpponentProfile] = useState<OpponentProfile>(initialSelection.opponentProfile);
   const [opponentSeat, setOpponentSeat] = useState<OpponentSeat | null>(initialSelection.opponentSeat);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -814,9 +830,13 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
         window.sessionStorage.setItem(workspaceSemanticNodeStorageKey, "gto-bb-root");
       } else if (rangeSource === "gto" && flopActive && flopActions.length === 1 && flopActions[0] === "check") {
         window.sessionStorage.setItem(workspaceSemanticNodeStorageKey, "gto-btn-after-check");
-      } else if (sourceChanged && previousRangeSource === "gto" && rangeSource === "ai" && flopActive
-        && (originalFlopActions.length === 1 && originalFlopActions[0] === "check" || previousSemanticNode === "gto-bb-root" && !aiRootUnavailable)) {
+      } else if (rangeSource === "gto" && flopActive && (flopActions.length > 1 || flopActions.some(action => action !== "check"))) {
+        window.sessionStorage.setItem(workspaceSemanticNodeStorageKey, "gto-unsaved-history");
+      } else if (useSourceTransition && previousRangeSource === "gto" && rangeSource === "ai" && flopActive
+        && (originalFlopActions.length === 1 && originalFlopActions[0] === "check" || previousNode === "gto-bb-root" && !aiRootUnavailable)) {
         window.sessionStorage.setItem(workspaceSemanticNodeStorageKey, "gto-btn-after-check");
+      } else if (useSourceTransition && previousRangeSource === "gto" && rangeSource === "ai" && flopActive && previousNode === "gto-unsaved-history") {
+        window.sessionStorage.setItem(workspaceSemanticNodeStorageKey, "gto-unsaved-history");
       } else {
         window.sessionStorage.removeItem(workspaceSemanticNodeStorageKey);
       }
@@ -830,7 +850,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const gtoAvailable = Boolean(!aiRootUnavailable && gtoContextMatches && flopCards.join(" ") === "Qs Jh 2h"
     && (flopActions.length === 0 || flopActions.length === 1 && flopActions[0] === "check")
     && !turnCard && turnActions.length === 0 && !riverCard && riverActions.length === 0);
-  const gtoPathMode = rangeSource === "gto" || aiRootUnavailable;
+  const gtoPathMode = rangeSource === "gto" || aiRootUnavailable || aiGtoHistoryUnavailable;
   const canEnterLaterStreets = !gtoPathMode && Boolean(flopContext?.pilotAvailable && flopBoard && laterStart(flopActions, flopContext));
   const laterBlocks = canEnterLaterStreets
     ? buildLaterActionBlocks({ flopActions, turnCard, turnActions, riverCard, riverActions }, flopContext)
@@ -1103,14 +1123,21 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
           blocks={combinedBlocks}
           selectedRangeBlock={selectedRangeBlock}
           {...actionState}
-          onRewindActionBlock={rewindToActionBlock}
+          onRewindActionBlock={block => {
+            if (aiGtoHistoryUnavailable) {
+              setAiGtoHistoryUnavailable(false);
+              if (block.flopIndex === 0) setAiRootUnavailable(true);
+            }
+            rewindToActionBlock(block);
+          }}
           onEnterPostflop={flopContext ? () => { setShowFlop(true); setFlopDialogOpen(postflopAllowed || rangeSource === "gto"); setSelectedRangeBlock(null); } : null}
           onOpenFlopCards={() => setFlopDialogOpen(postflopAllowed || rangeSource === "gto")}
           onOpenLaterCard={street => setStreetCardDialog(postflopAllowed && rangeSource !== "gto" ? street as StreetCardDialogName : null)}
           onFlopAction={(block, action) => {
-            if (aiRootUnavailable && block.key === "gto-bb-root" && action === "check") {
+            if ((aiRootUnavailable || aiGtoHistoryUnavailable) && block.key === "gto-bb-root" && action === "check") {
               setFlopActions([]);
               setAiRootUnavailable(false);
+              setAiGtoHistoryUnavailable(false);
             } else setFlopActions(current => [...current.slice(0, block.flopIndex), action]);
             setSelectedRangeBlock(null);
           }}
@@ -1138,6 +1165,9 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
         {aiRootUnavailable ? <Panel className="multiway-range-panel missing-range-panel">
           <SectionHeading title={localized("No AI estimate for BB's first flop decision", "BBのフロップ初手にAI推定はありません")} />
           <StatusState>{localized("The selected GTO action node is preserved. This AI source has no matching range, so no substitute is shown.", "選択中のGTOアクションノードを保持しています。このAIデータソースに対応するレンジはなく、代替表示はしません。")}</StatusState>
+        </Panel> : aiGtoHistoryUnavailable ? <Panel className="multiway-range-panel missing-range-panel">
+          <SectionHeading title={localized("No matching AI estimate for this saved action history", "この保存済みアクション履歴に対応するAI推定はありません")} />
+          <StatusState>{localized("The GTO action path is preserved for inspection and rewind. This action size is not accepted by the AI tree, so no AI range is substituted.", "GTOのアクション履歴を表示し、巻き戻せる状態で保持しています。このサイズはAIツリーにないため、AIレンジで代用しません。")}</StatusState>
         </Panel> : rangeSource === "gto" ? <GtoRangeView
           available={gtoAvailable}
           nodeId={flopActions.length === 1 ? "btn-after-check" : "bb-root"}

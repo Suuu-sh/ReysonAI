@@ -321,6 +321,24 @@ test("RangeWorkspace derives both saved nodes from the real URL action path and 
     await act(async () => rangeRoot.unmount());
     rangeRoot = null;
 
+    window.history.replaceState({}, "", buildUrl({ flopActions: ["check", "check"] }));
+    saveRangeSource("gto");
+    rangeRoot = createRoot(document.getElementById("root"));
+    await act(async () => rangeRoot.render(createElement(RangeWorkspace)));
+    assert.match(document.body.textContent, /No saved GTO data for this selection/);
+    await act(async () => rangeRoot.unmount());
+    rangeRoot = null;
+    window.history.replaceState({}, "", "/app/settings");
+    saveRangeSource("ai");
+    window.history.replaceState({}, "", "/analyze/ranges");
+    rangeRoot = createRoot(document.getElementById("root"));
+    await act(async () => rangeRoot.render(createElement(RangeWorkspace)));
+    assert.ok(document.querySelector('.action-seat[class*="action-seat-flop"]'),
+      "a GTO second-check history maps to the equivalent AI action path without entering unsupported GTO data");
+    assert.equal(document.querySelector(".matrix-panel"), null, "the guest AI gate does not substitute the saved GTO range");
+    await act(async () => rangeRoot.unmount());
+    rangeRoot = null;
+
     window.history.replaceState({}, "", buildUrl({ flopActions: [] }));
     saveRangeSource("gto");
     rangeRoot = createRoot(document.getElementById("root"));
@@ -335,6 +353,30 @@ test("RangeWorkspace derives both saved nodes from the real URL action path and 
     assert.deepEqual([...document.querySelectorAll('.action-seat[class*="action-seat-flop"] .action-seat-position')].map(button => button.textContent), ["BB"],
       "GTO BB-root remains the selected actor when AI has no matching BB-root estimate");
     assert.match(document.body.textContent, /No AI estimate for BB's first flop decision/);
+    await act(async () => rangeRoot.unmount());
+    rangeRoot = null;
+
+    window.history.replaceState({}, "", buildUrl({ flopActions: [] }));
+    saveRangeSource("gto");
+    rangeRoot = createRoot(document.getElementById("root"));
+    await act(async () => rangeRoot.render(createElement(RangeWorkspace)));
+    const rootDecision = document.querySelector(".action-seat-flop.active");
+    await click(rootDecision.querySelector(".action-seat-select-trigger"));
+    await click([...document.querySelectorAll('[role="menu"] button')].find(button => button.textContent.includes("Bet 2.75 BB")));
+    assert.match(document.body.textContent, /No saved GTO data for this selection/);
+    await act(async () => rangeRoot.unmount());
+    rangeRoot = null;
+    window.history.replaceState({}, "", "/app/settings");
+    saveRangeSource("ai");
+    window.history.replaceState({}, "", "/analyze/ranges");
+    rangeRoot = createRoot(document.getElementById("root"));
+    await act(async () => rangeRoot.render(createElement(RangeWorkspace)));
+    assert.deepEqual([...document.querySelectorAll('.action-seat[class*="action-seat-flop"] .action-seat-position')].map(button => button.textContent), ["BB"],
+      "GTO-only bet history remains visible in AI without entering the AI tree");
+    assert.match(document.body.textContent, /No matching AI estimate for this saved action history/);
+    await click(document.querySelector('.action-seat[class*="action-seat-flop"] .action-seat-position'));
+    assert.match(document.body.textContent, /No AI estimate for BB's first flop decision/,
+      "rewinding GTO-only bet returns to explicit AI-unavailable root without passing bet50 to AI replay");
     await act(async () => rangeRoot.unmount());
     rangeRoot = null;
   } finally {
