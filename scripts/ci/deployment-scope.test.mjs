@@ -286,6 +286,17 @@ test('does not skip readiness failures if any production deploy job ran or the f
     ] }) };
   };
   await assert.rejects(() => latestDeploymentRun({ repository: 'Suuu-sh/ReysonAI', currentRunId: '102', fetcher: truncatedJobsFetcher }), /production state may be partial|production deployment requires manual recovery/);
+  for (const total_count of [null, '3', -1, 3.5]) {
+    const malformedCountFetcher = async url => {
+      if (/\/actions\/workflows\/deploy-worker\.yml\/runs\?branch=main/.test(url)) return { ok: true, json: async () => ({ workflow_runs: [failed] }) };
+      return { ok: true, json: async () => ({ total_count, jobs: [
+        { name: 'Classify reviewed code and data inputs', status: 'completed', conclusion: 'success' },
+        { name: 'Verify reviewed preflop snapshot', status: 'completed', conclusion: 'success' },
+        { name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'failure', steps: readinessFailureSteps() },
+      ] }) };
+    };
+    await assert.rejects(() => latestDeploymentRun({ repository: 'Suuu-sh/ReysonAI', currentRunId: '102', fetcher: malformedCountFetcher }), /production state may be partial|production deployment requires manual recovery/);
+  }
 });
 
 test('manual force input is the only recovery path when lineage cannot be proved', async t => {

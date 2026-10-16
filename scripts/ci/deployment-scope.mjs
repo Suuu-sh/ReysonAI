@@ -492,9 +492,9 @@ export async function latestDeploymentRun({ repository, currentRunId, token, fet
         return step?.conclusion === 'success' && KNOWN_NON_WRITING_DEPLOY_STEPS.has(step?.name);
       });
       const jobNames = body.jobs.map(job => job?.name);
-      const completeJobsPage = Number.isInteger(body.total_count)
-        ? body.total_count === body.jobs.length
-        : body.jobs.length < 100;
+      const completeJobsPage = body.total_count === undefined
+        ? body.jobs.length < 100
+        : Number.isInteger(body.total_count) && body.total_count >= 0 && body.total_count === body.jobs.length;
       const completeUniqueJobList = completeJobsPage &&
         body.jobs.length === EXPECTED_DEPLOYMENT_JOB_NAMES.size &&
         jobNames.every(name => EXPECTED_DEPLOYMENT_JOB_NAMES.has(name)) && new Set(jobNames).size === jobNames.length;
