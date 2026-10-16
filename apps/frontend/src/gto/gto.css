@@ -1,39 +1,9 @@
-.gto-range-page { display: flex; flex-direction: column; gap: 10px; min-width: 0; min-height: 0; }
-.gto-context { padding: 14px 16px; }
-.gto-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.gto-heading h1 { margin: 0; font-size: 19px; }
-.gto-heading p, .gto-caveat, .gto-detail > p, .gto-class-note { margin: 5px 0 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
-.gto-badge { border: 1px solid var(--accent); border-radius: 3px; padding: 4px 7px; color: var(--accent-bright); font-size: 11px; font-weight: 700; }
-.gto-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 14px; margin: 12px 0 0; }
-.gto-facts div { min-width: 0; border-top: 1px solid var(--line); padding-top: 6px; }
-.gto-facts dt { color: var(--text-subtle); font-size: 10px; }
-.gto-facts dd { margin: 2px 0 0; font-size: 12px; font-weight: 600; }
-.gto-facts dd small { color: var(--text-subtle); font-size: 10px; font-weight: 400; }
-.gto-caveat { margin-top: 12px; }
-.gto-node-selector { display: flex; gap: 6px; flex-wrap: wrap; }
-.gto-node-selector button { min-height: 36px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 3px; background: var(--surface); color: var(--text-muted); cursor: pointer; }
-.gto-node-selector button[aria-pressed="true"] { border-color: var(--accent); color: var(--text); background: var(--surface-raised); }
-.gto-node-selector button:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 2px; }
-.gto-results { display: grid; grid-template-columns: minmax(350px, 1.6fr) minmax(250px, 1fr); gap: 8px; min-height: 0; flex: 1; }
-.gto-results .matrix-panel { min-width: 0; min-height: 360px; }
-.gto-results .matrix { aspect-ratio: 1; height: auto; }
-.gto-matrix-note { margin: 6px 0 0; color: var(--text-subtle); font-size: 10px; line-height: 1.4; }
-.gto-detail { min-width: 0; overflow: auto; }
-.gto-detail .bars { gap: 8px; }
+.gto-scope { color: var(--text-muted); font-size: 11px; line-height: 1.5; }
+.gto-scope summary { cursor: pointer; width: fit-content; }
+.gto-scope p { margin: 4px 0 0; }
+.gto-class-note { margin: 5px 0 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
 .gto-combo-list h3 { margin: 16px 0 5px; font-size: 12px; }
 .gto-combo-list table { width: 100%; border-collapse: collapse; font-size: 11px; font-variant-numeric: tabular-nums; }
 .gto-combo-list th, .gto-combo-list td { border-top: 1px solid var(--line); padding: 6px 4px; text-align: right; }
 .gto-combo-list th:first-child { text-align: left; }
 .gto-combo-list thead th { color: var(--text-muted); font-weight: 500; }
-@media (max-width: 760px) {
-  .gto-range-page { overflow: auto; }
-  .gto-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .gto-results { display: flex; flex-direction: column; }
-  .gto-results .matrix-panel { min-height: 0; }
-  .gto-results .matrix-scroll { flex: none; }
-  .gto-detail { overflow: visible; }
-}
-@media (max-width: 390px) {
-  .gto-context { padding: 12px; }
-  .gto-results .matrix { min-width: 0; width: 100%; }
-}

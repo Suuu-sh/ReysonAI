@@ -144,6 +144,25 @@ function PostflopLoading({ title }: { title: string }) {
   </div>;
 }
 
+export function PostflopRangeSummary({ items, labels, actions, combos }: {
+  items: { action: string; frequency: number }[];
+  labels: Record<string, string>;
+  actions: readonly string[];
+  combos: number;
+}) {
+  const english = productLocale() !== "ja";
+  const mix = Object.fromEntries(items.map(item => [item.action, item.frequency]));
+  return <details className="panel postflop-range-summary">
+    <summary>
+      <span className="postflop-range-summary-title">{english ? "Entire range" : "レンジ全体"}</span>
+      <span className="postflop-range-summary-bar" style={{ background: mixGradient(mix, actions) }}
+        aria-label={items.map(item => `${labels[item.action]} ${Math.round(item.frequency * 100)}%`).join("、")} />
+    </summary>
+    <p>{english ? `Weighted average of ${combos} reachable combos.` : `到達可能な ${combos}コンボの加重平均です。`}</p>
+    <ActionBars items={items} labels={labels} />
+  </details>;
+}
+
 const suitOrder = ["s", "h", "d", "c"];
 const suitNames: Record<string, Record<string, string>> = {
   en: { s: "Spades", h: "Hearts", d: "Diamonds", c: "Clubs" },
@@ -158,12 +177,12 @@ function mixGradient(mix: ActionMix, actions: readonly string[]) {
   return stops.length ? `linear-gradient(90deg, ${stops.join(", ")})` : undefined;
 }
 
-function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missingReason, missingTitle }: { hand: string; combos: StrategyCombo[]; actions: readonly string[]; selected: string; onSelect: (value: string) => void; labels: Record<string, string>; missingReason?: string; missingTitle?: string }) {
+export function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missingReason, missingTitle }: { hand: string; combos: (Pick<StrategyCombo, "cards" | "mix"> & Partial<Pick<StrategyCombo, "tier">>)[]; actions: readonly string[]; selected: string; onSelect: (value: string) => void; labels: Record<string, string>; missingReason?: string; missingTitle?: string }) {
   if (!combos?.length) return null;
   const english = productLocale() !== "ja";
   const missing = missingReason ?? (english ? "Overlaps the board" : "ボードと重複");
   const missingDescription = missingTitle ?? (english ? "Unavailable because the cards overlap the board" : "ボードのカードと重なるため存在しません");
-  const tierName = (tier: string) => english
+  const tierName = (tier?: string) => !tier ? (english ? "Saved combo" : "保存済みコンボ") : english
     ? ({ monster: "Two pair or better with your own cards", strong: "Top pair or better", draw: "Draw", medium: "Weak pair", air: "Unpaired high cards" } as Record<string, string>)[tier]
     : tierLabels[tier];
   const pair = hand[0] === hand[1];
@@ -191,19 +210,19 @@ function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missin
               : `${hand[0]}${suitLabels[row]} ${hand[1]}${suitLabels[col]}：${tierName(combo.tier)}、${labels[top]} ${pct(combo.mix[top])}`}
             title={`${tierName(combo.tier)} · ${actions.map(action => `${labels[action]} ${pct(combo.mix[action])}`).join(" / ")}`}
             onClick={() => onSelect(selected === combo.cards ? "all" : combo.cards)}>
-            {combo.tier !== "air" && combo.tier !== "medium" && <i className={`postflop-tier-dot tier-${combo.tier}`} />}
+            {combo.tier && combo.tier !== "air" && combo.tier !== "medium" && <i className={`postflop-tier-dot tier-${combo.tier}`} />}
           </button>;
         })}
       </div>)}
     </div>
     <div className="postflop-suit-side">
       <button type="button" className={`postflop-suit-all${selected === "all" ? " selected" : ""}`} aria-pressed={selected === "all"} onClick={() => onSelect("all")}>{english ? "All combos (average)" : "すべて（平均）"}</button>
-      <ul className="postflop-tier-legend">
+      {combos.some(combo => combo.tier) && <ul className="postflop-tier-legend">
         <li><i className="postflop-tier-dot tier-monster" />{english ? "Two pair or better with your own cards" : "強い役"}</li>
         <li><i className="postflop-tier-dot tier-strong" />{english ? "Top pair or better" : "トップペア以上"}</li>
         <li><i className="postflop-tier-dot tier-draw" />{english ? "Draw" : "ドロー"}</li>
         <li><i className="postflop-suit-cell blocked" />{missing}</li>
-      </ul>
+      </ul>}
     </div>
   </div>;
 }
@@ -609,15 +628,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
             boardCards={board ?? undefined}
             selected={selectedHand} onSelect={setSelectedHand} unreachableReason="元のプリフロップ頻度0%またはボードで到達不能、推奨なし" />
           <div className="postflop-side">
-          <details className="panel postflop-range-summary">
-            <summary>
-              <span className="postflop-range-summary-title">レンジ全体</span>
-              <span className="postflop-range-summary-bar" style={{ background: mixGradient(Object.fromEntries(totals!.items.map(item => [item.action, item.frequency])), current.actions) }}
-                aria-label={totals!.items.map(item => `${labels[item.action]} ${Math.round(item.frequency * 100)}%`).join("、")} />
-            </summary>
-            <p>到達可能な {totals!.combos}コンボの加重平均です。</p>
-            <ActionBars items={totals!.items} labels={labels} />
-          </details>
+          <PostflopRangeSummary items={totals!.items} labels={labels} actions={current.actions} combos={totals!.combos} />
           <Panel className="postflop-hand-detail">
             {chosen?.unreachable ? <><SectionHeading title={selectedHand} /><StatusState title="到達不能">元のプリフロップレンジに含まれないか、このボードで組み合わせがありません。</StatusState></>
               : chosen && view && <>
