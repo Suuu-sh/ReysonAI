@@ -451,20 +451,23 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const sourceChanged = previousRangeSource !== null && previousRangeSource !== rangeSource;
   const previousNode = explicitRangeUrl ? null : previousSemanticNode;
   const rawFlopActions = rawFlopActionsFromUrl(typeof window === "undefined" ? "" : window.location.search);
+  // A semantic GTO node is meaningful only when the restored selection actually
+  // includes a flop. Session metadata can outlive the preflop URL it was written for.
+  const hasSavedFlopState = initialUrlState?.showFlop === true;
   const originalFlopActions = (rangeSource === "gto" || previousRangeSource === "gto" || rawFlopActions?.includes("bet50") ? rawFlopActions : null)
     ?? initialUrlState?.flopActions ?? [];
-  const gtoRootUnavailableInAi = rangeSource === "ai" && (useSourceTransition && previousRangeSource === "gto" && originalFlopActions.length === 0
+  const gtoRootUnavailableInAi = rangeSource === "ai" && hasSavedFlopState && (useSourceTransition && previousRangeSource === "gto" && originalFlopActions.length === 0
     || previousNode === "gto-bb-root");
-  const gtoHistoryUnavailableInAi = rangeSource === "ai" && (originalFlopActions.includes("bet50")
+  const gtoHistoryUnavailableInAi = rangeSource === "ai" && hasSavedFlopState && (originalFlopActions.includes("bet50")
     || previousNode === "gto-unsaved-history" && originalFlopActions.includes("bet50"));
-  const transitionFlopActions = useSourceTransition && previousRangeSource === "gto" && rangeSource === "ai"
+  const transitionFlopActions = hasSavedFlopState && useSourceTransition && previousRangeSource === "gto" && rangeSource === "ai"
     ? originalFlopActions[0] === "check" ? originalFlopActions.slice(1) : originalFlopActions
-    : useSourceTransition && previousRangeSource === "ai" && rangeSource === "gto"
+    : hasSavedFlopState && useSourceTransition && previousRangeSource === "ai" && rangeSource === "gto"
       ? previousNode === "gto-bb-root" ? originalFlopActions : ["check", ...originalFlopActions]
       : originalFlopActions;
   const [aiRootUnavailable, setAiRootUnavailable] = useState(gtoRootUnavailableInAi);
   const [aiGtoHistoryUnavailable, setAiGtoHistoryUnavailable] = useState(gtoHistoryUnavailableInAi);
-  const preserveGtoDecisionPath = rangeSource === "ai" && (aiRootUnavailable || aiGtoHistoryUnavailable
+  const preserveGtoDecisionPath = rangeSource === "ai" && hasSavedFlopState && (aiRootUnavailable || aiGtoHistoryUnavailable
     || useSourceTransition && previousRangeSource === "gto"
     || previousNode === "gto-btn-after-check");
   const [opponentProfile, setOpponentProfile] = useState<OpponentProfile>(initialSelection.opponentProfile);
