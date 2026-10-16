@@ -109,7 +109,7 @@ export function flopUiComboFactsCanonical({ boardCards, node, cards, history, pr
       actions: betting.actions.map(action => pick(action, ["action", "alpha", "bluffs_per_100_value", "capped"])) } } : {}) };
 }
 
-// The final boards the defence evaluates equity over (same measure as defence.mjs finalTables).
+// The final boards the defence evaluates equity over (same measure as defence.ts finalTables).
 function finalTables(board: readonly number[]): RankTable[] {
   if (board.length === 5) return [rankTable(board)];
   if (board.length === 4) return Array.from({ length: 52 }, (_, card) => card).filter(card => !board.includes(card)).map(card => rankTable([...board, card]));

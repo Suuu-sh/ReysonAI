@@ -1,0 +1,142 @@
+import { fixtureValue } from "./fixture-value.ts";
+import assert from "node:assert/strict";
+import { after, before, test } from "node:test";
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { createServer } from "vite";
+import { transform } from "esbuild";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+let server, session, locale, AuthPanel, agentStats;
+before(async () => {
+  server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), configFile: false, optimizeDeps: { noDiscovery: true, include: [], entries: [] }, server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
+  session = await server.ssrLoadModule("/src/account/session.ts");
+  agentStats = await server.ssrLoadModule("/src/agent/agent-stats.ts");
+  locale = await server.ssrLoadModule("/src/locale.ts");
+  ({ AuthPanel } = await server.ssrLoadModule("/src/account/AuthPanel.tsx"));
+});
+after(async () => { await server?.close(); });
+test("Google-only account UI is gated and integration TSX parses", async () => {
+  const html = renderToStaticMarkup(createElement(AuthPanel, {}));
+  assert.match(html, /Googleでログイン/);
+  assert.match(html, /Google Workspace/);
+  assert.match(html, /独自ドメイン/);
+  assert.match(html, /class="account-primary" disabled=""/);
+  assert.doesNotMatch(html, /type="password"|type="email"|再設定リンク/);
+  for (const file of ["ProductApp.tsx", "account/AuthPanel.tsx", "account/AccountPage.tsx", "estimated/RangeWorkspace.tsx"]) {
+    await transform(await readFile(new URL(`../src/${file}`, import.meta.url), "utf8"), { loader: "tsx" });
+  }
+});
+test("cookie sessions isolate guests, consent-gate migration, serialize versions and preserve conflict exports", async () => {
+  const previousWindow = globalThis.window, previousFetch = globalThis.fetch;
+  const guestAgentHands = Array.from({ length: 3000 }, (_, index) => ({ at: index + 1, tableId: "reyson-01", pos: "BTN", returnBb: 1, vpip: true, pfr: true, threeBetOpp: false, threeBet: false, facedThreeBet: false, foldedToThreeBet: false, sawFlop: false, showdown: false, wonShowdown: false, ...(index % 2 === 0 ? { pfBets: 2, pfCalls: 1, pfFacing: 3, pfFolds: 0 } : {}) }));
+  guestAgentHands[0] = fixtureValue({ ...guestAgentHands[0], session: { id: "entry-sync", startedAt: 1, endedAt: 5 }, history: {
+    version: 1, handNo: 1, names: { BTN: "You", BB: "VEGA" }, holeCards: { BTN: ["Ad", "8c"], BB: ["Qs", "6s"] },
+    board: ["Qc", "9s", "7s", "Ts", "Jh"], log: [{ street: "river", pos: "BTN", action: "call", to: 6.86, pot: 22.86 }],
+    winners: ["BB"], returns: { BTN: -11.18, BB: 10.54 }, pot: 22.86, rake: 1.14, handRanks: { BTN: 4, BB: 5 },
+  } });
+  const values = new Map([["reysonai:profile:v1", JSON.stringify({ nickname: "Guest", level: "beginner" })], ["reysonai.trainer.rank.v1", '{"rating":9999}'], ["reysonai.trainer.review-sessions.v1", "[]"], ["evionai:agent-hands:v1", JSON.stringify(guestAgentHands)]]);
+  let reloads = 0;
+  globalThis.window = fixtureValue({ location: { hostname: "localhost", hash: "", reload() { reloads++; } }, localStorage: {
+    get length() { return values.size; }, key: index => [...values.keys()][index] ?? null,
+    getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value), removeItem: key => values.delete(key),
+  }});
+  let enabled = false, identity = { id: "first", email: "first@custom.example", verified: true }, remoteVersion = 2;
+  let remote = { "reysonai:profile:v1": { nickname: "Account", level: "intermediate" } };
+  let failData = false, conflict = false;
+  const posts: any[] = [], requests: any[] = [];
+  globalThis.fetch = async (url, options) => {
+    requests.push({ url, options });
+    const path = url.split("/").at(-1);
+    if (!enabled) return Response.json({ error: "accounts_not_enabled" }, { status: 503 });
+    if (path === "session") return Response.json({ user: identity });
+    if (path === "logout") { identity = fixtureValue(null); return Response.json({ ok: true }); }
+    if (url.endsWith("google/start")) return Response.json({ url: "https://accounts.google.com/o/oauth2/v2/auth" });
+    if (path === "data" && options.method !== "POST") return failData ? Response.json({ error: "unavailable" }, { status: 500 }) : Response.json({ ownerId: identity.id, data: remote, version: remoteVersion });
+    const body = JSON.parse(options.body);
+    if (body.expectedOwner !== identity?.id) return Response.json({ error: "account_owner_changed" }, { status: 409 });
+    posts.push(body);
+    if (conflict) return Response.json({ error: "data_conflict" }, { status: 409 });
+    assert.equal(body.version, remoteVersion);
+    remote = body.data; remoteVersion++;
+    return Response.json({ ok: true, version: remoteVersion });
+  };
+  try {
+    await session.refreshAccount();
+    assert.equal(session.accountSnapshot().available, false);
+    assert.equal(session.accountStorage(), window.localStorage);
+    assert.deepEqual(agentStats.loadAgentHands(), guestAgentHands, "guest stats read browser storage including the legacy key");
+    enabled = true;
+    const start = requests.length;
+    await Promise.all([session.refreshAccount(), session.refreshAccount()]);
+    assert.equal(requests.length - start, 2, "strict-mode initialization is deduplicated");
+    assert.equal(JSON.parse(session.accountStorage().getItem("reysonai:profile:v1")).nickname, "Account");
+    assert.equal(JSON.parse(fixtureValue(values.get("reysonai:profile:v1"))).nickname, "Guest");
+    assert.deepEqual(agentStats.loadAgentHands(), [], "signed-in stats do not read local guest history before consent");
+    assert.equal(posts.length, 0, "sign-in alone does not upload guest history");
+    const oauth = await session.accountRequest("google/start", {});
+    assert.match(oauth.url, /^https:\/\/accounts\.google\.com\//);
+    assert.equal(requests.at(-1).options.method, "POST");
+    assert.equal(requests.at(-1).options.headers["Content-Type"], "application/json");
+    await assert.rejects(session.importGuestData(), /consent/);
+    assert.equal(posts.length, 0, "guest data not uploaded automatically");
+    const accountBeforeOversizedImport = session.exportAccountData().data;
+    values.set("reysonai.trainer.history.v1", JSON.stringify("x".repeat(400_000)));
+    await assert.rejects(session.importGuestData(true), /payload_too_large/);
+    assert.equal(posts.length, 0, "oversized imports stop before sending a replacing snapshot");
+    assert.deepEqual(session.exportAccountData().data, accountBeforeOversizedImport, "oversized import keeps the current account snapshot in memory");
+    assert.equal(values.get("evionai:agent-hands:v1"), JSON.stringify(guestAgentHands), "oversized import keeps its legacy guest source intact");
+    values.delete("reysonai.trainer.history.v1");
+    await session.importGuestData(true);
+    assert.equal(posts[0].consent, true);
+    assert.equal(posts[0].importLocal, true);
+    assert.equal(posts[0].expectedOwner, "first", "account writes bind the loaded snapshot to its authenticated owner");
+    assert.equal(posts[0].data["reysonai.trainer.rank.v1"], undefined);
+    assert.deepEqual(posts[0].data["reysonai.trainer.review-sessions.v1"], []);
+    assert.equal(posts[0].data["reysonai:agent-hands:v1"].format, "reysonai-agent-hands:compact-v1", "explicit import maps and compacts the pre-rename key");
+    assert.deepEqual(posts[0].data["reysonai:agent-hands:v1"].records[0], guestAgentHands[0], "new session/history use the reversible old-client-safe object fallback");
+    assert.equal(posts[0].data["reysonai:agent-hands:v1"].records.length, 3000, "all existing rows survive compact encoding");
+    assert.ok(new TextEncoder().encode(JSON.stringify(posts[0])).byteLength < 500_000, "the 3,000-row history and other imported account data fit the existing request bound");
+    assert.equal(posts[0].data["reysonai:profile:v1"].nickname, "Guest", "compact history does not replace or omit the other consented account data");
+    assert.deepEqual(session.exportAccountData().data["reysonai:agent-hands:v1"], guestAgentHands, "account export expands compact history without loss");
+    assert.deepEqual(agentStats.loadAgentHands(), guestAgentHands, "signed-in stats read the imported account snapshot");
+    assert.equal(values.get("evionai:agent-hands:v1"), JSON.stringify(guestAgentHands), "import keeps the local legacy source intact");
+    agentStats.saveAgentHand({ ...guestAgentHands[0], at: 2, tableId: "account-table" });
+    await session.saveAccountData();
+    assert.equal(agentStats.loadAgentHands().length, 3000, "new signed-in hands use accountStorage and keep the existing record limit");
+    assert.equal(agentStats.loadAgentHands().at(-1).tableId, "account-table");
+    assert.deepEqual(agentStats.loadAgentHands().at(-1).session, fixtureValue<{ session: any }>(guestAgentHands[0]).session);
+    assert.deepEqual(agentStats.loadAgentHands().at(-1).history, fixtureValue<{ history: any }>(guestAgentHands[0]).history);
+    assert.equal(remote["reysonai:agent-hands:v1"].records.length, 3000);
+    const storage = session.accountStorage();
+    storage.setItem("reysonai:display-mode:v1", "simple");
+    const first = session.saveAccountData();
+    storage.setItem("reysonai:appearance:v1", '{"cards":"two"}');
+    await Promise.all([first, session.saveAccountData()]);
+    assert.equal(remote["reysonai:display-mode:v1"], "simple");
+    assert.deepEqual(remote["reysonai:appearance:v1"], { cards: "two" });
+    await session.logoutAccount();
+    assert.equal(session.accountStorage(), window.localStorage);
+    assert.equal(JSON.parse(fixtureValue(values.get("reysonai:profile:v1"))).nickname, "Guest");
+    assert.deepEqual(agentStats.loadAgentHands(), guestAgentHands, "sign-out switches back to guest-local history without leaking account records");
+    identity = { id: "second", email: "second@custom.example", verified: true };
+    failData = true;
+    await session.refreshAccount();
+    assert.equal(session.accountStorage().getItem("reysonai:profile:v1"), null, "old account data never leaks on new account load failure");
+    failData = false; remote = fixtureValue({}); remoteVersion = 0;
+    await session.refreshAccount();
+    conflict = true;
+    session.accountStorage().setItem("reysonai.trainer.history.v1", '[{"hand":"AA"}]');
+    await session.saveAccountData();
+    const postCount = posts.length;
+    assert.equal(session.accountSnapshot().error, "conflict");
+    await session.saveAccountData();
+    assert.equal(posts.length, postCount, "save failures do not retry automatically");
+    assert.deepEqual(session.exportAccountData().data["reysonai.trainer.history.v1"], [{ hand: "AA" }]);
+    await locale.selectProductLocale("ja");
+    assert.equal(reloads, 0, "language change cannot discard unsaved conflict data");
+    await assert.rejects(session.logoutAccount(), /conflict/);
+    assert.equal(session.accountSnapshot().user.id, "second");
+    assert.ok(requests.every(request => request.options.credentials === "include"));
+  } finally { globalThis.window = previousWindow; globalThis.fetch = previousFetch; }
+});

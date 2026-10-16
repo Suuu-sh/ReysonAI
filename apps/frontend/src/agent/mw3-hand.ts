@@ -1,6 +1,6 @@
 import { evaluate } from "../../scripts/lib/equity.ts";
 import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.ts";
-import { playMw3WithPolicies } from "../../scripts/postflop-ai/mw3-runtime.mjs";
+import { playMw3WithPolicies } from "../../scripts/postflop-ai/mw3-runtime.ts";
 import { isVerifiedMw3Kit, type Mw3Kit } from "../estimated/mw3-browser.ts";
 import { POSITIONS, STACK_BB, type Position, type PreflopState } from "./preflop.ts";
 import type { HandResult, LogEntry } from "./hand.ts";

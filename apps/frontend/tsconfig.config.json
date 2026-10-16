@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": false,
+    "strictNullChecks": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "resolveJsonModule": true,
+    "types": [
+      "node"
+    ],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "noImplicitAny": true,
+    "useUnknownInCatchVariables": false
+  },
+  "include": [
+    "vite.config.ts",
+    "worker/**/*.ts",
+    "worker-configuration.d.ts",
+    "tooling-worker-types.d.ts"
+  ]
+}

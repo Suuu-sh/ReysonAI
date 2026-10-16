@@ -43,7 +43,7 @@ export function checkCrossStrengthInversion(spot: AuditSpot, weight: Weight = ()
   // straight+flush playability that raw equity vs a random hand does not capture.
   for (const kind of ["o"]) {
     const candidates = live.filter(row => row.hand.endsWith(kind));
-    const inversions = [];
+    const inversions: NonNullable<Finding["examples"]> = [];
     for (const stronger of candidates) {
       for (const weaker of candidates) {
         // Only B's playability is an exception. Frequencies are conditional on
@@ -309,7 +309,7 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     }
   }
 
-  const autoProfit = [];
+  const autoProfit: Defense[] = [];
   for (const opener of positions.slice(0, 5)) {
     const openSize = openSizeFor(opener);
     const risk = openSize - (blind[opener] ?? 0);
@@ -322,7 +322,7 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
   }
 
   // 3. Opener facing a 3bet: range flow and auto-profit for the 3bettor.
-  const threeBetDefense = [];
+  const threeBetDefense: (Defense & { size: number })[] = [];
   for (const spot of threeBets.spots) {
     const openRows = openBy.get(spot.opener)!;
     const reachable = (hand: string) => openRows.get(hand)!.open > 0;
@@ -343,7 +343,7 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
   }
 
   // 4. 3bettor facing a 4bet: range flow and auto-profit for the 4bettor.
-  const fourBetDefense = [];
+  const fourBetDefense: (Defense & { size: number })[] = [];
   for (const spot of fourBets.spots) {
     const source = rows(responseBy.get(`${spot.opener}>${spot.hero}`)!);
     const reachable = (hand: string) => source.get(hand)!.three_bet > 0;
@@ -364,7 +364,7 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
   }
 
   // 5. Opener facing the 5bet all-in: range flow and auto-profit for the shover.
-  const fiveBetDefense = [];
+  const fiveBetDefense: Defense[] = [];
   for (const spot of fiveBets?.spots ?? []) {
     const openRows = openBy.get(spot.opener)!;
     const previous = rows(threeBets.spots.find(s => s.opener === spot.opener && s.three_bettor === spot.five_bettor)!);
@@ -391,8 +391,8 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     for (const row of spot.hands) if (!reachable && row.fold !== 100) add("range-flow", "error", spot.id, `${row.hand}: 到達不能なコール履歴なのにfold100ではない`);
     checkStrengthOrder(add, spot.id, spot, () => reachable);
     const headsUp = responseBy.get(`${spot.opener}>${spot.hero}`)!;
-    const squeezeCombos = spot.hands.reduce((sum, row) => sum + combos(row.hand) * row.squeeze / 100, 0);
-    const threeBetCombos = headsUp.hands.reduce((sum, row) => sum + combos(row.hand) * row.three_bet / 100, 0);
+    const squeezeCombos = (spot.hands as readonly {hand: string; squeeze: number}[]).reduce((sum, row) => sum + combos(row.hand) * row.squeeze / 100, 0);
+    const threeBetCombos = (headsUp.hands as readonly {hand: string; three_bet: number}[]).reduce((sum, row) => sum + combos(row.hand) * row.three_bet / 100, 0);
     if (squeezeCombos > threeBetCombos + 1e-9) {
       add("squeeze-width", "warn", spot.id, `スクイーズ ${squeezeCombos.toFixed(1)}コンボ > ${spot.hero}ヘッズアップ3bet ${threeBetCombos.toFixed(1)}コンボ`);
     }
@@ -424,7 +424,7 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     const source: Map<string, FrequencyRow> = spot.prior_action === null ? openBy.get(spot.opener)! : rows(responseBy.get(`${spot.opener}>${spot.caller}`)!);
     return (hand: string) => (spot.prior_action === null ? source.get(hand)!.open! : source.get(hand)!.call!) / 100;
   };
-  const squeezeDefense = [];
+  const squeezeDefense: (Defense & { openerFold: number; callerFold: number })[] = [];
   for (const spot of squeezes?.spots ?? []) {
     const reach = squeezeReach(spot);
     for (const row of spot.hands) {
@@ -461,7 +461,7 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
   // continuation (call + 3bet) versus the same 3bettor's open. Auto-profit of
   // X's 3bet also depends on the opener's response, so only the combined
   // opener × hero fold rate is reported (not a finding).
-  const coldThreeBetDefense = [];
+  const coldThreeBetDefense: (Omit<Defense, "threshold"> & { heroFold: number; openerFold: number })[] = [];
   for (const spot of coldThreeBets?.spots ?? []) {
     for (const row of spot.hands) {
       if (row.fold + row.call + row.four_bet !== 100) add("range-flow", "error", spot.id, `${row.hand}: fold/call/4betの合計が100でない`);
@@ -486,7 +486,7 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     const source: Map<string, FrequencyRow> = spot.hero === spot.opener ? openBy.get(spot.opener)! : rows(responseBy.get(`${spot.opener}>${spot.three_bettor}`)!);
     return (hand: string) => (spot.hero === spot.opener ? source.get(hand)!.open! : source.get(hand)!.three_bet!) / 100;
   };
-  const coldFourBetDefense = [];
+  const coldFourBetDefense: (Defense & { openerFold: number; threeBettorFold: number })[] = [];
   for (const spot of coldFourBets?.spots ?? []) {
     const reach = coldFourBetReach(spot);
     for (const row of spot.hands) {
@@ -560,7 +560,7 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     "opening-ranges": opening, "preflop-ranges": responses, "multiway-responses": multiway,
     "multiway2-responses": multiway2, "squeeze-responses": squeezes,
     "cold-three-bet-responses": coldThreeBets, "cold-four-bet-responses": coldFourBets,
-  } as ContinuationSourceDatasets, continuationEquities, { checkRangeBalance, checkCrossStrengthInversion }) : { findings: [], rangeBalance: [], defense: [] };
+  } as ContinuationSourceDatasets, continuationEquities, { checkRangeBalance, checkCrossStrengthInversion }) : { findings: [] as AuditFinding[], rangeBalance: [], defense: [] };
   findings.push(...continuationReport.findings);
   rangeBalance.push(...continuationReport.rangeBalance);
   const continuationConflicts = new Set(continuationReport.findings.filter(finding => finding.check === "ev-capacity-conflict").map(finding => finding.spot));

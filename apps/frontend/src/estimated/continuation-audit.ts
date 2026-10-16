@@ -7,6 +7,16 @@ export type RangeBalanceSummary = { spot: string; reachableCombos: number; findi
 export type ContinuationCapacity = { maxCalls: Map<string, number>; minimumFoldRate: number };
 export type DefenseResponder = { node: ContinuationDecision; context: ContinuationContext<ContinuationSourceSpot>; spot: ContinuationSourceSpot; foldRate: number; capacity: ContinuationCapacity | null };
 export type ContinuationDefenseEvent = { id: string; spot: string; risk_bb: number; pot_before_raise_bb: number; threshold: number; foldRate: number; minimumFoldRate: number; group: DefenseResponder[] };
+export type ContinuationAuditDefense = Omit<ContinuationDefenseEvent, "group"> & {
+  marginalFoldProxy: number; marginalCapacityProxy: number;
+  foldConfidence: JointDefenseRecord["fold"]; capacityConfidence: JointDefenseRecord["capacity"];
+  samples: number; confidence_delta: number; method: string; exact_legal_deals: number | null;
+  capacitySaturated: boolean; responders: string[];
+};
+export type ContinuationAuditReport = {
+  findings: AuditFinding[]; rangeBalance: RangeBalanceSummary[]; defense: ContinuationAuditDefense[];
+  aggregation_model?: string; defense_model?: string;
+};
 export type ContinuationEquityTable = { spots: Record<string, ContinuationEquity>; joint_defense?: Record<string, JointDefenseRecord> };
 export type ContinuationAuditHelpers = { allowPartial?: boolean; checkCrossStrengthInversion?: (spot: ContinuationSourceSpot, reach: (hand: string) => number) => AuditFinding[]; checkRangeBalance?: (spot: ContinuationSourceSpot, reach: (hand: string) => number, exemption: string | null) => RangeBalanceSummary };
 import { hands } from "../data.ts";
@@ -120,7 +130,7 @@ export function* iterateContinuationDefense(data: ContinuationDataset, datasets:
 }
 export const continuationDefense = (data: ContinuationDataset, datasets: ContinuationSourceDatasets, equities?: ContinuationEquityTable) => [...iterateContinuationDefense(data, datasets, equities!)];
 
-export function auditContinuationEstimates(data: ContinuationDataset, datasets: ContinuationSourceDatasets, equities: ContinuationEquityTable | null | undefined, helpers: ContinuationAuditHelpers = {}) {
+export function auditContinuationEstimates(data: ContinuationDataset, datasets: ContinuationSourceDatasets, equities: ContinuationEquityTable | null | undefined, helpers: ContinuationAuditHelpers = {}): ContinuationAuditReport {
   const findings: AuditFinding[] = [], add = (check: string, severity: string, spot: string, detail: string) => findings.push({ check, severity, spot, detail });
   try { validateContinuationDataset(data, datasets, { allowPartial: helpers.allowPartial === true }); }
   catch (error) { add("range-flow", "error", "continuation-responses", (error as Error).message); return { findings, defense: [], rangeBalance: [] }; }
@@ -145,7 +155,7 @@ export function auditContinuationEstimates(data: ContinuationDataset, datasets: 
       findings.push(...balance.findings); rangeBalance.push(balance);
     }
   }
-  const defense = [];
+  const defense: ContinuationAuditDefense[] = [];
   for (const item of iterateContinuationDefense(data, datasets, equities!)) {
     const { group, ...summary } = item;
     const record = equities?.joint_defense?.[item.id];

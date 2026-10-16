@@ -94,7 +94,7 @@ const RULES: { key: ProfileKey; level: ProfileLevel; pattern: RegExp }[] = [
 
 export function parseTableDescription(text = "") {
   const profile = { ...DEFAULT_PROFILE };
-  const matched = [];
+  const matched: { key: ProfileKey; level: ProfileLevel; text: string }[] = [];
   for (const rule of RULES) {
     if (profile[rule.key] !== DEFAULT_PROFILE[rule.key]) continue;
     const hit = text.match(rule.pattern);

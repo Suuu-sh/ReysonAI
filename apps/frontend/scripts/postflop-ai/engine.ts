@@ -24,7 +24,7 @@ export function createTable(spot: Spot): Table {
     spot, other: (seat: string) => seat === ip ? oop : ip,
     stacks: { [ip]: spot.stackBb, [oop]: spot.stackBb }, invested: { [ip]: 0, [oop]: 0 },
     pot: spot.potBb, winner: null, lastAggressor: null,
-    // Decision log for the computed defence (defence.mjs): one entry per decision asked, in order
+    // Decision log for the computed defence (defence.ts): one entry per decision asked, in order
     // ({ seat, node, street, boardLen, line, pot: pot before the decision, action }; `action` stays null
     // while the decision is pending), and the actions taken so far on each street.
     log: [], path: { flop: [], turn: [], river: [] },

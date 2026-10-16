@@ -24,7 +24,7 @@ class FakeBoundary:
             guard.check(full=True)
         id = request["id"] if request and "id" in request else command[command.index("--spot") + 1]
         is_helper = runner.HELPER in command
-        operation = command[-1] if is_helper else ("all-boards" if "scripts/postflop-ai/audit-all-boards.mjs" in command else "simulate" if "simulate" in command else "replay")
+        operation = command[-1] if is_helper else ("all-boards" if "scripts/postflop-ai/audit-all-boards.ts" in command else "simulate" if "simulate" in command else "replay")
         report_path = f"apps/frontend/.local/postflop-ai/{id.lower()}-hu-v1-report.json"
         proof_path = f"apps/frontend/.local/postflop-ai/audit-evidence/{id}-replay-123.json"
         if not is_helper and operation == "simulate":
@@ -337,7 +337,7 @@ class SerialValidationTests(unittest.TestCase):
         boundary = FakeBoundary(failure="replay")
         with self.assertRaises(runner.Refusal):
             runner.run_phases(self.repo, self.id, self.pin, self.token, boundary, self.guard)
-        self.assertFalse(any("scripts/postflop-ai/audit-all-boards.mjs" in command for command, _ in boundary.calls))
+        self.assertFalse(any("scripts/postflop-ai/audit-all-boards.ts" in command for command, _ in boundary.calls))
         self.assertFalse((self.repo / f"apps/frontend/.local/postflop-ai/serial-control/{self.id}/numerical-complete.json").exists())
 
     def test_unproven_existing_report_is_never_overwritten(self):

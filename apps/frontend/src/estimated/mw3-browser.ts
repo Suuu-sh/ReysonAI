@@ -1,6 +1,6 @@
 import { MW3_APPROVED_POLICIES, type Mw3ApprovedPolicy } from "../../../shared/mw3-approved.ts";
-import { buildMw3BrowserInputs, verifyMw3BrowserCandidate } from "../../scripts/postflop-ai/mw3-browser-inputs.mjs";
-import { mw3TextSha } from "../../scripts/postflop-ai/mw3-delivery.mjs";
+import { buildMw3BrowserInputs, verifyMw3BrowserCandidate } from "../../scripts/postflop-ai/mw3-browser-inputs.ts";
+import { mw3TextSha } from "../../scripts/postflop-ai/mw3-delivery.ts";
 import { loadDataset } from "./datasets.ts";
 
 export type Mw3Kit = { kind: "mw3_srp"; spotId: string; inputs: any; policies: { flop: any; later: any } };
@@ -114,7 +114,7 @@ export function createMw3DeliveryClient({
       || !Number.isInteger(manifest.bytes) || manifest.bytes < 1 || manifest.bytes > 20_000_000
       || !HASH.test(manifest.payloadHash) || manifest.policyHash !== pin.policyHash
       || !Array.isArray(header.partHashes) || header.partHashes.length !== manifest.parts || header.partHashes.some((hash: any) => !HASH.test(hash))) throw new Mw3UnavailableError("stale");
-    const parts = [];
+    const parts: { part: number; body: string }[] = [];
     // Bounded sequential reads avoid a hundred requests/large responses in flight.
     for (let index = 0; index < manifest.parts; index++) {
       const part = await readPart(pin.deliveryHash, index);

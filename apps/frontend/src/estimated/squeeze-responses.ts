@@ -42,7 +42,7 @@ export function validateSqueezeDataset(data: SqueezeDataset, multiway: MultiwayD
     if (!source || !Array.isArray(source.hands) || source.hands.length !== hands.length ||
         source.hands.some((row, j) => row?.hand !== hands[j] ||
           !Number.isInteger(row[action]!) || row[action]! < 0 || row[action]! > 100)) fail(`前段の局面がありません・不正です: ${id}`);
-    return new Map(source.hands.map(row => [row.hand, row[action]!]));
+    return new Map(source.hands.map(row => [row.hand, row[action]!] as const));
   };
 
   for (let i = 0; i < squeezeResponseSpots.length; i += 1) {
@@ -102,6 +102,6 @@ export function squeezeMatrixModel(spot: SqueezeSpot): MatrixModel {
       hand: row.hand,
       comboCount: row.hand.length === 2 ? 6 : row.hand.endsWith("s") ? 4 : 12,
       actions: { raise_four_bet: row.four_bet / 100, call: row.call / 100, fold: row.fold / 100 },
-    }])),
+    }] as const)),
   };
 }

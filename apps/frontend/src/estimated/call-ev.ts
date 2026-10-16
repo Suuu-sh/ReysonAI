@@ -259,7 +259,7 @@ const RANKS = "AKQJT98765432";
 const ORDER_CHAINS = [[...RANKS].map(r => r + r), ...[...RANKS].slice(0, -1).flatMap((high, i) =>
   ["s", "o"].map(suit => [...RANKS.slice(i + 1)].map(kicker => high + kicker + suit)))];
 function orderEdges(reachable: (hand: string) => boolean) {
-  const edges = [];
+  const edges: [string, string][] = [];
   for (const chain of ORDER_CHAINS) {
     const live = chain.filter(reachable);
     for (let i = 1; i < live.length; i += 1) {

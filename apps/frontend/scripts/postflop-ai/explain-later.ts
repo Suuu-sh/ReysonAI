@@ -28,7 +28,7 @@ import { scaleByPath, validatePolicy } from "./policy.ts";
 import { LATER_NODES, laterNodeRole } from "./later-tree.ts";
 import { laterPolicyMix, validateLaterPolicy } from "./later-policy.ts";
 import { flopState } from "./tree.ts";
-import { laterDecisionState as laterDecision, laterStart, replayLater } from "./street-state.mjs";
+import { laterDecisionState as laterDecision, laterStart, replayLater } from "./street-state.ts";
 import { defenceFor, isFacingNode, replayOrNull } from "./defence.ts";
 import { averageExplanationFacts } from "./explain-aggregate.ts";
 import { profileReferenceFacts } from "./profile-reference.ts";
@@ -174,7 +174,7 @@ function group(key: string, items: readonly EvaluatedCombo[], all: number): Expl
 }
 
 // `defenceOf(action)` returns { defence, table } for the responder's decision after `action`
-// (defence.mjs), or null when the line is not a legal continuation.
+// (defence.ts), or null when the line is not a legal continuation.
 function detailsFor(hero: readonly number[], villains: WeightedCombo[], board: readonly number[], policy: LaterPolicy,
  decision: PendingLaterDecision & { previousAggressor: PlayerRole | null }, spot: Spot, potBb: number, stacks: RoleValues,
  heroDefence: { requirement: ReturnType<DefenceModel["requirement"]>; facts: ReturnType<DefenceModel["facts"]> } | null,

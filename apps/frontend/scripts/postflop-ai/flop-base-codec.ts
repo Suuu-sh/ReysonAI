@@ -104,7 +104,7 @@ function unbase64(text: string) {
 // exactly. Non-integral f64 strategy/reach columns stay verbatim; never round them.
 function encodeColumn(values: unknown[], scale = 10000): LiteralColumn | VarintColumn {
   if (values.every((value): value is number => Number.isFinite(value) && Math.round((value as number) * scale) / scale === value && Math.abs((value as number) * scale) < 2 ** 29)) {
-    const bytes = [];
+    const bytes: number[] = [];
     let previous = 0;
     for (const value of values) {
       const integer = Math.round((value as number) * scale), delta = integer - previous;
@@ -191,7 +191,7 @@ function decodeColumn(column: EncodedColumn, get: (index: number) => unknown[]):
     return predicted.map((value, index) => (Math.round(value * 10000) + residuals[index]) / 10000);
   }
   if (column[0] !== 1) throw new Error("Invalid flop-base column encoding");
-  const bytes = unbase64(column[2]), values = [];
+  const bytes = unbase64(column[2]), values: number[] = [];
   let at = 0, previous = 0;
   while (at < bytes.length) {
     let code = 0, shift = 0, byte;

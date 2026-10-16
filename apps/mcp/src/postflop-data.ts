@@ -7,7 +7,7 @@ import { loadPublishedMultiwayPostflopSourceDatasets, publishedMultiwaySourceSel
 import { canonicalFlop, remapFlopNode, hydrateFrame, unpackView, flopState, NODES, referenceLaterPolicy,
   assertPolicyNodeComplete, buildInputs, evaluateFlopNodeCanonical, projectPolicyRows, parseFlopBoard, validatePolicy,
   DEFENCE_VERSION, EVALUATOR_VERSION, MCP_DEFENCE_ADAPTER_VERSION, MCP_DEFENCE_BASE_SOURCE_SHA256,
-  type FlopBase, type PackedView, type CodecView, type EvaluatedFlopNode, type FlopPolicy, type PostflopInputs } from "./postflop-shared.mjs";
+  type FlopBase, type PackedView, type CodecView, type EvaluatedFlopNode, type FlopPolicy, type PostflopInputs } from "./postflop-shared.ts";
 
 const KIND = "ai_estimate_not_gto" as const;
 const NOTICE = "Saved independent AI estimates for study; not solver GTO, live-game assistance, or a guarantee of profit. Missing, unreachable, or unpublished paths have no substitute strategy.";
@@ -125,7 +125,7 @@ async function parsePostflopPublication(version: VersionRow): Promise<PostflopPu
     if (keys.length !== 3 || keys[0] !== "mode" || keys[1] !== "publication_revision" || keys[2] !== "touched_spots"
       || !requiredString(detail.publication_revision, 128)) invalid();
     const hashes = parsePolicyHashMap(detail.touched_spots, { allowEmpty: false });
-    // publish-d1.mjs binds a metadata revision to the timestamp and the spot hashes
+    // publish-d1.ts binds a metadata revision to the timestamp and the spot hashes
     // changed by that SQL batch. This reader accepts the new format only when that
     // touched set is the complete current catalog; partial-upsert catalogs stay closed.
     const expectedHash = await digestText(JSON.stringify({ publicationRevision: detail.publication_revision,
@@ -646,6 +646,8 @@ async function evaluatePublishedPostflopPolicyCore(db: ReadOnlyDatabase | undefi
     ? await loadPublishedMultiwayPostflopSourceDatasets(db, spot.context.id)
     : await loadPublishedPostflopSourceDatasets(db, sourceRequirements);
   let inputs: PostflopInputs;
+  // Published source loaders validate the persisted JSON; buildInputs performs its
+  // own spot/range validation before producing the typed runtime inputs.
   try { inputs = buildInputs(input.spotId, sourceDatasets); } catch { return invalid(); }
   // The published spot is the authority. A changed local descriptor or source geometry
   // must not be silently substituted just because the same identifier still exists.

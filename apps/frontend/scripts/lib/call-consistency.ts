@@ -1,0 +1,120 @@
+// Constrained call-only reconciliation after the EV gate. Never changes raises,
+// admits a negative-EV call, or weakens the existing consistency audit.
+import { coldFourBetFoldThreshold, allowedCall, callFacts, limpFourBetFoldThreshold, limpReraiseFoldThreshold, squeezeFoldThreshold } from "../../src/estimated/call-ev.ts";
+import { comboCount } from "./equity.ts";
+import { openSizeFor } from "../../src/estimated/sizing.ts";
+const ranks = "AKQJT98765432", blind: any = { SB: 0.5, BB: 1 };
+const seats = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
+const continuation = (row: any) : any => 100 - row.fold;
+
+export function reconcileCalls(contexts?: any, table?: any) : any {
+  const nodes = contexts.flatMap((c: any) : any => c.spot.hands.filter((r: any) : any => c.reach(r.hand) > 0).map((row: any) : any => ({
+    row, context: c, ev: callFacts(c, row.hand, table.spots[c.spot.id].equities[row.hand]).call_ev_bb,
+  })));
+  const node = (c?: any, hand?: any) : any => nodes.find((n: any) : any => n.context === c && n.row.hand === hand);
+  const edges: any[] = [];
+  for (const c of contexts) {
+    const chains = [[...ranks].map((r: any) : any => r + r)];
+    for (let i = 0; i < ranks.length - 1; i++) for (const suit of ["s", "o"]) {
+      chains.push([...ranks.slice(i + 1)].map((r: any) : any => ranks[i] + r + suit));
+    }
+    for (const chain of chains) {
+      const live = chain.map((hand: any) : any => node(c, hand)).filter(Boolean);
+      for (let i = 1; i < live.length; i++) {
+        if (/^A6/.test(live[i - 1].row.hand) && /^A5/.test(live[i].row.hand)) continue;
+        edges.push([live[i - 1], live[i]]);
+      }
+    }
+    for (let i = 0; i < ranks.length; i++) for (let j = i + 1; j < ranks.length; j++) {
+      const s = node(c, ranks[i] + ranks[j] + "s"), o = node(c, ranks[i] + ranks[j] + "o");
+      if (s && o) edges.push([s, o]);
+    }
+  }
+  // Defense versus a later (wider) opener must not be narrower. SB's separate
+  // 3.5BB raise/limp split is excluded, matching the audit's existing rule.
+  for (const hero of seats) {
+    const spots = contexts.filter((c: any) : any => c.type === "response" && c.spot.hero === hero)
+      .sort((a?: any, b?: any) : any => seats.indexOf(a.spot.opener) - seats.indexOf(b.spot.opener));
+    for (let i = 1; i < spots.length; i++) {
+      if (hero === "BB" && spots[i].spot.opener === "SB") continue;
+      for (const row of spots[i].spot.hands) edges.push([node(spots[i], row.hand), node(spots[i - 1], row.hand)]);
+    }
+  }
+  const changes: any[] = [];
+  const adjust = (n?: any, delta?: any, reason?: any) : any => {
+    if (!delta) return;
+    const before = n.row.call;
+    n.row.call += delta; n.row.fold -= delta;
+    changes.push({ spot: n.context.spot.id, hand: n.row.hand, before, after: n.row.call, call_ev_bb: n.ev, reason });
+  };
+  // First conservatively trim weaker calls. This is monotone and terminates.
+  let changed: any;
+  do {
+    changed = false;
+    for (const [strong, weak] of edges) {
+      const excess = continuation(weak.row) - continuation(strong.row) - 10;
+      if (excess <= 0) continue;
+      if (excess > weak.row.call) throw new Error(`Cannot preserve strength without changing raises: ${weak.context.spot.id}/${weak.row.hand}`);
+      adjust(weak, -excess, "strength/nesting ceiling"); changed = true;
+    }
+  } while (changed);
+
+  const foldRate = (c: any) : any => {
+    const weights = c.spot.hands.map((row: any) : any => [row, comboCount(row.hand) * c.reach(row.hand)]);
+    return weights.reduce((n: any, [r, w]: any) : any => n + w * r.fold / 100, 0) / weights.reduce((n: any, [, w]: any) : any => n + w, 0);
+  };
+  function defend(group?: any, threshold?: any, label?: any) : any {
+    const fold = () : any => group.reduce((n?: any, c?: any) : any => n * foldRate(c), 1);
+    // Add only positive-EV calls, highest EV first, and only as much as needed
+    // to retain the pre-existing no-auto-profit requirement. No global widening.
+    const candidates = nodes.filter((n: any) : any => group.includes(n.context) && n.ev >= 0.05)
+      .sort((a?: any, b?: any) : any => b.ev - a.ev || a.row.hand.localeCompare(b.row.hand));
+    while (fold() > threshold + 1e-12) {
+      let added = false;
+      for (const n of candidates) {
+        const aggressive = 100 - n.row.call - n.row.fold;
+        const maxCall = allowedCall(100 - aggressive, n.ev);
+        const ceilings = edges.filter(([, weak]: any) : any => weak === n).map(([strong]: any) : any => continuation(strong.row) + 10 - continuation(n.row));
+        const delta = Math.min(5, maxCall - n.row.call, ...ceilings);
+        if (delta <= 0) continue;
+        adjust(n, delta, "positive-EV auto-profit protection"); added = true;
+        if (fold() <= threshold + 1e-12) break;
+      }
+      if (!added) {
+        // Do not invent a raise or restore a negative-EV call to force MDF.
+        // The audit independently proves whether this is an intrinsic capacity
+        // conflict; avoidable overfolding remains a blocking error there.
+        console.warn(`${label}: exhausted positive-EV call capacity (${fold()} > ${threshold}); audit must classify`);
+        break;
+      }
+    }
+  }
+  for (const opener of seats.slice(0, 5)) {
+    const group = contexts.filter((c: any) : any => c.type === "response" && c.spot.opener === opener);
+    if (!group.length) continue;
+    const risk = openSizeFor(opener) - (blind[opener] ?? 0), reward = 1.5 - (blind[opener] ?? 0);
+    defend(group, risk / (risk + reward), `${opener} open`);
+  }
+  for (const c of contexts.filter((c: any) : any => ["three_bet", "four_bet"].includes(c.type))) {
+    const s = c.spot, bettor = s.three_bettor ?? s.hero;
+    const dead = 1.5 - (blind[bettor] ?? 0) - (blind[s.opener] ?? 0);
+    const risk = c.type === "three_bet" ? s.three_bet_size_bb - (blind[bettor] ?? 0) : s.four_bet_size_bb - openSizeFor(s.opener);
+    const reward = (c.type === "three_bet" ? openSizeFor(s.opener) : s.three_bet_size_bb) + dead;
+    defend([c], risk / (risk + reward), s.id);
+  }
+  // Facing a squeeze: the squeezer auto-profits when opener fold × caller fold
+  // (after the opener folds) exceeds its break-even.
+  for (const c of contexts.filter((c: any) : any => c.type === "squeeze" && c.spot.prior_action === null)) {
+    const partner = contexts.find((d: any) : any => d.type === "squeeze" && d.spot.prior_action === "fold" && d.spot.source_squeeze_id === c.spot.source_squeeze_id);
+    if (partner) defend([c, partner], squeezeFoldThreshold(c.spot), `${c.spot.source_squeeze_id} squeeze`);
+  }
+  for (const c of contexts.filter((c: any) : any => c.type === "cold_four_bet" && c.spot.prior_action === null)) {
+    const partner = contexts.find((d: any) : any => d.type === "cold_four_bet" && d.spot.prior_action === "fold" && d.spot.source_cold_three_bet_id === c.spot.source_cold_three_bet_id);
+    if (partner) defend([c, partner], coldFourBetFoldThreshold(c.spot), `${c.spot.source_cold_three_bet_id} cold4bet`);
+  }
+  // BB facing SB's limp-reraise: SB's reraise auto-profits when BB folds more than its break-even.
+  for (const c of contexts.filter((c: any) : any => c.type === "limp_reraise")) defend([c], limpReraiseFoldThreshold(c.spot), c.spot.id);
+  // SB facing BB's 4bet after its limp-reraise: BB's 4bet auto-profits when SB folds more than its break-even.
+  for (const c of contexts.filter((c: any) : any => c.type === "limp_four_bet")) defend([c], limpFourBetFoldThreshold(c.spot), c.spot.id);
+  return changes;
+}

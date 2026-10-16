@@ -18,7 +18,7 @@ export function continuationDrawTables(ranges: readonly (readonly WeightedCombo[
 
 // One independent proposal, not a redraw of only the collided player.
 export function drawContinuationHoleCards(hero: readonly number[], tables: readonly ContinuationDrawTable[], random: RandomSource) {
-  const used = new Set(hero), villains = [];
+  const used = new Set(hero), villains: HoleCards[] = [];
   for (const table of tables) {
     const target = random() * table.total; let lo = 0, hi = table.range.length - 1;
     while (lo < hi) { const mid = (lo + hi) >> 1; if (table.cumulative[mid] < target) lo = mid + 1; else hi = mid; }
@@ -40,7 +40,7 @@ export function continuationEquity(hand: string, liveRanges: readonly (readonly 
     const hero = mine[accepted % mine.length], deal = drawContinuationHoleCards(hero, tables, random);
     if (!deal) continue;
     const { used, villains } = deal;
-    const board = [];
+    const board: number[] = [];
     while (board.length < 5) { const card = (random() * 52) | 0; if (!used.has(card)) { used.add(card); board.push(card); } }
     const heroScore = evaluate([...hero, ...board]); let best = heroScore, ties = 1;
     for (let i = 0; i < liveRanges.length; i++) {

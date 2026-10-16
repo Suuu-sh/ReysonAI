@@ -70,6 +70,6 @@ export function multiwayMatrixModel(spot: MultiwaySpot): MatrixModel {
       hand: row.hand,
       comboCount: row.hand.length === 2 ? 6 : row.hand.endsWith("s") ? 4 : 12,
       actions: { squeeze: row.squeeze / 100, call: row.call / 100, fold: row.fold / 100 },
-    }])),
+    }] as const)),
   };
 }

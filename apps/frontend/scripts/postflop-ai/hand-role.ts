@@ -1,7 +1,7 @@
 import type { HandFeatures } from "./hand-features.ts";
 export type RoleOptions = { action?: string; equity?: number | null; facingBet?: boolean };
 // The role of a hand in its action (value, semi-bluff, protection, bluff, pot-control), decided from the hand's
-// own features (hand-features.mjs) first and from equity only as a tie-break. Shared by postflop-explanation.ts
+// own features (hand-features.ts) first and from equity only as a tie-break. Shared by postflop-explanation.ts
 // (handRole) and the advanced copy so that every explanation names the same role for the same hand.
 import { featuresFromText } from "./hand-features.ts";
 

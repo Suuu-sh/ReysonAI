@@ -41,7 +41,7 @@ export function scoreProgress(history: AnswerEntry[], windowSize = 10) {
     const top = Math.max(...sample.spot!.actions.map(action => sample.mix[action.key]));
     return sample.mix[sample.action] / top;
   });
-  const series = [];
+  const series: number[] = [];
   let windowSum = 0;
   for (let i = 0; i < scores.length; i++) {
     windowSum += scores[i];
