@@ -4,12 +4,12 @@
   "status": "independently-reviewed",
   "scope": "Source compatibility only; no numerical generation, strategy quality, mathematical, runtime, publication, deployment or delivery acceptance renewed.",
   "baseline_commit": "df2370690e9b3172f2c109f80113b320880f940a",
-  "source_head_sha": "39750bc9d6b37b695c3aee48e5cd5ebfa8a8b64f",
-  "metadata_checkpoint_sha": "2465f694844a15044b42b46f862b3b5148006d8d",
+  "source_head_sha": "ab40b8dd8249234f52554c8c499bc68036956ed0",
+  "metadata_checkpoint_sha": "ab40b8dd8249234f52554c8c499bc68036956ed0",
   "reviewer": "/root/review_api_recovery",
   "requested_model": "gpt-6.1-sol",
   "runtime_model_attestation": "unavailable",
-  "reviewed_at_utc": "2026-10-16T04:11:45.991Z",
+  "reviewed_at_utc": "2026-10-16T04:17:21.945Z",
   "method": {
     "node": "v25.8.1",
     "independent_parser": "7.29.7",
@@ -1001,8 +1001,8 @@
       },
       "current": {
         "path": "apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.ts",
-        "bytes": 18775,
-        "sha256": "25123a7ed712ab156138c9d7755e39846578dee78657f0a06ad87648844ae99e"
+        "bytes": 19276,
+        "sha256": "f6d851d96dd55c3de9bf3d17cb3d13fabad405ee413a028e826947a3d27806c8"
       },
       "classification": "typescript-source-parity"
     },
@@ -2360,17 +2360,27 @@
   "archive_adapter_review": {
     "adapter": {
       "path": "apps/frontend/scripts/postflop-ai/mw3-manifest-source-identity.ts",
-      "bytes": 15601,
-      "sha256": "0519dddf213d746e1867086269640a28bc991b0026d9358bc2b918b4e2b251db"
+      "bytes": 16693,
+      "sha256": "1c2d2b67ce8bde0ea8cc8def8fd68f3c599fd6f251ffd5dbe1d2785f14587f3b"
     },
     "inventory": {
       "path": "configs/source-identity-mw3-typescript-archive.json",
       "bytes": 188484,
-      "sha256": "b34abd3b59408bb1679a252ed15389925ccb4f0e386feb7590aec56cee4345e3"
+      "sha256": "5f2e7579a1dc822b839ee1323df02c82b88f4a52e25bd3e763b2dae307197f5d"
     },
     "findings": 0,
     "semantics": "Fail-closed approval and exact complete inventory validation, bounded nonsymlink reads, ordered unique old/current paths, exact current source SHA/bytes, unchanged original recipes, six extra source pins, exact sixteen accepted manifest/receipt/archive/artifact identities, closed ten extra paths. Review SHA is source provenance rather than whole-HEAD equality. Historical Git-tree verification still uses original source records. No archive, manifest, original acceptance receipt or source fingerprint is rewritten.",
-    "tests": "Author separately reported synthetic13/13 and scripts/tests TS projects passing. Reviewer inspected test cases and did not duplicate successful tests."
+    "tests": "Author separately reported synthetic13/13 and scripts/tests TS projects passing. Reviewer inspected test cases and did not duplicate successful tests.",
+    "restore_split_renewal": {
+      "source_head_sha": "ab40b8dd8249234f52554c8c499bc68036956ed0",
+      "source_files": [
+        "apps/frontend/scripts/postflop-ai/mw3-manifest-source-identity.ts",
+        "apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.ts"
+      ],
+      "scope": "Historical manifest sources and unchanged inputs remain checked against original Git tree. Separately named currentSources are the approved152 current records plus six pinned extras and exact four helper/inventory/review/evidence records, checked against committed current Git tree and rehashed from worktree at both global preflight and restoration. Original immutable manifest/receipt/archive/artifact records remain unchanged. No current-source provenance guard was removed.",
+      "regression_evidence": "Author separately reported 19/19 focused restore tests and script/test TS checks passing, including historical/current source split and dirty rollback rejection. Reviewer read delta/test; did not duplicate successful tests.",
+      "findings": 0
+    }
   },
   "canonical_graph_review": {
     "stage2_source_count": 204,
@@ -2379,8 +2389,8 @@
     "counts": {
       "exact-byte-identity": 139,
       "configuration-or-evidence-review-required": 5,
-      "exact-executable-ast-parity": 88,
-      "semantic-amendment-requires-independent-review": 27,
+      "exact-executable-ast-parity": 87,
+      "semantic-amendment-requires-independent-review": 28,
       "new-source-requires-independent-review": 3
     },
     "records": [
@@ -4223,8 +4233,8 @@
       {
         "current": {
           "path": "apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.ts",
-          "bytes": 18775,
-          "sha256": "25123a7ed712ab156138c9d7755e39846578dee78657f0a06ad87648844ae99e"
+          "bytes": 19276,
+          "sha256": "f6d851d96dd55c3de9bf3d17cb3d13fabad405ee413a028e826947a3d27806c8"
         },
         "previous": {
           "path": "apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.mjs",
@@ -4232,8 +4242,9 @@
           "sha256": "a67b0d6ebae4bcbce1e023cbebfac1ade4b530c92474d5bfb8c9dc1e2268d9cb"
         },
         "previous_executable_ast_sha256": "5cd463566c21d29a483fa4f0ff695830106ee3c447a954fed60752e41be0a484",
-        "current_executable_ast_sha256": "5cd463566c21d29a483fa4f0ff695830106ee3c447a954fed60752e41be0a484",
-        "classification": "exact-executable-ast-parity"
+        "current_executable_ast_sha256": "89d35e6a1eb3274d140af24adf65d0787e3d52d583e04d49c9b3b76f1c44e6a6",
+        "classification": "semantic-amendment-requires-independent-review",
+        "independent_review": "Explicit dual-provenance restore split: retain original source_tree and historical sources; require approved exact current source/ten-extra pins against current committed Git tree and worktree, with unchanged inputs checked against both contexts. Global preflight/spot restoration use currentSources, original registry/receipt/artifact approvals remain enforced. Exported default synthetic dual-tree assertion retains prior behavior. No numerical or publication approval created."
       },
       {
         "current": {
@@ -6057,5 +6068,13 @@
     "Archive compressed payload execution/readback, full final-head CI and browser/product verification remain separate validation. Archive LFS identity was checked against immutable manifests; full payload validation is not claimed by this review.",
     "Broader peripheral tests/reproduction harness rewrites are not blanket-approved as strategy evidence."
   ],
-  "findings": 0
+  "findings": 0,
+  "source_review_history": [
+    {
+      "source_head_sha": "39750bc9d6b37b695c3aee48e5cd5ebfa8a8b64f",
+      "evidence_sha256": "b25ce802ae221c26e2a9bef3e682a5177c082723d5e559f75b205d6d7a80aff5",
+      "review_sha256": "e03dc6af4cd5a1330572211e55d9a9be4faeee3b3fbd48d5c197629b113692c4",
+      "scope": "Prior complete canonical/source-compatibility review, superseded only by the narrow restore source-tree split below."
+    }
+  ]
 }
