@@ -128,7 +128,7 @@ function SubscriptionTab() {
       </div>
       <span className="account-pill success">{t("利用中", "Active")}</span>
     </section>
-    <h3 className="account-section-title">{t("プランを比較", "Compare plans")}</h3>
+    <h2 className="account-section-title">{t("プランを比較", "Compare plans")}</h2>
     <div className="account-plans">
       {pricing.plans.map((plan, index) => {
         const current = index === 0;
