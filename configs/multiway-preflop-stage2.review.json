@@ -11305,16 +11305,16 @@
     },
     {
       "path": "scripts/ci/deployment-scope.test.ts",
-      "bytes": 42774,
-      "sha256": "f6b306c05aa3f9b51650588913d8a4a10aa5a58ab95085a2cdb5b2da79fa241f"
+      "bytes": 42814,
+      "sha256": "840336b3f99219b8441e36f9a82181b9d1aade85ebb7b05d4e84d4352c01e065"
     },
     {
       "path": "scripts/ci/deployment-scope.ts",
-      "bytes": 33217,
-      "sha256": "1e5473e1d96b1c317aa46fa0d771aa2fb1ca8ee2f40066c9236d4a92b22bdc1c"
+      "bytes": 33296,
+      "sha256": "991c219917fb4b05ef6553b62e6006f4e03bfa06099f2331d4f522f71758f34a"
     }
   ],
-  "content_sha256": "cf8ef891d2ad2d74a15d5b068fe12b9c497940c4db752d25a60e3d7402cf363b",
+  "content_sha256": "0aa89d05a65a0ce39ddd5dba838ad48bb231e2b22101a3238e9bc5d02dac8510",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -11598,5 +11598,53 @@
       "added": 67,
       "removed": 61
     }
+  },
+  "independent_ci_typescript_annotation_review": {
+    "reviewer": "Independent source-compatibility reviewer /root/review_api_recovery",
+    "requested_model": "gpt-6.1-sol",
+    "runtime_model_attestation": "unavailable",
+    "reviewed_at_utc": "2026-10-16T04:44:58.599Z",
+    "base_sha": "155dac792639208d6d64ac9644560f77ef24c8ba",
+    "source_head_sha": "7502859e17e62ce92ad251a183cfc87383f63999",
+    "scope": "Only explicit erased callback parameter annotations in two canonical-bound CI scope files. No runtime, lineage/recovery, numerical, strategy, generation, archive, publication or deployment acceptance change.",
+    "findings": 0,
+    "changed_sources": [
+      {
+        "path": "scripts/ci/deployment-scope.ts",
+        "before": {
+          "path": "scripts/ci/deployment-scope.ts",
+          "bytes": 33217,
+          "sha256": "1e5473e1d96b1c317aa46fa0d771aa2fb1ca8ee2f40066c9236d4a92b22bdc1c"
+        },
+        "after": {
+          "path": "scripts/ci/deployment-scope.ts",
+          "bytes": 33296,
+          "sha256": "991c219917fb4b05ef6553b62e6006f4e03bfa06099f2331d4f522f71758f34a"
+        },
+        "executable_ast_sha256": "81e333a46ddc45997840c811c6a9afdbfbd9d7d2303f07c34e55d85be0f7d87c",
+        "parity": "exact-native-type-erased-executable-AST"
+      },
+      {
+        "path": "scripts/ci/deployment-scope.test.ts",
+        "before": {
+          "path": "scripts/ci/deployment-scope.test.ts",
+          "bytes": 42774,
+          "sha256": "f6b306c05aa3f9b51650588913d8a4a10aa5a58ab95085a2cdb5b2da79fa241f"
+        },
+        "after": {
+          "path": "scripts/ci/deployment-scope.test.ts",
+          "bytes": 42814,
+          "sha256": "840336b3f99219b8441e36f9a82181b9d1aade85ebb7b05d4e84d4352c01e065"
+        },
+        "executable_ast_sha256": "87459411f5ca9c48c65b5984fd61f4b66f8be8a94a6a40fe4f0c423e62786bae",
+        "parity": "exact-native-type-erased-executable-AST"
+      }
+    ],
+    "method": "Independently stripped both source revisions with native node:module stripTypeScriptTypes(mode=strip), parsed with separately installed Babel parser, removed only source-location/comment metadata, and required complete executable AST equality. No path/string/guard/formula normalization.",
+    "author_validation": "Author separately reported npm --prefix apps/frontend run typecheck:repository passing and37/37 deployment-scope tests. Reviewer inspected exact delta and did not duplicate successful checks.",
+    "archive_proof_boundary": "Both CI paths lie outside the152-row accepted MW3 source inventory. Existing archive source approval/evidence/inventory bytes remain untouched. Prior successful16-pair/112-file/235515283-byte actual archive restore is not rerun or represented as a new final-head archive test.",
+    "preserved": "All existing receipt fields except exact sources/content_sha256 retained verbatim, including every numerical artifact/archive/fingerprint/count and original review/earlier source-only amendment.",
+    "prior_content_sha256": "cf8ef891d2ad2d74a15d5b068fe12b9c497940c4db752d25a60e3d7402cf363b",
+    "current_content_sha256": "0aa89d05a65a0ce39ddd5dba838ad48bb231e2b22101a3238e9bc5d02dac8510"
   }
 }
