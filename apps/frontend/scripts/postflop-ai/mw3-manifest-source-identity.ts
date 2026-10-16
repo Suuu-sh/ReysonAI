@@ -129,7 +129,21 @@ function approvedArchiveSources(): any {
     }
     acceptedManifests.set(record.spot, record);
   }
-  return { byHistorical, byCurrent, archiveRecipeSources, acceptedManifests };
+  const currentSourceRecords = [...inventory.rows.map((row: any) => row.current), ...extras,
+    { path: INVENTORY, bytes: inventoryBytes.length, sha256: digest(inventoryBytes) },
+    { path: REVIEW, bytes: reviewBytes.length, sha256: digest(reviewBytes) },
+    { path: EVIDENCE, bytes: evidenceBytes.length, sha256: digest(evidenceBytes) },
+    { path: ADAPTER, bytes: adapterBytes.length, sha256: digest(adapterBytes) }]
+    .sort((a: any, b: any) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0);
+  if (new Set(currentSourceRecords.map((row: any) => row.path)).size !== currentSourceRecords.length) fail('duplicate current tree source pin');
+  return { byHistorical, byCurrent, archiveRecipeSources, acceptedManifests, currentSourceRecords };
+}
+
+// Exact current bytes for the committed-tree guard in the accepted restore
+// verifier. Historical manifest records remain separately bound to their
+// original source tree; these pins prevent worktree-only source substitution.
+export function mw3ApprovedCurrentSourceRecords(): { path: string; bytes: number; sha256: string }[] {
+  return approvedArchiveSources().currentSourceRecords.map((row: any) => ({ ...row }));
 }
 
 // Returns historical source bytes keyed by exact old recipe paths, but only
