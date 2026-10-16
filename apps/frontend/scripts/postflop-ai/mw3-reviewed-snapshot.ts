@@ -15,6 +15,7 @@ import { MW3_ARTIFACT_PREFIX, MW3_ARCHIVE_LIMITS, MW3_REPORT_NAMES, assertMw3Arc
 export const MW3_REPOSITORY = fileURLToPath(new URL('../../../../', import.meta.url));
 const FRONTEND = 'apps/frontend/';
 import { mw3CompatibilityIdentity, MW3_CURRENT_IDENTITY_PATHS, MW3_COMPATIBILITY_SOURCE_PATHS } from './mw3-source-identity.ts';
+import { assertMw3AcceptedArchive, assertMw3AcceptedArtifactBytes, mw3ArchivedRecipeSources, verifyMw3ArchivedSourceInventory } from './mw3-manifest-source-identity.ts';
 const inputPaths = ['opening-ranges', 'preflop-ranges', 'multiway-responses'].map((name: any) : any => `${FRONTEND}src/estimated/${name}.json`).sort();
 const gateFiles = ['mw3-audit.ts', 'mw3-simulation.ts', 'mw3-simulation-report.ts', 'flop-isomorphism.ts', '../data/postflop-ai-pilot.json'];
 const json = (body?: any, label?: any) : any => { try { return JSON.parse(body.toString('utf8')); } catch { throw new Error(`Malformed saved Mw3 JSON: ${label}`); } };
@@ -65,6 +66,13 @@ export function sourcePathsFor(identity?: any) : any {
     'mw3-reviewed-archive.ts', 'mw3-reviewed-snapshot.ts', 'mw3-reviewed-delivery.ts', 'mw3-reviewed-restore.ts', 'mw3-snapshot-cli.ts', 'mw3-draft-pins.ts', 'mw3-acceptance-evidence.ts', 'mw3-browser-inputs.ts', 'mw3-transport.ts', 'mw3-delivery.ts'];
   roots.forEach((name: any) : any => visit(relative(MW3_REPOSITORY, resolve(MW3_REPOSITORY, FRONTEND, 'scripts/postflop-ai', name))));
   identity.sourceFiles.forEach((path: any) : any => visit(FRONTEND + path));
+  // These files are read by the archive compatibility verifier rather than
+  // static imports, so bind their exact current bytes explicitly.
+  ['configs/source-identity-mw3-typescript-archive.review.json', 'apps/frontend/docs/mw3-source-identity/typescript-archive-sources-parity.json',
+    // Retain the original identity inventory/review bytes in the graph even
+    // though the active TypeScript overlay has its own filenames.
+    `${FRONTEND}scripts/postflop-ai/mw3-source-identity-pairs.json`, 'configs/source-identity-mw3.review.json']
+    .forEach((path: any) : any => visit(path));
   // Protect dedicated delivery/runtime boundaries. General application dispatch
   // is covered by mw3-index.test.ts, rather than binding unrelated backend UI
   // and product changes into every saved numerical approval.
@@ -112,16 +120,44 @@ export function collectMw3Snapshot(spotId?: any) : any {
   decodeMw3Archive(compressed, manifest);
   return { manifest, manifestBytes: jsonBytes(manifest), compressed, files, ...checked };
 }
+
+export function collectMw3AcceptedSnapshot(spotId?: any) : any {
+  const inputs = loadMw3Inputs(spotId), stem = `artifacts/postflop/mw3-${inputs.spot.slug}`;
+  // Preservation collection returns only an exact accepted snapshot. It does
+  // not rebuild a manifest, rebind historical sources, or authorize new data.
+  return verifyMw3Snapshot(readSafeFile(MW3_REPOSITORY, `${stem}.manifest.json`, MW3_ARCHIVE_LIMITS.manifest),
+    readSafeFile(MW3_REPOSITORY, `${stem}.tar.gz`, MW3_ARCHIVE_LIMITS.compressed));
+}
+
+function archivedMw3ArchiveIdentity(spotId: string, manifestBytes: Buffer): any {
+  assertMw3AcceptedArchive(spotId, manifestBytes);
+  const identity = currentMw3ArchiveIdentity(spotId), archivedSources = mw3ArchivedRecipeSources(spotId, manifestBytes);
+  const isPilot = spotId === MW3_PILOT_AUTHORSHIP.spotId;
+  const recipeSha256 = isPilot
+    ? sha256(Buffer.from(archivedSources.get(`${FRONTEND}scripts/data/mw3-co-btn-bb-authored.mjs`) ?? '', 'utf8'))
+    : mw3Sha(Object.fromEntries(identity.author.sourceFiles.map((path: string) => {
+      const fullPath = `${FRONTEND}${path}`, historicalPath = fullPath.replace(/\.(?:mjs|js|ts)$/, match => match === '.ts' ? '.mjs' : match);
+      const body = archivedSources.get(historicalPath);
+      return [path.replace(/\.(?:mjs|js|ts)$/, match => match === '.ts' ? '.mjs' : match), body ?? readSafeFile(MW3_REPOSITORY, fullPath).toString('utf8')];
+    })));
+  const suffix = `v${identity.author.version}-${identity.inputs.fingerprint.slice(0, 12)}-${identity.implementationHash.slice(0, 12)}-${identity.verificationHash.slice(0, 12)}`;
+  const gateDirectory = isPilot ? `${MW3_ARTIFACT_PREFIX}pilot-gate/${suffix}`
+    : `${MW3_ARTIFACT_PREFIX}gates/${identity.inputs.spot.slug}/${suffix}-${recipeSha256.slice(0, 12)}`;
+  return { ...identity, recipeSha256, gateDirectory };
+}
 export function verifyMw3Snapshot(manifestBytes?: any, compressed?: any) : any {
   if (!Buffer.isBuffer(manifestBytes) || manifestBytes.length > MW3_ARCHIVE_LIMITS.manifest) throw new Error('Oversized/missing Mw3 manifest');
-  const manifest = assertMw3ArchiveManifest(json(manifestBytes, 'manifest')), files = decodeMw3Archive(compressed, manifest), identity = currentMw3ArchiveIdentity(manifest.spot.id);
+  const manifest = assertMw3ArchiveManifest(json(manifestBytes, 'manifest'));
+  assertMw3AcceptedArchive(manifest.spot.id, manifestBytes);
+  const files = decodeMw3Archive(compressed, manifest);
+  const identity = archivedMw3ArchiveIdentity(manifest.spot.id, manifestBytes);
+  assertMw3AcceptedArtifactBytes(manifest.spot.id, files);
   if (manifest.spot.source_hash !== identity.inputs.fingerprint || manifest.spot.implementation_hash !== identity.implementationHash ||
       manifest.spot.verification_hash !== identity.verificationHash || manifest.spot.recipe_sha256 !== identity.recipeSha256 ||
       manifest.spot.gate_directory !== identity.gateDirectory || manifest.spot.slug !== identity.inputs.spot.slug || manifest.spot.author_version !== identity.author.version) throw new Error('Stale Mw3 snapshot identity');
-  for (const [records, paths] of [[manifest.sources, sourcePathsFor(identity)], [manifest.inputs, inputPaths]]) {
-    if (JSON.stringify(records.map((row: any) : any => row.path)) !== JSON.stringify(paths)) throw new Error('Mw3 source/input dependency inventory differs');
-    for (const row of records) { const current = fileRecord(MW3_REPOSITORY, row.path); if (current.bytes !== row.bytes || current.sha256 !== row.sha256) throw new Error(`Mw3 source/input bytes changed: ${row.path}`); }
-  }
+  verifyMw3ArchivedSourceInventory(sourcePathsFor(identity), manifest.sources);
+  if (JSON.stringify(manifest.inputs.map((row: any) : any => row.path)) !== JSON.stringify(inputPaths)) throw new Error('Mw3 source/input dependency inventory differs');
+  for (const row of manifest.inputs) { const current = fileRecord(MW3_REPOSITORY, row.path); if (current.bytes !== row.bytes || current.sha256 !== row.sha256) throw new Error(`Mw3 source/input bytes changed: ${row.path}`); }
   verifyMw3SourceTree(MW3_REPOSITORY, manifest.source_tree, [...manifest.sources, ...manifest.inputs]);
   return { manifest, manifestBytes, compressed, files, ...verifyBodies(identity, manifest.spot, files) };
 }

@@ -72,6 +72,30 @@ function jobsFetcher(byRunId?: any): any {
   };
 }
 
+function readinessFailureSteps(): any[] {
+  const completed = 'completed';
+  return [
+    ['Set up job', 'success'], ['Validate deployment secrets', 'success'], ['Check out repository', 'success'],
+    ['Prepare deployment log directory', 'success'], ['Set up Node.js', 'success'], ['Install dependencies', 'success'],
+    ['Install MCP runtime dependencies for the composed API Worker', 'skipped'],
+    ['Restore exact reviewed Git LFS payload', 'skipped'], ["Fetch this run's validated delivery SQL", 'skipped'],
+    ['Recheck delivery against this exact checkout', 'skipped'],
+    ['Import exact reviewed MW3 data and require full D1 readback', 'skipped'],
+    ['Apply exact ranked schema', 'skipped'], ['Apply exact FastFold schema', 'skipped'],
+    ['Apply exact six-human ranked schema', 'skipped'], ['Apply exact postflop profile schema', 'skipped'],
+    ['Deploy ranked API before enabling the client', 'skipped'],
+    ['Require live authoritative ranked readiness', 'failure'],
+    ['Require live FastFold API and compatible published data before client', 'skipped'],
+    ['Build', 'skipped'], ['Deploy Worker', 'skipped'], ['Import reviewed preflop snapshot into D1', 'skipped'],
+    ['Require live FastFold release gate after reviewed import', 'skipped'],
+    ['Publish postflop policies into D1', 'skipped'],
+    ['Require live MW3 payloads and actual consumer source identities', 'skipped'],
+    ['Retain MW3 delivery plan, recovery reference and exact outcomes', 'skipped'],
+    ['Retain preflop recovery reference and import outcome', 'skipped'],
+    ['Post Set up Node.js', 'skipped'], ['Post Check out repository', 'success'], ['Complete job', 'success'],
+  ].map(([name, conclusion]) => ({ name, conclusion, status: completed }));
+}
+
 function baseFiles(): any {
   return {
     'apps/frontend/src/account/AccountPage.tsx': 'export const AccountPage = 1;\n',
@@ -185,6 +209,94 @@ test('unknown lineage runs full verification but blocks every automatic producti
   assert.equal(plan.publish_postflop, false);
   assert.equal(plan.import_mw3, false);
   assert.equal(plan.deploy_api, false);
+});
+
+test('skips only a first-attempt failure at the named read-only readiness gate after known non-writing steps', async (t?: any): Promise<any> => {
+  const root = repository(t);
+  const previous = commit(root, baseFiles());
+  const failed = workflowRun({ id: 101, head_sha: 'b'.repeat(40), conclusion: 'failure', updated_at: '2026-10-16T00:00:00Z' });
+  const success = workflowRun({ id: 100, head_sha: previous, updated_at: '2026-10-15T00:00:00Z' });
+  const fetcher = async (url: string) => {
+    if (/\/actions\/workflows\/deploy-worker\.yml\/runs\?branch=main/.test(url)) {
+      return { ok: true, json: async () => ({ workflow_runs: [failed, success] }) };
+    }
+    const id = /\/actions\/runs\/(\d+)\/jobs\?/.exec(url)?.[1];
+    assert.ok(id);
+    if (id === '101') return { ok: true, json: async () => ({ total_count: 3, jobs: [
+      { name: 'Classify reviewed code and data inputs', status: 'completed', conclusion: 'success' },
+      { name: 'Verify reviewed preflop snapshot', status: 'completed', conclusion: 'success' },
+      { name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'failure', steps: readinessFailureSteps() },
+    ] }) };
+    return { ok: true, json: async () => ({ jobs: [{
+      name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'success',
+    }] }) };
+  };
+  const baseline = await latestDeploymentRun({ repository: 'Suuu-sh/ReysonAI', currentRunId: '102', fetcher });
+  assert.equal(baseline.id, 100);
+});
+
+test('classifies human avatar migration as isolated additive schema, not a broad data reimport', async (t?: any): Promise<any> => {
+  const root = repository(t);
+  const base = commit(root, { ...baseFiles(), 'apps/backend/migrations/0013_human_rank_avatar.sql': 'ALTER TABLE human_rank_players ADD COLUMN avatar TEXT NOT NULL DEFAULT \'person\';\n' });
+  const head = commit(root, { 'apps/backend/migrations/0013_human_rank_avatar.sql': 'ALTER TABLE human_rank_players ADD COLUMN avatar TEXT NOT NULL DEFAULT \'person\' CHECK(length(avatar)>0);\n' });
+  const plan = await classifyEvent({
+    repoRoot: root, eventName: 'push', ref: 'refs/heads/main', sha: head,
+    repository: 'Suuu-sh/ReysonAI', runId: '200', fetcher: successFetcher(workflowRun({ head_sha: base })),
+  });
+  assert.equal(plan.apply_human_avatar_schema, true);
+  assert.equal(plan.data_release, true);
+  assert.equal(plan.verify_backend, true);
+  assert.equal(plan.needs_frontend_deps, false);
+  assert.equal(plan.import_preflop, false);
+  assert.equal(plan.publish_postflop, false);
+  assert.equal(plan.import_mw3, false);
+});
+
+test('does not skip readiness failures if any production deploy job ran or the failure step differs', async (): Promise<any> => {
+  const failed = workflowRun({ id: 101, head_sha: 'b'.repeat(40), conclusion: 'failure', updated_at: '2026-10-16T00:00:00Z' });
+  const complete = readinessFailureSteps();
+  const missingMutationEvidence = complete.filter(step => step.name !== 'Import reviewed preflop snapshot into D1');
+  const duplicateStep = [...complete, { ...complete[0] }];
+  const inProgressStep = complete.map(step => step.name === 'Build' ? { ...step, status: 'in_progress' } : step);
+  const mutatingStepRan = complete.map(step => step.name === 'Apply exact six-human ranked schema' ? { ...step, conclusion: 'success' } : step);
+  for (const steps of [
+    complete.map(step => step.name === 'Require live authoritative ranked readiness' ? { ...step, name: 'Other failed gate' } : step),
+    mutatingStepRan,
+    complete.map(step => step.name === 'Require live authoritative ranked readiness' ? { ...step, name: 'Require live authoritative ranked readiness', status: 'in_progress' } : step),
+    missingMutationEvidence,
+    duplicateStep,
+    inProgressStep,
+  ]) {
+    const fetcher = async (url: string) => {
+      if (/\/actions\/workflows\/deploy-worker\.yml\/runs\?branch=main/.test(url)) return { ok: true, json: async () => ({ workflow_runs: [failed] }) };
+      return { ok: true, json: async () => ({ total_count: 3, jobs: [
+        { name: 'Classify reviewed code and data inputs', status: 'completed', conclusion: 'success' },
+        { name: 'Verify reviewed preflop snapshot', status: 'completed', conclusion: 'success' },
+        { name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'failure', steps },
+      ] }) };
+    };
+    await assert.rejects(() => latestDeploymentRun({ repository: 'Suuu-sh/ReysonAI', currentRunId: '102', fetcher }), /production state may be partial|production deployment requires manual recovery/);
+  }
+  const truncatedJobsFetcher = async (url: string) => {
+    if (/\/actions\/workflows\/deploy-worker\.yml\/runs\?branch=main/.test(url)) return { ok: true, json: async () => ({ workflow_runs: [failed] }) };
+    return { ok: true, json: async () => ({ total_count: 4, jobs: [
+      { name: 'Classify reviewed code and data inputs', status: 'completed', conclusion: 'success' },
+      { name: 'Verify reviewed preflop snapshot', status: 'completed', conclusion: 'success' },
+      { name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'failure', steps: readinessFailureSteps() },
+    ] }) };
+  };
+  await assert.rejects(() => latestDeploymentRun({ repository: 'Suuu-sh/ReysonAI', currentRunId: '102', fetcher: truncatedJobsFetcher }), /production state may be partial|production deployment requires manual recovery/);
+  for (const total_count of [null, '3', -1, 3.5]) {
+    const malformedCountFetcher = async (url: string) => {
+      if (/\/actions\/workflows\/deploy-worker\.yml\/runs\?branch=main/.test(url)) return { ok: true, json: async () => ({ workflow_runs: [failed] }) };
+      return { ok: true, json: async () => ({ total_count, jobs: [
+        { name: 'Classify reviewed code and data inputs', status: 'completed', conclusion: 'success' },
+        { name: 'Verify reviewed preflop snapshot', status: 'completed', conclusion: 'success' },
+        { name: 'Deploy authoritative ranked API, compatible client and reviewed preflop data', status: 'completed', conclusion: 'failure', steps: readinessFailureSteps() },
+      ] }) };
+    };
+    await assert.rejects(() => latestDeploymentRun({ repository: 'Suuu-sh/ReysonAI', currentRunId: '102', fetcher: malformedCountFetcher }), /production state may be partial|production deployment requires manual recovery/);
+  }
 });
 
 test('manual force input is the only recovery path when lineage cannot be proved', async (t?: any): Promise<any> => {

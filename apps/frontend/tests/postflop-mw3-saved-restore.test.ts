@@ -210,6 +210,18 @@ test('current committed source drift cannot be concealed by dirty historical rol
   verifyMw3SourceTree(root, historical, records);
   assert.throws(() => assertMw3SavedSourceTrees(root, historical, current, records), /bytes differ/);
 }));
+test('accepted TypeScript archive provenance keeps historical and approved current source pins separate', () => temporary(root => {
+  const path = 'source.ts', historicalBytes = Buffer.from('export const value = 1;\n'), currentBytes = Buffer.from('export const value = 2;\n');
+  write(root, path, historicalBytes); commit(root); const historical = currentMw3SourceTree(root);
+  write(root, path, currentBytes); commit(root); const current = currentMw3SourceTree(root);
+  const historicalRecords = [record(path, historicalBytes)], currentRecords = [record(path, currentBytes)];
+  assert.throws(() => assertMw3SavedSourceTrees(root, historical, current, historicalRecords), /bytes differ/);
+  assert.doesNotThrow(() => assertMw3SavedSourceTrees(root, historical, current, historicalRecords, currentRecords));
+  write(root, path, historicalBytes); // A dirty rollback cannot hide the committed current pin.
+  assert.throws(() => assertMw3SavedSourceTrees(root, historical, current, historicalRecords, [record(path, historicalBytes)]), /bytes differ/);
+  assert.equal(readSafeFile(root, path, historicalBytes.length).equals(historicalBytes), true);
+  assert.throws(() => assertMw3CommittedFile(root, path, readSafeFile(root, path)), /differs/);
+}));
 test('strict LFS archives reject identical direct blobs and noncanonical or mismatched pointers', () => temporary(root => {
   const bytes = Buffer.from('synthetic compressed bytes'), pointer = `version https://git-lfs.github.com/spec/v1\noid sha256:${sha256(bytes)}\nsize ${bytes.length}\n`;
   write(root, 'direct.tar.gz', bytes);
@@ -237,6 +249,19 @@ test('compact spot ledgers never retain policies/reports/tar/raw receipt/archive
   const source = readFileSync(new URL('../scripts/postflop-ai/mw3-reviewed-restore.ts', import.meta.url), 'utf8');
   assert.doesNotMatch(source, /snapshots\.push|captures\.push/);
   assert.match(source, /finally \{ clearMw3ContractCache\(\); \}/);
+});
+test('compact saved ledger keeps current source pins separate from immutable historical records', async () => {
+  const fixture = await toySnapshot(), currentSources = [record('apps/frontend/scripts/source.ts', Buffer.from('current'))];
+  const ledger = compactMw3SavedSpot({ slug: 'synthetic-hj-btn-bb-mw3', archive: fixture.snapshot.manifest.archive.path,
+    manifest: fixture.snapshot.manifest.archive.path.replace(/\.tar\.gz$/, '.manifest.json'), receipt: 'configs/mw3-synthetic.review.json' },
+    fixture.snapshot, [record('archive.tar.gz', fixture.snapshot.compressed), record('manifest.json', fixture.snapshot.manifestBytes),
+      record('receipt.json', jsonBytes(fixture.receipt))].sort((a, b) => a.path < b.path ? -1 : 1), fixture.pins, currentSources);
+  assert.deepEqual(ledger.sources, fixture.snapshot.manifest.sources);
+  assert.deepEqual(ledger.currentSources, currentSources);
+  assert.throws(() => compactMw3SavedSpot({ slug: 'synthetic-hj-btn-bb-mw3', archive: fixture.snapshot.manifest.archive.path,
+    manifest: fixture.snapshot.manifest.archive.path.replace(/\.tar\.gz$/, '.manifest.json'), receipt: 'configs/mw3-synthetic.review.json' },
+    fixture.snapshot, [record('archive.tar.gz', fixture.snapshot.compressed), record('manifest.json', fixture.snapshot.manifestBytes),
+      record('receipt.json', jsonBytes(fixture.receipt))].sort((a, b) => a.path < b.path ? -1 : 1), fixture.pins, [...currentSources, currentSources[0]]), /duplicate|unsorted/);
 });
 
 test('contract cache release preserves returned witnesses and identical recomputation', () => {

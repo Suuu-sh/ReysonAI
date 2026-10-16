@@ -33,6 +33,7 @@ on:
       - 'apps/backend/migrations/0010_fastfold.sql'
       - 'apps/backend/migrations/0011_human_ranked.sql'
       - 'apps/backend/migrations/0012_postflop_profile_policies.sql'
+      - 'apps/backend/migrations/0013_human_rank_avatar.sql'
       - 'apps/backend/scripts/**'
       - 'apps/shared/**'
       - 'configs/**'
@@ -93,6 +94,7 @@ jobs:
       apply_ranked_schema: ${{ steps.scope.outputs.apply_ranked_schema }}
       apply_fastfold_schema: ${{ steps.scope.outputs.apply_fastfold_schema }}
       apply_human_schema: ${{ steps.scope.outputs.apply_human_schema }}
+      apply_human_avatar_schema: ${{ steps.scope.outputs.apply_human_avatar_schema }}
       apply_profile_schema: ${{ steps.scope.outputs.apply_profile_schema }}
       apply_mw3_schema: ${{ steps.scope.outputs.apply_mw3_schema }}
       mw3_live: ${{ steps.scope.outputs.mw3_live }}
@@ -149,6 +151,7 @@ jobs:
       apply_ranked_schema: ${{ needs.scope.outputs.apply_ranked_schema }}
       apply_fastfold_schema: ${{ needs.scope.outputs.apply_fastfold_schema }}
       apply_human_schema: ${{ needs.scope.outputs.apply_human_schema }}
+      apply_human_avatar_schema: ${{ needs.scope.outputs.apply_human_avatar_schema }}
       apply_profile_schema: ${{ needs.scope.outputs.apply_profile_schema }}
       apply_mw3_schema: ${{ needs.scope.outputs.apply_mw3_schema }}
       mw3_live: ${{ needs.scope.outputs.mw3_live }}
@@ -436,6 +439,17 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           WRANGLER_SEND_METRICS: 'false'
         run: npx --yes wrangler@4.147.0 d1 execute reysonai --remote --config wrangler.jsonc --file migrations/0011_human_ranked.sql --yes
+
+      # This is the only reviewed additive avatar change. The helper checks the
+      # existing schema, applies 0013 only when absent, and requires D1 readback.
+      - name: Ensure exact human avatar schema and require D1 readback
+        if: needs.verify.outputs.apply_human_avatar_schema == 'true'
+        working-directory: apps/backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: node scripts/ensure-human-avatar-schema.ts
 
       # Additive profile storage only; never apply all pending migrations.
       - name: Apply exact postflop profile schema

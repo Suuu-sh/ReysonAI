@@ -6,7 +6,7 @@ import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { clearMw3ContractCache } from './mw3-artifacts.ts';
 import { loadMw3Catalog } from './mw3-inputs.ts';
-import { MW3_REPOSITORY, collectMw3Snapshot } from './mw3-reviewed-snapshot.ts';
+import { MW3_REPOSITORY, collectMw3AcceptedSnapshot } from './mw3-reviewed-snapshot.ts';
 import { currentMw3SourceTree } from './mw3-source-tree.ts';
 import { prepareMw3SnapshotDeliveries, mw3DeliveryPins } from './mw3-reviewed-delivery.ts';
 import { MW3_ARTIFACT_PREFIX, MW3_ARCHIVE_LIMITS, readSafeFile, jsonBytes, sha256 } from './mw3-reviewed-archive.ts';
@@ -50,8 +50,9 @@ export async function deriveMw3DraftPins(inventoryPath?: any, inventorySha?: any
     try {
       // Collect verifies saved candidate provenance, every gate, all seven
       // accepted limitations and current committed source closure. No recipe runs.
-      const snapshot = collectMw3Snapshot(spotId);
-      assert.equal(snapshot.manifest.source_tree, tree);
+      const snapshot = collectMw3AcceptedSnapshot(spotId);
+      assert.deepEqual(snapshot.manifestBytes, readSafeFile(MW3_REPOSITORY, snapshot.manifest.archive.path.replace(/\.tar\.gz$/, '.manifest.json'), MW3_ARCHIVE_LIMITS.manifest),
+        'Accepted manifest source tree and historical source records remain byte-identical');
       assert.equal(snapshot.manifest.spot.source_hash, inventory.spots.find((row: any) : any => row.spot === spotId).source);
       for (const artifact of snapshot.manifest.artifacts) {
         const expected: any = records.get(artifact.path); assert.ok(expected && !used.has(artifact.path), 'Exact inventory must account for every saved artifact once');

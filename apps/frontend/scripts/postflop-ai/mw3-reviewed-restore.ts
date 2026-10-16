@@ -7,6 +7,7 @@ import { pathToFileURL } from 'node:url';
 import { clearMw3ContractCache } from './mw3-artifacts.ts';
 import { currentMw3SourceTree, verifyMw3SourceTree } from './mw3-source-tree.ts';
 import { MW3_REPOSITORY, verifyMw3Snapshot } from './mw3-reviewed-snapshot.ts';
+import { mw3ApprovedCurrentSourceRecords } from './mw3-manifest-source-identity.ts';
 import { MW3_ARCHIVE_LIMITS, assertMw3ArchiveManifest, readSafeFile, restoreMw3ArchiveBytes, sha256 } from './mw3-reviewed-archive.ts';
 import { assertRecords, assertSafeFile, safeRelativePath } from './reviewed-postflop-archive.ts';
 import { prepareMw3SnapshotDeliveries, assertMw3IndependentReceipt, mw3DeliveryPins } from './mw3-reviewed-delivery.ts';
@@ -132,9 +133,10 @@ export function assertMw3SavedRegistry(registryBytes?: any, ledgers?: any, accep
 const copyRecord = (row: any) : any => ({ path: row.path, bytes: row.bytes, sha256: row.sha256 });
 // Drop all raw archives/tars, policies, reports, transport parts and receipt
 // objects at the spot boundary. Only whitelisted small identity records escape.
-export function compactMw3SavedSpot(entry?: any, snapshot?: any, savedInputs?: any, pins?: any) : any {
+export function compactMw3SavedSpot(entry?: any, snapshot?: any, savedInputs?: any, pins?: any, currentSources?: any) : any {
   const manifest = assertMw3ArchiveManifest(snapshot.manifest);
   assertRecords(savedInputs, 'saved Mw3 input');
+  if (currentSources) assertRecords(currentSources, 'current Mw3 source');
   if (savedInputs.length !== 3 || !(snapshot.files instanceof Map) || snapshot.files.size !== 7) fail('Incomplete Mw3 saved ledger/file set');
   for (const item of manifest.artifacts) {
     const body = snapshot.files.get(item.path);
@@ -144,11 +146,12 @@ export function compactMw3SavedSpot(entry?: any, snapshot?: any, savedInputs?: a
   return { entry: Object.fromEntries(['slug', 'manifest', 'archive', 'receipt', 'sql'].filter((key: any) : any => Object.hasOwn(entry, key)).map((key: any) : any => [key, entry[key]])),
     spotId: manifest.spot.id, sourceTree: manifest.source_tree,
     savedInputs: savedInputs.map(copyRecord), sources: manifest.sources.map(copyRecord), inputs: manifest.inputs.map(copyRecord),
+    ...(currentSources ? { currentSources: currentSources.map(copyRecord) } : {}),
     artifacts: manifest.artifacts.map(copyRecord), pins: pins.map((pin: any) : any => Object.fromEntries(pinKeys.map((key: any) : any => [key, pin[key]]))) };
 }
-export function assertMw3SavedSourceTrees(root?: any, historicalTree?: any, committedTree?: any, records?: any) : any {
+export function assertMw3SavedSourceTrees(root?: any, historicalTree?: any, committedTree?: any, records?: any, currentRecords?: any) : any {
   verifyMw3SourceTree(root, historicalTree, records);
-  verifyMw3SourceTree(root, committedTree, records);
+  verifyMw3SourceTree(root, committedTree, currentRecords ?? records);
 }
 // Global hash-only preflight still covers the last distinct spot before the
 // first write, without keeping every decoded body or parsed policy in memory.
@@ -189,17 +192,20 @@ async function inspectMw3SavedSpot(root?: any, entry?: any, committedTree?: any,
       .map(([path, bytes, lfs]: any) : any => assertMw3CommittedFile(root, path, bytes, { lfs, tree: committedTree })).sort((a?: any, b?: any) : any => a.path < b.path ? -1 : 1);
     const snapshot = verifyMw3Snapshot(manifestBytes, compressed);
     if (snapshot.manifest.spot.slug !== entry.slug || snapshot.manifest.archive.path !== entry.archive) fail('Saved Mw3 inventory identity differs');
-    assertMw3SavedSourceTrees(root, snapshot.manifest.source_tree, committedTree, [...snapshot.manifest.sources, ...snapshot.manifest.inputs]);
+    const historicalRecords = [...snapshot.manifest.sources, ...snapshot.manifest.inputs];
+    const currentSources = mw3ApprovedCurrentSourceRecords();
+    const currentRecords = [...currentSources, ...snapshot.manifest.inputs];
+    assertMw3SavedSourceTrees(root, snapshot.manifest.source_tree, committedTree, historicalRecords, currentRecords);
     let receipt: any;
     try { receipt = JSON.parse(receiptBytes.toString('utf8')); } catch { fail('Malformed saved Mw3 independent receipt'); }
     const deliveries = await prepareMw3SnapshotDeliveries(snapshot);
     assertMw3IndependentReceipt(receipt, snapshot, deliveries);
-    const pins = mw3DeliveryPins(snapshot, deliveries), ledger = compactMw3SavedSpot(entry, snapshot, savedInputs, pins);
+    const pins = mw3DeliveryPins(snapshot, deliveries), ledger = compactMw3SavedSpot(entry, snapshot, savedInputs, pins, currentSources);
     const registrySource = ledger.sources.find((record: any) : any => record.path === MW3_REGISTRY_PATH);
     if (!registrySource || registrySource.bytes !== registryBytes.length || registrySource.sha256 !== sha256(registryBytes)) fail('Saved Mw3 source does not bind the actual shared build registry');
     if (expected && JSON.stringify(ledger) !== JSON.stringify(expected)) fail('Mw3 saved spot changed between verification and restoration');
     if (restore) {
-      for (const record of [...ledger.savedInputs, ...ledger.sources, ...ledger.inputs]) assertPinnedBytes(root, record);
+      for (const record of [...ledger.savedInputs, ...ledger.currentSources, ...ledger.inputs]) assertPinnedBytes(root, record);
       if (currentMw3SourceTree(root) !== committedTree) fail('Mw3 committed input tree changed before restoration');
       return { ledger, restored: restoreMw3ArchiveBytes(root, snapshot.manifest, snapshot.files) };
     }
@@ -220,7 +226,7 @@ export async function verifyMw3SavedInventory({ restore = false }: any = {}) : P
     const { ledger } = await inspectMw3SavedSpot(root, entry, committedTree, registryBytes);
     total += ledger.artifacts.reduce((sum?: any, item?: any) : any => sum + item.bytes, 0);
     if (total > TOTAL_LIMIT) fail('Saved Mw3 inventory exceeds total byte limit');
-    for (const record of [...ledger.sources, ...ledger.inputs]) {
+    for (const record of [...ledger.currentSources, ...ledger.inputs]) {
       const previous = sourceRecords.get(record.path);
       if (previous && JSON.stringify(previous) !== JSON.stringify(record)) fail('Mw3 saved spots disagree on source/input identity');
       sourceRecords.set(record.path, record);

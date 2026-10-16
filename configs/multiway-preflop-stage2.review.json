@@ -10300,8 +10300,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 29062,
-      "sha256": "b5214593c59e8bd150fc9e984834fd638346bfce46057f1258ef63e0960f91bb"
+      "bytes": 29895,
+      "sha256": "1f9e7e19f60de723da2a0790b13d7c77b82365f23490c02166925c39f68d1410"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -10309,14 +10309,14 @@
       "sha256": "75c321e1c269974f8b46337df0391bbfef0928c77697d0f370bb4e0dcc42aff6"
     },
     {
-      "path": "apps/backend/scripts/lib/fastfold-readiness-sources.mjs",
-      "bytes": 1116,
-      "sha256": "af0f5aa46558dc888d545cae6817085cfd5c92c0ad9d3251154d1a357f4cd542"
+      "path": "apps/backend/scripts/lib/fastfold-readiness-sources.ts",
+      "bytes": 1184,
+      "sha256": "0023baf2be829c7d5d988ac3013a937e7bd90d9491fe2947eb1efe392d95be1c"
     },
     {
-      "path": "apps/backend/scripts/verify-fastfold-readiness.mjs",
-      "bytes": 5186,
-      "sha256": "b6cc2c5363cc685e4176c82d38282c37b853203e9e5cee902b3c10c9cdd3e7c7"
+      "path": "apps/backend/scripts/verify-fastfold-readiness.ts",
+      "bytes": 5271,
+      "sha256": "500eb71ae98d6c026818693ef8071c2e75da08f1d90544e727513585efce9f6a"
     },
     {
       "path": "apps/backend/src/account.ts",
@@ -10339,9 +10339,9 @@
       "sha256": "e8f282efa1133d4f589e14ca56fe030354c5fcc30fd5a4de2a3cd208308b432a"
     },
     {
-      "path": "apps/backend/tests/fastfold-release.test.mjs",
-      "bytes": 6918,
-      "sha256": "8c418267eef2988a2cf58b8190fea8e10f6cd131b445a293b13aae9abf24f9bf"
+      "path": "apps/backend/tests/fastfold-release.test.ts",
+      "bytes": 7128,
+      "sha256": "a8086df2985645b8b378404e0808d2eeb1541727a3bab90a40642064d2c71198"
     },
     {
       "path": "apps/backend/wrangler.jsonc",
@@ -10349,34 +10349,39 @@
       "sha256": "7c6895420fedb903b401667f46dc2826b00da388232a0667d49f089b2d379c06"
     },
     {
+      "path": "apps/frontend/docs/mw3-source-identity/typescript-policy-source-parity.json",
+      "bytes": 29423,
+      "sha256": "8612c8b9cf97e3d3fc3217e367334f3cdb2b5f852e7069f071de31a8e7bf0f82"
+    },
+    {
       "path": "apps/frontend/package-lock.json",
-      "bytes": 95311,
-      "sha256": "e7de639e752d167f6f7fa772a36b588ebca8e85d87f78369e72c36cb0237806d"
+      "bytes": 96526,
+      "sha256": "cc90b198daf331c79fcabdd08d7f8d612bb341b98269f2c885341610d26c9826"
     },
     {
       "path": "apps/frontend/package.json",
-      "bytes": 2514,
-      "sha256": "7aa07c287011bd5c2f303680bc6f3fa07203ddb7692ed53b38b8de0907222696"
+      "bytes": 3005,
+      "sha256": "e89008373e2f2679221fe6c1cd489ebe5a021babb8be74290a1453e310d8721d"
     },
     {
-      "path": "apps/frontend/scripts/audit-estimates.mjs",
-      "bytes": 9811,
-      "sha256": "a83fa329de14492b8b2476ccff04fb28f710aa27664f5799687d09d952ab7fdb"
+      "path": "apps/frontend/scripts/audit-estimates.ts",
+      "bytes": 10071,
+      "sha256": "d858dc55e80cafdc182b407b47c753ad4583edc60673531d6badc3503c86a46e"
     },
     {
-      "path": "apps/frontend/scripts/build-continuations.mjs",
-      "bytes": 3339,
-      "sha256": "d67070443611efe50c896cec017a0de3c0dd3087c26f7fab9bfad389751fee30"
+      "path": "apps/frontend/scripts/build-continuations.ts",
+      "bytes": 3380,
+      "sha256": "48cf8d56ddfcec0092eedf513aff17f36f167f28d1ee553291b2a53a39473f6b"
     },
     {
-      "path": "apps/frontend/scripts/build-estimates.mjs",
-      "bytes": 6685,
-      "sha256": "15817c71d6cf51bd4d0454fbfd1755f7ed8fc2435e43a764c58e8d2d4b71d506"
+      "path": "apps/frontend/scripts/build-estimates.ts",
+      "bytes": 6754,
+      "sha256": "f5d3ad5629f2e86922e05ff147447c0df8f3c43f00551ac7d58d1ce740fb2443"
     },
     {
-      "path": "apps/frontend/scripts/build-stage3.mjs",
-      "bytes": 4311,
-      "sha256": "e935e8655e8bd004d85f012da3306849d6159c7cc961df51b518bb86f1499fda"
+      "path": "apps/frontend/scripts/build-stage3.ts",
+      "bytes": 4388,
+      "sha256": "9fd3eb1ed35da0dc188ce4bf94e8cc687a3a722fb28d37893b5abc0c5d5a6e01"
     },
     {
       "path": "apps/frontend/scripts/ci/preflop.wrangler.jsonc",
@@ -10394,9 +10399,9 @@
       "sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491"
     },
     {
-      "path": "apps/frontend/scripts/generate-continuation-responses.mjs",
-      "bytes": 15647,
-      "sha256": "6f1bdff7fc7b9db4e5d3d5a19e6c44c18cdfe9d8a8cc8aaf072aef7b23d3e91e"
+      "path": "apps/frontend/scripts/generate-continuation-responses.ts",
+      "bytes": 16164,
+      "sha256": "db9c87fd70d02088060385dfb4aa20e37e807eafbae254b12fc3396be796b0ee"
     },
     {
       "path": "apps/frontend/scripts/generate-opponent-profiles.py",
@@ -10404,29 +10409,29 @@
       "sha256": "eda5d3a4bcb75a84e9da9646678e440bc6537a84184f0e0a35e1de5a44d9fb9a"
     },
     {
-      "path": "apps/frontend/scripts/generate-stage3-responses.mjs",
-      "bytes": 18497,
-      "sha256": "dca6fe4555a1bac9bf0625b9a8479461a53360b887aaa7871678e1f42beeaf12"
+      "path": "apps/frontend/scripts/generate-stage3-responses.ts",
+      "bytes": 19144,
+      "sha256": "41f85bc3dda5c1b7ef9fc163d5d5d52d643cc96e9b67fc5ce3a150b6c6cc8b1f"
     },
     {
-      "path": "apps/frontend/scripts/import-reviewed-preflop.mjs",
-      "bytes": 4079,
-      "sha256": "8546a916bd81c817a69ca16a6fb3be6d9ad499759c3c9246535924fe6cd299f0"
+      "path": "apps/frontend/scripts/import-reviewed-preflop.ts",
+      "bytes": 4148,
+      "sha256": "0e925baa9463a1771ebe0cd01c792d0b4c51d636d5a27c09fa873d5734d4bad5"
     },
     {
-      "path": "apps/frontend/scripts/lib/all-in-call.mjs",
-      "bytes": 650,
-      "sha256": "0093f8d9667f81ba5aa8ba39a5bf27ec5385d2902263b886eb91d9385f951ea6"
+      "path": "apps/frontend/scripts/lib/all-in-call.ts",
+      "bytes": 660,
+      "sha256": "889b4035df81df5a89d47a5350e4087111cf449096bf98f67d3052c7fddf5cd6"
     },
     {
-      "path": "apps/frontend/scripts/lib/benchmark.mjs",
-      "bytes": 2998,
-      "sha256": "d4c107a5f856b6a600a9c8621e6e3053a8579ffc61a45b2c553072f22ea7eba0"
+      "path": "apps/frontend/scripts/lib/benchmark.ts",
+      "bytes": 3373,
+      "sha256": "909002d7c20235b6705e950f20ed66e4691f82a818adbf8d32ddeea39d96f226"
     },
     {
       "path": "apps/frontend/scripts/lib/continuation-equity.ts",
-      "bytes": 3120,
-      "sha256": "be174e788083ea17dc49eb29c3dcfc88fa2fe1f6cd35c516d15950507e005407"
+      "bytes": 3143,
+      "sha256": "93fb7c7acf3e4c41182dcb63cd2dacd4fec9278452cd8e9048434ed6f8f70a0c"
     },
     {
       "path": "apps/frontend/scripts/lib/continuation-evaluator.ts",
@@ -10434,84 +10439,84 @@
       "sha256": "197b78df3e92fbda4244b3d993e74a37d3ee1fd6735514686bd2d8f9cb6411a4"
     },
     {
-      "path": "apps/frontend/scripts/lib/continuation-profiles.mjs",
-      "bytes": 3986,
-      "sha256": "e9eaec329cdd9eb38ae6914ffc96efb8ed18e8ca28bbc94cfc51b7d3d485e4ee"
+      "path": "apps/frontend/scripts/lib/continuation-profiles.ts",
+      "bytes": 4065,
+      "sha256": "03f88103cbf2c49233fe932e09b92e7d0e2c80cf1210d8df038327fd97c9383b"
     },
     {
-      "path": "apps/frontend/scripts/lib/continuation-publication.mjs",
-      "bytes": 3195,
-      "sha256": "bd2283fe9f72085bb2533081aa6bc46656ef4b5e9146b99947350c97b635e55d"
+      "path": "apps/frontend/scripts/lib/continuation-publication.ts",
+      "bytes": 3317,
+      "sha256": "efd02b2bd183c91e3037dec5024bb143daacaeb78fac4f54225b48a96632271b"
     },
     {
-      "path": "apps/frontend/scripts/lib/continuation-reasons.mjs",
-      "bytes": 13286,
-      "sha256": "b85cee6941dc3f7f02eb9d2e6d7c052d35f81fe26866b4b567c2a5428bd82c69"
+      "path": "apps/frontend/scripts/lib/continuation-reasons.ts",
+      "bytes": 13911,
+      "sha256": "f8824a91d737c0db2e11a491a087ee2eb5bcd5ac0f449124d63d3fc849b8e629"
     },
     {
       "path": "apps/frontend/scripts/lib/equity.ts",
-      "bytes": 8670,
-      "sha256": "f395860a9243f0dc450e51c6ddcc4fe700339a846198b5914ae65bf6a24906c3"
+      "bytes": 8716,
+      "sha256": "06cc2c30c1b9666c4263546039efb28feb4c2005eb2582644eb41a2c9da80363"
     },
     {
-      "path": "apps/frontend/scripts/lib/estimate-diff.mjs",
-      "bytes": 2186,
-      "sha256": "dfa3f62447dff1bc586dd5715c65f3f84f89ca4b8794f2b148ef63f6a20b729e"
+      "path": "apps/frontend/scripts/lib/estimate-diff.ts",
+      "bytes": 2440,
+      "sha256": "c405c1826cb77912667c311c59a3448c4fa813cde97d5bfdbfddca7572b7fb9e"
     },
     {
-      "path": "apps/frontend/scripts/lib/opponent-profile-build.mjs",
-      "bytes": 1258,
-      "sha256": "7e349b57efdce2533382ad3c187c2e011da482fd3d9367d577018a9ea9e7120a"
+      "path": "apps/frontend/scripts/lib/opponent-profile-build.ts",
+      "bytes": 1403,
+      "sha256": "834d001b8661dcbf427508b5da2d05f98a088e6fff4825f6af6c70f17685b673"
     },
     {
-      "path": "apps/frontend/scripts/lib/preflop-delivery.mjs",
-      "bytes": 2385,
-      "sha256": "138b3a764ef939971a72838c130e1641634296e86daa61f5cda74e99f9281861"
+      "path": "apps/frontend/scripts/lib/preflop-delivery.ts",
+      "bytes": 2497,
+      "sha256": "a54bed08c9c47cb91a0e9145f053193433980898a1746c86ffb7632f237a574e"
     },
     {
-      "path": "apps/frontend/scripts/lib/preflop-sql.mjs",
-      "bytes": 5365,
-      "sha256": "5fec214ce59030c98dfbbf853fe44d29ee116d0ff092e1844fad63d8d983497a"
+      "path": "apps/frontend/scripts/lib/preflop-sql.ts",
+      "bytes": 5716,
+      "sha256": "9d6831835fa0a1f3303d164a3ff1a2a51dd40b42ef9956958e21007fdc71eb23"
     },
     {
-      "path": "apps/frontend/scripts/lib/reviewed-preflop.mjs",
-      "bytes": 11311,
-      "sha256": "b95c7235a5be1b666c1270708536182775b4e7ee7b75beb567a1a578a627450b"
+      "path": "apps/frontend/scripts/lib/reviewed-preflop.ts",
+      "bytes": 11862,
+      "sha256": "7864a29b40e9b2650c3ea012ab9bbf71975eca31673ede78eee8a34cb624ecb3"
     },
     {
-      "path": "apps/frontend/scripts/lib/reviewed-stage3.mjs",
-      "bytes": 5209,
-      "sha256": "d287283ad2c338ef9ad3c08833b0d62a48e9121140de64ae7a33c4cd7b9e6b9c"
+      "path": "apps/frontend/scripts/lib/reviewed-stage3.ts",
+      "bytes": 5551,
+      "sha256": "f36b4d603fe193c585ecf7a38016353ec6d5265119e1e738f4a2347954739f36"
     },
     {
-      "path": "apps/frontend/scripts/lib/stage3-artifacts.mjs",
-      "bytes": 6810,
-      "sha256": "90d888bc5f8dc96ab62ec70610e57570a1830317441760e10333992b9ef8d142"
+      "path": "apps/frontend/scripts/lib/stage3-artifacts.ts",
+      "bytes": 7072,
+      "sha256": "8a01cdcac73e1ff0db2ba095135df821a0ceda0a0594a3c3b63084c71b449494"
     },
     {
-      "path": "apps/frontend/scripts/lib/stage3-checkpoint.mjs",
-      "bytes": 648,
-      "sha256": "d521ec643fb8900383c4f76275203b52902b6137a221d60bfbd3249abc20c749"
+      "path": "apps/frontend/scripts/lib/stage3-checkpoint.ts",
+      "bytes": 664,
+      "sha256": "08c4eba62b8dc885158e76ce2d95b75c076f166cede6c442fef823d5bd204daf"
     },
     {
-      "path": "apps/frontend/scripts/lib/stage3-profiles.mjs",
-      "bytes": 5047,
-      "sha256": "20edf7a7a69ede30e2a1827dc4005adb92907a68c33561f047c04d5d82c7d8bb"
+      "path": "apps/frontend/scripts/lib/stage3-profiles.ts",
+      "bytes": 5126,
+      "sha256": "9b80e716e813acc7bc58739e179813973da9515916cfcbe41434743e008fc6a8"
     },
     {
-      "path": "apps/frontend/scripts/lib/stage3-publication.mjs",
-      "bytes": 3779,
-      "sha256": "982dba5f34f898a23aea7cfb12c7bfb79bee9402e9cf6b5ba206dbd9a7100fa5"
+      "path": "apps/frontend/scripts/lib/stage3-publication.ts",
+      "bytes": 3924,
+      "sha256": "cc88c2e140a7068a20b18322f8810d0abef71893c7dd5077f22b2394a1b3aafe"
     },
     {
-      "path": "apps/frontend/scripts/lib/stage3-reasons.mjs",
-      "bytes": 14425,
-      "sha256": "554f70f80d3d9a4b536a8cbbf494c1d363d97aeca4c7cc327c961a454606faa5"
+      "path": "apps/frontend/scripts/lib/stage3-reasons.ts",
+      "bytes": 15061,
+      "sha256": "22f3a1f0f920814384b4ef9eddd1526626c7b933d7098d805b3cd7493d6cbdb2"
     },
     {
-      "path": "apps/frontend/scripts/lib/typescript-policy-source.mjs",
-      "bytes": 910,
-      "sha256": "60124a17be73e85d43d83e5d431c63110492422adc060d2547b11b275cb8ea45"
+      "path": "apps/frontend/scripts/lib/typescript-policy-source.ts",
+      "bytes": 7266,
+      "sha256": "3a534992dfd073f417e590326c297bf20b17e465cecf94eb0dbff11b4c86d27d"
     },
     {
       "path": "apps/frontend/scripts/package-reviewed-preflop.py",
@@ -10524,14 +10529,14 @@
       "sha256": "ec9008f01190f1603c88ac07626bf5a7547d661076aae28048621b081ab0dd9a"
     },
     {
-      "path": "apps/frontend/scripts/pipeline.mjs",
-      "bytes": 4734,
-      "sha256": "8bc652dc8b964c2a720b4e5eea4262cc66fa170c8334eddcb9e94f5861be7967"
+      "path": "apps/frontend/scripts/pipeline.ts",
+      "bytes": 5043,
+      "sha256": "3f87c86ab982f5430a7ac56fcd6f4b3f6de979e88de6c97e2fabebe4691f4b70"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
-      "bytes": 14269,
-      "sha256": "1d1ad3609d8cdb7f0e74ef1d399e72970963d716eff6652af1b2a07affc92aec"
+      "bytes": 14344,
+      "sha256": "a08537c3f7aff518467c598f0fdd3be1222275615d918592fe9ab49546218564"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/cached-values.ts",
@@ -10545,18 +10550,18 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/defence.ts",
-      "bytes": 56594,
-      "sha256": "6b76dbbfb541c1de35d3355aad313db83623a81b9bcc33a8d37b637611f14ad0"
+      "bytes": 56784,
+      "sha256": "309405b0f7ce4afc649095dbd9347561a590656eb1c7f577f8f177e352265cbe"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/engine.ts",
-      "bytes": 11304,
-      "sha256": "82af24b14a2f4c5b61283958e49fbc8b2414597d213f823c4d6656668b408e7c"
+      "bytes": 11303,
+      "sha256": "87504f81103d6f41a63bd0d3a4447b6ae4ad9e89f5f975795cc1d9ed2841daf4"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/equity-kernel.ts",
-      "bytes": 11245,
-      "sha256": "9d50216df14677540e85c267d5dd426e2b8a415871ba2f9ef2e905a6fe508e3c"
+      "bytes": 11265,
+      "sha256": "5e33fa314128090d097c82e52f94b79d9dd01e442e31e9311c02c0725985d904"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/explain-aggregate.ts",
@@ -10565,8 +10570,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/flop-base-codec.ts",
-      "bytes": 19100,
-      "sha256": "1bc26415412f46c39dde3e8e2c999ad70369b29a76cf321ef30a385772dfd716"
+      "bytes": 19120,
+      "sha256": "513e76f6911acebbe900bd2b7cc1740edf2b23d9f33d14f76376b7429785fd0d"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/flop-base-core.ts",
@@ -10574,14 +10579,19 @@
       "sha256": "28cdc1bddd42499f95fc58b754fc488a44fc06bb699ddf073cb8aaea48c93acd"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/flop-base-d1.mjs",
-      "bytes": 6039,
-      "sha256": "bb7d327af6dc9a7f8b6ae008576e478e404e9d80622164d07bdcdf9d58eed1df"
+      "path": "apps/frontend/scripts/postflop-ai/flop-base-d1.ts",
+      "bytes": 6275,
+      "sha256": "b0dad8c3e9e476d2a01e9d7ac4dfb72402268068e5f2e80200bdc8e32bd8ae16"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/flop-base-files.mjs",
-      "bytes": 2945,
-      "sha256": "57402cf4adbba150df0818a91ed8014fc314b58008910dd0cbdd775d2bd5891b"
+      "path": "apps/frontend/scripts/postflop-ai/flop-base-files.ts",
+      "bytes": 3053,
+      "sha256": "4120da106204913619917942ed562aeb37b5dd78f7ddf7a664b8d5fe40b637a3"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-isomorphism.d.mts",
+      "bytes": 241,
+      "sha256": "8accda73b4aa1a825b2defb53499224dafc4bb33f4a9ce089f88afb94ade6c25"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/flop-isomorphism.ts",
@@ -10590,23 +10600,23 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
-      "bytes": 13124,
-      "sha256": "8b94ef706fd41590672f28267604ca1d983ea63faa381f358c927fd6ebb709d8"
+      "bytes": 13123,
+      "sha256": "24acc2bbe350e7c8c99d388a410e21939fd74b1a9dc99d712263cf60c9411e5d"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/generate-profiles.mjs",
-      "bytes": 10356,
-      "sha256": "eee090f7c629b373f7bc6537757b10361a00a6e12f1f27b5078c2e32f5503fdf"
+      "path": "apps/frontend/scripts/postflop-ai/generate-profiles.ts",
+      "bytes": 10916,
+      "sha256": "a007fd055c662bf532f1ed03b0cc56eff6368c83f95e5304e51a2de8509f96a3"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
-      "bytes": 34692,
-      "sha256": "85b554f82fd7dce2fa4430d0bf187279a0f10228ecc5894801ad18d9af7e5b11"
+      "path": "apps/frontend/scripts/postflop-ai/generate.ts",
+      "bytes": 35737,
+      "sha256": "0728080479299614f1f735058aaaddcafdc2f35bbabbdbf286c48e3624e17d7e"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/generation-options.mjs",
-      "bytes": 1932,
-      "sha256": "2c67872688e0a8525668642368d0fd52ebeda6c2908070fd6bc42c14edefd6fb"
+      "path": "apps/frontend/scripts/postflop-ai/generation-options.ts",
+      "bytes": 1966,
+      "sha256": "8a5183f5c6a8aae2c7a6ce3a755ab4a9390ac62c8e50e9fa7b2d11de0be1b0a1"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/hu-hand-tier.ts",
@@ -10619,9 +10629,14 @@
       "sha256": "d39b90dbc961724718ce5180482dec0cd8da88748a2fb018b651db8a7f60436e"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
-      "bytes": 15625,
-      "sha256": "599f07d0c2c0be1cbb6391043dc28c31d3b3c84221ccb4789e6161fbeec243c2"
+      "path": "apps/frontend/scripts/postflop-ai/inputs.ts",
+      "bytes": 16642,
+      "sha256": "da15e7de401925348f2e0b48fe3273fb0fe0ac3b4fa26ee4b176466641a67e6d"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/later-policy.d.mts",
+      "bytes": 587,
+      "sha256": "987e5b9123c75f9d5df44662f48a930ea42e0423789992609a6535ff2528a099"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/later-policy.ts",
@@ -10644,9 +10659,9 @@
       "sha256": "1ec789143898cf7f3249788168af32cc183f14c766115870c89185e92e0e1674"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/multiway-inputs.mjs",
-      "bytes": 4246,
-      "sha256": "5cd8c946a63a16d8fbe8ed971991f421a5709a4edace6d9885ff086f3c43c87d"
+      "path": "apps/frontend/scripts/postflop-ai/multiway-inputs.ts",
+      "bytes": 4871,
+      "sha256": "f7c8a6b48ed1233625c55d88ebd238151025f66937084fbd31978fd168748721"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/multiway-spots.ts",
@@ -10659,14 +10674,14 @@
       "sha256": "85c28103f454cb47f98daaeb6b1b7c5b740b07d65b84244eaec78639ffe70937"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/mw3-actions.mjs",
-      "bytes": 1946,
-      "sha256": "49ef4365c5ecf74c04720ddc4a2b4e566d35e25ecbb464c617680704d9d80bda"
+      "path": "apps/frontend/scripts/postflop-ai/mw3-actions.ts",
+      "bytes": 2538,
+      "sha256": "4233df63d9405907c1d4a2c52ffa7a810d94cdd8a9e6fcd9e5ec922afb4e0cb1"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/mw3-audit.mjs",
-      "bytes": 7237,
-      "sha256": "4b4fa4d5ec5b1ca53e65a36ac628c04cb0e31cd6b2940612e96cc0b5eaf8ebdd"
+      "path": "apps/frontend/scripts/postflop-ai/mw3-audit.ts",
+      "bytes": 7683,
+      "sha256": "7f9cb3c14c8807c16cf618f8efee2cb724f1af2c1f367892eb838fd1a0fcbc00"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/mw3-browser-inputs.d.mts",
@@ -10674,9 +10689,9 @@
       "sha256": "eb664cb2c2735f73af8578c4ea45564f4a59b796ea69a3ab4e516e0fa65123b0"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/mw3-browser-inputs.mjs",
-      "bytes": 1929,
-      "sha256": "c0c342c3c6783dbd2c98f822a6f21b059fcf42616756e7bd48b721ee60abcb11"
+      "path": "apps/frontend/scripts/postflop-ai/mw3-browser-inputs.ts",
+      "bytes": 2751,
+      "sha256": "fa022dbb7814185481f98509a72381d170ebb721ab8b7701560acb244c660623"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/mw3-delivery.d.mts",
@@ -10684,9 +10699,9 @@
       "sha256": "a67736a8015d32ce5f510e230638fab8ab3a4bce83db4432ddada70f14619170"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/mw3-delivery.mjs",
-      "bytes": 2986,
-      "sha256": "cf9de6f14b3b0272fa573e6fc75da2950a230d9280985cdd8af2d89690769cf9"
+      "path": "apps/frontend/scripts/postflop-ai/mw3-delivery.ts",
+      "bytes": 3765,
+      "sha256": "2d9b9a13fbb5276da2ba6f7e076d878ac682b4ed363f3b9feed00e0a0739830a"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/mw3-engine.d.mts",
@@ -10694,34 +10709,34 @@
       "sha256": "79aa87862ba855ffad261941e9f37241a30a303ccb440b3493f0050de108c2ba"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/mw3-engine.mjs",
-      "bytes": 12450,
-      "sha256": "b9f3f28b544c474d97c65040b835b1bfb51a7d705beb2efd81d93373bc30f1ca"
+      "path": "apps/frontend/scripts/postflop-ai/mw3-engine.ts",
+      "bytes": 14231,
+      "sha256": "86d3c94836abe17c54fe069f315a98feab8aa8807a0c832e23634970db76230a"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/mw3-hand-features.mjs",
-      "bytes": 12437,
-      "sha256": "c578cf11a1fd782adc89c0c98b390aa2c4b31deb2d19ddefa9e238fe4bef42e7"
+      "path": "apps/frontend/scripts/postflop-ai/mw3-hand-features.ts",
+      "bytes": 13097,
+      "sha256": "b45dcf6f51ec922e03e26a74c7885b80e3fb3fd0c8850a9ae5a9ad11ca634ccf"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/mw3-input-core.mjs",
-      "bytes": 1600,
-      "sha256": "48288f6ebf8ae21c16e78bd70bb6a5ff837d8416a0af5594a2cf211bf2b1d8c7"
+      "path": "apps/frontend/scripts/postflop-ai/mw3-input-core.ts",
+      "bytes": 1667,
+      "sha256": "7cfb24c07ebb0117c2c9702789741f59e17406b138a2ab921743bf948f08cf2f"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/mw3-joint-defence.mjs",
-      "bytes": 6218,
-      "sha256": "6f76aa4f863016496fe1fe5bd82f413dc12d30f3de372be2623a6d7fcfb65601"
+      "path": "apps/frontend/scripts/postflop-ai/mw3-joint-defence.ts",
+      "bytes": 6549,
+      "sha256": "c7866e0dc6251535b369c399f6c89027fd5fe2700310a3af70fe213c9ec54bdc"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/mw3-policy-codec.mjs",
-      "bytes": 3042,
-      "sha256": "dde31cdbb426aff5a8737bd3d0ae31723943027de3ba88af48cffe53bcdc21b7"
+      "path": "apps/frontend/scripts/postflop-ai/mw3-policy-codec.ts",
+      "bytes": 3251,
+      "sha256": "0c514dc3d545e8bc1816098d3326112b24eed91c88eed2d47169bcbdd78157f7"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/mw3-policy.mjs",
-      "bytes": 7558,
-      "sha256": "60c7ae0ba468fbe6105abdc81322197772819ed739b064917e4669c2ed195c4c"
+      "path": "apps/frontend/scripts/postflop-ai/mw3-policy.ts",
+      "bytes": 8061,
+      "sha256": "32d404b1b6bd0e1b636fb830b6348b7d7f8e60fe920c540d54a6fbbd8ca633d1"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/mw3-runtime.d.mts",
@@ -10729,24 +10744,29 @@
       "sha256": "4d74115863faf5d6864f765a0e07b96a087e90a26ba5433ba202fd2c10ce0b92"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/mw3-runtime.mjs",
-      "bytes": 5913,
-      "sha256": "97a26b17545afa349bc4e7e69a07bce32dbba3076565dcb8a922fee68206050d"
+      "path": "apps/frontend/scripts/postflop-ai/mw3-runtime.ts",
+      "bytes": 6749,
+      "sha256": "ffe851bbec040c38cd83b68d4623a4acb0ba7a9765384a6f97dd88e210c60005"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/mw3-spots.mjs",
-      "bytes": 8749,
-      "sha256": "3387e79adb16019e66f07444babd489c6a87957c5c8b61974c362536e9be1b22"
+      "path": "apps/frontend/scripts/postflop-ai/mw3-spots.ts",
+      "bytes": 9426,
+      "sha256": "1d36a73ec5b909b466c531e7543f7303733f7a01710ef15c0d9e15a8ba3da658"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/mw3-tree.mjs",
-      "bytes": 6079,
-      "sha256": "96192b18788eae5ed76c66b3bce66adbf50e82a699e6ddd133d64d1e0efea608"
+      "path": "apps/frontend/scripts/postflop-ai/mw3-tree.ts",
+      "bytes": 6431,
+      "sha256": "86ea1b4737707e5f9f91d32bae5f08e74f967b16f8c4a2df78a840e921d4d7e1"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/mw3-types.ts",
       "bytes": 4992,
       "sha256": "80f8b0855a83c38c1bc0a227fe8e3efcf06a24472a537db3c9f338e02c6dfbc3"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/policy.d.mts",
+      "bytes": 456,
+      "sha256": "1d9ce62ab7a34b525b9ad1bcb4ee160f8f28bfe0d3d3dc488283d3da739bb097"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/policy.ts",
@@ -10759,14 +10779,14 @@
       "sha256": "ac122a565b23f345e5351629df2d7d4bc4911e662f6abf9b615a77b1782205cc"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/publish-d1.mjs",
-      "bytes": 18904,
-      "sha256": "36731c2a7ff9593215d6cc3fc4d63abd7f8c13b945febdde3eeaa47d991bf6e3"
+      "path": "apps/frontend/scripts/postflop-ai/publish-d1.ts",
+      "bytes": 19548,
+      "sha256": "51819387d106014a706c3f8ab1f2eab2938cd543fb93a858d2588a37f3fcb689"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/range-equity.ts",
-      "bytes": 18505,
-      "sha256": "edefbe502204e626f385ac3e9612a4d708da4b25768030f623fe81c6afdee909"
+      "bytes": 18525,
+      "sha256": "687ec196e79fec883024b3e39a2cdaf6090afe25a5b3bccafb57c29f4fafd929"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/range-support.d.mts",
@@ -10774,19 +10794,19 @@
       "sha256": "6531953338488298f54851758354664371308d9a249beb3437fa19bcd410391a"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/range-support.mjs",
-      "bytes": 968,
-      "sha256": "36cda7b43f03d4779db036bdb16a519b94fb08e60a752fe6d6b4051ff894f319"
+      "path": "apps/frontend/scripts/postflop-ai/range-support.ts",
+      "bytes": 1321,
+      "sha256": "f1736a8fba161fc7c91d8a8fa63f1dceaba3f0252b33a51f8d69b74c3b8f66a4"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/simulation.mjs",
-      "bytes": 8346,
-      "sha256": "429548aafc1d5c1e184f4027435da78510b583671bb5d13359f71472c300d2e7"
+      "path": "apps/frontend/scripts/postflop-ai/simulation.ts",
+      "bytes": 8742,
+      "sha256": "9688c812dc8cec366e0b846b59b92ab0b501c8ff9d29e383d8b9c88b03f646aa"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/spots-core.ts",
-      "bytes": 12425,
-      "sha256": "3b210da79ea3bf179fdf81832feb87f88e74eacaa02f3224452177fba09ea834"
+      "bytes": 12422,
+      "sha256": "3c324a2f14f53d9a5918ee4d0f3f5b6f67feeaf7ff2f93641e23dcd4c6fb3b85"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/spots.ts",
@@ -10805,48 +10825,48 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/views.ts",
-      "bytes": 9792,
-      "sha256": "251117e6151407f0fc9915b005cf5295173bd2ea03b7df6aa502460179e88c74"
+      "bytes": 9790,
+      "sha256": "88d6bf657bf197d5e2f67e85987f33a96d680f709649293b5868d1f635f2bfd8"
     },
     {
-      "path": "apps/frontend/scripts/publish-d1.mjs",
-      "bytes": 4026,
-      "sha256": "6fc316986d1e8396f765189769f9ce3583bdbe85cfcac3e82c005e5e88cefe2e"
+      "path": "apps/frontend/scripts/publish-d1.ts",
+      "bytes": 4059,
+      "sha256": "ff7854d8bc050cdd92594587a1440355449918b911ee82517ace018e00069b3e"
     },
     {
-      "path": "apps/frontend/scripts/range.mjs",
-      "bytes": 9886,
-      "sha256": "43df2b49b24428b0d72df22bb1fff1caaebe83412e192f694409838317b6a657"
+      "path": "apps/frontend/scripts/range.ts",
+      "bytes": 10596,
+      "sha256": "884095380bb9a077bf44c10ef77b96f13c5748535e3a87ba2c807628fe13bb48"
     },
     {
-      "path": "apps/frontend/scripts/record-stage3-review-candidate.mjs",
-      "bytes": 1431,
-      "sha256": "d147ac83d7d28017b63ecaa11d3ec8de3ff31f916d57d454d568b1645d49fcd7"
+      "path": "apps/frontend/scripts/record-stage3-review-candidate.ts",
+      "bytes": 1429,
+      "sha256": "f8e6d03fd8ba06144d3c5ec5fc32dc189c0c8d54887105df9155cd30872bdf89"
     },
     {
-      "path": "apps/frontend/scripts/restore-reviewed-preflop.mjs",
-      "bytes": 4829,
-      "sha256": "7879fcd953f5ec7a81c5085a7b544af46d0d2314dcc7b61b9d010f73435d9b06"
+      "path": "apps/frontend/scripts/restore-reviewed-preflop.ts",
+      "bytes": 5040,
+      "sha256": "7ce1cdd23b78644ede80dddd05e0a4f5729852437e89421978c5bfc29147e371"
     },
     {
-      "path": "apps/frontend/scripts/restore-reviewed-stage3.mjs",
-      "bytes": 1837,
-      "sha256": "c6ed7a50683fefa495c74e144e70c8728232a9862e639f70663c21df794dacb5"
+      "path": "apps/frontend/scripts/restore-reviewed-stage3.ts",
+      "bytes": 1859,
+      "sha256": "bc85ce355d4b13929370a91c6d0e9fe7b0e4e3878cce9262a2e40649b2ac8aa5"
     },
     {
-      "path": "apps/frontend/scripts/validate-estimates.mjs",
-      "bytes": 3536,
-      "sha256": "58259ce87c808f1571d6cb6984e8b4f59ec9a673985ef87cc3c0fe8c3e6f947d"
+      "path": "apps/frontend/scripts/validate-estimates.ts",
+      "bytes": 3570,
+      "sha256": "73034a25ee0f6ae6a9c955466de3f48855283d4e29bfaec4660b39543609ed28"
     },
     {
-      "path": "apps/frontend/scripts/verify-preflop-local-d1.mjs",
-      "bytes": 22932,
-      "sha256": "d10b99c1801a59eff79e22a98cfb7780db840e962ae0aabf3a66990b65d84401"
+      "path": "apps/frontend/scripts/verify-preflop-local-d1.ts",
+      "bytes": 23566,
+      "sha256": "d15b1f5f1dcc59471e9d4483447f06340bb76d53d6fa61d3c8b5f2e7ec3eac0c"
     },
     {
-      "path": "apps/frontend/scripts/verify-reviewed-preflop.mjs",
-      "bytes": 1731,
-      "sha256": "c2a199ce82962c2ba7e85fce766b6a3a4b7c285ab2bc52c705b0cb49600cb110"
+      "path": "apps/frontend/scripts/verify-reviewed-preflop.ts",
+      "bytes": 1753,
+      "sha256": "84fb64eae4eebaed3b7bbf418c9cdff8434b2aebba4ee92d084968ffa4f13801"
     },
     {
       "path": "apps/frontend/src/account/config.ts",
@@ -10855,8 +10875,8 @@
     },
     {
       "path": "apps/frontend/src/account/session.ts",
-      "bytes": 9937,
-      "sha256": "ddd0ea2ecd4ff79d68b730d71cdac2188bef9eec0682fa60f58d1fec000afc43"
+      "bytes": 9981,
+      "sha256": "be44c06f3743f11d6ddfd976fa79fbf038ddb9bbe2bbeb984b39e5900899beaf"
     },
     {
       "path": "apps/frontend/src/agent/agent-history-codec.ts",
@@ -10870,13 +10890,13 @@
     },
     {
       "path": "apps/frontend/src/agent/mw3-hand.ts",
-      "bytes": 4033,
-      "sha256": "d6d82ecb8c572bd6a9bc40b4fd2d46571520bd29e22fea4cc0d1aedaecd6388d"
+      "bytes": 4032,
+      "sha256": "e52fbbcf64d5c25646a915802f1eb3e6abc16f0aede813247038d7e2e9cfbeff"
     },
     {
       "path": "apps/frontend/src/agent/policy.ts",
-      "bytes": 4659,
-      "sha256": "021a25138aee68ad71c5cf1f260598c7e2a9683c4432e03d792947a26d141ae1"
+      "bytes": 4658,
+      "sha256": "759bbe2fcdbee1be9117cf312420a045d3b56d202b857659c78d34af23895741"
     },
     {
       "path": "apps/frontend/src/agent/preflop.ts",
@@ -10900,13 +10920,13 @@
     },
     {
       "path": "apps/frontend/src/estimated/audit.ts",
-      "bytes": 43158,
-      "sha256": "d6e9c2a371d2a55887c65ef1ac546f0ad07144e747568d4540c41633279c9371"
+      "bytes": 43590,
+      "sha256": "28189b9de23b02596ccbebcda572202e31062a8b126b01fbe9cd2612e7904f36"
     },
     {
       "path": "apps/frontend/src/estimated/call-ev.ts",
-      "bytes": 22090,
-      "sha256": "8bb3a42521bd0e75f068ca6aa5cbc9c263649f7279c7f4b7e1a57c8dfbafdc45"
+      "bytes": 22110,
+      "sha256": "1b0ae70a8f9d0b8800a08aa1db1166629bb7b7136c78b62053608b43e7a4032b"
     },
     {
       "path": "apps/frontend/src/estimated/cold-four-bet-responses.json",
@@ -10915,8 +10935,8 @@
     },
     {
       "path": "apps/frontend/src/estimated/cold-four-bet-responses.ts",
-      "bytes": 7282,
-      "sha256": "98d3f991bddda2228588f6a5839fa69efa4f6449e43a3f22b928cccbb95ba1f0"
+      "bytes": 7291,
+      "sha256": "6af68877cd3c06afbe4239d5b17c6643e611c8f8455a54ecb4e50fbd87193f7f"
     },
     {
       "path": "apps/frontend/src/estimated/cold-three-bet-responses.json",
@@ -10930,8 +10950,8 @@
     },
     {
       "path": "apps/frontend/src/estimated/continuation-audit.ts",
-      "bytes": 13412,
-      "sha256": "eceda732f7b33c6a5ac687409faf74f25afe978d75e137cf36ddba1498314ea9"
+      "bytes": 14055,
+      "sha256": "e65f3cf7b67360da3e83bf7f904b375dbfd16957bc5c6b428bf8c6deab023786"
     },
     {
       "path": "apps/frontend/src/estimated/continuation-defense.ts",
@@ -10965,8 +10985,8 @@
     },
     {
       "path": "apps/frontend/src/estimated/datasets.ts",
-      "bytes": 5397,
-      "sha256": "dd3224feae502272ded066a636760bf05b4f62d5d865ff5a802bf6ac68b3a216"
+      "bytes": 5438,
+      "sha256": "8f3601317afddead6aeef71364c96cf86c8324d8bba8ca3bd19ba8806e72b453"
     },
     {
       "path": "apps/frontend/src/estimated/english-reasons.ts",
@@ -11025,8 +11045,8 @@
     },
     {
       "path": "apps/frontend/src/estimated/multiway-responses.ts",
-      "bytes": 4427,
-      "sha256": "285b37ce92dd2bf05a9648735a717c2f85cf801d5f099b67b30eb1d93d8674d9"
+      "bytes": 4436,
+      "sha256": "36ac061db189a8408e47dbda63e9ab931c949d7428329756c813b8652d6e5e78"
     },
     {
       "path": "apps/frontend/src/estimated/multiway2-responses.json",
@@ -11040,8 +11060,8 @@
     },
     {
       "path": "apps/frontend/src/estimated/mw3-browser.ts",
-      "bytes": 9591,
-      "sha256": "e80e55e9f5dc37aadd804b22db4d06810737e10bc3f53de3095dab794bb47e4e"
+      "bytes": 9623,
+      "sha256": "c093a07d115d38fbfd4d5ba66da7fa866b6255d01e6790210bd1182a74eb7cfc"
     },
     {
       "path": "apps/frontend/src/estimated/mw3-context.ts",
@@ -11125,13 +11145,13 @@
     },
     {
       "path": "apps/frontend/src/estimated/squeeze-responses.ts",
-      "bytes": 7365,
-      "sha256": "3435989bc81c19e0f054a01527171abc650176c770966a87b5593f6caac5b705"
+      "bytes": 7383,
+      "sha256": "6c9bc77b664725108db77254bfa892a3eff888b11c07a67025017113c14a72f9"
     },
     {
       "path": "apps/frontend/src/estimated/stage3-audit.ts",
-      "bytes": 12676,
-      "sha256": "de9736c6b7a9a4eaa4d33a8be600f161f47bf886e648faf39414ffb5e80a227d"
+      "bytes": 13167,
+      "sha256": "9a98a8e351362ea1867d2c367e589c2a3faef9048eb168af96c037d6c528488a"
     },
     {
       "path": "apps/frontend/src/estimated/stage3-call-ev.ts",
@@ -11180,8 +11200,8 @@
     },
     {
       "path": "apps/frontend/src/estimated/table-profile.ts",
-      "bytes": 9258,
-      "sha256": "5550fe661c4d0b84a333860dcaa2e86c202262ab1915110aa50b1b7f4f5af0f6"
+      "bytes": 9316,
+      "sha256": "7d7709fbd3ebef69f9d293b4b6b3cb07a97abd2d2cad31acc2bcedd1ae9bd2fa"
     },
     {
       "path": "apps/frontend/src/estimated/three-bet-responses.json",
@@ -11246,7 +11266,7 @@
     {
       "path": "apps/frontend/wrangler.jsonc",
       "bytes": 957,
-      "sha256": "2d48a85301d4c5a5eb849d87b41db3c9bf7366585699818607925db0452838bd"
+      "sha256": "57727a0ec9f9503e6f4c04e3060a332323fb70cd6da6348b2f9b56536bef192e"
     },
     {
       "path": "apps/shared/mw3-approved.ts",
@@ -11269,22 +11289,32 @@
       "sha256": "67de080dd1319f92148a03d9b8f8f62550180f7c9e1c37edc848fa390760817c"
     },
     {
+      "path": "configs/typescript-policy-source-migration-proposal.json",
+      "bytes": 281059,
+      "sha256": "782b6419493d113e0cf21031e5606eab699211c198349c6cda3aa81cf52180d1"
+    },
+    {
+      "path": "configs/typescript-policy-source-migration.review.json",
+      "bytes": 21378,
+      "sha256": "b7c83c501e629d95390990467930ffb76b83f6fb23abf1e46ba4b83c3099e9fa"
+    },
+    {
       "path": "configs/typescript-policy-source.review.json",
       "bytes": 259714,
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
     },
     {
-      "path": "scripts/ci/deployment-scope.mjs",
-      "bytes": 27274,
-      "sha256": "3c1d41ff2468010812bf2afac2719a54da26680a36f18058262ce83fc860b873"
+      "path": "scripts/ci/deployment-scope.test.ts",
+      "bytes": 42814,
+      "sha256": "840336b3f99219b8441e36f9a82181b9d1aade85ebb7b05d4e84d4352c01e065"
     },
     {
-      "path": "scripts/ci/deployment-scope.test.mjs",
-      "bytes": 32682,
-      "sha256": "d71fca38d57a1116f6a9204499c3243e645577ebc81a73a972923cc9b55d155c"
+      "path": "scripts/ci/deployment-scope.ts",
+      "bytes": 33296,
+      "sha256": "991c219917fb4b05ef6553b62e6006f4e03bfa06099f2331d4f522f71758f34a"
     }
   ],
-  "content_sha256": "7afe397106559af5455a971739181d4bba2c1456be9bc49d2c95f344a1fd90a6",
+  "content_sha256": "0aa89d05a65a0ce39ddd5dba838ad48bb231e2b22101a3238e9bc5d02dac8510",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -11518,5 +11548,103 @@
     "canonical_collector": "apps/frontend/scripts/lib/reviewed-preflop.mjs reviewedSourcePaths/fileRecord",
     "requested_model": "gpt-6-luna",
     "runtime_model_attestation": "unavailable"
+  },
+  "independent_typescript_source_compatibility_review": {
+    "reviewer": "Independent full canonical source-compatibility reviewer /root/review_api_recovery",
+    "requested_model": "gpt-6.1-sol",
+    "runtime_model_attestation": "unavailable",
+    "reviewed_at_utc": "2026-10-16T04:27:57.829Z",
+    "baseline_commit": "df2370690e9b3172f2c109f80113b320880f940a",
+    "source_head_sha": "4cbfa48369d0a5548b93471fa0d0bc187b9a5c7b",
+    "approval_checkpoint_sha": "963f25670dec0cfab4e00907b9be27f6bb4cc259",
+    "scope": "Complete canonical Stage2/Stage3 source graph plus immutable accepted MW3 source/recipe compatibility and reviewed human-avatar CI recovery integration. Source compatibility only; no numerical generation, mathematical or strategy-quality approval, publication, runtime, deployment or delivery acceptance renewed.",
+    "independent_evidence": {
+      "path": "apps/frontend/docs/mw3-source-identity/typescript-archive-sources-parity.json",
+      "bytes": 256690,
+      "sha256": "8cfb58bfaa3f38a5c7b573e07c5667b9ffa313246fca8caf0b96edbe21b1edb0"
+    },
+    "archive_source_approval": {
+      "path": "configs/source-identity-mw3-typescript-archive.review.json",
+      "bytes": 1518,
+      "sha256": "b652f2b73d50c09059350d56cb1e9a59e15786f8d2ae0ea1a334549cbdbe6126"
+    },
+    "coverage": {
+      "canonical_union_records": 262,
+      "exact_byte_identity": 139,
+      "exact_executable_ast_parity": 87,
+      "explicitly_reviewed_semantic_amendments": 28,
+      "configuration_amendments": 5,
+      "prior_approved_policy_overlay_records": 3,
+      "immutable_mw3_historical_current_source_pairs": 152,
+      "closed_extra_current_sources": 10,
+      "immutable_accepted_manifests": 16,
+      "immutable_artifact_records": 112,
+      "exact_original_raw_recipe_sources": 4
+    },
+    "method": "Independent native type erasure and installed Babel AST comparison normalized only verified static import/export relocations. Arbitrary filename strings, CLI paths, config, collector traversal and source/recipe compatibility logic were separately reviewed, not normalized away. The complete exact source records and individual semantic findings are retained in independent_evidence.",
+    "deliberate_semantics": "Current numerical source execution is equivalent apart from explicitly reviewed verification/packaging/CI behavior. Native-current author identity/collector remain separate; accepted archive verification/preservation is restricted to sixteen exact immutable accepted manifests/receipts/archive/artifact identities. Historical source_tree/records remain actual historical Git provenance; approved current sources and closed extras are separately verified against committed current Git tree and worktree. No dirty historical rollback or unknown source dependency is accepted.",
+    "prior_approvals": "Original 22-pair MW3 and 34-source policy migration approvals and their historical records remain unchanged; this separate review covers the full graph and later exact verification-only changes without attributing them to earlier reviewers.",
+    "validation_at_source_review": "Author separately reported synthetic13/13, focused restore20/20 and scripts/tests TypeScript checks plus clean diff. Reviewer inspected exact source/test deltas and did not duplicate those successful checks. Actual full accepted-archive restore is currently still running; no archive/runtime/release success is claimed by this amendment.",
+    "preserved": "All original numerical artifact/archive records, source_fingerprint, counts, strategy review attribution, advisories, historical limitations and every prior receipt field/amendment are preserved exactly. No strategy data/archive/accepted manifest/author receipt regeneration or production mutation by this reviewer.",
+    "findings": 0,
+    "canonical_collector": "apps/frontend/scripts/lib/reviewed-preflop.ts reviewedSourcePaths/fileRecord",
+    "prior_content_sha256": "7afe397106559af5455a971739181d4bba2c1456be9bc49d2c95f344a1fd90a6",
+    "current_content_sha256": "cf8ef891d2ad2d74a15d5b068fe12b9c497940c4db752d25a60e3d7402cf363b",
+    "prior_source_count": 198,
+    "current_source_count": 204,
+    "source_record_delta": {
+      "unchanged": 109,
+      "modified": 28,
+      "added": 67,
+      "removed": 61
+    }
+  },
+  "independent_ci_typescript_annotation_review": {
+    "reviewer": "Independent source-compatibility reviewer /root/review_api_recovery",
+    "requested_model": "gpt-6.1-sol",
+    "runtime_model_attestation": "unavailable",
+    "reviewed_at_utc": "2026-10-16T04:44:58.599Z",
+    "base_sha": "155dac792639208d6d64ac9644560f77ef24c8ba",
+    "source_head_sha": "7502859e17e62ce92ad251a183cfc87383f63999",
+    "scope": "Only explicit erased callback parameter annotations in two canonical-bound CI scope files. No runtime, lineage/recovery, numerical, strategy, generation, archive, publication or deployment acceptance change.",
+    "findings": 0,
+    "changed_sources": [
+      {
+        "path": "scripts/ci/deployment-scope.ts",
+        "before": {
+          "path": "scripts/ci/deployment-scope.ts",
+          "bytes": 33217,
+          "sha256": "1e5473e1d96b1c317aa46fa0d771aa2fb1ca8ee2f40066c9236d4a92b22bdc1c"
+        },
+        "after": {
+          "path": "scripts/ci/deployment-scope.ts",
+          "bytes": 33296,
+          "sha256": "991c219917fb4b05ef6553b62e6006f4e03bfa06099f2331d4f522f71758f34a"
+        },
+        "executable_ast_sha256": "81e333a46ddc45997840c811c6a9afdbfbd9d7d2303f07c34e55d85be0f7d87c",
+        "parity": "exact-native-type-erased-executable-AST"
+      },
+      {
+        "path": "scripts/ci/deployment-scope.test.ts",
+        "before": {
+          "path": "scripts/ci/deployment-scope.test.ts",
+          "bytes": 42774,
+          "sha256": "f6b306c05aa3f9b51650588913d8a4a10aa5a58ab95085a2cdb5b2da79fa241f"
+        },
+        "after": {
+          "path": "scripts/ci/deployment-scope.test.ts",
+          "bytes": 42814,
+          "sha256": "840336b3f99219b8441e36f9a82181b9d1aade85ebb7b05d4e84d4352c01e065"
+        },
+        "executable_ast_sha256": "87459411f5ca9c48c65b5984fd61f4b66f8be8a94a6a40fe4f0c423e62786bae",
+        "parity": "exact-native-type-erased-executable-AST"
+      }
+    ],
+    "method": "Independently stripped both source revisions with native node:module stripTypeScriptTypes(mode=strip), parsed with separately installed Babel parser, removed only source-location/comment metadata, and required complete executable AST equality. No path/string/guard/formula normalization.",
+    "author_validation": "Author separately reported npm --prefix apps/frontend run typecheck:repository passing and37/37 deployment-scope tests. Reviewer inspected exact delta and did not duplicate successful checks.",
+    "archive_proof_boundary": "Both CI paths lie outside the152-row accepted MW3 source inventory. Existing archive source approval/evidence/inventory bytes remain untouched. Prior successful16-pair/112-file/235515283-byte actual archive restore is not rerun or represented as a new final-head archive test.",
+    "preserved": "All existing receipt fields except exact sources/content_sha256 retained verbatim, including every numerical artifact/archive/fingerprint/count and original review/earlier source-only amendment.",
+    "prior_content_sha256": "cf8ef891d2ad2d74a15d5b068fe12b9c497940c4db752d25a60e3d7402cf363b",
+    "current_content_sha256": "0aa89d05a65a0ce39ddd5dba838ad48bb231e2b22101a3238e9bc5d02dac8510"
   }
 }

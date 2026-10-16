@@ -2,7 +2,7 @@
 // receipt approval or deployment. CI may verify/restore already saved bytes only.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { MW3_REPOSITORY, collectMw3Snapshot, currentMw3ArchiveIdentity, saveMw3Snapshot, verifyMw3Snapshot } from './mw3-reviewed-snapshot.ts';
+import { MW3_REPOSITORY, collectMw3AcceptedSnapshot, currentMw3ArchiveIdentity, saveMw3Snapshot, verifyMw3Snapshot } from './mw3-reviewed-snapshot.ts';
 import { restoreMw3ArchiveBytes, readSafeFile, MW3_ARCHIVE_LIMITS, sha256 } from './mw3-reviewed-archive.ts';
 import { prepareMw3SnapshotDeliveries, buildMw3DeliverySql } from './mw3-reviewed-delivery.ts';
 import { assertSafeFile } from './reviewed-postflop-archive.ts';
@@ -19,7 +19,7 @@ const identity = currentMw3ArchiveIdentity(values['--spot']);
 if (identity.inputs.fingerprint !== values['--source-hash']) throw new Error('Requested archive source is stale');
 const stem = `artifacts/postflop/mw3-${identity.inputs.spot.slug}`;
 if (command === 'package') {
-  const snapshot = collectMw3Snapshot(values['--spot']);
+  const snapshot = collectMw3AcceptedSnapshot(values['--spot']);
   console.log(JSON.stringify({ status: 'unapproved_preservation_only', files: saveMw3Snapshot(snapshot), evidence: snapshot.evidence }, null, 2));
 } else {
   const snapshot = verifyMw3Snapshot(readSafeFile(MW3_REPOSITORY, `${stem}.manifest.json`, MW3_ARCHIVE_LIMITS.manifest),

@@ -35,8 +35,10 @@ test("synthetic current-source archive fixture retains exact bytes and refuses c
     for (const path of currentSources) copy(path);
     for (const { path } of review.artifacts.filter(item => !stage2(item.path))) copy(path);
     copy(REVIEW_FILE); copy(ARCHIVE_FILE);
-    // Type-only compatibility cannot bless the old release's changed source graph.
-    assert.throws(() => restoreReviewedPreflop(root), /Review source\/configuration identity changed/);
+    // The refreshed independent receipt binds this exact current TS source
+    // closure; preserving an older archive does not weaken source validation.
+    assert.deepEqual(review.sources, currentSources.map(path => fileRecord(REPOSITORY, path)));
+    assert.equal(restoreReviewedPreflop(root).files, 1614);
     const synthetic = { ...review, fixture: "SYNTHETIC TEST ONLY - NOT RELEASE APPROVAL",
       review: { ...review.review, reviewer: "SYNTHETIC ARCHIVE SECURITY FIXTURE", scope: "temporary archive filesystem/security tests only" },
       sources: currentSources.map(path => fileRecord(root, path)) };
