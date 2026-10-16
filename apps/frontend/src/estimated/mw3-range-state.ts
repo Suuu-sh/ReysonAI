@@ -1,6 +1,6 @@
-import { applyMw3Action, createMw3Table, mw3Decision, settleMw3, startMw3Street } from "../../scripts/postflop-ai/mw3-engine.mjs";
+import { applyMw3Action, createMw3Table, mw3Decision, settleMw3, startMw3Street } from "../../scripts/postflop-ai/mw3-engine.ts";
 import { cardIds } from "../../scripts/postflop-ai/flop-isomorphism.ts";
-import { cloneMw3Table, mw3ActionGroups } from "../../scripts/postflop-ai/mw3-actions.mjs";
+import { cloneMw3Table, mw3ActionGroups } from "../../scripts/postflop-ai/mw3-actions.ts";
 import { mw3ActionLabel, mw3Copy } from "./mw3-copy.ts";
 
 const streets = ["flop", "turn", "river"];

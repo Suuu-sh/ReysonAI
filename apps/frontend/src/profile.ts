@@ -58,7 +58,7 @@ export function stashOnboardingDraft({ nickname = "", level = "" }: { nickname?:
 
 export function adoptOnboardingDraft() {
   if (typeof window === "undefined" || !accountSnapshot().user?.verified) return;
-  let draft = null;
+  let draft: (ProfileDraft & { locale?: unknown }) | null = null;
   try { draft = JSON.parse(session()?.getItem(draftKey) ?? "null"); session()?.removeItem(draftKey); } catch {}
   if (!draft) return;
   if (!loadProfile() && levels.some(item => item.value === draft.level)) saveProfile(draft);

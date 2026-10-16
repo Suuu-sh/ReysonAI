@@ -39,4 +39,4 @@ jobs:
         run: npx --yes wrangler@4.147.0 deploy --dry-run --config wrangler.jsonc --outdir ../mcp/.local/api-build
       - name: Existing API and account contracts remain unchanged
         working-directory: apps/backend
-        run: node --experimental-strip-types --test tests/index.test.mjs tests/postflop.test.mjs tests/preflop-datasets.test.mjs tests/postflop-runtime-config.test.mjs tests/account.test.mjs tests/account-local.test.mjs tests/native-account.test.mjs
+        run: node --experimental-strip-types --test tests/index.test.ts tests/postflop.test.ts tests/preflop-datasets.test.ts tests/postflop-runtime-config.test.ts tests/account.test.ts tests/account-local.test.ts tests/native-account.test.ts

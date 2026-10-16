@@ -1,0 +1,8 @@
+// Saved evidence can be read as text or bytes; JSON parsing preserves its recorded shape.
+const parseEvidenceJson = (value: string | Uint8Array): any => JSON.parse(typeof value === "string" ? value : Buffer.from(value).toString("utf8"));
+import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';import {pathToFileURL} from 'node:url';
+const [repo,out]=process.argv.slice(2),load=(x: any)=>import(pathToFileURL(path.join(repo,'apps/frontend/scripts/postflop-ai',x)).href);
+const {verifyMw3Snapshot}=await load('mw3-reviewed-snapshot.mjs'),{prepareMw3SnapshotDeliveries,assertMw3IndependentReceipt}=await load('mw3-reviewed-delivery.mjs');const {sha256,jsonBytes}=await load('mw3-reviewed-archive.mjs');
+const slug='co-btn-bb-mw3-srp-v1',bytes=fs.readFileSync(path.join(out,'drafts/mw3-'+slug+'.manifest.json')),manifest=parseEvidenceJson(bytes),snapshot=verifyMw3Snapshot(bytes,fs.readFileSync(path.join(repo,manifest.archive.path))),deliveries=await prepareMw3SnapshotDeliveries(snapshot);
+const results=[];for(const [kind,p]of [['current-historical-source-receipt',path.join(repo,'configs/mw3-'+slug+'.review.json')],['earlier-ffe7-independent-receipt','/workspace/scratch/08c72b2d7549/mw3-review-ffe7c657/install/configs/mw3-'+slug+'.review.json']]){const b=fs.readFileSync(p),r=parseEvidenceJson(b);assert.throws(()=>assertMw3IndependentReceipt(r,snapshot,deliveries),/Separate matching/);results.push({kind,sha256:sha256(b),source_tree:r.source_tree,rejected:true});}
+fs.writeFileSync(path.join(out,'stale-receipt-rejection.json'),jsonBytes({status:'PASS',source_tree:manifest.source_tree,results}));console.log(JSON.stringify(results));

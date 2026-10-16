@@ -148,7 +148,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
       blocks.push({ key: position, position, stack, active: false, chosen: "fold", options: [{ action: "fold", label: "Fold", disabled: true }], kind: "forced", rangeRef: { kind: "pending", position, reason: reraised ? "3bet後の応答データはまだ保存されていません。" : "スクイーズ後の応答データはまだ保存されていません。" } });
       continue;
     }
-    let chosen = null;
+    let chosen: string | null = null;
     if (callers.includes(position)) { chosen = "call"; contribution[position] = openSizeFor(opener); }
     else if (index < heroIndex || foldedHero) chosen = "fold";
     else if (reraised || pendingRaise === "squeeze") { chosen = "raise"; contribution[position] = earlierCallers.length ? threeBetToSize(opener, position, earlierCallers.length) : raiseToBb ?? threeBetSizeBb ?? 0; }
@@ -284,7 +284,7 @@ export function buildRangeUrlActionBlocks(state: RangeBuildState) {
 const preflopToken = (token: string) => token === "F" ? "fold" : token === "C" ? "call" : token === "X" ? "check"
   : token === "RAI" ? "all_in" : /^R\d+(?:\.\d+)?$/.test(token) ? "raise" : null;
 function chosenPreflopTokens(blocks: readonly ActionBlock[]) {
-  const tokens = [];
+  const tokens: string[] = [];
   for (const block of blocks) {
     if (block.kind === "end" || !block.chosen) break;
     const action = block.chosen;
@@ -368,7 +368,7 @@ function postflopToken(action: string) {
   return null;
 }
 function parsePostflopActions(value: string | null) {
-  const actions = [];
+  const actions: string[] = [];
   for (const token of splitActions(value).slice(0, 32)) {
     const action = token === "X" ? "check" : token === "C" ? "call" : token === "F" ? "fold"
       : token === "AI" ? "allin" : token === "R" ? "raise"

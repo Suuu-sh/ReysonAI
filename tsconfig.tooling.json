@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "strict": false,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "erasableSyntaxOnly": true,
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "typeRoots": [
+      "./apps/frontend/node_modules/@types",
+      "./apps/mcp/node_modules/@types"
+    ],
+    "types": [
+      "node"
+    ],
+    "noImplicitAny": true
+  },
+  "include": [
+    "apps/backend/scripts/**/*.ts",
+    "apps/backend/tests/**/*.ts",
+    "apps/mcp/scripts/**/*.ts",
+    "apps/mcp/tests/**/*.ts",
+    "packages/reysonai-sdk-ts/tests/**/*.ts",
+    "scripts/ci/**/*.ts",
+    "tools/**/*.ts",
+    "docs/qa/**/*.ts",
+    "types/tooling-runtime.d.ts",
+    "apps/mcp/worker-configuration.d.ts"
+  ]
+}

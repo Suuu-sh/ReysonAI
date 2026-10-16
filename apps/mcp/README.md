@@ -72,7 +72,7 @@ npm test
 npm run build:check
 ```
 
-The MCP row index is regenerated only after restoring the approved Stage 2 source archive with `node --experimental-strip-types apps/frontend/scripts/restore-reviewed-preflop.mjs`. Then run `node apps/mcp/scripts/build-multiway-source-index.mjs`; it accepts only the pinned current D1 metadata and writes row offsets and hashes, not source strategy rows. A dataset release change requires a separate source review and explicit index update.
+The MCP row index is regenerated only after restoring the approved Stage 2 source archive with `node --experimental-strip-types apps/frontend/scripts/restore-reviewed-preflop.ts`. Then run `node apps/mcp/scripts/build-multiway-source-index.ts`; it accepts only the pinned current D1 metadata and writes row offsets and hashes, not source strategy rows. A dataset release change requires a separate source review and explicit index update.
 
 The runtime test bundles a **test-only** entry into `.local/tests` and runs the real pinned OAuth provider and MCP SDK inside local workerd, with in-memory D1/KV and synthetic identities/sessions/clients. All fixture requests use manual redirects, and outbound HTTP is blocked in that fixture and no production credential is used. Unit tests also cover all seven actual saved range families. The test harness uses Miniflare's exported v4-options conversion bridge shipped with the pinned Wrangler runtime.
 

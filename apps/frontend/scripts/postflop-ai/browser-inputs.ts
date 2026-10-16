@@ -2,7 +2,7 @@ import { adjustedInputOptions, finalizeInputs, inputStructureHash } from "./inpu
 import type { FrequencyRow, InputOptions, Inputs, PostflopDatasets, SourceAction, SourceDataset, SourceHand, SourceSpot } from "./types.ts";
 import type { WeightedCombo } from "../lib/equity.ts";
 import type { MultiwaySpot, Spot } from "./spots.ts";
-import { multiwayInputData } from "./multiway-inputs.mjs";
+import { multiwayInputData } from "./multiway-inputs.ts";
 import { combosOf } from "../lib/equity.ts";
 import { gameConfig } from "../../src/estimated/sizing.ts";
 import { parseCards } from "./model.ts";
@@ -85,9 +85,9 @@ function productRows(factors: readonly (readonly [SourceHand[], SourceAction])[]
   return hands.map(hand => ({ hand, freq: maps.reduce((product, map) => product * map.get(hand)! / 100, 100) }));
 }
 
-export function buildInputs(spotId: string = DEFAULT_SPOT_ID, datasets: PostflopDatasets = {}, options: InputOptions = {}): Inputs {
-  const base = buildBaseInputs(spotId, datasets, adjustedInputOptions(options));
-  return finalizeInputs(base, options, name => getDataset(datasets, name, ...(DATASET_ALIASES[name] ?? [])), sha,
+export function buildInputs(spotId: string = DEFAULT_SPOT_ID, datasets: PostflopDatasets | Readonly<Record<string, unknown>> = {}, options: InputOptions = {}): Inputs {
+  const base = buildBaseInputs(spotId, datasets as PostflopDatasets, adjustedInputOptions(options));
+  return finalizeInputs(base, options, name => getDataset(datasets as PostflopDatasets, name, ...(DATASET_ALIASES[name] ?? [])), sha,
     inputStructureHash(base, gameConfig, flopConfig(), sha));
 }
 

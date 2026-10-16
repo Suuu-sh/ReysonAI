@@ -37,7 +37,7 @@ export function createStage3UiRuntime(datasets: Stage3UiDatasets): Stage3UiRunti
   const legacy = createContinuationUiRuntime(datasets as Parameters<typeof createContinuationUiRuntime>[0]);
   const data = datasets['stage3-responses'];
   validateStage3UiHeader(data);
-  const records = new Map<string, Stage3SourceSpot>(Object.entries(datasets).flatMap(([name, content]) => (content?.spots ?? []).map(spot => [`${name}/${spot.id}`, spot])));
+  const records = new Map<string, Stage3SourceSpot>(Object.entries(datasets).flatMap(([name, content]) => (content?.spots ?? []).map(spot => [`${name}/${spot.id}`, spot] as const)));
   const checked = new Set<string>(), resultCache = new Map<string, Stage3UiResult>();
   function validateSpot(spot: Stage3StoredSpot, tree: Stage3UiTree) {
     if (checked.has(spot.id)) return;
@@ -77,17 +77,17 @@ export function createStage3UiRuntime(datasets: Stage3UiDatasets): Stage3UiRunti
         // including a fold. Keep its contribution to reach exactly zero.
         return { ref, rows: null };
       }
-      return { ref, rows: new Map(source(ref, tree).hands.map(row => [row.hand, row])) };
+      return { ref, rows: new Map(source(ref, tree).hands.map(row => [row.hand, row] as const)) };
     });
     return new Map(hands.map(hand => [hand, rows.reduce((weight, { ref, rows }) => {
       if (!rows) return 0;
       const value = rows.get(hand)?.[ref.action as PreflopAction];
       if (!Number.isInteger(value) || value! < 0 || value! > 100) throw new Error('Invalid Stage3 source frequency');
       return weight * value! / 100;
-    }, 1)]));
+    }, 1)] as const));
   }
   function evidence(root: Stage3Root, tree: Stage3UiTree): Stage3UiEvidence {
-    const known = [];
+    const known: number[] = [];
     for (const seat of root.participants) {
       const factors = root.history.filter(event => event.seat === seat && event.source).map(event => event.source!);
       if (!factors.length) continue;
@@ -102,7 +102,7 @@ export function createStage3UiRuntime(datasets: Stage3UiDatasets): Stage3UiRunti
     return { joint_reach_upper_bound: upper, rare: root.rare_eligible && upper < STAGE3_RARE_THRESHOLD };
   }
   function context(node: Stage3Decision, tree: Stage3UiTree, resolving = new Set<string>()): Stage3UiSupport {
-    const ranges = new Map(node.participants.map(seat => [seat, weights(node.source_factors[seat], tree, resolving)]));
+    const ranges = new Map(node.participants.map(seat => [seat, weights(node.source_factors[seat], tree, resolving)] as const));
     const own = ranges.get(node.hero)!;
     const others = node.participants.filter(seat => seat !== node.hero).map(seat => [...ranges.get(seat)!].filter(([, value]) => value > 0));
     const compatible = new Map<string, boolean>();
@@ -134,7 +134,7 @@ export function createStage3UiRuntime(datasets: Stage3UiDatasets): Stage3UiRunti
           result = { status: 'saved', node, spot, model: { actions,
             actionLabels: Object.fromEntries(actions.map(key => [key, `${labels[key]}${node.action_sizes_bb[key] == null ? '' : ` ${node.action_sizes_bb[key]}BB`}`])),
             aggregates: new Map(spot.hands.map(row => [row.hand, { hand: row.hand, comboCount: combos(row.hand),
-              ...(!support.reach(row.hand) ? { unreachable: true, actions: {} } : { actions: Object.fromEntries(actions.map(action => [action, row[action] / 100])) }) }])) } };
+              ...(!support.reach(row.hand) ? { unreachable: true, actions: {} } : { actions: Object.fromEntries(actions.map(action => [action, row[action] / 100])) }) }] as const)) } };
         }
       }
     } catch (error) {

@@ -146,7 +146,7 @@ BLINDS_IP = profile('''
 10 10: A4s
 ''')
 # SB 3bets a wider, bluff-heavier range than BB, so it must defend more vs 4bets
-# or any-two 4bets profit (audit-estimates.mjs auto-profit check, 2026-09-23).
+# or any-two 4bets profit (audit-estimates.ts auto-profit check, 2026-09-23).
 SB_VS_HJ = profile('''
 5 95: AA
 10 90: KK

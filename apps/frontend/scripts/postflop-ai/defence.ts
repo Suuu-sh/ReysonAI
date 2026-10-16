@@ -32,9 +32,9 @@ import { packEquities, packWeights, unpackWeights } from "./cached-values.ts";
 //      combo, the bettor combos that share a card with it gives the blocker effect.
 //   2. Equity of the defender combo against B (ties count half): exact on the river and the turn
 //      (all remaining rivers), a seeded sample of FLOP_RUNOUTS runouts on the flop. Every combo is
-//      ranked once per final board (lib/equity.mjs evaluate) and compared by rank.
+//      ranked once per final board (lib/equity.ts evaluate) and compared by rank.
 //   3. Break-even: pot P before the aggressive action, chips W it added, call C (capped by the
-//      stacks, as engine.mjs does), final pot F = P + W + C, calling wins when
+//      stacks, as engine.ts does), final pot F = P + W + C, calling wins when
 //      realized equity * (F - rake(F)) - C > 0, i.e. required equity = C / (F - rake(F)).
 //      River: realized = equity. Turn / flop: realized = equity * R(tier, role, street) from
 //      the artifact-derived defence_realization table (an estimate, not a solved value).
@@ -140,7 +140,7 @@ export function rankTable(board: readonly number[]): RankTable {
   const score = new Int32Array(NUM_IDS).fill(-1);
   const blocked = new Uint8Array(52);
   for (const card of board) blocked[card] = 1;
-  const ids = [], hand = [0, 0, ...board];
+  const ids: number[] = [], hand = [0, 0, ...board];
   for (let a = 0; a < 52; a++) {
     if (blocked[a]) continue;
     for (let b = a + 1; b < 52; b++) {
@@ -217,7 +217,7 @@ export function flopRunouts(flop: readonly number[]): FlopRunouts {
 export function finalTables(board: readonly number[]): RankTable[] {
   if (board.length === 5) return [rankTable(board)];
   if (board.length === 4) {
-    const tables = [];
+    const tables: RankTable[] = [];
     for (let card = 0; card < 52; card++) if (!board.includes(card)) tables.push(rankTable([...board, card]));
     return tables;
   }
@@ -677,7 +677,7 @@ class Defence {
   }
 
   prime(context: DefenceContext, weights: Float64Array | null) {
-    const ids = [];
+    const ids: number[] = [];
     if (weights) for (let id = 0; id < NUM_IDS; id++) if (weights[id] > 0 && !context.equities.has(id)) ids.push(id);
     if (!context.completeEquities && this.largeRun &&
         context.bettorRange.queries + ids.length >= 3) {
@@ -738,7 +738,7 @@ class Defence {
     this.prime(context, weights);
     const tiers = context.tiers ??= tierArray(board), texture = textureOf(entry.street, board.slice(0, entry.boardLen));
     const baseMixes = TIERS.map((_, tier) => this.policyRule(entry, texture, tier));
-    const items = [];
+    const items: { realized: number; call: number }[] = [];
     let total = 0, raiseWeight = 0, callWeight = 0;
     for (let id = 0; id < NUM_IDS; id++) {
       const weight = weights[id];
@@ -786,7 +786,7 @@ class Defence {
     this.prime(context, weights);
     const tiers = context.tiers ??= tierArray(board), texture = textureOf(entry.street, board.slice(0, entry.boardLen));
     const baseMixes = TIERS.map((_, tier) => this.policyRule(entry, texture, tier));
-    const items = [];
+    const items: { realized: number; fold: number }[] = [];
     let total = 0, continued = 0;
     for (let id = 0; id < NUM_IDS; id++) {
       const weight = weights[id];
@@ -852,7 +852,7 @@ class Defence {
     const tiers = tierArray(board), entry = context.target, texture = textureOf(entry.street, board.slice(0, entry.boardLen));
     const baseMixes = TIERS.map((_, tier) => this.policyRule(entry, texture, tier));
     // Defender: equity, defended mix and realized equity of every combo of its range.
-    const defenders = [];
+    const defenders: { id: number; weight: number; equity: number; realized: number }[] = [];
     let continued = 0;
     for (const id of defenderRange.ids) {
       const combo = [Math.floor(id / 52), id % 52];
@@ -899,7 +899,7 @@ class Defence {
       const type = summary.kind[bettorId];
       if (type) removed[type] += range.dense![bettorId];
     }
-    let percentile = null;
+    let percentile: number | null = null;
     if (equity !== null && summary.defenderTotal > 0) {
       const realized = equity * this.realizationFor(context, combo);
       const target = realized - 1e-12;

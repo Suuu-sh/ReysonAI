@@ -869,3 +869,12 @@ Verification:
 - Broader frontend glob was also started and exposes existing unrelated data/fixture/UI failures; it is not a clean full-suite result. It was stopped when it entered unrelated offline hand-EV research. Minimal development-baseline comparisons reproduced the stale UI expectations and Mac/Linux/symlink constraints; missing ignored continuation artifacts and sandbox loopback EPERM also account for failures. Agent timeout causes were not fully diagnosed. Existing locale duplicate-key and bundle-size warnings remain outside this change.
 
 - Existing FastFold CI exposed an avatar-integration test fixture that applied only migrations 0007/0011, while the preserved development runtime requires 0013's avatar column. Added 0013 to that test's ephemeral DB setup only; real native SQLite Durable Object / six humans / persistent reconnect / no-request alarm test passes (1/1). No avatar implementation or deployment changes.
+
+
+## 2026-10-16 — Repository-wide TypeScript migration
+
+- Migrated all 482 tracked JavaScript source/config/test/tooling files to TypeScript.
+- Repository typecheck and production build passed; compiled Sites JS Worker smoke passed.
+- Computer Use: local development app at http://127.0.0.1:5173/app renders BB and BTN 169-hand ranges.
+- Final targeted migration checks: 38 passed, 3 unresolved source/author-recipe receipt gates; isolated overlay guards 16/16 passed.
+- Existing strategy data and previous approval records remain unchanged. No main merge, data publication or production deployment.

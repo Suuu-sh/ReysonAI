@@ -1,0 +1,271 @@
+import { DEFENCE_VERSION } from "./defence.ts";
+import { EVALUATOR_VERSION } from "../lib/equity.ts";
+import { hasPostflopDeal } from "./range-support.ts";
+// SQL for the canonical local postflop artifacts in the reysonai D1 database (schema:
+// apps/backend/migrations). Spots whose flop policy or report is missing or stale are
+// skipped. Run through scripts/publish-d1.ts.
+import { createHash, randomUUID } from "node:crypto";
+import { existsSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+import { artifactPaths, config, loadInputs, readArtifact, root, boards, laterSizingHash } from "./inputs.ts";
+import { loadCandidate, loadLaterCandidate, sha as policySha } from "./generate.ts";
+import { generationInputOptions } from "./generation-options.ts";
+import { PROFILE_IDS, POLICY_ROLES } from "./generate-profiles.ts";
+import { profileArtifactKey, resolveFlopCandidate, resolveLaterCandidate } from "./candidate-source.ts";
+import { SIMULATION_VERSION, PROFILES } from "./simulation.ts";
+import { POSTFLOP_SPOTS } from "./spots.ts";
+
+// D1 rejects SQL statements over 100 KB, so every stored JSON value must stay below this.
+export const MAX_VALUE_BYTES = 90_000;
+export const quote = (value: any) : any => `'${String(value).replaceAll("'", "''")}'`;
+const sha = (value: any) : any => createHash("sha256").update(value).digest("hex");
+
+function jsonValue(value?: any, label?: any) : any {
+  const text = JSON.stringify(value);
+  if (Buffer.byteLength(text) > MAX_VALUE_BYTES) throw new Error(`${label} is ${Buffer.byteLength(text)} bytes, over the ${MAX_VALUE_BYTES}-byte D1 statement budget`);
+  return quote(text);
+}
+
+// Artifacts of one spot, or null with a reason when it is not publishable.
+export function spotArtifacts(spot?: any) : any {
+  if (!spot.reachable) return { skip: "unreachable" };
+  let inputs: any, candidate: any, laterCandidate: any;
+  try {
+    inputs = loadInputs(spot.id);
+    candidate = loadCandidate(inputs);
+    laterCandidate = loadLaterCandidate(inputs, candidate);
+  } catch (error: any) { return { skip: error.message }; }
+  if (spot.history && !laterCandidate) return { skip: "new HU spot requires its own later policy" };
+  const report = readArtifact(spot, "report");
+  if (!isFreshSimulationReport(inputs, candidate, laterCandidate, report)) return { skip: "report missing, stale or incomplete" };
+  // These are the adopted development-v7 policies, not the abandoned v10 experiment.
+  // Retain the actual generator attribution; an independent reviewer is not a generator.
+  if (spot.history && [candidate, laterCandidate].some((item: any) : any =>
+      item.metadata.model !== "gpt-6.1-sol" || item.metadata.reasoning_effort !== "high")) {
+    return { skip: "adopted HU-v7 policies require their recorded Sol/high attribution" };
+  }
+  return { spot, candidate, laterCandidate, report };
+}
+
+// Cheap publication identity gate; full audit/replay remains a separate
+// acceptance step. Version identities refer to the adopted development-v7 runtime,
+// including its evaluator. The unchanged v7 report schema has no evaluator field:
+// do not invent one or accept a v10 execution merely because a spot has history.
+const ADOPTED_RUNTIME = Object.freeze({ defence: 7, simulation: 3, evaluator: 2, config: 2 });
+const isHash = (value: any) : any => typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
+const hasActionModelMarker = (value: any) : any => value != null && Object.hasOwn(value, "action_model_version");
+
+export function isFreshSimulationReport(inputs?: any, candidate?: any, laterCandidate?: any, report?: any) : any {
+  if (DEFENCE_VERSION !== ADOPTED_RUNTIME.defence || SIMULATION_VERSION !== ADOPTED_RUNTIME.simulation ||
+      EVALUATOR_VERSION !== ADOPTED_RUNTIME.evaluator || config.version !== ADOPTED_RUNTIME.config) return false;
+  if (!inputs?.spot || !isHash(inputs.fingerprint) || !candidate?.policy || !candidate.metadata ||
+      candidate.metadata.kind !== "ai_estimate_not_gto" || candidate.metadata.config_version !== config.version ||
+      candidate.metadata.spot !== inputs.spot.id || candidate.metadata.tree !== inputs.spot.tree ||
+      candidate.metadata.source_hash !== inputs.fingerprint || !isHash(candidate.metadata.policy_hash) ||
+      candidate.metadata.policy_hash !== policySha(candidate.policy) || hasActionModelMarker(candidate.metadata)) return false;
+  if (inputs.spot.history && !laterCandidate) return false;
+  if (laterCandidate && (!laterCandidate.policy || !laterCandidate.metadata ||
+      laterCandidate.metadata.kind !== "ai_estimate_not_gto" || laterCandidate.metadata.config_version !== config.version ||
+      laterCandidate.metadata.spot !== inputs.spot.id || laterCandidate.metadata.source_hash !== inputs.fingerprint ||
+      laterCandidate.metadata.flop_policy_hash !== candidate.metadata.policy_hash || !isHash(laterCandidate.metadata.policy_hash) ||
+      laterCandidate.metadata.policy_hash !== policySha(laterCandidate.policy) || hasActionModelMarker(laterCandidate.metadata))) return false;
+  if (!report || report.kind !== "ai_estimate_not_gto" || report.version !== 1 || report.spot !== inputs.spot.id ||
+      report.policy_hash !== candidate.metadata.policy_hash || report.source_hash !== inputs.fingerprint ||
+      report.simulation_version !== SIMULATION_VERSION || hasActionModelMarker(report) || report.defence_version !== DEFENCE_VERSION ||
+      (Object.hasOwn(report, "evaluator_version") && report.evaluator_version !== EVALUATOR_VERSION) ||
+      report.later_sizing_hash !== laterSizingHash() || report.seed !== config.seed ||
+      report.samples_per_board_profile_seat !== config.samples_per_board_profile_seat ||
+      (report.later_policy_hash ?? null) !== (laterCandidate?.metadata.policy_hash ?? null)) return false;
+  const available = boards().filter((board: any) : any => !inputs.spot.history || hasPostflopDeal(inputs, board.cards));
+  const absent = boards().filter((board: any) : any => !available.some((item: any) : any => item.id === board.id)).map((board: any) : any => board.id);
+  if (JSON.stringify(report.unreachable_boards ?? ([] as any[])) !== JSON.stringify(absent)) return false;
+  const expected = new Map(available.flatMap((board: any) : any => PROFILES.flatMap((profile: any) : any => [inputs.spot.ip, inputs.spot.oop].map((hero: any) : any =>
+    [`${board.id}|${profile}|${hero}`, board.split]))));
+  if (!Array.isArray(report.results) || report.results.length !== expected.size) return false;
+  for (const row of report.results) {
+    if (!row || typeof row !== "object") return false;
+    const key = `${row.board}|${row.opponent}|${row.hero}`;
+    if (!expected.has(key) || row.split !== expected.get(key)) return false;
+    expected.delete(key);
+    for (const metric of [row.candidate_ev_bb, row.baseline_ev_bb, row.delta_bb]) {
+      if (!Number.isFinite(metric?.mean) || !Array.isArray(metric.ci95) || metric.ci95.length !== 2 ||
+          metric.ci95.some((value: any) : any => !Number.isFinite(value)) || metric.ci95[0] > metric.mean || metric.ci95[1] < metric.mean) return false;
+    }
+  }
+  return expected.size === 0;
+}
+
+export function buildSql(published?: any, publishedAt: any = new Date().toISOString(), publicationRevision: any = randomUUID(), profiles: any = ([] as any[])) : any {
+  // Missing local artifacts must never erase an unrelated published spot.
+  if (!published.length && !profiles.length) return "-- No publishable postflop artifacts; no database changes.\n";
+  if (new Set(published.map((item: any) : any => item.spot.id)).size !== published.length) throw new Error("Duplicate published postflop spot");
+  if (new Set(profiles.map((item: any) : any => `${item.profile}|${item.spot.id}`)).size !== profiles.length) throw new Error("Duplicate published postflop profile/spot");
+  const lines = ["-- spot-scoped postflop upsert; preserves every unmentioned spot and profile."];
+  for (const { spot, candidate, laterCandidate, report } of published) {
+    const id = quote(spot.id);
+    for (const table of ["postflop_policies", "postflop_reports", "postflop_reasons", "postflop_spots"]) {
+      lines.push(`DELETE FROM ${table} WHERE spot_id = ${id};`);
+    }
+    lines.push(`INSERT INTO postflop_spots (spot_id, slug, kind, tree, ip, oop, pot_bb, stack_bb, spot_json) VALUES (${id}, ${quote(spot.slug)}, ${quote(spot.kind)}, ${quote(spot.tree)}, ${quote(spot.ip)}, ${quote(spot.oop)}, ${Number(spot.potBb)}, ${Number(spot.stackBb ?? 100)}, ${jsonValue(spot, `${spot.id} spot`)});`);
+    for (const [stage, item] of [["flop", candidate], ["later", laterCandidate]]) {
+      if (!item) continue;
+      lines.push(`INSERT INTO postflop_policies (spot_id, stage, policy_hash, metadata_json, policy_json) VALUES (${id}, '${stage}', ${quote(item.metadata.policy_hash)}, ${jsonValue(item.metadata, `${spot.id} ${stage} metadata`)}, ${jsonValue(item, `${spot.id} ${stage} policy`)});`);
+    }
+    lines.push(`INSERT INTO postflop_reports (spot_id, payload_json) VALUES (${id}, ${jsonValue(report, `${spot.id} report`)});`);
+  }
+  const hashes = Object.fromEntries(published.map(({ spot, candidate, laterCandidate }: any) : any =>
+    [spot.id, { flop: candidate.metadata.policy_hash, later: laterCandidate?.metadata.policy_hash ?? null }]));
+  const profileHashes: Record<string, any> = {};
+  for (const { profile, spot, flop, later, opponentSeat: declaredOpponentSeat } of profiles) {
+    const opponentSeat = itemOpponentSeat({ flop, later, opponentSeat: declaredOpponentSeat });
+    lines.push(`DELETE FROM postflop_profile_policies WHERE profile = ${quote(profile)} AND spot_id = ${quote(spot.id)} AND opponent_seat = ${quote(opponentSeat)};`);
+    profileHashes[profile] ??= {};
+    const roles: any = profileHashes[profile][spot.id] = {};
+    for (const role of POLICY_ROLES) {
+      roles[role] = {};
+      for (const [stage, candidate] of [["flop", flop[role]], ["later", later[role]]]) {
+        const label = `${profile}/${spot.id}/${role}/${stage}`;
+        const metadata = { ...candidate.metadata, opponent_seat: opponentSeat };
+        roles[role][stage] = { policy: candidate.metadata.policy_hash, metadata: sha(JSON.stringify(metadata)) };
+        lines.push(`INSERT INTO postflop_profile_policies (profile, spot_id, opponent_seat, role, stage, metadata_json, policy_json, published_at) VALUES (${quote(profile)}, ${quote(spot.id)}, ${quote(opponentSeat)}, ${quote(role)}, ${quote(stage)}, ${jsonValue(metadata, `${label} metadata`)}, ${jsonValue(candidate.policy, `${label} policy`)}, ${quote(publishedAt)});`);
+      }
+    }
+  }
+  // A partial publication gets a new revision even for A -> B -> A. Hashing
+  // only the touched content would revive a stale cache for untouched rows.
+  // Keep standard policy metadata isolated from profile-only writes: MCP reads
+  // this exact three-key detail contract and hashes only the standard catalog.
+  if (published.length) {
+    lines.push("DELETE FROM dataset_versions WHERE name = 'postflop';");
+    lines.push(`INSERT INTO dataset_versions (name, content_hash, published_at, detail_json) VALUES ('postflop', ${quote(sha(JSON.stringify({ publicationRevision, publishedAt, hashes })))}, ${quote(publishedAt)}, ${jsonValue({ mode: "spot-upsert", publication_revision: publicationRevision, touched_spots: hashes }, "dataset detail")});`);
+  }
+  if (profiles.length) {
+    const profileDetail = { kind: "ai_estimate_not_gto", mode: "profile-spot-upsert", publication_revision: publicationRevision,
+      touched_profiles: Object.fromEntries(PROFILE_IDS.map((profile: any) : any => [profile, {
+        spots: Object.keys(profileHashes[profile] ?? {}).length,
+        policies: Object.keys(profileHashes[profile] ?? {}).length * 4,
+      }])), policies: profiles.length * 4 };
+    lines.push("DELETE FROM dataset_versions WHERE name = 'postflop-profiles';");
+    lines.push(`INSERT INTO dataset_versions (name, content_hash, published_at, detail_json) VALUES ('postflop-profiles', ${quote(sha(JSON.stringify({ publicationRevision, publishedAt, profiles: profileHashes })))}, ${quote(publishedAt)}, ${jsonValue(profileDetail, "profile dataset detail")});`);
+  }
+  return `${lines.join("\n")}\n`;
+}
+
+// Every publishable spot, logging what is skipped and why.
+// requireAll (CI): every reachable spot must have fresh flop and turn/river policies.
+// SQL remains spot-scoped so unmentioned published histories are preserved.
+export function publishableSpots(log: any = console.log, { requireAll = false }: any = {}) : any {
+  const published: any[] = [];
+  for (const spot of POSTFLOP_SPOTS) {
+    const result = spotArtifacts(spot);
+    if (result.skip) {
+      if (requireAll && result.skip !== "unreachable") throw new Error(`${spot.id} is not publishable: ${result.skip}`);
+      log(`skip ${spot.id}: ${result.skip}`); continue;
+    }
+    if (requireAll && !result.laterCandidate) throw new Error(`${spot.id} has no turn/river policy`);
+    published.push(result);
+    log(`publish ${spot.id}${result.laterCandidate ? " +later" : ""}`);
+  }
+  return published;
+}
+
+// Each generated profile/spot is an indivisible four-file delivery unit. Fully
+// absent HU-after-multiway units are still preparing; any present partial/stale
+// unit is a hard failure before producing spot/profile-scoped delivery SQL.
+export function publishableProfiles(log: any = console.log, { requireAll = false, spots = POSTFLOP_SPOTS,
+  read = readArtifact, inputsFor = loadInputs, hasArtifact }: any = {}) : any {
+  const published: any[] = [];
+  if (read === readArtifact) for (const profile of PROFILE_IDS) {
+    const expected = new Set(spots.flatMap((spot: any) : any => POLICY_ROLES.flatMap((role: any) : any => ["candidate", "laterCandidate"].map((kind: any) : any =>
+      `${profileArtifactKey(spot, kind, profile, role).split("/").at(-1)}.json`))));
+    for (const base of ["scripts/data/postflop-ai/profiles", ".local/postflop-ai/profiles"]) {
+      const directory = join(root, base, profile);
+      if (!existsSync(directory)) continue;
+      for (const name of readdirSync(directory)) if (name.endsWith(".json") && !expected.has(name)) {
+        throw new Error(`${profile}/${name}: unknown generated profile artifact`);
+      }
+    }
+  }
+  for (const profile of PROFILE_IDS) for (const spot of spots) {
+    const flop: any = {}, later: any = {};
+    try {
+      let present = 0;
+      for (const role of POLICY_ROLES) for (const [kind, pair] of [["candidate", flop], ["laterCandidate", later]]) {
+        pair[role] = read(spot, kind, { profile, role });
+        // JSON null/false is an invalid present file, not an ungenerated unit.
+        const onDisk: any = hasArtifact ? hasArtifact(spot, kind, { profile, role }) : read === readArtifact &&
+          (existsSync(artifactPaths(spot, { profile, role })[kind]) ||
+            existsSync(join(root, ".local/postflop-ai", `${profileArtifactKey(spot, kind, profile, (role as any))}.json`)));
+        if (onDisk || pair[role] !== null && pair[role] !== undefined) present++;
+      }
+      if (!present && "history" in spot) { log(`skip ${profile}/${spot.id}: profile policy is not generated`); continue; }
+      if (present && present !== 4) throw new Error(`Incomplete generated profile policy: ${present}/4 files`);
+      let inputs: any, opponentSeat: any;
+      if (present) {
+        const candidates = POLICY_ROLES.flatMap((role: any) : any => [flop[role], later[role]]);
+        const declaredSeats = new Set(candidates.flatMap((item: any) : any => {
+          const metadata = item?.metadata ?? {};
+          const values = [metadata.opponent_seat, metadata.opponentSeat].filter((value: any) : any => value !== undefined);
+          if (values.some((value: any) : any => value !== "ip" && value !== "oop") || new Set(values).size > 1) {
+            throw new Error("Invalid or conflicting opponent-seat metadata");
+          }
+          return values;
+        }));
+        if (declaredSeats.size > 1) throw new Error("Profile policy pair mixes opponent seats");
+        const seats = declaredSeats.size ? [...declaredSeats] : ["ip", "oop"];
+        const matches: any[] = [];
+        for (const seat of seats) {
+          try {
+            const candidateInputs = inputsFor(spot.id, generationInputOptions(spot.id, profile, seat));
+            const sourceHashesMatch = candidates.every((item: any) : any => item?.metadata?.source_hash === candidateInputs.fingerprint);
+            const seatMetadataMatches = candidates.every((item: any) : any => {
+              const metadata = item?.metadata ?? {};
+              return (metadata.opponent_seat === undefined || metadata.opponent_seat === seat) &&
+                (metadata.opponentSeat === undefined || metadata.opponentSeat === seat);
+            });
+            if (sourceHashesMatch && seatMetadataMatches) matches.push({ seat, inputs: candidateInputs });
+          } catch { /* A seat without usable profile source data cannot match a saved source hash. */ }
+        }
+        if (matches.length !== 1) throw new Error("Profile source hashes do not identify exactly one opponent seat");
+        ({ seat: opponentSeat, inputs } = matches[0]);
+      } else {
+        // Preserve the existing preparing/unreachable behavior for absent units.
+        try {
+          opponentSeat = generationInputOptions(spot.id, profile).opponentSeat;
+          inputs = inputsFor(spot.id, generationInputOptions(spot.id, profile));
+        } catch (error: any) {
+          if (/unreachable after range adjustment/.test(error.message)) {
+            log(`skip ${profile}/${spot.id}: unreachable adjusted history`); continue;
+          }
+          throw error;
+        }
+      }
+      if (!present && !requireAll) { log(`skip ${profile}/${spot.id}: profile policy is not generated`); continue; }
+      if (present !== 4) throw new Error(`Incomplete generated profile policy: ${present}/4 files`);
+      for (const role of POLICY_ROLES) for (const [stage, candidate] of [["flop", flop[role]], ["later", later[role]]]) {
+        const metadata = candidate?.metadata;
+        if (metadata?.profile !== profile || metadata?.role !== role || metadata?.spot !== spot.id ||
+            metadata?.structure_hash !== inputs.structure_hash || metadata?.config_version !== config.version ||
+            candidate?.profileCandidates || metadata?.kind !== "ai_estimate_not_gto" ||
+            (stage === "flop" ? metadata?.tree !== spot.tree : metadata?.tree !== undefined && metadata.tree !== spot.tree)) {
+          throw new Error(`Profile policy identity mismatch: ${stage}/${role}`);
+        }
+      }
+      const resolved = resolveFlopCandidate(inputs, flop);
+      resolveLaterCandidate(inputs, later, resolved);
+      published.push({ profile, spot, flop, later, opponentSeat });
+      log(`publish ${profile}/${spot.id}: villain+exploit flop+later`);
+    } catch (error: any) { throw new Error(`${profile}/${spot.id} is not publishable: ${error.message}`, { cause: error }); }
+  }
+  return published;
+}
+
+function itemOpponentSeat({ flop, later, opponentSeat }: any) : any {
+  const values = POLICY_ROLES.flatMap((role: any) : any => [flop[role], later[role]]).map((item: any) : any =>
+    item?.metadata?.opponent_seat ?? item?.metadata?.opponentSeat).filter((value: any) : any => value !== undefined);
+  const selected = opponentSeat ?? values[0];
+  if (!selected || !["ip", "oop"].includes(selected) || values.some((value: any) : any => value !== selected) || new Set(values).size > 1) {
+    throw new Error("Profile publication requires one verified opponent seat per unit");
+  }
+  return selected;
+}

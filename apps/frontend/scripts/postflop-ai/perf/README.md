@@ -7,8 +7,8 @@ before golden.
 ## Capture / comparison
 
 ```sh
-node scripts/postflop-ai/perf/equality.mjs capture /private/tmp/reyson-w1-before
-node scripts/postflop-ai/perf/equality.mjs compare /private/tmp/reyson-w1-before
+node scripts/postflop-ai/perf/equality.ts capture /private/tmp/reyson-w1-before
+node scripts/postflop-ai/perf/equality.ts compare /private/tmp/reyson-w1-before
 ```
 
 This covers the 400-deal simulation, all hand classes/histories of As7d2c and the any-flop KhTh4s
@@ -22,9 +22,9 @@ reference, both JS and WebAssembly paths, board workers, hand tiers and the eval
 ## Isolated on-demand benchmark
 
 ```sh
-node scripts/postflop-ai/perf/ondemand.mjs flop
-node scripts/postflop-ai/perf/ondemand.mjs turn
-node scripts/postflop-ai/perf/ondemand.mjs river
+node scripts/postflop-ai/perf/ondemand.ts flop
+node scripts/postflop-ai/perf/ondemand.ts turn
+node scripts/postflop-ai/perf/ondemand.ts river
 ```
 
 Each new Node process makes one cold and one identical warm request. The JSON includes sample
@@ -33,7 +33,7 @@ counts, wall timings, target budget and result equality; it does not hide an exc
 ## Explicit full CLI measurements
 
 ```sh
-node scripts/postflop-ai/perf/measure.mjs /private/tmp/reyson-w1-before /private/tmp/reyson-w1-after
+node scripts/postflop-ai/perf/measure.ts /private/tmp/reyson-w1-before /private/tmp/reyson-w1-after
 ```
 
 This runs the real default `simulate` → `audit` → `hand-ev` commands for **BTN_open_BB_call only**.
@@ -148,10 +148,10 @@ were authorized, while the shared computation and scheduler apply to all support
 
 ## Changed files / scope
 
-- Shared computation: `scripts/postflop-ai/{defence,range-equity,cached-values,equity-kernel,model,flop-hand-ev-core,later-hand-ev-core}.mjs`, `scripts/lib/equity.mjs`.
-- Offline orchestration: `scripts/postflop-ai/{board-batch,board-worker,simulation-parallel,simulation,hand-ev,audit,cli}.mjs`.
-- Tests/oracles: `tests/postflop-performance.test.mjs`, `tests/postflop-browser-compute.test.mjs`, `tests/reference/{range-equity,hand-tier}.mjs`.
-- Reproducible tooling: `scripts/postflop-ai/perf/{equality,ondemand,measure}.mjs`.
+- Shared computation: `scripts/postflop-ai/{defence,range-equity,cached-values,equity-kernel,model,flop-hand-ev-core,later-hand-ev-core}.ts`, `scripts/lib/equity.ts`.
+- Offline orchestration: `scripts/postflop-ai/{board-batch,board-worker,simulation-parallel,simulation,hand-ev,audit,cli}.ts`.
+- Tests/oracles: `tests/postflop-performance.test.ts`, `tests/postflop-browser-compute.test.ts`, `tests/reference/{range-equity,hand-tier}.ts`.
+- Reproducible tooling: `scripts/postflop-ai/perf/{equality,ondemand,measure}.ts`.
 - Documentation: this README and `docs/postflop-defence.md`.
 
 No dependencies or external network were used. No commit, push, reset, stash, checkout or staging
@@ -161,8 +161,8 @@ golden and probe outputs were stored under `/private/tmp`.
 
 ## W3 note (2026-10-01)
 
-Per-hand action EV became an exact expectation (`exact-ev.mjs`, docs/postflop-flop-base.md). The hand-EV golden
-cases of `equality.mjs` (200-sample boards, 160/600-sample classes, river hands at 600 samples) and the 2,000-sample
-`measure.mjs` hand-EV comparison were Monte Carlo goldens and no longer apply; simulation, audit and explanation
-goldens are unchanged. Use `perf/exact-validate.mjs river|turn|flop` for the validation against the Monte Carlo
-and `perf/ondemand.mjs` for cold timings (budgets: river 50 ms, turn 400 ms, flop 1.5 s; the turn and flop are over).
+Per-hand action EV became an exact expectation (`exact-ev.ts`, docs/postflop-flop-base.md). The hand-EV golden
+cases of `equality.ts` (200-sample boards, 160/600-sample classes, river hands at 600 samples) and the 2,000-sample
+`measure.ts` hand-EV comparison were Monte Carlo goldens and no longer apply; simulation, audit and explanation
+goldens are unchanged. Use `perf/exact-validate.ts river|turn|flop` for the validation against the Monte Carlo
+and `perf/ondemand.ts` for cold timings (budgets: river 50 ms, turn 400 ms, flop 1.5 s; the turn and flop are over).

@@ -10,7 +10,7 @@ Every seat after S folds before the action returns to O (later-seat cold
 unreachable, including the four histories whose original caller is SB.
 
 This is an authoring-time, hand-group frequency table, not a solver result.
-Only the staging directory used by build-estimates.mjs may be written.
+Only the staging directory used by build-estimates.ts may be written.
 """
 import json
 import os
