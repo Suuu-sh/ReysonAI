@@ -3,6 +3,7 @@ import test from "node:test";
 import worker from "../src/index.ts";
 import { buildPreflopSql, PART_CHARS } from "../../frontend/scripts/publish-d1.ts";
 import { installEdgeCache } from "./helpers/edge-cache.ts";
+import { isPublishedDatasetName } from "../src/domain/published-dataset.ts";
 
 // D1 mock over preflop_datasets / preflop_dataset_parts rows.
 function mockDb(datasets?: any, parts?: any, onQuery: any = (): any => {}): any {
@@ -29,6 +30,13 @@ test("preflop datasets are listed and served as the concatenated JSON with an et
   assert.equal(response.headers.get("etag"), '"h"');
   assert.equal(await response.text(), text);
   assert.equal((await get("/v1/preflop/datasets/opening-ranges", { "if-none-match": '"h"' })).status, 304);
+});
+
+test("AIv2 source datasets are addressable without widening path traversal names", () => {
+  assert.equal(isPublishedDatasetName("aiv2/opening-ranges"), true);
+  assert.equal(isPublishedDatasetName("aiv2/reasons/BB_vs_BTN"), true);
+  assert.equal(isPublishedDatasetName("aiv2/profiles/nit/villain/meta"), true);
+  assert.equal(isPublishedDatasetName("aiv2/../opening-ranges"), false);
 });
 
 test("unknown, invalid and incomplete datasets are rejected", async (): Promise<any> => {

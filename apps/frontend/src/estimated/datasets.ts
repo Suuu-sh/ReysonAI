@@ -27,6 +27,10 @@ type NodeFs = {
 
 const registry = new Map<string, unknown>();
 const pending = new Map<string, Promise<unknown>>();
+let source: "ai" | "aiv2" = "ai";
+
+export function setDatasetSource(value: "ai" | "aiv2") { source = value === "aiv2" ? "aiv2" : "ai"; }
+const datasetName = (name: string) => source === "aiv2" ? `aiv2/${name}` : name;
 
 // Needed synchronously by the app; everything else loads on demand.
 export const APP_DATASETS = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses",
@@ -40,30 +44,32 @@ const nodeFs = () => (globalThis as typeof globalThis & { process?: { getBuiltin
 export function dataset<Name extends keyof DatasetMap>(name: Name): DatasetMap[Name];
 export function dataset<T = unknown>(name: string): T;
 export function dataset<T = unknown>(name: string): T {
-  if (registry.has(name)) return registry.get(name) as T;
+  const key = datasetName(name);
+  if (registry.has(key)) return registry.get(key) as T;
   const fs = nodeFs();
   if (!fs) throw new Error(`Preflop dataset ${name} is not loaded`);
-  const value = JSON.parse(fs.readFileSync(new URL(`./${name}.json`, here), "utf8"));
-  registry.set(name, value);
+  const value = JSON.parse(fs.readFileSync(new URL(`./${key}.json`, here), "utf8"));
+  registry.set(key, value);
   return value;
 }
 
 export function loadDataset<Name extends keyof DatasetMap>(name: Name): Promise<DatasetMap[Name]>;
 export function loadDataset<T = unknown>(name: string): Promise<T>;
 export function loadDataset<T = unknown>(name: string): Promise<T> {
-  if (registry.has(name)) return Promise.resolve(registry.get(name) as T);
+  const key = datasetName(name);
+  if (registry.has(key)) return Promise.resolve(registry.get(key) as T);
   if (nodeFs()) return Promise.resolve().then(() => dataset<T>(name));
-  if (!pending.has(name)) {
-    pending.set(name, fetch(`${apiBase()}/v1/preflop/datasets/${name}`)
+  if (!pending.has(key)) {
+    pending.set(key, fetch(`${apiBase()}/v1/preflop/datasets/${key}`)
       .then(async response => {
         if (!response.ok) throw new Error(`${name} を読み込めませんでした（${response.status}）。`);
         const value = await response.json();
-        registry.set(name, value);
+        registry.set(key, value);
         return value;
       })
-      .finally(() => pending.delete(name)));
+      .finally(() => pending.delete(key)));
   }
-  return pending.get(name) as Promise<T>;
+  return pending.get(key) as Promise<T>;
 }
 
 export const preloadDatasets = (names: string[]) => Promise.all(names.map(name => loadDataset(name)));
@@ -74,7 +80,12 @@ let index: Promise<string[]> | null = null;
 let known: Set<string> | null = null;
 export function hasDataset(name: string): boolean {
   if (!known && nodeFs()) known = new Set(listFiles(nodeFs()!, new URL("./", here)));
-  return Boolean(known?.has(name));
+  return Boolean(known?.has(datasetName(name)));
+}
+
+export function hasCompleteAiv2Source(): boolean {
+  if (!known && nodeFs()) known = new Set(listFiles(nodeFs()!, new URL("./", here)));
+  return APP_DATASETS.every(name => known?.has(`aiv2/${name}`)) && Boolean(known?.has("aiv2/manifest"));
 }
 
 export function datasetNames(): Promise<string[]> {

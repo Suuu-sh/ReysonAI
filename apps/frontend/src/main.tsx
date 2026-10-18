@@ -11,11 +11,13 @@ import "./site/site.css";
 import "./components/loading.css";
 import { productLocale, rememberLocale } from "./locale.ts";
 import { isProductAppRoute, legalDocumentOf } from "./route.ts";
-import { APP_DATASETS, datasetNames, preloadDatasets } from "./estimated/datasets.ts";
+import { APP_DATASETS, datasetNames, preloadDatasets, setDatasetSource } from "./estimated/datasets.ts";
+import { loadRangeSource } from "./account/preferences.ts";
 
 // The app reads preflop datasets synchronously, so preload them and the dataset index
 // before importing its module.
 const withDatasets = <T,>(names: string[], load: () => Promise<T>) => () => Promise.all([preloadDatasets(names), datasetNames()]).then(load);
+setDatasetSource(loadRangeSource() === "aiv2" ? "aiv2" : "ai");
 const ProductApp = lazy(withDatasets(APP_DATASETS, () => import("./ProductApp.tsx")));
 const isProductRoute = isProductAppRoute(window.location.pathname, window.location.hostname);
 const legalDocument = legalDocumentOf(window.location.pathname);

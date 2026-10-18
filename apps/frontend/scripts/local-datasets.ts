@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const dir = fileURLToPath(new URL("../src/estimated", import.meta.url));
 // Keep ordinary names unchanged; allow only the Stage A villain namespace.
-const NAME = /^(?:[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)?|profiles\/(?:nit|station|lag|maniac)\/villain\/(?:opening-ranges|preflop-ranges|three-bet-responses|four-bet-responses|five-bet-responses|limp-responses|limp-deep-responses|meta))$/;
+const NAME = /^(?:[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)?|profiles\/(?:nit|station|lag|maniac)\/villain\/(?:opening-ranges|preflop-ranges|three-bet-responses|four-bet-responses|five-bet-responses|limp-responses|limp-deep-responses|meta)|aiv2\/(?:[A-Za-z0-9_-]+|reasons\/[A-Za-z0-9_-]+|profiles\/(?:nit|station|lag|maniac)\/villain\/(?:opening-ranges|preflop-ranges|three-bet-responses|four-bet-responses|five-bet-responses|limp-responses|limp-deep-responses|meta)))$/;
 
 function names(current: any = dir) : any {
   return readdirSync(current, { withFileTypes: true }).flatMap((entry: any) : any => entry.isDirectory()

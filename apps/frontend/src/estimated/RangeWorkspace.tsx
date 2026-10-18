@@ -18,7 +18,7 @@ type LocalEstimate = { scenario?: string; ranges: LocalRange[] };
 type LocalEstimateResponse = { error?: string; data?: LocalEstimate; pending?: boolean; cached?: boolean };
 type InlineFact = { key?: string; label: string; unit?: string; value: number | null | undefined };
 type WorkspaceActionBlock = Partial<Omit<ActionBlock, "key" | "kind">> & { key: string; kind: string; cards?: string[]; street?: string; potBb?: number; pending?: boolean; flopIndex?: number; laterIndex?: number };
-type EstimatedRangesProps = WorkspaceProps & { rangeSource?: "ai" | "gto"; previousRangeSource?: "ai" | "gto" | null; previousSemanticNode?: string | null; initialRangeType?: string; fourBet?: ReturnType<typeof loadFourBetDataset>; mw3Client?: typeof mw3DeliveryClient };
+type EstimatedRangesProps = WorkspaceProps & { rangeSource?: "ai" | "aiv2" | "gto"; previousRangeSource?: "ai" | "aiv2" | "gto" | null; previousSemanticNode?: string | null; initialRangeType?: string; fourBet?: ReturnType<typeof loadFourBetDataset>; mw3Client?: typeof mw3DeliveryClient };
 type WorkspaceProps = { profile?: Profile | null; onEditProfile?: () => void; onSectionChange?: (section: string) => void };
 type ActionPathProps = RangeBuildState & { leading?: ReactNode; expanded?: boolean; blocks?: WorkspaceActionBlock[]; selectedRangeBlock?: string | null; onSelectRangeBlock?: (key: string | null) => void; onRewindActionBlock?: ((block: WorkspaceActionBlock) => void) | null; onEnterPostflop?: (() => void) | null; onOpenFlopCards?: () => void; onOpenLaterCard?: (street: string) => void; onFlopAction?: (block: WorkspaceActionBlock, action: string) => void; onLaterAction?: (block: WorkspaceActionBlock, action: string) => void; onAct?: (position: string, action: string) => void; onContinuationAction?: (action: string) => void; onColdAction?: (value: RangeUrlSelection["coldAction"]) => void; onSqueezeResponse?: (role: string, action: string) => void; onBoundedContinuation?: (block: WorkspaceActionBlock, action: string) => void; onStage3Action?: (block: WorkspaceActionBlock, action: string) => void; onFourBet?: () => void; onAllIn?: () => void; onShoveResponse?: (action: string) => void };
 import { stage3Copy } from "./stage3-copy.ts";
@@ -854,7 +854,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
     && (flopActions.length === 0 || flopActions.length === 1 && flopActions[0] === "check")
     && !turnCard && turnActions.length === 0 && !riverCard && riverActions.length === 0);
   const gtoPathMode = rangeSource === "gto" || aiRootUnavailable || aiGtoHistoryUnavailable;
-  const canEnterLaterStreets = !gtoPathMode && Boolean(flopContext?.pilotAvailable && flopBoard && laterStart(flopActions, flopContext));
+  const canEnterLaterStreets = rangeSource !== "aiv2" && !gtoPathMode && Boolean(flopContext?.pilotAvailable && flopBoard && laterStart(flopActions, flopContext));
   const laterBlocks = canEnterLaterStreets
     ? buildLaterActionBlocks({ flopActions, turnCard, turnActions, riverCard, riverActions }, flopContext)
     : [];
@@ -873,7 +873,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
     previousPendingStreetCard.current = pendingStreetCard;
   }, [pendingStreetCard]);
   const combinedBlocks: WorkspaceActionBlock[] = flopActive
-    ? [...actionBlocks.filter(block => block.kind !== "end"), { key: "flop-board", kind: "board", cards: flopCards, street: "flop", potBb: flopContext!.potBb },
+    ? rangeSource === "aiv2" ? [] : [...actionBlocks.filter(block => block.kind !== "end"), { key: "flop-board", kind: "board", cards: flopCards, street: "flop", potBb: flopContext!.potBb },
       ...(flopContext!.kind === "mw3_srp"
         ? mw3Session.navigation?.blocks ?? []
         : flopContext!.pilotAvailable && flopBoard
@@ -1088,7 +1088,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
     if (profileChanged || seatChanged) { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); }
     return profileChanged || seatChanged;
   };
-  if (flopActive && !postflopAllowed && rangeSource !== "gto" && !preserveGtoDecisionPath) return <div className="shell">
+  if (flopActive && !postflopAllowed && rangeSource !== "gto" && rangeSource !== "aiv2" && !preserveGtoDecisionPath) return <div className="shell">
     <Sidebar activeSection={RANGE_SECTION}
       onSectionChange={onSectionChange ?? (() => {})}
       profile={profile} onEditProfile={onEditProfile} />
@@ -1133,9 +1133,9 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
             }
             rewindToActionBlock(block);
           }}
-          onEnterPostflop={flopContext ? () => { setShowFlop(true); setFlopDialogOpen(postflopAllowed || rangeSource === "gto"); setSelectedRangeBlock(null); } : null}
-          onOpenFlopCards={() => setFlopDialogOpen(postflopAllowed || rangeSource === "gto")}
-          onOpenLaterCard={street => setStreetCardDialog(postflopAllowed && rangeSource !== "gto" ? street as StreetCardDialogName : null)}
+          onEnterPostflop={flopContext && rangeSource !== "aiv2" ? () => { setShowFlop(true); setFlopDialogOpen(postflopAllowed || rangeSource === "gto"); setSelectedRangeBlock(null); } : null}
+          onOpenFlopCards={rangeSource !== "aiv2" ? () => setFlopDialogOpen(postflopAllowed || rangeSource === "gto") : undefined}
+          onOpenLaterCard={rangeSource !== "aiv2" ? street => setStreetCardDialog(postflopAllowed && rangeSource !== "gto" ? street as StreetCardDialogName : null) : undefined}
           onFlopAction={(block, action) => {
             if ((aiRootUnavailable || aiGtoHistoryUnavailable) && block.key === "gto-bb-root" && action === "check") {
               setFlopActions([]);
@@ -1165,7 +1165,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
         </Panel>
-        {flopActive && rangeSource !== "gto" && !postflopAllowed ? <PostflopSignIn account={account} onBack={() => setShowFlop(false)} /> : aiRootUnavailable ? <Panel className="multiway-range-panel missing-range-panel">
+        {flopActive && rangeSource === "aiv2" ? <Panel className="multiway-range-panel missing-range-panel"><SectionHeading title={localized("AIv2はプリフロップのみ", "AIv2 covers preflop only")} /><StatusState title={localized("ポストフロップ未対応", "Postflop is not available")}>{localized("AIv2の保存データはプリフロップのみです。ポストフロップの代替データは表示しません。", "AIv2 currently has preflop data only. No postflop substitute is shown.")}</StatusState><button type="button" onClick={() => { setShowFlop(false); setSelectedRangeBlock(null); }}>{localized("プリフロップに戻る", "Back to preflop")}</button></Panel> : flopActive && rangeSource !== "gto" && !postflopAllowed ? <PostflopSignIn account={account} onBack={() => setShowFlop(false)} /> : aiRootUnavailable ? <Panel className="multiway-range-panel missing-range-panel">
           <SectionHeading title={localized("No AI estimate for BB's first flop decision", "BBのフロップ初手にAI推定はありません")} />
           <StatusState>{localized("The selected GTO action node is preserved. This AI source has no matching range, so no substitute is shown.", "選択中のGTOアクションノードを保持しています。このAIデータソースに対応するレンジはなく、代替表示はしません。")}</StatusState>
         </Panel> : aiGtoHistoryUnavailable ? <Panel className="multiway-range-panel missing-range-panel">
@@ -1186,11 +1186,11 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
         </div>
       </>}
       {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} displayMode={displayMode} onDisplayModeChange={changeDisplayMode} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
-      {flopActive && flopDialogOpen && <FlopCardDialog cards={flopCards} profile={opponentProfile} seat={flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? undefined : effectiveOpponentSeat}
+      {flopActive && rangeSource !== "aiv2" && flopDialogOpen && <FlopCardDialog cards={flopCards} profile={opponentProfile} seat={flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? undefined : effectiveOpponentSeat}
         positions={{ ip: flopContext!.ip ?? null, oop: flopContext!.oop ?? null }} onClose={() => setFlopDialogOpen(false)}
         onApply={(cards, seat, profile) => {
           if (applyOpponent(profile, seat, cards) || cards.join("") !== flopCards.join("")) { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); } setFlopDialogOpen(false); }} />}
-      {flopActive && streetCardDialog && <StreetCardDialog street={streetCardDialog}
+      {flopActive && rangeSource !== "aiv2" && streetCardDialog && <StreetCardDialog street={streetCardDialog}
         currentCard={streetCardDialog === "turn" ? turnCard : riverCard}
         usedCards={[...flopCards, ...(streetCardDialog === "river" ? [turnCard] : [])].filter(Boolean)}
         onClose={() => setStreetCardDialog(null)}
@@ -1208,8 +1208,8 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
 
 export function RangeWorkspace({ profile, onEditProfile, onSectionChange }: WorkspaceProps) {
   const [rangeSource, setRangeSource] = useState(loadRangeSource);
-  const [previousRangeSource] = useState<"ai" | "gto" | null>(() => {
-    try { const value = window.sessionStorage.getItem(workspaceSourceStorageKey); return value === "ai" || value === "gto" ? value : null; } catch { return null; }
+  const [previousRangeSource] = useState<"ai" | "aiv2" | "gto" | null>(() => {
+    try { const value = window.sessionStorage.getItem(workspaceSourceStorageKey); return value === "ai" || value === "aiv2" || value === "gto" ? value : null; } catch { return null; }
   });
   const [previousSemanticNode] = useState<string | null>(() => {
     try { return window.sessionStorage.getItem(workspaceSemanticNodeStorageKey); } catch { return null; }
