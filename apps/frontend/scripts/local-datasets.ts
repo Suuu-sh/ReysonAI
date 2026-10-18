@@ -3,6 +3,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { isCompleteAiv2Manifest } from "../src/estimated/aiv2-contract.ts";
 
 const dir = fileURLToPath(new URL("../src/estimated", import.meta.url));
 // Keep ordinary names unchanged; allow only the Stage A villain namespace.
@@ -14,18 +15,27 @@ function names(current: any = dir) : any {
     : entry.name.endsWith(".json") ? [relative(dir, join(current, entry.name)).slice(0, -5)] : ([] as any[]));
 }
 
+function aiv2Ready() {
+  try {
+    const manifest = JSON.parse(readFileSync(join(dir, "aiv2/manifest.json"), "utf8"));
+    return isCompleteAiv2Manifest(manifest);
+  } catch { return false; }
+}
+
 export function localDatasetsMiddleware(req?: any, res?: any, next?: any) : any {
   const url = new URL(req.url, "http://localhost");
   if (url.pathname !== "/v1/preflop/datasets" && !url.pathname.startsWith("/v1/preflop/datasets/")) { next(); return; }
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.setHeader("Cache-Control", "no-store");
   if (url.pathname === "/v1/preflop/datasets") {
-    res.end(JSON.stringify({ kind: "ai_estimate_not_gto", datasets: Object.fromEntries(names().map((name: any) : any => [name, {}])) })); return;
+    const available = names().filter((name: string) => !name.startsWith("aiv2/") || aiv2Ready());
+    res.end(JSON.stringify({ kind: "ai_estimate_not_gto", datasets: Object.fromEntries(available.map((name: any) : any => [name, {}])) })); return;
   }
   let name: any;
   try { name = decodeURIComponent(url.pathname.slice("/v1/preflop/datasets/".length)); }
   catch { res.writeHead(400).end(JSON.stringify({ error: "invalid dataset name" })); return; }
   if (!NAME.test(name)) { res.writeHead(400).end(JSON.stringify({ error: "invalid dataset name" })); return; }
+  if (name.startsWith("aiv2/") && !aiv2Ready()) { res.writeHead(404).end(JSON.stringify({ error: "AIv2 dataset is not complete" })); return; }
   try { res.end(JSON.stringify(JSON.parse(readFileSync(join(dir, `${name}.json`), "utf8")))); }
   catch { res.writeHead(404).end(JSON.stringify({ error: `dataset not found: ${name}` })); }
 }

@@ -1,6 +1,7 @@
 export { opponentProfileDatasetName } from "./opponent-profiles.ts";
 import type { OpeningDataset, ResponseDataset, ThreeBetDataset, FourBetDataset, FiveBetDataset, LimpDataset, LimpDeepDataset, MultiwayDataset, Multiway2Dataset, ColdThreeBetDataset, ColdFourBetDataset, SqueezeDataset, ContinuationDataset } from "./preflop-types.ts";
 import type { CallEquityTable } from "./call-ev.ts";
+import { isCompleteAiv2Manifest } from "./aiv2-contract.ts";
 
 type DatasetMap = {
   "opening-ranges": OpeningDataset; "preflop-ranges": ResponseDataset;
@@ -28,6 +29,7 @@ type NodeFs = {
 const registry = new Map<string, unknown>();
 const pending = new Map<string, Promise<unknown>>();
 let source: "ai" | "aiv2" = "ai";
+let aiv2Ready: boolean | null = null;
 
 export function setDatasetSource(value: "ai" | "aiv2") { source = value === "aiv2" ? "aiv2" : "ai"; }
 const datasetName = (name: string) => source === "aiv2" ? `aiv2/${name}` : name;
@@ -84,8 +86,39 @@ export function hasDataset(name: string): boolean {
 }
 
 export function hasCompleteAiv2Source(): boolean {
+  if (aiv2Ready !== null) return aiv2Ready;
   if (!known && nodeFs()) known = new Set(listFiles(nodeFs()!, new URL("./", here)));
-  return APP_DATASETS.every(name => known?.has(`aiv2/${name}`)) && Boolean(known?.has("aiv2/manifest"));
+  const names = known;
+  if (!names || !APP_DATASETS.every(name => names.has(`aiv2/${name}`)) || !names.has("aiv2/manifest")) return false;
+  try {
+    const fs = nodeFs();
+    if (!fs) return false;
+    const manifest = JSON.parse(fs.readFileSync(new URL("./aiv2/manifest.json", here), "utf8"));
+    aiv2Ready = validAiv2Manifest(manifest);
+    return aiv2Ready;
+  } catch { return false; }
+}
+
+function validAiv2Manifest(value: any): boolean {
+  return isCompleteAiv2Manifest(value) &&
+    APP_DATASETS.every(name => value?.coverage?.datasets?.includes(`${name}.json`) && value?.sha256?.[`${name}.json`]);
+}
+
+export async function configureDatasetSource(requested: "ai" | "aiv2"): Promise<boolean> {
+  aiv2Ready = false;
+  if (requested !== "aiv2") { setDatasetSource("ai"); return false; }
+  const names = await datasetNames();
+  if (!APP_DATASETS.every(name => names.includes(`aiv2/${name}`)) || !names.includes("aiv2/manifest")) {
+    setDatasetSource("ai"); return false;
+  }
+  setDatasetSource("aiv2");
+  try {
+    const manifest = await loadDataset<any>("manifest");
+    aiv2Ready = validAiv2Manifest(manifest);
+    if (aiv2Ready) return true;
+  } catch {}
+  setDatasetSource("ai");
+  return false;
 }
 
 export function datasetNames(): Promise<string[]> {

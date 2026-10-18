@@ -1,8 +1,7 @@
 // Regenerates the authored estimate JSON in a staging dir and publishes it only if the audit passes.
 // Usage: npm run build:estimates   (ESTIMATES_DRY_RUN=1: audit only, keep staging, publish nothing)
 import { execFileSync } from "node:child_process";
-import { createHash } from "node:crypto";
-import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { continuationSpots } from "../src/estimated/continuation-tree.ts";
@@ -22,8 +21,7 @@ if (process.argv.includes("--stage3-only")) {
 const root = fileURLToPath(new URL("..", import.meta.url));
 const published = join(root, "src/estimated");
 const aiv2 = process.argv.includes("--aiv2");
-const destination = aiv2 ? join(published, "aiv2") : published;
-if (aiv2 && process.argv.includes("--profiles-only")) throw new Error("AIv2 requires a complete preflop generation, not --profiles-only");
+if (aiv2) throw new Error("AIv2 preflop is generated only by the range-wide LLM workflow; run scripts/generate-aiv2-preflop.ts instead. The deterministic estimate pipeline cannot publish AIv2.");
 const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "limp-deep-responses", "cold-three-bet-responses", "multiway2-responses", "cold-four-bet-responses", "continuation-responses", "table-profile-adjustments"];
 // Order matters: each generator reads the previous stages from the staging dir.
 const generators = [
@@ -45,7 +43,7 @@ const generators = [
 ];
 // Keep even transient generated data in this worktree.
 mkdirSync(join(root, ".local"), { recursive: true });
-const equityCache = join(root, `.local/${aiv2 ? "aiv2-" : ""}call-equities-cache.json`);
+const equityCache = join(root, ".local/call-equities-cache.json");
 const staging = mkdtempSync(join(root, ".local/estimates-build-"));
 const dryRun = process.env.ESTIMATES_DRY_RUN === "1";
 const profilesOnly = process.argv.includes("--profiles-only");
@@ -81,38 +79,16 @@ try {
       execFileSync("node", ["--max-old-space-size=384", "--max-semi-space-size=1", join(root, "scripts", script)], { cwd: root, stdio: "inherit",
         env: { ...process.env, ESTIMATES_DIR: staging, REASON_FACTS_DIR: join(staging, "reason-facts") } });
     }
-    cpSync(join(staging, "reason-facts"), join(root, `.local/${aiv2 ? "aiv2-" : ""}reason-facts`), { recursive: true });
-    if (!aiv2) {
-      for (const node of continuationSpots) {
-        const obsolete = join(published, "reasons", `${node.id}.json`);
-        if (existsSync(obsolete)) rmSync(obsolete);
-      }
-      cpSync(join(staging, "reasons"), join(published, "reasons"), { recursive: true });
+    cpSync(join(staging, "reason-facts"), join(root, ".local/reason-facts"), { recursive: true });
+    for (const node of continuationSpots) {
+      const obsolete = join(published, "reasons", `${node.id}.json`);
+      if (existsSync(obsolete)) rmSync(obsolete);
     }
-    if (aiv2 && existsSync(destination)) rmSync(destination, { recursive: true, force: true });
-    mkdirSync(destination, { recursive: true });
-    for (const name of [...files, "call-equities", "call-ev-report", "continuation-call-equities", "continuation-audit-report"]) copyFileSync(join(staging, `${name}.json`), join(destination, `${name}.json`));
-    cpSync(join(staging, "profiles"), join(destination, "profiles"), { recursive: true });
-    if (aiv2) {
-      cpSync(join(staging, "reasons"), join(destination, "reasons"), { recursive: true });
-      const collect = (dir: string, prefix = ""): Record<string, string> => Object.fromEntries(readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
-        const path = join(dir, entry.name), name = `${prefix}${entry.name}`;
-        if (entry.isDirectory()) return Object.entries(collect(path, `${name}/`));
-        if (!entry.name.endsWith(".json")) return [];
-        return [[name.replaceAll("\\", "/"), createHash("sha256").update(readFileSync(path)).digest("hex")]];
-      }));
-      const datasets = collect(destination);
-      writeFileSync(join(destination, "manifest.json"), JSON.stringify({
-        source: "AIv2", schema_version: 1, generation: "same audited deterministic preflop estimate pipeline as AI; independently generated artifact set",
-        method: "npm run build:estimates -- --aiv2", strategy_identity: "ai_estimate_not_gto",
-        coverage: { scope: "preflop", datasets: Object.keys(datasets).filter(name => !name.startsWith("profiles/") && !name.startsWith("reasons/")), profiles: Object.keys(datasets).filter(name => name.startsWith("profiles/")), reasons: Object.keys(datasets).filter(name => name.startsWith("reasons/")) },
-        excluded: ["postflop strategies and board policies"],
-        sha256: datasets,
-      }, null, 2) + "\n");
-    }
-    console.log(aiv2
-      ? `検証を通過したため src/estimated/aiv2 に独立保存しました。（助言警告 ${findings.length}件、公開を妨げません）`
-      : `検証を通過したため src/estimated に保存しました。（助言警告 ${findings.length}件、公開を妨げません）`);
+    cpSync(join(staging, "reasons"), join(published, "reasons"), { recursive: true });
+    mkdirSync(published, { recursive: true });
+    for (const name of [...files, "call-equities", "call-ev-report", "continuation-call-equities", "continuation-audit-report"]) copyFileSync(join(staging, `${name}.json`), join(published, `${name}.json`));
+    cpSync(join(staging, "profiles"), join(published, "profiles"), { recursive: true });
+    console.log(`検証を通過したため src/estimated に保存しました。（助言警告 ${findings.length}件、公開を妨げません）`);
   }
 } catch (error: any) {
   process.exitCode = 1;
