@@ -35,7 +35,10 @@ test("local AIv2 endpoint exposes only the validated UTG-open sample", () => {
 
   const reasons = request("/v1/preflop/local/aiv2-sample/reasons/UTG_open");
   assert.equal(Object.keys(reasons.body.hands).length, 169);
+  assert.ok(Object.values(reasons.body.hands).every((hand: any) => typeof hand.reason === "string" && typeof hand.reason_ja === "string" && hand.reason_ja.length > 0));
   assert.match(reasons.body.hands.AA.reason, /Open 100%/);
+  assert.match(reasons.body.hands.A2s.reason_ja, /^オープン45%、フォールド55%/);
+  assert.match(reasons.body.hands.A9s.reason_ja, /^オープン90%、フォールド10%/);
   assert.equal(request("/v1/preflop/local/aiv2-sample/reasons/BTN_open").nextCalled, true);
   assert.equal(request("/v1/preflop/local/aiv2-sample/status", "POST").status, 405);
 });

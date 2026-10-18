@@ -81,7 +81,7 @@ export function localAiv2SampleMiddleware(req?: any, res?: any, next?: any) : an
       const spots = opening.spots.map((spot: any) => spot.id === "UTG_open" ? { ...spot, hands, combo_mixes: sample.spot.combo_mixes } : spot);
       res.end(JSON.stringify({ ...opening, metadata: { ...opening.metadata, aiv2_local_sample: { scenario: "UTG_open", method: sample.metadata.method, model: sample.metadata.model, concrete_combo_count: comboWeights.length, combo_reach_weights: sample.combo_reach_weights, analysis_hash: sample.metadata.analysis_hash } }, spots })); return;
     }
-    res.end(JSON.stringify({ spot_id: "UTG_open", type: "open", method: `${sample.metadata.method} · ${sample.metadata.model}`, hands: Object.fromEntries(reasons.map((row: any) => [row.hand, { reason: row.text }])) }));
+    res.end(JSON.stringify({ spot_id: "UTG_open", type: "open", method: `${sample.metadata.method} · ${sample.metadata.model}`, hands: Object.fromEntries(reasons.map((row: any) => [row.hand, { reason: row.text, reason_ja: row.text_ja }])) }));
   } catch {
     res.writeHead(404).end(JSON.stringify({ available: false }));
   }

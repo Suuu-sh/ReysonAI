@@ -212,15 +212,24 @@ async function sample(datasetName: string, scenarioId: string) {
   const afterStrategy = Date.now();
   // Reasons are deliberately composed only after final frequencies are saved.
   const comboExceptions = generated.metadata.combo_exceptions ?? [];
-  const reasonPrompt = `Write honest per-hand explanations only AFTER this finalized AIv2 policy was generated and strategically reevaluated. This is an estimate, not GTO or solver output. Never alter frequencies. Return JSON {"scenario_id":${JSON.stringify(scenarioId)},"reasons":[{"hand":"AA","text":"..."},...169 canonical classes in this exact order: ${readDatasetHands().join(",")}],"combo_reasons":[{"combo":"AsKh","text":"..."},...one for each listed combo exception, in exact listed order]}. Explain hand-class decisions from the finalized frequencies; explain each combo exception and its card-specific reason using only finalized combo mixes and exact reach.\nScenario: ${JSON.stringify(scenarioOnly(spot))}\nAction order: ${JSON.stringify(actionsForSpot(spot))}\nFinal class frequencies: ${JSON.stringify(generated.spot.hands.map((row: any) => ({ hand: row.hand, mix: Object.fromEntries(actionsForSpot(spot).map(action => [action, row[action]])) })))}\nConcrete combo exceptions: ${JSON.stringify(generated.spot.combo_mixes.filter((row: any) => comboExceptions.includes(row.combo)))}\nReach weights (exact per combo or verified class symmetry): ${JSON.stringify(generated.combo_reach_weights)}`;
+  const reasonPrompt = `Write honest per-hand explanations only AFTER this finalized AIv2 policy was generated and strategically reevaluated. This is an estimate, not GTO or solver output. Never alter frequencies. Return JSON {"scenario_id":${JSON.stringify(scenarioId)},"reasons":[{"hand":"AA","text":"...","text_ja":"..."},...169 canonical classes in this exact order: ${readDatasetHands().join(",")}],"combo_reasons":[{"combo":"AsKh","text":"...","text_ja":"..."},...one for each listed combo exception, in exact listed order]}. ` +
+    `For every item, write text in natural English and text_ja as a faithful, natural Japanese translation of that same explanation. Preserve the exact action frequencies and strategic meaning in both languages; do not add new reasoning in translation. Explain hand-class decisions from the finalized frequencies; explain each combo exception and its card-specific reason using only finalized combo mixes and exact reach.\nScenario: ${JSON.stringify(scenarioOnly(spot))}\nAction order: ${JSON.stringify(actionsForSpot(spot))}\nFinal class frequencies: ${JSON.stringify(generated.spot.hands.map((row: any) => ({ hand: row.hand, mix: Object.fromEntries(actionsForSpot(spot).map(action => [action, row[action]])) })))}\nConcrete combo exceptions: ${JSON.stringify(generated.spot.combo_mixes.filter((row: any) => comboExceptions.includes(row.combo)))}\nReach weights (exact per combo or verified class symmetry): ${JSON.stringify(generated.combo_reach_weights)}`;
   const reasonCheckpoint = join(local, "checkpoints", "standard", datasetName, `${safeName(scenarioId)}.reasons.json`);
   const finalHash = generated.metadata.final_hash;
+  const reasonPromptHash = sha(reasonPrompt);
   let reasons: any;
   if (existsSync(reasonCheckpoint)) {
     const saved = read(reasonCheckpoint);
     if (saved.input_hash !== generated.metadata.source_hash || saved.final_hash !== finalHash || saved.method !== AIV2_PREflop_METHOD || saved.model !== AIV2_MODEL)
       throw new Error(`Stale post-final reason checkpoint identity for ${datasetName}/${scenarioId}`);
-    reasons = { scenario_id: scenarioId, reasons: saved.result.reasons, combo_reasons: saved.result.combo_reasons };
+    if (saved.reason_prompt_hash === reasonPromptHash) {
+      try { reasons = validateFinalReasons(saved.result, scenarioId, comboExceptions); }
+      catch { reasons = await runCodex(reasonPrompt, { model: AIV2_MODEL, effort: AIV2_REASONING_EFFORT }); }
+    } else {
+      // The prompt/schema changed (for example, from English-only to bilingual).
+      // Refresh only explanations; keep the finalized strategy and its hash.
+      reasons = await runCodex(reasonPrompt, { model: AIV2_MODEL, effort: AIV2_REASONING_EFFORT });
+    }
   } else {
     reasons = await runCodex(reasonPrompt, { model: AIV2_MODEL, effort: AIV2_REASONING_EFFORT });
   }
@@ -228,7 +237,8 @@ async function sample(datasetName: string, scenarioId: string) {
   const samplePath = join(local, "sample", datasetName, `${safeName(scenarioId)}.json`);
   const reasonHash = sha(reasons);
   atomicJson(reasonCheckpoint, {
-    input_hash: generated.metadata.source_hash, final_hash: finalHash, method: AIV2_PREflop_METHOD, model: AIV2_MODEL, result: reasons, result_hash: reasonHash });
+    input_hash: generated.metadata.source_hash, final_hash: finalHash, method: AIV2_PREflop_METHOD, model: AIV2_MODEL,
+    reason_prompt_hash: reasonPromptHash, result: reasons, result_hash: reasonHash });
   atomicJson(samplePath, { ...generated, reasons, metadata: { ...generated.metadata, publication_status: "local-experimental-single-spot-not-selectable",
     reason_generated_after_finalization: true,
     reason_hash: reasonHash, total_elapsed_ms: Date.now() - before,

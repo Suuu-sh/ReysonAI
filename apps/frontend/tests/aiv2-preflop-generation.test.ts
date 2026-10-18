@@ -78,9 +78,11 @@ test("range analysis is persisted as its own phase before policy generation and 
 });
 
 test("post-final reasons require all class reasons and exact combo exception coverage", () => {
-  const result = { scenario_id: "spot", reasons: hands.map(hand => ({ hand, text: "Final mix explained." })),
-    combo_reasons: [{ combo: "AsKh", text: "Card blocker exception." }] };
+  const result = { scenario_id: "spot", reasons: hands.map(hand => ({ hand, text: "Final mix explained.", text_ja: "最終ミックスの理由。" })),
+    combo_reasons: [{ combo: "AsKh", text: "Card blocker exception.", text_ja: "カードブロッカーの例外。" }] };
   assert.equal(validateFinalReasons(result, "spot", ["AsKh"]).combo_reasons.length, 1);
   assert.throws(() => validateFinalReasons({ ...result, combo_reasons: [] }, "spot", ["AsKh"]), /concrete combo reasons/);
   assert.throws(() => validateFinalReasons({ ...result, reasons: result.reasons.slice(1) }, "spot", ["AsKh"]), /incomplete/);
+  assert.throws(() => validateFinalReasons({ ...result, reasons: result.reasons.map(({ text, ...row }) => row) }, "spot", ["AsKh"]), /incomplete/);
+  assert.throws(() => validateFinalReasons({ ...result, combo_reasons: [{ combo: "AsKh", text: "Card blocker exception." }] }, "spot", ["AsKh"]), /concrete combo reasons/);
 });

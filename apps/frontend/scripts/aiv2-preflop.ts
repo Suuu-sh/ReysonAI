@@ -186,11 +186,11 @@ export function validateFinalReasons(raw: unknown, scenarioId: string, comboExce
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("AIv2 reasons must be an object");
   const value = raw as Record<string, unknown>;
   if (value.scenario_id !== scenarioId || !Array.isArray(value.reasons) || value.reasons.length !== hands.length ||
-      value.reasons.some((row: any, index: number) => row?.hand !== hands[index] || typeof row.text !== "string" || !row.text.trim()))
+      value.reasons.some((row: any, index: number) => row?.hand !== hands[index] || typeof row.text !== "string" || !row.text.trim() || typeof row.text_ja !== "string" || !row.text_ja.trim()))
     throw new Error("Post-frequency reason response is incomplete or mismatched");
   const comboReasons = value.combo_reasons;
   if (!Array.isArray(comboReasons) || comboReasons.length !== comboExceptions.length || comboReasons.some((row: any, index: number) =>
-      row?.combo !== comboExceptions[index] || typeof row.text !== "string" || !row.text.trim()))
+      row?.combo !== comboExceptions[index] || typeof row.text !== "string" || !row.text.trim() || typeof row.text_ja !== "string" || !row.text_ja.trim()))
     throw new Error("Post-frequency concrete combo reasons are incomplete or mismatched");
   return { scenario_id: scenarioId, reasons: value.reasons, combo_reasons: comboReasons };
 }
