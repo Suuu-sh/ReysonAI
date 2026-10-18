@@ -9055,8 +9055,8 @@
     },
     {
       "path": "apps/frontend/package.json",
-      "bytes": 3005,
-      "sha256": "e89008373e2f2679221fe6c1cd489ebe5a021babb8be74290a1453e310d8721d"
+      "bytes": 3250,
+      "sha256": "ad7de1a99afd66ada71d8b98c645bdf4d4a46b7cadf2e9ffe05cc6346d88d2ae"
     },
     {
       "path": "apps/frontend/scripts/audit-estimates.ts",
@@ -9065,8 +9065,8 @@
     },
     {
       "path": "apps/frontend/scripts/build-estimates.ts",
-      "bytes": 6754,
-      "sha256": "f5d3ad5629f2e86922e05ff147447c0df8f3c43f00551ac7d58d1ce740fb2443"
+      "bytes": 7072,
+      "sha256": "db4ad79d05d7085dbd6ed1b9132dc8773dd7217aae9e144bc8d71bb51d781d96"
     },
     {
       "path": "apps/frontend/scripts/build-stage3.ts",
@@ -9125,8 +9125,8 @@
     },
     {
       "path": "apps/frontend/scripts/lib/preflop-sql.ts",
-      "bytes": 5716,
-      "sha256": "9d6831835fa0a1f3303d164a3ff1a2a51dd40b42ef9956958e21007fdc71eb23"
+      "bytes": 6236,
+      "sha256": "23ccadbb934e3157056cacc4e770636bf06364184ff6f61d719c0871dd5dde7a"
     },
     {
       "path": "apps/frontend/scripts/lib/reviewed-preflop.ts",
@@ -9219,6 +9219,11 @@
       "sha256": "386fd5eb5850e9893ed315edee00e0627e1b501347ba32cb861049040eaf2dd9"
     },
     {
+      "path": "apps/frontend/src/estimated/aiv2-contract.ts",
+      "bytes": 1759,
+      "sha256": "c63277fbb44a17eb3c4b7fa61307a550176977c7f260028c063d8414376195e2"
+    },
+    {
       "path": "apps/frontend/src/estimated/audit-policy.ts",
       "bytes": 510,
       "sha256": "25dd1b6bb40b2fa8e6740b695c4e38ff4e9fa08bba14b4ffe9b352437c803242"
@@ -9285,8 +9290,8 @@
     },
     {
       "path": "apps/frontend/src/estimated/datasets.ts",
-      "bytes": 5438,
-      "sha256": "8f3601317afddead6aeef71364c96cf86c8324d8bba8ca3bd19ba8806e72b453"
+      "bytes": 8605,
+      "sha256": "7657450f0ff32decfcc8d1a96b634bf32d47da97060ec787c618de09fba60841"
     },
     {
       "path": "apps/frontend/src/estimated/english-reasons.ts",
@@ -9375,8 +9380,8 @@
     },
     {
       "path": "apps/frontend/src/estimated/ranges.ts",
-      "bytes": 3720,
-      "sha256": "56d04ffbbcb6da004d611706129625d77cbc17da73311cadbdba53891394c4b8"
+      "bytes": 5377,
+      "sha256": "8344f819aef1d7f18df3a13378febb93a4926a49bcc616d84fa1900dddf0faa5"
     },
     {
       "path": "apps/frontend/src/estimated/sizing.ts",
@@ -9520,8 +9525,8 @@
     },
     {
       "path": "configs/multiway-preflop-stage2.review.json",
-      "bytes": 558050,
-      "sha256": "d61e86046c95c4b554cbb91efdda21662db8e6365f52378cdd5bc94e9429f056"
+      "bytes": 560636,
+      "sha256": "538a3ff13b50795115608110f1e7d7da598a6f84ea1d8aa506f21f47a2e4f804"
     },
     {
       "path": "configs/multiway-preflop-stage3.json",
@@ -9560,7 +9565,7 @@
     "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
     "format": "ustar+gzip-stage3-content-v1"
   },
-  "content_sha256": "dd9f77d2ac8547a39cefe404304bcfe7e99a7766072758a1e2241e0bacb9f198",
+  "content_sha256": "541b2de0959da099d9ee38438cd0d4ac06c9b2ef86050097ae666f8deef7ec52",
   "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
   "counts": {
     "catalog": 16132,
@@ -10514,7 +10519,55 @@
         }
       },
       "limitations": "No numerical regeneration, new strategy-quality approval, full acceptance, merge or deployment is claimed. Independent review of the final exact head and CI remain pending."
-    }
+    },
+    "source_renewals": [
+      {
+        "date": "2026-10-19",
+        "reviewer": "Codex independent reviewer agent",
+        "reviewer_task": "/root/independent_release_review",
+        "reviewer_model": "not exposed to reviewer; no model identity asserted",
+        "reviewed_commit": "265db2afc88c6ade4fa1e06d69faae250784967f",
+        "scope": "Source-only current release binding; no AIv2 generated-data, strategy quality, GTO, numerical, runtime, UI, deployment or future publication approval.",
+        "report": "docs/qa/release-source-review-265db2a/independent-source-review.json",
+        "before_content_sha256": "dd9f77d2ac8547a39cefe404304bcfe7e99a7766072758a1e2241e0bacb9f198",
+        "after_content_sha256": "541b2de0959da099d9ee38438cd0d4ac06c9b2ef86050097ae666f8deef7ec52",
+        "source_records_before": 105,
+        "source_records_after": 106,
+        "changed_sources": [
+          "apps/frontend/package.json",
+          "apps/frontend/scripts/build-estimates.ts",
+          "apps/frontend/scripts/lib/preflop-sql.ts",
+          "apps/frontend/src/estimated/aiv2-contract.ts",
+          "apps/frontend/src/estimated/datasets.ts",
+          "apps/frontend/src/estimated/ranges.ts",
+          "configs/multiway-preflop-stage2.review.json"
+        ],
+        "verified_unchanged": {
+          "artifacts": 1805,
+          "archive": {
+            "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+            "bytes": 2436451,
+            "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+            "format": "ustar+gzip-stage3-content-v1"
+          },
+          "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+          "counts": {
+            "catalog": 16132,
+            "saved": 1801,
+            "unreachable": 5621,
+            "rare": 8710,
+            "hands": 304369
+          }
+        },
+        "limitations": [
+          "No human or named-model approval claimed.",
+          "Complete AIv2 manifest currently checks inventory/count/hash format, not payload hash/audit validity; future generated-data publication requires fresh full review. No complete AIv2 corpus exists in reviewed source.",
+          "No renewed MW3 numerical or HU foundation acceptance; prior evidence retains original scope.",
+          "Current review is bounded source/delivery provenance, not exhaustive application behavioral review.",
+          "Normal official restore and verification results will be recorded separately."
+        ]
+      }
+    ]
   },
   "mcp_api_main_source_renewal": {
     "status": "prepared-pending-independent-source-review",
