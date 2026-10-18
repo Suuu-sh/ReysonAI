@@ -15,6 +15,7 @@ const REVIEW = 'configs/source-identity-mw3-typescript-archive.review.json';
 const EVIDENCE = 'apps/frontend/docs/mw3-source-identity/typescript-archive-sources-parity.json';
 const EXTRAS = [ADAPTER, INVENTORY, REVIEW, EVIDENCE,
   'apps/frontend/docs/mw3-source-identity/typescript-executable-parity.json',
+  'apps/frontend/src/estimated/aiv2-contract.ts',
   'apps/frontend/scripts/postflop-ai/flop-isomorphism.d.mts',
   'apps/frontend/scripts/postflop-ai/later-policy.d.mts',
   'apps/frontend/scripts/postflop-ai/mw3-typescript-source-identity-pairs.json',

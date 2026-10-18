@@ -4,12 +4,12 @@
   "status": "independently-reviewed",
   "scope": "Source compatibility only; no numerical generation, strategy quality, mathematical, runtime, publication, deployment or delivery acceptance renewed.",
   "baseline_commit": "df2370690e9b3172f2c109f80113b320880f940a",
-  "source_head_sha": "4cbfa48369d0a5548b93471fa0d0bc187b9a5c7b",
-  "metadata_checkpoint_sha": "4cbfa48369d0a5548b93471fa0d0bc187b9a5c7b",
-  "reviewer": "/root/review_api_recovery",
+  "source_head_sha": "203a36245e1f0cc84dcbb575fb91a18114d919cd",
+  "metadata_checkpoint_sha": "203a36245e1f0cc84dcbb575fb91a18114d919cd",
+  "reviewer": "/root/independent_release_review (independent from implementation author)",
   "requested_model": "gpt-6.1-sol",
-  "runtime_model_attestation": "unavailable",
-  "reviewed_at_utc": "2026-10-16T04:20:41.634Z",
+  "runtime_model_attestation": "unavailable; current reviewer model not exposed; inherited requested_model schema value is not runtime attestation",
+  "reviewed_at_utc": "2026-10-18T19:42:28.670Z",
   "method": {
     "node": "v25.8.1",
     "independent_parser": "7.29.7",
@@ -130,8 +130,8 @@
       },
       "current": {
         "path": "apps/frontend/package.json",
-        "bytes": 3005,
-        "sha256": "e89008373e2f2679221fe6c1cd489ebe5a021babb8be74290a1453e310d8721d"
+        "bytes": 3250,
+        "sha256": "ad7de1a99afd66ada71d8b98c645bdf4d4a46b7cadf2e9ffe05cc6346d88d2ae"
       },
       "classification": "same-path-source-parity"
     },
@@ -1547,8 +1547,8 @@
       },
       "current": {
         "path": "apps/frontend/src/estimated/datasets.ts",
-        "bytes": 5438,
-        "sha256": "8f3601317afddead6aeef71364c96cf86c8324d8bba8ca3bd19ba8806e72b453"
+        "bytes": 8605,
+        "sha256": "7657450f0ff32decfcc8d1a96b634bf32d47da97060ec787c618de09fba60841"
       },
       "classification": "same-path-source-parity"
     },
@@ -1742,10 +1742,10 @@
       },
       "current": {
         "path": "apps/frontend/src/estimated/ranges.ts",
-        "bytes": 3720,
-        "sha256": "56d04ffbbcb6da004d611706129625d77cbc17da73311cadbdba53891394c4b8"
+        "bytes": 5377,
+        "sha256": "8344f819aef1d7f18df3a13378febb93a4926a49bcc616d84fa1900dddf0faa5"
       },
-      "classification": "exact-byte-identity"
+      "classification": "same-path-source-parity"
     },
     {
       "historical": {
@@ -2020,6 +2020,11 @@
       "path": "apps/frontend/scripts/postflop-ai/policy.d.mts",
       "bytes": 456,
       "sha256": "1d9ce62ab7a34b525b9ad1bcb4ee160f8f28bfe0d3d3dc488283d3da739bb097"
+    },
+    {
+      "path": "apps/frontend/src/estimated/aiv2-contract.ts",
+      "bytes": 1759,
+      "sha256": "c63277fbb44a17eb3c4b7fa61307a550176977c7f260028c063d8414376195e2"
     },
     {
       "path": "configs/source-identity-typescript.review.json",
@@ -2360,13 +2365,13 @@
   "archive_adapter_review": {
     "adapter": {
       "path": "apps/frontend/scripts/postflop-ai/mw3-manifest-source-identity.ts",
-      "bytes": 16693,
-      "sha256": "1c2d2b67ce8bde0ea8cc8def8fd68f3c599fd6f251ffd5dbe1d2785f14587f3b"
+      "bytes": 16939,
+      "sha256": "7f18530cf5c0b8db58f019a221afc9303363e3afe55e5fdd04a2d32c11b76e37"
     },
     "inventory": {
       "path": "configs/source-identity-mw3-typescript-archive.json",
-      "bytes": 188484,
-      "sha256": "ff3f0577a9c7e18e55479f6173296f8382a3f13fa3943a2988fb63d79af73789"
+      "bytes": 188667,
+      "sha256": "eed9316796066dd396f6b6aa7917d41a09bb467f6a60cb4b6360131bf2b79f7f"
     },
     "findings": 0,
     "semantics": "Fail-closed approval and exact complete inventory validation, bounded nonsymlink reads, ordered unique old/current paths, exact current source SHA/bytes, unchanged original recipes, six extra source pins, exact sixteen accepted manifest/receipt/archive/artifact identities, closed ten extra paths. Review SHA is source provenance rather than whole-HEAD equality. Historical Git-tree verification still uses original source records. No archive, manifest, original acceptance receipt or source fingerprint is rewritten.",
@@ -6087,6 +6092,68 @@
       "evidence_sha256": "5bb3c8e9e002cf402b000e29a8f91d9a64b9147b959b68ef93e79225c66bd6bb",
       "review_sha256": "bfd41fe90896fffa019a05dff7c552130514cdca1d7947d56e1b493d28e5de38",
       "scope": "Prior complete source review and historical/current restore-tree separation; superseded only by void-return assertion fix."
+    },
+    {
+      "source_head_sha": "4cbfa48369d0a5548b93471fa0d0bc187b9a5c7b",
+      "evidence_sha256": "8cfb58bfaa3f38a5c7b573e07c5667b9ffa313246fca8caf0b96edbe21b1edb0",
+      "review_sha256": "b652f2b73d50c09059350d56cb1e9a59e15786f8d2ae0ea1a334549cbdbe6126",
+      "scope": "Prior complete source compatibility evidence retained in Git; superseded only by explicit AIv2 readiness current-source amendment below."
     }
-  ]
+  ],
+  "source_only_renewal_203a362": {
+    "reviewer_task": "/root/independent_release_review",
+    "scope": "Current-source context only, not whole-file executable parity for changed files and not renewed numerical, strategy, runtime or deployment acceptance.",
+    "source_changes": [
+      {
+        "before": {
+          "path": "apps/frontend/package.json",
+          "bytes": 3005,
+          "sha256": "e89008373e2f2679221fe6c1cd489ebe5a021babb8be74290a1453e310d8721d"
+        },
+        "after": {
+          "path": "apps/frontend/package.json",
+          "bytes": 3250,
+          "sha256": "ad7de1a99afd66ada71d8b98c645bdf4d4a46b7cadf2e9ffe05cc6346d88d2ae"
+        }
+      },
+      {
+        "before": {
+          "path": "apps/frontend/src/estimated/datasets.ts",
+          "bytes": 5438,
+          "sha256": "8f3601317afddead6aeef71364c96cf86c8324d8bba8ca3bd19ba8806e72b453"
+        },
+        "after": {
+          "path": "apps/frontend/src/estimated/datasets.ts",
+          "bytes": 8605,
+          "sha256": "7657450f0ff32decfcc8d1a96b634bf32d47da97060ec787c618de09fba60841"
+        }
+      },
+      {
+        "before": {
+          "path": "apps/frontend/src/estimated/ranges.ts",
+          "bytes": 3720,
+          "sha256": "56d04ffbbcb6da004d611706129625d77cbc17da73311cadbdba53891394c4b8"
+        },
+        "after": {
+          "path": "apps/frontend/src/estimated/ranges.ts",
+          "bytes": 5377,
+          "sha256": "8344f819aef1d7f18df3a13378febb93a4926a49bcc616d84fa1900dddf0faa5"
+        }
+      }
+    ],
+    "review": [
+      "package.json adds exactly three opt-in offline AIv2 commands; existing generation/build/publish commands/dependencies/engines unchanged. Commands do not run on module import or saved restore.",
+      "datasets.ts default ai keeps prior paths/cache keys/JSON parsing for offline saved MW3 callers. AIv2 names and pending fetches have separate keys. No saved MW3 caller imports/calls configureDatasetSource or setDatasetSource; browser bootstrap alone explicitly configures source. DEV probe is gated; missing complete corpus resets to ai before app import.",
+      "ranges.ts adds only unused preflopComboWeights export; existing validation exports unchanged. No current runtime consumer calls new export.",
+      "aiv2-contract.ts is an explicit current-only dependency; author adapter change adds exactly that path to closed overlay, preserving all historical source/path/count checks and exact current SHA/length validation. No blanket exclusion, skip, dynamic path or acceptance change.",
+      "All152 historical Git blobs independently rehashed against df2370690e9b3172f2c109f80113b320880f940a. All16 manifest/receipt/materialized archive triplets independently rehashed and exact. Other155 prior current pins exact."
+    ],
+    "limitations": [
+      "The legacy same-path-source-parity classification is retained as schema vocabulary; current semantic additions are explicitly reviewed above, not claimed whole-file executable parity.",
+      "Original canonical_graph_review/method/parity sections describe their historical snapshot; current graph/source evidence is the explicit amendment and subsequent dependent receipts.",
+      "Future complete AIv2 payload publication requires fresh digest, audit and generated-data review; manifest readiness checks alone do not establish data quality.",
+      "No human approval, model identity, new strategy-quality approval, numerical regeneration or production verification claimed."
+    ],
+    "checks_pending": "Normal saved restore, immutable production contract and dependent preflop acceptance to be recorded in separate QA evidence."
+  }
 }

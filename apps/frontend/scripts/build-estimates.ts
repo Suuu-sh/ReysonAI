@@ -20,7 +20,9 @@ if (process.argv.includes("--stage3-only")) {
 } else {
 const root = fileURLToPath(new URL("..", import.meta.url));
 const published = join(root, "src/estimated");
-const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "limp-deep-responses", "cold-three-bet-responses", "multiway2-responses", "cold-four-bet-responses", "continuation-responses"];
+const aiv2 = process.argv.includes("--aiv2");
+if (aiv2) throw new Error("AIv2 preflop is generated only by the range-wide LLM workflow; run scripts/generate-aiv2-preflop.ts instead. The deterministic estimate pipeline cannot publish AIv2.");
+const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "limp-deep-responses", "cold-three-bet-responses", "multiway2-responses", "cold-four-bet-responses", "continuation-responses", "table-profile-adjustments"];
 // Order matters: each generator reads the previous stages from the staging dir.
 const generators = [
   ["python3", "generate-opening-ranges.py"],
@@ -83,6 +85,7 @@ try {
       if (existsSync(obsolete)) rmSync(obsolete);
     }
     cpSync(join(staging, "reasons"), join(published, "reasons"), { recursive: true });
+    mkdirSync(published, { recursive: true });
     for (const name of [...files, "call-equities", "call-ev-report", "continuation-call-equities", "continuation-audit-report"]) copyFileSync(join(staging, `${name}.json`), join(published, `${name}.json`));
     cpSync(join(staging, "profiles"), join(published, "profiles"), { recursive: true });
     console.log(`検証を通過したため src/estimated に保存しました。（助言警告 ${findings.length}件、公開を妨げません）`);

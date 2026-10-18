@@ -168,3 +168,17 @@ test("local and backend routes accept only the bounded profile namespace and rej
   }
   assert.equal((await routePreflopDatasets(fixtureValue(db),"/v1/preflop/datasets/profiles/nit/villain/opening-ranges")).status,404);
 });
+
+test("AIv2 dataset paths are source-isolated and available through local and D1 routes", async () => {
+  const key = "aiv2/opening-ranges", body = JSON.stringify({ source: "AIv2" });
+  const db = { prepare(sql) { return { bind(name) { return { async all() { return { results: name !== key ? [] : sql.includes("dataset_parts") ? [{ part: 0, body }] : [{ content_hash: "aiv2-hash", parts: 1 }] }; } }; } }; } };
+  assert.equal(local(key).status, 200);
+  assert.equal(local(key).body.metadata.strategy_type, "ai_estimate_not_gto");
+  const api = await routePreflopDatasets(fixtureValue(db), `/v1/preflop/datasets/${key}`);
+  assert.equal(api.status, 200);
+  assert.equal(api.text, body);
+  for (const bad of ["aiv2%2F..%2Fsecret", "aiv2/profiles/unknown/villain/meta"]) {
+    assert.equal(local(bad).status, 400, bad);
+    assert.equal((await routePreflopDatasets(fixtureValue(db), `/v1/preflop/datasets/${bad}`)).status, 400, bad);
+  }
+});

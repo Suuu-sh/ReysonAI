@@ -4,6 +4,33 @@ import { hands } from "../data.ts";
 import { positions, openSizeBb, openSizeFor, threeBetToSize } from "./sizing.ts";
 import { hasConfiguredRake } from "./rake.ts";
 
+export type PreflopComboWeight = { combo: string; handClass: string; reachWeight: number; frequencies: Record<string, number> };
+
+/** Expand class-level preflop frequencies to exact, suit-aware combos for future street consumers. */
+export function preflopComboWeights(rows: Array<{ hand: string; [action: string]: string | number | undefined }>, priorReachWeight: number | Record<string, number> = 1): PreflopComboWeight[] {
+  const suits = "cdhs";
+  const combos: PreflopComboWeight[] = [];
+  for (const row of rows) {
+    const hand = row.hand;
+    if (!hands.includes(hand)) throw new Error(`Unknown preflop hand class: ${hand}`);
+    const frequencies = Object.fromEntries(Object.entries(row).filter(([key, value]) => key !== "hand" && typeof value === "number")) as Record<string, number>;
+    const add = (first: string, second: string) => {
+      const combo = `${first}${second}`;
+      const reachWeight = typeof priorReachWeight === "number" ? priorReachWeight : priorReachWeight[combo] ?? 0;
+      if (!Number.isFinite(reachWeight) || reachWeight < 0) throw new Error(`Invalid combo reach weight: ${combo}`);
+      combos.push({ combo, handClass: hand, reachWeight, frequencies });
+    };
+    if (hand[0] === hand[1]) {
+      for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) add(`${hand[0]}${suits[i]}`, `${hand[1]}${suits[j]}`);
+    } else if (hand.endsWith("s")) {
+      for (const suit of suits) add(`${hand[0]}${suit}`, `${hand[1]}${suit}`);
+    } else {
+      for (const highSuit of suits) for (const lowSuit of suits) if (highSuit !== lowSuit) add(`${hand[0]}${highSuit}`, `${hand[1]}${lowSuit}`);
+    }
+  }
+  return combos;
+}
+
 export { positions };
 
 export const rangeTypes = [

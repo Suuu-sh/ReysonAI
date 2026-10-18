@@ -18,7 +18,7 @@ type LocalEstimate = { scenario?: string; ranges: LocalRange[] };
 type LocalEstimateResponse = { error?: string; data?: LocalEstimate; pending?: boolean; cached?: boolean };
 type InlineFact = { key?: string; label: string; unit?: string; value: number | null | undefined };
 type WorkspaceActionBlock = Partial<Omit<ActionBlock, "key" | "kind">> & { key: string; kind: string; cards?: string[]; street?: string; potBb?: number; pending?: boolean; flopIndex?: number; laterIndex?: number };
-type EstimatedRangesProps = WorkspaceProps & { rangeSource?: "ai" | "gto"; previousRangeSource?: "ai" | "gto" | null; previousSemanticNode?: string | null; initialRangeType?: string; fourBet?: ReturnType<typeof loadFourBetDataset>; mw3Client?: typeof mw3DeliveryClient };
+type EstimatedRangesProps = WorkspaceProps & { rangeSource?: "ai" | "aiv2" | "gto"; previousRangeSource?: "ai" | "aiv2" | "gto" | null; previousSemanticNode?: string | null; initialRangeType?: string; fourBet?: ReturnType<typeof loadFourBetDataset>; mw3Client?: typeof mw3DeliveryClient };
 type WorkspaceProps = { profile?: Profile | null; onEditProfile?: () => void; onSectionChange?: (section: string) => void };
 type ActionPathProps = RangeBuildState & { leading?: ReactNode; expanded?: boolean; blocks?: WorkspaceActionBlock[]; selectedRangeBlock?: string | null; onSelectRangeBlock?: (key: string | null) => void; onRewindActionBlock?: ((block: WorkspaceActionBlock) => void) | null; onEnterPostflop?: (() => void) | null; onOpenFlopCards?: () => void; onOpenLaterCard?: (street: string) => void; onFlopAction?: (block: WorkspaceActionBlock, action: string) => void; onLaterAction?: (block: WorkspaceActionBlock, action: string) => void; onAct?: (position: string, action: string) => void; onContinuationAction?: (action: string) => void; onColdAction?: (value: RangeUrlSelection["coldAction"]) => void; onSqueezeResponse?: (role: string, action: string) => void; onBoundedContinuation?: (block: WorkspaceActionBlock, action: string) => void; onStage3Action?: (block: WorkspaceActionBlock, action: string) => void; onFourBet?: () => void; onAllIn?: () => void; onShoveResponse?: (action: string) => void };
 import { stage3Copy } from "./stage3-copy.ts";
@@ -27,7 +27,7 @@ import { useStage3UiRuntime, withStage3Availability } from "./stage3-ranges.ts";
 import { accountStorage } from "../account/session.ts";
 import { loadRangeSource, RANGE_SOURCE_CHANGED } from "../account/preferences.ts";
 import { GtoRangeView } from "../gto/GtoRangeView.tsx";
-import { dataset as publishedDataset } from "./datasets.ts";
+import { dataset as publishedDataset, isLocalAiv2SampleMode } from "./datasets.ts";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { hands } from "../data.ts";
@@ -138,6 +138,7 @@ export function selectedHandForRangeEntry(entry: RangeEntry, selected: string) {
 const legacySelectionStorageKey = "reysonai-legacy:estimated-selection:v1";
 function restoredSelection(initialRangeType: string): RangeUrlSelection & PostflopProfileState {
   const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, limpReraiseAction: null, limpFourBetAction: null, squeezeResponse: [], continuationActions: [], stage3RootId: null, stage3Actions: [], coldAction: null, selected: "AKo", ...normalizePostflopProfileState(null) };
+  if (isLocalAiv2SampleMode()) return { ...fallback, rangeType: "open", opener: "UTG", hero: "HJ", selected: "A9s" };
   if (typeof window === "undefined") return fallback;
   try {
     const stored = window.sessionStorage.getItem(selectionStorageKey) ?? window.sessionStorage.getItem(legacySelectionStorageKey);
@@ -185,7 +186,7 @@ export function AiReason({ hand, reasonState, inlineFacts, hideCallEv = false }:
   const detailed = data?.hands[hand.hand];
   const english = productLocale() !== "ja";
   const facts = detailed
-    ? data!.fact_labels!.map(({ key, label, scope, unit }) => ({ key, label: english ? localizedFactLabel(key) ?? label : label, unit, value: scope === "spot" ? data!.spot_facts![key] as number | null : detailed.facts![key] }))
+    ? (data!.fact_labels ?? []).map(({ key, label, scope, unit }) => ({ key, label: english ? localizedFactLabel(key) ?? label : label, unit, value: scope === "spot" ? data!.spot_facts?.[key] as number | null : detailed.facts?.[key] }))
     : inlineFacts ?? [];
   const shown = facts.filter(fact => fact.value !== null && fact.value !== undefined && !(hideCallEv && fact.key === "call_ev_bb"));
   return <div className="ai-reason">
@@ -197,6 +198,10 @@ export function AiReason({ hand, reasonState, inlineFacts, hideCallEv = false }:
     </dl>}
     {detailed && <small className="reason-note">{english ? localizedEquityNote() : data!.equity_note}</small>}
   </div>;
+}
+
+export function reasonEquityFact(data: ReturnType<typeof useDetailedReasons>["data"]) {
+  return data?.fact_labels?.find(fact => fact.key === "equity_pct" || fact.key.startsWith("equity_vs_") && fact.key.endsWith("_pct"));
 }
 
 function endResultLabel(result: string) {
@@ -215,7 +220,7 @@ function endResultLabel(result: string) {
 
 function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isFourBet, isFiveBet, isContinuation, extra = null, spot, position, onReturnToComparison, displayMode }: { hand: DisplayHand; model: MatrixModel; isOpening?: boolean; isLimpResponse?: boolean; isThreeBet?: boolean; isFourBet?: boolean; isFiveBet?: boolean; isContinuation?: boolean; extra?: ReturnType<typeof extendedBreakdown>; spot: DisplaySpot; position: string; onReturnToComparison?: () => void; displayMode: string }) {
   const reasonState = useDetailedReasons(spot?.id);
-  const equityFact = reasonState.data?.fact_labels!.find(fact => fact.key === "equity_pct" || fact.key.startsWith("equity_vs_") && fact.key.endsWith("_pct"));
+  const equityFact = reasonEquityFact(reasonState.data);
   const savedFacts = reasonState.data?.hands[hand.hand]?.facts;
   const callEvFacts = savedFacts && equityFact ? { eqr: savedFacts.eqr, equityPct: savedFacts[equityFact.key], callEvBb: savedFacts.call_ev_bb } : null;
   const hasCallEv = callEvFacts && Object.values(callEvFacts).every(Number.isFinite);
@@ -435,6 +440,9 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const [explicitRangeUrl] = useState(() => typeof window !== "undefined" && Boolean(window.location.search));
   const useSourceTransition = previousRangeSource !== null && previousRangeSource !== rangeSource && !explicitRangeUrl;
   const [initialUrlState] = useState(() => {
+    // The local AIv2 sample is a single root spot, so never restore a saved
+    // AI/GTO action path over its explicitly selected UTG-open entry point.
+    if (isLocalAiv2SampleMode()) return null;
     const current = readRangeUrl();
     if (current || typeof window === "undefined" || window.location.pathname !== "/analyze/ranges" || window.location.search) return current;
     try {
@@ -508,7 +516,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const isComparison = rangeType === "response";
   const [opener, setOpener] = useState(initialSelection.opener);
   const [hero, setHero] = useState(initialSelection.hero);
-  const [focusedRange, setFocusedRange] = useState<string | null>(null);
+  const [focusedRange, setFocusedRange] = useState<string | null>(() => isLocalAiv2SampleMode() ? "UTG" : null);
   const [selectedRangeBlock, setSelectedRangeBlock] = useState<string | null>(null);
   const [callers, setCallers] = useState(initialSelection.callers);
   const [foldedHero, setFoldedHero] = useState(initialSelection.foldedHero);
@@ -854,7 +862,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
     && (flopActions.length === 0 || flopActions.length === 1 && flopActions[0] === "check")
     && !turnCard && turnActions.length === 0 && !riverCard && riverActions.length === 0);
   const gtoPathMode = rangeSource === "gto" || aiRootUnavailable || aiGtoHistoryUnavailable;
-  const canEnterLaterStreets = !gtoPathMode && Boolean(flopContext?.pilotAvailable && flopBoard && laterStart(flopActions, flopContext));
+  const canEnterLaterStreets = rangeSource !== "aiv2" && !gtoPathMode && Boolean(flopContext?.pilotAvailable && flopBoard && laterStart(flopActions, flopContext));
   const laterBlocks = canEnterLaterStreets
     ? buildLaterActionBlocks({ flopActions, turnCard, turnActions, riverCard, riverActions }, flopContext)
     : [];
@@ -873,7 +881,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
     previousPendingStreetCard.current = pendingStreetCard;
   }, [pendingStreetCard]);
   const combinedBlocks: WorkspaceActionBlock[] = flopActive
-    ? [...actionBlocks.filter(block => block.kind !== "end"), { key: "flop-board", kind: "board", cards: flopCards, street: "flop", potBb: flopContext!.potBb },
+    ? rangeSource === "aiv2" ? [] : [...actionBlocks.filter(block => block.kind !== "end"), { key: "flop-board", kind: "board", cards: flopCards, street: "flop", potBb: flopContext!.potBb },
       ...(flopContext!.kind === "mw3_srp"
         ? mw3Session.navigation?.blocks ?? []
         : flopContext!.pilotAvailable && flopBoard
@@ -1067,6 +1075,16 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
     const raiser = history.findLast(item => ["open", "three_bet", "squeeze", "four_bet", "all_in"].includes(item.action))?.seat;
     rangeEntries.sort((a, b) => Number(b.position === raiser) - Number(a.position === raiser));
   }
+  const localSampleSupported = !isLocalAiv2SampleMode() || rangeSource === "aiv2" && !flopActive && isOpening && opener === "UTG" &&
+    callers.length === 0 && !pendingRaise && format.game === "cash" && format.table === "6max" && format.stack === 100 &&
+    format.openSize === 2.5 && !format.ante && format.rake === "5pct-cap3" && isDefaultProfile(tableProfile);
+  if (!localSampleSupported && isLocalAiv2SampleMode()) {
+    rangeEntries.splice(0, rangeEntries.length, {
+      position: "UTG", kind: "pending", title: localized("UTG · AIv2 ローカル試験", "UTG · AIv2 local sample"),
+      statusTitle: localized("このスポットは未生成です", "This spot has not been generated"),
+      statusDescription: localized("ローカルAIv2サンプルは6-max・100BB・アンティなしのUTGオープンのみです。AIデータへの代替表示は行いません。", "The local AIv2 sample covers only 6-max, 100BB, no-ante UTG open. AI data is not substituted."),
+    });
+  }
   const selectedBlockIndex = actionBlocks.findIndex(block => block.key === selectedRangeBlock);
   const selectedActionEntries = selectedBlockIndex < 0 ? null : [
     ...(isOpening ? [] : [actionRangeEntry(actionBlocks[selectedBlockIndex - 1], "previous")]),
@@ -1088,7 +1106,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
     if (profileChanged || seatChanged) { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); }
     return profileChanged || seatChanged;
   };
-  if (flopActive && !postflopAllowed && rangeSource !== "gto" && !preserveGtoDecisionPath) return <div className="shell">
+  if (flopActive && !postflopAllowed && rangeSource !== "gto" && rangeSource !== "aiv2" && !preserveGtoDecisionPath) return <div className="shell">
     <Sidebar activeSection={RANGE_SECTION}
       onSectionChange={onSectionChange ?? (() => {})}
       profile={profile} onEditProfile={onEditProfile} />
@@ -1102,6 +1120,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
       onSectionChange={onSectionChange ?? (() => {})}
       profile={profile} onEditProfile={onEditProfile} />
     <main>
+      {isLocalAiv2SampleMode() && <div role="status" className="aiv2-local-sample-banner">{localized("AIv2 ローカル試験 · 生成済み UTG オープンのみ。その他のスポットは未生成として表示します。", "AIv2 local sample · Generated UTG open only. Other spots remain unavailable.")}</div>}
       <Panel className="estimate-settings">
         <ActionPath
           leading={<RangeContextCard postflop={flopActive} settingsOpen={settingsOpen}
@@ -1133,9 +1152,9 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
             }
             rewindToActionBlock(block);
           }}
-          onEnterPostflop={flopContext ? () => { setShowFlop(true); setFlopDialogOpen(postflopAllowed || rangeSource === "gto"); setSelectedRangeBlock(null); } : null}
-          onOpenFlopCards={() => setFlopDialogOpen(postflopAllowed || rangeSource === "gto")}
-          onOpenLaterCard={street => setStreetCardDialog(postflopAllowed && rangeSource !== "gto" ? street as StreetCardDialogName : null)}
+          onEnterPostflop={flopContext && rangeSource !== "aiv2" ? () => { setShowFlop(true); setFlopDialogOpen(postflopAllowed || rangeSource === "gto"); setSelectedRangeBlock(null); } : null}
+          onOpenFlopCards={rangeSource !== "aiv2" ? () => setFlopDialogOpen(postflopAllowed || rangeSource === "gto") : undefined}
+          onOpenLaterCard={rangeSource !== "aiv2" ? street => setStreetCardDialog(postflopAllowed && rangeSource !== "gto" ? street as StreetCardDialogName : null) : undefined}
           onFlopAction={(block, action) => {
             if ((aiRootUnavailable || aiGtoHistoryUnavailable) && block.key === "gto-bb-root" && action === "check") {
               setFlopActions([]);
@@ -1165,7 +1184,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
         </Panel>
-        {flopActive && rangeSource !== "gto" && !postflopAllowed ? <PostflopSignIn account={account} onBack={() => setShowFlop(false)} /> : aiRootUnavailable ? <Panel className="multiway-range-panel missing-range-panel">
+        {flopActive && rangeSource === "aiv2" ? <Panel className="multiway-range-panel missing-range-panel"><SectionHeading title={localized("AIv2はプリフロップのみ", "AIv2 covers preflop only")} /><StatusState title={localized("ポストフロップ未対応", "Postflop is not available")}>{localized("AIv2の保存データはプリフロップのみです。ポストフロップの代替データは表示しません。", "AIv2 currently has preflop data only. No postflop substitute is shown.")}</StatusState><button type="button" onClick={() => { setShowFlop(false); setSelectedRangeBlock(null); }}>{localized("プリフロップに戻る", "Back to preflop")}</button></Panel> : flopActive && rangeSource !== "gto" && !postflopAllowed ? <PostflopSignIn account={account} onBack={() => setShowFlop(false)} /> : aiRootUnavailable ? <Panel className="multiway-range-panel missing-range-panel">
           <SectionHeading title={localized("No AI estimate for BB's first flop decision", "BBのフロップ初手にAI推定はありません")} />
           <StatusState>{localized("The selected GTO action node is preserved. This AI source has no matching range, so no substitute is shown.", "選択中のGTOアクションノードを保持しています。このAIデータソースに対応するレンジはなく、代替表示はしません。")}</StatusState>
         </Panel> : aiGtoHistoryUnavailable ? <Panel className="multiway-range-panel missing-range-panel">
@@ -1186,11 +1205,11 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
         </div>
       </>}
       {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} displayMode={displayMode} onDisplayModeChange={changeDisplayMode} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
-      {flopActive && flopDialogOpen && <FlopCardDialog cards={flopCards} profile={opponentProfile} seat={flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? undefined : effectiveOpponentSeat}
+      {flopActive && rangeSource !== "aiv2" && flopDialogOpen && <FlopCardDialog cards={flopCards} profile={opponentProfile} seat={flopContext!.kind === "mw3_srp" || flopContext!.kind === "multiway_unavailable" ? undefined : effectiveOpponentSeat}
         positions={{ ip: flopContext!.ip ?? null, oop: flopContext!.oop ?? null }} onClose={() => setFlopDialogOpen(false)}
         onApply={(cards, seat, profile) => {
           if (applyOpponent(profile, seat, cards) || cards.join("") !== flopCards.join("")) { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); } setFlopDialogOpen(false); }} />}
-      {flopActive && streetCardDialog && <StreetCardDialog street={streetCardDialog}
+      {flopActive && rangeSource !== "aiv2" && streetCardDialog && <StreetCardDialog street={streetCardDialog}
         currentCard={streetCardDialog === "turn" ? turnCard : riverCard}
         usedCards={[...flopCards, ...(streetCardDialog === "river" ? [turnCard] : [])].filter(Boolean)}
         onClose={() => setStreetCardDialog(null)}
@@ -1208,8 +1227,8 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
 
 export function RangeWorkspace({ profile, onEditProfile, onSectionChange }: WorkspaceProps) {
   const [rangeSource, setRangeSource] = useState(loadRangeSource);
-  const [previousRangeSource] = useState<"ai" | "gto" | null>(() => {
-    try { const value = window.sessionStorage.getItem(workspaceSourceStorageKey); return value === "ai" || value === "gto" ? value : null; } catch { return null; }
+  const [previousRangeSource] = useState<"ai" | "aiv2" | "gto" | null>(() => {
+    try { const value = window.sessionStorage.getItem(workspaceSourceStorageKey); return value === "ai" || value === "aiv2" || value === "gto" ? value : null; } catch { return null; }
   });
   const [previousSemanticNode] = useState<string | null>(() => {
     try { return window.sessionStorage.getItem(workspaceSemanticNodeStorageKey); } catch { return null; }
@@ -1220,5 +1239,5 @@ export function RangeWorkspace({ profile, onEditProfile, onSectionChange }: Work
     return () => window.removeEventListener(RANGE_SOURCE_CHANGED, update);
   }, []);
   useEffect(() => { try { window.sessionStorage.setItem(workspaceSourceStorageKey, rangeSource); } catch {} }, [rangeSource]);
-  return <EstimatedRanges profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} rangeSource={rangeSource} previousRangeSource={previousRangeSource} previousSemanticNode={previousSemanticNode} />;
+  return <EstimatedRanges profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} rangeSource={rangeSource} previousRangeSource={previousRangeSource} previousSemanticNode={previousSemanticNode} initialRangeType={isLocalAiv2SampleMode() ? "open" : "response"} />;
 }

@@ -14,6 +14,7 @@ import { ACCOUNT_SECTION } from "./AccountMenu.tsx";
 import { ProfileAvatar, PROFILE_AVATARS, profileAvatar, type ProfileAvatarId } from "./ProfileAvatar.tsx";
 import { humanRequest } from "../trainer/human-api.ts";
 import { ffCopy } from "../trainer/fastfold-api.ts";
+import { hasCompleteAiv2Source, hasLocalAiv2Sample } from "../estimated/datasets.ts";
 
 
 const t = (ja: string, en: string) => localized(en, ja);
@@ -155,6 +156,12 @@ function AppearanceTab() {
   const [appearance, setAppearance] = useState(loadAppearance);
   const [displayMode, setDisplayMode] = useState(loadDisplayMode);
   const [rangeSource, setRangeSource] = useState(loadRangeSource);
+  const [aiv2Available, setAiv2Available] = useState(false);
+  const [aiv2SampleAvailable, setAiv2SampleAvailable] = useState(false);
+  useEffect(() => {
+    setAiv2Available(hasCompleteAiv2Source());
+    void hasLocalAiv2Sample().then(setAiv2SampleAvailable);
+  }, []);
   const update = (patch: Partial<ReturnType<typeof loadAppearance>>) => { const next = { ...appearance, ...patch }; setAppearance(next); saveAppearance(next); };
   const cardPreview = (colors: string[][]) => <span className="account-card-preview" aria-hidden="true">{colors.map(([suit, color]) => <i key={suit} style={{ background: color }}>{suit}</i>)}</span>;
   return <section className="account-card">
@@ -170,8 +177,17 @@ function AppearanceTab() {
     <SettingRow title={sourceCopy("計算バージョン", "Calculation version", "计算版本", "Versión de cálculo")}
       description={sourceCopy("レンジ分析のみ切り替えます。トレーナーと保存済み履歴は AI のままです。", "Changes Range Analysis only. Trainer and saved history remain AI-based.", "仅切换范围分析。训练器和已保存的历史记录仍使用 AI。", "Solo cambia el análisis de rangos. El entrenador y el historial guardado siguen usando IA.")}>
       <Choice label={sourceCopy("計算バージョン", "Calculation version", "计算版本", "Versión de cálculo")}
-        value={rangeSource} onChange={value => { const next = value === "gto" ? "gto" : "ai"; setRangeSource(next); saveRangeSource(next); }}
+        value={rangeSource} onChange={value => {
+          const next = value === "gto" || value === "aiv2" && (aiv2Available || aiv2SampleAvailable) ? value : "ai";
+          setRangeSource(next); saveRangeSource(next);
+          if (next === "aiv2" && !aiv2Available && aiv2SampleAvailable) {
+            window.location.assign("/analyze/ranges");
+            return;
+          }
+          if (next === "aiv2" || rangeSource === "aiv2") window.location.reload();
+        }}
         options={[{ value: "ai", label: "AI", hint: sourceCopy("推定レンジ", "Estimated ranges", "估计范围", "Rangos estimados") },
+          { value: "aiv2", label: "AIv2", hint: aiv2SampleAvailable && !aiv2Available ? sourceCopy("ローカル試験：UTG openのみ", "Local sample: UTG open only", "本地样例：仅 UTG open", "Muestra local: solo UTG open") : aiv2Available ? sourceCopy("独立した保存データ", "Separate saved dataset", "独立保存数据", "Datos guardados independientes") : sourceCopy("準備中", "Not available", "暂不可用", "No disponible"), disabled: !(aiv2Available || aiv2SampleAvailable) },
           { value: "gto", label: "GTO", hint: sourceCopy("保存済みフロップ計算", "Saved flop calculation", "已保存的翻牌计算", "Cálculo de flop guardado") }]} />
     </SettingRow>
     <SettingRow title={t("カードの色", "Card colors")} description={t("トレーナーのカード", "Trainer cards")}>

@@ -5,6 +5,7 @@ import { closeSync, openSync, readFileSync, readSync, readdirSync, writeFileSync
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isDeepStrictEqual } from "node:util";
+import { isCompleteAiv2Manifest } from "../../src/estimated/aiv2-contract.ts";
 
 export const ESTIMATED_DIR = fileURLToPath(new URL("../../src/estimated", import.meta.url));
 // Keep the historical UTF-16 code-unit boundaries and SQL quote semantics.
@@ -16,12 +17,22 @@ const differs = () : any => new Error("Delivery bundle differs from the reviewed
 // Retain only paths. Object property enumeration preserves the old numeric-root
 // name ordering, in addition to localeCompare traversal and depth-first order.
 export function* preflopDatasetEntries(dir: any = ESTIMATED_DIR) : any {
+  // Never include legacy/incomplete AIv2 artifacts in a replacement D1 snapshot.
+  // AIv2 is publishable only after its full LLM generation and audit manifest.
+  let publishAiv2 = false;
+  try {
+    const manifest = JSON.parse(readFileSync(join(dir, "aiv2/manifest.json"), "utf8"));
+    publishAiv2 = isCompleteAiv2Manifest(manifest);
+  } catch {}
   const paths: Record<string, any> = {};
   const walk = (current: any) : any => {
     for (const entry of readdirSync(current, { withFileTypes: true }).sort((a?: any, b?: any) : any => a.name.localeCompare(b.name))) {
       const path = join(current, entry.name);
       if (entry.isDirectory()) walk(path);
-      else if (entry.name.endsWith(".json")) paths[relative(dir, path).replace(/\.json$/, "")] = path;
+      else if (entry.name.endsWith(".json")) {
+        const name = relative(dir, path).replace(/\.json$/, "");
+        if (!name.startsWith("aiv2/") || publishAiv2) paths[name] = path;
+      }
     }
   };
   walk(dir);

@@ -1,6 +1,7 @@
 export { opponentProfileDatasetName } from "./opponent-profiles.ts";
 import type { OpeningDataset, ResponseDataset, ThreeBetDataset, FourBetDataset, FiveBetDataset, LimpDataset, LimpDeepDataset, MultiwayDataset, Multiway2Dataset, ColdThreeBetDataset, ColdFourBetDataset, SqueezeDataset, ContinuationDataset } from "./preflop-types.ts";
 import type { CallEquityTable } from "./call-ev.ts";
+import { isCompleteAiv2Manifest } from "./aiv2-contract.ts";
 
 type DatasetMap = {
   "opening-ranges": OpeningDataset; "preflop-ranges": ResponseDataset;
@@ -27,6 +28,15 @@ type NodeFs = {
 
 const registry = new Map<string, unknown>();
 const pending = new Map<string, Promise<unknown>>();
+let source: "ai" | "aiv2" = "ai";
+let aiv2Ready: boolean | null = null;
+let aiv2LocalSampleReady = false;
+
+export function setDatasetSource(value: "ai" | "aiv2") { source = value === "aiv2" ? "aiv2" : "ai"; }
+export const isLocalAiv2SampleMode = () => source === "aiv2" && aiv2LocalSampleReady;
+const datasetName = (name: string) => isLocalAiv2SampleMode()
+  ? name === "opening-ranges" ? "aiv2/local-sample/opening-ranges" : name === "reasons/UTG_open" ? "aiv2/local-sample/reasons/UTG_open" : name
+  : source === "aiv2" ? `aiv2/${name}` : name;
 
 // Needed synchronously by the app; everything else loads on demand.
 export const APP_DATASETS = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses",
@@ -40,30 +50,35 @@ const nodeFs = () => (globalThis as typeof globalThis & { process?: { getBuiltin
 export function dataset<Name extends keyof DatasetMap>(name: Name): DatasetMap[Name];
 export function dataset<T = unknown>(name: string): T;
 export function dataset<T = unknown>(name: string): T {
-  if (registry.has(name)) return registry.get(name) as T;
+  const key = datasetName(name);
+  if (registry.has(key)) return registry.get(key) as T;
   const fs = nodeFs();
   if (!fs) throw new Error(`Preflop dataset ${name} is not loaded`);
-  const value = JSON.parse(fs.readFileSync(new URL(`./${name}.json`, here), "utf8"));
-  registry.set(name, value);
+  const value = JSON.parse(fs.readFileSync(new URL(`./${key}.json`, here), "utf8"));
+  registry.set(key, value);
   return value;
 }
 
 export function loadDataset<Name extends keyof DatasetMap>(name: Name): Promise<DatasetMap[Name]>;
 export function loadDataset<T = unknown>(name: string): Promise<T>;
 export function loadDataset<T = unknown>(name: string): Promise<T> {
-  if (registry.has(name)) return Promise.resolve(registry.get(name) as T);
+  const key = datasetName(name);
+  if (registry.has(key)) return Promise.resolve(registry.get(key) as T);
   if (nodeFs()) return Promise.resolve().then(() => dataset<T>(name));
-  if (!pending.has(name)) {
-    pending.set(name, fetch(`${apiBase()}/v1/preflop/datasets/${name}`)
+  if (!pending.has(key)) {
+    const url = key.startsWith("aiv2/local-sample/")
+      ? `/v1/preflop/local/aiv2-sample/${key.slice("aiv2/local-sample/".length)}`
+      : `${apiBase()}/v1/preflop/datasets/${key}`;
+    pending.set(key, fetch(url)
       .then(async response => {
         if (!response.ok) throw new Error(`${name} を読み込めませんでした（${response.status}）。`);
         const value = await response.json();
-        registry.set(name, value);
+        registry.set(key, value);
         return value;
       })
-      .finally(() => pending.delete(name)));
+      .finally(() => pending.delete(key)));
   }
-  return pending.get(name) as Promise<T>;
+  return pending.get(key) as Promise<T>;
 }
 
 export const preloadDatasets = (names: string[]) => Promise.all(names.map(name => loadDataset(name)));
@@ -73,8 +88,67 @@ export const preloadDatasets = (names: string[]) => Promise.all(names.map(name =
 let index: Promise<string[]> | null = null;
 let known: Set<string> | null = null;
 export function hasDataset(name: string): boolean {
+  if (isLocalAiv2SampleMode()) return name === "reasons/UTG_open";
   if (!known && nodeFs()) known = new Set(listFiles(nodeFs()!, new URL("./", here)));
-  return Boolean(known?.has(name));
+  return Boolean(known?.has(datasetName(name)));
+}
+
+export function hasCompleteAiv2Source(): boolean {
+  if (aiv2Ready !== null) return aiv2Ready;
+  if (!known && nodeFs()) known = new Set(listFiles(nodeFs()!, new URL("./", here)));
+  const names = known;
+  if (!names || !APP_DATASETS.every(name => names.has(`aiv2/${name}`)) || !names.has("aiv2/manifest")) return false;
+  try {
+    const fs = nodeFs();
+    if (!fs) return false;
+    const manifest = JSON.parse(fs.readFileSync(new URL("./aiv2/manifest.json", here), "utf8"));
+    aiv2Ready = validAiv2Manifest(manifest);
+    return aiv2Ready;
+  } catch { return false; }
+}
+
+export async function hasLocalAiv2Sample(): Promise<boolean> {
+  const env = (import.meta as ImportMeta & { env?: { DEV?: boolean } }).env;
+  if (!env?.DEV) return false;
+  try {
+    const response = await fetch("/v1/preflop/local/aiv2-sample/status", { cache: "no-store" });
+    const status = response.ok ? await response.json() as { available?: boolean; scenario?: string; method?: string } : null;
+    return status?.available === true && status.scenario === "UTG_open" && status.method === "llm-range-wide-combo-v3";
+  } catch { return false; }
+}
+
+function validAiv2Manifest(value: any): boolean {
+  return isCompleteAiv2Manifest(value) &&
+    APP_DATASETS.every(name => value?.coverage?.datasets?.includes(`${name}.json`) && value?.sha256?.[`${name}.json`]);
+}
+
+export async function configureDatasetSource(requested: "ai" | "aiv2"): Promise<boolean> {
+  aiv2Ready = false;
+  aiv2LocalSampleReady = false;
+  if (requested !== "aiv2") { setDatasetSource("ai"); return false; }
+  const names = await datasetNames();
+  if (!APP_DATASETS.every(name => names.includes(`aiv2/${name}`)) || !names.includes("aiv2/manifest")) {
+    setDatasetSource("ai");
+    const env = (import.meta as ImportMeta & { env?: { DEV?: boolean } }).env;
+    if (env?.DEV) {
+      try {
+        aiv2LocalSampleReady = await hasLocalAiv2Sample();
+        if (aiv2LocalSampleReady) {
+          setDatasetSource("aiv2");
+          return true;
+        }
+      } catch {}
+    }
+    return false;
+  }
+  setDatasetSource("aiv2");
+  try {
+    const manifest = await loadDataset<any>("manifest");
+    aiv2Ready = validAiv2Manifest(manifest);
+    if (aiv2Ready) return true;
+  } catch {}
+  setDatasetSource("ai");
+  return false;
 }
 
 export function datasetNames(): Promise<string[]> {

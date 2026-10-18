@@ -15,6 +15,10 @@ const EVIDENCE = 'apps/frontend/docs/mw3-source-identity/typescript-archive-sour
 const ADAPTER = 'apps/frontend/scripts/postflop-ai/mw3-manifest-source-identity.ts';
 const EXTRA_CURRENT_PATHS = Object.freeze([ADAPTER, INVENTORY, REVIEW, EVIDENCE,
   'apps/frontend/docs/mw3-source-identity/typescript-executable-parity.json',
+  // AIv2 readiness is now a consumed source-level guard in the shared dataset
+  // path. Keep it explicit in this overlay rather than allowing it to drift
+  // outside the archived recipe graph.
+  'apps/frontend/src/estimated/aiv2-contract.ts',
   'apps/frontend/scripts/postflop-ai/flop-isomorphism.d.mts',
   'apps/frontend/scripts/postflop-ai/later-policy.d.mts',
   'apps/frontend/scripts/postflop-ai/mw3-typescript-source-identity-pairs.json',

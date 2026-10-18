@@ -4,7 +4,7 @@ import { displayModeKey } from "../profile.ts";
 
 const KEY = "reysonai:appearance:v1";
 export const RANGE_SOURCE_CHANGED = "reysonai:range-source-changed";
-export type RangeSource = "ai" | "gto";
+export type RangeSource = "ai" | "aiv2" | "gto";
 export const DEFAULT_APPEARANCE = Object.freeze({ cards: "four", motion: "standard" });
 
 const storage = () => { try { return typeof window === "undefined" ? null : accountStorage(); } catch { return null; } };
@@ -17,7 +17,7 @@ const appearanceRecord = (): Record<string, unknown> => {
     return record;
   } catch { return {}; }
 };
-const sourceOf = (record: Record<string, unknown>): RangeSource => record.rangeSource === "gto" ? "gto" : "ai";
+const sourceOf = (record: Record<string, unknown>): RangeSource => record.rangeSource === "gto" || record.rangeSource === "aiv2" ? record.rangeSource : "ai";
 
 export function loadAppearance() {
   const saved = appearanceRecord();
@@ -57,7 +57,7 @@ export function loadRangeSource(): RangeSource {
 }
 
 export function saveRangeSource(source: RangeSource) {
-  try { storage()?.setItem(KEY, JSON.stringify({ ...appearanceRecord(), rangeSource: source === "gto" ? "gto" : "ai" })); } catch {}
+  try { storage()?.setItem(KEY, JSON.stringify({ ...appearanceRecord(), rangeSource: sourceOf({ rangeSource: source }) })); } catch {}
   if (typeof window !== "undefined") window.dispatchEvent(new Event(RANGE_SOURCE_CHANGED));
 }
 
