@@ -4,11 +4,17 @@ import { createHash } from "node:crypto";
 import { hands } from "../src/data.ts";
 import { runCodex } from "./postflop-ai/generate.ts";
 
-export const AIV2_PREflop_METHOD = "llm-range-wide-combo-v3";
-export const AIV2_MODEL = "gpt-6-sol";
-export const AIV2_REASONING_EFFORT = "high";
+export const AIV2_PREflop_METHOD = "llm-range-wide-combo-v5";
+export const AIV2_MODEL = "gpt-6.1-sol";
+export const AIV2_REASONING_EFFORT = "medium";
 const SUITS = ["s", "h", "d", "c"] as const;
 const RANKS = "AKQJT98765432";
+const PREFLOP_ACTIONS = new Set(["fold", "check", "call", "open", "limp", "raise", "three_bet", "four_bet", "squeeze", "all_in"]);
+const isRecord = (value: unknown): value is Record<string, unknown> => !!value && typeof value === "object" && !Array.isArray(value);
+function assertActions(actions: string[]) {
+  if (!actions.length || new Set(actions).size !== actions.length || actions.some(action => !PREFLOP_ACTIONS.has(action)))
+    throw new Error("Invalid or duplicate legal preflop actions");
+}
 const sha = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
 export type Aiv2Mix = Record<string, number>;
@@ -46,7 +52,7 @@ export function encodeComboReachWeights(weightsByCombo: Record<string, number>) 
   const groups = new Map<string, number[]>();
   for (const { combo, hand } of CONCRETE_COMBOS) {
     const weight = weightsByCombo[combo];
-    if (!Number.isFinite(weight) || weight < 0) throw new Error(`Invalid concrete reach weight for ${combo}`);
+    if (!Number.isFinite(weight) || weight < 0 || weight > 1) throw new Error(`Invalid concrete reach weight for ${combo}`);
     groups.set(hand, [...(groups.get(hand) ?? []), weight]);
   }
   const weightsByHand: Record<string, number> = {};
@@ -70,19 +76,29 @@ function normalizedMix(value: unknown, actions: string[], label: string): Aiv2Mi
 }
 
 export function validateAiv2Policy(raw: unknown, scenarioId: string, actions: string[]) {
+  assertActions(actions);
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("AIv2 response must be an object");
   const policy = raw as Record<string, unknown>;
+  // Saved phase checkpoints contain our normalized keyed representation. Accept
+  // that exact structure too, without relaxing canonical model array ordering.
+  const keyed = isRecord(policy.class_mixes);
+  const classRows = keyed ? hands.map(hand => ({ hand, mix: (policy.class_mixes as Record<string, unknown>)[hand] })) : policy.class_mixes;
+  if (keyed && (Object.keys(policy.class_mixes as object).length !== hands.length || !Array.isArray(policy.actions) || JSON.stringify(policy.actions) !== JSON.stringify(actions)))
+    throw new Error("AIv2 normalized policy has wrong hand classes or legal actions");
+  if (Object.keys(policy).some(key => !["kind", "scenario_id", "class_mixes", "combo_overrides", "actions"].includes(key))) throw new Error("AIv2 policy contains unsupported fields");
   if (policy.kind !== "aiv2_preflop_combo_policy" || policy.scenario_id !== scenarioId ||
-      !Array.isArray(policy.class_mixes) || policy.class_mixes.length !== hands.length) throw new Error("AIv2 response has wrong policy identity or incomplete hand classes");
+      !Array.isArray(classRows) || classRows.length !== hands.length) throw new Error("AIv2 response has wrong policy identity or incomplete hand classes");
   const classMixes: Record<string, Aiv2Mix> = {};
   for (let i = 0; i < hands.length; i++) {
-    const row = policy.class_mixes[i] as Record<string, unknown>;
+    const row = classRows[i] as Record<string, unknown>;
     if (row?.hand !== hands[i]) throw new Error(`AIv2 class order mismatch at ${i}`);
     classMixes[hands[i]] = normalizedMix(row.mix, actions, `${scenarioId}/${hands[i]}`);
   }
   const overrides: Record<string, Aiv2Mix> = {};
-  if (!Array.isArray(policy.combo_overrides)) throw new Error("AIv2 response must include combo_overrides array");
-  for (const item of policy.combo_overrides as Array<Record<string, unknown>>) {
+  const overrideRows = keyed && isRecord(policy.combo_overrides)
+    ? Object.entries(policy.combo_overrides).map(([combo, mix]) => ({ combo, mix })) : policy.combo_overrides;
+  if (!Array.isArray(overrideRows)) throw new Error("AIv2 response must include combo_overrides array");
+  for (const item of overrideRows as Array<Record<string, unknown>>) {
     const combo = item?.combo;
     if (typeof combo !== "string" || !CONCRETE_COMBOS.some(candidate => candidate.combo === combo) || overrides[combo]) throw new Error("AIv2 response contains an invalid or duplicate combo override");
     overrides[combo] = normalizedMix(item.mix, actions, `${scenarioId}/${combo}`);
@@ -91,6 +107,9 @@ export function validateAiv2Policy(raw: unknown, scenarioId: string, actions: st
 }
 
 export function expandConcretePolicy(policy: ReturnType<typeof validateAiv2Policy>, reachWeights: Record<string, number> = {}) : Aiv2ComboMix[] {
+  if (Object.keys(reachWeights).length && (Object.keys(reachWeights).length !== CONCRETE_COMBOS.length ||
+      CONCRETE_COMBOS.some(({ combo }) => !Number.isFinite(reachWeights[combo]) || reachWeights[combo] < 0 || reachWeights[combo] > 1)))
+    throw new Error("Concrete reach must be complete and finite within [0,1]");
   return CONCRETE_COMBOS.map(({ combo, hand }) => ({
     combo, hand,
     mix: policy.combo_overrides[combo] ?? policy.class_mixes[hand],
@@ -99,8 +118,18 @@ export function expandConcretePolicy(policy: ReturnType<typeof validateAiv2Polic
 }
 
 export function compressConcretePolicy(rows: Aiv2ComboMix[], actions: string[]) {
+  assertActions(actions);
+  const expected = new Map(CONCRETE_COMBOS.map(row => [row.combo, row.hand]));
+  const seen = new Set<string>();
   const grouped = new Map<string, Aiv2ComboMix[]>();
-  for (const row of rows) grouped.set(row.hand, [...(grouped.get(row.hand) ?? []), row]);
+  for (const row of rows) {
+    if (expected.get(row.combo) !== row.hand || seen.has(row.combo) || !Number.isFinite(row.reach_weight) || row.reach_weight < 0 || row.reach_weight > 1)
+      throw new Error("Invalid, duplicate or nonfinite concrete policy row");
+    normalizedMix(row.mix, actions, row.combo);
+    seen.add(row.combo);
+    grouped.set(row.hand, [...(grouped.get(row.hand) ?? []), row]);
+  }
+  if (seen.size !== CONCRETE_COMBOS.length) throw new Error("Incomplete concrete policy");
   return hands.map(hand => {
     const combos = grouped.get(hand) ?? [];
     if (!combos.length) throw new Error(`No concrete combos for ${hand}`);
@@ -113,25 +142,45 @@ export function compressConcretePolicy(rows: Aiv2ComboMix[], actions: string[]) 
       ? actions.map(action => combos.reduce((sum, row) => sum + row.mix[action], 0) / combos.length)
       : actions.map(action => combos.reduce((sum, row) => sum + row.reach_weight * row.mix[action], 0) / totalWeight);
     // Largest-remainder rounding keeps the app's integer 169-grid contract intact.
-    const rounded = weights.map(Math.floor), remainder = 100 - rounded.reduce((sum, value) => sum + value, 0);
-    for (const index of weights.map((value, index) => ({ index, fractional: value - Math.floor(value) })).sort((a,b) => b.fractional - a.fractional).slice(0, remainder)) rounded[index.index]++;
+    const total = weights.reduce((sum, value) => sum + value, 0);
+    if (!Number.isFinite(total) || Math.abs(total - 100) > 1e-8 || weights.some(value => !Number.isFinite(value) || value < 0 || value > 100 + 1e-8))
+      throw new Error(`Invalid weighted policy total for ${hand}`);
+    // Correct floating-point drift only, never normalize a malformed policy.
+    const stable = weights.map(value => value * 100 / total);
+    const rounded = stable.map(Math.floor), remainder = 100 - rounded.reduce((sum, value) => sum + value, 0);
+    for (const index of stable.map((value, index) => ({ index, fractional: value - Math.floor(value) })).sort((a,b) => b.fractional - a.fractional).slice(0, remainder)) rounded[index.index]++;
     return { hand, mix: Object.fromEntries(actions.map((action, i) => [action, rounded[i]])), combo_count: combos.length, reach_weight: totalWeight, unreachable };
   });
+}
+
+// Range-level diagnostics are computed from the concrete policy, not LLM
+// claims or equally weighted hand classes. Zero-reach rows contribute nothing.
+export function summarizeConcretePolicy(rows: Aiv2ComboMix[], actions: string[]) {
+  compressConcretePolicy(rows, actions); // enforce the same complete-policy contract
+  const reach = rows.reduce((sum, row) => sum + row.reach_weight, 0);
+  return {
+    concrete_combo_count: rows.length,
+    reached_combo_count: rows.filter(row => row.reach_weight > 0).length,
+    total_reach_weight: reach,
+    action_frequency_pct: Object.fromEntries(actions.map(action => [action, reach === 0 ? null :
+      rows.reduce((sum, row) => sum + row.reach_weight * row.mix[action], 0) / reach])),
+  };
 }
 
 export function rangePrompt({ scenario, actions, context = [], phase = "generate", candidate, analysis }: {
   scenario: Record<string, unknown>; actions: string[]; context?: unknown[]; phase?: "generate" | "reevaluate"; candidate?: unknown; analysis?: unknown;
 }) {
   const scenarioId = String(scenario.id ?? "");
-  if (!scenarioId || !actions.length) throw new Error("A named scenario and legal actions are required");
+  assertActions(actions);
+  if (!scenarioId) throw new Error("A named scenario and legal actions are required");
   const policyContract = `Return one JSON object only: {"kind":"aiv2_preflop_combo_policy","scenario_id":${JSON.stringify(scenarioId)},"class_mixes":[{"hand":"AA","mix":{"action":integer,...}},...169 canonical hands in this exact order: ${hands.join(",")}],"combo_overrides":[{"combo":"AsKh","mix":{"action":integer,...}}]}. Include exactly the legal actions ${JSON.stringify(actions)} on every mix; integer percentages must sum to 100. Use combo_overrides only for justified card-specific distinctions; otherwise leave it empty. The 169 defaults are compressed suit-symmetry groups, not a limitation: override any of the 1,326 concrete two-card combos independently when a specific card matters.`;
-  const sharedContext = `Game: 6-max cash, 100BB effective, no ante, rake 5% capped at 3BB. Use only this spot's actual legal actions and preflop raise-to sizes. Frequencies are conditional on the exact action history; never use postflop bet/pot sizing. This is a range-wide estimated policy, not GTO/solver output. Analyze the full 1,326-combo range as a connected strategy: blockers, value/bluff balance, action coverage, prior player reach, and mutually coherent action frequencies. Existing AI frequencies are not supplied as a target.`;
+  const sharedContext = `Game: 6-max cash, 100BB effective, no ante, rake 5% capped at 3BB. Use only this spot's actual legal actions and preflop raise-to sizes. Frequencies are conditional on the exact action history; never use postflop bet/pot sizing. This is a range-wide estimated policy, not GTO/solver output. Analyze the full 1,326-combo range as a connected strategy: blockers, value/bluff balance, action coverage, prior player reach, and mutually coherent action frequencies. Existing AI frequencies are not supplied as a target. Derive your whole-range action coverage and value/bluff allocation from this exact history, position, profile and recorded sizes before selecting mixes. Reach factors belong to their named participant: multiply only that participant's own previous conditional actions; another player's fold/open frequency is not the current player's same-combo reach. Opponent ranges still inform blockers and strategy, but are not independent same-card factors. Zero-own-reach combos are counterfactual display policies, excluded from reached-range aggregates. Compute any action-frequency aggregate with exact physical combo multiplicity and own reach, not an unweighted mean of 169 classes. Do not invent numerical EV, equity, solver results or unavailable measurements. In this suit-symmetric preflop game, do not fabricate suit preferences: concrete overrides require an actual asymmetry in the supplied context.`;
   return [
-    phase === "generate" ? "Generate a new independent AIv2 preflop range-wide strategy." : "Re-evaluate the full provisional AIv2 range-wide strategy for this exact history. Preserve legal sizes/actions; repair strategic incoherence in the complete range. Do not simply approve it: review the full 169 classes and any card-specific exceptions as a policy, then return your corrected final policy.",
+    phase === "generate" ? "Generate a new independent AIv2 preflop range-wide strategy." : "Re-evaluate the full provisional AIv2 range-wide strategy for this exact history. Preserve legal sizes/actions; repair strategic incoherence in the complete range. Compare the candidate's actual combo-and-own-reach-weighted action coverage, value/bluff composition, boundary-hand continuity and exceptions with the persisted analysis. If the preliminary analysis is unsound, correct the strategy rather than blindly following it; the final reasons must explain the saved final policy, not repeat an obsolete plan. Do not simply approve it: review the full 169 classes and any card-specific exceptions as a policy, then return your corrected final policy.",
     sharedContext,
     `Scenario structure (frequency rows deliberately omitted): ${JSON.stringify(scenario)}`,
     context.length ? `Generated upstream participant/history ranges and their exact per-combo action reach factors: ${JSON.stringify(context)}` : "No prior generated action ranges are required before this decision.",
-    analysis ? `Persisted Phase 1 whole-range strategic analysis (must follow and implement): ${JSON.stringify(analysis)}` : "",
+    analysis ? `Persisted Phase 1 whole-range strategic analysis (implement unless reevaluation identifies a strategic inconsistency): ${JSON.stringify(analysis)}` : "",
     candidate ? `Full provisional policy for strategic reevaluation: ${JSON.stringify(candidate)}` : "",
     policyContract,
   ].filter(Boolean).join("\n\n");
@@ -139,14 +188,15 @@ export function rangePrompt({ scenario, actions, context = [], phase = "generate
 
 export function rangeAnalysisPrompt({ scenario, actions, context = [] }: { scenario: Record<string, unknown>; actions: string[]; context?: unknown[] }) {
   const scenarioId = String(scenario.id ?? "");
-  if (!scenarioId || !actions.length) throw new Error("A named scenario and legal actions are required");
+  assertActions(actions);
+  if (!scenarioId) throw new Error("A named scenario and legal actions are required");
   return [
     "Phase 1: analyze the entire preflop strategy range before assigning any action frequencies. Do not output frequencies or a policy. This is an estimated strategy, not GTO or solver output.",
     "Return only compact JSON {kind:'aiv2_preflop_range_analysis',scenario_id,summary,range_themes:[string,...],blocker_notes:[{combo,strategic_note},...]}. Keep summary under 500 characters; at most 8 range_themes (each <=180 chars); at most 12 concrete blocker_notes, using valid physical combos. Cover positional/range-wide value-bluff coverage, legal action roles, and blocker-sensitive exceptions. The next phase will assign every hand-class mix and may add justified exceptions for any of 1,326 physical combos.",
     `Game: 6-max cash, 100BB effective, no ante, rake 5% capped at 3BB. Legal actions/sizes: ${JSON.stringify(actions)} / ${JSON.stringify(scenario)}. Do not introduce postflop bet sizing.`,
     `Scenario (frequency rows omitted): ${JSON.stringify(scenario)}`,
     context.length ? `Prior generated history with exact concrete combo action reach factors: ${JSON.stringify(context)}` : "No generated prerequisite action ranges.",
-    "Analyze range interactions jointly: value/bluff coverage, position, pot odds and raise sizing, blockers, and action-history reach. Do not copy legacy AI strategy frequencies.",
+    "Analyze range interactions jointly: value/bluff coverage, position, pot odds and raise sizing, blockers, and action-history reach. Do not copy legacy AI strategy frequencies. State an actionable whole-range plan for every legal action, including which value hands and blocker/playability bluffs support aggressive actions and which boundaries may mix. Do not invent measured EV/equity or solver precision. Participant reach is conditioned only on that participant's own prior actions; account for other participants as opponent ranges, not same-combo reach multipliers. Distinguish zero-reach counterfactual hands from the reached range, and preserve exact suit symmetry unless the provided context genuinely breaks it.",
   ].join("\n\n");
 }
 
@@ -155,9 +205,10 @@ export function validateRangeAnalysis(raw: unknown, scenarioId: string) {
   const analysis = raw as Record<string, unknown>;
   if (analysis.kind !== "aiv2_preflop_range_analysis" || analysis.scenario_id !== scenarioId ||
       typeof analysis.summary !== "string" || !analysis.summary.trim() || analysis.summary.length > 500 ||
-      !Array.isArray(analysis.range_themes) || analysis.range_themes.length > 8 || analysis.range_themes.some((item: any) => typeof item !== "string" || !item.trim() || item.length > 180) ||
+      !Array.isArray(analysis.range_themes) || !analysis.range_themes.length || analysis.range_themes.length > 8 || analysis.range_themes.some((item: any) => typeof item !== "string" || !item.trim() || item.length > 180) ||
       !Array.isArray(analysis.blocker_notes) || analysis.blocker_notes.length > 12 || analysis.blocker_notes.some((item: any) =>
-        !CONCRETE_COMBOS.some(combo => combo.combo === item?.combo) || typeof item?.strategic_note !== "string" || !item.strategic_note.trim()))
+        !CONCRETE_COMBOS.some(combo => combo.combo === item?.combo) || typeof item?.strategic_note !== "string" || !item.strategic_note.trim() || item.strategic_note.length > 500) ||
+      new Set((analysis.blocker_notes as Array<any>).map(item => item.combo)).size !== analysis.blocker_notes.length)
     throw new Error("AIv2 range analysis has wrong identity or incomplete/oversized range-level content");
   return analysis;
 }
@@ -198,11 +249,33 @@ export function validateFinalReasons(raw: unknown, scenarioId: string, comboExce
 export function actionsForSpot(spot: Record<string, unknown>): string[] {
   const row = (spot.hands as Array<Record<string, unknown>> | undefined)?.[0];
   if (!row) throw new Error("Spot has no canonical hand rows");
-  const nonActions = new Set(["hand", "raise_to_size_bb", "open_size_bb", "all_in_size_bb", "four_bet_size_bb", "three_bet_size_bb", "raise_size_bb", "equity_vs_shove_pct"]);
-  return Object.keys(row).filter(key => !nonActions.has(key) && typeof row[key] === "number");
+  const actions = Object.keys(row).filter(key => PREFLOP_ACTIONS.has(key));
+  assertActions(actions);
+  for (const candidate of spot.hands as Array<Record<string, unknown>>) {
+    if (Object.keys(candidate).filter(key => PREFLOP_ACTIONS.has(key)).join(",") !== actions.join(",")) throw new Error("Inconsistent legal actions across hand rows");
+    for (const [key, value] of Object.entries(candidate)) {
+      if (typeof value === "number" && !PREFLOP_ACTIONS.has(key) && !key.endsWith("_size_bb") && key !== "equity_vs_shove_pct")
+        throw new Error(`Unknown numeric hand field ${key}`);
+    }
+  }
+  return actions;
 }
 
 export function scenarioOnly(spot: Record<string, unknown>): Record<string, unknown> {
-  const { hands: _oldFrequencies, ...structure } = spot;
-  return structure;
+  const { hands: _oldFrequencies, ...sourceStructure } = spot;
+  // Keep game geometry/history, never seed an independent policy with legacy
+  // strategy-derived ranges, explanations, EV/equity or generation receipts.
+  const legacyFields = new Set(["summary", "metadata", "provenance", "combo_mixes", "class_mixes", "combo_overrides", "shove_range_combos", "call_break_even_equity_pct"]);
+  const structure = Object.fromEntries(Object.entries(sourceStructure).filter(([key]) =>
+    !legacyFields.has(key) && !/(^|_)(reason|reasons|analysis|policy|frequencies|frequency|equity|ev)(_|$)/.test(key)));
+  const rows = _oldFrequencies as Array<Record<string, unknown>> | undefined;
+  const sizes: Record<string, number> = {};
+  for (const row of rows ?? []) for (const [key, value] of Object.entries(row)) {
+    if (!key.endsWith("_size_bb") || value === null) continue;
+    if (typeof value !== "number" || !Number.isFinite(value) || value <= 0 || (sizes[key] !== undefined && sizes[key] !== value))
+      throw new Error(`Inconsistent or invalid preflop size ${key}`);
+    if (structure[key] !== undefined && structure[key] !== value) throw new Error(`Conflicting preflop size ${key}`);
+    sizes[key] = value;
+  }
+  return { ...structure, ...sizes };
 }
