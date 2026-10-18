@@ -186,7 +186,7 @@ export function AiReason({ hand, reasonState, inlineFacts, hideCallEv = false }:
   const detailed = data?.hands[hand.hand];
   const english = productLocale() !== "ja";
   const facts = detailed
-    ? data!.fact_labels!.map(({ key, label, scope, unit }) => ({ key, label: english ? localizedFactLabel(key) ?? label : label, unit, value: scope === "spot" ? data!.spot_facts![key] as number | null : detailed.facts![key] }))
+    ? (data!.fact_labels ?? []).map(({ key, label, scope, unit }) => ({ key, label: english ? localizedFactLabel(key) ?? label : label, unit, value: scope === "spot" ? data!.spot_facts?.[key] as number | null : detailed.facts?.[key] }))
     : inlineFacts ?? [];
   const shown = facts.filter(fact => fact.value !== null && fact.value !== undefined && !(hideCallEv && fact.key === "call_ev_bb"));
   return <div className="ai-reason">
@@ -198,6 +198,10 @@ export function AiReason({ hand, reasonState, inlineFacts, hideCallEv = false }:
     </dl>}
     {detailed && <small className="reason-note">{english ? localizedEquityNote() : data!.equity_note}</small>}
   </div>;
+}
+
+export function reasonEquityFact(data: ReturnType<typeof useDetailedReasons>["data"]) {
+  return data?.fact_labels?.find(fact => fact.key === "equity_pct" || fact.key.startsWith("equity_vs_") && fact.key.endsWith("_pct"));
 }
 
 function endResultLabel(result: string) {
@@ -216,7 +220,7 @@ function endResultLabel(result: string) {
 
 function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isFourBet, isFiveBet, isContinuation, extra = null, spot, position, onReturnToComparison, displayMode }: { hand: DisplayHand; model: MatrixModel; isOpening?: boolean; isLimpResponse?: boolean; isThreeBet?: boolean; isFourBet?: boolean; isFiveBet?: boolean; isContinuation?: boolean; extra?: ReturnType<typeof extendedBreakdown>; spot: DisplaySpot; position: string; onReturnToComparison?: () => void; displayMode: string }) {
   const reasonState = useDetailedReasons(spot?.id);
-  const equityFact = reasonState.data?.fact_labels!.find(fact => fact.key === "equity_pct" || fact.key.startsWith("equity_vs_") && fact.key.endsWith("_pct"));
+  const equityFact = reasonEquityFact(reasonState.data);
   const savedFacts = reasonState.data?.hands[hand.hand]?.facts;
   const callEvFacts = savedFacts && equityFact ? { eqr: savedFacts.eqr, equityPct: savedFacts[equityFact.key], callEvBb: savedFacts.call_ev_bb } : null;
   const hasCallEv = callEvFacts && Object.values(callEvFacts).every(Number.isFinite);
@@ -436,6 +440,9 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const [explicitRangeUrl] = useState(() => typeof window !== "undefined" && Boolean(window.location.search));
   const useSourceTransition = previousRangeSource !== null && previousRangeSource !== rangeSource && !explicitRangeUrl;
   const [initialUrlState] = useState(() => {
+    // The local AIv2 sample is a single root spot, so never restore a saved
+    // AI/GTO action path over its explicitly selected UTG-open entry point.
+    if (isLocalAiv2SampleMode()) return null;
     const current = readRangeUrl();
     if (current || typeof window === "undefined" || window.location.pathname !== "/analyze/ranges" || window.location.search) return current;
     try {
