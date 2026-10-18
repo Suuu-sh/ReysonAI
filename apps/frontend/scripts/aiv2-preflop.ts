@@ -106,8 +106,11 @@ export function compressConcretePolicy(rows: Aiv2ComboMix[], actions: string[]) 
     if (!combos.length) throw new Error(`No concrete combos for ${hand}`);
     const totalWeight = combos.reduce((sum, row) => sum + row.reach_weight, 0);
     const unreachable = totalWeight === 0;
+    // A zero-reach class has no reach-weighted policy average. Keep the
+    // model-generated policy as an explicitly unreachable display summary;
+    // never invent a fold/open fallback that can violate the 100% contract.
     const weights = unreachable
-      ? actions.map((action, index) => action === "fold" ? 100 : index === 0 ? 100 : 0)
+      ? actions.map(action => combos.reduce((sum, row) => sum + row.mix[action], 0) / combos.length)
       : actions.map(action => combos.reduce((sum, row) => sum + row.reach_weight * row.mix[action], 0) / totalWeight);
     // Largest-remainder rounding keeps the app's integer 169-grid contract intact.
     const rounded = weights.map(Math.floor), remainder = 100 - rounded.reduce((sum, value) => sum + value, 0);

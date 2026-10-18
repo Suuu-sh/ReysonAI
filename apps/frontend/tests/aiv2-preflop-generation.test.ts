@@ -22,6 +22,17 @@ test("AIv2 supports all physical combos with exact class multiplicities and per-
   assert.deepEqual(compressed.find(row => row.hand === "AKo")?.mix, { fold: 54, call: 46 });
 });
 
+test("zero-reach hand classes keep the generated mix without inventing incompatible actions", () => {
+  const policy = validateAiv2Policy({ kind: "aiv2_preflop_combo_policy", scenario_id: "zero-reach",
+    class_mixes: hands.map(hand => ({ hand, mix: { open: 60, fold: 40 } })), combo_overrides: [] }, "zero-reach", ["open", "fold"]);
+  const combos = expandConcretePolicy(policy, Object.fromEntries(CONCRETE_COMBOS.map(({ combo, hand }) => [combo, hand === "AA" ? 0 : 1])));
+  const aa = compressConcretePolicy(combos, ["open", "fold"]).find(row => row.hand === "AA")!;
+  assert.equal(aa.unreachable, true);
+  assert.equal(aa.reach_weight, 0);
+  assert.deepEqual(aa.mix, { open: 60, fold: 40 });
+  assert.equal(Object.values(aa.mix).reduce((sum, value) => sum + value, 0), 100);
+});
+
 test("per-combo history factors are multiplied exactly and only symmetric reach compresses", () => {
   const weights = concreteComboReachWeights([
     { action: "call", frequenciesByHand: Object.fromEntries(hands.map(hand => [hand, hand === "AA" ? 50 : hand === "AKo" ? 20 : 100])) },
