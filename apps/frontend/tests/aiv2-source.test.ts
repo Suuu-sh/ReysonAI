@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -7,15 +7,13 @@ import { APP_DATASETS, configureDatasetSource, dataset, datasetNames, hasComplet
 import { AIV2_METHOD, AIV2_PRE_FLOP_DATASETS, AIV2_PROFILE_DATASETS, AIV2_PROFILES, isCompleteAiv2Manifest } from "../src/estimated/aiv2-contract.ts";
 import { preflopDatasetEntries } from "../scripts/lib/preflop-sql.ts";
 
-test("legacy deterministic AIv2 artifacts are explicitly unavailable and never published", async () => {
-  const manifest = JSON.parse(readFileSync(new URL("../src/estimated/aiv2/manifest.json", import.meta.url), "utf8"));
-  assert.equal(manifest.source, "AIv2");
-  assert.equal(manifest.status, "invalidated");
-  assert.equal(manifest.method, "legacy-deterministic-not-valid-for-aiv2");
+test("unreviewed legacy AIv2 artifacts are absent and the source fails closed", async () => {
+  assert.equal(existsSync(new URL("../src/estimated/aiv2", import.meta.url)), false);
   assert.equal(await configureDatasetSource("aiv2"), false);
   assert.equal(hasCompleteAiv2Source(), false);
   const names = await datasetNames();
   assert.ok(APP_DATASETS.every(name => names.includes(name)));
+  assert.equal(names.some(name => name.startsWith("aiv2/")), false);
   const fixture = mkdtempSync(join(tmpdir(), "aiv2-publication-filter-"));
   try {
     mkdirSync(join(fixture, "aiv2"), { recursive: true });
