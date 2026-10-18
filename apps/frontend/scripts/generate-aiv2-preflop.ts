@@ -306,17 +306,17 @@ async function fullGeneration(argv: string[]) {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       if (message.includes("controlled_stop_requested")) {
-        delete states[node.key]; pending.add(node.key); stopped = "controlled-stop-requested; saved phases are resumable"; return;
+        delete states[node.key]; pending.add(node.key); stopped ??= "controlled-stop-requested; saved phases are resumable"; return;
       }
       const phase = states[node.key].current_phase;
       states[node.key] = { ...states[node.key], status: "failed", error: message, at: new Date().toISOString() };
       if (phase) states[node.key].phases[phase] = "failed";
       console.error(JSON.stringify({ event: "failed", key: node.key, phase, error: message }));
-      if (/quota|rate.?limit|usage.?limit|exhausted|insufficient|model.*unavailable|unsupported.*model|authentication_required/i.test(message)) stopped = message;
+      if (/quota|rate.?limit|usage.?limit|exhausted|insufficient|model.*unavailable|unsupported.*model|authentication_required/i.test(message)) { stopped = message; stopRequested = true; }
     } finally { save(); }
   };
   while ((pending.size || active.size) && !stopped) {
-    if (stopRequested) { stopped = "controlled-stop-requested; saved phases are resumable"; break; }
+    if (stopRequested) { stopped ??= "controlled-stop-requested; saved phases are resumable"; break; }
     const ready = graph.nodes.filter(node => pending.has(node.key) && node.dependencies.every(key => states[key]?.status === "complete") &&
       (!consistency.aliases.has(node.key) || states[consistency.aliases.get(node.key)!]?.status === "complete"));
     if (argv.includes("--retry-failed")) ready.sort((a, b) => Number(previousFailed.has(b.key)) - Number(previousFailed.has(a.key)));

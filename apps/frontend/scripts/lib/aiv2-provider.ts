@@ -1,6 +1,7 @@
 // Authenticated local Codex only. Each request owns a process, thread and turn;
 // the shared limiter bounds provider calls, not merely top-level scenarios.
 import { spawn } from "node:child_process";
+import { createHash } from "node:crypto";
 import type { ChildProcessWithoutNullStreams } from "node:child_process";
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -13,7 +14,7 @@ export type ProviderMetric = {
   model: string; effort: string; confirmedModel?: string; confirmedEffort?: string;
   threadId?: string; turnId?: string; attempt: number; queueMs: number;
   elapsedMs: number; turnDurationMs?: number; status: "completed" | "failed";
-  tokenUsage?: Record<string, unknown>; errorCode?: string;
+  tokenUsage?: Record<string, unknown>; errorCode?: string; errorDiagnostic?: ProviderErrorDiagnostic;
 };
 type CallOptions = { model?: string; effort?: string; outputSchema?: JsonSchema; onThread?: (result: any) => void };
 type ProviderOptions = {
@@ -23,22 +24,44 @@ type ProviderOptions = {
   spawnProcess?: typeof spawn;
 };
 
+export type ProviderErrorDiagnostic = {
+  stage: string; originalCode?: number | string; errorInfoType?: string; httpStatusCode?: number;
+  messageHash: string; flags: { quota: boolean; authentication: boolean; capability: boolean; transient: boolean };
+};
 export class Aiv2ProviderError extends Error {
   code: string;
   retryable: boolean;
-  constructor(code: string, retryable = false) {
-    super(`AIv2 Codex provider: ${code}`); this.code = code; this.retryable = retryable;
+  diagnostic?: ProviderErrorDiagnostic;
+  constructor(code: string, retryable = false, diagnostic?: ProviderErrorDiagnostic) {
+    super(`AIv2 Codex provider: ${code}`); this.code = code; this.retryable = retryable; this.diagnostic = diagnostic;
   }
 }
 
-function failure(error: any): Aiv2ProviderError {
-  const code = String(error?.code ?? error?.codexErrorInfo ?? "");
-  const message = String(error?.message ?? "");
-  if (/rate.?limit|quota|usage.?limit|429/i.test(`${code} ${message}`)) return new Aiv2ProviderError("quota_or_rate_limit");
-  if (/auth|login|401|403/i.test(`${code} ${message}`)) return new Aiv2ProviderError("authentication_required");
-  if (/model|effort|schema|invalid.?param/i.test(`${code} ${message}`)) return new Aiv2ProviderError("unsupported_model_effort_or_schema");
+function failure(error: any, stage = "transport"): Aiv2ProviderError {
+  const message = typeof error?.message === "string" ? error.message : "";
+  const info = error?.codexErrorInfo;
+  const infoName = typeof info === "string" ? info : info && typeof info === "object" ? Object.keys(info)[0] : undefined;
+  const allowedInfo = new Set(["contextWindowExceeded", "sessionBudgetExceeded", "usageLimitExceeded", "rateLimitExceeded", "flexUnavailable", "serverOverloaded", "httpConnectionFailed", "responseStreamConnectionFailed", "internalServerError", "unauthorized", "badRequest", "responseStreamDisconnected", "responseTooManyFailedAttempts", "other"]);
+  const errorInfoType = infoName ? allowedInfo.has(infoName) ? infoName : "unrecognized" : undefined;
+  const status = info && typeof info === "object" ? info[infoName!]?.httpStatusCode : undefined;
+  const httpStatusCode = Number.isInteger(status) && status >= 100 && status <= 599 ? status : undefined;
+  const knownCodes = new Set(["invalid_request_error", "invalid_json_schema", "invalid_model", "model_not_found", "unsupported_model", "unsupported_value", "rate_limit_exceeded", "insufficient_quota", "server_error", "internal_error", "unauthorized"]);
+  // Only known public codes/types are persisted; unknown strings may contain secrets.
+  const originalCode = typeof error?.code === "number" ? error.code : typeof error?.code === "string" ? knownCodes.has(error.code) ? error.code : "unrecognized" : undefined;
+  const quota = ["usageLimitExceeded", "rateLimitExceeded", "sessionBudgetExceeded"].includes(errorInfoType ?? "") || httpStatusCode === 429 || /rate.?limit|quota|usage.?limit|\b429\b/i.test(message) || ["rate_limit_exceeded", "insufficient_quota"].includes(String(originalCode));
+  const authentication = errorInfoType === "unauthorized" || [401, 403].includes(httpStatusCode ?? 0) || /authentication|unauthorized|sign[ -]?in required|login required|\b401\b|\b403\b/i.test(message);
+  const capability = ["invalid_json_schema", "invalid_model", "model_not_found", "unsupported_model"].includes(String(originalCode)) ||
+    /(?:unsupported|invalid|unknown) (?:model|reasoning effort|json schema)|(?:model|reasoning effort|(?:json )?schema)[^\n]{0,100}(?:is not supported|not found|does not exist|not available|is invalid)|invalid schema for (?:response_format|output)|invalid value[^\n]{0,80}(?:reasoning_effort|output_schema)/i.test(message);
+  const transient = ["flexUnavailable", "serverOverloaded", "httpConnectionFailed", "responseStreamConnectionFailed", "internalServerError", "responseStreamDisconnected", "responseTooManyFailedAttempts"].includes(errorInfoType ?? "") ||
+    [408, 500, 502, 503, 504].includes(httpStatusCode ?? 0) || ["server_error", "internal_error"].includes(String(originalCode)) ||
+    /timeout|timed out|connection (?:closed|reset|failed)|network error|stream (?:disconnected|connection failed)|internal server error|server overloaded|\b50[234]\b/i.test(message);
+  const diagnostic: ProviderErrorDiagnostic = { stage, originalCode, errorInfoType, httpStatusCode,
+    messageHash: createHash("sha256").update(message).digest("hex"), flags: { quota, authentication, capability, transient } };
   // Never persist raw provider errors/stderr: they may include request content.
-  return new Aiv2ProviderError("upstream_error", /timeout|connection|network|502|503|504/i.test(`${code} ${message}`));
+  if (quota) return new Aiv2ProviderError("quota_or_rate_limit", false, diagnostic);
+  if (authentication) return new Aiv2ProviderError("authentication_required", false, diagnostic);
+  if (capability) return new Aiv2ProviderError("unsupported_model_effort_or_schema", false, diagnostic);
+  return new Aiv2ProviderError("upstream_error", transient, diagnostic);
 }
 
 export function createAiv2Provider({ concurrency = 4, timeoutMs = 600_000, maxRetries = 1,
@@ -68,7 +91,7 @@ export function createAiv2Provider({ concurrency = 4, timeoutMs = 600_000, maxRe
           return result;
         } catch (error) {
           const safe = error instanceof Aiv2ProviderError ? error : failure(error);
-          metric.errorCode = safe.code;
+          metric.errorCode = safe.code; metric.errorDiagnostic = safe.diagnostic;
           if (!safe.retryable || attempt > maxRetries) throw safe;
           await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
         } finally {
@@ -112,7 +135,7 @@ function request(prompt: string, options: Required<Pick<CallOptions, "model" | "
         const line = buffer.slice(0, index); buffer = buffer.slice(index + 1);
         let msg: any; try { msg = JSON.parse(line); } catch { continue; }
         try {
-          if (msg.error) { stop(failure(msg.error)); continue; }
+          if (msg.error) { stop(failure(msg.error, msg.id === 1 ? "initialize" : msg.id === 2 ? "thread/start" : msg.id === 3 ? "turn/start" : "rpc")); continue; }
           if (msg.id === 1) {
             send({ method: "initialized", params: {} });
             send({ id: 2, method: "thread/start", params: { cwd: ROOT, approvalPolicy: "never", sandbox: "read-only", ephemeral: true,
@@ -142,7 +165,7 @@ function request(prompt: string, options: Required<Pick<CallOptions, "model" | "
           if (msg.id != null && msg.method) { stop(new Aiv2ProviderError("unexpected_server_request")); continue; }
           if (msg.method === "turn/completed") {
             if (params.turn?.id !== metric.turnId) continue;
-            if (params.turn.status !== "completed") { stop(failure(params.turn.error)); continue; }
+            if (params.turn.status !== "completed") { stop(failure(params.turn.error, "turn/completed")); continue; }
             metric.turnDurationMs = params.turn.durationMs ?? undefined;
             const text = [...completed.values()].at(-1) ?? [...messages.values()].at(-1) ?? "";
             try { stop(undefined, JSON.parse(text.trim().replace(/^```(?:json)?\s*|\s*```$/g, ""))); }
