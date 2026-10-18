@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { isCompleteAiv2Manifest } from "../src/estimated/aiv2-contract.ts";
 
 const dir = fileURLToPath(new URL("../src/estimated", import.meta.url));
-const localAiv2Sample = join(fileURLToPath(new URL("..", import.meta.url)), ".local/aiv2-preflop/llm-range-wide-combo-v3/sample/opening-ranges/UTG_open.json");
+const localAiv2Sample = join(fileURLToPath(new URL("..", import.meta.url)), "data/aiv2-preflop/samples/opening-ranges/UTG_open.json");
 // Keep ordinary names unchanged; allow only the Stage A villain namespace.
 const NAME = /^(?:[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)?|profiles\/(?:nit|station|lag|maniac)\/villain\/(?:opening-ranges|preflop-ranges|three-bet-responses|four-bet-responses|five-bet-responses|limp-responses|limp-deep-responses|meta)|aiv2\/(?:[A-Za-z0-9_-]+|reasons\/[A-Za-z0-9_-]+|profiles\/(?:nit|station|lag|maniac)\/villain\/(?:opening-ranges|preflop-ranges|three-bet-responses|four-bet-responses|five-bet-responses|limp-responses|limp-deep-responses|meta)))$/;
 
@@ -42,8 +42,8 @@ export function localDatasetsMiddleware(req?: any, res?: any, next?: any) : any 
 }
 
 // Deliberately registered only on Vite's development server (never preview or
-// the worker). The path is fixed and the ignored local artifact is validated
-// before it can be used as an experimental AIv2 dataset.
+// the worker). Read only the fixed, Git-managed UTG sample so the preview is
+// reproducible on a fresh checkout and cannot silently consume ignored state.
 export function localAiv2SampleMiddleware(req?: any, res?: any, next?: any) : any {
   const url = new URL(req.url, "http://localhost");
   const prefix = "/v1/preflop/local/aiv2-sample";
