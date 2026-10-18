@@ -2,7 +2,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { localEstimateMiddleware } from "./scripts/local-estimate.ts";
-import { localDatasetsMiddleware } from "./scripts/local-datasets.ts";
+import { localAiv2SampleMiddleware, localDatasetsMiddleware } from "./scripts/local-datasets.ts";
 import { localPostflopMiddleware } from "./scripts/postflop-ai/local-view.ts";
 import { flopBaseMiddleware } from "./scripts/postflop-ai/flop-base-d1.ts";
 import { isRetiredAdminPath, isRetiredJapanesePath } from "./worker/index.ts";
@@ -35,6 +35,7 @@ export default defineConfig({
   plugins: [react(), { name: "retired-routes", configureServer(server) { server.middlewares.use(rejectRetiredPath); }, configurePreviewServer(server) { server.middlewares.use(rejectRetiredPath); server.middlewares.use(localDatasetsMiddleware); } }, { name: "local-codex-estimates", configureServer(server) {
     server.middlewares.use(localEstimateMiddleware);
     server.middlewares.use(localDatasetsMiddleware);
+    server.middlewares.use(localAiv2SampleMiddleware);
     server.middlewares.use(localPostflopMiddleware);
     server.middlewares.use(flopBaseMiddleware);
   } }],

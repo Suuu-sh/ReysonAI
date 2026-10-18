@@ -27,7 +27,7 @@ import { useStage3UiRuntime, withStage3Availability } from "./stage3-ranges.ts";
 import { accountStorage } from "../account/session.ts";
 import { loadRangeSource, RANGE_SOURCE_CHANGED } from "../account/preferences.ts";
 import { GtoRangeView } from "../gto/GtoRangeView.tsx";
-import { dataset as publishedDataset } from "./datasets.ts";
+import { dataset as publishedDataset, isLocalAiv2SampleMode } from "./datasets.ts";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { hands } from "../data.ts";
@@ -138,6 +138,7 @@ export function selectedHandForRangeEntry(entry: RangeEntry, selected: string) {
 const legacySelectionStorageKey = "reysonai-legacy:estimated-selection:v1";
 function restoredSelection(initialRangeType: string): RangeUrlSelection & PostflopProfileState {
   const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, limpReraiseAction: null, limpFourBetAction: null, squeezeResponse: [], continuationActions: [], stage3RootId: null, stage3Actions: [], coldAction: null, selected: "AKo", ...normalizePostflopProfileState(null) };
+  if (isLocalAiv2SampleMode()) return { ...fallback, rangeType: "open", opener: "UTG", hero: "HJ", selected: "A9s" };
   if (typeof window === "undefined") return fallback;
   try {
     const stored = window.sessionStorage.getItem(selectionStorageKey) ?? window.sessionStorage.getItem(legacySelectionStorageKey);
@@ -508,7 +509,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const isComparison = rangeType === "response";
   const [opener, setOpener] = useState(initialSelection.opener);
   const [hero, setHero] = useState(initialSelection.hero);
-  const [focusedRange, setFocusedRange] = useState<string | null>(null);
+  const [focusedRange, setFocusedRange] = useState<string | null>(() => isLocalAiv2SampleMode() ? "UTG" : null);
   const [selectedRangeBlock, setSelectedRangeBlock] = useState<string | null>(null);
   const [callers, setCallers] = useState(initialSelection.callers);
   const [foldedHero, setFoldedHero] = useState(initialSelection.foldedHero);
@@ -1067,6 +1068,16 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
     const raiser = history.findLast(item => ["open", "three_bet", "squeeze", "four_bet", "all_in"].includes(item.action))?.seat;
     rangeEntries.sort((a, b) => Number(b.position === raiser) - Number(a.position === raiser));
   }
+  const localSampleSupported = !isLocalAiv2SampleMode() || rangeSource === "aiv2" && !flopActive && isOpening && opener === "UTG" &&
+    callers.length === 0 && !pendingRaise && format.game === "cash" && format.table === "6max" && format.stack === 100 &&
+    format.openSize === 2.5 && !format.ante && format.rake === "5pct-cap3" && isDefaultProfile(tableProfile);
+  if (!localSampleSupported && isLocalAiv2SampleMode()) {
+    rangeEntries.splice(0, rangeEntries.length, {
+      position: "UTG", kind: "pending", title: localized("UTG · AIv2 ローカル試験", "UTG · AIv2 local sample"),
+      statusTitle: localized("このスポットは未生成です", "This spot has not been generated"),
+      statusDescription: localized("ローカルAIv2サンプルは6-max・100BB・アンティなしのUTGオープンのみです。AIデータへの代替表示は行いません。", "The local AIv2 sample covers only 6-max, 100BB, no-ante UTG open. AI data is not substituted."),
+    });
+  }
   const selectedBlockIndex = actionBlocks.findIndex(block => block.key === selectedRangeBlock);
   const selectedActionEntries = selectedBlockIndex < 0 ? null : [
     ...(isOpening ? [] : [actionRangeEntry(actionBlocks[selectedBlockIndex - 1], "previous")]),
@@ -1102,6 +1113,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
       onSectionChange={onSectionChange ?? (() => {})}
       profile={profile} onEditProfile={onEditProfile} />
     <main>
+      {isLocalAiv2SampleMode() && <div role="status" className="aiv2-local-sample-banner">{localized("AIv2 ローカル試験 · 生成済み UTG オープンのみ。その他のスポットは未生成として表示します。", "AIv2 local sample · Generated UTG open only. Other spots remain unavailable.")}</div>}
       <Panel className="estimate-settings">
         <ActionPath
           leading={<RangeContextCard postflop={flopActive} settingsOpen={settingsOpen}
@@ -1220,5 +1232,5 @@ export function RangeWorkspace({ profile, onEditProfile, onSectionChange }: Work
     return () => window.removeEventListener(RANGE_SOURCE_CHANGED, update);
   }, []);
   useEffect(() => { try { window.sessionStorage.setItem(workspaceSourceStorageKey, rangeSource); } catch {} }, [rangeSource]);
-  return <EstimatedRanges profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} rangeSource={rangeSource} previousRangeSource={previousRangeSource} previousSemanticNode={previousSemanticNode} />;
+  return <EstimatedRanges profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} rangeSource={rangeSource} previousRangeSource={previousRangeSource} previousSemanticNode={previousSemanticNode} initialRangeType={isLocalAiv2SampleMode() ? "open" : "response"} />;
 }
