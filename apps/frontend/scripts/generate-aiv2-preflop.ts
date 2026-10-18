@@ -3,20 +3,24 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { AIV2_MODEL, AIV2_REASONING_EFFORT, AIV2_PREflop_METHOD, actionsForSpot, compressConcretePolicy,
+import { AIV2_MODEL, AIV2_REASONING_EFFORT, AIV2_PREflop_METHOD, CONCRETE_COMBOS, actionsForSpot, compressConcretePolicy,
   concreteComboReachWeights, encodeComboReachWeights, expandConcretePolicy, rangePrompt, rangeAnalysisPrompt, scenarioOnly,
   validateAiv2Policy, validateFinalReasons, validateRangeAnalysis, summarizeConcretePolicy } from "./aiv2-preflop.ts";
 import { buildGraph, DATASETS, PROFILE_DATASETS, PROFILES } from "./aiv2-preflop-graph.ts";
 import { consistencyPlan, auditGlobal } from "./aiv2-preflop-consistency.ts";
 import type { Node, Profile } from "./aiv2-preflop-graph.ts";
 import { createAiv2Provider } from "./lib/aiv2-provider.ts";
+import { encodeCompactPolicy, decodeCompactPolicy } from "./aiv2-preflop-codec.ts";
 import { generationCounts, analysisOutputSchema, analysisDiagnostics } from "./aiv2-preflop-run-state.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const estimated = join(root, "src/estimated");
 const candidateRoot = join(root, "candidates/aiv2-preflop", AIV2_PREflop_METHOD);
 const checkpoints = join(root, ".local/aiv2-preflop", AIV2_PREflop_METHOD, "all-checkpoints");
-const VERSION = "dag-full-history-per-seat-bilingual-v3";
+const VERSION = "dag-full-history-per-seat-bilingual-v3-exact-defaults-1";
+let stopRequested = false;
+process.once("SIGTERM", () => { stopRequested = true; });
+let sourceActions = new Map<string, string[]>();
 const sha = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 function read(path: string): any { return JSON.parse(readFileSync(path, "utf8")); }
 function atomicJson(path: string, value: unknown) {
@@ -29,7 +33,7 @@ const checkpointPath = (node: Node, phase: string) => join(checkpoints, node.key
 const identity = { method: AIV2_PREflop_METHOD, model: AIV2_MODEL, effort: AIV2_REASONING_EFFORT, version: VERSION };
 // Hash executable prompt/validation/graph source as well as prompt/context: editing
 // code can never silently reuse a different semantic generation.
-const implementationHash = sha(["generate-aiv2-preflop.ts", "aiv2-preflop.ts", "aiv2-preflop-graph.ts", "aiv2-preflop-consistency.ts", "aiv2-preflop-run-state.ts"].map(path => readFileSync(join(root, "scripts", path), "utf8")));
+const implementationHash = sha(["generate-aiv2-preflop.ts", "aiv2-preflop.ts", "aiv2-preflop-graph.ts", "aiv2-preflop-consistency.ts", "aiv2-preflop-run-state.ts", "aiv2-preflop-codec.ts"].map(path => readFileSync(join(root, "scripts", path), "utf8")));
 
 function contextsFor(node: Node) {
   const contexts: any[] = [], factors = new Map<string, any[]>();
@@ -39,12 +43,15 @@ function contextsFor(node: Node) {
     const prior = read(path);
     if (prior.metadata?.model !== AIV2_MODEL || prior.metadata?.method !== AIV2_PREflop_METHOD || prior.metadata?.reasoning_effort !== AIV2_REASONING_EFFORT)
       throw new Error("Prior provenance mismatch " + key);
-    const frequenciesByHand = Object.fromEntries(prior.spot.hands.map((row: any) => [row.hand, row[ref.action]]));
-    const frequenciesByCombo = Object.fromEntries((prior.spot.combo_overrides ?? []).map((row: any) => [row.combo, row.mix[ref.action]]));
+    const priorActions = sourceActions.get(key);
+    if (!priorActions) throw new Error("Unknown original action columns " + key);
+    const exactPolicy = decodeCompactPolicy(prior.spot, priorActions);
+    const frequenciesByHand = Object.fromEntries(Object.entries(exactPolicy.class_mixes).map(([hand, mix]) => [hand, mix[ref.action]]));
+    const frequenciesByCombo = Object.fromEntries(Object.entries(exactPolicy.combo_overrides).map(([combo, mix]) => [combo, mix[ref.action]]));
     const previous = factors.get(ref.seat) ?? [];
     previous.push({ action: ref.action, frequenciesByHand, frequenciesByCombo }); factors.set(ref.seat, previous);
     contexts.push({ ...ref, source_hash: prior.metadata.source_hash, final_hash: prior.metadata.final_hash,
-      action_mixes: prior.spot.hands.map((row: any) => ({ hand: row.hand, frequency: row[ref.action] })),
+      action_mixes: prior.spot.hands.map((row: any) => ({ hand: row.hand, frequency: frequenciesByHand[row.hand] })),
       combo_overrides: prior.spot.combo_overrides ?? [] });
   });
   const weights = Object.fromEntries([...factors].map(([seat, list]) => [seat, concreteComboReachWeights(list)]));
@@ -105,6 +112,7 @@ async function createSpot(node: Node, provider: Provider, onPhase: (phase: strin
         ? "\nThe previous response failed validation: " + lastIssues.join("; ") + ". Regenerate the complete coherent range analysis as exact JSON. Summary <=350 characters, 1..8 themes each <=120 characters, 0..12 distinct canonical concrete blocker notes each <=350 characters. These are character counts, not tokens. No frequencies, no policy, no invented measurements."
         : "\nYour last response failed the required schema. Return the complete exact JSON schema; no prose, no omitted hands.";
       const effectivePrompt = prompt + (attempt ? repair : "");
+      if (stopRequested) throw new Error("AIv2 controlled_stop_requested");
       const raw = await provider(effectivePrompt,
         { model: AIV2_MODEL, effort: AIV2_REASONING_EFFORT, ...(outputSchema ? { outputSchema } : {}) });
       try { result = validate(raw); effectivePromptHash = sha(effectivePrompt); break; } catch (error) {
@@ -134,12 +142,12 @@ async function createSpot(node: Node, provider: Provider, onPhase: (phase: strin
   const finalHash = sha(finalized);
   const reasonPrompt = `Compose explanations ONLY AFTER finalized frequencies, from the persisted analysis and reevaluated policy. AI estimate, not GTO/solver. Never invent numeric EV, equity or solver proof, never alter frequencies. JSON {"scenario_id":${JSON.stringify(node.spot.id)},"reasons":[{"hand":"AA","text":"English explanation","text_ja":"Faithful natural Japanese translation of exactly the same explanation"}...all 169 classes in supplied order],"combo_reasons":[{"combo":"AsKh","text":"...","text_ja":"..."}...exactly the supplied exception order]}. Both languages must retain exactly the same action frequencies and strategic content. Every explanation must be specific to this hand and this scenario; explain mixes, blocker effects only when justified, and practical tradeoffs. No unrelated old policy or old reason is supplied.\nScenario: ${JSON.stringify(scenario)}\nPersisted analysis: ${JSON.stringify(analysis)}\nActions: ${JSON.stringify(actions)}\nFinal classes (exact order): ${JSON.stringify(rows)}\nException order: ${JSON.stringify(exceptions)}\nConcrete exceptions: ${JSON.stringify(comboOverrides)}\nExact per-seat reach: ${JSON.stringify(reach)}`;
   const reasons = await phase("reasons", reasonPrompt, raw => validateFinalReasons(raw, node.spot.id, exceptions));
-  const output = { spot: { ...scenario, hands: rows, combo_overrides: comboOverrides }, reasons,
+  const output = { spot: { ...scenario, hands: rows, ...encodeCompactPolicy(finalized) }, reasons,
     combo_reach_weights: { compression: "per-seat-conditional-action-product", players: reach }, metadata: { ...identity,
       reasoning_effort: AIV2_REASONING_EFFORT, source_hash: inputHash, scenario_id: node.spot.id,
       reach_distribution_model: "per-player conditional action product; not joint card-removal-conditioned distribution",
       history_assumptions: fullHistory.filter(event => !event.source && event.assumption),
-      implementation_hash: implementationHash, analysis_hash: sha(analysis), candidate_hash: sha(candidate), final_hash: finalHash,
+      storage_format: "exact-class-defaults-v1", implementation_hash: implementationHash, analysis_hash: sha(analysis), candidate_hash: sha(candidate), final_hash: finalHash,
       reason_hash: sha(reasons), prompt_hashes: [sha(analysisPrompt), sha(firstPrompt), sha(reviewPrompt), sha(reasonPrompt)],
       reason_generated_after_finalization: true, concrete_combo_count: expanded.length, decision_count: rows.length,
       actual_range_summary: summarizeConcretePolicy(expanded, actions), status: "complete", ...(phaseOrigins.length ? { migrated_from: phaseOrigins } : {}), publication_status: "candidate-not-selectable" } };
@@ -153,7 +161,21 @@ function auditOutput(node: Node, output: any) {
       actions.reduce((sum, action) => sum + row[action], 0) !== 100) throw new Error("Invalid final frequencies " + node.key);
     for (const field of ["ev", "equity", "reason", "reason_ja"]) if (field in row) throw new Error("Legacy row metadata " + node.key);
   }
-  if (!node.spot.unreachable) validateFinalReasons(output.reasons, node.spot.id, output.spot.combo_overrides.map((row: any) => row.combo).sort());
+  if (!node.spot.unreachable) {
+    const policy = decodeCompactPolicy(output.spot, actions);
+    if (sha(policy) !== output.metadata.final_hash) throw new Error("Stored exact defaults differ from finalized policy " + node.key);
+    const encoded = output.combo_reach_weights?.players?.[node.spot.hero];
+    let own: Record<string, number> = {};
+    if (encoded) {
+      if (!["hand-class-exact-suit-symmetry", "concrete-combo-exact"].includes(encoded.encoding)) throw new Error("Unknown own-reach encoding " + node.key);
+      own = Object.fromEntries(CONCRETE_COMBOS.map(({ combo, hand }) => [combo, encoded.weights[encoded.encoding === "concrete-combo-exact" ? combo : hand]]));
+      if (Object.values(own).some(value => !Number.isFinite(value) || value < 0 || value > 1)) throw new Error("Malformed exact own reach " + node.key);
+    }
+    const replayRows = compressConcretePolicy(expandConcretePolicy(policy, own), actions).map(({ hand, mix, ...rest }) => ({ hand, ...mix, ...rest }));
+    if (sha(replayRows) !== sha(output.spot.hands)) throw new Error("Weighted display disagrees with exact stored physical policy " + node.key);
+    validateFinalReasons(output.reasons, node.spot.id, output.spot.combo_overrides.map((row: any) => row.combo).sort());
+    if (sha(output.reasons) !== output.metadata.reason_hash) throw new Error("Stored reason hash mismatch " + node.key);
+  }
 }
 export function domainSummary() {
   const graph = buildGraph(estimated), nodes = graph.nodes;
@@ -169,6 +191,7 @@ export function domainSummary() {
 }
 async function fullGeneration(argv: string[]) {
   const graph = buildGraph(estimated);
+  sourceActions = new Map(graph.nodes.map(node => [node.key, actionsForSpot(node.spot)]));
   const summary = domainSummary();
   const consistency = consistencyPlan(graph.nodes);
   if (argv.includes("--domain")) { console.log(JSON.stringify(summary, null, 2)); return; }
@@ -247,9 +270,14 @@ async function fullGeneration(argv: string[]) {
         if (!node.spot.unreachable && (fields.some(field => output.metadata[field] !== prior.metadata[field]) ||
             sha(output.metadata.prompt_hashes) !== sha(prior.metadata.prompt_hashes)))
           throw new Error("Prior completed prompt/policy changed: " + node.key);
-        if (sha(output.spot) !== sha(prior.spot) || sha(output.combo_reach_weights ?? null) !== sha(prior.combo_reach_weights ?? null))
-          throw new Error("Prior completed full-history/reach output changed: " + node.key);
-        output.metadata = { ...prior.metadata, revalidated_by_version: VERSION, revalidated_implementation_hash: implementationHash,
+        const withoutStorage = (spot: Record<string, unknown>) => {
+          const { class_defaults: _defaults, class_default_actions: _columns, ...rest } = spot; return rest;
+        };
+        if (sha(withoutStorage(output.spot)) !== sha(withoutStorage(prior.spot)) ||
+            (!node.spot.unreachable && sha(decodeCompactPolicy(output.spot, actionsForSpot(node.spot))) !== sha(decodeCompactPolicy(prior.spot, actionsForSpot(node.spot)))) ||
+            sha(output.combo_reach_weights ?? null) !== sha(prior.combo_reach_weights ?? null))
+          throw new Error("Prior completed full-history/exact-policy/reach output changed: " + node.key);
+        output.metadata = { ...prior.metadata, storage_format: "exact-class-defaults-v1", storage_implementation_hash: implementationHash, revalidated_by_version: VERSION, revalidated_implementation_hash: implementationHash,
           revalidated_input_hash: output.metadata.source_hash };
         output.metadata.semantic_identity = consistency.identities.get(node.key);
         output.metadata.upstream_fingerprint = sha(node.dependencies.map(key => completeOutputs.get(key).metadata.final_hash ?? completeOutputs.get(key).metadata.source_hash));
@@ -277,6 +305,9 @@ async function fullGeneration(argv: string[]) {
       console.log(JSON.stringify({ event: "complete", key: node.key, ...generationCounts(graph.nodes, states) }));
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
+      if (message.includes("controlled_stop_requested")) {
+        delete states[node.key]; pending.add(node.key); stopped = "controlled-stop-requested; saved phases are resumable"; return;
+      }
       const phase = states[node.key].current_phase;
       states[node.key] = { ...states[node.key], status: "failed", error: message, at: new Date().toISOString() };
       if (phase) states[node.key].phases[phase] = "failed";
@@ -285,6 +316,7 @@ async function fullGeneration(argv: string[]) {
     } finally { save(); }
   };
   while ((pending.size || active.size) && !stopped) {
+    if (stopRequested) { stopped = "controlled-stop-requested; saved phases are resumable"; break; }
     const ready = graph.nodes.filter(node => pending.has(node.key) && node.dependencies.every(key => states[key]?.status === "complete") &&
       (!consistency.aliases.has(node.key) || states[consistency.aliases.get(node.key)!]?.status === "complete"));
     if (argv.includes("--retry-failed")) ready.sort((a, b) => Number(previousFailed.has(b.key)) - Number(previousFailed.has(a.key)));

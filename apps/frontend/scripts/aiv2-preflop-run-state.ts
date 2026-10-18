@@ -23,6 +23,11 @@ export function generationCounts(nodes: Node[], states: Record<string, any>) {
   };
 }
 
+const RANKS = "AKQJT98765432";
+export const CANONICAL_COMBO_PATTERN = "^(?:" + [
+  ...[...RANKS].slice(0, -1).map((rank, index) => rank + "[shdc][" + RANKS.slice(index + 1) + "][shdc]"),
+  ...[...RANKS].map(rank => rank + "(?:s" + rank + "[hdc]|h" + rank + "[dc]|d" + rank + "c)"),
+].join("|") + ")$";
 export function analysisOutputSchema(scenarioId: string): Record<string, unknown> {
   return {
     type: "object", additionalProperties: false,
@@ -35,7 +40,7 @@ export function analysisOutputSchema(scenarioId: string): Record<string, unknown
       blocker_notes: { type: "array", maxItems: 12, items: {
         type: "object", additionalProperties: false, required: ["combo", "strategic_note"],
         properties: {
-          combo: { type: "string", pattern: "^[AKQJT98765432][shdc][AKQJT98765432][shdc]$" },
+          combo: { type: "string", pattern: CANONICAL_COMBO_PATTERN },
           strategic_note: { type: "string", minLength: 1, maxLength: 500 },
         },
       } },

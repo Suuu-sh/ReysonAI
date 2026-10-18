@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { generationCounts, analysisDiagnostics, analysisOutputSchema } from "../scripts/aiv2-preflop-run-state.ts";
+import { generationCounts, analysisDiagnostics, analysisOutputSchema, CANONICAL_COMBO_PATTERN } from "../scripts/aiv2-preflop-run-state.ts";
 import type { Node } from "../scripts/aiv2-preflop-graph.ts";
 test("generated completion excludes unreachable placeholders and remaining includes failures/inflight", () => {
   const nodes = ["done", "failed", "running", "pending", "placeholder"].map(key => ({
@@ -25,4 +25,20 @@ test("analysis diagnostics identify exact oversized field without retaining pros
   assert.ok(issues.some(issue => issue.includes("summary length=501")));
   assert.ok(issues.some(issue => issue.includes("range_themes[0] length=220")));
   assert.ok(issues.every(issue => !issue.includes("secret-text")));
+});
+
+test("canonical combo schema matches exactly all 1326 of 2704 ordered physical card pairs", async () => {
+  const { CONCRETE_COMBOS } = await import("../scripts/aiv2-preflop.ts");
+  const expected = new Set(CONCRETE_COMBOS.map(row => row.combo));
+  const cards = [..."AKQJT98765432"].flatMap(rank => [..."shdc"].map(suit => rank + suit));
+  const pattern = new RegExp(CANONICAL_COMBO_PATTERN);
+  let accepted = 0;
+  for (const first of cards) for (const second of cards) {
+    const combo = first + second;
+    assert.equal(pattern.test(combo), expected.has(combo), combo);
+    if (pattern.test(combo)) accepted++;
+  }
+  assert.equal(accepted, 1326);
+  assert.equal(pattern.test("AsAs"), false);
+  assert.equal(pattern.test("KhAs"), false);
 });

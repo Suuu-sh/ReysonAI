@@ -62,16 +62,18 @@ Each actionable node has four separate validated checkpoints:
 Analysis output uses a strict JSON schema retaining the existing compact limits:
 summary <=500 characters, 1..8 themes <=180 characters, <=12 concrete blocker notes.
 Up to three attempts use precise structural validation feedback; constraints are
-not loosened. Other phases retain bounded schema retries. No legacy frequencies,
+not loosened. A 587-character finite canonical-combo regex accepts exactly the 1,326 allowed card pairs (not reversed pairs or duplicate cards); the exhaustive 2,704 ordered-pair regression verifies this without a 1,326-value enum. Other phases retain bounded schema retries. No legacy frequencies,
 reasons, EV/equities or solver claims are supplied as generation targets.
 
 Candidate files are under:
 `apps/frontend/candidates/aiv2-preflop/llm-range-wide-combo-v5`.
 Compact output stores new 169-class rows, concrete exceptions, per-seat reach and
-bilingual reasons—not 1,326 repeated rows. Files are candidates, not selectable production data.
+bilingual reasons—not 1,326 repeated rows. Exact 169-class defaults and named action columns are stored separately from the weighted display grid; defaults plus concrete exceptions reconstruct every physical combo without using rounded display frequencies as policy inputs. Legacy compact files are accepted only with zero exceptions; missing exact defaults with exceptions fail closed. Files are candidates, not selectable production data.
 
 Checkpoints are local under:
 `apps/frontend/.local/aiv2-preflop/llm-range-wide-combo-v5/all-checkpoints`.
+SIGTERM now requests a controlled drain: the active provider phase is saved, new phases are not started, and the runner exits resumably. Wait for exit before restarting; do not kill provider children during an ordinary controlled stop.
+
 Preserve this ignored directory for exact local resume; a fresh Git clone alone
 does not contain all intermediate analysis/candidate checkpoints.
 

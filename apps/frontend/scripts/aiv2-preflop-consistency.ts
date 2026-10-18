@@ -68,7 +68,7 @@ export function auditGlobal(nodes: Node[], outputs: Map<string, any>, identities
     const output = outputs.get(node.key);
     if (!output) throw new Error("Global coverage missing " + node.key);
     for (const key of node.dependencies) if (!outputs.has(key)) throw new Error("Global prerequisite missing " + key);
-    const fingerprint = sha({ hands: output.spot.hands, overrides: output.spot.combo_overrides, reach: output.combo_reach_weights });
+    const fingerprint = sha({ final_policy_hash: output.metadata.final_hash, hands: output.spot.hands, overrides: output.spot.combo_overrides, reach: output.combo_reach_weights });
     const semantic = identities.get(node.key)!;
     if (fingerprints.has(semantic) && fingerprints.get(semantic) !== fingerprint) throw new Error("Contradictory duplicate decision " + node.key);
     fingerprints.set(semantic, fingerprint);
