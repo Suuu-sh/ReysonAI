@@ -47,7 +47,7 @@ import { continuationRangeBreakdown, continuationUnreachableCopy, useContinuatio
 import { limpActionTransition, responseActionTransition, rewindActionBlockTransition } from "./action-path.ts";
 import { displayModeKey } from "../profile.ts";
 import { useDetailedReasons } from "./detailed-reasons.ts";
-import { localizedPreflopReason, localizedFactLabel, localizedEquityNote } from "./english-reasons.ts";
+import { generatedAiv2Reason, localizedPreflopReason, localizedFactLabel, localizedEquityNote } from "./english-reasons.ts";
 import { productLocale, translateProductCopy } from "../i18n.ts";
 import { localized } from "../locale.ts";
 import { fiveBetMatrixModel, useFiveBetSpot } from "./five-bet-responses.ts";
@@ -192,7 +192,9 @@ export function AiReason({ hand, reasonState, inlineFacts, hideCallEv = false }:
   return <div className="ai-reason">
     <span>AIの考え方</span>
     {loading && !detailed ? <SkeletonText lines={3} label={english ? "Loading explanation…" : "説明を読み込み中…"} />
-      : <p>{english ? (detailed ? localizedPreflopReason(hand, detailed, data) : error ? "Could not load the explanation." : "No hand-specific explanation is recorded for this spot.") : detailed?.reason ?? (error ? "理由を読み込めませんでした。" : hand.reason)}</p>}
+      : <p>{isLocalAiv2SampleMode()
+        ? generatedAiv2Reason(detailed) ?? (english ? "Generated explanation unavailable." : "生成された説明を利用できません。")
+        : english ? (detailed ? localizedPreflopReason(hand, detailed, data) : error ? "Could not load the explanation." : "No hand-specific explanation is recorded for this spot.") : detailed?.reason ?? (error ? "理由を読み込めませんでした。" : hand.reason)}</p>}
     {shown.length > 0 && <dl className="reason-facts">
       {shown.map(fact => <div key={fact.label}><dt>{fact.label}</dt><dd className={fact.unit === "bb" ? (fact.value! >= 0 ? "fact-positive" : "fact-negative") : undefined}>{formatFact(fact)}</dd></div>)}
     </dl>}

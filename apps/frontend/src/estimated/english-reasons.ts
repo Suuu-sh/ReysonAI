@@ -221,6 +221,10 @@ export function englishPreflopReason(hand: FrequencyRow, detailed: DetailedReaso
   return parts.join(" ");
 }
 
+// AIv2 explanations are generated from the finalized policy. Never replace
+// their recorded prose with the legacy frequency-based presentation template.
+export const generatedAiv2Reason = (detailed: DetailedReason | null | undefined) => detailed?.reason?.trim() || null;
+
 export const localizedPreflopReason = (hand: FrequencyRow, detailed: DetailedReason | null | undefined, data: DetailedReasonDataset | null | undefined) => englishPreflopReason(hand, detailed, data, productLocale());
 export const localizedFactLabel = (key: string) => translateExplanationCopy(englishFactLabels[key] ?? key, productLocale());
 export const localizedEquityNote = () => translateExplanationCopy(englishEquityNote, productLocale());
