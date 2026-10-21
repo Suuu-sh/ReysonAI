@@ -1,0 +1,89 @@
+{
+  "scope": "four-distinct-decision-model-calls-only",
+  "rows": [
+    {
+      "stage": "turn-bb",
+      "decision_id": "52ef028be959308231f9123c14d061d783a33c8db3e987246a8f28f03e767b4e",
+      "calls": 1,
+      "metrics": [
+        {
+          "status": "completed",
+          "model": "gpt-6.1-sol",
+          "effort": "medium",
+          "elapsedMs": 172195,
+          "token_usage_last": {
+            "totalTokens": 32322,
+            "inputTokens": 26204,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "outputTokens": 6118,
+            "reasoningOutputTokens": 1034
+          }
+        }
+      ]
+    },
+    {
+      "stage": "turn-btn",
+      "decision_id": "db36b233b2a0234cc36b87999597bc64c53e80525c99f604889faa38870ec445",
+      "calls": 1,
+      "metrics": [
+        {
+          "status": "completed",
+          "model": "gpt-6.1-sol",
+          "effort": "medium",
+          "elapsedMs": 113912,
+          "token_usage_last": {
+            "totalTokens": 32612,
+            "inputTokens": 26664,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "outputTokens": 5948,
+            "reasoningOutputTokens": 1552
+          }
+        }
+      ]
+    },
+    {
+      "stage": "river-bb",
+      "decision_id": "6f9b28e4a8b7e1c30d4f4a1da188d013e2ca9528bb40b02f67676edbccfd5af2",
+      "calls": 1,
+      "metrics": [
+        {
+          "status": "completed",
+          "model": "gpt-6.1-sol",
+          "effort": "medium",
+          "elapsedMs": 185557,
+          "token_usage_last": {
+            "totalTokens": 33291,
+            "inputTokens": 26732,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "outputTokens": 6559,
+            "reasoningOutputTokens": 1552
+          }
+        }
+      ]
+    },
+    {
+      "stage": "river-btn",
+      "decision_id": "744fb2ef8bb0a5fd9e0f5d5a59538eddfafdd7545538dafda31f242432353e7f",
+      "calls": 1,
+      "metrics": [
+        {
+          "status": "completed",
+          "model": "gpt-6.1-sol",
+          "effort": "medium",
+          "elapsedMs": 165117,
+          "token_usage_last": {
+            "totalTokens": 34787,
+            "inputTokens": 26895,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "outputTokens": 7892,
+            "reasoningOutputTokens": 2833
+          }
+        }
+      ]
+    }
+  ]
+}
