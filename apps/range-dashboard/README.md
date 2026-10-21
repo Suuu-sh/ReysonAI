@@ -25,3 +25,18 @@ The UI explicitly displays partial progress (`new_single_pass / generated_total`
 ## Design
 
 Restrained standalone dark-neutral palette, compact mobile-first layout, red raise/open, green call/check, blue fold; mixed frequencies use proportional segments with textual action labels and percentages. 13×13 is fully visible at 375 px. 21st CLI and MCP search were unavailable in the working environment; no unrelated dependencies were installed.
+
+
+## Actual postflop decisions
+
+The **Postflop** tab reads only `apps/frontend/candidates/aiv2-postflop/llm-postflop-single-response-v1/decisions/<64hex>.json`. Endpoints: `/api/postflop/scenes` and `/api/postflop/scene?key=<64hex>`. No manifest is needed; only exact 64-hex `.json` files are scanned, with real-path confinement. No generator/provider module is imported.
+
+Independent verification checks identity, method/version/model/effort, input and full response hashes, expanded physical-combo policy hash, exact response-group membership/reasons, positive actor-reach board-legal coverage, all legal action sizes (new 33/66/100/125% bets), and all 169 reach-weighted grid aggregates. Raw-file SHA-256 is shown separately. Board-blocked and zero-reach cells have **no generated policy**, not a fold/legacy-frequency fallback. Each reached physical combo's exact saved English/Japanese reason is available below the cell; summary prose is also saved original text. Hashes are integrity checks, not signed authenticity or strategic-quality proof.
+
+The initial line's BB flop check is explicitly assumed with probability 1; it is **not** a generated BB check strategy. Flop/Turn/River filtering only shows saved actual decisions. Missing streets/boards/histories are explicitly ungenerated, never synthesized. Client polling never requests new model generations. The preflop headline uses independently reverified keys from the existing 65-target basic-HU audit when present, separates 20 prerequisites, and marks type profiles deferred; all saved verified scenes remain viewable.
+
+Focused new postflop tests (do not require or generate actual candidates):
+
+```sh
+node --test apps/range-dashboard/postflop.test.ts
+```

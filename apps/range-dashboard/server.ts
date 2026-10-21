@@ -4,8 +4,10 @@ import { readFile, realpath } from 'node:fs/promises';
 import { resolve, dirname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
+import { postflopSnapshot } from './postflop.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
+export const POSTFLOP_ROOT=resolve(HERE,'../frontend/candidates/aiv2-postflop/llm-postflop-single-response-v1');
 export const ROOT = resolve(HERE, '../frontend/candidates/aiv2-preflop/llm-range-single-response-v6');
 const METHOD = 'llm-range-single-response-v6';
 const ranks = [...'AKQJT98765432'];
@@ -81,19 +83,23 @@ export async function snapshot(root=ROOT) {
       const scene=verifyArtifact(output,node.artifact_hash);scenes.push({...scene,key});
     } catch {invalid++;}
   }
+  let baseScope=null;
+  try{const audit=JSON.parse(await readFile(resolve(root,'base-hu-audit.json'),'utf8'));const keys=new Set(scenes.map(s=>s.key));if(audit.scope==='base-hu-preflop'&&Array.isArray(audit.target_keys)&&audit.target_keys.length===65){baseScope={total:65,completed:audit.target_keys.filter(k=>keys.has(k)).length,prerequisites_total:20,prerequisites_completed:Array.isArray(audit.prerequisite_keys)?audit.prerequisite_keys.filter(k=>keys.has(k)).length:Object.keys(audit.source_hashes??{}).filter(k=>!audit.target_keys.includes(k)&&keys.has(k)).length};}}catch{}
   const number=v=>Number.isFinite(v)&&v>=0?v:0;
-  const value={status:{state:String(manifest.status??'unknown'),total:number(manifest.generated_total),completed:number(manifest.generated_completed),new_single_pass:number(manifest.new_single_pass),running:number(manifest.running),failed:number(manifest.failed),remaining:number(manifest.remaining_actionable),placeholders:number(manifest.placeholders_completed),verified:scenes.length,excluded,invalid,updated_at:typeof manifest.updated_at==='string'?manifest.updated_at:null,polled_at:new Date().toISOString()},scenes};
+  const value={status:{base_hu:baseScope,state:String(manifest.status??'unknown'),total:number(manifest.generated_total),completed:number(manifest.generated_completed),new_single_pass:number(manifest.new_single_pass),running:number(manifest.running),failed:number(manifest.failed),remaining:number(manifest.remaining_actionable),placeholders:number(manifest.placeholders_completed),verified:scenes.length,excluded,invalid,updated_at:typeof manifest.updated_at==='string'?manifest.updated_at:null,polled_at:new Date().toISOString()},scenes};
   if(root===ROOT){cache=value;cachedAt=Date.now();}return value;
 }
 const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Referrer-Policy':'no-referrer','X-Robots-Tag':'noindex, nofollow','Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; frame-ancestors 'none'; form-action 'none'"};
 const assets={'/':['index.html','text/html; charset=utf-8'],'/app.js':['app.js','text/javascript; charset=utf-8'],'/style.css':['style.css','text/css; charset=utf-8']};
-export function createDashboardServer(root=ROOT){return createServer(async(req,res)=>{
+export function createDashboardServer(root=ROOT,postflopRoot=POSTFLOP_ROOT){return createServer(async(req,res)=>{
   const send=(status,type,value)=>{res.writeHead(status,{...headers,'Content-Type':type});res.end(value);};
   try{
     if(req.method!=='GET' && req.method!=='HEAD'){send(405,'application/json','{"error":"Read-only service"}');return;}
     // Exact path allowlist before URL normalization defeats encoded traversal.
     const raw=(req.url??'').split('?')[0];
     if(Object.hasOwn(assets,raw)){const [name,type]=assets[raw];send(200,type,req.method==='HEAD'?'':await readFile(resolve(HERE,name)));return;}
+    if(raw==='/api/postflop/scenes'){const data=await postflopSnapshot(postflopRoot);send(200,'application/json',JSON.stringify({status:data.status,scenes:data.scenes.map(({cells,summary,provenance,...scene})=>scene)}));return;}
+    if(raw==='/api/postflop/scene'){const key=new URL(req.url,'http://localhost').searchParams.get('key');const data=await postflopSnapshot(postflopRoot);const scene=data.scenes.find(s=>s.key===key);send(scene?200:404,'application/json',JSON.stringify(scene??{error:'Scene not generated or unavailable'}));return;}
     if(raw==='/api/status'){const data=await snapshot(root);send(200,'application/json',JSON.stringify(data.status));return;}
     if(raw==='/api/scenes'){const data=await snapshot(root);send(200,'application/json',JSON.stringify({status:data.status,scenes:data.scenes.map(({cells,summary,provenance,...scene})=>({...scene,actions:scene.actions}))}));return;}
     if(raw==='/api/scene'){const key=new URL(req.url,'http://localhost').searchParams.get('key');const data=await snapshot(root);const scene=data.scenes.find(s=>s.key===key);send(scene?200:404,'application/json',JSON.stringify(scene??{error:'Scene not available'}));return;}
