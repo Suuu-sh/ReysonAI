@@ -1,0 +1,23 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import { approvedAmendment,frequencyDigest } from './amendments.ts';
+const hash=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex'),digest=v=>v.repeat(64);
+test('only exactly approved immutable reason revision applies; absent approval or any binding mismatch falls back',()=>{
+ const artifact={decision_id:digest('a'),metadata:{input_hash:digest('b'),response_hash:digest('c'),policy_hash:digest('d')},legal_actions:[{action:'check',paid_bb:0,to_bb:0,all_in:false}],combos:[{combo:'8s5s',hand:'85s',reach_weight:.5,mix:{check:100},text:'Original',text_ja:'原文'}]};
+ const baseHash=digest('e'),reportHash=digest('f'),revisionRaw=digest('1'),approvalRaw=digest('2');
+ const report={schema_version:'aiv2-postflop-independent-review-v1',approved:false,artifacts:[{decision_id:artifact.decision_id,raw_file_sha256:baseHash}],findings:[{id:'finding',decision_id:artifact.decision_id,artifact_raw_file_sha256:baseHash,affected_combos:['8s5s']}]};
+ const base={decision_id:artifact.decision_id,raw_file_sha256:baseHash,policy_hash:artifact.metadata.policy_hash,input_hash:artifact.metadata.input_hash,response_hash:artifact.metadata.response_hash,frequency_only_sha256:frequencyDigest(artifact)};
+ const p={method:'aiv2-postflop-reason-amendment-v1',version:'three-bound-findings-v1',model:'gpt-6.1-sol',effort:'medium',implementation_hash:digest('3'),confirmed_model:'gpt-6.1-sol',confirmed_effort:'medium',thread_id:'test-thread',turn_id:'test-turn'},scope={kind:'combo-reasons',combos:['8s5s']},ids=['finding'];
+ const request_id=hash({method:p.method,version:p.version,model:p.model,effort:p.effort,implementation_hash:p.implementation_hash,base,original_failed_review_sha256:reportHash,scope,resolved_finding_ids:ids});
+ const body={schema_version:'aiv2-postflop-reason-amendment-v1',generation_mode:'post-generation-review-amendment',request_id,base,original_failed_review_sha256:reportHash,resolved_finding_ids:ids,scope,source_response:{request_id,assessment:'reason-only',unchanged_all_frequencies:true,explanation:{text:'Reason correction only.',text_ja:'理由のみ修正。'},summary_patch:null,combo_patches:[{combo:'8s5s',mix:{check:100},text:'A six completes a straight.',text_ja:'6でストレートが完成します。'}]},provenance:p,approval_status:'pending-independent-review'};
+ const revision={...body,revision_id:hash(body)};
+ const entry={revision_id:revision.revision_id,revision_raw_file_sha256:revisionRaw,base_decision_id:artifact.decision_id,base_raw_file_sha256:baseHash,frequency_only_sha256:frequencyDigest(artifact)};
+ const approval={schema_version:'aiv2-postflop-reason-amendment-approval-v1',approved:true,scope:'three-saved-decision-reason-only-amendments',original_failed_review_sha256:reportHash,reviewer:{actor:'independent-reviewer',model:null,relationship:'independent-review',evidence:['Review evidence']},revisions:[entry,{...entry,revision_id:digest('4'),base_decision_id:digest('5')},{...entry,revision_id:digest('6'),base_decision_id:digest('7')}]};
+ const before=JSON.stringify(artifact),apply=(a=approval,r=revision,b=baseHash,h=reportHash)=>approvedAmendment(artifact,b,report,h,r,revisionRaw,a,approvalRaw);
+ const result=apply();assert.ok(result);assert.equal(result.combo_reasons[0].reason.ja,'6でストレートが完成します。');assert.deepEqual(result.resolved_finding_ids,['finding']);assert.equal(result.production_approved,false);assert.equal(JSON.stringify(artifact),before);
+ assert.equal(apply(null),null);assert.equal(apply({...approval,approved:false}),null);assert.equal(apply(approval,revision,digest('8')),null);assert.equal(apply(approval,revision,baseHash,digest('9')),null);
+ const wrong=structuredClone(approval);wrong.revisions[0].revision_raw_file_sha256=digest('0');assert.equal(apply(wrong),null);
+ const tampered=structuredClone(revision);tampered.source_response.combo_patches[0].mix.check=99;assert.equal(apply(approval,tampered),null);
+ const selfApproved=structuredClone(approval);selfApproved.reviewer.actor='generator';assert.equal(apply(selfApproved),null);
+});

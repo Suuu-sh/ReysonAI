@@ -5,6 +5,7 @@ import { resolve, dirname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { postflopSnapshot } from './postflop.ts';
+import { treeSnapshot } from './tree.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 export const POSTFLOP_ROOT=resolve(HERE,'../frontend/candidates/aiv2-postflop/llm-postflop-single-response-v1');
@@ -98,6 +99,7 @@ export function createDashboardServer(root=ROOT,postflopRoot=POSTFLOP_ROOT){retu
     // Exact path allowlist before URL normalization defeats encoded traversal.
     const raw=(req.url??'').split('?')[0];
     if(Object.hasOwn(assets,raw)){const [name,type]=assets[raw];send(200,type,req.method==='HEAD'?'':await readFile(resolve(HERE,name)));return;}
+    if(raw==='/api/postflop/tree'){try{const query=new URL(req.url,'http://localhost').searchParams;if((query.get('path')??'').length>1200)throw Error('Path too long');const path=JSON.parse(query.get('path')??'[]'),data=await postflopSnapshot(postflopRoot);send(200,'application/json',JSON.stringify(treeSnapshot(data.scenes,query.get('board')??'As7d2c',path)));}catch{send(400,'application/json',JSON.stringify({error:'Invalid flop or legal action/card path'}));}return;}
     if(raw==='/api/postflop/scenes'){const data=await postflopSnapshot(postflopRoot);send(200,'application/json',JSON.stringify({status:data.status,scenes:data.scenes.map(({cells,summary,provenance,...scene})=>scene)}));return;}
     if(raw==='/api/postflop/scene'){const key=new URL(req.url,'http://localhost').searchParams.get('key');const data=await postflopSnapshot(postflopRoot);const scene=data.scenes.find(s=>s.key===key);send(scene?200:404,'application/json',JSON.stringify(scene??{error:'Scene not generated or unavailable'}));return;}
     if(raw==='/api/status'){const data=await snapshot(root);send(200,'application/json',JSON.stringify(data.status));return;}

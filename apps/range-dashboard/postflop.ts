@@ -3,6 +3,8 @@ import { readFile, realpath, readdir } from 'node:fs/promises';
 import { resolve, sep, dirname } from 'node:path';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { resolveAmendment } from './amendments.ts';
+import { resolveSelection } from './selection.ts';
 const REVIEW_PATH=resolve(dirname(fileURLToPath(import.meta.url)),'../../docs/qa/aiv2-postflop-checkthrough-review.json');
 const METHOD='llm-postflop-single-response-v1';
 const VERSION='exact-combo-bilingual-bets33-66-100-125-v1';
@@ -16,7 +18,7 @@ const text=v=>typeof v==='string'?v:'';
 const reason=v=>{assert(typeof v?.text==='string'&&v.text.trim()&&typeof v.text_ja==='string'&&v.text_ja.trim());return {en:v.text,ja:v.text_ja};};
 const mix=(v,actions)=>{assert(v&&Object.keys(v).length===actions.length&&actions.every(a=>Number.isInteger(v[a])&&v[a]>=0&&v[a]<=100)&&actions.reduce((n,a)=>n+v[a],0)===100);};
 const event=v=>({street:text(v.street),board:typeof v.board==='string'?v.board:'',seat:text(v.seat),action:text(v.action),...(Number.isFinite(v.paid_bb)?{paid_bb:v.paid_bb}:{}),...(Number.isFinite(v.to_bb)?{to_bb:v.to_bb}:{}),...(Number.isFinite(v.to_size_bb)?{to_size_bb:v.to_size_bb}:{}),...(v.assumption?{assumption:typeof v.assumption==='string'?v.assumption:'assumed action'}:{})});
-function legalOptions(input){
+export function legalOptions(input){
   const round=v=>Math.round(v*100)/100, me=input.actor, opponent=me==='BTN'?'BB':'BTN',mine=input.committed_bb[me],theirs=input.committed_bb[opponent];
   assert(Number.isFinite(mine)&&mine>=0&&Number.isFinite(theirs)&&theirs>=mine&&input.stacks_bb[me]>0);
   const cap=round(Math.min(input.stacks_bb[me],input.stacks_bb[opponent]+theirs-mine)), facing=round(theirs-mine);
@@ -60,7 +62,8 @@ export function verifyPostflop(output,fileHash=null){
     const unique=new Set(group.map(c=>JSON.stringify([c.mix,c.text,c.text_ja])));
     return {hand,mix:frequencies,reach_weight:weight,unreachable:!weight,blocked:!group.length,combo_count:group.length,reason:!group.length?{en:'No positive-reach board-legal physical combo. No policy or reason was generated.',ja:'ボードと両立する到達重み付きコンボがないため、方針・理由は生成されていません。'}:unique.size===1?reason(group[0]):{en:'Physical combos have different saved policies or reasons. See each exact combo below; the cell displays their reach-weighted frequencies.',ja:'実コンボごとに保存方針・理由が異なります。セルは到達重み付き集計です。以下に各実コンボの保存原文を表示します。'},overrides:group.map(c=>({combo:c.combo,mix:c.mix,reach_weight:c.reach_weight,reason:reason(c)}))};
   });
-  return {key:id,id:`${input.spot_id} · ${input.street}`,hero:input.actor,family:input.street,context:'postflop',street:input.street,board:[...board],pot_bb:input.pot_bb,stacks_bb:{BTN:input.stacks_bb.BTN,BB:input.stacks_bb.BB},history:(input.history??[]).map(event),preflop_history:(input.preflop_history??[]).map(event),assumptions:(input.assumptions??[]).map(v=>typeof v==='string'?v:'Recorded explicit assumption'),actions,legal_actions:output.legal_actions.map(v=>({action:v.action,paid_bb:v.paid_bb,to_bb:v.to_bb,all_in:v.all_in===true})),cells,range_reason:summaryReason,summary:{action_frequency_pct:frequency,total_reach_weight:total,reached_combo_count:rows.length},provenance:{method:METHOD,model:m.model,effort:m.reasoning_effort,final_hash:m.policy_hash,reason_hash:m.response_hash,artifact_hash:fileHash,verified:true}};
+  const tree_state={spot_id:input.spot_id,street:input.street,board:input.board,actor:input.actor,pot_bb:input.pot_bb,stacks_bb:input.stacks_bb,committed_bb:input.committed_bb,last_full_raise_bb:input.last_full_raise_bb,raises_this_street:input.raises_this_street,raise_reopened:input.raise_reopened,history:input.history,source_lineage:hash(input.upstream)};
+  return {tree_state,key:id,id:`${input.spot_id} · ${input.street}`,hero:input.actor,family:input.street,context:'postflop',street:input.street,board:[...board],pot_bb:input.pot_bb,stacks_bb:{BTN:input.stacks_bb.BTN,BB:input.stacks_bb.BB},history:(input.history??[]).map(event),preflop_history:(input.preflop_history??[]).map(event),assumptions:(input.assumptions??[]).map(v=>typeof v==='string'?v:'Recorded explicit assumption'),actions,legal_actions:output.legal_actions.map(v=>({action:v.action,paid_bb:v.paid_bb,to_bb:v.to_bb,all_in:v.all_in===true})),cells,range_reason:summaryReason,summary:{action_frequency_pct:frequency,total_reach_weight:total,reached_combo_count:rows.length},provenance:{method:METHOD,model:m.model,effort:m.reasoning_effort,final_hash:m.policy_hash,reason_hash:m.response_hash,artifact_hash:fileHash,verified:true}};
 }
 // Review notes annotate only the exact raw artifact reviewed. They never alter saved prose/frequencies.
 export function boundReview(scene,report){
@@ -70,11 +73,13 @@ export function boundReview(scene,report){
   return {status:warnings.length?'needs_correction':'no_bound_warning',production_approved:false,warnings};
 }
 export async function postflopSnapshot(root,reviewPath=REVIEW_PATH){
-  let review=null;try{review=JSON.parse(await readFile(reviewPath,'utf8'));}catch{}
+  let review=null,reviewHash=null;try{const bytes=await readFile(reviewPath);review=JSON.parse(bytes.toString('utf8'));reviewHash=createHash('sha256').update(bytes).digest('hex');}catch{}
+  const selected=await resolveSelection(root,reviewHash,verifyPostflop);
+  if(selected)return {status:{state:'saved',total:5,completed:5,new_single_pass:5,running:0,failed:0,verified:5,invalid:0,updated_at:null,polled_at:new Date().toISOString(),selection:selected.binding},scenes:selected.scenes};
   let files;try{files=await readdir(resolve(root,'decisions'));}catch(error){if(error.code==='ENOENT')return {status:{state:'not_generated',total:0,completed:0,new_single_pass:0,running:0,failed:0,verified:0,invalid:0,updated_at:null,polled_at:new Date().toISOString()},scenes:[]};throw error;}
   const realRoot=await realpath(resolve(root,'decisions')),scenes=[];let invalid=0;
   for(const file of files.filter(v=>/^[a-f0-9]{64}\.json$/.test(v)).sort()){
-    try{const path=await realpath(resolve(realRoot,file));assert(path.startsWith(realRoot+sep));const bytes=await readFile(path);const artifact=JSON.parse(bytes.toString('utf8'));assert(file===artifact.decision_id+'.json');const scene=verifyPostflop(artifact,createHash('sha256').update(bytes).digest('hex'));scene.review=boundReview(scene,review);scenes.push(scene);}catch{invalid++;}
+    try{const path=await realpath(resolve(realRoot,file));assert(path.startsWith(realRoot+sep));const bytes=await readFile(path);const artifact=JSON.parse(bytes.toString('utf8'));assert(file===artifact.decision_id+'.json');const scene=verifyPostflop(artifact,createHash('sha256').update(bytes).digest('hex'));scene.review=boundReview(scene,review);scene.amendment=await resolveAmendment(root,artifact,scene.provenance.artifact_hash,review,reviewHash);if(scene.amendment){const ids=new Set(scene.amendment.resolved_finding_ids);scene.review.warnings=scene.review.warnings.map(note=>({...note,resolved:ids.has(note.id)}));scene.review.status=scene.review.warnings.some(note=>!note.resolved)?'needs_correction':'reason_amendment_approved';}scenes.push(scene);}catch{invalid++;}
   }
   return {status:{state:scenes.length?'saved':'not_generated',total:scenes.length,completed:scenes.length,new_single_pass:scenes.length,running:0,failed:0,verified:scenes.length,invalid,updated_at:null,polled_at:new Date().toISOString()},scenes};
 }
