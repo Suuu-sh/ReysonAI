@@ -1,7 +1,9 @@
 // Independent read-only decoder; never imports postflop generator/provider code.
 import { readFile, realpath, readdir } from 'node:fs/promises';
-import { resolve, sep } from 'node:path';
+import { resolve, sep, dirname } from 'node:path';
 import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+const REVIEW_PATH=resolve(dirname(fileURLToPath(import.meta.url)),'../../docs/qa/aiv2-postflop-checkthrough-review.json');
 const METHOD='llm-postflop-single-response-v1';
 const VERSION='exact-combo-bilingual-bets33-66-100-125-v1';
 const ranks=[...'AKQJT98765432'], cards=ranks.flatMap(r=>[...'shdc'].map(s=>r+s));
@@ -60,11 +62,19 @@ export function verifyPostflop(output,fileHash=null){
   });
   return {key:id,id:`${input.spot_id} · ${input.street}`,hero:input.actor,family:input.street,context:'postflop',street:input.street,board:[...board],pot_bb:input.pot_bb,stacks_bb:{BTN:input.stacks_bb.BTN,BB:input.stacks_bb.BB},history:(input.history??[]).map(event),preflop_history:(input.preflop_history??[]).map(event),assumptions:(input.assumptions??[]).map(v=>typeof v==='string'?v:'Recorded explicit assumption'),actions,legal_actions:output.legal_actions.map(v=>({action:v.action,paid_bb:v.paid_bb,to_bb:v.to_bb,all_in:v.all_in===true})),cells,range_reason:summaryReason,summary:{action_frequency_pct:frequency,total_reach_weight:total,reached_combo_count:rows.length},provenance:{method:METHOD,model:m.model,effort:m.reasoning_effort,final_hash:m.policy_hash,reason_hash:m.response_hash,artifact_hash:fileHash,verified:true}};
 }
-export async function postflopSnapshot(root){
+// Review notes annotate only the exact raw artifact reviewed. They never alter saved prose/frequencies.
+export function boundReview(scene,report){
+  const digest=scene.provenance.artifact_hash;
+  const binding=report?.schema_version==='aiv2-postflop-independent-review-v1'&&Array.isArray(report.artifacts)&&report.artifacts.some(v=>v.decision_id===scene.key&&v.raw_file_sha256===digest);
+  const warnings=binding&&Array.isArray(report.findings)?report.findings.filter(v=>v.decision_id===scene.key&&v.artifact_raw_file_sha256===digest&&typeof v.warning?.en==='string'&&typeof v.warning?.ja==='string').map(v=>({id:text(v.id),severity:text(v.severity),warning:{en:v.warning.en,ja:v.warning.ja},affected_combos:Array.isArray(v.affected_combos)?v.affected_combos.filter(c=>typeof c==='string'&&/^(?:[AKQJT98765432][shdc]){2}$/.test(c)):[]})):[];
+  return {status:warnings.length?'needs_correction':'no_bound_warning',production_approved:false,warnings};
+}
+export async function postflopSnapshot(root,reviewPath=REVIEW_PATH){
+  let review=null;try{review=JSON.parse(await readFile(reviewPath,'utf8'));}catch{}
   let files;try{files=await readdir(resolve(root,'decisions'));}catch(error){if(error.code==='ENOENT')return {status:{state:'not_generated',total:0,completed:0,new_single_pass:0,running:0,failed:0,verified:0,invalid:0,updated_at:null,polled_at:new Date().toISOString()},scenes:[]};throw error;}
   const realRoot=await realpath(resolve(root,'decisions')),scenes=[];let invalid=0;
   for(const file of files.filter(v=>/^[a-f0-9]{64}\.json$/.test(v)).sort()){
-    try{const path=await realpath(resolve(realRoot,file));assert(path.startsWith(realRoot+sep));const bytes=await readFile(path);const artifact=JSON.parse(bytes.toString('utf8'));assert(file===artifact.decision_id+'.json');scenes.push(verifyPostflop(artifact,createHash('sha256').update(bytes).digest('hex')));}catch{invalid++;}
+    try{const path=await realpath(resolve(realRoot,file));assert(path.startsWith(realRoot+sep));const bytes=await readFile(path);const artifact=JSON.parse(bytes.toString('utf8'));assert(file===artifact.decision_id+'.json');const scene=verifyPostflop(artifact,createHash('sha256').update(bytes).digest('hex'));scene.review=boundReview(scene,review);scenes.push(scene);}catch{invalid++;}
   }
   return {status:{state:scenes.length?'saved':'not_generated',total:scenes.length,completed:scenes.length,new_single_pass:scenes.length,running:0,failed:0,verified:scenes.length,invalid,updated_at:null,polled_at:new Date().toISOString()},scenes};
 }

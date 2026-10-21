@@ -40,3 +40,9 @@ Focused new postflop tests (do not require or generate actual candidates):
 ```sh
 node --test apps/range-dashboard/postflop.test.ts
 ```
+
+## Independent reason-review annotations
+
+The fixed local report `docs/qa/aiv2-postflop-checkthrough-review.json` may add public notes without changing or hiding generated artifacts. A note is accepted only when both its report artifact binding and finding binding match the current decision ID **and exact raw-file SHA-256**. The viewer exposes only note ID/severity, EN/JA warning text and validated combo labels—not report filesystem paths or raw evidence. Affected decisions prominently show **理由に要修正箇所あり・本番未承認**. Original generated text remains separately labeled and unchanged. No warning, missing report, or passing numeric/hash checks ever imply semantic/production approval.
+
+Focused binding check: `node --test apps/range-dashboard/review.test.ts`.
