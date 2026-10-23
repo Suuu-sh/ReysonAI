@@ -101,6 +101,11 @@ test('existing migrations get a preservation sentinel in every application table
     assert.deepEqual(Object.keys(snapshot.rows).sort(), UNRELATED_TABLES);
     for (const [name, rows] of Object.entries(snapshot.rows)) assert.equal(fixtureValue<{ length: any }>(rows).length, 1, `${name}: missing preservation row`);
     assert.deepEqual(db.prepare('PRAGMA foreign_key_check').all(), []);
+    const job = db.prepare('SELECT status,reserved_calls,result_json FROM aiv2_ondemand_jobs').get()!;
+    assert.equal(job.status, 'complete'); assert.equal(job.reserved_calls, 2);
+    assert.equal(JSON.parse(String(job.result_json)).synthetic_local_preservation_fixture, true);
+    assert.throws(() => db.exec("UPDATE aiv2_ondemand_jobs SET result_json='{}'"), /terminal on-demand job is immutable/);
+    assert.deepEqual(databaseSnapshot(db, { excludeMw3: true }), snapshot);
     assert.equal(databaseSnapshot(db).rows.mw3_policy_deliveries.length, 1);
   } finally { db.close(); }
 });

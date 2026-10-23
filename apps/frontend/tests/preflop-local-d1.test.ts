@@ -90,8 +90,12 @@ test("current backend schema has a valid preservation sentinel in every unrelate
     const tables = db.prepare("SELECT name FROM sqlite_schema WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT IN ('preflop_datasets', 'preflop_dataset_parts') ORDER BY name").all();
     for (const { name } of tables)
       assert.equal(db.prepare(`SELECT COUNT(*) AS count FROM "${fixtureValue<{ replaceAll: any }>(name).replaceAll('"', '""')}"`).get()!.count!, 1, `${name}: expected one unrelated sentinel row`);
-    for (const name of ["account_native_attempts", "account_native_oauth_states", "account_native_sessions", "ranked_players", "ranked_matches", "fastfold_players", "fastfold_sessions", "fastfold_results", "fastfold_actions", "fastfold_dataset_parts", "human_rank_players", "human_rank_tables", "human_rank_receipts", "human_rank_results"])
+    for (const name of ["account_native_attempts", "account_native_oauth_states", "account_native_sessions", "ranked_players", "ranked_matches", "fastfold_players", "fastfold_sessions", "fastfold_results", "fastfold_actions", "fastfold_dataset_parts", "human_rank_players", "human_rank_tables", "human_rank_receipts", "human_rank_results", "aiv2_ondemand_jobs", "aiv2_ondemand_access", "aiv2_ondemand_owner"])
       assert.ok(tables.some(table => table.name === name), `${name}: current account/ranked migrations must be covered`);
+    const onDemand = db.prepare("SELECT status, result_json FROM aiv2_ondemand_jobs WHERE id = 'local-ondemand-job'").get()!;
+    assert.equal(onDemand.status, "complete");
+    assert.deepEqual(JSON.parse(String(onDemand.result_json)), { synthetic_local_preservation_fixture: true, keep: true });
+    assert.throws(() => db.prepare("UPDATE aiv2_ondemand_jobs SET status = 'queued' WHERE id = 'local-ondemand-job'").run(), /terminal on-demand job is immutable/);
     assert.deepEqual(db.prepare("PRAGMA foreign_key_check").all(), []);
   } finally { db.close(); }
 });
@@ -136,9 +140,9 @@ test("pinned Wrangler local integration: Unicode roundtrip, repeated import, iso
     const result = await verifyLocalD1({ sql, manifest: manifestPath, wrangler: process.env.PREFLOP_LOCAL_WRANGLER, log: () => {} });
     assert.equal(result.full_payload_sha256_roundtrip, true);
     assert.equal(result.repeated_imports, 2);
-    assert.equal(result.unrelated_tables_preserved.length, 25);
-    for (const name of ["ranked_players", "ranked_matches"])
-      assert.ok(result.unrelated_tables_preserved.includes(name), `${name}: imports and rollback must preserve ranked records`);
+    assert.equal(result.unrelated_tables_preserved.length, 28);
+    for (const name of ["ranked_players", "ranked_matches", "aiv2_ondemand_jobs", "aiv2_ondemand_access", "aiv2_ondemand_owner"])
+      assert.ok(result.unrelated_tables_preserved.includes(name), `${name}: imports and rollback must preserve unrelated records`);
     assert.equal(result.full_file_failure_rollback, "preserved all preexisting preflop rows and unrelated sentinels");
     const bounded = await verifyLocalD1({ sql, manifest: manifestPath, wrangler: process.env.PREFLOP_LOCAL_WRANGLER, boundedLocal: true, log: () => {} });
     assert.equal(bounded.full_payload_sha256_roundtrip, true);
