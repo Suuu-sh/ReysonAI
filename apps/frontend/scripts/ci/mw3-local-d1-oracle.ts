@@ -25,7 +25,7 @@ export const WRANGLER_VERSION = '4.147.0';
 export const RUNTIME_PINS: any = Object.freeze({ wrangler: WRANGLER_VERSION, miniflare: '5.20261001.0-alpha', workerd: '1.20261001.1', esbuild: '0.28.1' });
 export const UNRELATED_TABLES = Object.freeze(['account_data', 'account_native_attempts', 'account_native_oauth_states', 'account_native_sessions',
   'account_oauth_states', 'account_rate_limits', 'account_sessions', 'account_users',
-  'aiv2_ondemand_access', 'aiv2_ondemand_jobs', 'aiv2_ondemand_owner', 'dataset_versions',
+  'aiv2_ondemand_access', 'aiv2_ondemand_jobs', 'aiv2_ondemand_operator_batches', 'aiv2_ondemand_owner', 'dataset_versions',
   'fastfold_actions', 'fastfold_dataset_parts', 'fastfold_players', 'fastfold_results', 'fastfold_sessions',
   'human_rank_players', 'human_rank_receipts', 'human_rank_results', 'human_rank_tables', 'postflop_flop_base_br',
   'postflop_policies', 'postflop_profile_policies', 'postflop_reasons', 'postflop_reports', 'postflop_spots', 'preflop_dataset_parts', 'preflop_datasets', 'ranked_matches', 'ranked_players']);

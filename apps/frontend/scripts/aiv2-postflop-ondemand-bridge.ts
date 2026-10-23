@@ -62,8 +62,8 @@ function settledJournal(value:any){
 }
 export async function runBridge(options:Options){
  const concurrency=options.concurrency??1;
- if(!Number.isInteger(concurrency)||concurrency<1||concurrency>2)throw failure('invalid_bridge_concurrency');
- if(concurrency===2)return runParallelBridge(options);
+ if(!Number.isInteger(concurrency)||concurrency<1||concurrency>4)throw failure('invalid_bridge_concurrency');
+ if(concurrency>=2)return runParallelBridge(options);
  const origin=bridgeOrigin(options.origin,options.allowLoopback),maxDecisions=budget(options.maxDecisions,100),maxCalls=budget(options.maxCalls,100);
  const root=options.root??DEFAULT_STORE,source=options.source??DEFAULT_SOURCE,implementation=implementationHash();
  const heartbeatMs=options.heartbeatMs??30_000,pollMs=options.pollMs??3_000;
@@ -187,10 +187,11 @@ export async function runBridge(options:Options){
 }
 
 
-// A single owner/lock schedules at most two independent jobs. Each lane has its own
+// A single owner/lock schedules at most four independent jobs. Each lane has its own
 // provider, metrics, lease heartbeat and journal entry; the journal is atomically
 // replaced as one aggregate so concurrent updates cannot overwrite another lane.
 async function runParallelBridge(options:Options){
+ const concurrency=options.concurrency??2;
  const origin=bridgeOrigin(options.origin,options.allowLoopback),maxDecisions=budget(options.maxDecisions,100),maxCalls=budget(options.maxCalls,100);
  const root=options.root??DEFAULT_STORE,source=options.source??DEFAULT_SOURCE,implementation=implementationHash();
  const heartbeatMs=options.heartbeatMs??30_000,pollMs=options.pollMs??3_000;
@@ -198,7 +199,7 @@ async function runParallelBridge(options:Options){
  const runtime=options.runtimePath??resolve(fileURLToPath(new URL('../../../',import.meta.url)),'.local/range-dashboard/ondemand-bridge');
  mkdirSync(root,{recursive:true});mkdirSync(runtime,{recursive:true,mode:0o700});
  const lock=resolve(root,'worker.lock'),journalFile=resolve(runtime,'bridge-journal.json');
- try{writeFileSync(lock,JSON.stringify({pid:process.pid,kind:'outbound-owner-bridge',concurrency:2,started_at:new Date().toISOString()}),{flag:'wx',mode:0o600});}catch{throw failure('owner_worker_locked');}
+ try{writeFileSync(lock,JSON.stringify({pid:process.pid,kind:'outbound-owner-bridge',concurrency,started_at:new Date().toISOString()}),{flag:'wx',mode:0o600});}catch{throw failure('owner_worker_locked');}
  type Entry={job:Job;status:string;calls:number;decisions:number;call_in_flight:boolean;completion?:any;error?:string};
  type Lane={entry:Entry;provider?:Provider;heartbeat?:ReturnType<typeof setInterval>;heartbeatWork?:Promise<void>;heartbeatFailed:boolean;receive?:(metric:any)=>void;work?:Promise<void>};
  const entries:Entry[]=[],active=new Set<Lane>(),boards=new Set<string>();
@@ -207,7 +208,7 @@ async function runParallelBridge(options:Options){
  let journal:any;
  const persist=()=>{
   const status=claimPending?'claim_pending':entries.some(e=>e.status==='completion_pending')?'completion_pending':entries.some(e=>!['complete','failed'].includes(e.status))?'running':halted?'failed':entries.length?'complete':'idle';
-  journal={format:'parallel-owner-v1',status,origin,concurrency:2,claim_pending:claimPending,calls,decisions,entries};
+  journal={format:'parallel-owner-v1',status,origin,concurrency,claim_pending:claimPending,calls,decisions,entries};
   const temp=journalFile+'.tmp';writeFileSync(temp,JSON.stringify(journal)+'\n',{mode:0o600});renameSync(temp,journalFile);
  };
  const halt=(error:unknown)=>{halted=true;firstError??=error;};
@@ -330,7 +331,7 @@ async function runParallelBridge(options:Options){
   };
   try{
    while(!halted&&calls<maxCalls&&decisions<maxDecisions){
-    if(active.size>=2){await Promise.race([...active].map(l=>l.work));continue;}
+    if(active.size>=concurrency){await Promise.race([...active].map(l=>l.work));continue;}
     const reserved=pendingBudget(),remainingCalls=maxCalls-calls-reserved.calls,remainingDecisions=maxDecisions-decisions-reserved.decisions;
     if(remainingCalls<1||remainingDecisions<1){
      if(active.size){await Promise.race([...active].map(l=>l.work));continue;}
@@ -358,7 +359,7 @@ async function runParallelBridge(options:Options){
     const lane:Lane={entry:{job,status:'running',calls:0,decisions:0,call_in_flight:false},heartbeatFailed:false};
     entries.push(lane.entry);active.add(lane);claimPending=false;persist();
     lane.work=runLane(lane).catch(error=>halt(error)).finally(()=>{active.delete(lane);});
-    if(!options.watch)break; // --run-once still means at most one job, even at concurrency 2.
+    if(!options.watch)break; // --run-once still means at most one job, even in parallel mode.
    }
   }catch(error){halt(error);}
   await Promise.all([...active].map(l=>l.work));
