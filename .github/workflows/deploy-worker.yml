@@ -264,7 +264,7 @@ jobs:
 
       - name: Verify bounded local owner bridge and enqueue-only operator command
         if: needs.scope.outputs.verify_frontend == 'true'
-        run: node --experimental-strip-types --test --test-concurrency=1 tests/aiv2-postflop-ondemand-bridge.test.ts tests/aiv2-postflop-operator-batch.test.ts
+        run: node --experimental-strip-types --test --test-concurrency=1 tests/aiv2-postflop-ondemand-bridge.test.ts tests/aiv2-postflop-operator-batch.test.ts tests/aiv2-postflop-scoped-bridge.test.ts tests/aiv2-postflop-flop-coverage.test.ts
 
       - name: Verify authoritative ranked service without live credentials
         if: needs.scope.outputs.verify_backend == 'true'
