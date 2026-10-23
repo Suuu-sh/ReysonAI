@@ -6,6 +6,7 @@ import { pathToFileURL, fileURLToPath } from 'node:url';
 import { generateOne } from './aiv2-postflop-ondemand-cli.ts';
 import { postflopHash as hash } from './aiv2-postflop-ondemand.ts';
 import { CONFIG, DEFAULT_STORE, DEFAULT_SOURCE, implementationHash, loadRoot, resolveFrontier, loadDecision, saveDecision, normalizeRequest } from './aiv2-postflop-ondemand-store.ts';
+import { loadExpiredJobQuarantine, quarantinePhysicalKey } from './lib/aiv2-postflop-quarantine.ts';
 import { createAiv2SessionProvider } from './lib/aiv2-provider-session.ts';
 
 type Job = { id:string; board:string; path:string[]; revision:string; implementationHash:string; sourceHash:string; leaseToken:string; maxProviderCalls:number; maxDecisions:number; operatorBatchId?:string };
@@ -25,7 +26,7 @@ async function onDemandSnapshot(board:string,path:string[],root:string,source:st
 }
 type Options = {
  origin:string; bearerFile:string; allowLoopback?:boolean; watch?:boolean; retryCompletion?:boolean;
- maxDecisions?:number; maxCalls?:number; concurrency?:number; operatorBatchId?:string; root?:string; source?:string; runtimePath?:string;
+ maxDecisions?:number; maxCalls?:number; concurrency?:number; operatorBatchId?:string; quarantineFile?:string; root?:string; source?:string; runtimePath?:string;
  // Injection points are for isolated tests; the CLI never accepts these dependencies.
  fetch?:typeof fetch; providerFactory?:(onMetric:(m:any)=>void)=>Provider;
  heartbeatMs?:number; pollMs?:number; signal?:AbortSignal;
@@ -62,7 +63,7 @@ function bridgePoster(origin:string,bearer:string,fetcher:typeof fetch){
 // Diagnostics never copy messages, prompts, outputs, stderr, unknown codes or capabilities.
 type DiagnosticPhase='startup'|'pin_validation'|'claim'|'job_validation'|'lease_heartbeat'|'idle_heartbeat'|'provider'|'decision_validation'|'completion_validation'|'completion_upload'|'failure_upload'|'provider_drain';
 function bridgeDiagnostics(){
- const started=Date.now(),codes=new Set(['quota_or_rate_limit','authentication_required','unsupported_model_effort_or_schema','upstream_error','process_failed','process_exited','transport_closed','session_lost','provider_closed','timeout','invalid_json','protocol_error','response_too_large','unexpected_server_request','missing_turn','missing_thread','model_or_effort_mismatch','unexpected_tool_call','overlapping_session_turn','session_closed_during_turn','bridge_transport_uncertain','bridge_lease_conflict','bridge_request_failed','bridge_response_invalid','pins_changed','budget_exhausted','invalid_or_stale_claim','snapshot_adapter_invalid','incomplete_validated_store','uncertain_provider_outcome','completion_upload_requires_explicit_retry','operator_scope_failed']);
+ const started=Date.now(),codes=new Set(['quota_or_rate_limit','authentication_required','unsupported_model_effort_or_schema','upstream_error','process_failed','process_exited','transport_closed','session_lost','provider_closed','timeout','invalid_json','protocol_error','response_too_large','unexpected_server_request','missing_turn','missing_thread','model_or_effort_mismatch','unexpected_tool_call','overlapping_session_turn','session_closed_during_turn','bridge_transport_uncertain','bridge_lease_conflict','bridge_request_failed','bridge_response_invalid','pins_changed','budget_exhausted','invalid_or_stale_claim','snapshot_adapter_invalid','incomplete_validated_store','uncertain_provider_outcome','completion_upload_requires_explicit_retry','operator_scope_failed','quarantined_target','invalid_expired_job_quarantine']);
  const code=(value:unknown)=>typeof value==='string'&&codes.has(value)?value:'unclassified_failure';
  type Cause={code:string;phase:DiagnosticPhase;at:string;elapsed_ms:number;job_id?:string;transport?:TransportDetail};
  type Retry={code:string;phase:'lease_heartbeat';at:string;elapsed_ms:number;job_id:string;attempt:1;outcome:'pending'|'confirmed'|'failed';failure_code?:string;transport?:TransportDetail};
@@ -141,6 +142,7 @@ function settledJournal(value:any){
 }
 export async function runBridge(options:Options):Promise<BridgeResult>{
  const concurrency=options.concurrency??1,operatorBatchId=options.operatorBatchId;
+ if(options.quarantineFile&&!operatorBatchId)throw failure('invalid_expired_job_quarantine');
  if(operatorBatchId!==undefined&&!isHash(operatorBatchId))throw failure('invalid_bridge_operator_batch');
  if(!Number.isInteger(concurrency)||concurrency<1||concurrency>(operatorBatchId?50:4))throw failure('invalid_bridge_concurrency');
  if(concurrency>=2||operatorBatchId)return runParallelBridge(options);
@@ -281,7 +283,10 @@ async function runParallelBridge(options:Options):Promise<BridgeResult>{
  const root=options.root??DEFAULT_STORE,source=options.source??DEFAULT_SOURCE,implementation=implementationHash();
  const heartbeatMs=options.heartbeatMs??30_000,pollMs=options.pollMs??3_000;
  if(!Number.isInteger(heartbeatMs)||heartbeatMs<1||heartbeatMs>30_000||!Number.isInteger(pollMs)||pollMs<1||pollMs>10_000)throw failure('invalid_bridge_interval');
- const runtime=options.runtimePath??resolve(fileURLToPath(new URL('../../../',import.meta.url)),'.local/range-dashboard/ondemand-bridge');
+ const quarantine=options.quarantineFile?loadExpiredJobQuarantine(options.quarantineFile,resolve(fileURLToPath(new URL('../../../',import.meta.url)),'.local/range-dashboard')):null;
+ if(quarantine&&(quarantine.originalBatchId===operatorBatchId||quarantine.pins.implementationHash!==implementation||options.runtimePath&&resolve(options.runtimePath)!==quarantine.runtime))throw failure('invalid_expired_job_quarantine');
+ const quarantineBoards=new Set(quarantine?.excludedBoards.map(quarantinePhysicalKey)??[]);
+ const runtime=quarantine?.runtime??options.runtimePath??resolve(fileURLToPath(new URL('../../../',import.meta.url)),'.local/range-dashboard/ondemand-bridge');
  mkdirSync(root,{recursive:true});mkdirSync(runtime,{recursive:true,mode:0o700});
  const lock=resolve(root,'worker.lock'),journalFile=resolve(runtime,'bridge-journal.json');
  try{writeFileSync(lock,JSON.stringify({pid:process.pid,kind:'outbound-owner-bridge',concurrency,...(operatorBatchId?{operatorBatchId}:{}),started_at:new Date().toISOString()}),{flag:'wx',mode:0o600});}catch{throw failure('owner_worker_locked');}
@@ -336,6 +341,7 @@ async function runParallelBridge(options:Options):Promise<BridgeResult>{
   diagnosticsEnabled=true;diagnosticPhase='pin_validation';
   const onlineSourceHash=hash((await loadRoot('As7d2c',source)).upstream);
   const onlinePins={revision:hash({method:CONFIG.method,version:CONFIG.version,implementationHash:implementation,sourceHash:onlineSourceHash}),implementationHash:implementation,sourceHash:onlineSourceHash};
+  if(quarantine&&hash(onlinePins)!==hash({revision:quarantine.pins.revision,implementationHash:quarantine.pins.implementationHash,sourceHash:quarantine.pins.sourceHash}))throw failure('invalid_expired_job_quarantine');
   const assertPins=async()=>{if(implementationHash()!==implementation||hash((await loadRoot('As7d2c',source)).upstream)!==onlineSourceHash)throw failure('pins_changed');};
   process.once('SIGTERM',stop);process.once('SIGINT',stop);options.signal?.addEventListener('abort',stop,{once:true});
   if(options.signal?.aborted)stop();
@@ -453,6 +459,7 @@ async function runParallelBridge(options:Options):Promise<BridgeResult>{
     // Validate before accepting claimed capacity; malformed/over-budget leases remain
     // uncertain in the journal and cannot reach any provider factory.
     validateBridgeJob(job,implementation,onlineSourceHash,operatorBatchId);
+    if(quarantineBoards.has(quarantinePhysicalKey(job.board)))throw failure('quarantined_target');
     if(job.maxProviderCalls>remainingCalls||job.maxDecisions>remainingDecisions||entries.some(e=>e.job.id===job.id))throw failure('invalid_or_stale_claim');
     const lane:Lane={entry:{job,status:'running',calls:0,decisions:0,call_in_flight:false},heartbeatFailed:false,phase:'job_validation'};
     entries.push(lane.entry);active.add(lane);claimPending=false;persist();
@@ -477,7 +484,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const retry=args.includes('--retry-completion');
   if(!retry&&(!args.includes('--confirm-local-generation')||(!args.includes('--run-once')&&!args.includes('--watch'))))throw failure('explicit_owner_generation_confirmation_required');
   const origin=get('origin'),bearerFile=get('bearer-file');if(!origin||!bearerFile)throw failure('origin_and_bearer_file_required');
-  const result=await runBridge({origin,bearerFile,source:get('source-dir')===undefined?undefined:resolve(get('source-dir')!),watch:args.includes('--watch'),operatorBatchId:get('operator-batch-id'),concurrency:get('concurrency')===undefined?undefined:Number(get('concurrency')),retryCompletion:retry,allowLoopback:args.includes('--allow-loopback-test'),maxDecisions:get('max-decisions')===undefined?undefined:Number(get('max-decisions')),maxCalls:get('max-calls')===undefined?undefined:Number(get('max-calls'))});
+  const result=await runBridge({origin,bearerFile,source:get('source-dir')===undefined?undefined:resolve(get('source-dir')!),watch:args.includes('--watch'),operatorBatchId:get('operator-batch-id'),quarantineFile:get('quarantine-file')===undefined?undefined:resolve(get('quarantine-file')!),concurrency:get('concurrency')===undefined?undefined:Number(get('concurrency')),retryCompletion:retry,allowLoopback:args.includes('--allow-loopback-test'),maxDecisions:get('max-decisions')===undefined?undefined:Number(get('max-decisions')),maxCalls:get('max-calls')===undefined?undefined:Number(get('max-calls'))});
   console.log(JSON.stringify(result));
  }catch{console.error(JSON.stringify({status:'failed',error:'owner_bridge_stopped_check_local_journal_no_automatic_retry'}));process.exitCode=1;}
 }
