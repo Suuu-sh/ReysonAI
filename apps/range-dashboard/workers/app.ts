@@ -5,7 +5,7 @@ export interface Snapshot {
  run:{status:string;calls:number;decisions:number;maxCalls:number;maxDecisions:number;active:number;stale:boolean;lastUpdatedAt?:string|null};
  counts:{recordedAt?:string|null;source?:string;queued:number|null;running:number;complete:number;failed:number;uncertain:number};
  lanes:Lane[];
- coverage:{domain:number;root:Coverage;check:Coverage;recordedAt:string|null;stale:boolean};warnings:string[];
+ coverage:{domain:number;root:Coverage;check:Coverage;recordedAt:string|null;localRecordedAt?:string|null;stale:boolean};warnings:string[];
 }
 interface Coverage {saved:number;missing:number;blocked:number;unknown:number;parentPending?:number;zeroReach?:number}
 const number=(value:unknown):number=>typeof value==='number'&&Number.isFinite(value)&&value>=0?Math.floor(value):0;
@@ -33,10 +33,11 @@ export function render(doc:Document,snapshot:Snapshot,filter='all'):void {
  const batchDone=!alive&&snapshot.run.status==='complete'&&snapshot.run.active===0&&snapshot.counts.queued===0&&snapshot.counts.running===0&&snapshot.counts.failed===0&&snapshot.counts.uncertain===0&&snapshot.counts.complete>0&&snapshot.lanes.length>0&&snapshot.lanes.every(l=>['complete','completed'].includes(l.status)&&!l.callInFlight);
  const waiting=alive&&bound&&snapshot.lanes.some(l=>laneState(l,snapshot)==='active'&&l.callInFlight);
  const reviewWait=!alive&&snapshot.run.active===0&&snapshot.owner.phase==='review_wait';
+ const halted=!alive&&snapshot.owner.phase==='halted';
  const journalTime=dateText(snapshot.run.lastUpdatedAt);
- connection.textContent=reviewWait?'独立検証待ち · 生成は休止中':batchDone?'今回の生成は完了しました · 次のバッチは未起動':!alive?'ワーカー停止 · 最後の記録を表示':!bound?'所有者未確認 · 実行との対応を確認できません':`監視中 · プロセス存在確認${waiting?' / 応答待ち':''}${stale?`（ジョブ記録 ${journalTime}）`:''}`;
+ connection.textContent=halted?'生成は停止しています · 復旧・再開は未確認':reviewWait?'独立検証待ち · 生成は休止中':batchDone?'今回の生成は完了しました · 次のバッチは未起動':!alive?'ワーカー停止 · 最後の記録を表示':!bound?'所有者未確認 · 実行との対応を確認できません':`監視中 · プロセス存在確認${waiting?' / 応答待ち':''}${stale?`（ジョブ記録 ${journalTime}）`:''}`;
  connection.dataset.tone=reviewWait||batchDone||alive&&bound?'live':'warning';
- set(doc,'updated',`最終取得 ${dateText(snapshot.observedAt)}`);
+ set(doc,'updated',`監視取得 ${dateText(snapshot.observedAt)} / ジョブ記録 ${dateText(snapshot.run.lastUpdatedAt)}`);
  set(doc,'owner',reviewWait?'生成ワーカーなし・独立検証待ち':batchDone?'バッチ完了・正常終了':alive&&snapshot.owner.bindingAvailable===false?'プロセス検出・実行との対応未確認':alive?`起動設定 ${shown(snapshot.owner.configuredConcurrency)}並列`:'稼働プロセスなし');
  const warning=doc.getElementById('notice')!;
  const needsAttention=number(snapshot.counts.failed)>0||number(snapshot.counts.uncertain)>0;
@@ -72,7 +73,7 @@ export function render(doc:Document,snapshot:Snapshot,filter='all'):void {
  for(const [label,value] of [['BB 初手',snapshot.coverage.root],['BTN · check後',snapshot.coverage.check]] as const) {const item=el(doc,'div',undefined,'coverage-item');item.append(el(doc,'h3',label),el(doc,'strong',shown(value.saved)),el(doc,'small',' / 22,100 保存済み'));
  const track=el(doc,'div',undefined,'track');const fill=el(doc,'div',undefined,'fill');fill.style.width=`${Math.min(100,number(value.saved)/22100*100)}%`;track.append(fill);item.append(track,el(doc,'p',`未保存 ${shown(value.missing)} · 保留 ${shown(value.blocked)} · 未検証 ${shown(value.unknown)}${value.parentPending!==undefined?` · 親未保存 ${shown(value.parentPending)}`:''}${value.zeroReach!==undefined?` · 到達なし ${shown(value.zeroReach)}`:''}`,'caption'));coverage.append(item);}
  doc.getElementById('coverage-age')!.dataset.tone=snapshot.coverage.stale?'amber':'neutral';
- set(doc,'coverage-age',`オフライン集計 ${dateText(snapshot.coverage.recordedAt)}${snapshot.coverage.stale?' · 更新待ち（ライブ保存数ではありません）':' · キュー操作は行いません'}`);
+ set(doc,'coverage-age',`ローカル集計ファイル更新 ${dateText(snapshot.coverage.localRecordedAt)}${snapshot.coverage.stale?' · 更新待ち':''} / 参照キュー記録 ${dateText(snapshot.coverage.recordedAt)}。保存済みはローカル検証値であり、ライブDB件数ではありません。`);
 }
 export function showFetchError(doc:Document):void {set(doc,'connection','接続できません · 最後の取得内容を保持');doc.getElementById('connection')!.dataset.tone='warning';const notice=doc.getElementById('notice')!;notice.hidden=false;notice.dataset.tone='warning';notice.textContent='最新の稼働状況は未確認です。通信が回復すると自動で読み取りを再開します。';}
 export function start(doc:Document):()=>void {
