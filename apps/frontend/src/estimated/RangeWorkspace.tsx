@@ -1243,5 +1243,5 @@ export function RangeWorkspace({ profile, onEditProfile, onSectionChange }: Work
   }, []);
   useEffect(() => { try { window.sessionStorage.setItem(workspaceSourceStorageKey, rangeSource); } catch {} }, [rangeSource]);
   if (rangeSource === "aiv2") return <Aiv2OnDemandWorkspace />;
-  return <EstimatedRanges profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} rangeSource={rangeSource} previousRangeSource={previousRangeSource} previousSemanticNode={previousSemanticNode} initialRangeType={isLocalAiv2SampleMode() ? "open" : "response"} />;
+  return <><nav className="shell" aria-label={localized("Additional range tools", "追加のレンジツール")}><a href="/analyze/ondemand">{localized("On-demand postflop · AIv2", "オンデマンド・ポストフロップ · AIv2")}</a></nav><EstimatedRanges profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} rangeSource={rangeSource} previousRangeSource={previousRangeSource} previousSemanticNode={previousSemanticNode} initialRangeType={isLocalAiv2SampleMode() ? "open" : "response"} /></>;
 }

@@ -23,6 +23,8 @@ const loadProductApp = async () => {
   await Promise.all([preloadDatasets(APP_DATASETS), datasetNames()]);
   return import("./ProductApp.tsx");
 };
+const Aiv2OnDemandApp = lazy(() => import("./estimated/Aiv2OnDemandApp.tsx"));
+const isOnDemandRoute = window.location.pathname.replace(/\/+$/, "") === "/analyze/ondemand";
 const ProductApp = lazy(loadProductApp);
 const isProductRoute = isProductAppRoute(window.location.pathname, window.location.hostname);
 const legalDocument = legalDocumentOf(window.location.pathname);
@@ -53,7 +55,9 @@ function MarketingSite() {
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    {isProductRoute
+    {isOnDemandRoute
+      ? <Suspense fallback={<AppLoading label={productLocale() === "ja" ? "AIv2を開いています…" : "Opening AIv2…"} />}><Aiv2OnDemandApp /></Suspense>
+      : isProductRoute
       ? <Suspense fallback={<AppLoading label={({ en: "Opening ReysonAI…", ja: "ReysonAIを開いています…", "zh-CN": "正在打开ReysonAI…", es: "Abriendo ReysonAI…" }[productLocale()])} />}><ProductApp /></Suspense>
       : <MarketingSite />}
   </React.StrictMode>,
