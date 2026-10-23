@@ -24,9 +24,10 @@ type Props = {
   onSelect: (hand: string) => void;
   displayMode: string;
   workspaceRake: string;
+  onChooseAi?: () => void;
 };
 
-export function GtoRangeView({ available, nodeId, selected, onSelect, displayMode, workspaceRake }: Props) {
+export function GtoRangeView({ available, nodeId, selected, onSelect, displayMode, workspaceRake, onChooseAi }: Props) {
   const [selectedCombo, setSelectedCombo] = useState("all");
   const node = calculation?.nodes.find(item => item.id === nodeId);
   const aggregates = useMemo(() => {
@@ -65,6 +66,7 @@ export function GtoRangeView({ available, nodeId, selected, onSelect, displayMod
           "Cobertura: BTN abre 2,5 BB → BB paga; flop Qs Jh 2h; 100 BB iniciales / 97,5 BB efectivos; bote 5,5 BB; rake 0 %. Solo BB primero y BTN tras check de BB. No se sustituyen estimaciones IA.",
         )}
       </StatusState>
+      {onChooseAi && <button type="button" onClick={onChooseAi}>{copy("Switch to AI estimates · 5% rake, cap 3BB · not GTO", "AI推定に切り替える（レーキ5%・上限3BB、GTOではありません）", "切换到AI估计（抽水5%上限3BB，非GTO）", "Cambiar a estimaciones IA · rake5%, tope3BB · no GTO")}</button>}
     </Panel>;
   }
 
