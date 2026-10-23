@@ -141,7 +141,7 @@ function notModified(request: Request, response: Response, cacheControl?: string
 }
 
 async function route(request: Request, env: Env, url: URL): Promise<Response> {
-  if (url.pathname.startsWith("/v1/aiv2/ondemand/")) return routeOnDemand(request, env);
+  if ((url.pathname.startsWith("/v1/aiv2/ondemand/") || url.pathname.startsWith("/v1/aiv2/nodonk/"))) return routeOnDemand(request, env);
   // Dedicated three-player bytes have a build-pinned approval boundary. Keep
   // this separate from HU caches/dataset versions, and never infer approval
   // from a database row, preflop path, query parameter or existing HU policy.
@@ -583,7 +583,7 @@ function withCors(response: Response, request: Request, env: Env): Response {
   const pathname = new URL(request.url).pathname;
   // Ranked, FastFold and explicit on-demand jobs use the same HttpOnly account cookie. Credentialed browser fetches
   // (including OPTIONS and error responses) require an exact allowed origin.
-  if (pathname.startsWith("/v1/account/") || pathname.startsWith("/v1/ranked/") || pathname.startsWith("/v1/fastfold/") || pathname.startsWith("/v1/aiv2/ondemand/")) {
+  if (pathname.startsWith("/v1/account/") || pathname.startsWith("/v1/ranked/") || pathname.startsWith("/v1/fastfold/") || (pathname.startsWith("/v1/aiv2/ondemand/") || pathname.startsWith("/v1/aiv2/nodonk/"))) {
     headers.delete("access-control-allow-origin");
     headers.delete("access-control-allow-credentials");
     if (requestOrigin && configured.filter(value => value !== "*").includes(requestOrigin)) {

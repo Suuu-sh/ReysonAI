@@ -1,3 +1,4 @@
+import {NODONK_WORKSPACE_SOURCE,noDonkFlopActions,noDonkHistorySelection} from "./aiv2-nodonk-workspace-state.ts";
 import { ONDEMAND_WORKSPACE_SOURCE, onDemandRootSupported, onDemandHistorySelection } from "./aiv2-ondemand-workspace-state.ts";
 import type { Stage3Decision, Stage3Terminal } from "./stage3-types.ts";
 import type { ContinuationDecision, ContinuationTerminal, ContinuationFamily, HistoryAction } from "./continuation-tree.ts";
@@ -242,7 +243,7 @@ export type RangeUrlSelection = {
 };
 export type RangeUrlState = RangeUrlSelection & PostflopProfileState & {
   format: typeof defaultFormat; tableProfile: TableProfile;
-  postflopSource?: typeof ONDEMAND_WORKSPACE_SOURCE;
+  postflopSource?: typeof ONDEMAND_WORKSPACE_SOURCE | typeof NODONK_WORKSPACE_SOURCE;
   showFlop: boolean; flopCards: string[]; flopActions: string[];
   turnCard: string; turnActions: string[]; riverCard: string; riverActions: string[];
 };
@@ -437,8 +438,8 @@ export function encodeRangeUrl(state: RangeEncodingState, actionBlocks = buildRa
   const flop = state.showFlop === false ? null : boardCards(state.flopCards?.join(""), 3);
   if (flop) {
     params.set("board", flop.join(""));
-    if (state.postflopSource === ONDEMAND_WORKSPACE_SOURCE && onDemandRootSupported({ ...state, format, callers: state.callers ?? [], foldedHero: !!state.foldedHero, defaultTable: profileLevel(state.tableProfile?.call) === "normal" && profileLevel(state.tableProfile?.three_bet) === "normal", opponentProfile: state.opponentProfile ?? "standard", context })) {
-      try { onDemandHistorySelection({flopCards:flop,flopActions:state.flopActions??[],turnCard:state.turnCard??"",turnActions:state.turnActions??[],riverCard:state.riverCard??"",riverActions:state.riverActions??[]});params.set("postflop_source",ONDEMAND_WORKSPACE_SOURCE); } catch { /* Never mark an illegal or legacy action path as exact AIv2. */ }
+    if ((state.postflopSource === ONDEMAND_WORKSPACE_SOURCE || state.postflopSource === NODONK_WORKSPACE_SOURCE) && onDemandRootSupported({ ...state, format, callers: state.callers ?? [], foldedHero: !!state.foldedHero, defaultTable: profileLevel(state.tableProfile?.call) === "normal" && profileLevel(state.tableProfile?.three_bet) === "normal", opponentProfile: state.opponentProfile ?? "standard", context })) {
+      try { if(state.postflopSource===NODONK_WORKSPACE_SOURCE)state={...state,flopActions:noDonkFlopActions(state.flopActions??[])};onDemandHistorySelection({flopCards:flop,flopActions:state.flopActions??[],turnCard:state.turnCard??"",turnActions:state.turnActions??[],riverCard:state.riverCard??"",riverActions:state.riverActions??[]});params.set("postflop_source",state.postflopSource!); } catch { /* Never mark an illegal or legacy action path as exact AIv2. */ }
     }
     const writeActions = (key: string, actions: string[] | undefined) => params.set(key, (actions ?? []).map(postflopToken).filter(Boolean).join("-"));
     writeActions("flop_actions", state.flopActions);
@@ -481,12 +482,12 @@ export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState |
   // without a pilot still has an active read-only placeholder in the workspace.
   if (!context) return state;
   state.showFlop = true; state.flopCards = flop;
-  if (params.get("postflop_source") === ONDEMAND_WORKSPACE_SOURCE && onDemandRootSupported({...state,defaultTable:state.tableProfile.call==="normal"&&state.tableProfile.three_bet==="normal",context})) {
+  if ((params.get("postflop_source") === ONDEMAND_WORKSPACE_SOURCE || params.get("postflop_source") === NODONK_WORKSPACE_SOURCE) && onDemandRootSupported({...state,defaultTable:state.tableProfile.call==="normal"&&state.tableProfile.three_bet==="normal",context})) {
     const turn=boardCards(params.get("turn"),1,flop),river=turn?boardCards(params.get("river"),1,[...flop,...turn]):null;
     try {
       if ((params.has("turn") && !turn) || (params.has("river") && !river)) throw Error("Invalid exact street card");
-      const exact:RangeUrlState={...state,postflopSource:ONDEMAND_WORKSPACE_SOURCE,flopActions:parseExactPostflopActions(params.get("flop_actions")),turnCard:turn?.[0]??"",turnActions:parseExactPostflopActions(params.get("turn_actions")),riverCard:river?.[0]??"",riverActions:parseExactPostflopActions(params.get("river_actions"))};
-      onDemandHistorySelection(exact);return exact;
+      const exact:RangeUrlState={...state,postflopSource:params.get("postflop_source") as typeof ONDEMAND_WORKSPACE_SOURCE | typeof NODONK_WORKSPACE_SOURCE,flopActions:params.get("postflop_source")===NODONK_WORKSPACE_SOURCE?noDonkFlopActions(parseExactPostflopActions(params.get("flop_actions"))):parseExactPostflopActions(params.get("flop_actions")),turnCard:turn?.[0]??"",turnActions:parseExactPostflopActions(params.get("turn_actions")),riverCard:river?.[0]??"",riverActions:parseExactPostflopActions(params.get("river_actions"))};
+      if(exact.postflopSource===NODONK_WORKSPACE_SOURCE)noDonkHistorySelection(exact);else onDemandHistorySelection(exact);return exact;
     } catch { /* Keep the normal fail-closed legacy codec for invalid marked paths. */ }
   }
   if (context.kind === "mw3_srp") {

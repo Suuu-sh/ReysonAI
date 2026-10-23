@@ -5,42 +5,46 @@ import { accountApiBase } from "../account/config.ts";
 import { accountSnapshot, subscribeAccount } from "../account/session.ts";
 import { productLocale } from "../locale.ts";
 import { browsePath, onDemandRequest, savedSceneModel } from "./aiv2-ondemand-client.ts";
-import type { Capability, Job, SavedResult } from "./aiv2-ondemand-client.ts";
+import {NODONK_METHOD,NODONK_VERSION} from "./aiv2-nodonk-workspace-state.ts";
+import type { OnDemandScope, Capability, Job, SavedResult } from "./aiv2-ondemand-client.ts";
 import "./ranges.css";
 import "./aiv2-ondemand.css";
 const storageKey="reysonai:aiv2:ondemand:browse:v1";
-type Props={selection:{board:string;path:string[]};selectedHand:string;onSelectHand:(hand:string)=>void};
+type Props={scope?:OnDemandScope;selection:{board:string;path:string[]};selectedHand:string;onSelectHand:(hand:string)=>void};
 // Controlled range slot only: board and actions belong to the existing solver strip.
-export function Aiv2OnDemandWorkspace({selection:location,selectedHand:hand,onSelectHand:setHand}:Props){
+export function Aiv2OnDemandWorkspace({selection:location,selectedHand:hand,onSelectHand:setHand,scope="ondemand"}:Props){
  const ja=productLocale()==="ja",t=(en:string,jp:string,zh:string,es:string)=>({en,ja:jp,"zh-CN":zh,es})[productLocale()];
  const [user,setUser]=useState(()=>accountSnapshot().user?.id),[retry,setRetry]=useState(0),[cap,setCap]=useState<Capability|null>(null),[error,setError]=useState("");
  const [loaded,setLoaded]=useState<{key:string;result?:SavedResult;missing?:boolean}>({key:""}),[job,setJob]=useState<Job|null>(null),[submitting,setSubmitting]=useState(false),[combo,setCombo]=useState("");
- const base=accountApiBase(import.meta.env),key=JSON.stringify(location),jobKey=`${storageKey}:job:${user??"guest"}:${key}`,state=browsePath(location.board,location.path);
+ const base=accountApiBase(import.meta.env),key=scope==="nodonk"?JSON.stringify([scope,location]):JSON.stringify(location),jobKey=`${scope==="nodonk"?"reysonai:aiv2:nodonk:browse:v1":storageKey}:job:${user??"guest"}:${key}`,state=browsePath(location.board,location.path);
+ const invalidScopePath=scope==="nodonk"&&location.path[0]!=="check";
+ const request=<T,>(path:string,body?:unknown,signal?:AbortSignal)=>onDemandRequest<T>(base,path,body,signal,scope);
  const active=useRef(true),selectionKey=useRef(key);selectionKey.current=key;
  useEffect(()=>{active.current=true;return()=>{active.current=false;};},[]);
  useEffect(()=>subscribeAccount(()=>setUser(accountSnapshot().user?.id)),[]);
- useEffect(()=>{setCap(null);setError("");setLoaded({key:""});setJob(null);const abort=new AbortController();void onDemandRequest<Capability>(base,"status",undefined,abort.signal).then(value=>{if(!value.enabled)throw Error("disabled");if(typeof value.revision!=="string"||typeof value.implementationHash!=="string"||typeof value.sourceHash!=="string"||!value.limits||!Number.isInteger(value.limits.jobsPerUserDay)||!Number.isInteger(value.limits.maxProviderCalls))throw Error("invalid_capability");setCap(value);}).catch(e=>{if(!abort.signal.aborted)setError(e.message);});return()=>abort.abort();},[base,user,retry]);
+ useEffect(()=>{setCap(null);setError("");setLoaded({key:""});setJob(null);const abort=new AbortController();if(invalidScopePath){setError("invalid_scope_path");return;}void request<Capability>("status",undefined,abort.signal).then(value=>{if(!value.enabled)throw Error("disabled");if(scope==="nodonk"&&(value.method!==NODONK_METHOD||value.version!==NODONK_VERSION))throw Error("invalid_scope");if(typeof value.revision!=="string"||typeof value.implementationHash!=="string"||typeof value.sourceHash!=="string"||!value.limits||!Number.isInteger(value.limits.jobsPerUserDay)||!Number.isInteger(value.limits.maxProviderCalls))throw Error("invalid_capability");setCap(value);}).catch(e=>{if(!abort.signal.aborted)setError(e.message);});return()=>abort.abort();},[base,user,retry,scope,invalidScopePath]);
  useEffect(()=>{
   if(!cap)return;const abort=new AbortController();setLoaded({key:""});setJob(null);setError("");
-  void onDemandRequest<{status:string;result?:SavedResult}>(base,`scene?board=${encodeURIComponent(location.board)}&path=${encodeURIComponent(JSON.stringify(location.path))}`,undefined,abort.signal).then(value=>{if(!abort.signal.aborted){setLoaded({key,result:value.result,missing:value.status==="not_generated"});if(!value.result){let id="";try{id=sessionStorage.getItem(jobKey)??"";}catch{}if(/^[a-f0-9]{64}$/.test(id))void onDemandRequest<Job>(base,`requests/${id}`,undefined,abort.signal).then(existing=>{if(!abort.signal.aborted){setJob(existing);if(existing.status==="complete"&&existing.result)setLoaded({key,result:existing.result});}},()=>{});}}},e=>{if(!abort.signal.aborted)setError(e.message);});
+  void request<{status:string;result?:SavedResult}>(`scene?board=${encodeURIComponent(location.board)}&path=${encodeURIComponent(JSON.stringify(location.path))}`,undefined,abort.signal).then(value=>{if(!abort.signal.aborted){setLoaded({key,result:value.result,missing:value.status==="not_generated"});if(!value.result){let id="";try{id=sessionStorage.getItem(jobKey)??"";}catch{}if(/^[a-f0-9]{64}$/.test(id))void request<Job>(`requests/${id}`,undefined,abort.signal).then(existing=>{if(!abort.signal.aborted){setJob(existing);if(existing.status==="complete"&&existing.result)setLoaded({key,result:existing.result});}},()=>{});}}},e=>{if(!abort.signal.aborted)setError(e.message);});
   return()=>abort.abort();
- },[base,cap,key,jobKey]);
+ },[base,cap,key,jobKey,scope]);
  useEffect(()=>{if(!job)return;try{sessionStorage.setItem(jobKey,job.id);}catch{}},[job,jobKey]);
  useEffect(()=>{
   if(!job||!["queued","running"].includes(job.status))return;const abort=new AbortController();
-  const timer=setTimeout(()=>{void onDemandRequest<Job>(base,`requests/${encodeURIComponent(job.id)}`,undefined,abort.signal).then(value=>{if(abort.signal.aborted)return;setJob(value);if(value.status==="complete"){if(value.result)setLoaded({key,result:value.result});else setError("invalid_result");}if(value.status==="failed")setError("generation_failed");},e=>{if(!abort.signal.aborted){setJob(null);setError(e.message);}});},2000);
+  const timer=setTimeout(()=>{void request<Job>(`requests/${encodeURIComponent(job.id)}`,undefined,abort.signal).then(value=>{if(abort.signal.aborted)return;setJob(value);if(value.status==="complete"){if(value.result)setLoaded({key,result:value.result});else setError("invalid_result");}if(value.status==="failed")setError("generation_failed");},e=>{if(!abort.signal.aborted){setJob(null);setError(e.message);}});},2000);
   return()=>{clearTimeout(timer);abort.abort();};
- },[base,job,key]);
+ },[base,job,key,scope]);
  let model=null,scene=null,invalid=false;
- if(cap&&loaded.key===key&&loaded.result){try{model=savedSceneModel(loaded.result,cap,location.board,location.path);scene=model?loaded.result.snapshot.scene:null;}catch{invalid=true;}}
+ if(cap&&loaded.key===key&&loaded.result){try{model=savedSceneModel(loaded.result,cap,location.board,location.path,scope);scene=model?loaded.result.snapshot.scene:null;}catch{invalid=true;}}
  const pending=submitting||!!job&&["queued","running"].includes(job.status),cell=scene?.cells.find(c=>c.hand===hand),exact=cell?.overrides.find(row=>row.combo===combo)??cell?.overrides[0];
  const generate=async()=>{
-  if(!cap||cap.ownerOnline===false||pending)return;setSubmitting(true);setError("");
+  if(!cap||cap.ownerOnline===false||pending||invalidScopePath)return;setSubmitting(true);setError("");
   const requestKey=key,isCurrent=()=>active.current&&selectionKey.current===requestKey;
-  try{const value=await onDemandRequest<Job>(base,"requests",{board:location.board,path:location.path,consent:true});if(!isCurrent())return;setJob(value);if(value.status==="complete"&&value.result)setLoaded({key:requestKey,result:value.result});if(value.status==="failed")setError("generation_failed");}catch(e){if(isCurrent())setError(e instanceof Error?e.message:"request_failed");}finally{if(isCurrent())setSubmitting(false);}
+  try{const value=await request<Job>("requests",{board:location.board,path:location.path,consent:true});if(!isCurrent())return;setJob(value);if(value.status==="complete"&&value.result)setLoaded({key:requestKey,result:value.result});if(value.status==="failed")setError("generation_failed");}catch(e){if(isCurrent())setError(e instanceof Error?e.message:"request_failed");}finally{if(isCurrent())setSubmitting(false);}
  };
  const errorCopy=error==="sign_in_required"?t("Sign in to generate an AI estimate.","AI推定を生成するにはログインしてください。","请登录以生成AI估计。","Inicia sesión para generar una estimación IA."):error==="quota_exceeded"?t("Generation quota reached. No new generation was started.","生成上限に達しました。新しい生成は開始していません。","已达到生成限额。未开始新生成。","Límite de generación alcanzado. No se inició otra generación."):error==="disabled"?t("Generation is not enabled in this deployment.","この環境では生成は有効になっていません。","此环境未启用生成。","La generación no está habilitada en este entorno."):t("Saved data could not be read or generation failed. No substitute or automatic generation retry.","保存データの読込または生成に失敗しました。代用や生成の自動再試行は行いません。","无法读取保存数据或生成失败。不使用替代数据或自动重试生成。","No se pudieron leer los datos o generar la estimación. Sin sustitutos ni reintentos automáticos.");
  return <section className="postflop-trial aiv2-ondemand-workspace aiv2-ondemand-inline" aria-label={t("Exact AI estimate","正確な局面のAI推定","精确局面AI估计","Estimación IA exacta")}>
+ {scope==="nodonk"&&<p role="note" data-testid="nodonk-user-rule">{t("New no-donk scope: BB flop check100% is a user rule, not a model estimate (0 model calls). The model starts at BTN after check. Not GTO; old saved scopes are not reused.","新no-donk設定：BBのフロップ初手チェック100%はユーザー指定で、AI推定ではありません（モデル呼出0）。BTNの判断から生成します。GTOではなく、旧設定の保存データは流用しません。","新无donk范围：BB翻牌首步过牌100%是用户规则，不是模型估计（0次调用）。从BTN决策开始生成；非GTO，不复用旧范围。","Nuevo ámbito sin donk: check100% deBB es regla del usuario, no IA (0 llamadas). El modelo empieza enBTN; noGTO ni reutilización de datos antiguos.")}</p>}
  <p>{t("AI estimate · 100BB BTN 2.5BB → BB call · rake 5% cap3BB · 33/66/125%, raise-to 2.5×. Not GTO; strategy explanations are not independently approved.","AI推定 · 100BB BTN 2.5BB→BBコール · レーキ5%・上限3BB · 33/66/125%、2.5倍レイズ。GTOではなく、戦略説明の独立承認は未完了です。","AI估计 · 100BB BTN 2.5BB→BB跟注 · 抽水5%上限3BB · 33/66/125%、加注至2.5倍。非GTO；策略说明未经独立批准。","Estimación IA · 100BB BTN 2,5BB→BB paga · rake5% tope3BB · 33/66/125%, subida a2,5×. No es GTO; explicaciones no aprobadas independientemente.")}</p>
  {error&&<div role="alert"><p>{errorCopy}</p><button disabled={pending} onClick={()=>setRetry(retry+1)}>{t("Retry saved-data lookup","保存データを再確認","重新检查保存数据","Revisar datos guardados")}</button></div>}
  {!cap&&!error&&<p role="status">{t("Reading saved data…","保存データを確認中…","正在读取保存数据…","Leyendo datos guardados…")}</p>}

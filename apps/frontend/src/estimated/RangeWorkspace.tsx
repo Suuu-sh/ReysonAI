@@ -1,3 +1,5 @@
+import {NODONK_WORKSPACE_SOURCE,noDonkActionBlocks,noDonkFlopActions} from "./aiv2-nodonk-workspace-state.ts";
+import type {OnDemandScope} from "./aiv2-ondemand-client.ts";
 import { ONDEMAND_WORKSPACE_SOURCE, onDemandRootSupported, onDemandActionBlocks } from "./aiv2-ondemand-workspace-state.ts";
 import { Aiv2OnDemandWorkspace } from "./Aiv2OnDemandWorkspace.tsx";
 /// <reference lib="es2023.array" />
@@ -475,7 +477,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const gtoHistoryUnavailableInAi = rangeSource === "ai" && hasSavedFlopState && (originalFlopActions.includes("bet50")
     || previousNode === "gto-unsaved-history" && originalFlopActions.includes("bet50"));
   const preserveBtnBbHistory = hasSavedFlopState && initialSelection.rangeType === "response" && initialSelection.opener === "BTN" && initialSelection.hero === "BB" && initialSelection.callers.length === 1 && initialSelection.callers[0] === "BB" && initialSelection.foldedHero;
-  const transitionFlopActions = initialUrlState?.postflopSource === ONDEMAND_WORKSPACE_SOURCE ? initialUrlState.flopActions : preserveBtnBbHistory ? originalFlopActions : hasSavedFlopState && useSourceTransition && previousRangeSource === "gto" && rangeSource === "ai"
+  const transitionFlopActions = (initialUrlState?.postflopSource === ONDEMAND_WORKSPACE_SOURCE || initialUrlState?.postflopSource === NODONK_WORKSPACE_SOURCE) ? initialUrlState.flopActions : preserveBtnBbHistory ? originalFlopActions : hasSavedFlopState && useSourceTransition && previousRangeSource === "gto" && rangeSource === "ai"
     ? originalFlopActions[0] === "check" ? originalFlopActions.slice(1) : originalFlopActions
     : hasSavedFlopState && useSourceTransition && previousRangeSource === "ai" && rangeSource === "gto"
       ? previousNode === "gto-bb-root" ? originalFlopActions : ["check", ...originalFlopActions]
@@ -498,7 +500,8 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const [flopActions, setFlopActions] = useState(transitionFlopActions);
   const rawPostflopHistory = new URLSearchParams(typeof window === "undefined" ? "" : window.location.search);
   const hasRawPostflopHistory = ["flop_actions","turn_actions","river_actions","turn","river"].some(name=>Boolean(rawPostflopHistory.get(name)));
-  const [onDemandHistoryExact,setOnDemandHistoryExact] = useState(initialUrlState?.postflopSource===ONDEMAND_WORKSPACE_SOURCE || !(hasRawPostflopHistory || originalFlopActions.length || initialUrlState?.turnCard || initialUrlState?.turnActions.length || initialUrlState?.riverCard || initialUrlState?.riverActions.length));
+  const [onDemandScope,setOnDemandScope] = useState<OnDemandScope>(()=>initialUrlState?.postflopSource===NODONK_WORKSPACE_SOURCE||!initialUrlState?.postflopSource&&rangeSource!=="gto"&&previousRangeSource!=="gto"&&!hasRawPostflopHistory&&originalFlopActions.length===0?"nodonk":"ondemand");
+  const [onDemandHistoryExact,setOnDemandHistoryExact] = useState((initialUrlState?.postflopSource===ONDEMAND_WORKSPACE_SOURCE||initialUrlState?.postflopSource===NODONK_WORKSPACE_SOURCE) || !(hasRawPostflopHistory || originalFlopActions.length || initialUrlState?.turnCard || initialUrlState?.turnActions.length || initialUrlState?.riverCard || initialUrlState?.riverActions.length));
   const [turnCard, setTurnCard] = useState(initialUrlState?.turnCard ?? "");
   const [turnActions, setTurnActions] = useState(initialUrlState?.turnActions ?? []);
   const [riverCard, setRiverCard] = useState(initialUrlState?.riverCard ?? "");
@@ -836,7 +839,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const onDemandRoot = onDemandRootSupported({rangeType,opener,hero,callers,foldedHero,format,defaultTable:isDefaultProfile(tableProfile),opponentProfile,context:flopContext});
   const onDemandActive = flopActive && rangeSource !== "gto" && onDemandRoot;
   let onDemandNavigation:ReturnType<typeof onDemandActionBlocks>|null=null;
-  if(onDemandActive && onDemandHistoryExact){try{onDemandNavigation=onDemandActionBlocks({flopCards,flopActions,turnCard,turnActions,riverCard,riverActions},productLocale());}catch{/* An unsupported/legacy size never becomes a different AIv2 decision. */}}
+  if(onDemandActive && onDemandHistoryExact){try{onDemandNavigation=(onDemandScope==="nodonk"?noDonkActionBlocks:onDemandActionBlocks)({flopCards,flopActions,turnCard,turnActions,riverCard,riverActions},productLocale());}catch{/* An unsupported/legacy size never becomes a different AIv2 decision. */}}
 
   useEffect(() => {
     // Wait for dependent street resets before serializing a changed upstream path.
@@ -844,13 +847,13 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
     const encoded = encodeRangeUrl({ rangeType, opener, hero, callers, foldedHero, pendingRaise,
       continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction,
       limpFourBetAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions, selected, format, tableProfile, opponentProfile, opponentSeat, showFlop: persistFlop,
-      flopCards, flopActions, turnCard, turnActions, riverCard, riverActions, postflopSource:onDemandRoot&&onDemandHistoryExact?ONDEMAND_WORKSPACE_SOURCE:undefined }, actionBlocks);
+      flopCards, flopActions:onDemandScope==="nodonk"&&onDemandNavigation?noDonkFlopActions(flopActions):flopActions, turnCard, turnActions, riverCard, riverActions, postflopSource:onDemandRoot&&onDemandHistoryExact?(onDemandScope==="nodonk"?NODONK_WORKSPACE_SOURCE:ONDEMAND_WORKSPACE_SOURCE):undefined }, actionBlocks);
     replaceRangeUrl(encoded);
     try { window.sessionStorage.setItem(workspaceUrlStorageKey, encoded); } catch {}
   }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse,
     coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions,
     selected, format, tableProfile, opponentProfile, opponentSeat, persistFlop, flopCards, flopActions, turnCard, turnActions,
-    riverCard, riverActions, flopChanged, turnChanged, actionBlocks, onDemandActive, onDemandRoot, onDemandHistoryExact]);
+    riverCard, riverActions, flopChanged, turnChanged, actionBlocks, onDemandActive, onDemandRoot, onDemandHistoryExact,onDemandScope]);
   useEffect(() => {
     try {
       if (aiRootUnavailable || rangeSource === "gto" && flopActive && flopActions.length === 0) {
@@ -1176,7 +1179,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
               setFlopActions([]);
               setAiRootUnavailable(false);
               setAiGtoHistoryUnavailable(false);
-            } else setFlopActions(current => [...current.slice(0, block.flopIndex), action]);
+            } else setFlopActions(current => [...(onDemandScope==="nodonk"?noDonkFlopActions(current):current).slice(0, block.flopIndex), action]);
             setSelectedRangeBlock(null);
           }}
           onLaterAction={(block, action) => {
@@ -1200,7 +1203,8 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
         </Panel>
-        {flopActive && rangeSource !== "gto" && rangeSource !== "aiv2" && !postflopAllowed ? <PostflopSignIn account={account} onBack={() => setShowFlop(false)} /> : onDemandActive ? onDemandNavigation ? <Aiv2OnDemandWorkspace key={JSON.stringify([onDemandNavigation.board,onDemandNavigation.path,account.user?.id])} selection={{board:onDemandNavigation.board,path:onDemandNavigation.path}} selectedHand={selected} onSelectHand={setSelected} /> : <Panel className="multiway-range-panel missing-range-panel"><SectionHeading title={onDemandCopy("No exact AI estimate for this path", "この履歴の正確なAI推定はありません", "此路径没有精确AI估计", "Sin estimación IA exacta para esta secuencia")} /><StatusState>{!onDemandHistoryExact ? onDemandCopy("This saved history uses legacy action semantics. Rewind to the first flop decision to start an exact AI path; no actor, check or size is inferred.","この保存履歴は旧アクション定義です。フロップ最初の判断に巻き戻すと正確なAI経路を開始できます。手番・チェック・サイズは推測しません。","此保存历史使用旧行动定义。请回退到翻牌首个决策以开始精确AI路径；不会推断行动方、过牌或尺寸。","Esta secuencia usa acciones antiguas. Retrocede al primer nodo del flop para una ruta IA exacta; sin inferir actor, check ni tamaño.") : onDemandCopy("Choose three distinct flop cards and a supported action path above. Only 33/66/125% bets and the exact 2.5× raise tree are supported; no action sizes are translated.","上で重複のないフロップ3枚と対応するアクションを選択してください。33/66/125%ベット・正確な2.5倍レイズの経路のみ対応し、別サイズには置き換えません。","请在上方选择三张不同的翻牌及支持的行动路径。仅支持33/66/125%下注与精确2.5倍加注；不会转换下注尺寸。","Elige arriba tres cartas distintas y una secuencia compatible. Solo33/66/125% y subidas exactas2,5×; sin convertir tamaños.")}</StatusState></Panel> : flopActive && rangeSource === "aiv2" ? <Panel className="multiway-range-panel missing-range-panel"><SectionHeading title={localized("AIv2はプリフロップのみ", "AIv2 covers preflop only")} /><StatusState title={localized("ポストフロップ未対応", "Postflop is not available")}>{localized("AIv2の保存データはプリフロップのみです。ポストフロップの代替データは表示しません。", "AIv2 currently has preflop data only. No postflop substitute is shown.")}</StatusState><button type="button" onClick={() => { setShowFlop(false); setSelectedRangeBlock(null); }}>{localized("プリフロップに戻る", "Back to preflop")}</button></Panel> : aiRootUnavailable ? <Panel className="multiway-range-panel missing-range-panel">
+        {onDemandActive&&postflopAllowed&&<div className="aiv2-ondemand-scope"><label>{onDemandCopy("Postflop source","ポストフロップの設定","翻牌后来源","Fuente postflop")} <select value={onDemandScope} onChange={event=>{const next:OnDemandScope=event.target.value==="nodonk"?"nodonk":"ondemand";setOnDemandScope(next);setFlopActions(next==="nodonk"?["check"]:[]);setTurnCard("");setTurnActions([]);setRiverCard("");setRiverActions([]);setOnDemandHistoryExact(true);setAiRootUnavailable(false);setAiGtoHistoryUnavailable(false);setSelectedRangeBlock(null);}}><option value="nodonk">{onDemandCopy("New · BB check fixed by user rule","新設定 · BBチェック固定（ユーザー指定）","新设置 · BB过牌固定（用户规则）","Nuevo · BB check fijo por regla")}</option><option value="ondemand">{onDemandCopy("Legacy · modelled BB first decision","旧設定 · BB初手もAI推定","旧设置 · BB首步也由AI估计","Anterior · BB también estimado por IA")}</option></select></label><small>{onDemandCopy("Switching resets the postflop path; saved policies are not relabelled or reused across sources.","切替時はフロップ以降の履歴を初期化します。別設定の保存方針へ読み替え・流用はしません。","切换会重置翻牌后路径；不跨来源重标或复用保存策略。","Cambiar reinicia la ruta; no se reutilizan ni renombran políticas entre fuentes.")}</small></div>}
+        {flopActive && rangeSource !== "gto" && rangeSource !== "aiv2" && !postflopAllowed ? <PostflopSignIn account={account} onBack={() => setShowFlop(false)} /> : onDemandActive ? onDemandNavigation ? <Aiv2OnDemandWorkspace scope={onDemandScope} key={JSON.stringify([onDemandScope,onDemandNavigation.board,onDemandNavigation.path,account.user?.id])} selection={{board:onDemandNavigation.board,path:onDemandNavigation.path}} selectedHand={selected} onSelectHand={setSelected} /> : <Panel className="multiway-range-panel missing-range-panel"><SectionHeading title={onDemandCopy("No exact AI estimate for this path", "この履歴の正確なAI推定はありません", "此路径没有精确AI估计", "Sin estimación IA exacta para esta secuencia")} /><StatusState>{!onDemandHistoryExact ? onDemandCopy("This saved history uses legacy action semantics. Rewind to the first flop decision to start an exact AI path; no actor, check or size is inferred.","この保存履歴は旧アクション定義です。フロップ最初の判断に巻き戻すと正確なAI経路を開始できます。手番・チェック・サイズは推測しません。","此保存历史使用旧行动定义。请回退到翻牌首个决策以开始精确AI路径；不会推断行动方、过牌或尺寸。","Esta secuencia usa acciones antiguas. Retrocede al primer nodo del flop para una ruta IA exacta; sin inferir actor, check ni tamaño.") : onDemandCopy("Choose three distinct flop cards and a supported action path above. Only 33/66/125% bets and the exact 2.5× raise tree are supported; no action sizes are translated.","上で重複のないフロップ3枚と対応するアクションを選択してください。33/66/125%ベット・正確な2.5倍レイズの経路のみ対応し、別サイズには置き換えません。","请在上方选择三张不同的翻牌及支持的行动路径。仅支持33/66/125%下注与精确2.5倍加注；不会转换下注尺寸。","Elige arriba tres cartas distintas y una secuencia compatible. Solo33/66/125% y subidas exactas2,5×; sin convertir tamaños.")}</StatusState></Panel> : flopActive && rangeSource === "aiv2" ? <Panel className="multiway-range-panel missing-range-panel"><SectionHeading title={localized("AIv2はプリフロップのみ", "AIv2 covers preflop only")} /><StatusState title={localized("ポストフロップ未対応", "Postflop is not available")}>{localized("AIv2の保存データはプリフロップのみです。ポストフロップの代替データは表示しません。", "AIv2 currently has preflop data only. No postflop substitute is shown.")}</StatusState><button type="button" onClick={() => { setShowFlop(false); setSelectedRangeBlock(null); }}>{localized("プリフロップに戻る", "Back to preflop")}</button></Panel> : aiRootUnavailable ? <Panel className="multiway-range-panel missing-range-panel">
           <SectionHeading title={localized("No AI estimate for BB's first flop decision", "BBのフロップ初手にAI推定はありません")} />
           <StatusState>{localized("The selected GTO action node is preserved. This AI source has no matching range, so no substitute is shown.", "選択中のGTOアクションノードを保持しています。このAIデータソースに対応するレンジはなく、代替表示はしません。")}</StatusState>
         </Panel> : aiGtoHistoryUnavailable ? <Panel className="multiway-range-panel missing-range-panel">

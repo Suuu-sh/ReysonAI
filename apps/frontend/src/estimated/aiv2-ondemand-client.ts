@@ -1,15 +1,17 @@
+import {NODONK_METHOD,NODONK_VERSION,validNoDonkRule} from './aiv2-nodonk-workspace-state.ts';
 import { hands } from "../data.ts";
 import type { MatrixModel } from "../data.ts";
+export type OnDemandScope="ondemand"|"nodonk";
 export const ONDEMAND_METHOD = "llm-postflop-ondemand-v2";
 export type Scene = {
  key:string; hero:"BTN"|"BB"; street:string; board:string[]; pot_bb:number;
  actions:string[]; range_reason:{en:string;ja:string};
- provenance:{method:string;verified:boolean;independent_gto_approved:boolean;artifact_hash?:string};
+ provenance:{method:string;verified:boolean;independent_gto_approved:boolean;artifact_hash?:string;user_rule?:unknown};
  cells:Array<{hand:string;mix:Record<string,number>;reach_weight:number;unreachable:boolean;reason:{en:string;ja:string};overrides:Array<{combo:string;mix:Record<string,number>;reach_weight:number;reason:{en:string;ja:string}}>}>;
 };
 export type SavedResult = {status:string;snapshot:{scene:Scene|null;status:string};proof:{revision:string;implementationHash:string;sourceHash:string;validatedStore:boolean}};
 export type Job = {id:string;status:"queued"|"running"|"complete"|"failed";board:string;path:string[];result?:SavedResult;error?:string};
-export type Capability = {ownerOnline?:boolean;enabled:boolean;revision:string;implementationHash:string;sourceHash:string;limits:{jobsPerUserDay:number;maxProviderCalls:number}};
+export type Capability = {method?:string;version?:string;ownerOnline?:boolean;enabled:boolean;revision:string;implementationHash:string;sourceHash:string;limits:{jobsPerUserDay:number;maxProviderCalls:number}};
 export const validBoard=(board:string,count=3)=>new RegExp(`^(?:[AKQJT2-9][shdc]){${count}}$`).test(board)&&new Set(board.match(/../g)).size===count;
 const round=(n:number)=>Math.round(n*100)/100;
 type Seat="BTN"|"BB";
@@ -38,11 +40,13 @@ export function browsePath(board:string,path:string[]):BrowseState {
  }
  return s;
 }
-export function savedSceneModel(result:SavedResult,cap:Capability,board:string,path:string[]):MatrixModel|null {
+export function savedSceneModel(result:SavedResult,cap:Capability,board:string,path:string[],scope:OnDemandScope="ondemand"):MatrixModel|null {
+ if(scope!=="ondemand"&&scope!=="nodonk")throw Error("Invalid source scope");
+ if(scope==="nodonk"&&(cap.method!==NODONK_METHOD||cap.version!==NODONK_VERSION||path[0]!=="check"))throw Error("No-donk source/path mismatch");
  if(!result.proof?.validatedStore||result.proof.revision!==cap.revision||result.proof.implementationHash!==cap.implementationHash||result.proof.sourceHash!==cap.sourceHash)throw Error("Source snapshot mismatch");
  if(result.status!=="generated")return null;
  const s=result.snapshot.scene,state=browsePath(board,path);
- if(!s||s.provenance?.method!==ONDEMAND_METHOD||s.provenance.verified!==true||s.provenance.independent_gto_approved!==false||s.board.join("")!==state.board||s.hero!==state.actor||s.street!==state.street||s.cells.length!==169||!s.range_reason.en?.trim()||!s.range_reason.ja?.trim())throw Error("Invalid saved scene");
+ if(!s||s.provenance?.method!==(scope==="nodonk"?NODONK_METHOD:ONDEMAND_METHOD)||scope==="nodonk"&&!validNoDonkRule(s.provenance.user_rule)||s.provenance.verified!==true||s.provenance.independent_gto_approved!==false||s.board.join("")!==state.board||s.hero!==state.actor||s.street!==state.street||s.cells.length!==169||!s.range_reason.en?.trim()||!s.range_reason.ja?.trim())throw Error("Invalid saved scene");
  const legal=browseActions(state).map(a=>a.token);
  if(s.actions.length!==legal.length||legal.some(a=>!s.actions.includes(a)))throw Error("Invalid saved actions");
  // Reach-weighted aggregation can produce 100.00000000000004. Allow only
@@ -54,8 +58,9 @@ export function savedSceneModel(result:SavedResult,cap:Capability,board:string,p
   return [c.hand,{hand:c.hand,comboCount:c.reach_weight,unreachable:c.unreachable,actions:c.unreachable?{}:Object.fromEntries(legal.map(a=>[a,c.mix[a]/100])),combos:c.overrides.map(row=>({cards:row.combo,mix:Object.fromEntries(legal.map(a=>[a,row.mix[a]/100])),reachWeight:row.reach_weight}))}];
  }))};
 }
-export async function onDemandRequest<T>(base:string,path:string,body?:unknown,signal?:AbortSignal):Promise<T>{
- const response=await fetch(`${base}/v1/aiv2/ondemand/${path}`,{credentials:"include",signal,...(body===undefined?{}:{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})});
+export async function onDemandRequest<T>(base:string,path:string,body?:unknown,signal?:AbortSignal,scope:OnDemandScope="ondemand"):Promise<T>{
+ if(scope!=="ondemand"&&scope!=="nodonk")throw Error("Invalid source scope");
+ const response=await fetch(`${base}/v1/aiv2/${scope}/${path}`,{credentials:"include",signal,...(body===undefined?{}:{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})});
  if(!response.ok)throw Error(response.status===401?"sign_in_required":response.status===429?"quota_exceeded":response.status===503?"disabled":"request_failed");
  return response.json() as Promise<T>;
 }
