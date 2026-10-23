@@ -1,0 +1,351 @@
+{
+  "schema_version": 1,
+  "kind": "parent-recorded-next-six-root-live-smoke-with-readonly-child-preflight",
+  "recorded_at_utc": "2026-10-23T11:10:46.659Z",
+  "approved": false,
+  "production_strategy_approved": false,
+  "gto_verified": false,
+  "factual_accuracy_approved": false,
+  "promotion_approved": false,
+  "batch_id": "ba06eca20f537955b4bac2466a8482e7207e6fd81581a2380cbb053b8c5013b6",
+  "implementation_hash": "96e53c3932c656a1a331e8e2e389ff5e30e75eeb65db95eda07bdf3fb204e84d",
+  "root_phase": {
+    "boards": [
+      "AcTc5d",
+      "KsQh6d",
+      "Qh9h4c",
+      "Jc8d5s",
+      "8c8h2d",
+      "6s4s2h"
+    ],
+    "configured_concurrency": 4,
+    "max_decisions": 6,
+    "max_calls": 12,
+    "parent_recorded_completed_jobs": 6,
+    "parent_recorded_actual_calls": 6,
+    "parent_recorded_decisions": 6,
+    "parent_recorded_repairs": 0,
+    "parent_recorded_owner_pid": 36637,
+    "parent_recorded_owner_self_exited": true,
+    "parent_recorded_worker_lock_removed": true,
+    "observed_peak_concurrency": 4
+  },
+  "parent_recorded_live_ui": {
+    "surface": "existing solver/range BB saved-estimate view",
+    "boards": [
+      {
+        "board": "AcTc5d",
+        "saved_cells": 169
+      },
+      {
+        "board": "KsQh6d",
+        "saved_cells": 169
+      },
+      {
+        "board": "Qh9h4c",
+        "saved_cells": 169
+      },
+      {
+        "board": "Jc8d5s",
+        "saved_cells": 169
+      },
+      {
+        "board": "8c8h2d",
+        "saved_cells": 169
+      },
+      {
+        "board": "6s4s2h",
+        "saved_cells": 169
+      }
+    ],
+    "source": "Parent live observations; this report compiler did not repeat browser checks."
+  },
+  "initial_review_observation": {
+    "source": "Parent relay of independent review agent root assessment",
+    "numeric_and_provenance_checks_passed": true,
+    "factual_sample_passed": true,
+    "all_six_root_ranges_check100": true,
+    "coverage": "Factual sample only, not full strategy/EV/optimality approval.",
+    "approval": false
+  },
+  "readonly_child_preflight": {
+    "requested_path": [
+      "check"
+    ],
+    "completed_at_utc": "2026-10-23T11:10:46.659Z",
+    "six_reachable": true,
+    "six_frontiers_missing_at_ancestor_index": 1,
+    "actor": "BTN",
+    "children_enqueued_by_report_compiler": false,
+    "provider_calls": 0,
+    "children_status": "pending-separate-explicit-phase",
+    "rows": [
+      {
+        "board": "AcTc5d",
+        "root": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/23466a1013acb31d8ca27d70c853e7f43aa46df72db619af5a9f32af74f81a13.json",
+        "root_sha256": "d53207ad3d4c71e26175c59cf9bf235d11674e9cb0103861032e82b0d6b2fd32",
+        "root_calls": 1,
+        "child": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/d4b31d8373bb5c868aaab4ad0b4c399075d8525c03cf9af5fa9d935085a03a00.json",
+        "child_id": "d4b31d8373bb5c868aaab4ad0b4c399075d8525c03cf9af5fa9d935085a03a00",
+        "frontier_status": "missing",
+        "index": 1,
+        "actor": "BTN"
+      },
+      {
+        "board": "KsQh6d",
+        "root": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/48d3c8a1eee9654ad46a8cb86a3caeba7634fe438b1b398d464959449231f18f.json",
+        "root_sha256": "2ef0607906d8118806f28afced3277bb9f58885c974ef44083f5f5360b3fb3d8",
+        "root_calls": 1,
+        "child": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/69c4a05f0c39ff9967c92d04f55f1330b9ce7be8d21225f3433a0f97952c6a4b.json",
+        "child_id": "69c4a05f0c39ff9967c92d04f55f1330b9ce7be8d21225f3433a0f97952c6a4b",
+        "frontier_status": "missing",
+        "index": 1,
+        "actor": "BTN"
+      },
+      {
+        "board": "Qh9h4c",
+        "root": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/524dee582f06b81d0c3f93744d47584d0c34ff909270633332bb28c2ddf2300d.json",
+        "root_sha256": "40f4704b3f6f809679934ee9f7585b295925e654654af3ce7e32a4e4978fe8c9",
+        "root_calls": 1,
+        "child": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/2e82fc5b2b25d34cd6ecef75093222619fdc7b43e233bc617779b46bd18f2f35.json",
+        "child_id": "2e82fc5b2b25d34cd6ecef75093222619fdc7b43e233bc617779b46bd18f2f35",
+        "frontier_status": "missing",
+        "index": 1,
+        "actor": "BTN"
+      },
+      {
+        "board": "Jc8d5s",
+        "root": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/70b651187e716e4a10d225717495509985e239a11a75b5df937b3ce4c0ce2cdb.json",
+        "root_sha256": "771d634d17699e48f32bbe58213aa9466882d73855278cc1012e45a6a1576d5c",
+        "root_calls": 1,
+        "child": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/bf3e7683a820eb96076048ba80f6d477ddfc2dd1a6022fd0f05c9954c8d8528e.json",
+        "child_id": "bf3e7683a820eb96076048ba80f6d477ddfc2dd1a6022fd0f05c9954c8d8528e",
+        "frontier_status": "missing",
+        "index": 1,
+        "actor": "BTN"
+      },
+      {
+        "board": "8c8h2d",
+        "root": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/e9e04f6ab0b2bdade070db3c0dabc6445c255337a2fc4c7322e857b5b6fe3d0f.json",
+        "root_sha256": "5aee01f0db1358bb2be93efdb47221f78aa937e46f2abc942a76d02cc1ad66d3",
+        "root_calls": 1,
+        "child": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/92e30bc90b0107513a84b14fd0b2582bcd22fe0a39ed8f34b55745e2a8d672e3.json",
+        "child_id": "92e30bc90b0107513a84b14fd0b2582bcd22fe0a39ed8f34b55745e2a8d672e3",
+        "frontier_status": "missing",
+        "index": 1,
+        "actor": "BTN"
+      },
+      {
+        "board": "6s4s2h",
+        "root": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/6e63edbb45238f0df208bd4e587720bc2aaf933b5523b37ed429f33d9a537fac.json",
+        "root_sha256": "cb1d673026f17beb76f3ae4bc2a56d02567c20dde34078c3deb96f04f69994b5",
+        "root_calls": 1,
+        "child": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/d6b43374881ae716e629b65548c9e3773907308e830346e828d613031698e29b.json",
+        "child_id": "d6b43374881ae716e629b65548c9e3773907308e830346e828d613031698e29b",
+        "frontier_status": "missing",
+        "index": 1,
+        "actor": "BTN"
+      }
+    ],
+    "snapshot_timing": "Historical pre-enqueue read-only frontier snapshot, not the current interrupted execution outcome."
+  },
+  "limitations": [
+    "Root generation, saved169 UI readback and child reachability do not establish strategic correctness, factual explanation accuracy, GTO or complete flop-tree coverage.",
+    "The previously reported 9s8s6d BTN JsTs factual explanation blocker remains unresolved; this report does not repair, clear or promote any previous artifact.",
+    "This smoke binds parent root observations and a local read-only resolveFrontier check; it does not claim independent browser, remote broker or deployment verification.",
+    "No provider, queue write, process operation, test rerun, Git staging or commit was performed by this report compiler.",
+    "The child phase stopped on an uncertain provider outcome. The journal attempt counter is not a reliable count of accepted physical turns or actual responses; the first cause and quota state are unknown.",
+    "No child completion or child live-UI success is claimed. Final state: two jobs remain queued-unclaimed and all four claimed jobs failed uncertain after the owner drained/exited; no worker lock remains. No retry or fallback is authorized/performed.",
+    "Preserve the six saved BB roots and their parent-recorded BB saved169 UI observations only; the child phase is not successful or approved.",
+    "The final backup is limited to six saved BB roots plus independent review and this smoke; it intentionally excludes all child paths because none was saved."
+  ],
+  "recorded_parallel_observations": {
+    "root": {
+      "source_path": ".local/operator-next-six-root-overlap.json",
+      "source_sha256": "0930ee77191946c7a8a4ee1629297314b0eaf6700c0fee0a6db8f7ed6d531733",
+      "source": "Parent captured whitelisted live overlap; no lease/provider thread identifiers.",
+      "observed_peak_concurrency": 4,
+      "observation": {
+        "status": "running",
+        "concurrency": 4,
+        "calls": 4,
+        "decisions": 0,
+        "claim_pending": false,
+        "entries": [
+          {
+            "board": "6s4s2h",
+            "status": "running",
+            "calls": 1,
+            "decisions": 0,
+            "call_in_flight": true,
+            "error": null
+          },
+          {
+            "board": "Jc8d5s",
+            "status": "running",
+            "calls": 1,
+            "decisions": 0,
+            "call_in_flight": true,
+            "error": null
+          },
+          {
+            "board": "AcTc5d",
+            "status": "running",
+            "calls": 1,
+            "decisions": 0,
+            "call_in_flight": true,
+            "error": null
+          },
+          {
+            "board": "Qh9h4c",
+            "status": "running",
+            "calls": 1,
+            "decisions": 0,
+            "call_in_flight": true,
+            "error": null
+          }
+        ]
+      }
+    },
+    "child": {
+      "source_path": ".local/operator-next-six-child-overlap.json",
+      "source_sha256": "ca8cac3f0979d4a10ebc03ceef790542e689e095909d976d780718d1218a3ec9",
+      "source": "Parent captured whitelisted live overlap; no lease/provider thread identifiers.",
+      "observed_peak_concurrency": 4,
+      "observation": {
+        "status": "running",
+        "concurrency": 4,
+        "calls": 4,
+        "decisions": 0,
+        "claim_pending": false,
+        "entries": [
+          {
+            "board": "KsQh6d",
+            "status": "running",
+            "calls": 1,
+            "decisions": 0,
+            "call_in_flight": true,
+            "error": null
+          },
+          {
+            "board": "Qh9h4c",
+            "status": "running",
+            "calls": 1,
+            "decisions": 0,
+            "call_in_flight": true,
+            "error": null
+          },
+          {
+            "board": "AcTc5d",
+            "status": "running",
+            "calls": 1,
+            "decisions": 0,
+            "call_in_flight": true,
+            "error": null
+          },
+          {
+            "board": "6s4s2h",
+            "status": "running",
+            "calls": 1,
+            "decisions": 0,
+            "call_in_flight": true,
+            "error": null
+          }
+        ]
+      },
+      "limitation": "This prior in-flight flag observation is not proof that a physical provider turn was accepted, completed or returned a response."
+    }
+  },
+  "child_phase": {
+    "requested_path": [
+      "check"
+    ],
+    "parent_recorded_owner_pid": 37560,
+    "configured_concurrency": 4,
+    "observed_peak_concurrency": 4,
+    "max_decisions": 12,
+    "max_calls": 24,
+    "target_jobs": 6,
+    "status": "stopped-drained-uncertain-provider-outcome",
+    "completed_jobs": 0,
+    "actual_calls": null,
+    "decisions": 0,
+    "repairs": null,
+    "approved": false,
+    "production_strategy_approved": false,
+    "gto_verified": false,
+    "actual_response_count": null,
+    "accepted_physical_turn_count": null,
+    "attempted_call_counter": 4,
+    "journal_recorded_decisions": 0,
+    "parent_recorded_owner_exited": true,
+    "parent_recorded_worker_lock_removed": true,
+    "automatic_retry_performed": false,
+    "fallback_performed": false,
+    "first_failure_cause": "Not durably recorded; metrics and detailed first error existed only in RAM.",
+    "quota_status": "Unknown; the four-attempt counter does not prove accepted physical turns or a quota error.",
+    "job_states": [
+      {
+        "board": "KsQh6d",
+        "state": "failed",
+        "error": "uncertain_provider_outcome",
+        "last_persisted_call_in_flight": true
+      },
+      {
+        "board": "AcTc5d",
+        "state": "failed",
+        "error": "uncertain_provider_outcome",
+        "last_persisted_call_in_flight": true
+      },
+      {
+        "board": "Qh9h4c",
+        "state": "failed",
+        "error": "uncertain_provider_outcome",
+        "last_persisted_call_in_flight": true
+      },
+      {
+        "board": "6s4s2h",
+        "state": "failed",
+        "error": "uncertain_provider_outcome",
+        "last_persisted_call_in_flight": true
+      },
+      {
+        "board": "Jc8d5s",
+        "state": "queued-unclaimed"
+      },
+      {
+        "board": "8c8h2d",
+        "state": "queued-unclaimed"
+      }
+    ],
+    "live_child_ui_verified": false,
+    "final_drained_state": "Owner exited; no worker lock. Four claimed jobs failed uncertain; two unclaimed jobs remain queued.",
+    "saved_children": 0,
+    "journal_status": "failed",
+    "claim_pending": false
+  },
+  "updated_at_utc": "2026-10-23T11:20:14Z",
+  "result": "partial-roots-saved-child-phase-stopped-uncertain",
+  "parent_recorded_readonly_broker_observation": {
+    "operator_complete": 18,
+    "operator_failed": 4,
+    "operator_queued": 2,
+    "child_batch": {
+      "complete": 0,
+      "failed": 4,
+      "queued": 2
+    },
+    "user_complete": 3,
+    "user_complete_unchanged": true,
+    "rows_written": 0,
+    "scope": "Parent MCP read-only observation; report compiler did not repeat remote queries. These counters do not prove accepted physical provider turns."
+  },
+  "independent_review": {
+    "path": "docs/qa/aiv2-postflop-operator-next-six-review.json",
+    "sha256": "0a9850e2f24d25762bef2fad7ddb73ca332e977345595b36eb75477e90ccbd02",
+    "approved": false,
+    "production_strategy_approved": false,
+    "gto_verified": false,
+    "scope": "Six BB roots: numerical/provenance and representative bilingual facts pass. Child interruption is preserved as uncertain; no child artifact or live-UI approval."
+  }
+}

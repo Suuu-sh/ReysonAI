@@ -1,0 +1,1318 @@
+{
+  "schema_version": "aiv2-postflop-operator-next-six-bounded-review-v1",
+  "approved": false,
+  "production_strategy_approved": false,
+  "gto_verified": false,
+  "reviewed_at_utc": "2026-10-23T11:21:13.004808+00:00",
+  "reviewer": {
+    "task": "/root/operator_broker",
+    "scope": "Independent read-only numerical/provenance and representative EN/JA factual review of six NEW saved BB roots. No saved child artifact was presented/reviewed; child execution ended uncertain. No model/network/D1 calls, oldtests or old independent artifactchecks, implementation edits or regeneration."
+  },
+  "result": "six_saved_BB_roots_numerical_provenance_pass_no_concrete_representative_factual_blocker_child_phase_uncertain_incomplete",
+  "root_checks": {
+    "six_exact_normal_BB_root_inputs_current_frozen_reader_identity": true,
+    "normal_prompt_provenance_not_a_forced_check_special_case": true,
+    "both_seats_1326_physical_combo_universe": true,
+    "board_blocked_reach_zero_both_seats": true,
+    "exact_positive_BB_combo_coverage_once": true,
+    "own_reach_not_opponent_same_combo_product": true,
+    "all_legal_integer_mixes_sum100": true,
+    "group_mixes_and_EN_JA_text_expand_exactly_to_saved_rows": true,
+    "all169_hand_aggregates_independent_reach_weight_recalculation": true,
+    "one_completed_gpt_6_1_sol_medium_turn_per_root": true,
+    "exact_actual_prompt_schema_hashes_no_correction": true,
+    "six_distinct_root_model_threads": true,
+    "all_six_actual_check_actions_positive_and_reachable": true,
+    "bilingual_nonempty_representative_factual_read_no_concrete_root_contradiction": true
+  },
+  "root_totals": {
+    "saved_artifacts_reviewed": 6,
+    "new_completed_decisions": 6,
+    "confirmed_completed_provider_turns": 6,
+    "repairs": 0,
+    "all_six_policy": "Actual model-chosen check100 for all reached BB combos; all lead sizes zero, not forced by the normal input."
+  },
+  "recorded_root_parallel_observation": {
+    "path": ".local/operator-next-six-root-overlap.json",
+    "raw_sha256": "0930ee77191946c7a8a4ee1629297314b0eaf6700c0fee0a6db8f7ed6d531733",
+    "concurrency": 4,
+    "observed_calls": 4,
+    "observed_decisions": 0,
+    "four_lanes_marked_in_flight": true,
+    "limitation": "Retained bridge observation; this review did not instrument live processes."
+  },
+  "root_artifacts": [
+    {
+      "decision_id": "23466a1013acb31d8ca27d70c853e7f43aa46df72db619af5a9f32af74f81a13",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/23466a1013acb31d8ca27d70c853e7f43aa46df72db619af5a9f32af74f81a13.json",
+      "raw_file_sha256": "d53207ad3d4c71e26175c59cf9bf235d11674e9cb0103861032e82b0d6b2fd32",
+      "board": "AcTc5d",
+      "actor": "BB",
+      "saved_at": "2026-10-23T11:06:04.535Z",
+      "implementation_hash": "96e53c3932c656a1a331e8e2e389ff5e30e75eeb65db95eda07bdf3fb204e84d",
+      "numeric": {
+        "physical_combos": 1326,
+        "board_legal_combos": 1176,
+        "ranges": {
+          "BB": {
+            "positive_combos": 818,
+            "reach_weight": 428.15
+          },
+          "BTN": {
+            "positive_combos": 629,
+            "reach_weight": 508.85
+          }
+        },
+        "group_count": 1,
+        "hand_count": 169,
+        "zero_reach_hands": 35,
+        "provider_calls": 1,
+        "repairs": 0,
+        "overall_actor_reach_weighted_mix": {
+          "check": 100.0,
+          "bet33": 0,
+          "bet66": 0,
+          "bet125": 0
+        }
+      },
+      "provenance": {
+        "thread_id": "01a1686f-62ec-7851-af0f-09bd5f0e952d",
+        "turn_ids": [
+          "01a1686f-6368-7441-9f59-a5be531047b9"
+        ],
+        "statuses": [
+          "completed"
+        ],
+        "session_turns": [
+          1
+        ],
+        "provider_calls": [
+          {
+            "session_turn": 1,
+            "validation_issue": null,
+            "effective_prompt_hash": "a1f02b8aeb79289cfec6ed4f23e9400ce1aa59fa641853cc59a04cc44281939a",
+            "schema_hash": "dd96153d7130ace7b7bad59e6a2b748af27abe1f166caae455dba26abecf6ef9"
+          }
+        ]
+      },
+      "representative_range_facts": {
+        "AA": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "AKs": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "AKo": {
+          "BB": {
+            "board_legal_combos": 9,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 9,
+            "positive_combos": 9,
+            "reach_weight": 9
+          }
+        },
+        "AQs": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 0.3
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "AQo": {
+          "BB": {
+            "board_legal_combos": 9,
+            "positive_combos": 9,
+            "reach_weight": 1.35
+          },
+          "BTN": {
+            "board_legal_combos": 9,
+            "positive_combos": 9,
+            "reach_weight": 9
+          }
+        },
+        "AJs": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 0.9
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "AJo": {
+          "BB": {
+            "board_legal_combos": 9,
+            "positive_combos": 9,
+            "reach_weight": 4.5
+          },
+          "BTN": {
+            "board_legal_combos": 9,
+            "positive_combos": 9,
+            "reach_weight": 9
+          }
+        },
+        "TT": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 0.75
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "55": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 2.7
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "ATs": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 1.5
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "A5s": {
+          "BB": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 0.8
+          },
+          "BTN": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 2
+          }
+        },
+        "T5s": {
+          "BB": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 0.9
+          },
+          "BTN": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 0.5
+          }
+        }
+      },
+      "representative_en_ja_factual_read": {
+        "status": "no_concrete_contradiction_found_in_representative_root_read",
+        "checked_claims": [
+          "Two-clubAT5: AA/TT/55 are sets, AT/A5/T5 two pair; two hole clubs give a club flushdraw, not a madeflush.",
+          "BTN has positive AA/AK absent from BB. BB TT reach0.75 versusBTN3, AQ total1.65 versus12, AJ total5.4 versus12.",
+          "BB positive55 and two-pair examples agree with summary.",
+          "No leads in any size agrees with both English/Japanese summary and group reason."
+        ],
+        "sample_combos": [
+          "AsAh",
+          "TsTh",
+          "5s5h",
+          "AsTs",
+          "As5s",
+          "Ts5s",
+          "KcQc"
+        ],
+        "strategic_boundary": "Observable range/handclass facts and check100 consistency only; qualitative advantage/check rationale is not independently solved EV or optimality."
+      },
+      "check_reachability": {
+        "reachable": true,
+        "action": "check",
+        "all_positive_BB_combos_check_percent": 100,
+        "check_conditioned_reach_weight": 428.15,
+        "normal_root_policy_not_forced_check": true,
+        "basis": "Exact frozen normal rootprompt and actual first-turn request hashes match; legal bet33/bet66/bet125 remained available. The model output independently selected check100, not an injected forced-check branch."
+      }
+    },
+    {
+      "decision_id": "48d3c8a1eee9654ad46a8cb86a3caeba7634fe438b1b398d464959449231f18f",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/48d3c8a1eee9654ad46a8cb86a3caeba7634fe438b1b398d464959449231f18f.json",
+      "raw_file_sha256": "2ef0607906d8118806f28afced3277bb9f58885c974ef44083f5f5360b3fb3d8",
+      "board": "KsQh6d",
+      "actor": "BB",
+      "saved_at": "2026-10-23T11:07:17.930Z",
+      "implementation_hash": "96e53c3932c656a1a331e8e2e389ff5e30e75eeb65db95eda07bdf3fb204e84d",
+      "numeric": {
+        "physical_combos": 1326,
+        "board_legal_combos": 1176,
+        "ranges": {
+          "BB": {
+            "positive_combos": 813,
+            "reach_weight": 433.1
+          },
+          "BTN": {
+            "positive_combos": 634,
+            "reach_weight": 518.05
+          }
+        },
+        "group_count": 1,
+        "hand_count": 169,
+        "zero_reach_hands": 35,
+        "provider_calls": 1,
+        "repairs": 0,
+        "overall_actor_reach_weighted_mix": {
+          "check": 100.0,
+          "bet33": 0,
+          "bet66": 0,
+          "bet125": 0
+        }
+      },
+      "provenance": {
+        "thread_id": "01a16870-8123-7b41-bc21-fed0a209b0bd",
+        "turn_ids": [
+          "01a16870-81da-7c13-93e8-bd9dbf83ffe1"
+        ],
+        "statuses": [
+          "completed"
+        ],
+        "session_turns": [
+          1
+        ],
+        "provider_calls": [
+          {
+            "session_turn": 1,
+            "validation_issue": null,
+            "effective_prompt_hash": "0dfe7f78bf7e2e270c726f196d8364601bd477f188c830721a794dbc7894671c",
+            "schema_hash": "c1e77d781e063f6b68e866e0e10e9757b9482717c896a3110297b84bf0ef49c4"
+          }
+        ]
+      },
+      "representative_range_facts": {
+        "AA": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "KK": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "QQ": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "AKs": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "AKo": {
+          "BB": {
+            "board_legal_combos": 9,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 9,
+            "positive_combos": 9,
+            "reach_weight": 9
+          }
+        },
+        "66": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 2.55
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "K6s": {
+          "BB": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 1.7
+          },
+          "BTN": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 2
+          }
+        },
+        "K6o": {
+          "BB": {
+            "board_legal_combos": 7,
+            "positive_combos": 7,
+            "reach_weight": 2.1
+          },
+          "BTN": {
+            "board_legal_combos": 7,
+            "positive_combos": 7,
+            "reach_weight": 1.75
+          }
+        },
+        "Q6s": {
+          "BB": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 1.6
+          },
+          "BTN": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 2
+          }
+        },
+        "Q6o": {
+          "BB": {
+            "board_legal_combos": 7,
+            "positive_combos": 7,
+            "reach_weight": 0.35
+          },
+          "BTN": {
+            "board_legal_combos": 7,
+            "positive_combos": 0,
+            "reach_weight": 0
+          }
+        }
+      },
+      "representative_en_ja_factual_read": {
+        "status": "no_concrete_contradiction_found_in_representative_root_read",
+        "checked_claims": [
+          "RainbowKQ6: KK/QQ/66 sets, KQ/K6/Q6 two pair; no madeflush or straight at this flop.",
+          "BTN AA/KK/QQ/AK positive and BB zero, as both languages state.",
+          "BB has all7board-legalQ6o combos with totalreach0.35 while BTNQ6o0, supporting extra low two-pair coverage.",
+          "Retaining strong hands in checks is the chosen policy, not demonstrated optimality."
+        ],
+        "sample_combos": [
+          "KhKc",
+          "QsQd",
+          "6s6h",
+          "Kh6h",
+          "Qd6c",
+          "AsJs"
+        ],
+        "strategic_boundary": "Observable range/handclass facts and check100 consistency only; qualitative advantage/check rationale is not independently solved EV or optimality."
+      },
+      "check_reachability": {
+        "reachable": true,
+        "action": "check",
+        "all_positive_BB_combos_check_percent": 100,
+        "check_conditioned_reach_weight": 433.1,
+        "normal_root_policy_not_forced_check": true,
+        "basis": "Exact frozen normal rootprompt and actual first-turn request hashes match; legal bet33/bet66/bet125 remained available. The model output independently selected check100, not an injected forced-check branch."
+      }
+    },
+    {
+      "decision_id": "524dee582f06b81d0c3f93744d47584d0c34ff909270633332bb28c2ddf2300d",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/524dee582f06b81d0c3f93744d47584d0c34ff909270633332bb28c2ddf2300d.json",
+      "raw_file_sha256": "40f4704b3f6f809679934ee9f7585b295925e654654af3ce7e32a4e4978fe8c9",
+      "board": "Qh9h4c",
+      "actor": "BB",
+      "saved_at": "2026-10-23T11:06:20.819Z",
+      "implementation_hash": "96e53c3932c656a1a331e8e2e389ff5e30e75eeb65db95eda07bdf3fb204e84d",
+      "numeric": {
+        "physical_combos": 1326,
+        "board_legal_combos": 1176,
+        "ranges": {
+          "BB": {
+            "positive_combos": 831,
+            "reach_weight": 435.8
+          },
+          "BTN": {
+            "positive_combos": 648,
+            "reach_weight": 529.9
+          }
+        },
+        "group_count": 1,
+        "hand_count": 169,
+        "zero_reach_hands": 35,
+        "provider_calls": 1,
+        "repairs": 0,
+        "overall_actor_reach_weighted_mix": {
+          "check": 100.0,
+          "bet33": 0,
+          "bet66": 0,
+          "bet125": 0
+        }
+      },
+      "provenance": {
+        "thread_id": "01a1686f-6329-7bb1-9165-a08a8b62f90f",
+        "turn_ids": [
+          "01a1686f-6399-7990-89fe-6977ff336919"
+        ],
+        "statuses": [
+          "completed"
+        ],
+        "session_turns": [
+          1
+        ],
+        "provider_calls": [
+          {
+            "session_turn": 1,
+            "validation_issue": null,
+            "effective_prompt_hash": "c06c96af45866ffada0895e6a7ea3d19a7051ac9a2d0b5e96c1858d2623a0738",
+            "schema_hash": "1971234489f40371e67948949564010e24d31e6e87c97cc1c8ad8214af11e034"
+          }
+        ]
+      },
+      "representative_range_facts": {
+        "AA": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "KK": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "QQ": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "99": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 1.5
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "44": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 2.85
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "Q9s": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 2.7
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "Q4s": {
+          "BB": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 1.2
+          },
+          "BTN": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 1.7
+          }
+        },
+        "94s": {
+          "BB": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 0.7
+          },
+          "BTN": {
+            "board_legal_combos": 2,
+            "positive_combos": 0,
+            "reach_weight": 0
+          }
+        }
+      },
+      "representative_en_ja_factual_read": {
+        "status": "no_concrete_contradiction_found_in_representative_root_read",
+        "checked_claims": [
+          "Two-heartQ94: QQ/99/44 are sets; Q9/Q4/94 two pair. Two hole hearts give a flushdraw, not a madeflush.",
+          "BTN AA/KK/QQ present; BB AA/KK/QQ zero, with positive99/44 and two pairs.",
+          "BB94s totalreach0.7 while BTN94s0 adds a concrete reachedtwo-pair example.",
+          "Both languages correctly state that the same check action does not mean equal handstrength or a specified later response."
+        ],
+        "sample_combos": [
+          "QsQd",
+          "9s9d",
+          "4s4h",
+          "Qs9s",
+          "Qd4d",
+          "9d4d",
+          "AhJh"
+        ],
+        "strategic_boundary": "Observable range/handclass facts and check100 consistency only; qualitative advantage/check rationale is not independently solved EV or optimality."
+      },
+      "check_reachability": {
+        "reachable": true,
+        "action": "check",
+        "all_positive_BB_combos_check_percent": 100,
+        "check_conditioned_reach_weight": 435.8,
+        "normal_root_policy_not_forced_check": true,
+        "basis": "Exact frozen normal rootprompt and actual first-turn request hashes match; legal bet33/bet66/bet125 remained available. The model output independently selected check100, not an injected forced-check branch."
+      }
+    },
+    {
+      "decision_id": "70b651187e716e4a10d225717495509985e239a11a75b5df937b3ce4c0ce2cdb",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/70b651187e716e4a10d225717495509985e239a11a75b5df937b3ce4c0ce2cdb.json",
+      "raw_file_sha256": "771d634d17699e48f32bbe58213aa9466882d73855278cc1012e45a6a1576d5c",
+      "board": "Jc8d5s",
+      "actor": "BB",
+      "saved_at": "2026-10-23T11:06:24.972Z",
+      "implementation_hash": "96e53c3932c656a1a331e8e2e389ff5e30e75eeb65db95eda07bdf3fb204e84d",
+      "numeric": {
+        "physical_combos": 1326,
+        "board_legal_combos": 1176,
+        "ranges": {
+          "BB": {
+            "positive_combos": 823,
+            "reach_weight": 431.95
+          },
+          "BTN": {
+            "positive_combos": 645,
+            "reach_weight": 534.1
+          }
+        },
+        "group_count": 1,
+        "hand_count": 169,
+        "zero_reach_hands": 35,
+        "provider_calls": 1,
+        "repairs": 0,
+        "overall_actor_reach_weighted_mix": {
+          "check": 100.0,
+          "bet33": 0,
+          "bet66": 0,
+          "bet125": 0
+        }
+      },
+      "provenance": {
+        "thread_id": "01a1686f-663f-71c0-8442-cb1fcc51922a",
+        "turn_ids": [
+          "01a1686f-66ba-7840-9f25-e2ba7ac14c3e"
+        ],
+        "statuses": [
+          "completed"
+        ],
+        "session_turns": [
+          1
+        ],
+        "provider_calls": [
+          {
+            "session_turn": 1,
+            "validation_issue": null,
+            "effective_prompt_hash": "011db985a66e4869134c3f48455ed5eb4ad34bac3daf3244fe4da8935d6fe3ee",
+            "schema_hash": "47e6dd95d52b19bc05f3d17136e74c8c0e1bd0073a42b94bd0a7dcc8160c4dcb"
+          }
+        ]
+      },
+      "representative_range_facts": {
+        "AA": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "KK": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "QQ": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "JJ": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 0.3
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "88": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 2.1
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "55": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 2.7
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "J8s": {
+          "BB": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 1.9
+          },
+          "BTN": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 2
+          }
+        },
+        "J5s": {
+          "BB": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 1.1
+          },
+          "BTN": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 0.8
+          }
+        },
+        "85s": {
+          "BB": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 1.8
+          },
+          "BTN": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 1.3
+          }
+        },
+        "85o": {
+          "BB": {
+            "board_legal_combos": 7,
+            "positive_combos": 7,
+            "reach_weight": 0.35
+          },
+          "BTN": {
+            "board_legal_combos": 7,
+            "positive_combos": 0,
+            "reach_weight": 0
+          }
+        }
+      },
+      "representative_en_ja_factual_read": {
+        "status": "no_concrete_contradiction_found_in_representative_root_read",
+        "checked_claims": [
+          "RainbowJ85: JJ/88/55 sets; J8/J5/85 two pair; no madeflush or straight on this flop.",
+          "BTN AA/KK/QQ remain positive and BB zero.",
+          "BB all7board-legal85o have totalreach0.35 versus BTN0, supporting extra low two-pair coverage.",
+          "Strong responses to a possible bet is qualitative retention language, not an independently saved/generated future response policy."
+        ],
+        "sample_combos": [
+          "JsJh",
+          "8s8h",
+          "5h5d",
+          "Jh8h",
+          "Jh5h",
+          "8h5d",
+          "Th9h"
+        ],
+        "strategic_boundary": "Observable range/handclass facts and check100 consistency only; qualitative advantage/check rationale is not independently solved EV or optimality."
+      },
+      "check_reachability": {
+        "reachable": true,
+        "action": "check",
+        "all_positive_BB_combos_check_percent": 100,
+        "check_conditioned_reach_weight": 431.95,
+        "normal_root_policy_not_forced_check": true,
+        "basis": "Exact frozen normal rootprompt and actual first-turn request hashes match; legal bet33/bet66/bet125 remained available. The model output independently selected check100, not an injected forced-check branch."
+      }
+    },
+    {
+      "decision_id": "e9e04f6ab0b2bdade070db3c0dabc6445c255337a2fc4c7322e857b5b6fe3d0f",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/e9e04f6ab0b2bdade070db3c0dabc6445c255337a2fc4c7322e857b5b6fe3d0f.json",
+      "raw_file_sha256": "5aee01f0db1358bb2be93efdb47221f78aa937e46f2abc942a76d02cc1ad66d3",
+      "board": "8c8h2d",
+      "actor": "BB",
+      "saved_at": "2026-10-23T11:07:56.014Z",
+      "implementation_hash": "96e53c3932c656a1a331e8e2e389ff5e30e75eeb65db95eda07bdf3fb204e84d",
+      "numeric": {
+        "physical_combos": 1326,
+        "board_legal_combos": 1176,
+        "ranges": {
+          "BB": {
+            "positive_combos": 828,
+            "reach_weight": 435.7
+          },
+          "BTN": {
+            "positive_combos": 651,
+            "reach_weight": 546.7
+          }
+        },
+        "group_count": 1,
+        "hand_count": 169,
+        "zero_reach_hands": 35,
+        "provider_calls": 1,
+        "repairs": 0,
+        "overall_actor_reach_weighted_mix": {
+          "check": 100.0,
+          "bet33": 0,
+          "bet66": 0,
+          "bet125": 0
+        }
+      },
+      "provenance": {
+        "thread_id": "01a16870-bfd7-7f52-a2f1-9c78040f6d84",
+        "turn_ids": [
+          "01a16870-c05f-7c11-9658-e105d16e6000"
+        ],
+        "statuses": [
+          "completed"
+        ],
+        "session_turns": [
+          1
+        ],
+        "provider_calls": [
+          {
+            "session_turn": 1,
+            "validation_issue": null,
+            "effective_prompt_hash": "6976a15cb86467af86396addc048190732af48012a012f8a6209e1226904fa2f",
+            "schema_hash": "4217eab5e4aeed0abb4c953a70035b581c86d8610c284d852a155e1ab5705a95"
+          }
+        ]
+      },
+      "representative_range_facts": {
+        "AA": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "KK": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "QQ": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "88": {
+          "BB": {
+            "board_legal_combos": 1,
+            "positive_combos": 1,
+            "reach_weight": 0.7
+          },
+          "BTN": {
+            "board_legal_combos": 1,
+            "positive_combos": 1,
+            "reach_weight": 1
+          }
+        },
+        "22": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 2.7
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "82s": {
+          "BB": {
+            "board_legal_combos": 1,
+            "positive_combos": 1,
+            "reach_weight": 0.15
+          },
+          "BTN": {
+            "board_legal_combos": 1,
+            "positive_combos": 0,
+            "reach_weight": 0
+          }
+        },
+        "82o": {
+          "BB": {
+            "board_legal_combos": 5,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 5,
+            "positive_combos": 0,
+            "reach_weight": 0
+          }
+        }
+      },
+      "representative_en_ja_factual_read": {
+        "status": "no_concrete_contradiction_found_in_representative_root_read",
+        "checked_claims": [
+          "Pairedrainbow882: remaining8s8d makes quads;22 and82 make full houses; a single8 makes trips.",
+          "Both seats have the one legal88quads combo and3legal22full-house combos with positive reach. BB82s is positive butBTN82s0.",
+          "BTN AA/KK/QQ positive and BB zero.",
+          "A sharedgenericcheckreason does not mislabel all combos as the same handclass."
+        ],
+        "sample_combos": [
+          "8s8d",
+          "2s2h",
+          "8s2s",
+          "As8s",
+          "AsKs"
+        ],
+        "strategic_boundary": "Observable range/handclass facts and check100 consistency only; qualitative advantage/check rationale is not independently solved EV or optimality."
+      },
+      "check_reachability": {
+        "reachable": true,
+        "action": "check",
+        "all_positive_BB_combos_check_percent": 100,
+        "check_conditioned_reach_weight": 435.7,
+        "normal_root_policy_not_forced_check": true,
+        "basis": "Exact frozen normal rootprompt and actual first-turn request hashes match; legal bet33/bet66/bet125 remained available. The model output independently selected check100, not an injected forced-check branch."
+      }
+    },
+    {
+      "decision_id": "6e63edbb45238f0df208bd4e587720bc2aaf933b5523b37ed429f33d9a537fac",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/6e63edbb45238f0df208bd4e587720bc2aaf933b5523b37ed429f33d9a537fac.json",
+      "raw_file_sha256": "cb1d673026f17beb76f3ae4bc2a56d02567c20dde34078c3deb96f04f69994b5",
+      "board": "6s4s2h",
+      "actor": "BB",
+      "saved_at": "2026-10-23T11:06:25.772Z",
+      "implementation_hash": "96e53c3932c656a1a331e8e2e389ff5e30e75eeb65db95eda07bdf3fb204e84d",
+      "numeric": {
+        "physical_combos": 1326,
+        "board_legal_combos": 1176,
+        "ranges": {
+          "BB": {
+            "positive_combos": 843,
+            "reach_weight": 452.75
+          },
+          "BTN": {
+            "positive_combos": 679,
+            "reach_weight": 562.75
+          }
+        },
+        "group_count": 1,
+        "hand_count": 169,
+        "zero_reach_hands": 35,
+        "provider_calls": 1,
+        "repairs": 0,
+        "overall_actor_reach_weighted_mix": {
+          "check": 100,
+          "bet33": 0,
+          "bet66": 0,
+          "bet125": 0
+        }
+      },
+      "provenance": {
+        "thread_id": "01a1686f-66e2-76e2-8b35-3935a7360445",
+        "turn_ids": [
+          "01a1686f-6766-75d1-bac2-f4ac0afa05a3"
+        ],
+        "statuses": [
+          "completed"
+        ],
+        "session_turns": [
+          1
+        ],
+        "provider_calls": [
+          {
+            "session_turn": 1,
+            "validation_issue": null,
+            "effective_prompt_hash": "e3fe6e2fb638eea230be943cf1cd274ebeb2902be6f00cee4a51094d50f2d3dc",
+            "schema_hash": "3e0754a4e8c8aa93c5496cf0b597b789d28dbd943be3a4f78d5aaa526f434ccd"
+          }
+        ]
+      },
+      "representative_range_facts": {
+        "AA": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "KK": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "QQ": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "66": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 2.55
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "44": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 2.85
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "22": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 2.7
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "53s": {
+          "BB": {
+            "board_legal_combos": 4,
+            "positive_combos": 4,
+            "reach_weight": 3.2
+          },
+          "BTN": {
+            "board_legal_combos": 4,
+            "positive_combos": 4,
+            "reach_weight": 2.6
+          }
+        },
+        "53o": {
+          "BB": {
+            "board_legal_combos": 12,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 12,
+            "positive_combos": 0,
+            "reach_weight": 0
+          }
+        },
+        "64s": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 2.7
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 2.7
+          }
+        },
+        "64o": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 0.3
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          }
+        },
+        "62s": {
+          "BB": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 1
+          },
+          "BTN": {
+            "board_legal_combos": 2,
+            "positive_combos": 0,
+            "reach_weight": 0
+          }
+        },
+        "62o": {
+          "BB": {
+            "board_legal_combos": 7,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 7,
+            "positive_combos": 0,
+            "reach_weight": 0
+          }
+        },
+        "42s": {
+          "BB": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 1.1
+          },
+          "BTN": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 0.3
+          }
+        },
+        "42o": {
+          "BB": {
+            "board_legal_combos": 7,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 7,
+            "positive_combos": 0,
+            "reach_weight": 0
+          }
+        }
+      },
+      "representative_en_ja_factual_read": {
+        "status": "no_concrete_contradiction_found_in_representative_root_read",
+        "checked_claims": [
+          "Two-spade642:53 makes six-high nutstraight;66/44/22 sets;64/62/42 two pair.",
+          "Both seats have all4suited53combos. BB total53reach3.2 versusBTN2.6; neither has positive53o.",
+          "Both seats contain all3setclasses; BB has extra64o/62s reach absent from BTN.",
+          "Two hole spades give a flushdraw, not a madeflush, and no leadsize is actually used."
+        ],
+        "sample_combos": [
+          "5s3s",
+          "6h6d",
+          "4h4d",
+          "2s2d",
+          "6h4h",
+          "6c2c",
+          "4h2c",
+          "AsJs"
+        ],
+        "strategic_boundary": "Observable range/handclass facts and check100 consistency only; qualitative advantage/check rationale is not independently solved EV or optimality."
+      },
+      "check_reachability": {
+        "reachable": true,
+        "action": "check",
+        "all_positive_BB_combos_check_percent": 100,
+        "check_conditioned_reach_weight": 452.75,
+        "normal_root_policy_not_forced_check": true,
+        "basis": "Exact frozen normal rootprompt and actual first-turn request hashes match; legal bet33/bet66/bet125 remained available. The model output independently selected check100, not an injected forced-check branch."
+      }
+    }
+  ],
+  "child_phase": {
+    "status": "stopped_after_uncertain_provider_outcomes_incomplete",
+    "artifact_reviews_completed": 0,
+    "saved_child_artifacts_reported_by_operator": 0,
+    "attempted_provider_calls_reported_by_operator": 4,
+    "confirmed_completed_child_decisions": 0,
+    "claimed_jobs_failed_uncertain_reported_by_operator": 4,
+    "unclaimed_jobs_queued_reported_by_operator": 2,
+    "failed_claimed_boards": [
+      "AcTc5d",
+      "KsQh6d",
+      "Qh9h4c",
+      "6s4s2h"
+    ],
+    "unclaimed_queued_boards": [
+      "Jc8d5s",
+      "8c8h2d"
+    ],
+    "durable_state_reported_by_operator": {
+      "journal_status": "failed",
+      "claim_pending": false,
+      "all_four_claimed_entries": "failed / uncertain_provider_outcome / call_in_flight=true retained",
+      "process_exited": true,
+      "worker_lock_removed": true
+    },
+    "interpretation": "Four attempts are NOT proof of four accepted or completed model turns. call_in_flight=true is a preserved uncertainty marker, not a statement that a process is still running after drain. Two queued targets were not claimed; no successful child review or batch completion is asserted.",
+    "source": "Parent operator final drained-process/journal and read-only broker observation; not independently re-queried here.",
+    "cause": "unknown_in_this_artifact_review",
+    "retry": false,
+    "fallback": false,
+    "children_generated_or_repaired_by_reviewer": false
+  },
+  "factual_findings_in_these_six_reviewed_roots": [],
+  "limitations": [
+    "The requested root+check-child batch is NOT complete: six roots saved/reviewed, zero child artifacts reviewed, four uncertain attempts and two unclaimed queued targets remain.",
+    "Execution uncertainty is separate from six-root numeric/provenance/factual checks; rootPASS does not bless an absent child or prove provider acceptance.",
+    "No solver, EV/equity, exploitability or independent strategy-quality/GTO acceptance.",
+    "Six purecheck rootpolicies are observed model outputs, not optimality or strategy-improvement proof.",
+    "Representative factual read is not exhaustive every-combo strategic acceptance.",
+    "No UI/reload, currentquota, remoteDB or ultimate provider-root-cause assertion is made by this report.",
+    "Existing prior phase3 JsTs explanation finding remains outside these six boards and was neither erased nor regenerated.",
+    "Saved marginal reaches are not an independently established joint deal distribution.",
+    "Original immutable artifacts and all semantic_review/publication/production approval fields remain unchanged. No further generation/retry/fallback is authorized by this QA report."
+  ]
+}
