@@ -24,7 +24,7 @@ before(async()=>{
  for(const name of ['window','document','Event','HTMLElement','sessionStorage','localStorage','IS_REACT_ACT_ENVIRONMENT','fetch']){originals.set(name,Object.getOwnPropertyDescriptor(globalThis,name));if(name!=='fetch')Object.defineProperty(globalThis,name,{configurable:true,writable:true,value:name==='IS_REACT_ACT_ENVIRONMENT'?true:dom.window[name]});}
  window.HTMLElement.prototype.scrollTo=()=>{};window.matchMedia=(media:string):MediaQueryList=>({matches:false,media,onchange:null,addListener(){},removeListener(){},addEventListener(){},removeEventListener(){},dispatchEvent(){return true;}});
  globalThis.fetch=async(url,init)=>{calls.push({url:String(url),method:init?.method??'GET'});const path=new URL(String(url),'http://localhost').pathname;if(path==='/v1/account/session')return Response.json({user});if(path==='/v1/account/data')return Response.json({ownerId:user.id,data:{},version:0});if(path.endsWith('/ondemand/status'))return Response.json(cap);if(path.endsWith('/ondemand/scene'))return Response.json({status:'not_generated'});if(path.endsWith('/ondemand/requests'))return Response.json({id:'b'.repeat(64),status:'queued',board:'As7d2c',path:[]});if(path.includes('/ondemand/requests/'))return Response.json({id:'b'.repeat(64),status:'complete',board:'As7d2c',path:[],result:saved()});throw Error('Unexpected test-only request');};
- server=await createServer({root:fileURLToPath(new URL('..',import.meta.url)),server:{middlewareMode:true,watch:null,hmr:false,ws:false},appType:'custom',optimizeDeps:{noDiscovery:true,include:[]}});
+ server=await createServer({root:fileURLToPath(new URL('..',import.meta.url)),server:{middlewareMode:true,watch:null,hmr:false,ws:false},appType:'custom',define:{'import.meta.env.VITE_DEV_GUEST':JSON.stringify('0')},optimizeDeps:{noDiscovery:true,include:[]}});
  ({RangeWorkspace}=await server.ssrLoadModule('/src/estimated/RangeWorkspace.tsx'));session={refreshAccount:(await server.ssrLoadModule('/src/account/session.ts')).refreshAccount};preferences={saveRangeSource:(await server.ssrLoadModule('/src/account/preferences.ts')).saveRangeSource};await session.refreshAccount();
 });
 after(async()=>{const previousRoot=root;if(previousRoot)await act(async()=>previousRoot.unmount());await server?.close();dom?.window.close();for(const[name,descriptor]of originals){if(descriptor)Object.defineProperty(globalThis,name,descriptor);else delete globalThis[name];}});
@@ -90,4 +90,19 @@ test('exact AI history retains its origin when viewing GTO and switching back, w
 test('invalid exact-marked raw history cannot auto-promote a decoder-truncated empty path',async()=>{
  const before=calls.filter(c=>c.url.includes('/ondemand/')).length;await mount('As7d2c','BOGUS','ai','&postflop_source=aiv2-exact-v2');
  assert.match(document.body.textContent,/legacy action semantics/);assert.equal(calls.filter(c=>c.url.includes('/ondemand/')).length,before);assert.ok(!new URLSearchParams(window.location.search).has('postflop_source'));
+});
+
+
+test('guest switching public GTO to AI keeps sign-in CTA and never mounts the inline broker slot',async()=>{
+ const normalFetch=globalThis.fetch;
+ globalThis.fetch=async(url,init)=>new URL(String(url),'http://localhost').pathname==='/v1/account/session'?Response.json({user:null}):normalFetch(url,init);
+ try{
+  await act(async()=>{await session.refreshAccount();});
+  await mount('As7d2c');const before=calls.filter(c=>c.url.includes('/ondemand/')).length;
+  await click([...document.querySelectorAll('button')].find(b=>b.textContent.includes('Switch to AI estimates')));
+  assert.ok(document.querySelector('.postflop-gate'),'guest retains the existing sign-in card');
+  assert.equal(document.querySelector('.aiv2-ondemand-inline'),null);
+  assert.ok(![...document.querySelectorAll('button')].some(b=>b.textContent==='Generate AI estimate'));
+  assert.equal(calls.filter(c=>c.url.includes('/ondemand/')).length,before,'guest does not load broker state');
+ }finally{globalThis.fetch=normalFetch;await act(async()=>{await session.refreshAccount();});}
 });
