@@ -1,6 +1,8 @@
-/* Only the existing solver's exact AI range slot; no second page or selector. */
+/* Only the existing solver's exact AI range slot; no second page; source choice preserves separate scopes. */
 .aiv2-ondemand-inline.postflop-trial { display: block; overflow: auto; }
 .aiv2-ondemand-inline .matrix-panel { width: 100%; }
 .aiv2-ondemand-inline .matrix-scroll { flex: none; width: 100%; aspect-ratio: 1; min-height: 260px; overflow: visible; }
 .aiv2-ondemand-inline .matrix { width: 100%; height: 100%; min-width: 0; min-height: 256px; grid-template-rows: repeat(13, minmax(0, 1fr)); }
 .aiv2-ondemand-inline .missing-range-panel button { margin-right: 8px; }
+
+.aiv2-ondemand-scope{display:grid;gap:8px;margin:12px 0;min-width:0}.aiv2-ondemand-scope label{display:flex;align-items:center;flex-wrap:wrap;gap:10px;color:var(--text);font-size:12px}.aiv2-ondemand-scope select{max-width:100%;min-height:44px;min-width:0;background:var(--surface-raised);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:8px;font:inherit}.aiv2-ondemand-scope small{color:var(--text-muted);line-height:1.6}.aiv2-ondemand-scope select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}

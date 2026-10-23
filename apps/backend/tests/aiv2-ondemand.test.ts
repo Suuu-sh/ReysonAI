@@ -258,3 +258,17 @@ test('one failed scoped member fences every still-queued sibling without replay 
  assert.equal(f.sqlite.prepare("SELECT COUNT(*) n FROM aiv2_ondemand_jobs WHERE status='queued'").get()!.n,1);assert.equal(f.sqlite.prepare("SELECT COUNT(*) n FROM aiv2_ondemand_jobs WHERE status='running'").get()!.n,0);
  }finally{f.sqlite.close();}
 });
+test('no-donk API has separate revision, explicit user-rule root with no queue, BTN-only admission and same private authorization',async()=>{
+ const f=await fixture();try{
+ Object.assign(f.env,{AIV2_NODONK_ENABLED:'true',AIV2_NODONK_IMPLEMENTATION_HASH:'d'.repeat(64),AIV2_NODONK_SOURCE_HASH:'e'.repeat(64)});
+ const call=(path:string,value?:unknown,owner=false,auth=true)=>routeOnDemand(new Request('https://api.reysonai.com/v1/aiv2/nodonk/'+(owner?'owner/':'')+path,{method:value===undefined?'GET':'POST',headers:{...(auth?owner?{authorization:'Bearer '+secret}:{cookie:'__Host-reysonai='+token}:{}),...(value===undefined?{}:{'content-type':'application/json',...(!owner?{origin:'https://app.reysonai.com'}:{})})},...(value===undefined?{}:{body:JSON.stringify(value)})}),f.env);
+ const root=await call('scene?board=AhKd7c&path=[]');assert.equal(root.status,200);const info=await root.json();assert.equal(info.status,'user_rule');assert.equal(info.userRule.providerCalls,0);assert.equal(info.userRule.authority,'user-instruction');assert.equal(info.userRule.gto_verified,false);
+ assert.equal((await call('requests',{board:'AhKd7c',path:[],consent:true})).status,400);
+ assert.equal((await call('requests',{board:'AhKd7c',path:['bet33'],consent:true})).status,400);
+ assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM aiv2_ondemand_jobs').get()!.n,0);
+ assert.equal((await call('heartbeat',{},true,false)).status,403);assert.equal((await call('heartbeat',{},true)).status,200);
+ assert.equal((await call('requests',{board:'AhKd7c',path:['check'],consent:true})).status,202);
+ const row=f.sqlite.prepare('SELECT * FROM aiv2_ondemand_jobs').get()!;assert.equal(row.reserved_calls,2);assert.equal(row.path_json,'["check"]');
+ const capability=await (await call('status')).json();assert.equal(capability.method,'llm-postflop-nodonk-v1');assert.equal(capability.version,'user-rule-no-donk-flop-bb-check-v1');assert.notEqual(capability.revision,(await(await f.call('status')).json()).revision);
+ }finally{f.sqlite.close();}
+});

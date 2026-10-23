@@ -2,6 +2,7 @@
 import { accountTransport, digest, type AccountEnv } from './account.ts';
 import type { D1Database } from './postflop.ts';
 export type OnDemandEnv = AccountEnv & {
+ AIV2_NODONK_ENABLED?:string; AIV2_NODONK_IMPLEMENTATION_HASH?:string; AIV2_NODONK_SOURCE_HASH?:string;
  AIV2_ONDEMAND_ENABLED?:string; AIV2_ONDEMAND_IMPLEMENTATION_HASH?:string;
  AIV2_ONDEMAND_SOURCE_HASH?:string; AIV2_ONDEMAND_BRIDGE_SECRET?:string;
 };
@@ -31,13 +32,15 @@ async function body(request:Request,max:number):Promise<Record<string,any>>{
  const value=JSON.parse(new TextDecoder().decode(bytes));if(!value||typeof value!=='object'||Array.isArray(value))throw Error('invalid_request');return value;
 }
 function publicJob(row:Job){return {id:row.id,status:row.status,board:row.board,path:JSON.parse(row.path_json),...(row.result_json?{result:JSON.parse(row.result_json)}:{}),...(row.error?{error:row.error}:{})};}
-export function validateBrokerResult(result:any,job:Pick<Job,'board'|'path_json'|'revision'>,implementationHash:string,sourceHash:string){
+export function validateBrokerResult(result:any,job:Pick<Job,'board'|'path_json'|'revision'>,implementationHash:string,sourceHash:string,noDonk=false){
+ const method=noDonk?'llm-postflop-nodonk-v1':METHOD,version=noDonk?'user-rule-no-donk-flop-bb-check-v1':VERSION;
+ if(noDonk&&JSON.parse(job.path_json)[0]!=='check')throw Error('invalid_result');
  if(!result||!['generated','terminal','chance','zero-reach'].includes(result.status))throw Error('invalid_result');
  const snapshot=result.snapshot,proof=result.proof;
- if(!snapshot||snapshot.board!==job.board||!equal(snapshot.path,JSON.parse(job.path_json))||snapshot.status!==result.status||snapshot.method!==METHOD||snapshot.config?.method!==METHOD||snapshot.config?.version!==VERSION||snapshot.config?.model!=='gpt-6.1-sol'||snapshot.config?.effort!=='medium'||!proof||proof.revision!==job.revision||proof.implementationHash!==implementationHash||proof.sourceHash!==sourceHash||proof.validatedStore!==true)throw Error('invalid_result');
+ if(!snapshot||snapshot.board!==job.board||!equal(snapshot.path,JSON.parse(job.path_json))||snapshot.status!==result.status||snapshot.method!==method||snapshot.config?.method!==method||snapshot.config?.version!==version||snapshot.config?.model!=='gpt-6.1-sol'||snapshot.config?.effort!=='medium'||!proof||proof.revision!==job.revision||proof.implementationHash!==implementationHash||proof.sourceHash!==sourceHash||proof.validatedStore!==true)throw Error('invalid_result');
  if(result.status==='generated'){
   const p=snapshot.scene?.provenance,r=snapshot.scene?.review;
-  if(!p||p.method!==METHOD||p.model!=='gpt-6.1-sol'||p.effort!=='medium'||p.independent_gto_approved!==false||r?.production_approved!==false||!isHash(p.artifact_hash)||!Array.isArray(snapshot.scene.cells)||snapshot.scene.cells.length!==169)throw Error('invalid_result');
+  if(!p||p.method!==method||p.model!=='gpt-6.1-sol'||p.effort!=='medium'||p.independent_gto_approved!==false||r?.production_approved!==false||!isHash(p.artifact_hash)||!Array.isArray(snapshot.scene.cells)||snapshot.scene.cells.length!==169)throw Error('invalid_result');
  }else if(snapshot.scene!==null)throw Error('invalid_result');
  // Numerical, legal-path and provider-call verification occurs in the trusted Mac store.
  // This adapter validates identity and transport bounds, not independent poker correctness.
@@ -47,10 +50,12 @@ export async function routeOnDemand(request:Request,env:OnDemandEnv):Promise<Res
  try{return await handle(request,env);}catch(error){return json({error:error instanceof Error&&['invalid_request','invalid_result'].includes(error.message)?error.message:'ondemand_service_unavailable'},error instanceof Error&&['invalid_request','invalid_result'].includes(error.message)?400:503);}
 }
 async function handle(request:Request,env:OnDemandEnv):Promise<Response>{
- const implementationHash=env.AIV2_ONDEMAND_IMPLEMENTATION_HASH,sourceHash=env.AIV2_ONDEMAND_SOURCE_HASH;
- if(env.AIV2_ONDEMAND_ENABLED!=='true'||env.AUTH_ENABLED!=='true'||!env.DB||!isHash(implementationHash)||!isHash(sourceHash)||!env.AIV2_ONDEMAND_BRIDGE_SECRET||env.AIV2_ONDEMAND_BRIDGE_SECRET.length<32)return json({enabled:false,error:'ondemand_not_enabled'},503);
- const revision=await digest(JSON.stringify({method:METHOD,version:VERSION,implementationHash,sourceHash}));
- const url=new URL(request.url),path=url.pathname.slice(PREFIX.length),db=env.DB as D1Database,now=Date.now(),day=new Date(now).toISOString().slice(0,10);
+ const noDonk=new URL(request.url).pathname.startsWith('/v1/aiv2/nodonk/'),method=noDonk?'llm-postflop-nodonk-v1':METHOD,version=noDonk?'user-rule-no-donk-flop-bb-check-v1':VERSION;
+ const implementationHash=noDonk?env.AIV2_NODONK_IMPLEMENTATION_HASH:env.AIV2_ONDEMAND_IMPLEMENTATION_HASH,sourceHash=noDonk?env.AIV2_NODONK_SOURCE_HASH:env.AIV2_ONDEMAND_SOURCE_HASH;
+ const normalize=(board:unknown,path:unknown)=>{const v=normalizeBrokerRequest(board,path);if(noDonk&&v.path[0]!=='check')throw Error('invalid_request');return v;};
+ if((noDonk?env.AIV2_NODONK_ENABLED:env.AIV2_ONDEMAND_ENABLED)!=='true'||env.AUTH_ENABLED!=='true'||!env.DB||!isHash(implementationHash)||!isHash(sourceHash)||!env.AIV2_ONDEMAND_BRIDGE_SECRET||env.AIV2_ONDEMAND_BRIDGE_SECRET.length<32)return json({enabled:false,error:'ondemand_not_enabled'},503);
+ const revision=await digest(JSON.stringify({method,version,implementationHash,sourceHash}));
+ const url=new URL(request.url),path=url.pathname.slice((noDonk?'/v1/aiv2/nodonk/':PREFIX).length),db=env.DB as D1Database,now=Date.now(),day=new Date(now).toISOString().slice(0,10);
  const query=async<T=Job>(sql:string,...args:unknown[])=>(await db.prepare(sql).bind(...args).all<T>()).results;
  if(path.startsWith('owner/')){
   if(url.protocol!=='https:'||request.method!=='POST'||request.headers.has('origin'))return json({error:'bridge_forbidden'},403);
@@ -65,9 +70,9 @@ async function handle(request:Request,env:OnDemandEnv):Promise<Response>{
   if(path==='owner/operator-batch'){
    if(Object.keys(input).some(k=>!['batchId','revision','implementationHash','sourceHash','requests','maxCalls','maxDecisions','operatorUserId'].includes(k))||typeof input.operatorUserId!=='string'||input.operatorUserId.length<1||input.operatorUserId.length>200||!isHash(input.batchId)||!Array.isArray(input.requests)||input.requests.length<1||input.requests.length>OPERATOR_LIMITS.requests||!Number.isInteger(input.maxCalls)||input.maxCalls<1||input.maxCalls>OPERATOR_LIMITS.maxCalls||!Number.isInteger(input.maxDecisions)||input.maxDecisions<1||input.maxDecisions>OPERATOR_LIMITS.maxDecisions)throw Error('invalid_request');
    if(input.revision!==revision||input.implementationHash!==implementationHash||input.sourceHash!==sourceHash)return json({error:'pin_mismatch'},409);
-   const requests=input.requests.map((item:any)=>{if(!item||typeof item!=='object'||Array.isArray(item)||Object.keys(item).some(k=>!['board','path'].includes(k)))throw Error('invalid_request');return normalizeBrokerRequest(item.board,item.path);});
+   const requests=input.requests.map((item:any)=>{if(!item||typeof item!=='object'||Array.isArray(item)||Object.keys(item).some(k=>!['board','path'].includes(k)))throw Error('invalid_request');return normalize(item.board,item.path);});
    const keys=requests.map((item:any)=>JSON.stringify({board:(item.board.match(/../g)??[]).sort().join(''),path:item.path}));
-   const reservedCalls=requests.map((item:any)=>2*(1+item.path.filter((v:string)=>! /^[AKQJT98765432][shdc]$/.test(v)).length));
+   const reservedCalls=requests.map((item:any)=>2*((noDonk?0:1)+item.path.filter((v:string)=>! /^[AKQJT98765432][shdc]$/.test(v)).length));
    const totalCalls=reservedCalls.reduce((sum:number,n:number)=>sum+n,0);
    if(new Set(keys).size!==keys.length||totalCalls>input.maxCalls||totalCalls/2>input.maxDecisions)throw Error('invalid_request');
    // Explicit existing account, authorized by the private owner bearer; never invent users.
@@ -147,7 +152,7 @@ async function handle(request:Request,env:OnDemandEnv):Promise<Response>{
   const [job]=await query('SELECT * FROM aiv2_ondemand_jobs WHERE id=? AND revision=? AND lease_hash=?',input.id,revision,await digest(input.leaseToken));
   if(!job)return json({error:'lease_conflict'},409);
   if(path==='owner/complete'&&job.status==='complete'){
-   const result=validateBrokerResult(input.result,job,implementationHash,sourceHash);
+   const result=validateBrokerResult(input.result,job,implementationHash,sourceHash,noDonk);
    return equal(JSON.parse(job.result_json!),result)?json({ok:true,replayed:true}):json({error:'lease_conflict'},409);
   }
   if(job.status!=='running'||!job.lease_until||job.lease_until<=now)return json({error:'lease_conflict'},409);
@@ -156,7 +161,7 @@ async function handle(request:Request,env:OnDemandEnv):Promise<Response>{
    const rows=await query("UPDATE aiv2_ondemand_jobs SET status='failed',error=?,lease_hash=NULL WHERE id=? AND status='running' AND lease_hash=? AND lease_until>? RETURNING id",input.error,job.id,job.lease_hash,now);
    return json({ok:rows.length===1},rows.length?200:409);
   }
-  const result=validateBrokerResult(input.result,job,implementationHash,sourceHash),text=JSON.stringify(result);
+  const result=validateBrokerResult(input.result,job,implementationHash,sourceHash,noDonk),text=JSON.stringify(result);
   const rows=await query("UPDATE aiv2_ondemand_jobs SET status='complete',result_json=? WHERE id=? AND status='running' AND lease_hash=? AND lease_until>? RETURNING id",text,job.id,job.lease_hash,now);
   return json({ok:rows.length===1},rows.length?200:409);
  }
@@ -171,10 +176,11 @@ async function handle(request:Request,env:OnDemandEnv):Promise<Response>{
  const user=users[0].id;
  const ownerRows=await query<{heartbeat_at:number}>('SELECT heartbeat_at FROM aiv2_ondemand_owner WHERE singleton=1 AND revision=?',revision);
  const ownerOnline=!!ownerRows.length&&ownerRows[0].heartbeat_at>now-90000;
- if(request.method==='GET'&&path==='status')return json({enabled:true,ownerOnline,revision,implementationHash,sourceHash,limits:LIMITS});
+ if(request.method==='GET'&&path==='status')return json({enabled:true,ownerOnline,method,version,revision,implementationHash,sourceHash,limits:LIMITS});
  if(request.method==='GET'&&path==='scene'){
   if(url.searchParams.getAll('board').length!==1||url.searchParams.getAll('path').length!==1||(url.searchParams.get('path')?.length??0)>1400)throw Error('invalid_request');
-  const input=normalizeBrokerRequest(url.searchParams.get('board'),JSON.parse(url.searchParams.get('path')!));
+  const rawPath=JSON.parse(url.searchParams.get('path')!);if(noDonk&&Array.isArray(rawPath)&&rawPath.length===0){normalizeBrokerRequest(url.searchParams.get('board'),rawPath);return json({status:'user_rule',method,userRule:{kind:'user-rule-policy',authority:'user-instruction',action:'check',probability:1,providerCalls:0,approved:false,production_strategy_approved:false,gto_verified:false},path:[]});}
+  const input=normalize(url.searchParams.get('board'),rawPath);
   const [job]=await query("SELECT * FROM aiv2_ondemand_jobs WHERE revision=? AND board=? AND path_json=? AND status='complete'",revision,input.board,JSON.stringify(input.path));
   return json(job?{status:'generated',result:JSON.parse(job.result_json!)}:{status:'not_generated'});
  }
@@ -185,8 +191,8 @@ async function handle(request:Request,env:OnDemandEnv):Promise<Response>{
  if(request.method!=='POST'||path!=='requests')return json({error:'not_found'},404);
  const input=await body(request,4096);
  if(input.consent!==true||Object.keys(input).some(k=>!['board','path','consent'].includes(k)))throw Error('invalid_request');
- const normalized=normalizeBrokerRequest(input.board,input.path),pathJSON=JSON.stringify(normalized.path),id=await digest(JSON.stringify({revision,...normalized}));
- const reservedCalls=2*(1+normalized.path.filter(v=>! /^[AKQJT98765432][shdc]$/.test(v)).length);
+ const normalized=normalize(input.board,input.path),pathJSON=JSON.stringify(normalized.path),id=await digest(JSON.stringify({revision,...normalized}));
+ const reservedCalls=2*((noDonk?0:1)+normalized.path.filter(v=>! /^[AKQJT98765432][shdc]$/.test(v)).length);
  const [rate]=await query<{count:number}>('INSERT INTO account_rate_limits(bucket,count,expires_at) VALUES (?,1,?) ON CONFLICT(bucket) DO UPDATE SET count=count+1 RETURNING count',`ondemand:${user}:${Math.floor(now/60000)}`,Math.floor(now/1000)+120);
  if(rate.count>30)return json({error:'rate_limited'},429);
  const [existing]=await query('SELECT * FROM aiv2_ondemand_jobs WHERE id=?',id);
