@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import test from 'node:test';
-import { classifyChangedPaths, classifyEvent, changedGroups, fingerprintsAtCommit, latestDeploymentRun, assertOperatorRecoveryEvidence, assertOperatorRecoverySourceScope, assertOperatorRecoveryReceipt, assertOperatorRecoveryArchive } from './deployment-scope.ts';
+import { classifyChangedPaths, classifyEvent, changedGroups, fingerprintsAtCommit, latestDeploymentRun, assertOperatorRecoveryEvidence, assertOperatorRecoverySourceScope, assertOperatorRecoveryReceipt, assertOperatorRecoveryArchive, ensureScopedRecoveryAncestor } from './deployment-scope.ts';
 
 const workflowRun = (overrides: any = {}): any => {
   const run = {
@@ -893,4 +893,55 @@ test('operator recovery preserves every historical receipt field and source path
 test('operator recovery refuses unbound archive bytes before readback extraction',()=>{
  const f=operatorRecoveryFixture(),proof=JSON.parse(String(f.proofBytes));
  assert.throws(()=>assertOperatorRecoveryArchive(f.policy,proof,Buffer.from('unbound archive bytes')));
+});
+
+function shallowClone(t:any,source:string){
+ const root=join(repository(t),'clone');
+ execFileSync('git',['clone','--quiet','--depth=1',pathToFileURL(source).href,root],{stdio:'pipe'});
+ assert.equal(git(root,['rev-list','--count','HEAD']),'1');return root;
+}
+test('operator recovery proves exact ancestry in a real depth-one clone by bounded exact-SHA hydration',t=>{
+ const source=repository(t),ancestor=commit(source,baseFiles());
+ commit(source,{'unrelated-doc.txt':'one'});const candidate=commit(source,{'unrelated-doc.txt':'two'}),clone=shallowClone(t,source);
+ assert.doesNotThrow(()=>ensureScopedRecoveryAncestor(clone,ancestor,candidate));
+ assert.doesNotThrow(()=>git(clone,['merge-base','--is-ancestor',ancestor,candidate]));
+ assert.equal(git(clone,['rev-parse','HEAD']),candidate);
+});
+test('operator recovery ancestry rejects divergent history and unavailable hydration, never inferring ancestry from two objects',t=>{
+ const source=repository(t),ancestor=commit(source,baseFiles());
+ commit(source,{'unrelated-doc.txt':'one'});const candidate=commit(source,{'unrelated-doc.txt':'two'});
+ const unavailable=shallowClone(t,source);git(unavailable,['fetch','--quiet','--depth=1','origin',ancestor]);git(unavailable,['remote','set-url','origin',join(source,'missing-origin')]);
+ assert.throws(()=>ensureScopedRecoveryAncestor(unavailable,ancestor,candidate),/fetch unavailable/);
+ git(source,['checkout','--quiet','--orphan','unrelated']);const divergent=commit(source,{'unrelated-doc.txt':'orphan'});
+ assert.throws(()=>ensureScopedRecoveryAncestor(source,ancestor,divergent),/not descendant/);
+ const divergedClone=shallowClone(t,source);assert.throws(()=>ensureScopedRecoveryAncestor(divergedClone,ancestor,divergent),/unproven|not descendant/);
+});
+test('operator recovery ancestry fails closed when the fixed depth budget cannot prove history',t=>{
+ const source=repository(t),ancestor=commit(source,baseFiles()),tree=git(source,['rev-parse','HEAD^{tree}']);let candidate=ancestor;
+ for(let i=0;i<270;i++)candidate=git(source,['commit-tree',tree,'-p',candidate,'-m','bounded synthetic chain '+i]);
+ git(source,['update-ref','HEAD',candidate]);const clone=shallowClone(t,source);
+ assert.throws(()=>ensureScopedRecoveryAncestor(clone,ancestor,candidate),/remains unproven/);
+ assert.equal(git(clone,['rev-parse','HEAD']),candidate);
+});
+test('operator recovery receipt amendments append exactly one and cannot rewrite a historical renewal',()=>{
+ const before={sources:[{path:'source',sha256:'old'}],content_sha256:'old',artifacts:[{sha256:'immutable'}],operator_schema_recovery_source_renewals:[{proof:'first-immutable'}]};
+ const after={...before,sources:[{path:'source',sha256:'new'}],content_sha256:'new',operator_schema_recovery_source_renewals:[...before.operator_schema_recovery_source_renewals,{proof:'second-source-only'}]};
+ assert.doesNotThrow(()=>assertOperatorRecoveryReceipt(before,after));
+ for(const renewals of [[{proof:'replacement'},{proof:'second-source-only'}],[{proof:'second-source-only'}],[...after.operator_schema_recovery_source_renewals,{proof:'unexpected-third'}]])assert.throws(()=>assertOperatorRecoveryReceipt(before,{...after,operator_schema_recovery_source_renewals:renewals}));
+});
+test('operator recovery API metadata/archive failures keep fresh main pushes fail-closed',async t=>{
+ const f=operatorRecoveryFixture(),root=repository(t),policyPath='configs/operator-schema-recovery-39925016206.json';
+ const sha=commit(root,{...baseFiles(),[policyPath]:JSON.stringify(f.policy),[f.policy.proof.path]:String(f.proofBytes)});
+ const baseline=workflowRun({id:Number(f.policy.baseline_run_id),head_sha:f.policy.baseline_sha,created_at:'2026-10-09T00:00:00Z'});
+ for(const failedApi of ['metadata','archive']){
+  const fetcher=async(url:string)=>{
+   if(url.includes('/workflows/'))return {ok:true,json:async()=>({workflow_runs:[f.run,baseline]})};
+   if(url.includes('/runs/39925016206/jobs?'))return {ok:true,json:async()=>f.jobs};
+   if(url.includes('/runs/39925016206/artifacts?'))return failedApi==='metadata'?{ok:false,status:503}:{ok:true,json:async()=>f.artifacts};
+   if(url.includes('/artifacts/12489599024/zip'))return {ok:false,status:503};
+   throw Error('unexpected mock API');
+  };
+  const plan=await classifyEvent({repoRoot:root,eventName:'push',ref:'refs/heads/main',sha,repository:'Suuu-sh/ReysonAI',runId:'99999999999',event:{},fetcher});
+  assert.equal(plan.release_safe,false,failedApi);assert.equal(plan.data_release,false,failedApi);assert.equal(plan.deploy_api,false,failedApi);assert.match(plan.reason,/unavailable/);
+ }
 });
