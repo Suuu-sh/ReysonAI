@@ -11354,16 +11354,16 @@
     },
     {
       "path": "scripts/ci/deployment-scope.test.ts",
-      "bytes": 54811,
-      "sha256": "0da501bc0bbe9b393b1d0d838323f0b5491c4b47e6bc061c660efea1765613df"
+      "bytes": 59436,
+      "sha256": "6054258e5ad96dbf0ab532f1a3d49ae76c88b36182ec60373d0b0ec0228a41a0"
     },
     {
       "path": "scripts/ci/deployment-scope.ts",
-      "bytes": 44472,
-      "sha256": "327c89298fc013c94e94736fe62c85f0f114d16c62ac895722c2502c6af4cd40"
+      "bytes": 46878,
+      "sha256": "d8724863bbcb14ff075f0bc5c37bfed7ddef4ff38e16d16e2482a4a2c539267f"
     }
   ],
-  "content_sha256": "04edbf4c8ba36e904c0597d7740c10f5eb7677c7fff7cbbfa29c0f3d7ec5a751",
+  "content_sha256": "36b841e4bb07dfa20c1a6ecf33ddb4537d9aec5489f2b1abb5fb2ac92705eedb",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -11939,6 +11939,46 @@
         "original_review_sha256": "17f8ea0ba36f26311f30b59ada348033465372417edb5c817e0377a07bd94feb"
       },
       "limitations": "All old strategy/numerical/GTO/runtime/production/deployment approval and limitations remain unchanged; no new acceptance granted."
+    },
+    {
+      "date": "2026-10-23",
+      "status": "approved-source-only",
+      "reviewer": "Independent source-only static reviewer /root/flop_parallel_audit",
+      "scope": "Source-only canonical receipt amendment for bounded exact-SHA shallow-history hydration before the existing scoped recovery ancestry check. Preserve all existing receipt fields and amendment entry1; update only current sources/content and append one entry2. No numerical, strategy-quality/GTO, runtime, production or deployment approval is renewed.",
+      "prior_raw_receipt_sha256": "0c857aeb4f328d28bef3fd38c31572fe953bd4c95836c24a1b1e4985670c8713",
+      "before_content_sha256": "04edbf4c8ba36e904c0597d7740c10f5eb7677c7fff7cbbfa29c0f3d7ec5a751",
+      "after_content_sha256": "36b841e4bb07dfa20c1a6ecf33ddb4537d9aec5489f2b1abb5fb2ac92705eedb",
+      "review_reference": {
+        "path": "docs/qa/operator-schema-recovery-shallow-source-renewal.json",
+        "sha256": "9eb267f4508ded0e13ada78e071217681d83288eb0c5b6b032ee601ad734979c"
+      },
+      "changed_sources": [
+        "scripts/ci/deployment-scope.test.ts",
+        "scripts/ci/deployment-scope.ts"
+      ],
+      "preserved": {
+        "stage": 2,
+        "artifact_record_count": 1888,
+        "artifact_records_sha256": "60179b68d2fe722deb3ac93f7db76101b065ee9453d397377a0db8550d73e73e",
+        "archive": {
+          "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+          "bytes": 1747857,
+          "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+          "format": "ustar+gzip"
+        },
+        "archive_materialized_raw_rehashed": true,
+        "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+        "counts": {
+          "catalog": 3115,
+          "saved": 1611,
+          "unreachable": 1504,
+          "hands": 272259
+        },
+        "original_review_sha256": "17f8ea0ba36f26311f30b59ada348033465372417edb5c817e0377a07bd94feb",
+        "prior_amendment_count": 1,
+        "prior_amendments_sha256": "783bfb51573172f432928e9869fe401bb68ee8ee58814fe63d6d18429ce692c5"
+      },
+      "limitations": "No historical numerical/strategy/GTO/runtime/production/deployment approval or limitations replaced."
     }
   ]
 }
