@@ -217,9 +217,26 @@ function ensureCommit(repoRoot?: any, sha?: any): any {
   try {
     runGit(repoRoot, ['cat-file', '-e', `${sha}^{commit}`]);
   } catch {
-    runGit(repoRoot, ['fetch', '--no-tags', '--depth=1', 'origin', sha], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
+    runGit(repoRoot, ['fetch', '--no-tags', '--depth=1', 'origin', sha], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024, timeout:20000, stdio:'pipe' });
     runGit(repoRoot, ['cat-file', '-e', `${sha}^{commit}`]);
   }
+}
+
+// A depth-one checkout can contain both commits but still hide every connecting
+// parent. Hydrate only the exact candidate, with a fixed depth/time budget; never
+// treat missing ancestry, an API comparison or a failed fetch as proof.
+export function ensureScopedRecoveryAncestor(repoRoot:string,ancestor:string,candidate:string){
+ if(!SHA_RE.test(ancestor)||!SHA_RE.test(candidate))throw Error('invalid recovery ancestry identity');
+ ensureCommit(repoRoot,ancestor);ensureCommit(repoRoot,candidate);
+ const proven=()=>{try{runGit(repoRoot,['merge-base','--is-ancestor',ancestor,candidate],{timeout:10000,stdio:'pipe'});return true;}catch{return false;}};
+ if(proven())return;
+ if(String(runGit(repoRoot,['rev-parse','--is-shallow-repository'],{encoding:'utf8'})).trim()!=='true')throw Error('recovery candidate is not descendant of failed release');
+ for(const depth of [64,256]){
+  try{runGit(repoRoot,['fetch','--no-tags',`--depth=${depth}`,'origin',candidate],{timeout:20000,maxBuffer:8*1024*1024,stdio:'pipe'});}catch{throw Error('bounded recovery ancestry fetch unavailable');}
+  if(proven())return;
+  if(String(runGit(repoRoot,['rev-parse','--is-shallow-repository'],{encoding:'utf8'})).trim()!=='true')break;
+ }
+ throw Error('bounded recovery ancestry remains unproven');
 }
 
 function treeEntries(repoRoot?: any, sha?: any): any {
@@ -468,7 +485,7 @@ export function assertOperatorRecoveryArchive(policy:any,proof:any,bytes:Uint8Ar
  if(sha256(outcome)!==proof.mw3_outcome_raw_sha256||JSON.stringify(JSON.parse(String(outcome)))!==JSON.stringify(proof.mw3_outcome))throw Error('operator recovery retained readback bytes differ');
 }
 export function assertOperatorRecoverySourceScope(policy:any,paths:string[],before:any,after:any,readBlob:(path:string)=>any){
- const allowed=['apps/backend/scripts/ensure-aiv2-operator-schema.ts','apps/backend/tests/aiv2-operator-schema.test.ts','scripts/ci/deployment-scope.ts','scripts/ci/deployment-scope.test.ts',WORKFLOW_PATH,OPERATOR_RECOVERY_PATH,policy.proof.path,...REVIEW_RECEIPTS,'docs/qa/operator-schema-recovery-source-renewal.json'];
+ const allowed=['apps/backend/scripts/ensure-aiv2-operator-schema.ts','apps/backend/tests/aiv2-operator-schema.test.ts','scripts/ci/deployment-scope.ts','scripts/ci/deployment-scope.test.ts',WORKFLOW_PATH,OPERATOR_RECOVERY_PATH,policy.proof.path,...REVIEW_RECEIPTS,'docs/qa/operator-schema-recovery-source-renewal.json','docs/qa/operator-schema-recovery-shallow-source-renewal.json'];
  if(JSON.stringify(policy.allowed_paths)!==JSON.stringify(allowed)||paths.some((p:string)=>!allowed.includes(p)))throw Error('operator recovery source scope exceeded');
  const expectedFixes=['apps/backend/scripts/ensure-aiv2-operator-schema.ts','apps/backend/tests/aiv2-operator-schema.test.ts'];
  if(JSON.stringify(Object.keys(policy.source_fix_hashes??{}).sort())!==JSON.stringify(expectedFixes)||expectedFixes.some(p=>!paths.includes(p)||sha256(readBlob(p))!==policy.source_fix_hashes[p]))throw Error('operator recovery exact source fix missing');
@@ -476,9 +493,9 @@ export function assertOperatorRecoverySourceScope(policy:any,paths:string[],befo
  }
 export function assertOperatorRecoveryReceipt(before:any,after:any){
  const prior={...before},next={...after};
- delete prior.sources;delete prior.content_sha256;
+ delete prior.sources;delete prior.content_sha256;delete prior.operator_schema_recovery_source_renewals;
  delete next.sources;delete next.content_sha256;delete next.operator_schema_recovery_source_renewals;
- if(JSON.stringify(prior)!==JSON.stringify(next)||!Array.isArray(after.operator_schema_recovery_source_renewals)||after.operator_schema_recovery_source_renewals.length!==1||JSON.stringify(before.sources?.map((r:any)=>r.path))!==JSON.stringify(after.sources?.map((r:any)=>r.path)))throw Error('operator recovery historical receipt changed');
+ if(JSON.stringify(prior)!==JSON.stringify(next)||!Array.isArray(after.operator_schema_recovery_source_renewals)||after.operator_schema_recovery_source_renewals.length!==(before.operator_schema_recovery_source_renewals?.length??0)+1||JSON.stringify(after.operator_schema_recovery_source_renewals.slice(0,-1))!==JSON.stringify(before.operator_schema_recovery_source_renewals??[])||JSON.stringify(before.sources?.map((r:any)=>r.path))!==JSON.stringify(after.sources?.map((r:any)=>r.path)))throw Error('operator recovery historical receipt changed');
 }
 async function reviewedOperatorRecovery({repoRoot,sha,run,jobsBody,matches,repository,headers,fetcher}:any){
  if(String(run.id)!==OPERATOR_FAILED_RUN||!repoRoot||!SHA_RE.test(sha??''))return null;
@@ -497,10 +514,18 @@ async function reviewedOperatorRecovery({repoRoot,sha,run,jobsBody,matches,repos
  if(!baselineResponse?.ok)throw Error('operator recovery baseline job unavailable');
  const baselineJobs=await baselineResponse.json();
  if(baselineJobs.total_count!==3||baselineJobs.jobs?.length!==3||baselineJobs.jobs.some((j:any)=>j.status!=='completed'||j.conclusion!=='success')||new Set(baselineJobs.jobs.map((j:any)=>j.name)).size!==3||baselineJobs.jobs.some((j:any)=>!EXPECTED_DEPLOYMENT_JOB_NAMES.has(j.name)))throw Error('operator recovery baseline job incomplete');
- ensureCommit(repoRoot,policy.failed_sha);runGit(repoRoot,['merge-base','--is-ancestor',policy.failed_sha,sha]);
+ ensureScopedRecoveryAncestor(repoRoot,policy.failed_sha,sha);
  const paths=changedPaths(repoRoot,policy.failed_sha,sha);
  assertOperatorRecoverySourceScope(policy,paths,fingerprintsAtCommit(repoRoot,policy.failed_sha),fingerprintsAtCommit(repoRoot,sha),blob);
- for(const path of REVIEW_RECEIPTS)assertOperatorRecoveryReceipt(JSON.parse(String(runGit(repoRoot,['show',`${policy.failed_sha}:${path}`]))),JSON.parse(String(blob(path))));
+ if(policy.receipt_baseline_sha!=='cdee4b447eaf993bbbe7999ea0f129dc05389000'||JSON.stringify(Object.keys(policy.receipt_baseline_hashes??{}))!==JSON.stringify(REVIEW_RECEIPTS))throw Error('unreviewed recovery receipt baseline');
+ ensureCommit(repoRoot,policy.receipt_baseline_sha);ensureScopedRecoveryAncestor(repoRoot,policy.receipt_baseline_sha,sha);
+ for(const path of REVIEW_RECEIPTS){
+  const prior=runGit(repoRoot,['show',`${policy.receipt_baseline_sha}:${path}`]);
+  if(sha256(prior)!==policy.receipt_baseline_hashes[path])throw Error('recovery prior receipt bytes drift');
+  assertOperatorRecoveryReceipt(JSON.parse(String(prior)),JSON.parse(String(blob(path))));
+ }
+ const priorReport='docs/qa/operator-schema-recovery-source-renewal.json';
+ if(sha256(runGit(repoRoot,['show',`${policy.receipt_baseline_sha}:${priorReport}`]))!==policy.prior_source_report_sha256||sha256(blob(priorReport))!==policy.prior_source_report_sha256)throw Error('recovery historical source report changed');
  // Bind the retained readback's exact SQL identities to committed blobs as well.
  if(proof.mw3_outcome.sql.some((r:any)=>sha256(blob(r.path))!==r.sha256||blob(r.path).length!==r.bytes))throw Error('operator recovery MW3 SQL bytes changed');
  return {...baseline,recovery:{run_id:policy.failed_run_id,sha:policy.failed_sha,proof_hash:policy.proof.sha256}};
