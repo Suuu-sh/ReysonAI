@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync, rmSync, lstatSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve, join } from 'node:path';
-import { bridgeOrigin, runBridge, validateBridgeJob } from '../scripts/aiv2-postflop-ondemand-bridge.ts';
+import { bridgeOrigin, runBridge, validateBridgeJob, bridgeTransportDiagnostic } from '../scripts/aiv2-postflop-ondemand-bridge.ts';
 import { CONFIG, DEFAULT_STORE, implementationHash, loadRoot } from '../scripts/aiv2-postflop-ondemand-store.ts';
 import { postflopHash as hash } from '../scripts/aiv2-postflop-ondemand.ts';
 
@@ -436,4 +436,37 @@ test('lease confirmation pending fences response save and correction dispatch un
    if(outcome==='confirmed'){assert.equal(result.error,null);assert.equal(result.result!.decisions,1);assert.equal(calls,1);assert.equal(existsSync(join(f.root,'decisions',childId+'.json')),true);}else{assert.ok(result.error);assert.equal(calls,outcome==='correction'?2:1);assert.equal(existsSync(join(f.root,'decisions',childId+'.json')),false);assert.equal(f.requests.some(r=>r.action==='complete'),false);}
   }finally{release();f.cleanup();}
  }
+});
+
+test('transport diagnostics whitelist exception names and cause codes without retaining arbitrary fields',()=>{
+ const context={action:'complete',phase:'completion_upload',stage:'fetch',timeoutFired:true,elapsedMs:15003,serializationMs:2,bodyBytes:123456,concurrentAtStart:16,inFlightRequests:9};
+ const error=Object.assign(new Error('SECRET-message'),{name:'TimeoutError',cause:{code:'UND_ERR_CONNECT_TIMEOUT',hostname:'SECRET-host',stack:'SECRET-stack'},body:'SECRET-body',authorization:'SECRET-auth'});
+ const detail=bridgeTransportDiagnostic(error,context)!;assert.equal(detail.name,'TimeoutError');assert.equal(detail.causeCode,'UND_ERR_CONNECT_TIMEOUT');assert.equal(detail.timeoutFired,true);assert.equal(detail.timeoutMs,15000);assert.equal(detail.bodyBytes,123456);assert.equal(detail.inFlightRequests,9);assert.equal(JSON.stringify(detail).includes('SECRET'),false);
+ for(const code of ['ENOTFOUND','EAI_AGAIN','ECONNRESET','CERT_HAS_EXPIRED','EMFILE'])assert.equal(bridgeTransportDiagnostic({name:'TypeError',cause:{code}},context)!.causeCode,code);
+ const unknown=bridgeTransportDiagnostic({name:'SECRET-name',cause:{code:'SECRET-code'}},{...context,elapsedMs:Infinity,bodyBytes:-1,inFlightRequests:9999})!;assert.equal(unknown.name,'UnknownError');assert.equal(unknown.causeCode,'UNCLASSIFIED');assert.equal(unknown.elapsedMs,null);assert.equal(unknown.bodyBytes,null);assert.equal(unknown.inFlightRequests,null);assert.equal(JSON.stringify(unknown).includes('SECRET'),false);assert.equal(bridgeTransportDiagnostic(error,{...context,phase:'SECRET-phase'}),undefined);
+});
+test('transport diagnostics persist sanitized fetch rejection and distinguish response-body failure without blind retry',async()=>{
+ for(const stage of ['fetch','response_json']){
+  const f=await fixture(['check'],true);let attempts=0;
+  try{
+   const fetcher=async(url:any,init:any)=>{
+    if(String(url).endsWith('/complete')){attempts++;const error=Object.assign(Error('SECRET-url-token-body'),{name:stage==='fetch'?'TypeError':'TimeoutError',cause:{code:'ECONNRESET',message:'SECRET-detail'}});if(stage==='fetch')throw error;const response=Response.json({ok:true});Object.defineProperty(response,'json',{value:async()=>{throw error;}});return response;}
+    return f.options.fetch(url,init);
+   };
+   await assert.rejects(runBridge({...f.options,fetch:fetcher as typeof fetch,providerFactory:()=>{throw Error('cache only');}}));
+   const j=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8')),d=j.diagnostics.first_failure;
+   assert.equal(attempts,1);assert.equal(j.status,'completion_pending');assert.equal(d.code,stage==='fetch'?'bridge_transport_uncertain':'bridge_response_invalid');assert.equal(d.phase,'completion_upload');assert.equal(d.transport.stage,stage);assert.equal(d.transport.action,'complete');assert.equal(d.transport.phase,'completion_upload');assert.equal(d.transport.causeCode,'ECONNRESET');assert.equal(d.transport.timeoutFired,false);assert.equal(d.transport.concurrentAtStart,1);assert.equal(d.transport.inFlightRequests,1);assert.ok(d.transport.bodyBytes>100);assert.ok(d.transport.elapsedMs>=0);assert.equal(JSON.stringify(j.diagnostics).includes('SECRET'),false);assert.equal(JSON.stringify(j.diagnostics).includes('leaseToken'),false);
+  }finally{f.cleanup();}
+ }
+});
+test('transport diagnostics retain recovered lease rejection separately from first failure',async()=>{
+ const f=await fixture(['check'],true);let beats=0;
+ try{
+  const fetcher=async(url:any,init:any)=>{
+   if(String(url).endsWith('/heartbeat')&&JSON.parse(init.body).id&&++beats===1)throw Object.assign(new Error('SECRET-TLS-host'),{name:'TypeError',cause:{code:'CERT_HAS_EXPIRED',certificate:'SECRET-cert'}});
+   return f.options.fetch(url,init);
+  };
+  const result=await runBridge({...f.options,concurrency:2,fetch:fetcher as typeof fetch,providerFactory:()=>{throw Error('cache only');}});
+  const d=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8')).diagnostics;assert.equal(result.calls,0);assert.equal(beats,2);assert.equal(d.first_failure,null);assert.equal(d.lease_heartbeat_transport_retries[0].outcome,'confirmed');assert.equal(d.lease_heartbeat_transport_retries[0].transport.causeCode,'CERT_HAS_EXPIRED');assert.equal(d.lease_heartbeat_transport_retries[0].transport.phase,'lease_heartbeat');assert.equal(JSON.stringify(d).includes('SECRET'),false);
+ }finally{f.cleanup();}
 });

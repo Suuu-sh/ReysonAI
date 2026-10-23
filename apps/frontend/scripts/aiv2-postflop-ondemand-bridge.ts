@@ -32,21 +32,48 @@ type Options = {
 };
 const isHash=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v);
 const failure=(code:string)=>Object.assign(new Error(code),{code});
+// Safe transport metadata only: never copy exception messages, stacks, URLs or bodies.
+const TRANSPORT_NAMES=new Set(['TimeoutError','AbortError','TypeError','Error','AggregateError']);
+const TRANSPORT_CAUSES=new Set(['ECONNRESET','ECONNREFUSED','ENOTFOUND','EAI_AGAIN','ETIMEDOUT','EHOSTUNREACH','ENETUNREACH','EPIPE','EMFILE','ENFILE','ABORT_ERR','UND_ERR_CONNECT_TIMEOUT','UND_ERR_HEADERS_TIMEOUT','UND_ERR_BODY_TIMEOUT','UND_ERR_SOCKET','UND_ERR_ABORTED','CERT_HAS_EXPIRED','ERR_TLS_CERT_ALTNAME_INVALID','DEPTH_ZERO_SELF_SIGNED_CERT','UNABLE_TO_VERIFY_LEAF_SIGNATURE','UNABLE_TO_GET_ISSUER_CERT_LOCALLY','ERR_SSL_WRONG_VERSION_NUMBER']);
+const TRANSPORT_PHASES=new Set(['lease_heartbeat','owner_heartbeat','claim','completion_upload','failure_upload']);
+type TransportDetail={action:string;phase:string;stage:string;name:string;causeCode:string|null;timeoutFired:boolean;timeoutMs:number;elapsedMs:number|null;serializationMs:number|null;bodyBytes:number|null;concurrentAtStart:number|null;inFlightRequests:number|null};
+function safeTransportDetail(value:any):TransportDetail|undefined{
+ if(!value||!['heartbeat','claim','complete','fail'].includes(value.action)||!TRANSPORT_PHASES.has(value.phase)||!['fetch','response_json'].includes(value.stage))return undefined;
+ const bounded=(n:unknown,max:number)=>Number.isSafeInteger(n)&&Number(n)>=0&&Number(n)<=max?Number(n):null;
+ return {action:value.action,phase:value.phase,stage:value.stage,name:TRANSPORT_NAMES.has(value.name)?value.name:'UnknownError',causeCode:TRANSPORT_CAUSES.has(value.causeCode)?value.causeCode:value.causeCode===null?null:'UNCLASSIFIED',timeoutFired:value.timeoutFired===true,timeoutMs:15_000,elapsedMs:bounded(value.elapsedMs,3_600_000),serializationMs:bounded(value.serializationMs,3_600_000),bodyBytes:bounded(value.bodyBytes,16*1024*1024),concurrentAtStart:bounded(value.concurrentAtStart,256),inFlightRequests:bounded(value.inFlightRequests,256)};
+}
+export function bridgeTransportDiagnostic(error:unknown,context:{action:string;phase:string;stage:string;timeoutFired:boolean;elapsedMs:number;serializationMs:number;bodyBytes:number;concurrentAtStart:number;inFlightRequests:number}){
+ return safeTransportDetail({...context,name:(error as any)?.name,causeCode:(error as any)?.cause?.code??null});
+}
+function bridgePoster(origin:string,bearer:string,fetcher:typeof fetch){
+ let inFlight=0;
+ return async(action:string,body:any)=>{
+  const serializationStart=performance.now(),serialized=JSON.stringify(body),serializationMs=Math.max(0,Math.round(performance.now()-serializationStart)),bodyBytes=Buffer.byteLength(serialized);
+  const signal=AbortSignal.timeout(15_000),started=performance.now(),concurrentAtStart=++inFlight;
+  const phase=action==='heartbeat'?(body?.id?'lease_heartbeat':'owner_heartbeat'):action==='claim'?'claim':action==='complete'?'completion_upload':'failure_upload';
+  const rejected=(code:string,error:unknown,stage:string)=>Object.assign(failure(code),{bridgeTransport:bridgeTransportDiagnostic(error,{action,phase,stage,timeoutFired:signal.aborted&&signal.reason?.name==='TimeoutError',elapsedMs:Math.max(0,Math.round(performance.now()-started)),serializationMs,bodyBytes,concurrentAtStart,inFlightRequests:inFlight})});
+  try{
+   let response:Response;try{response=await fetcher(origin+'/v1/aiv2/ondemand/owner/'+action,{method:'POST',headers:{authorization:'Bearer '+bearer,'content-type':'application/json'},body:serialized,redirect:'error',signal});}catch(error){throw rejected('bridge_transport_uncertain',error,'fetch');}
+   if(!response.ok)throw failure(response.status===409?'bridge_lease_conflict':'bridge_request_failed');
+   try{return await response.json() as any;}catch(error){throw rejected('bridge_response_invalid',error,'response_json');}
+  }finally{inFlight--;}
+ };
+}
 // Diagnostics never copy messages, prompts, outputs, stderr, unknown codes or capabilities.
 type DiagnosticPhase='startup'|'pin_validation'|'claim'|'job_validation'|'lease_heartbeat'|'idle_heartbeat'|'provider'|'decision_validation'|'completion_validation'|'completion_upload'|'failure_upload'|'provider_drain';
 function bridgeDiagnostics(){
  const started=Date.now(),codes=new Set(['quota_or_rate_limit','authentication_required','unsupported_model_effort_or_schema','upstream_error','process_failed','process_exited','transport_closed','session_lost','provider_closed','timeout','invalid_json','protocol_error','response_too_large','unexpected_server_request','missing_turn','missing_thread','model_or_effort_mismatch','unexpected_tool_call','overlapping_session_turn','session_closed_during_turn','bridge_transport_uncertain','bridge_lease_conflict','bridge_request_failed','bridge_response_invalid','pins_changed','budget_exhausted','invalid_or_stale_claim','snapshot_adapter_invalid','incomplete_validated_store','uncertain_provider_outcome','completion_upload_requires_explicit_retry','operator_scope_failed']);
  const code=(value:unknown)=>typeof value==='string'&&codes.has(value)?value:'unclassified_failure';
- type Cause={code:string;phase:DiagnosticPhase;at:string;elapsed_ms:number;job_id?:string};
- type Retry={code:string;phase:'lease_heartbeat';at:string;elapsed_ms:number;job_id:string;attempt:1;outcome:'pending'|'confirmed'|'failed';failure_code?:string};
+ type Cause={code:string;phase:DiagnosticPhase;at:string;elapsed_ms:number;job_id?:string;transport?:TransportDetail};
+ type Retry={code:string;phase:'lease_heartbeat';at:string;elapsed_ms:number;job_id:string;attempt:1;outcome:'pending'|'confirmed'|'failed';failure_code?:string;transport?:TransportDetail};
  const state:{first_failure:Cause|null;jobs:Record<string,{metrics:Record<string,unknown>[];failure?:Cause}>;lease_heartbeat_transport_retries:Retry[]}={first_failure:null,jobs:{},lease_heartbeat_transport_retries:[]};
  const job=(id:string)=>state.jobs[id]??={metrics:[]};
- return {state,recordHeartbeatRetry(id:string){
+ return {state,recordHeartbeatRetry(id:string,error:unknown){
   if(!isHash(id)||state.lease_heartbeat_transport_retries.length>=64)throw failure('bridge_transport_uncertain');
-  const retry:Retry={code:'bridge_transport_uncertain',phase:'lease_heartbeat',at:new Date().toISOString(),elapsed_ms:Math.max(0,Date.now()-started),job_id:id,attempt:1,outcome:'pending'};state.lease_heartbeat_transport_retries.push(retry);return retry;
+  const retry:Retry={code:'bridge_transport_uncertain',phase:'lease_heartbeat',at:new Date().toISOString(),elapsed_ms:Math.max(0,Date.now()-started),job_id:id,attempt:1,outcome:'pending'};const transport=safeTransportDetail((error as any)?.bridgeTransport);if(transport)retry.transport=transport;state.lease_heartbeat_transport_retries.push(retry);return retry;
  },safeCode:code,recordFailure(error:unknown,phase:DiagnosticPhase,id?:string){
   const cause:Cause={code:code((error as any)?.code),phase,at:new Date().toISOString(),elapsed_ms:Math.max(0,Date.now()-started)};
-  if(isHash(id))cause.job_id=id;
+  if(isHash(id))cause.job_id=id;const transport=safeTransportDetail((error as any)?.bridgeTransport);if(transport)cause.transport=transport;
   state.first_failure??=cause;if(isHash(id))job(id).failure??=cause;
  },recordMetric(id:string,value:any){
   if(!isHash(id)||!value||typeof value!=='object')return;
@@ -68,7 +95,7 @@ function confirmedLeaseHeartbeat(send:()=>Promise<void>,id:string,diagnostics:Re
   if(stopped())throw failure('uncertain_provider_outcome');
   try{await send();}catch(error){
    if((error as any)?.code!=='bridge_transport_uncertain'||retried||stopped())throw error;
-   retried=true;const retry=diagnostics.recordHeartbeatRetry(id);persist();
+   retried=true;const retry=diagnostics.recordHeartbeatRetry(id,error);persist();
    try{if(stopped())throw failure('uncertain_provider_outcome');await send();retry.outcome='confirmed';persist();}
    catch(finalError){retry.outcome='failed';retry.failure_code=diagnostics.safeCode((finalError as any)?.code);persist();throw finalError;}
   }
@@ -139,11 +166,7 @@ export async function runBridge(options:Options):Promise<BridgeResult>{
  try{
   const bearer=readBearer(options.bearerFile),fetcher=options.fetch??fetch;
   // Never reflect network/provider response bodies, messages, or the owner bearer.
-  const post=async(action:string,body:unknown)=>{
-   let response:Response;try{response=await fetcher(origin+'/v1/aiv2/ondemand/owner/'+action,{method:'POST',headers:{authorization:'Bearer '+bearer,'content-type':'application/json'},body:JSON.stringify(body),redirect:'error',signal:AbortSignal.timeout(15_000)});}catch{throw failure('bridge_transport_uncertain');}
-   if(!response.ok)throw failure(response.status===409?'bridge_lease_conflict':'bridge_request_failed');
-   try{return await response.json() as any;}catch{throw failure('bridge_response_invalid');}
-  };
+  const post=bridgePoster(origin,bearer,fetcher);
   const previous=existsSync(journalFile)?JSON.parse(readFileSync(journalFile,'utf8')):null;
   if(options.retryCompletion){
    // Explicit upload-only retry. Do not claim, instantiate a provider, or generate.
@@ -285,11 +308,7 @@ async function runParallelBridge(options:Options):Promise<BridgeResult>{
  });
  try{
   const bearer=readBearer(options.bearerFile),fetcher=options.fetch??fetch;
-  const post=async(action:string,body:unknown)=>{
-   let response:Response;try{response=await fetcher(origin+'/v1/aiv2/ondemand/owner/'+action,{method:'POST',headers:{authorization:'Bearer '+bearer,'content-type':'application/json'},body:JSON.stringify(body),redirect:'error',signal:AbortSignal.timeout(15_000)});}catch{throw failure('bridge_transport_uncertain');}
-   if(!response.ok)throw failure(response.status===409?'bridge_lease_conflict':'bridge_request_failed');
-   try{return await response.json() as any;}catch{throw failure('bridge_response_invalid');}
-  };
+  const post=bridgePoster(origin,bearer,fetcher);
   const previous=existsSync(journalFile)?JSON.parse(readFileSync(journalFile,'utf8')):null;
   if(options.retryCompletion){
    if((operatorBatchId||previous?.operatorBatchId)&&previous?.operatorBatchId!==operatorBatchId)throw failure('completion_scope_changed');
