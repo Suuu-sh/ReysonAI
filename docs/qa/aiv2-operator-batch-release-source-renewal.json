@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "kind": "operator-batch-release-source-only-preservation-proof",
+  "status": "independently-reviewed-source-only",
+  "reviewed_at_utc": "2026-10-23T07:51:53.116Z",
+  "author_task": "/root/parallel_safety_review",
+  "independent_reviewer": {
+    "task": "/root/operator_broker",
+    "runtime_model": "not-exposed",
+    "scope": "Read-only exact three CI source diffs plus final receipt preservation; not numerical/strategy/GTO approval",
+    "source_review": "No actionable findings: additive0015 fingerprint/output/gate; exact schema readback before API; no strategy input/import scope broadened; executed production-write prevents benign lineage recovery."
+  },
+  "baseline_commit": "1dc784f5a606d5f9d9523ae0d393ab9961aabcf6",
+  "source_candidate_commit": "d81e94496386c22cb1ab88dc00f04d5e2ec9579a",
+  "clean_snapshot": "Canonical sources materialized from exact committed Git blobs only. Unrelated dirty datasets.ts and three untracked AIv2 imports excluded. Collector implementations, roots, import traversal, ordering and exact equality checks unchanged.",
+  "source_changes": [
+    {
+      "stage": 2,
+      "before_source_count": 205,
+      "after_source_count": 205,
+      "added": [],
+      "removed": [],
+      "changes": [
+        {
+          "before": {
+            "path": ".github/workflows/deploy-worker.yml",
+            "bytes": 30925,
+            "sha256": "ed41354e6f2e88122fef372ea09e2e37547cc481bb1ef866494b37902add98b7"
+          },
+          "after": {
+            "path": ".github/workflows/deploy-worker.yml",
+            "bytes": 32010,
+            "sha256": "8603d563f2f9ce3c2e729b766d4a01b997c168600a995d6bc0979b2541132550"
+          }
+        },
+        {
+          "before": {
+            "path": "scripts/ci/deployment-scope.test.ts",
+            "bytes": 46475,
+            "sha256": "0d485a28adbd14d7549c48c4e65f2cb251d830ddabc255139a65d804c171785c"
+          },
+          "after": {
+            "path": "scripts/ci/deployment-scope.test.ts",
+            "bytes": 49984,
+            "sha256": "abef3a564a55cb17752e0c0a7675258c49417222d73c8bdd7a65f70a479126f2"
+          }
+        },
+        {
+          "before": {
+            "path": "scripts/ci/deployment-scope.ts",
+            "bytes": 33798,
+            "sha256": "3bed19652756ff1b79ee26274aa0944b590b5ec2db1d420d0acbba395d9f1e28"
+          },
+          "after": {
+            "path": "scripts/ci/deployment-scope.ts",
+            "bytes": 34108,
+            "sha256": "ba05c69c21a0d4e85d3ddad4e5be7c81b8f0cc032639581940b15c5a3045d47f"
+          }
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "before_source_count": 106,
+      "after_source_count": 106,
+      "added": [],
+      "removed": [],
+      "changes": [
+        {
+          "before": {
+            "path": ".github/workflows/deploy-worker.yml",
+            "bytes": 30925,
+            "sha256": "ed41354e6f2e88122fef372ea09e2e37547cc481bb1ef866494b37902add98b7"
+          },
+          "after": {
+            "path": ".github/workflows/deploy-worker.yml",
+            "bytes": 32010,
+            "sha256": "8603d563f2f9ce3c2e729b766d4a01b997c168600a995d6bc0979b2541132550"
+          }
+        },
+        {
+          "before": {
+            "path": "scripts/ci/deployment-scope.test.ts",
+            "bytes": 46475,
+            "sha256": "0d485a28adbd14d7549c48c4e65f2cb251d830ddabc255139a65d804c171785c"
+          },
+          "after": {
+            "path": "scripts/ci/deployment-scope.test.ts",
+            "bytes": 49984,
+            "sha256": "abef3a564a55cb17752e0c0a7675258c49417222d73c8bdd7a65f70a479126f2"
+          }
+        },
+        {
+          "before": {
+            "path": "scripts/ci/deployment-scope.ts",
+            "bytes": 33798,
+            "sha256": "3bed19652756ff1b79ee26274aa0944b590b5ec2db1d420d0acbba395d9f1e28"
+          },
+          "after": {
+            "path": "scripts/ci/deployment-scope.ts",
+            "bytes": 34108,
+            "sha256": "ba05c69c21a0d4e85d3ddad4e5be7c81b8f0cc032639581940b15c5a3045d47f"
+          }
+        }
+      ]
+    }
+  ],
+  "preservation": [
+    {
+      "stage": 2,
+      "artifact_record_count": 1888,
+      "artifact_records_sha256": "60179b68d2fe722deb3ac93f7db76101b065ee9453d397377a0db8550d73e73e",
+      "archive": {
+        "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+        "bytes": 1747857,
+        "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+        "format": "ustar+gzip"
+      },
+      "archive_materialized_bytes_rehashed": true,
+      "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+      "counts": {
+        "catalog": 3115,
+        "saved": 1611,
+        "unreachable": 1504,
+        "hands": 272259
+      },
+      "original_review_sha256": "17f8ea0ba36f26311f30b59ada348033465372417edb5c817e0377a07bd94feb",
+      "tracked_artifact_or_archive_changes_since_baseline": []
+    },
+    {
+      "stage": 3,
+      "artifact_record_count": 1805,
+      "artifact_records_sha256": "5ee2be29e51a468e8e58fb9dcee0cc9017de1118e34ba4eb66986524aa542937",
+      "archive": {
+        "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+        "bytes": 2436451,
+        "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+        "format": "ustar+gzip-stage3-content-v1"
+      },
+      "archive_materialized_bytes_rehashed": true,
+      "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+      "counts": {
+        "catalog": 16132,
+        "saved": 1801,
+        "unreachable": 5621,
+        "rare": 8710,
+        "hands": 304369
+      },
+      "original_review_sha256": "6d0afd9eebb7fc0db1767a5dfedd78126836b1abd25d0470255dadca50401c20",
+      "tracked_artifact_or_archive_changes_since_baseline": []
+    }
+  ],
+  "scope": "Canonical source-only receipt amendment for three legitimate CI release integrations plus final renewed Stage2 receipt binding in Stage3. Preserve every prior receipt field except current sources/content_sha256, append new amendment only. No numerical generation, strategy-quality/GTO, semantic-policy, archive acceptance, runtime, UI, production or deployment approval is renewed.",
+  "verification": [
+    "Exact committed canonical source records compared before renewal: only three CI files changed per stage.",
+    "All historical artifact records, archives, fingerprints, counts, review metadata and old amendments preserved.",
+    "Both materialized archive byte counts and raw SHA256 rehashed against old receipts.",
+    "No tracked numerical artifact or archive path changed from last deployed main to candidate.",
+    "Renew in dependency order Stage2 then Stage3, binding exact final Stage2 raw bytes.",
+    "Final independent preservation and canonical-identity check requested before commit; normal CI remains required."
+  ],
+  "limitations": [
+    "No archive unpacking or poker numerical recomputation in this source-only amendment.",
+    "No guard weakening, historical review replacement, source collection exclusions or strategy self-approval.",
+    "Dirty developer files intentionally remain outside candidate source closure."
+  ]
+}
