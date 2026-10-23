@@ -1,0 +1,168 @@
+{
+  "schema_version": "aiv2-postflop-reviewed-regeneration-review-v1",
+  "approved": false,
+  "scope": "dashboard-data-content-only",
+  "run_id": "4cf32b71efd09dddfea2de266d93a28f7a0ed791a25bc9c1bd96182ad86324a5",
+  "run_plan_raw_file_sha256": "f7badb38fbf47d2603a544662e25585a1983671018dcec2fad0002ef4f51534b",
+  "reviewed_at_utc": "2026-10-21T10:28:39.988005+00:00",
+  "reviewer": {
+    "actor": "independent-reviewer-first-release-review",
+    "model": null,
+    "relationship": "independent-review",
+    "evidence": [
+      "Separate review agent; reviewer runtime model identity is not independently attested.",
+      "No policy generation, model-provider call, existing-test rerun or original-artifact modification performed by this reviewer."
+    ]
+  },
+  "artifacts": [
+    {
+      "slot": "flop-btn",
+      "source": "original",
+      "decision_id": "1ae33fd719b2a4c8186c3a241d86f301216326384b9b83e82154db305a6ed028",
+      "raw_file_sha256": "1c104ca948525e43598a074c334eb91ebaf20ba2d004794a78ca059818ce595d",
+      "revision_raw_file_sha256": null
+    },
+    {
+      "slot": "turn-bb",
+      "source": "original",
+      "decision_id": "52ef028be959308231f9123c14d061d783a33c8db3e987246a8f28f03e767b4e",
+      "raw_file_sha256": "e2341805c8184943f4a7d2be65b5eb57991b1f57c89d71b38c293ecaa5d1e399",
+      "revision_raw_file_sha256": null
+    },
+    {
+      "slot": "turn-btn",
+      "source": "reviewed-regeneration",
+      "decision_id": "388dca97e802cd590dd1d8d76605019b256f6acc13a717abc0dbbfe735c1c1ea",
+      "raw_file_sha256": "a8342186df25956e184e8d258b912371efa066ba5f54aed77b6eb12acee146c5",
+      "revision_raw_file_sha256": "ec8a75e9882902bd94858ddd3c25d49e6101dbc84fb3f795c67e66d8f567a250"
+    },
+    {
+      "slot": "river-bb",
+      "source": "reviewed-regeneration",
+      "decision_id": "70b6346ea77c604cf3cfe3535f5cd586d39bb55bb269edf40e090f4929e25f46",
+      "raw_file_sha256": "99436c99ed0ee9b8822ffbf675a26fe4c03fea85ade9e441cd40333add7fcfe2",
+      "revision_raw_file_sha256": "522e7730da1e7963d6b6eaf0ab7d97d6162329a3aef758440ef11ed381374a18"
+    },
+    {
+      "slot": "river-btn",
+      "source": "reviewed-regeneration",
+      "decision_id": "0e3689e995bf6f0c3e5806be168ced94dde96fe7f41a52294f409215d8a08598",
+      "raw_file_sha256": "4a7fc72412d5c58fc5ed4982a835e4d09275a0bdab15c6217b13848a982d6ba5",
+      "revision_raw_file_sha256": "62261b313e9e81a03df4c51aa21ac64e9aee025e41ad589136a0790e006708be"
+    }
+  ],
+  "findings": [
+    {
+      "id": "new-river-bb-a9-shared-reason-scope",
+      "severity": "explanation-error",
+      "decision_id": "70b6346ea77c604cf3cfe3535f5cd586d39bb55bb269edf40e090f4929e25f46",
+      "artifact_raw_file_sha256": "99436c99ed0ee9b8822ffbf675a26fe4c03fea85ade9e441cd40333add7fcfe2",
+      "source_path": "source_response.groups[3].text / text_ja; combos[hand=A9s or A9o].text / text_ja",
+      "affected_combos": [
+        "Ah9s",
+        "Ah9d",
+        "Ah9c",
+        "Ad9s",
+        "Ad9d",
+        "Ad9c",
+        "Ac9s",
+        "Ac9d",
+        "Ac9c"
+      ],
+      "warning": {
+        "en": "Saved shared-reason scope error: A9 is the highest two pair on As7d2c9h3s. The phrase that BTN retains stronger two pair is inapplicable to these nine A9 combos. BTN sets and 54 can still beat A9. The original frequencies and reasons are preserved; they are not cleanly approved for publication.",
+        "ja": "保存された共通理由の適用範囲に誤りがあります。As7d2c9h3sではA9が最高のツーペアのため、「BTNの上位ツーペア」という句は、このA9の9コンボには当てはまりません。BTNのセットと54には引き続き負けます。元の頻度と理由は保持しており、問題なしとして公開承認したものではありません。"
+      },
+      "evidence": {
+        "board": "As7d2c9h3s",
+        "claim_en": "Keep substantial checks because BTN still has stronger two pair, sets and 54.",
+        "claim_ja": "BTNの上位ツーペア・セット・54を考慮し、相応にチェックも残す。",
+        "highest_two_pair_ranks": [
+          "A",
+          "9"
+        ],
+        "saved_mix": {
+          "check": 35,
+          "bet33": 0,
+          "bet66": 0,
+          "bet100": 65,
+          "bet125": 0
+        },
+        "interpretation": "The stronger-two-pair clause is false for A9, although the sets/54 clauses remain valid. This factual explanation defect does not by itself prove the frequencies are wrong."
+      }
+    }
+  ],
+  "node_reviews": [
+    {
+      "slot": "turn-btn",
+      "reviewed_groups": 13,
+      "reviewed_positive_actor_combos": 617,
+      "result": "no-new-scoped-factual-or-bilingual-mismatch-found",
+      "notes": [
+        "All four 85s combos explicitly have a gutshot completed by any 6 and no flush draw; check80/bet66=20.",
+        "Set, two-pair, top-pair, gutshot, open-ended and no-one-card-straight-completion group claims checked against exact cards; no mismatch found.",
+        "BTN set own-reach3.9 exceeds BB0.66, supporting the summary comparison.",
+        "bet100 and bet125 have zero allocation; no forced quota or specific 85s frequency is claimed."
+      ]
+    },
+    {
+      "slot": "river-bb",
+      "reviewed_groups": 14,
+      "reviewed_positive_actor_combos": 770,
+      "result": "shared-reason-scope-finding",
+      "notes": [
+        "Old A-high overpair terminology error removed.",
+        "Both retain54: BTN0.75 and BB2.76 before BB river decision.",
+        "Heart blocker claims checked against current BTN reaches: 5h4h0.30 versus other54s0.15; Ah6h0.3575 versus Ad6d/Ac6c0.26.",
+        "bet66 and bet125 have zero allocation; small thin value plus one pot-sized polar branch is consistent with saved frequencies.",
+        "A9 shared-reason scope error remains as the explicit finding."
+      ]
+    },
+    {
+      "slot": "river-btn",
+      "reviewed_groups": 15,
+      "reviewed_positive_actor_combos": 604,
+      "result": "no-new-scoped-factual-or-bilingual-mismatch-found",
+      "notes": [
+        "Read all fifteen EN/JA groups and summary against the current public history and ranges.",
+        "Both ranges retain54 after BB check: BTN0.75, BB0.276; the old exclusive-BTN-nuts claim is not reused.",
+        "KK/QQ explicitly described as pocket pairs below the board ace, not overpairs.",
+        "85s turn gutshot is correctly described as missed on river3; one-pair, set, two-pair and unpaired category checks found no mismatch.",
+        "bet66 and bet125 have zero allocation; selected pot-sized bluffs accompany pot-sized value without a stated mathematical quota."
+      ]
+    }
+  ],
+  "lineage_checks": {
+    "result": "matched-exact-reviewed-three-node-chain",
+    "implementation_hash": "3b0c9a790e574f51b9aba6dab7f3d614bd7e8a74e9e14c7bb1e0832a13198377",
+    "chain": [
+      "52ef028be959308231f9123c14d061d783a33c8db3e987246a8f28f03e767b4e",
+      "388dca97e802cd590dd1d8d76605019b256f6acc13a717abc0dbbfe735c1c1ea",
+      "70b6346ea77c604cf3cfe3535f5cd586d39bb55bb269edf40e090f4929e25f46",
+      "0e3689e995bf6f0c3e5806be168ced94dde96fe7f41a52294f409215d8a08598"
+    ],
+    "checks": [
+      "Each new generation revision self-hash, run_id, exact raw artifact SHA, parent raw SHA, parent policy hash and new decision ID matched.",
+      "Each public history appends the exact NEW parent decision_id/policy_hash and saved check action.",
+      "For each transition, independently compared all2652 seat/combo range entries: multiply only the acting seat by its saved check frequency; zero board-blocked combos; retain opponent weights otherwise.",
+      "Each new record reports attempts=1 and provider-confirmed gpt-6.1-sol/medium. This is persisted provider metadata, not an independent replay of the provider session.",
+      "The two retained original nodes match raw hashes in the unchanged original failed-review report."
+    ],
+    "run_plan_identity_verified": true
+  },
+  "selection_assessment": {
+    "production_approved": false,
+    "clean_dashboard_active_selection_approved": false,
+    "candidate_inspection_only": "The new lineage can be inspected as candidate data with an explicit exact-artifact-bound warning that leaves original reasons/frequencies unchanged. This report does not authorize activation or publication.",
+    "approved_false_resolver_behavior": "Retain original five-node selection and existing artifact-bound warnings; do not treat numeric consistency as semantic approval.",
+    "no_additional_generation_requested": true
+  },
+  "limitations": [
+    "Limited factual/bilingual and parent-range audit, not GTO/solver proof, exploitability analysis, a proof of poker optimality or full-tree coverage.",
+    "No clean approval of the new three-node policy set because the river BB shared-reason defect remains.",
+    "No preflop85 semantic certification, combined production-publication payload approval, deployment or live-browser certification.",
+    "Normal1response per new node is evidenced by stored records; no additional generation or regeneration is authorized."
+  ],
+  "original_review_raw_sha256": "7729cfcf3aa919e0cd9d94de0fa8b7ff73500de15d88d982415fed0e2ab2ed88",
+  "preservation": "Original five decision files and the prior failed-review report remain unchanged. This new report is separate."
+}

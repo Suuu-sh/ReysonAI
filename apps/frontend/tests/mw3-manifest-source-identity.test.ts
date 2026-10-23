@@ -20,6 +20,13 @@ const EXTRAS = [ADAPTER, INVENTORY, REVIEW, EVIDENCE,
   'apps/frontend/scripts/postflop-ai/later-policy.d.mts',
   'apps/frontend/scripts/postflop-ai/mw3-typescript-source-identity-pairs.json',
   'apps/frontend/scripts/postflop-ai/policy.d.mts', 'configs/source-identity-typescript.review.json'].sort();
+const EXTENSION = 'apps/frontend/scripts/postflop-ai/mw3-verification-preservation-extension.ts';
+const EXT_PROPOSAL = 'configs/source-identity-mw3-verification-preservation.json';
+const EXT_REVIEW = 'configs/source-identity-mw3-verification-preservation.review.json';
+const EXT_BASELINE = 'apps/frontend/docs/mw3-source-identity/verification-preservation-adapter-baseline.json';
+const EXT_EXTRAS = [EXT_BASELINE, EXTENSION, EXT_PROPOSAL, EXT_REVIEW];
+const CURRENT_EXTRAS = [...EXTRAS, ...EXT_EXTRAS].sort();
+const PRESERVATION_PATHS = ['apps/frontend/scripts/ci/mw3-local-d1-oracle.ts', 'apps/frontend/scripts/verify-preflop-local-d1.ts'];
 const RECIPE_PATHS = ['apps/frontend/scripts/data/mw3-authored/context-judgments.mjs', 'apps/frontend/scripts/data/mw3-authored/emit.mjs',
   'apps/frontend/scripts/data/mw3-authored/registry.mjs', 'apps/frontend/scripts/data/mw3-co-btn-bb-authored.mjs'];
 const SPOTS = ['CO_open_BTN_call_BB_call', 'CO_open_BTN_call_SB_call', 'HJ_open_BTN_call_BB_call', 'HJ_open_BTN_call_SB_call',
@@ -41,10 +48,14 @@ function fixture(t: any) {
     return { historical: { path, bytes: historicalBytes.length, sha256: sha(historicalBytes) },
       current: { path: currentPath, bytes: currentBytes.length, sha256: sha(currentBytes) }, classification: 'typescript-source-parity' };
   });
-  for (let i = 0; i < 148; i++) {
+  for (let i = 0; i < 146; i++) {
     const path = `fixture/source-${String(i).padStart(3, '0')}.mjs`, body = Buffer.from(`source ${i}\n`), currentPath = `fixture/source-${String(i).padStart(3, '0')}.mjs`;
     put(root, currentPath, body);
     rows.push({ historical: { path, bytes: body.length, sha256: sha(body) }, current: { path: currentPath, bytes: body.length, sha256: sha(body) }, classification: 'exact-byte-identity' });
+  }
+  for (const path of PRESERVATION_PATHS) {
+    const historicalPath=path.replace(/\.ts$/, '.mjs'), prior=Buffer.from('synthetic prior preservation helper '+path), current=Buffer.from('synthetic extended preservation helper '+path);
+    put(root,path,current); rows.push({historical:{path:historicalPath,bytes:prior.length,sha256:sha(prior)},current:{path,bytes:prior.length,sha256:sha(prior)},classification:'typescript-source-parity'});
   }
   rows.sort((a, b) => a.historical.path.localeCompare(b.historical.path));
   for (const path of EXTRAS.filter(path => ![ADAPTER, INVENTORY, REVIEW, EVIDENCE].includes(path))) put(root, path, `extra ${path}\n`);
@@ -72,16 +83,20 @@ function fixture(t: any) {
   put(root, INVENTORY, json(inventory));
   const review = { schema_version: 1, kind: 'mw3-typescript-archive-source-compatibility-review', status: 'approved', scope: 'source-only-no-strategy-or-runtime-renewal',
     baseline_commit: 'df2370690e9b3172f2c109f80113b320880f940a', source_head_sha: 'a'.repeat(40), reviewer: 'synthetic test only', requested_model: 'gpt-6.1-sol',
-    runtime_model_attestation: 'unavailable in synthetic fixture', inventory_sha256: sha(readFileSync(join(root, INVENTORY))), adapter_sha256: sha(helper),
+    runtime_model_attestation: 'unavailable in synthetic fixture', inventory_sha256: sha(readFileSync(join(root, INVENTORY))), adapter_sha256: sha("synthetic old adapter bytes"),
     evidence_sha256: sha(readFileSync(join(root, EVIDENCE))), source_count: 152, extra_current_paths: EXTRAS };
   put(root, REVIEW, json(review));
-  return { root, inventory, rows, evidence, review, saveInventory: () => { put(root, INVENTORY, json(inventory)); review.inventory_sha256 = sha(readFileSync(join(root, INVENTORY))); put(root, REVIEW, json(review)); },
+  const validator=readFileSync(new URL('../../../'+EXTENSION,import.meta.url));put(root,EXTENSION,validator);
+  const extensionProposal={schema_version:1,kind:'mw3-verification-preservation-extension-proposal',status:'source-only-proposal',scope:'verification-preservation-only-no-numerical-or-gto-renewal',author_task:'/root/production_path',rows:PRESERVATION_PATHS.map(path=>({classification:'verification-preservation-extension',prior:rows.find(row=>row.current.path===path).current,current:{path,bytes:readFileSync(join(root,path)).length,sha256:sha(readFileSync(join(root,path)))}}))};
+  put(root,EXT_PROPOSAL,json(extensionProposal));put(root,EXT_BASELINE,json({schema_version:1,kind:'mw3-preservation-legacy-adapter-bytes',path:ADAPTER,source:'synthetic old adapter bytes'}));
+  const extensionReview={schema_version:1,kind:'mw3-verification-preservation-extension-review',status:'approved',scope:extensionProposal.scope,reviewer:'synthetic contract fixture only',reviewer_task:'/synthetic-independent-review-not-real-approval',reviewer_model:'not-exposed',proposal_sha256:sha(readFileSync(join(root,EXT_PROPOSAL))),adapter_sha256:sha(helper),validator_sha256:sha(validator),baseline_snapshot_sha256:sha(readFileSync(join(root,EXT_BASELINE))),legacy_inventory_sha256:sha(readFileSync(join(root,INVENTORY))),legacy_review_sha256:sha(readFileSync(join(root,REVIEW))),legacy_evidence_sha256:sha(readFileSync(join(root,EVIDENCE))),notes:['Synthetic fixture only; no real approval.']};put(root,EXT_REVIEW,json(extensionReview));
+  return { extensionProposal, extensionReview, root, inventory, rows, evidence, review, saveInventory: () => { put(root, INVENTORY, json(inventory)); review.inventory_sha256 = sha(readFileSync(join(root, INVENTORY))); put(root, REVIEW, json(review)); },
     saveReview: () => put(root, REVIEW, json(review)), load: () => import(pathToFileURL(join(root, ADAPTER)).href) };
 }
 
 test('synthetic approved inventory maps exact historical manifest paths to current bytes', async t => {
   const f = fixture(t), api = await f.load();
-  const sourceRows = f.rows.slice(0, 8), currentPaths = [...sourceRows.map(row => row.current.path), ...EXTRAS].sort();
+  const sourceRows = f.rows.slice(0, 8), currentPaths = [...sourceRows.map(row => row.current.path), ...CURRENT_EXTRAS].sort();
   const manifestSources = sourceRows.map(row => row.historical).sort((a, b) => a.path.localeCompare(b.path));
   api.verifyMw3ArchivedSourceInventory(currentPaths, manifestSources);
   assert.deepEqual([...api.mw3ArchivedRecipeSources('CO_open_BTN_call_BB_call', readFileSync(join(f.root, f.inventory.accepted_manifests[0].manifest.path))).keys()].sort(), [...RECIPE_PATHS].sort());
@@ -89,16 +104,43 @@ test('synthetic approved inventory maps exact historical manifest paths to curre
 });
 
 for (const [name, mutate] of [
-  ['unknown current path', async (f, api) => assert.throws(() => api.verifyMw3ArchivedSourceInventory([...f.rows.slice(0, 1).map(r => r.current.path), ...EXTRAS, 'unreviewed/file.ts'], [f.rows[0].historical]), /source identity/)],
-  ['missing overlay dependency', async (f, api) => assert.throws(() => api.verifyMw3ArchivedSourceInventory(f.rows.slice(0, 1).map(r => r.current.path), [f.rows[0].historical]), /source identity/)],
-  ['changed current file', async (f, api) => { const row = f.rows[0]; put(f.root, row.current.path, 'mutated'); assert.throws(() => api.verifyMw3ArchivedSourceInventory([row.current.path, ...EXTRAS], [row.historical]), /source identity/); }],
-  ['changed historical record', async (f, api) => assert.throws(() => api.verifyMw3ArchivedSourceInventory([f.rows[0].current.path, ...EXTRAS], [{ ...f.rows[0].historical, sha256: '0'.repeat(64) }]), /source identity/)],
-  ['changed evidence', async (f, api) => { put(f.root, EVIDENCE, '{}\n'); assert.throws(() => api.verifyMw3ArchivedSourceInventory([f.rows[0].current.path, ...EXTRAS], [f.rows[0].historical]), /source identity/); }],
-  ['unapproved review', async (f, api) => { f.review.status = 'pending'; f.saveReview(); assert.throws(() => api.verifyMw3ArchivedSourceInventory([f.rows[0].current.path, ...EXTRAS], [f.rows[0].historical]), /source identity/); }],
-  ['eleventh current extra', async (f, api) => { f.review.extra_current_paths.push('unreviewed/extra.ts'); f.saveReview(); assert.throws(() => api.verifyMw3ArchivedSourceInventory([f.rows[0].current.path, ...EXTRAS], [f.rows[0].historical]), /source identity/); }],
-  ['changed pinned extra', async (f, api) => { const path = f.inventory.extra_current_sources[0].path; put(f.root, path, 'changed'); assert.throws(() => api.verifyMw3ArchivedSourceInventory([f.rows[0].current.path, ...EXTRAS], [f.rows[0].historical]), /source identity/); }],
+  ['unknown current path', async (f, api) => assert.throws(() => api.verifyMw3ArchivedSourceInventory([...f.rows.slice(0, 1).map((r:any) => r.current.path), ...CURRENT_EXTRAS, 'unreviewed/file.ts'], [f.rows[0].historical]), /source identity/)],
+  ['missing overlay dependency', async (f, api) => assert.throws(() => api.verifyMw3ArchivedSourceInventory(f.rows.slice(0, 1).map((r:any) => r.current.path), [f.rows[0].historical]), /source identity/)],
+  ['changed current file', async (f, api) => { const row = f.rows[0]; put(f.root, row.current.path, 'mutated'); assert.throws(() => api.verifyMw3ArchivedSourceInventory([row.current.path, ...CURRENT_EXTRAS], [row.historical]), /source identity/); }],
+  ['changed historical record', async (f, api) => assert.throws(() => api.verifyMw3ArchivedSourceInventory([f.rows[0].current.path, ...CURRENT_EXTRAS], [{ ...f.rows[0].historical, sha256: '0'.repeat(64) }]), /source identity/)],
+  ['changed evidence', async (f, api) => { put(f.root, EVIDENCE, '{}\n'); assert.throws(() => api.verifyMw3ArchivedSourceInventory([f.rows[0].current.path, ...CURRENT_EXTRAS], [f.rows[0].historical]), /source identity/); }],
+  ['unapproved review', async (f, api) => { f.review.status = 'pending'; f.saveReview(); assert.throws(() => api.verifyMw3ArchivedSourceInventory([f.rows[0].current.path, ...CURRENT_EXTRAS], [f.rows[0].historical]), /source identity/); }],
+  ['eleventh current extra', async (f, api) => { f.review.extra_current_paths.push('unreviewed/extra.ts'); f.saveReview(); assert.throws(() => api.verifyMw3ArchivedSourceInventory([f.rows[0].current.path, ...CURRENT_EXTRAS], [f.rows[0].historical]), /source identity/); }],
+  ['changed pinned extra', async (f, api) => { const path = f.inventory.extra_current_sources[0].path; put(f.root, path, 'changed'); assert.throws(() => api.verifyMw3ArchivedSourceInventory([f.rows[0].current.path, ...CURRENT_EXTRAS], [f.rows[0].historical]), /source identity/); }],
   ['changed recipe bytes', async (f, api) => { const bytes = readFileSync(join(f.root, f.inventory.accepted_manifests[0].manifest.path)); assert.throws(() => api.mw3ArchivedRecipeSources('CO_open_BTN_call_BB_call', Buffer.concat([bytes, Buffer.from('x')])), /source identity/); }],
   ['unknown accepted manifest', async (f, api) => assert.throws(() => api.assertMw3AcceptedArchive('future_spot', Buffer.from('{}')), /source identity/)],
   ['changed receipt bytes', async (f, api) => { const row = f.inventory.accepted_manifests[0]; put(f.root, row.receipt.path, 'changed'); assert.throws(() => api.assertMw3AcceptedArchive(row.spot, readFileSync(join(f.root, row.manifest.path))), /source identity/); }],
   ['changed accepted artifact', async (f, api) => assert.throws(() => api.assertMw3AcceptedArtifactBytes('CO_open_BTN_call_BB_call', new Map([['unknown', Buffer.from('x')]])), /source identity/)],
 ] as [string, (f: any, api: any) => Promise<void>][]) test(`synthetic archive adapter rejects ${name}`, async t => { const f = fixture(t), api = await f.load(); await mutate(f, api); });
+
+// Synthetic addendum authority exists only in each temporary fixture, never in
+// a normal repository receipt. Functional preservation is not TS/AST parity.
+for(const [name,mutate] of [
+ ['wrong prior pin',(f:any)=>{f.extensionProposal.rows[0].prior.sha256='0'.repeat(64);}],
+ ['fake extension path',(f:any)=>{f.extensionProposal.rows[0].current.path='unreviewed/arbitrary.ts';}],
+ ['relabelled TypeScript parity',(f:any)=>{f.extensionProposal.rows[0].classification='typescript-source-parity';}],
+ ['third extension row',(f:any)=>{f.extensionProposal.rows.push(structuredClone(f.extensionProposal.rows[0]));}],
+] as [string,(f:any)=>void][])test(`synthetic preservation addendum rejects ${name} even with matching proposal digest`,async t=>{
+ const f=fixture(t);mutate(f);put(f.root,EXT_PROPOSAL,json(f.extensionProposal));f.extensionReview.proposal_sha256=sha(readFileSync(join(f.root,EXT_PROPOSAL)));put(f.root,EXT_REVIEW,json(f.extensionReview));
+ const api=await f.load();assert.throws(()=>api.mw3ApprovedCurrentSourceRecords(),/source identity/);
+});
+for(const [name,mutate] of [
+ ['new adapter hash',(f:any)=>{f.extensionReview.adapter_sha256='0'.repeat(64);put(f.root,EXT_REVIEW,json(f.extensionReview));}],
+ ['pending review',(f:any)=>{f.extensionReview.status='pending-independent-review';put(f.root,EXT_REVIEW,json(f.extensionReview));}],
+ ['self review',(f:any)=>{f.extensionReview.reviewer_task='/root/production_path';put(f.root,EXT_REVIEW,json(f.extensionReview));}],
+ ['original receipt drift',(f:any)=>{put(f.root,REVIEW,Buffer.concat([readFileSync(join(f.root,REVIEW)),Buffer.from(' ')]));}],
+ ['unrelated legacy source drift',(f:any)=>{const row=f.rows.find((r:any)=>r.classification==='exact-byte-identity');put(f.root,row.current.path,'unapproved source drift');}],
+] as [string,(f:any)=>void][])test(`synthetic preservation addendum rejects ${name}`,async t=>{
+ const f=fixture(t);mutate(f);const api=await f.load();assert.throws(()=>api.mw3ApprovedCurrentSourceRecords(),/source identity/);
+});
+test('synthetic preservation addendum returns exact two new current pins and retains all legacy manifest pins',async t=>{
+ const f=fixture(t),api=await f.load(),records=api.mw3ApprovedCurrentSourceRecords();
+ for(const path of PRESERVATION_PATHS){const actual=readFileSync(join(f.root,path)),pin=records.find((r:any)=>r.path===path);assert.deepEqual(pin,{path,bytes:actual.length,sha256:sha(actual)});}
+ for(const path of EXT_EXTRAS)assert.equal(records.filter((r:any)=>r.path===path).length,1);
+ assert.equal(f.inventory.rows.length,152);assert.equal(f.inventory.accepted_manifests.length,16);assert.equal(f.inventory.archived_recipe_sources.length,4);
+});

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "mw3-verification-preservation-extension-proposal",
+  "status": "source-only-proposal",
+  "scope": "verification-preservation-only-no-numerical-or-gto-renewal",
+  "author_task": "/root/production_path",
+  "rows": [
+    {
+      "classification": "verification-preservation-extension",
+      "prior": {
+        "path": "apps/frontend/scripts/ci/mw3-local-d1-oracle.ts",
+        "bytes": 50190,
+        "sha256": "a23c85492777c8b4df293959c363030126bc62ae84642f07403289a41ee100b3"
+      },
+      "current": {
+        "path": "apps/frontend/scripts/ci/mw3-local-d1-oracle.ts",
+        "bytes": 50261,
+        "sha256": "287386599f433aa31ac45b00f059de24d730d897c08406a9d12c47a6b8434cb8"
+      }
+    },
+    {
+      "classification": "verification-preservation-extension",
+      "prior": {
+        "path": "apps/frontend/scripts/verify-preflop-local-d1.ts",
+        "bytes": 23566,
+        "sha256": "d15b1f5f1dcc59471e9d4483447f06340bb76d53d6fa61d3c8b5f2e7ec3eac0c"
+      },
+      "current": {
+        "path": "apps/frontend/scripts/verify-preflop-local-d1.ts",
+        "bytes": 24026,
+        "sha256": "34551a2e261d441b5fb4e70e9c4bbf399c0379c7bbcaf5a659cb813ad593ff5c"
+      }
+    }
+  ]
+}

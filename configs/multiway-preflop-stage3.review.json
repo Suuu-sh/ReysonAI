@@ -9035,13 +9035,13 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 29895,
-      "sha256": "1f9e7e19f60de723da2a0790b13d7c77b82365f23490c02166925c39f68d1410"
+      "bytes": 30925,
+      "sha256": "ed41354e6f2e88122fef372ea09e2e37547cc481bb1ef866494b37902add98b7"
     },
     {
       "path": ".gitignore",
-      "bytes": 1140,
-      "sha256": "b39314808a7e32aacee3f6bec97cfcea8f6f24a543023600d03fc3fa0fd1f7fe"
+      "bytes": 1534,
+      "sha256": "a0e0ed9b86b81ab62bc3f1a79109b3fa71c32ed3abfd30c93fed45c7b1021ef9"
     },
     {
       "path": "apps/frontend/docs/mw3-source-identity/typescript-policy-source-parity.json",
@@ -9295,8 +9295,8 @@
     },
     {
       "path": "apps/frontend/src/estimated/english-reasons.ts",
-      "bytes": 14526,
-      "sha256": "d34914e02db033aadd8f59ea4d425c14e10d8adc70748ab477d0c5c97b272063"
+      "bytes": 15045,
+      "sha256": "82623b518a86b0a80a74d4ab59a2e6658861dc30622a5577bb5a1335ed079cae"
     },
     {
       "path": "apps/frontend/src/estimated/eqr.ts",
@@ -9525,8 +9525,8 @@
     },
     {
       "path": "configs/multiway-preflop-stage2.review.json",
-      "bytes": 560636,
-      "sha256": "538a3ff13b50795115608110f1e7d7da598a6f84ea1d8aa506f21f47a2e4f804"
+      "bytes": 566894,
+      "sha256": "f359e5fc850758f41f4873f78e825cc8b8b1dcb55d1b03cedfa0795685d66a1c"
     },
     {
       "path": "configs/multiway-preflop-stage3.json",
@@ -9550,13 +9550,13 @@
     },
     {
       "path": "scripts/ci/deployment-scope.test.ts",
-      "bytes": 42814,
-      "sha256": "840336b3f99219b8441e36f9a82181b9d1aade85ebb7b05d4e84d4352c01e065"
+      "bytes": 46475,
+      "sha256": "0d485a28adbd14d7549c48c4e65f2cb251d830ddabc255139a65d804c171785c"
     },
     {
       "path": "scripts/ci/deployment-scope.ts",
-      "bytes": 33296,
-      "sha256": "991c219917fb4b05ef6553b62e6006f4e03bfa06099f2331d4f522f71758f34a"
+      "bytes": 33798,
+      "sha256": "3bed19652756ff1b79ee26274aa0944b590b5ec2db1d420d0acbba395d9f1e28"
     }
   ],
   "archive": {
@@ -9565,7 +9565,7 @@
     "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
     "format": "ustar+gzip-stage3-content-v1"
   },
-  "content_sha256": "541b2de0959da099d9ee38438cd0d4ac06c9b2ef86050097ae666f8deef7ec52",
+  "content_sha256": "db2e44ef04892953b22a9cd84433f8c7a6ec1847d573a3eecca8a1a2f0bc39fd",
   "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
   "counts": {
     "catalog": 16132,
@@ -10819,5 +10819,128 @@
       "bytes": 558050,
       "sha256": "d61e86046c95c4b554cbb91efdda21662db8e6365f52378cdd5bc94e9429f056"
     }
-  }
+  },
+  "ondemand_release_source_renewals": [
+    {
+      "date": "2026-10-23",
+      "reviewer": "Codex independent release source reviewer",
+      "reviewer_task": "/root/production_path",
+      "status": "approved-source-only",
+      "scope": "Exact current-source provenance renewal only for the five bound source deltas per prior Stage 2/3 receipt and the final renewed Stage 2 receipt binding in Stage 3. No new strategy-quality, numerical, GTO, generated-policy, semantic-reason, runtime-acceptance, UI-acceptance, production, or deployment approval.",
+      "prior_raw_receipt_sha256": "762c37235ef65b4c70f8035735b46a848237032d5f14866fa9987ed6573c765c",
+      "before_content_sha256": "541b2de0959da099d9ee38438cd0d4ac06c9b2ef86050097ae666f8deef7ec52",
+      "after_content_sha256": "bc10c3ceece58808d48224869dc36031feeedaa4c013418281550c05d70f5112",
+      "review_reference": {
+        "path": "docs/qa/aiv2-ondemand-release-source-review.json",
+        "sha256": "0fe6d41f61155fbb4d260bcfb1c8e5a47b56f65b41993d7796d6e6cc7f47e076"
+      },
+      "changed_sources": [
+        ".github/workflows/deploy-worker.yml",
+        ".gitignore",
+        "apps/frontend/src/estimated/english-reasons.ts",
+        "configs/multiway-preflop-stage2.review.json",
+        "scripts/ci/deployment-scope.test.ts",
+        "scripts/ci/deployment-scope.ts"
+      ],
+      "preserved": {
+        "artifact_records_sha256": "5ee2be29e51a468e8e58fb9dcee0cc9017de1118e34ba4eb66986524aa542937",
+        "archive": {
+          "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+          "bytes": 2436451,
+          "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+          "format": "ustar+gzip-stage3-content-v1"
+        },
+        "policy_source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+        "counts": {
+          "catalog": 16132,
+          "saved": 1801,
+          "unreachable": 5621,
+          "rare": 8710,
+          "hands": 304369
+        }
+      },
+      "limitations": "No replacement/renewal of historical numerical or strategy-quality approval. No new generated-policy, GTO, semantic-reason, production or deployment approval."
+    }
+  ],
+  "ondemand_preservation_source_renewals": [
+    {
+      "date": "2026-10-23",
+      "reviewer": "Independent source-only verification fixture reviewer /root/cache_review",
+      "status": "approved-source-only",
+      "scope": "Only additive local D1 preservation-fixture/oracle/test coverage for aiv2_ondemand_jobs, aiv2_ondemand_access and aiv2_ondemand_owner. Approval is source compatibility for these verification fixtures only, not runtime/numerical/GTO/data-quality/production/deploy approval.",
+      "prior_raw_receipt_sha256": "84c68f44a10b17a2a8689c01f74d0843d1c24ad523923a40e3693a8b54132f1d",
+      "before_content_sha256": "bc10c3ceece58808d48224869dc36031feeedaa4c013418281550c05d70f5112",
+      "after_content_sha256": "f470c5611084036239818c69e2963856512285e496444c2f57b1081f7ea6475d",
+      "review_reference": {
+        "path": "docs/qa/aiv2-ondemand-preservation-source-review.json",
+        "sha256": "6bed895411a9f4172ad73a124970809f6887be8476613cd26296546752bf5871"
+      },
+      "changed_sources": [
+        "configs/multiway-preflop-stage2.review.json"
+      ],
+      "preserved": {
+        "artifact_records_sha256": "5ee2be29e51a468e8e58fb9dcee0cc9017de1118e34ba4eb66986524aa542937",
+        "archive": {
+          "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+          "bytes": 2436451,
+          "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+          "format": "ustar+gzip-stage3-content-v1"
+        },
+        "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+        "counts": {
+          "catalog": 16132,
+          "saved": 1801,
+          "unreachable": 5621,
+          "rare": 8710,
+          "hands": 304369
+        },
+        "original_review_sha256": "6d0afd9eebb7fc0db1767a5dfedd78126836b1abd25d0470255dadca50401c20"
+      },
+      "limitations": "Source-only compatibility renewal. No numerical/data-quality/GTO/runtime/deployment approval."
+    }
+  ],
+  "ondemand_mw3_extension_source_renewals": [
+    {
+      "date": "2026-10-23",
+      "reviewer": "Independent source-only reviewer /root/cache_review",
+      "status": "approved-source-only",
+      "scope": "Canonical Stage2/Stage3 source identity renewal for the exact two classifier files; separate new MW3 preservation-extension source approval is referenced, not substituted for historical TS parity or numerical approval. No numerical/data-quality/GTO/runtime/publication/deploy approval.",
+      "prior_raw_receipt_sha256": "15644c787b07b308fbe7db21159c6097da191005fb795de3d74092c46a0b0b72",
+      "before_content_sha256": "f470c5611084036239818c69e2963856512285e496444c2f57b1081f7ea6475d",
+      "after_content_sha256": "db2e44ef04892953b22a9cd84433f8c7a6ec1847d573a3eecca8a1a2f0bc39fd",
+      "review_reference": {
+        "path": "docs/qa/aiv2-ondemand-mw3-extension-source-renewal.json",
+        "sha256": "005b5c082e54ced63d6d5ae1f9764f91f7e7e5eefcf7c9a7bb08d5a42eab22c6"
+      },
+      "independent_extension_review": {
+        "path": "configs/source-identity-mw3-verification-preservation.review.json",
+        "bytes": 2299,
+        "sha256": "c46ca5191d90381b31360d0f655bc2d8c7801ec30cb4514d479439e2adf50bb1"
+      },
+      "changed_sources": [
+        "configs/multiway-preflop-stage2.review.json",
+        "scripts/ci/deployment-scope.test.ts",
+        "scripts/ci/deployment-scope.ts"
+      ],
+      "preserved": {
+        "artifact_records_sha256": "5ee2be29e51a468e8e58fb9dcee0cc9017de1118e34ba4eb66986524aa542937",
+        "archive": {
+          "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+          "bytes": 2436451,
+          "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+          "format": "ustar+gzip-stage3-content-v1"
+        },
+        "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+        "counts": {
+          "catalog": 16132,
+          "saved": 1801,
+          "unreachable": 5621,
+          "rare": 8710,
+          "hands": 304369
+        },
+        "original_review_sha256": "6d0afd9eebb7fc0db1767a5dfedd78126836b1abd25d0470255dadca50401c20"
+      },
+      "limitations": "No numerical, strategy-quality/GTO, runtime, production or deployment acceptance renewed."
+    }
+  ]
 }

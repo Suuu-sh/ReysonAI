@@ -3,6 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import test from 'node:test';
 import { classifyChangedPaths, classifyEvent, changedGroups, fingerprintsAtCommit, latestDeploymentRun } from './deployment-scope.ts';
 
@@ -764,4 +765,59 @@ test('repository TypeScript tooling changes verify code without numerical public
     for (const key of ['verify_frontend', 'verify_backend', 'needs_frontend_deps', 'needs_mcp_deps']) assert.equal(plan[key], true, `${path}: ${key}`);
     for (const key of ['verify_data', 'verify_preflop', 'verify_postflop', 'verify_mw3', 'data_release', 'import_preflop', 'publish_postflop', 'import_mw3', 'deploy_api', 'deploy_frontend']) assert.equal(plan[key], false, `${path}: ${key}`);
   }
+});
+
+test('on-demand broker schema has a dedicated additive release scope', async (t: any) => {
+  const root = repository(t);
+  const base = commit(root, baseFiles());
+  const head = commit(root, {'apps/backend/migrations/0014_aiv2_ondemand.sql':'CREATE TABLE IF NOT EXISTS broker_fixture(id TEXT PRIMARY KEY);'});
+  const plan = await classifyEvent({repoRoot:root,eventName:'push',ref:'refs/heads/main',sha:head,repository:'Suuu-sh/ReysonAI',runId:'200',fetcher:successFetcher(workflowRun({head_sha:base}))});
+  assert.equal(plan.lineage_known,true);
+  assert.equal(plan.apply_ondemand_schema,true);
+  assert.equal(plan.import_preflop,false);
+  assert.equal(plan.publish_postflop,false);
+  assert.equal(plan.import_mw3,false);
+  const workflow = readFileSync(new URL('../../.github/workflows/deploy-worker.yml', import.meta.url),'utf8');
+  assert.match(workflow,/name: Apply exact AIv2 on-demand broker schema\n        if: needs.verify.outputs.apply_ondemand_schema == 'true'/);
+});
+
+
+test('shallow PR checkout fetches the exact absent baseline before tree comparison', async t => {
+  const remote = repository(t);
+  const base = commit(remote, baseFiles());
+  const head = commit(remote, { 'apps/frontend/src/account/AccountPage.tsx': 'export const AccountPage = 2;\n' });
+  const checkout = mkdtempSync(join(tmpdir(), 'reysonai-scope-shallow-'));
+  t.after(() => rmSync(checkout, { recursive: true, force: true }));
+  execFileSync('git', ['clone', '--quiet', '--depth=1', '--no-local', pathToFileURL(remote).href, checkout]);
+  assert.equal(git(checkout, ['rev-parse', '--is-shallow-repository']), 'true');
+  assert.throws(() => execFileSync('git', ['-C', checkout, 'cat-file', '-e', `${base}^{commit}`], { stdio: 'ignore' }));
+  const plan = await classifyEvent({ repoRoot: checkout, eventName: 'pull_request', ref: 'refs/pull/1/merge', sha: head,
+    repository: 'Suuu-sh/ReysonAI', runId: '200', event: { pull_request: { base: { sha: base } } },
+    fetcher: async () => { throw Error('PR comparison must not infer production lineage'); } });
+  assert.equal(plan.mode, 'pull-request');
+  assert.equal(plan.verify_frontend, true);
+  assert.equal(plan.verify_data, false);
+  assert.equal(plan.release_safe, false);
+  assert.equal(plan.lineage_known, false);
+  assert.equal(plan.deploy_api, false);
+  assert.equal(plan.deploy_frontend, true);
+  assert.equal(plan.data_release, false);
+  assert.equal(plan.import_preflop, false);
+  assert.equal(git(checkout, ['rev-parse', 'HEAD']), head);
+  assert.equal(git(checkout, ['rev-parse', `${base}^{commit}`]), base);
+});
+
+test('an unavailable exact production baseline stays fail-closed after fetch failure', async t => {
+  const remote = repository(t);
+  const head = commit(remote, baseFiles());
+  const checkout = mkdtempSync(join(tmpdir(), 'reysonai-scope-missing-baseline-'));
+  t.after(() => rmSync(checkout, { recursive: true, force: true }));
+  execFileSync('git', ['clone', '--quiet', '--depth=1', '--no-local', pathToFileURL(remote).href, checkout]);
+  const plan = await classifyEvent({ repoRoot: checkout, eventName: 'push', ref: 'refs/heads/main', sha: head,
+    repository: 'Suuu-sh/ReysonAI', runId: '200', fetcher: successFetcher(workflowRun({ head_sha: 'f'.repeat(40) })) });
+  assert.equal(plan.lineage_known, false);assert.equal(plan.release_safe, false);
+  assert.equal(plan.verify_data, true);assert.equal(plan.verify_preflop, true);
+  assert.equal(plan.deploy_api, false);assert.equal(plan.deploy_frontend, false);
+  assert.equal(plan.data_release, false);assert.equal(plan.import_preflop, false);
+  assert.match(plan.reason, /could not be proven/);
 });

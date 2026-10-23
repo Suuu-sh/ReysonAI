@@ -1,0 +1,1074 @@
+{
+  "checkpoint_at": "2026-10-21T07:25:34.917Z",
+  "manifest_at": "2026-10-21T07:25:10.167Z",
+  "method": "llm-range-single-response-v6",
+  "version": "single-scene-frequency-bilingual-1",
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "generated_total": 2100,
+  "generated_completed": 114,
+  "new_single_pass": 114,
+  "existing_reused": 0,
+  "placeholders_completed": 16,
+  "scope": "basic-hu",
+  "scoped_target_count": 325,
+  "scoped_target_completed": 72,
+  "scoped_prerequisite_count": 20,
+  "scoped_prerequisite_completed": 20,
+  "publication_status": "candidate-not-selectable",
+  "audit": {
+    "status": "passed",
+    "nodes": 130,
+    "unique_decisions": 130,
+    "duplicate_aliases": 0,
+    "checks": [
+      "exact-domain-coverage",
+      "per-seat-action-history-identity",
+      "legal-action-size-identity",
+      "dependency-final-policy-hashes",
+      "duplicate-decision-policy-equality"
+    ]
+  },
+  "nodes": {
+    "base/opening-ranges/UTG_open": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/opening-ranges/UTG_open.json",
+      "artifact_hash": "f8eaa4c26a2c60764506e5eea2cdb1d54e0fc8ec01a5af1d2b6ab627aba66383",
+      "file_sha256": "0f9d6931953ab1635b1ac8458cbde4af819830ecc448e3c7a16e7aa6e5e7500c",
+      "unreachable": false
+    },
+    "base/opening-ranges/HJ_open": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/opening-ranges/HJ_open.json",
+      "artifact_hash": "41f17fb59d9ebf4d014e0f5dc53c6786975fb5e708bc7a06e71dba49acd4b45b",
+      "file_sha256": "245c28b03c62e78d4c26df6c50ed291ba4e38d1ed00345a2a8b804906fb6e797",
+      "unreachable": false
+    },
+    "base/opening-ranges/CO_open": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/opening-ranges/CO_open.json",
+      "artifact_hash": "af94504af16c5af510e6bb5f24f33af3c14cbe06f3e009264d457f7386960b82",
+      "file_sha256": "713feb81cc1b931e1e9c524d6e860cdd7ddef971b53015b3d07312787d6606f5",
+      "unreachable": false
+    },
+    "base/opening-ranges/BTN_open": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/opening-ranges/BTN_open.json",
+      "artifact_hash": "e326d1ccbbe3ed935edb700a44168d922430c5d6aa522d92ddd6666f0d288fab",
+      "file_sha256": "ab3f89db0240e0082360cbd94f4e51befaff4be0b0c582c521db2306d540f738",
+      "unreachable": false
+    },
+    "base/opening-ranges/SB_open": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/opening-ranges/SB_open.json",
+      "artifact_hash": "fd253c0350fdd303dcb69c488f070dd47d78ca8bbdbfdfe3749caab69b9ac897",
+      "file_sha256": "ee0c6c58d26b4036896906b178b172baac378003e2c99e1f0a4a1809d2fbd39f",
+      "unreachable": false
+    },
+    "base/preflop-ranges/HJ_vs_UTG": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/preflop-ranges/HJ_vs_UTG.json",
+      "artifact_hash": "9ad10d869343091e10373330554abee2fefa6520ec57ca27ed4a643a9acb4a5b",
+      "file_sha256": "6371b442e0e9b423426497aa0695299b6828ba155c2c42f78d4b9ffe5fb772f7",
+      "unreachable": false
+    },
+    "base/preflop-ranges/CO_vs_UTG": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/preflop-ranges/CO_vs_UTG.json",
+      "artifact_hash": "904c37029eb50ab837bddc8f213f1dbb4fa65931e08ec0f42f8a2ca94dded1dd",
+      "file_sha256": "6f7c516072261fc9dd2e4536313ce13bf4cb63e063414dc1d469d6b8979ee7f1",
+      "unreachable": false
+    },
+    "base/preflop-ranges/BTN_vs_UTG": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/preflop-ranges/BTN_vs_UTG.json",
+      "artifact_hash": "8ba9c2d4a17de082b9c8bfe229261444addc59e0d58e581c680a9c7e37865f2b",
+      "file_sha256": "5a2feec9a52ff818f7ba804fc228b4d0178844a774c4c337fe1b7214220abddd",
+      "unreachable": false
+    },
+    "base/preflop-ranges/SB_vs_UTG": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/preflop-ranges/SB_vs_UTG.json",
+      "artifact_hash": "ed8d470fcfef325e286d474a84f0525d0f841f693e48e4961fea6e5d3f671607",
+      "file_sha256": "7799d184582c5c76f0608a014f82926baec919c0e867f7c3773ca0095f5a6090",
+      "unreachable": false
+    },
+    "base/preflop-ranges/BB_vs_UTG": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/preflop-ranges/BB_vs_UTG.json",
+      "artifact_hash": "75a1df36b99a8f65566b6a45ac7c7cf78677cf8c44b72a4e47fa2cbd2eb2fedc",
+      "file_sha256": "9dc12d12fb72a2ba09b8f8607e83046525cb3019f7953bb7411e8dd9b9b0990d",
+      "unreachable": false
+    },
+    "base/preflop-ranges/CO_vs_HJ": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/preflop-ranges/CO_vs_HJ.json",
+      "artifact_hash": "2e823548c0468f7b2615f5311bc8eb73771729db21021bddc3e895d83d9ad45b",
+      "file_sha256": "a34e550cdf6b91d7861d4d583767f71860a7b9e8341f95e4a15232b742a5ce74",
+      "unreachable": false
+    },
+    "base/preflop-ranges/BTN_vs_HJ": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/preflop-ranges/BTN_vs_HJ.json",
+      "artifact_hash": "3487033dd2e64d9976a39cdcde742de41db7a625d23b698dd323975e9e79f166",
+      "file_sha256": "d7620d9e8a5fd097877ad45685334230ab6b44ab24331e5bf3a02e69db0f18c3",
+      "unreachable": false
+    },
+    "base/preflop-ranges/SB_vs_HJ": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/preflop-ranges/SB_vs_HJ.json",
+      "artifact_hash": "a0fe631d28bfba20aa5cb011bd341c37c237c81a375a21fc2c127b50227be265",
+      "file_sha256": "42e69d054150deff93183848fda1fe123467d883cb5b85e1adb46b3fe1211384",
+      "unreachable": false
+    },
+    "base/preflop-ranges/BB_vs_HJ": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/preflop-ranges/BB_vs_HJ.json",
+      "artifact_hash": "0eb53aa754b022c176f6e398fb0d4da455bbfcbefda243e95af43ee7bcd54d64",
+      "file_sha256": "6a56f20a2279e303db37d629de9e6ecd6ece9e75da112f43983b1892795b9739",
+      "unreachable": false
+    },
+    "base/preflop-ranges/BTN_vs_CO": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/preflop-ranges/BTN_vs_CO.json",
+      "artifact_hash": "58502f809a0a5a7338c909d5fe096e6efedd9ce0305b68499cd008a5f1ef65c2",
+      "file_sha256": "1d0d4f7ec3f30e791e56a813d0853f662c5261a567e5dfef6d9e9d335d1323e7",
+      "unreachable": false
+    },
+    "base/preflop-ranges/SB_vs_CO": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/preflop-ranges/SB_vs_CO.json",
+      "artifact_hash": "23c07ccd5955cb17ddd8e5403dcfc8987bffcb997c34b27b88a4e38d462ef014",
+      "file_sha256": "c1086b9644a2aed8687e05040920bc4960b74a628ac41294874473532b43b90c",
+      "unreachable": false
+    },
+    "base/preflop-ranges/BB_vs_CO": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/preflop-ranges/BB_vs_CO.json",
+      "artifact_hash": "1931933156365f01d35af3dff5c5d3c257d00c16f124d6e2bc144d7960b8765d",
+      "file_sha256": "99215679ef2a21d91f4f1fbe45df97fb43d262695a0a6194d7143891213a736c",
+      "unreachable": false
+    },
+    "base/preflop-ranges/SB_vs_BTN": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/preflop-ranges/SB_vs_BTN.json",
+      "artifact_hash": "bcd89aeb221e7cb465575c7f5c534bcb8411093c6994e9015b494b98a7c1f4f3",
+      "file_sha256": "f1f39c3472cea74d5fd73f707c85153b48a326905792a13c8381fc107a5d0513",
+      "unreachable": false
+    },
+    "base/preflop-ranges/BB_vs_BTN": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/preflop-ranges/BB_vs_BTN.json",
+      "artifact_hash": "b275ec3066c9ce7ffe95fac9058fd099174fe3acb02a3e8853853c4ac5862762",
+      "file_sha256": "e5073cd844015b1012d6c519dde1ea396c4e3e0f7835cf73601afd22ebdb3e7a",
+      "unreachable": false
+    },
+    "base/preflop-ranges/BB_vs_SB": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/preflop-ranges/BB_vs_SB.json",
+      "artifact_hash": "7adeadf1a0715b5ae572ff2f09eff250fd37573ad2007a55aaf8942b0640a7bb",
+      "file_sha256": "6c1018c06fe2f686e0446a9c09778799d23295703497e5bb03134796810edf5a",
+      "unreachable": false
+    },
+    "base/three-bet-responses/UTG_vs_BB_three_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/three-bet-responses/UTG_vs_BB_three_bet.json",
+      "artifact_hash": "2eca1cd86ba95225a49a674938688b58d30bad1e910fb57fda831d2bb5985b7f",
+      "file_sha256": "79e3a7f6b2fcab95a3af9ba43d30c078ed908939113a4dbcd6fc272845d7d26f",
+      "unreachable": false
+    },
+    "base/three-bet-responses/HJ_vs_BB_three_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/three-bet-responses/HJ_vs_BB_three_bet.json",
+      "artifact_hash": "49e19aed93344b069a514ba2e907641848721c4fafe07d6b3beef24d231846fa",
+      "file_sha256": "25ec1b9cc3c53c8bcebb5f80ad95b18513e3b8df2969b6d098e3ceb965f23c28",
+      "unreachable": false
+    },
+    "base/three-bet-responses/CO_vs_BB_three_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/three-bet-responses/CO_vs_BB_three_bet.json",
+      "artifact_hash": "2fad489b9ba2c475fb108a1ccbcdf42ef717cd0937e32f9185985cab49cb2d0a",
+      "file_sha256": "d1bba8fc3aafd95dfe5d147d4196e8e1aaf7895d82f83cd704b3d823da40b4ce",
+      "unreachable": false
+    },
+    "base/three-bet-responses/BTN_vs_BB_three_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/three-bet-responses/BTN_vs_BB_three_bet.json",
+      "artifact_hash": "083918cc57f436477727910aeaa3d657ac28ba45e145038e32ebe2a96c27632a",
+      "file_sha256": "340f4c0b535c4c4caaa3eef95bf368eb9ae01d0ff95cb5d032fc3218643cc49a",
+      "unreachable": false
+    },
+    "base/three-bet-responses/SB_vs_BB_three_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/three-bet-responses/SB_vs_BB_three_bet.json",
+      "artifact_hash": "760c8295f0ff2ae962590ecc0863c2a338a9bba0bf426e01bb342dba05dd54be",
+      "file_sha256": "9dec5cc3a6092b5e72de6c80d5605031526b0f8fe6455df74e9fd086c94d7e7b",
+      "unreachable": false
+    },
+    "base/four-bet-responses/BB_vs_UTG_four_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/four-bet-responses/BB_vs_UTG_four_bet.json",
+      "artifact_hash": "b678d985f630b8afbe1a75e05a245b54ccb196003d520c9ff98d048963441de8",
+      "file_sha256": "9f6a21e093961c33889187fbd089a3c4701b344764081bdbdf534ded4c7035e7",
+      "unreachable": false
+    },
+    "base/four-bet-responses/BB_vs_HJ_four_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/four-bet-responses/BB_vs_HJ_four_bet.json",
+      "artifact_hash": "3de29437541bf501da31f59a6f2f0a0665e5614389a69d42d27888258177b570",
+      "file_sha256": "9ff7dae2f33b02ff6fc0808212ed1605270b87b0e3235184bb2647581726db64",
+      "unreachable": false
+    },
+    "base/four-bet-responses/BB_vs_CO_four_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/four-bet-responses/BB_vs_CO_four_bet.json",
+      "artifact_hash": "da25fad4e00fcf024daf88a87261f467bb4ddb6d6707559668e65191552ed171",
+      "file_sha256": "34ffa94be79590d2f366dd4eb31b5b7959db457d742238fe75b0d7236a020160",
+      "unreachable": false
+    },
+    "base/four-bet-responses/BB_vs_BTN_four_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/four-bet-responses/BB_vs_BTN_four_bet.json",
+      "artifact_hash": "50acdf3a82fbfe4d6535f63173aa3d8a6bf1febeef250797ed75093cf4c178a8",
+      "file_sha256": "3212cfa0e3f32ffe2a5567f51dab0c276f2f8e5ed323f7d659112aedba66f4e9",
+      "unreachable": false
+    },
+    "base/four-bet-responses/BB_vs_SB_four_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/four-bet-responses/BB_vs_SB_four_bet.json",
+      "artifact_hash": "2043b6880858c2bf9b6866b20f42895d69066883e064be6e9daa830dfdd08b0b",
+      "file_sha256": "34fb39b7b4aab746568578f1aa881f15d59e75afd083c51fed603f5b0fbb8cf5",
+      "unreachable": false
+    },
+    "base/five-bet-responses/UTG_vs_BB_five_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/five-bet-responses/UTG_vs_BB_five_bet.json",
+      "artifact_hash": "569c7b882d72e26725a197c6e7f998a876fc45ed41ef12efc0f081625ae2607d",
+      "file_sha256": "c206ef195f4a99397c48d4081a3c7a8914bddd37dff42344eae17b642ab147a4",
+      "unreachable": false
+    },
+    "base/five-bet-responses/HJ_vs_BB_five_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/five-bet-responses/HJ_vs_BB_five_bet.json",
+      "artifact_hash": "cfa80c561f82111bae8fee15533c8e2ae84a1258a478eeb0f59a7d886824bf17",
+      "file_sha256": "20f8d7b6cefa3f6bc2155ee121155dc9faab14b26c208080fb29f26bb9cdd0bb",
+      "unreachable": false
+    },
+    "base/five-bet-responses/CO_vs_BB_five_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/five-bet-responses/CO_vs_BB_five_bet.json",
+      "artifact_hash": "c39df40c0405d28e27a5f11746e6f359203ac367a4ea433b138b0126e7e604da",
+      "file_sha256": "2523feedd24b261997a3370ffecd4e0eb7d8aa5c3ca54b9fd07960d8884c8868",
+      "unreachable": false
+    },
+    "base/five-bet-responses/BTN_vs_BB_five_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/five-bet-responses/BTN_vs_BB_five_bet.json",
+      "artifact_hash": "becef460f62c84a64272e461527158f980ca634788faaad5cc8484956fd9a2a7",
+      "file_sha256": "c277d90767b5b962ba4a098bef92787d7bf4de2ec72059998473d9aac879eca6",
+      "unreachable": false
+    },
+    "base/five-bet-responses/SB_vs_BB_five_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/five-bet-responses/SB_vs_BB_five_bet.json",
+      "artifact_hash": "bd751a556a69ba2b9d6e2add36a775aa67e4191f4bd28f8daa4cd1f5827011e1",
+      "file_sha256": "714dda4685566118767c4b745c5d871908210c9a88db738da0063ec95ae75122",
+      "unreachable": false
+    },
+    "base/multiway-responses/SB_vs_UTG_BTNcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/SB_vs_UTG_BTNcall.json",
+      "artifact_hash": "9bc57e2058b103b7d64d3ee23eeb82805aaecfd36392eca5a45c12a2162070d8",
+      "file_sha256": "a022e009dfe06932c02634ce8b1f05b4b3eb427b14e2a367c48ca7b92e9da9f1",
+      "unreachable": false
+    },
+    "base/multiway-responses/SB_vs_HJ_BTNcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/SB_vs_HJ_BTNcall.json",
+      "artifact_hash": "8ae777850c163e72789385dfbe004afef9fa53626075899054fe0d5becd7dc0c",
+      "file_sha256": "604f1c300006ed5c7fa177e5d16f69847d3ab6d5431ef4cfde5ae75ff8f4fea1",
+      "unreachable": false
+    },
+    "base/multiway-responses/SB_vs_CO_BTNcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/SB_vs_CO_BTNcall.json",
+      "artifact_hash": "5b180a166b484e2d731e0dbc2c9cf39082b8efbd2a5281194fc3161a22334781",
+      "file_sha256": "af02b44ea25f6376c7a0877f30f6df57b95b4030b011a823c17290aca3bf7516",
+      "unreachable": false
+    },
+    "base/multiway-responses/CO_vs_UTG_HJcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/CO_vs_UTG_HJcall.json",
+      "artifact_hash": "f8a4d06ed630f827d34cd8418fbbe28e9a69d60136d4ab6968bcfa6ee1c77b14",
+      "file_sha256": "2b3793fa2234eb33999ef6e31f7e45456065e007a9e8b826abf40fa4bfc0dfef",
+      "unreachable": false
+    },
+    "base/multiway-responses/BTN_vs_UTG_HJcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/BTN_vs_UTG_HJcall.json",
+      "artifact_hash": "2fb7066a35f9e2327ed1e86cf88405bcb3bf806536736b5c64b9bc6ffee110d8",
+      "file_sha256": "cc7b5481827e96ae26b0e10ef206a3a27445d82d6859485354483ad5e2d4d28a",
+      "unreachable": false
+    },
+    "base/multiway-responses/BTN_vs_UTG_COcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/BTN_vs_UTG_COcall.json",
+      "artifact_hash": "9389119add007c01a0f096da9cf5da891dcfb3d42f306f54395e5488ae7c29ad",
+      "file_sha256": "5095788f7fda32e48be5f53444058f41bf08288e17de128629cc85da581140a7",
+      "unreachable": false
+    },
+    "base/multiway-responses/BTN_vs_HJ_COcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/BTN_vs_HJ_COcall.json",
+      "artifact_hash": "f892b4a18b47cd1417d8c2dc78508125532213b35bdd557dd7417e293a1f8978",
+      "file_sha256": "aca47a01f911cae605fce1aa5aadc1c53e537e808ce6bc05b847456fb4a75b21",
+      "unreachable": false
+    },
+    "base/multiway-responses/BB_vs_UTG_SBcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/BB_vs_UTG_SBcall.json",
+      "artifact_hash": "78491b005102cbf449b129e203f5f169e540fb19d606a70295c808e2ed10f66e",
+      "file_sha256": "8990eb7745bd66312aeff2061fce918312a0df4356f0ff55623407b59d20ac91",
+      "unreachable": true
+    },
+    "base/multiway-responses/BB_vs_HJ_SBcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/BB_vs_HJ_SBcall.json",
+      "artifact_hash": "4afc745c4dc04527ee2cd97b203ba340b27925050485a94c036ef4de7c33c214",
+      "file_sha256": "116dd9c2992a634e09a1d3f56fd79d7b56bb128ac81d8d48f7c6f7eccdd75fdf",
+      "unreachable": true
+    },
+    "base/multiway-responses/BB_vs_CO_SBcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/BB_vs_CO_SBcall.json",
+      "artifact_hash": "c1555e770a6ec9ee37d45106ba2023ee1b470f6aff6f95ac90303f8c686e5201",
+      "file_sha256": "9c48a116a55a36d411201f5861d706949860be6d7f6f8ca016fb96d3ef9b4b7a",
+      "unreachable": true
+    },
+    "base/multiway-responses/BB_vs_BTN_SBcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/BB_vs_BTN_SBcall.json",
+      "artifact_hash": "2a570f32edb47658bab08fcb4ec6c4bf3aabb1f277b69eb3e00a0d92a79fb456",
+      "file_sha256": "dfab5b04ef70b5890cc4c5f7c3860d0a6834f68c902878b7b722aa13303f397f",
+      "unreachable": true
+    },
+    "base/squeeze-responses/UTG_vs_SB_squeeze_BTNcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/UTG_vs_SB_squeeze_BTNcall.json",
+      "artifact_hash": "c0599762a5e2b91a8d5386d5d0e41517889c15f9ebaa8a0d19b9ee012f16d55c",
+      "file_sha256": "22e8e0102b5f187f39b3f2ecbfef673b51a4295d7ba792223ae716263411a3fe",
+      "unreachable": false
+    },
+    "base/squeeze-responses/UTG_vs_BB_squeeze_SBcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/UTG_vs_BB_squeeze_SBcall.json",
+      "artifact_hash": "4d4dfabf9521647c4c96a9af2f65068e565195140e58dd7772f9166c3d7fad6f",
+      "file_sha256": "1752bcd368361258584e227cd21af131dff04d5be45ff854eee0366796640c3c",
+      "unreachable": true
+    },
+    "base/squeeze-responses/HJ_vs_BB_squeeze_SBcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/HJ_vs_BB_squeeze_SBcall.json",
+      "artifact_hash": "eb7c9f885aa7ea44958fdb688e3071c36ede44aa787bd099b8310ed2110c7feb",
+      "file_sha256": "36099049e5e0825ad63c8b8b35e222d7974625d24c1a6cfe90e66abf0c980e47",
+      "unreachable": true
+    },
+    "base/squeeze-responses/CO_vs_BB_squeeze_SBcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/CO_vs_BB_squeeze_SBcall.json",
+      "artifact_hash": "5e55a7795add91f6d2d4637310cabff5d2d067868d31ba0725371118f5f190eb",
+      "file_sha256": "fa9baab657dca0ceb862c6272160e13f06e4e0788a273dfe6811d917625fa3f2",
+      "unreachable": true
+    },
+    "base/squeeze-responses/BTN_vs_BB_squeeze_SBcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/BTN_vs_BB_squeeze_SBcall.json",
+      "artifact_hash": "0d61622a7753cdace9777199ba71dc6d1ea3fb4639e39b282fc9501867bdde02",
+      "file_sha256": "fc63161c84b2eb4fdbb163af91a92765323eedceea1e651f9c84fd533b37fa48",
+      "unreachable": true
+    },
+    "base/squeeze-responses/SB_vs_BB_squeeze_UTGfold": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/SB_vs_BB_squeeze_UTGfold.json",
+      "artifact_hash": "32cafe6438feff7b8bf8594a3a5b9216b661eeed620a7922e77041cb89228e33",
+      "file_sha256": "742a506f3dc728a8f19546e173d78983c29f2cc47d0d0f6a2d56bbd94f2081ae",
+      "unreachable": true
+    },
+    "base/squeeze-responses/SB_vs_BB_squeeze_HJfold": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/SB_vs_BB_squeeze_HJfold.json",
+      "artifact_hash": "a7b1b41cafe0e0df49cec2515d21902fca40968ddcc6cd750ce39542e8bb002b",
+      "file_sha256": "a5af273fd7e136b91b6d7644156d676099335629249fbf35d55f010e844b48f5",
+      "unreachable": true
+    },
+    "base/squeeze-responses/SB_vs_BB_squeeze_COfold": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/SB_vs_BB_squeeze_COfold.json",
+      "artifact_hash": "4fdb93d493fa5da08b3ae5cc82eed35a2407149eeba6b8706e88df0234981c00",
+      "file_sha256": "93c6595adc747df22e9f6eafc35e399519b50720b8a346bd954a9d719ec0db3b",
+      "unreachable": true
+    },
+    "base/squeeze-responses/SB_vs_BB_squeeze_BTNfold": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/SB_vs_BB_squeeze_BTNfold.json",
+      "artifact_hash": "8259faa0cce86f26ec16ddcf1bfe703f537609a8f8b802e7b6a035ba4f0df69f",
+      "file_sha256": "5f1d62217d5d9292915e9673fe23eb1a5d6f365e5e2ad00ab9aae8de91e5178e",
+      "unreachable": true
+    },
+    "base/squeeze-responses/SB_vs_BB_squeeze_UTGcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/SB_vs_BB_squeeze_UTGcall.json",
+      "artifact_hash": "45fa4a8a0cf015d9eec6e77c2655cb0a39b3e3ddcbebf2d143654606f2aea8e8",
+      "file_sha256": "2ae472cc75010f697d405a1fbcaa66d89f2ea227e4519bdac8ca4fa132446d0e",
+      "unreachable": true
+    },
+    "base/squeeze-responses/SB_vs_BB_squeeze_HJcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/SB_vs_BB_squeeze_HJcall.json",
+      "artifact_hash": "83a5c6b615c81017248efaf1359f1a66d2bc4ca588a48deb24d77984ecfeeeb2",
+      "file_sha256": "eac19771e2c445992afd86269494d6e4e0367178211d6c594d11cba3d8d6d981",
+      "unreachable": true
+    },
+    "base/squeeze-responses/SB_vs_BB_squeeze_COcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/SB_vs_BB_squeeze_COcall.json",
+      "artifact_hash": "06fff95332943f99df3b29215fcf4b7d217322163380d187c978a0954ead3f42",
+      "file_sha256": "a4bd5e78aab2bc1e9743efab3a3910c15cba5c7abcead5f07373f9b3316a1403",
+      "unreachable": true
+    },
+    "base/squeeze-responses/SB_vs_BB_squeeze_BTNcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/SB_vs_BB_squeeze_BTNcall.json",
+      "artifact_hash": "66919a00c4e88e1156635a2588f4cde8e5b9c18f1c633a79fc913cc9af081f42",
+      "file_sha256": "4c474a63797a9bb57465c0973f360841b59b981c23bf542b464eff27b6ae5ea2",
+      "unreachable": true
+    },
+    "base/cold-three-bet-responses/CO_vs_HJ_3bet_UTGopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/CO_vs_HJ_3bet_UTGopen.json",
+      "artifact_hash": "835c00bb8d19855cae67e3a4b0474b28070b304c69e21096344a94b05f474886",
+      "file_sha256": "a88de64347c6fd4ccc7cce1aeed2bf640fc5e6149792b2ea26ffaff34e34c1c2",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/BTN_vs_HJ_3bet_UTGopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/BTN_vs_HJ_3bet_UTGopen.json",
+      "artifact_hash": "6a39d2957d54dd33dc47cca870d96d4d7e80f0f0d5455786c514e2acebbd0a2f",
+      "file_sha256": "d7180ab3810dccd93f557b9d046ff8506613887a304313ce96b21cf340ede316",
+      "unreachable": false
+    },
+    "profiles/nit/villain/opening-ranges/UTG_open": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/profiles/nit/villain/opening-ranges/UTG_open.json",
+      "artifact_hash": "8defbd54026dad09d44d4e577ea4cbbca4592dc4d8c56f4619cdf5d1f98ba08d",
+      "file_sha256": "bb7e4b4f8934a494d6963b93053011dc290ca883261a713ba7071de3ca310062",
+      "unreachable": false
+    },
+    "profiles/nit/villain/opening-ranges/HJ_open": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/profiles/nit/villain/opening-ranges/HJ_open.json",
+      "artifact_hash": "f102f86ef0c7fdb0f9e3f5caaf8f2976eda2b084bc5ebff9dd4aa65c4eb5a4a7",
+      "file_sha256": "6841b75d0f1a07011dfdc9d752e1a2ca16a52b18a314cccf1deaa5c8a6306ce3",
+      "unreachable": false
+    },
+    "profiles/station/villain/opening-ranges/UTG_open": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/profiles/station/villain/opening-ranges/UTG_open.json",
+      "artifact_hash": "7453256f3ebd4f4f59a2b14f143822ded3b29b461c1935aada40d03a76d3dc59",
+      "file_sha256": "fc06c7cf592bad0d16c0a7f219580286ffd28de68c43b6f63d2860c0a4764839",
+      "unreachable": false
+    },
+    "base/multiway-responses/BB_vs_UTG_BTNcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/BB_vs_UTG_BTNcall.json",
+      "artifact_hash": "b3c08162096f13af3bc482ef794225a8ca8c92d78a8029fca4d1d1edb0f8df4f",
+      "file_sha256": "313aafb21036b1fa4554656cadc942084b6c50d1c1480d1617dd7ccfb8cd5c29",
+      "unreachable": false
+    },
+    "base/multiway-responses/BB_vs_HJ_BTNcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/BB_vs_HJ_BTNcall.json",
+      "artifact_hash": "e90926db60f72e99b29bcf92b082ff2ac60dca654e4f0266b11b6bbe5426615a",
+      "file_sha256": "4a96ce7789613a3cd88934e43dcf73500adfff2838bab22832d9ce168e65cab0",
+      "unreachable": false
+    },
+    "base/multiway-responses/BB_vs_CO_BTNcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/BB_vs_CO_BTNcall.json",
+      "artifact_hash": "fb07adc6497b93d509094106b25623f07a799dd4981a2482ba819e3fd10b2696",
+      "file_sha256": "bbfe6f26027aa94e56ea4919e80e1110e4f609dcb68dc43fc70f4a92d98cb382",
+      "unreachable": false
+    },
+    "base/multiway-responses/SB_vs_UTG_HJcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/SB_vs_UTG_HJcall.json",
+      "artifact_hash": "605daed8bdf7d6f066505eea7bfd40f900fef62641c3cb5c4b02e8b80f03463c",
+      "file_sha256": "22641a9624a461c267f9d1e61e0216057153d02ea8f050e8ab9c1b796f2be44a",
+      "unreachable": false
+    },
+    "base/multiway-responses/SB_vs_UTG_COcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/SB_vs_UTG_COcall.json",
+      "artifact_hash": "10168739d38d492ae5aede770cd027530fbe56856d6076c554c7566976722f74",
+      "file_sha256": "3745b40010ae4931cb92a460adead1cb497f12adfecc7758f9c074aa07d9b7b2",
+      "unreachable": false
+    },
+    "base/multiway-responses/SB_vs_HJ_COcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/SB_vs_HJ_COcall.json",
+      "artifact_hash": "646ef79e74dd066638128923c014da54693832acee0ed5a2212c282748fd7891",
+      "file_sha256": "91a39b9ac1d3028598db647e14a043ee8347a266420b50ca21a66e715fb41706",
+      "unreachable": false
+    },
+    "base/squeeze-responses/UTG_vs_BB_squeeze_BTNcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/UTG_vs_BB_squeeze_BTNcall.json",
+      "artifact_hash": "2cc4175c6c02d2b1c5a2177cb450745e62d0017996a566bf63074033364dc12f",
+      "file_sha256": "9da7e882acf6436065769432056ee60a830b25a0c43c8d4bf688187f8d7b418c",
+      "unreachable": false
+    },
+    "base/squeeze-responses/HJ_vs_BB_squeeze_BTNcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/HJ_vs_BB_squeeze_BTNcall.json",
+      "artifact_hash": "e717144f272b9048fc9a2c80b0661a460f1cb39fd4aaf1e8a6cce706b7276423",
+      "file_sha256": "20e05006d332e2aff3ca3a8e1fa04c0280bd977c9c224deeada38a4f21b6118f",
+      "unreachable": false
+    },
+    "base/squeeze-responses/CO_vs_BB_squeeze_BTNcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/CO_vs_BB_squeeze_BTNcall.json",
+      "artifact_hash": "25acfac7cf777977c7beeed7e3480c2935428c8f18964df746d82aea62ba184d",
+      "file_sha256": "de4025e159c4f53bbba02df615bbb2d23062e3001256391a2cce267601282bf2",
+      "unreachable": false
+    },
+    "base/squeeze-responses/UTG_vs_SB_squeeze_HJcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/UTG_vs_SB_squeeze_HJcall.json",
+      "artifact_hash": "d243a8d7da93144806262d00b78fd967997fc04b9eb95e71df004c7d719623b4",
+      "file_sha256": "15b64dc7047822532dc5b7da4a9a95932435262c49be428c772ad927e3e1858f",
+      "unreachable": false
+    },
+    "base/squeeze-responses/UTG_vs_SB_squeeze_COcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/UTG_vs_SB_squeeze_COcall.json",
+      "artifact_hash": "7b0b28e11914e1753a1b53717381fd062134bc26ad33085a321475ca8a3b68e6",
+      "file_sha256": "bd9e084a6f0b21e3c824513892f16b67ed0c6bb13e879aab44d79c50f8408b0b",
+      "unreachable": false
+    },
+    "base/multiway-responses/BB_vs_UTG_HJcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/BB_vs_UTG_HJcall.json",
+      "artifact_hash": "8b163b28fbed13a2562942565f253e1647330dec11107fa212b93b73fe5ab74a",
+      "file_sha256": "c405ae35a755bbb8307bce59e97fa16ce6c737957295e1acf559551275065633",
+      "unreachable": false
+    },
+    "base/multiway-responses/BB_vs_UTG_COcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/multiway-responses/BB_vs_UTG_COcall.json",
+      "artifact_hash": "7389530aa669bc939be5f3a386043c070239d0fe427383061e9f3677a30c7aa3",
+      "file_sha256": "cf00d588dbcd2e1263129e024459af59c59fdbdb0d8fe8e4ab9d3c0b3af8c2ba",
+      "unreachable": false
+    },
+    "base/squeeze-responses/UTG_vs_BB_squeeze_HJcall": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/squeeze-responses/UTG_vs_BB_squeeze_HJcall.json",
+      "artifact_hash": "50a9e9040bce15d766571be18ce21275ddc8075377146663d87980f18bd8652d",
+      "file_sha256": "818ebdcc6672b3704361876edbd83f4a5558c5bc6a4a5df34e5896c3e839b007",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/SB_vs_HJ_3bet_UTGopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/SB_vs_HJ_3bet_UTGopen.json",
+      "artifact_hash": "62b911f41ef87a35a5a45fd220b076e8fe23fe751c72f4246cf02bc4394e44aa",
+      "file_sha256": "9ec25ef19f24f8c2840a8ce701c6c6a5b44b23afa9d3726afbac44581c87f337",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/BTN_vs_CO_3bet_UTGopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/BTN_vs_CO_3bet_UTGopen.json",
+      "artifact_hash": "d0ecb78e92ab7ce88ac3f6e660e8814818b0b6a1b7c319d79fe4d9faca4bfa58",
+      "file_sha256": "46dc063f3132f5aaeef865fd67768eb6bc2677145871100aea961e713925933d",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/SB_vs_BTN_3bet_UTGopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/SB_vs_BTN_3bet_UTGopen.json",
+      "artifact_hash": "e4e55d3d5a1d967f373d50ababf4e2f2afc3368d411812221af0bb1bd71958b5",
+      "file_sha256": "fad1e5e533cc6b0ddd4f4c9abec983db65913eef94a5730d2ace724eb5e440d9",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/BB_vs_SB_3bet_UTGopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/BB_vs_SB_3bet_UTGopen.json",
+      "artifact_hash": "a23451bdf3c45194037465ecc9ca010697549963698d7521553cf2322db383d8",
+      "file_sha256": "6f1c32691ef9f66672f2f84ade1bfbc2fea7a6467e1947591915c1278bf99d08",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/BTN_vs_CO_3bet_HJopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/BTN_vs_CO_3bet_HJopen.json",
+      "artifact_hash": "279e8127fa2012a841206c3d70e4738dafc8b4bfe8c731747ce7204411a259ab",
+      "file_sha256": "3409e6fd1e535935bb24ccd6642309ceee42171920e3b3c2c81e78a977985ad7",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/SB_vs_BTN_3bet_HJopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/SB_vs_BTN_3bet_HJopen.json",
+      "artifact_hash": "15c0924b2ce0ba608367d34a62ac5e7bbbd0eae4cbb76f53cebefc58d02fd8e1",
+      "file_sha256": "5601d2b5d64a36875a1da65dc02bd2f89c47b1a17ace31cc3a603ec39779651c",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/BB_vs_SB_3bet_HJopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/BB_vs_SB_3bet_HJopen.json",
+      "artifact_hash": "f576ceee81058ba66c5f9af5e029be1e07f144ae662bee16f67661cc420fa621",
+      "file_sha256": "9917abf00740fb85e85fe4c18bd0c8c13ca1fa4f37d513f137a502c9a6d4ebcd",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/SB_vs_BTN_3bet_COopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/SB_vs_BTN_3bet_COopen.json",
+      "artifact_hash": "a39ca3b260ada232e6b799093ab3b6980c42adc0a47cc156c73424c57abef622",
+      "file_sha256": "57c9075c323f1e6b6bb93caee3cfb01f63ed65b4d0bd0750b326ef73e4725d98",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/BB_vs_SB_3bet_COopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/BB_vs_SB_3bet_COopen.json",
+      "artifact_hash": "5fcc68e86d9b60d583e6a82f73c5fe357a8eb87f87c59cbe1ef01f70b299d0bd",
+      "file_sha256": "4158cdea2c3ee82df9ef4b9afe0a8689bc8acb1c391e91b18248046eac7691a5",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/BB_vs_SB_3bet_BTNopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/BB_vs_SB_3bet_BTNopen.json",
+      "artifact_hash": "a143f6ce8d11084eb2205141c338e7cdaa0bf10c2f7867d6b73d719eb4628a27",
+      "file_sha256": "3f7a22eac65700e868bc286cf1825c7a3abe49c0bdc1958a545217c44a2a4c96",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/SB_vs_CO_3bet_HJopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/SB_vs_CO_3bet_HJopen.json",
+      "artifact_hash": "7d1a56a8aebd3f1d1ba567fda983e634980a5625d81e3aacbc2bb7e28693741d",
+      "file_sha256": "7325ed74d18d579c7f8fbfb318adcd2e964077800ae14de72927b2704fb1b5d1",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/BB_vs_BTN_3bet_UTGopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/BB_vs_BTN_3bet_UTGopen.json",
+      "artifact_hash": "f42dafa7485a6dd7d1a87ab986a397fe7a87b584c0f35c5a299682b45beb60a1",
+      "file_sha256": "6e9aafbde2605c77294337a979379c206f6a2534232e35f1164eedb4e3b51a3a",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/BB_vs_BTN_3bet_HJopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/BB_vs_BTN_3bet_HJopen.json",
+      "artifact_hash": "d7f0e48c3b0f6dc10f77289ce0d43359ff3ed7e29a2ae8881d1336ef0d194dcc",
+      "file_sha256": "b2c6eb8f20fce5979b0e14e51f4d685c07e3abb33c56351782defd69036ecb4f",
+      "unreachable": false
+    },
+    "base/three-bet-responses/BTN_vs_SB_three_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/three-bet-responses/BTN_vs_SB_three_bet.json",
+      "artifact_hash": "79323495f1605f2c9fe375c4f9b99fed06821fa54c8bf75aea3e4b2b03d76bce",
+      "file_sha256": "3efad60756988c86bae15e791f431b11e5bf866c518c9f9deb602dfe8cf07a39",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/BB_vs_BTN_3bet_COopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/BB_vs_BTN_3bet_COopen.json",
+      "artifact_hash": "39010ddfeb2f40f8762ac3f3a8819ac287421b31ce56e587fd2ceec338412266",
+      "file_sha256": "629854864857c968dca1c105c04a02420862fceab0a3e65f9223beebdd4cf33e",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/SB_vs_CO_3bet_UTGopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/SB_vs_CO_3bet_UTGopen.json",
+      "artifact_hash": "876898ecb0b5cc58fa7d066d9bdc3e64db4c6206ce450b64a14187bd422e0845",
+      "file_sha256": "2a2cae686541e600626f6c6cb61d2026200471750c6c564fc657ef514c86b0cb",
+      "unreachable": false
+    },
+    "base/three-bet-responses/UTG_vs_SB_three_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/three-bet-responses/UTG_vs_SB_three_bet.json",
+      "artifact_hash": "d93d075727b5405093ce991b5a8df2b6937d8823868b36064abd64c4df749ef8",
+      "file_sha256": "67549d6598c6b247eacdf07ff063c1b0212f92ba1c980bb1bf47081a72991d7f",
+      "unreachable": false
+    },
+    "base/three-bet-responses/CO_vs_SB_three_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/three-bet-responses/CO_vs_SB_three_bet.json",
+      "artifact_hash": "0db8dac7ee7e10a353f0108a62c493d138f93cfd57d20c7344f85e07f1fb44c0",
+      "file_sha256": "d684cbf773caad0db80598036a5b75988b2643c352411fc5bb1f23b30b20ea65",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/BB_vs_HJ_3bet_UTGopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/BB_vs_HJ_3bet_UTGopen.json",
+      "artifact_hash": "d56ceaf50bf1831010e28594d464922e615f2fdd26cf3a1b88c6fdfce29e9b6d",
+      "file_sha256": "54f59de9e71904586cb6c8b96ecfac02d12bd65f81ea5c37ede09b9bfe3d543a",
+      "unreachable": false
+    },
+    "base/three-bet-responses/HJ_vs_SB_three_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/three-bet-responses/HJ_vs_SB_three_bet.json",
+      "artifact_hash": "5b9005dbb5dbf7045e582450dc33ea074519d9483f7b16213217029db194a2c4",
+      "file_sha256": "86e2920438f8c3ae3b5499d4e6f9756ef36f73498d320eb7aad470fa0ee2be3a",
+      "unreachable": false
+    },
+    "base/four-bet-responses/SB_vs_BTN_four_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/four-bet-responses/SB_vs_BTN_four_bet.json",
+      "artifact_hash": "64eebcae1b35226e456515800bb0576d545e22d7d46853c19e08f0a19ff60ca2",
+      "file_sha256": "b0ba250df06a2ccb83c640c26b655f04e48b1a22b08c64ec0ee28c03f894549d",
+      "unreachable": false
+    },
+    "base/four-bet-responses/SB_vs_HJ_four_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/four-bet-responses/SB_vs_HJ_four_bet.json",
+      "artifact_hash": "65602c1b75c45a288242ec74a45bd887a5fee0951576404b3919bc00374b7bb7",
+      "file_sha256": "16925942be516230272c48eb0b22e073b24b151fcc42dd91c47abc71db9eb301",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/BB_vs_CO_3bet_HJopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/BB_vs_CO_3bet_HJopen.json",
+      "artifact_hash": "82496dc4339d4b89315c9e3050fe179b9a11588c0b9edd03d46f3bdf142b1c76",
+      "file_sha256": "5e21b1f69441de37826c78dd0aed3756f097eb8e66f870a03eab9ef153eead8a",
+      "unreachable": false
+    },
+    "base/four-bet-responses/SB_vs_CO_four_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/four-bet-responses/SB_vs_CO_four_bet.json",
+      "artifact_hash": "3a70e179bb780b7fdeae881e2b1345f2c4a8b28dd0647e1a1b96152271e2dab4",
+      "file_sha256": "798ecb96e61eb76676bd5c7fb029a1f09413633f7d10eace545949f2aca8ebd9",
+      "unreachable": false
+    },
+    "base/cold-three-bet-responses/BB_vs_CO_3bet_UTGopen": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/cold-three-bet-responses/BB_vs_CO_3bet_UTGopen.json",
+      "artifact_hash": "2d7f6e85877c49f137feedc0287c44184fc97374fdd391310ddfd032da1f230e",
+      "file_sha256": "256ad244f95d5dde2f1e4120168370db629efd3a7792f59cbe80123572a66616",
+      "unreachable": false
+    },
+    "base/three-bet-responses/UTG_vs_BTN_three_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/three-bet-responses/UTG_vs_BTN_three_bet.json",
+      "artifact_hash": "fa88527b2c9284447fb0b6bf28071b8be9e46164e569a840165bac16fafbcf6d",
+      "file_sha256": "af9e7e6cc404eeef2c213549286a7c277641e92553e2133b5317e260aed324bf",
+      "unreachable": false
+    },
+    "base/three-bet-responses/CO_vs_BTN_three_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/three-bet-responses/CO_vs_BTN_three_bet.json",
+      "artifact_hash": "db29d82ca2e36770d742961008bfcf4359d197a641ca2d9bd85a82209a7d70f1",
+      "file_sha256": "71e668ba8eee03effb4170871e5c1d2c302ca507021fb3046ad198b49305b473",
+      "unreachable": false
+    },
+    "base/three-bet-responses/HJ_vs_BTN_three_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/three-bet-responses/HJ_vs_BTN_three_bet.json",
+      "artifact_hash": "0856fce4b532d2eaeec3f9d051244f080692532609436f5884733f9426093e8c",
+      "file_sha256": "6f10cbfa39601a7205adb1fb41b43d3edc887b344793845d76f53913f91c2b62",
+      "unreachable": false
+    },
+    "base/three-bet-responses/UTG_vs_HJ_three_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/three-bet-responses/UTG_vs_HJ_three_bet.json",
+      "artifact_hash": "cf921f96a61732d4026e3d42f71d8a9ea6a6a78585ca42d85084cbb1e5aaef69",
+      "file_sha256": "84f91b556591e3f923e7f642f92afe0fad60bace4345b3d6dfb9e6fd998a1244",
+      "unreachable": false
+    },
+    "base/four-bet-responses/SB_vs_UTG_four_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/four-bet-responses/SB_vs_UTG_four_bet.json",
+      "artifact_hash": "8d8e57f163b592d66bb7c5a8b65b6a26768c37027bf091667551ec87818786be",
+      "file_sha256": "c43daff483543a0564434c1e053dc8b5fa7dffae206aa5ae8cd64c86cfd784f9",
+      "unreachable": false
+    },
+    "base/five-bet-responses/BTN_vs_SB_five_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/five-bet-responses/BTN_vs_SB_five_bet.json",
+      "artifact_hash": "a386b93754819020febad516f2410176f54ff195ae832059a10f79808d27fe18",
+      "file_sha256": "9d7b89023e7b69709ecda4a5146fd802779da927959387815e63259a630d9641",
+      "unreachable": false
+    },
+    "base/three-bet-responses/HJ_vs_CO_three_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/three-bet-responses/HJ_vs_CO_three_bet.json",
+      "artifact_hash": "99db2a548b4df2284b928b75de0f0186f62ed0914aaad042efb6e3c208671cca",
+      "file_sha256": "1a2a37d5c3e928917a5ec39231d59a15aee54035e974853d7fb173e6b58305fa",
+      "unreachable": false
+    },
+    "base/five-bet-responses/CO_vs_SB_five_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/five-bet-responses/CO_vs_SB_five_bet.json",
+      "artifact_hash": "044a8f6b6cb20501aa97df079f8325d6ee2a7bb491b2b6986bf6b627137db309",
+      "file_sha256": "aa35b1659f98d0db27c59942cb38a19f27fec0f7a02bb91b55a343b7e9bb68b1",
+      "unreachable": false
+    },
+    "base/five-bet-responses/HJ_vs_SB_five_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/five-bet-responses/HJ_vs_SB_five_bet.json",
+      "artifact_hash": "40e85edf35b4ae5d465f44616ef3080dfc4d33de9fb13d0b16cfea84dd688e13",
+      "file_sha256": "aa179083eea9d16fa9f11004ef08be65a0f8fa8e23f93588403f0d822f49d9af",
+      "unreachable": false
+    },
+    "base/three-bet-responses/UTG_vs_CO_three_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/three-bet-responses/UTG_vs_CO_three_bet.json",
+      "artifact_hash": "57d6d4ae3aaa8e52265452fcf6f48e374a082c978dc55c2b51a5ff81366df62e",
+      "file_sha256": "774f710efbae89ab3be28c07692ad60cb7e4590452219b3a7ee0bc3176d2bb7a",
+      "unreachable": false
+    },
+    "base/four-bet-responses/BTN_vs_HJ_four_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/four-bet-responses/BTN_vs_HJ_four_bet.json",
+      "artifact_hash": "27e1d0ac4ac5a1b3a4c8e111ccd6b0a7ac24afd2a54d002aaac5ed3e752ccdca",
+      "file_sha256": "ac96ed06f01dee645a182e01c1443e9556f91099361e14ed0eb4de9fbc814153",
+      "unreachable": false
+    },
+    "base/four-bet-responses/BTN_vs_CO_four_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/four-bet-responses/BTN_vs_CO_four_bet.json",
+      "artifact_hash": "585ca56b65128787c2a6b9923db4e5c29d7e7153e6c9498232d8b9b9d288ba02",
+      "file_sha256": "d73fd5319e08a5be96e9ed21070b00a20bedd2f14cf580d6e444233d7cbdf8ff",
+      "unreachable": false
+    },
+    "base/four-bet-responses/HJ_vs_UTG_four_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/four-bet-responses/HJ_vs_UTG_four_bet.json",
+      "artifact_hash": "1d3ed36fc64b3d1bbd3a7cbd59bf0ee9c259176d426e7a44fa543f6494f3e133",
+      "file_sha256": "02f4a3c3072767c57db4c3e524a2d6e84f9b641c609db9eb852511ee3a3598ae",
+      "unreachable": false
+    },
+    "base/four-bet-responses/BTN_vs_UTG_four_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/four-bet-responses/BTN_vs_UTG_four_bet.json",
+      "artifact_hash": "6a929538d5b516dacffad796a448af25dd8adc057589391e24a670cebb72842a",
+      "file_sha256": "b65c0385de91569fb7e81e44bf8712071ccb96e72421bea0f2c895ae0eab992b",
+      "unreachable": false
+    },
+    "profiles/nit/villain/opening-ranges/CO_open": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/profiles/nit/villain/opening-ranges/CO_open.json",
+      "artifact_hash": "eed2cf5ba65231c0120b75fa9d8c4fe01d091d704f9e11d791bcc39fd930f938",
+      "file_sha256": "3f5fa5f60c5c65a541d8efbcbe01aea8da1c54a1c3dd8f43b72f8a40a348f2f8",
+      "unreachable": false
+    },
+    "base/five-bet-responses/UTG_vs_SB_five_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/five-bet-responses/UTG_vs_SB_five_bet.json",
+      "artifact_hash": "6195eee5370de4908294ac7d271d94e1337f52d5882f71bf1e6a93faa4ec32f9",
+      "file_sha256": "79e1f0976474cb964bf7eb71513d63f25ba5d9a4a23276a5ec4206fa4fbef783",
+      "unreachable": false
+    },
+    "base/four-bet-responses/CO_vs_HJ_four_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/four-bet-responses/CO_vs_HJ_four_bet.json",
+      "artifact_hash": "b2dd3ea077f91e08955e221fda1845f5303d081705e72fd89e8dcfd972b30925",
+      "file_sha256": "d2bf18eb5c6683dcefd602041ac4358490474f7cb46fbd51b1f0db2ddda2b25b",
+      "unreachable": false
+    },
+    "profiles/nit/villain/preflop-ranges/HJ_vs_UTG": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/profiles/nit/villain/preflop-ranges/HJ_vs_UTG.json",
+      "artifact_hash": "eaa2a6ac7b9b5be53ff1fad06fb42d937f8ca09813f99d9bbe3663cde6200aa0",
+      "file_sha256": "ef607a9af7b46c052cb07e6e155926152b7ae306a308bc80fb758740dcf33545",
+      "unreachable": false
+    },
+    "profiles/nit/villain/preflop-ranges/CO_vs_HJ": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/profiles/nit/villain/preflop-ranges/CO_vs_HJ.json",
+      "artifact_hash": "d1b74f01faa66d58ee74b5228fd20fc886075b1948a346f2840a0d22f15df236",
+      "file_sha256": "8d6e51fd57748392ceeff26af29205df5c3bc702a977494c95550b9107579d82",
+      "unreachable": false
+    },
+    "base/five-bet-responses/HJ_vs_BTN_five_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/five-bet-responses/HJ_vs_BTN_five_bet.json",
+      "artifact_hash": "0e7ba736668c38bd21fc96fc2ed9998b9fd63542e7a2316c000129834de02eed",
+      "file_sha256": "13a1f892d56bead81361f3bdb7c07513eb117c77921732d31bf4bf5f4f5bbcb4",
+      "unreachable": false
+    },
+    "base/four-bet-responses/CO_vs_UTG_four_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/four-bet-responses/CO_vs_UTG_four_bet.json",
+      "artifact_hash": "e71306bd3048ce850161ac3a953c373fd6bf045ee13e71e9e8e3a55a9cdac4f3",
+      "file_sha256": "24d16ecf7fc59b0c0b2f6bf8cb021a46143207d1ef3184d0bb8a782502b9b76a",
+      "unreachable": false
+    },
+    "base/five-bet-responses/UTG_vs_HJ_five_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/five-bet-responses/UTG_vs_HJ_five_bet.json",
+      "artifact_hash": "186a64fe298674c5b9934081ccfb5441d5dbc6444ea3568d30f8a5f3fee4507c",
+      "file_sha256": "438ea1eeb604afc7a24439661ceb359e8472d29d8de07925515b32d219283291",
+      "unreachable": false
+    },
+    "base/five-bet-responses/UTG_vs_BTN_five_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/five-bet-responses/UTG_vs_BTN_five_bet.json",
+      "artifact_hash": "7c7e260a78307081b29e7b56944819390e3fe494cd5d92ae4690000334bfc1fb",
+      "file_sha256": "b96ddf08331e6ee1bd3bb5f714080b2242d9dc71fedba05765f1c23bd104247f",
+      "unreachable": false
+    },
+    "base/five-bet-responses/CO_vs_BTN_five_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/five-bet-responses/CO_vs_BTN_five_bet.json",
+      "artifact_hash": "902f52a6cf3f57672774577a6547565ae2f85cfcb687d360b61ca822f39b8532",
+      "file_sha256": "99f5be4b56c6403ecf10e00cfda7846d162a454f3ee8770956f971b0a5f2b741",
+      "unreachable": false
+    },
+    "profiles/station/villain/opening-ranges/HJ_open": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/profiles/station/villain/opening-ranges/HJ_open.json",
+      "artifact_hash": "7ed30fe9b5a987e280d52c5f1785ea9e63926d999526da05981b7d6597d5c1e1",
+      "file_sha256": "8889b954321f1cc351374a2c9636fec7b512307995cca367843284df6aa1a8a5",
+      "unreachable": false
+    },
+    "profiles/nit/villain/opening-ranges/BTN_open": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/profiles/nit/villain/opening-ranges/BTN_open.json",
+      "artifact_hash": "d576010f5ca1e8eadf04dd6aafce2dd0e005863c260515c9c86f73797368a033",
+      "file_sha256": "e8d1fb17c9e26ff0a607d3fe871cea2e187dfa32208bf81640b4730e01667f2d",
+      "unreachable": false
+    },
+    "base/five-bet-responses/HJ_vs_CO_five_bet": {
+      "status": "complete",
+      "origin": "single-pass-v6",
+      "artifact": "spots/base/five-bet-responses/HJ_vs_CO_five_bet.json",
+      "artifact_hash": "b9f4fa3c9cecd438e23b3b861a94e445cfebacfb45e237b56376d2a95e14a0ba",
+      "file_sha256": "d41942c69481c63ab79847c131b3b02cc92d186213e8ce54b2e3b929484db6d8",
+      "unreachable": false
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "mw3-verification-preservation-extension-review",
+  "status": "approved",
+  "scope": "verification-preservation-only-no-numerical-or-gto-renewal",
+  "reviewer": "Independent source compatibility and guard reviewer",
+  "reviewer_task": "/root/cache_review",
+  "reviewer_model": "not-exposed",
+  "proposal_sha256": "3e7e643f55b63dc66dbe9b56eb15cb1bd45f2c63955df2028a9a3dd7520ecf34",
+  "adapter_sha256": "0b6c91c2d745675e4ef6021ccb8bf708b6c0a3c09efce55b97fceda83bbf1e38",
+  "validator_sha256": "d79ac546b040c46a9d108e2356b273311466a6e335b7a23553f629b34087d68d",
+  "baseline_snapshot_sha256": "fc8dbcfe93e3f514dbff72ca871029ec85becfd9c29582c01684f30735bedb21",
+  "legacy_inventory_sha256": "eed9316796066dd396f6b6aa7917d41a09bb467f6a60cb4b6360131bf2b79f7f",
+  "legacy_review_sha256": "1cf5294f6fe6ec601eabf1670353afc5d3b909ff82ac84adc5fbc977350065e0",
+  "legacy_evidence_sha256": "ceb437a661843d11b5f0b7c07bf621ffd9190911ab2d0e55196ba3d88b3a8656",
+  "notes": [
+    "Actual independent read of the new adapter/validator/proposal and the two helper diffs. Approval is limited to verification-preservation-only-no-numerical-or-gto-renewal; no AST/parity assertion for functional helper changes.",
+    "Closed exactly to mw3-local-d1-oracle.ts and verify-preflop-local-d1.ts. Prior pins match the untouched original 152-row inventory; current pins match the committed additive three-table preservation fixture/helper changes.",
+    "Original TypeScript inventory, review and parity evidence remain exact unchanged bytes. The baseline snapshot source matches original review.adapter_sha256; the new adapter and validator have separate exact hash authority in this addendum.",
+    "No blocking guard/source findings: arbitrary/third paths, relabelled parity, source drift, missing or self review, altered old evidence/baseline and unknown accepted manifests remain fail-closed. Current committed-tree inventory includes all four closed extension dependencies.",
+    "Independent detailed evidence: docs/qa/aiv2-ondemand-mw3-preservation-extension-review.json. Reviewer runtime model is not exposed; no provider attestation, numerical/data-quality/GTO/runtime/deployment approval or production invocation is asserted. Existing historical limitations remain unchanged."
+  ]
+}

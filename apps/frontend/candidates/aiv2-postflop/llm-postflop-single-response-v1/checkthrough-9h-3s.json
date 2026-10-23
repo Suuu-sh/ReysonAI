@@ -1,0 +1,59 @@
+{
+  "kind": "aiv2_exact_checkthrough_line",
+  "coverage": "one-exact-runout-checkthrough-only-not-all-BTN-BB",
+  "board": "As7d2c9h3s",
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "initial_assumption": "BB flop check probability1 is supplied, not generated",
+  "decisions": [
+    {
+      "stage": "flop-btn",
+      "decision_id": "1ae33fd719b2a4c8186c3a241d86f301216326384b9b83e82154db305a6ed028"
+    },
+    {
+      "stage": "turn-bb",
+      "decision_id": "52ef028be959308231f9123c14d061d783a33c8db3e987246a8f28f03e767b4e",
+      "combos": 790
+    },
+    {
+      "stage": "turn-btn",
+      "decision_id": "db36b233b2a0234cc36b87999597bc64c53e80525c99f604889faa38870ec445",
+      "combos": 617
+    },
+    {
+      "stage": "river-bb",
+      "decision_id": "6f9b28e4a8b7e1c30d4f4a1da188d013e2ca9528bb40b02f67676edbccfd5af2",
+      "combos": 770
+    },
+    {
+      "stage": "river-btn",
+      "decision_id": "744fb2ef8bb0a5fd9e0f5d5a59538eddfafdd7545538dafda31f242432353e7f",
+      "combos": 604
+    }
+  ],
+  "transitions": [
+    {
+      "from": "1ae33fd719b2a4c8186c3a241d86f301216326384b9b83e82154db305a6ed028",
+      "to": "52ef028be959308231f9123c14d061d783a33c8db3e987246a8f28f03e767b4e",
+      "action": "check",
+      "next_card": "9h"
+    },
+    {
+      "from": "52ef028be959308231f9123c14d061d783a33c8db3e987246a8f28f03e767b4e",
+      "to": "db36b233b2a0234cc36b87999597bc64c53e80525c99f604889faa38870ec445",
+      "action": "check"
+    },
+    {
+      "from": "db36b233b2a0234cc36b87999597bc64c53e80525c99f604889faa38870ec445",
+      "to": "6f9b28e4a8b7e1c30d4f4a1da188d013e2ca9528bb40b02f67676edbccfd5af2",
+      "action": "check",
+      "next_card": "3s"
+    },
+    {
+      "from": "6f9b28e4a8b7e1c30d4f4a1da188d013e2ca9528bb40b02f67676edbccfd5af2",
+      "to": "744fb2ef8bb0a5fd9e0f5d5a59538eddfafdd7545538dafda31f242432353e7f",
+      "action": "check"
+    }
+  ],
+  "status": "generated-validated-dashboard-visible-not-main-release"
+}

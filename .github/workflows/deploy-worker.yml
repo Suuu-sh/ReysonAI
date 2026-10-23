@@ -34,6 +34,7 @@ on:
       - 'apps/backend/migrations/0011_human_ranked.sql'
       - 'apps/backend/migrations/0012_postflop_profile_policies.sql'
       - 'apps/backend/migrations/0013_human_rank_avatar.sql'
+      - 'apps/backend/migrations/0014_aiv2_ondemand.sql'
       - 'apps/backend/scripts/**'
       - 'apps/shared/**'
       - 'configs/**'
@@ -95,6 +96,7 @@ jobs:
       apply_fastfold_schema: ${{ steps.scope.outputs.apply_fastfold_schema }}
       apply_human_schema: ${{ steps.scope.outputs.apply_human_schema }}
       apply_human_avatar_schema: ${{ steps.scope.outputs.apply_human_avatar_schema }}
+      apply_ondemand_schema: ${{ steps.scope.outputs.apply_ondemand_schema }}
       apply_profile_schema: ${{ steps.scope.outputs.apply_profile_schema }}
       apply_mw3_schema: ${{ steps.scope.outputs.apply_mw3_schema }}
       mw3_live: ${{ steps.scope.outputs.mw3_live }}
@@ -152,6 +154,7 @@ jobs:
       apply_fastfold_schema: ${{ needs.scope.outputs.apply_fastfold_schema }}
       apply_human_schema: ${{ needs.scope.outputs.apply_human_schema }}
       apply_human_avatar_schema: ${{ needs.scope.outputs.apply_human_avatar_schema }}
+      apply_ondemand_schema: ${{ needs.scope.outputs.apply_ondemand_schema }}
       apply_profile_schema: ${{ needs.scope.outputs.apply_profile_schema }}
       apply_mw3_schema: ${{ needs.scope.outputs.apply_mw3_schema }}
       mw3_live: ${{ needs.scope.outputs.mw3_live }}
@@ -244,6 +247,11 @@ jobs:
       - name: Check continuation invariants and unchanged HU inputs
         if: needs.scope.outputs.verify_preflop == 'true' || needs.scope.outputs.verify_postflop == 'true'
         run: node --test --test-force-exit --test-concurrency=1 tests/continuation-*.test.ts tests/stage3-*.test.ts tests/reviewed-preflop.test.ts tests/preflop-delivery.test.ts tests/preflop-workflow.test.ts tests/ranked-workflow.test.ts tests/preflop-local-d1.test.ts tests/reviewed-preflop-archive.test.ts tests/detailed-reasons.test.ts
+
+      - name: Verify authenticated bounded AIv2 on-demand broker
+        if: needs.scope.outputs.verify_backend == 'true'
+        working-directory: apps/backend
+        run: node --experimental-strip-types --test tests/aiv2-ondemand.test.ts
 
       - name: Verify authoritative ranked service without live credentials
         if: needs.scope.outputs.verify_backend == 'true'
@@ -450,6 +458,16 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           WRANGLER_SEND_METRICS: 'false'
         run: node scripts/ensure-human-avatar-schema.ts
+
+      # Add only the broker tables; existing strategy/account data is untouched.
+      - name: Apply exact AIv2 on-demand broker schema
+        if: needs.verify.outputs.apply_ondemand_schema == 'true'
+        working-directory: apps/backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: npx --yes wrangler@4.147.0 d1 execute reysonai --remote --config wrangler.jsonc --file migrations/0014_aiv2_ondemand.sql --yes
 
       # Additive profile storage only; never apply all pending migrations.
       - name: Apply exact postflop profile schema

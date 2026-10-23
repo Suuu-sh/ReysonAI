@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { isCompleteAiv2Manifest } from "../src/estimated/aiv2-contract.ts";
 
 const dir = fileURLToPath(new URL("../src/estimated", import.meta.url));
-const localAiv2Sample = join(fileURLToPath(new URL("..", import.meta.url)), ".local/aiv2-preflop/llm-range-wide-combo-v3/sample/opening-ranges/UTG_open.json");
+const localAiv2Sample = join(fileURLToPath(new URL("..", import.meta.url)), "data/aiv2-preflop/samples/opening-ranges/UTG_open.json");
 // Keep ordinary names unchanged; allow only the Stage A villain namespace.
 const NAME = /^(?:[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)?|profiles\/(?:nit|station|lag|maniac)\/villain\/(?:opening-ranges|preflop-ranges|three-bet-responses|four-bet-responses|five-bet-responses|limp-responses|limp-deep-responses|meta)|aiv2\/(?:[A-Za-z0-9_-]+|reasons\/[A-Za-z0-9_-]+|profiles\/(?:nit|station|lag|maniac)\/villain\/(?:opening-ranges|preflop-ranges|three-bet-responses|four-bet-responses|five-bet-responses|limp-responses|limp-deep-responses|meta)))$/;
 
@@ -42,8 +42,8 @@ export function localDatasetsMiddleware(req?: any, res?: any, next?: any) : any 
 }
 
 // Deliberately registered only on Vite's development server (never preview or
-// the worker). The path is fixed and the ignored local artifact is validated
-// before it can be used as an experimental AIv2 dataset.
+// the worker). Read only the fixed, Git-managed UTG sample so the preview is
+// reproducible on a fresh checkout and cannot silently consume ignored state.
 export function localAiv2SampleMiddleware(req?: any, res?: any, next?: any) : any {
   const url = new URL(req.url, "http://localhost");
   const prefix = "/v1/preflop/local/aiv2-sample";
@@ -81,7 +81,7 @@ export function localAiv2SampleMiddleware(req?: any, res?: any, next?: any) : an
       const spots = opening.spots.map((spot: any) => spot.id === "UTG_open" ? { ...spot, hands, combo_mixes: sample.spot.combo_mixes } : spot);
       res.end(JSON.stringify({ ...opening, metadata: { ...opening.metadata, aiv2_local_sample: { scenario: "UTG_open", method: sample.metadata.method, model: sample.metadata.model, concrete_combo_count: comboWeights.length, combo_reach_weights: sample.combo_reach_weights, analysis_hash: sample.metadata.analysis_hash } }, spots })); return;
     }
-    res.end(JSON.stringify({ spot_id: "UTG_open", type: "open", method: `${sample.metadata.method} · ${sample.metadata.model}`, hands: Object.fromEntries(reasons.map((row: any) => [row.hand, { reason: row.text }])) }));
+    res.end(JSON.stringify({ spot_id: "UTG_open", type: "open", method: `${sample.metadata.method} · ${sample.metadata.model}`, hands: Object.fromEntries(reasons.map((row: any) => [row.hand, { reason: row.text, reason_ja: row.text_ja }])) }));
   } catch {
     res.writeHead(404).end(JSON.stringify({ available: false }));
   }

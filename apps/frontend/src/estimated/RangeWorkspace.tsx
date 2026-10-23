@@ -1,3 +1,4 @@
+import { Aiv2OnDemandWorkspace } from "./Aiv2OnDemandWorkspace.tsx";
 /// <reference lib="es2023.array" />
 import type { CSSProperties, MouseEvent, ReactNode } from "react";
 import type { Profile } from "../profile.ts";
@@ -47,7 +48,7 @@ import { continuationRangeBreakdown, continuationUnreachableCopy, useContinuatio
 import { limpActionTransition, responseActionTransition, rewindActionBlockTransition } from "./action-path.ts";
 import { displayModeKey } from "../profile.ts";
 import { useDetailedReasons } from "./detailed-reasons.ts";
-import { localizedPreflopReason, localizedFactLabel, localizedEquityNote } from "./english-reasons.ts";
+import { generatedAiv2Reason, localizedPreflopReason, localizedFactLabel, localizedEquityNote } from "./english-reasons.ts";
 import { productLocale, translateProductCopy } from "../i18n.ts";
 import { localized } from "../locale.ts";
 import { fiveBetMatrixModel, useFiveBetSpot } from "./five-bet-responses.ts";
@@ -181,7 +182,7 @@ const formatFact = ({ value, unit }: InlineFact) => unit === "bb"
   ? `${value! > 0 ? "+" : ""}${Number(value).toFixed(2)}bb`
   : `${Number(value).toFixed(1)}%`;
 
-export function AiReason({ hand, reasonState, inlineFacts, hideCallEv = false }: { hand: DisplayHand; reasonState: ReturnType<typeof useDetailedReasons>; inlineFacts?: InlineFact[] | null; hideCallEv?: boolean | null }) {
+export function AiReason({ hand, reasonState, inlineFacts, hideCallEv = false, generatedAiv2 = false }: { hand: DisplayHand; reasonState: ReturnType<typeof useDetailedReasons>; inlineFacts?: InlineFact[] | null; hideCallEv?: boolean | null; generatedAiv2?: boolean }) {
   const { data, loading, error } = reasonState;
   const detailed = data?.hands[hand.hand];
   const english = productLocale() !== "ja";
@@ -192,7 +193,9 @@ export function AiReason({ hand, reasonState, inlineFacts, hideCallEv = false }:
   return <div className="ai-reason">
     <span>AIの考え方</span>
     {loading && !detailed ? <SkeletonText lines={3} label={english ? "Loading explanation…" : "説明を読み込み中…"} />
-      : <p>{english ? (detailed ? localizedPreflopReason(hand, detailed, data) : error ? "Could not load the explanation." : "No hand-specific explanation is recorded for this spot.") : detailed?.reason ?? (error ? "理由を読み込めませんでした。" : hand.reason)}</p>}
+      : <p>{generatedAiv2
+        ? generatedAiv2Reason(detailed, productLocale()) ?? (english ? "Generated explanation unavailable." : "生成された説明を利用できません。")
+        : english ? (detailed ? localizedPreflopReason(hand, detailed, data) : error ? "Could not load the explanation." : "No hand-specific explanation is recorded for this spot.") : detailed?.reason ?? (error ? "理由を読み込めませんでした。" : hand.reason)}</p>}
     {shown.length > 0 && <dl className="reason-facts">
       {shown.map(fact => <div key={fact.label}><dt>{fact.label}</dt><dd className={fact.unit === "bb" ? (fact.value! >= 0 ? "fact-positive" : "fact-negative") : undefined}>{formatFact(fact)}</dd></div>)}
     </dl>}
@@ -218,7 +221,7 @@ function endResultLabel(result: string) {
   return result;
 }
 
-function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isFourBet, isFiveBet, isContinuation, extra = null, spot, position, onReturnToComparison, displayMode }: { hand: DisplayHand; model: MatrixModel; isOpening?: boolean; isLimpResponse?: boolean; isThreeBet?: boolean; isFourBet?: boolean; isFiveBet?: boolean; isContinuation?: boolean; extra?: ReturnType<typeof extendedBreakdown>; spot: DisplaySpot; position: string; onReturnToComparison?: () => void; displayMode: string }) {
+function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isFourBet, isFiveBet, isContinuation, extra = null, spot, position, onReturnToComparison, displayMode, generatedAiv2 = false }: { hand: DisplayHand; model: MatrixModel; isOpening?: boolean; isLimpResponse?: boolean; isThreeBet?: boolean; isFourBet?: boolean; isFiveBet?: boolean; isContinuation?: boolean; extra?: ReturnType<typeof extendedBreakdown>; spot: DisplaySpot; position: string; onReturnToComparison?: () => void; displayMode: string; generatedAiv2?: boolean }) {
   const reasonState = useDetailedReasons(spot?.id);
   const equityFact = reasonEquityFact(reasonState.data);
   const savedFacts = reasonState.data?.hands[hand.hand]?.facts;
@@ -237,14 +240,14 @@ function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isF
       <HandHeader position={position} hand={hand.hand} comboCount={aggregate.comboCount} onClose={onReturnToComparison} />
       {aggregate.unreachable ? <StatusState title="対象外（到達不能）">{isContinuation ? continuationUnreachableCopy().description : extra?.unreachableText ?? (isLimpResponse ? "SBのリンプ頻度が0%のため、この応答経路の推奨頻度はありません。保存上のfold=100は形式上の値です。" : `${isFiveBet ? "既存4bet" : "既存3bet"}頻度が0%のため、この経路の推奨頻度はありません。保存上のfold=100は形式上の値です。`)}</StatusState> : <>
       {tableReason && <p className="adjustment-reason">{tableReason}</p>}
-      {displayMode !== "standard" && !tableReason && !isLimpResponse && <AiReason hand={hand} reasonState={reasonState} inlineFacts={inlineFacts} />}
+      {displayMode !== "standard" && !tableReason && !isLimpResponse && <AiReason hand={hand} reasonState={reasonState} inlineFacts={inlineFacts} generatedAiv2={generatedAiv2} />}
       {displayMode !== "standard" && isLimpResponse && <div className="ai-reason"><span>AIの考え方</span><p>この局面のハンド別説明はありません。</p></div>}
       {displayMode === "standard" && <>
       {isFourBet && <small>オールイン = 5bet（合計100BB）</small>}
       {hasCallEv && !tableReason
         ? <PreflopCallEvBars items={actionItems} labels={model.actionLabels} facts={callEvFacts as PreflopCallEvFacts} equityLabel={equityFact!.label} />
         : <ActionBars items={actionItems} labels={model.actionLabels} />}
-      {!tableReason && !isLimpResponse && <AiReason hand={hand} reasonState={reasonState} inlineFacts={inlineFacts} hideCallEv={hasCallEv} />}
+      {!tableReason && !isLimpResponse && <AiReason hand={hand} reasonState={reasonState} inlineFacts={inlineFacts} hideCallEv={hasCallEv} generatedAiv2={generatedAiv2} />}
       {isLimpResponse && <div className="ai-reason"><span>AIの考え方</span><p>この局面のハンド別説明はありません。</p></div>}
       {!isOpening && !isLimpResponse && <StatList items={extra ? [extra.sizeItem, ...extra.received] : [
         isFiveBet ? { label: "受けるオールイン（合計）", value: "100 BB" }
@@ -259,7 +262,7 @@ function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isF
        ].filter(Boolean) as { label: string; value: string }[]} />}
       </>}
       </>}
-      {aggregate.unreachable && !isLimpResponse && <AiReason hand={hand} reasonState={reasonState} inlineFacts={inlineFacts} />}
+      {aggregate.unreachable && !isLimpResponse && <AiReason hand={hand} reasonState={reasonState} inlineFacts={inlineFacts} generatedAiv2={generatedAiv2} />}
     </Panel>
   </div>;
 }
@@ -1201,7 +1204,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
             {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイレンジを生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
             {canGenerateFiveBet && entry.position === opener && <InlineGenerationControl description="この分岐のレンジを生成します。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
           </Panel>)}
-          {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand!} model={focusedEntry.model!} isOpening={focusedEntry.kind === "opening"} isLimpResponse={focusedEntry.kind === "limp_response"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} isContinuation={focusedEntry.kind === "bounded"} extra={focusedEntry.kind === "bounded" ? continuationRangeBreakdown(focusedEntry.spot!) : extendedBreakdown(focusedEntry.kind, focusedEntry.spot!, focusedEntry.hand!)} spot={focusedEntry.spot!} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
+          {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand!} model={focusedEntry.model!} isOpening={focusedEntry.kind === "opening"} isLimpResponse={focusedEntry.kind === "limp_response"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} isContinuation={focusedEntry.kind === "bounded"} extra={focusedEntry.kind === "bounded" ? continuationRangeBreakdown(focusedEntry.spot!) : extendedBreakdown(focusedEntry.kind, focusedEntry.spot!, focusedEntry.hand!)} spot={focusedEntry.spot!} position={focusedEntry.position} displayMode={displayMode} generatedAiv2={rangeSource === "aiv2"} onReturnToComparison={() => setFocusedRange(null)} />)}
         </div>
       </>}
       {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} displayMode={displayMode} onDisplayModeChange={changeDisplayMode} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
@@ -1239,5 +1242,6 @@ export function RangeWorkspace({ profile, onEditProfile, onSectionChange }: Work
     return () => window.removeEventListener(RANGE_SOURCE_CHANGED, update);
   }, []);
   useEffect(() => { try { window.sessionStorage.setItem(workspaceSourceStorageKey, rangeSource); } catch {} }, [rangeSource]);
-  return <EstimatedRanges profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} rangeSource={rangeSource} previousRangeSource={previousRangeSource} previousSemanticNode={previousSemanticNode} initialRangeType={isLocalAiv2SampleMode() ? "open" : "response"} />;
+  if (rangeSource === "aiv2") return <Aiv2OnDemandWorkspace />;
+  return <><nav className="shell" aria-label={localized("Additional range tools", "追加のレンジツール")}><a href="/analyze/ondemand">{localized("On-demand postflop · AIv2", "オンデマンド・ポストフロップ · AIv2")}</a></nav><EstimatedRanges profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} rangeSource={rangeSource} previousRangeSource={previousRangeSource} previousSemanticNode={previousSemanticNode} initialRangeType={isLocalAiv2SampleMode() ? "open" : "response"} /></>;
 }

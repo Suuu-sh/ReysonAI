@@ -1,7 +1,7 @@
 import type { NarrativeLanguage } from "../locales/reason-copy.ts";
 import type { ProductLocale } from "../locale.ts";
 import type { FrequencyRow, PreflopAction } from "./preflop-types.ts";
-export type DetailedReason = { reason: string; facts?: Record<string, number | null> };
+export type DetailedReason = { reason: string; reason_ja?: string; facts?: Record<string, number | null> };
 export type DetailedReasonDataset = { spot_id: string; type: string; source_fingerprint?: string; method?: string; equity_note?: string; fact_labels?: { key: string; label: string; scope?: string; unit?: string }[]; spot_facts?: Record<string, unknown> & { call_break_even_equity_pct?: number; all_fold_pct?: number }; schema_version?: undefined; hands: Record<string, DetailedReason> };
 import { narrative, translateExplanationCopy } from "../locales/reason-copy.ts";
 import { productLocale } from "../locale.ts";
@@ -220,6 +220,15 @@ export function englishPreflopReason(hand: FrequencyRow, detailed: DetailedReaso
   else parts.push(narrative("The recorded action mix is shown above.", [], en as NarrativeLanguage));
   return parts.join(" ");
 }
+
+// AIv2 explanations are generated from the finalized policy. Never replace
+// their recorded prose with the legacy frequency-based presentation template.
+export const generatedAiv2Reason = (detailed: DetailedReason | null | undefined, locale: ProductLocale = productLocale()) => {
+  const english = detailed?.reason?.trim();
+  if (!english) return null;
+  if (locale === "ja") return detailed?.reason_ja?.trim() || `日本語訳がありません。英語原文: ${english}`;
+  return english;
+};
 
 export const localizedPreflopReason = (hand: FrequencyRow, detailed: DetailedReason | null | undefined, data: DetailedReasonDataset | null | undefined) => englishPreflopReason(hand, detailed, data, productLocale());
 export const localizedFactLabel = (key: string) => translateExplanationCopy(englishFactLabels[key] ?? key, productLocale());

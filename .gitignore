@@ -26,3 +26,11 @@ __pycache__/
 /apps/frontend/src/estimated/stage3-audit-report.json
 /apps/frontend/src/estimated/stage3-coverage.json
 /apps/frontend/src/estimated/reasons/s3_*.json
+
+# Mutable owner queue and scoped lease state are not release artifacts.
+/apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/jobs/
+/apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/worker.lock
+/apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/bridge-journal.json*
+
+# Local operational state and isolated release validation (never artifacts).
+/.local/

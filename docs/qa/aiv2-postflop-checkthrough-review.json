@@ -1,0 +1,168 @@
+{
+  "schema_version": "aiv2-postflop-independent-review-v1",
+  "approved": false,
+  "reviewed_at_utc": "2026-10-21T09:04:36.105810+00:00",
+  "reviewer": {
+    "actor": "independent-reviewer-first-release-review",
+    "model": null,
+    "relationship": "separate review agent; no policy generation or model-provider calls performed in this review",
+    "model_attestation": "Reviewer runtime model identity is not independently attested by this report."
+  },
+  "scope": {
+    "name": "five-saved-btn-bb-exact-checkthrough-decisions",
+    "board_runout": "As7d2c9h3s",
+    "initial_assumption": "BB flop check conditioned at probability 1; not a generated BB flop policy",
+    "status": "release-blocked-original-artifacts-preserved",
+    "not_an_approval_receipt": true
+  },
+  "hash_binding": {
+    "algorithm": "SHA-256",
+    "input": "exact raw file bytes, not parsed or canonicalized JSON",
+    "warning_rule": "Display a finding only when its decision_id and artifact_raw_file_sha256 match the loaded artifact raw bytes and the corresponding artifacts entry. Do not modify, replace, or silently reinterpret saved policy/reason text."
+  },
+  "artifacts": [
+    {
+      "decision_id": "1ae33fd719b2a4c8186c3a241d86f301216326384b9b83e82154db305a6ed028",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-single-response-v1/decisions/1ae33fd719b2a4c8186c3a241d86f301216326384b9b83e82154db305a6ed028.json",
+      "raw_file_sha256": "1c104ca948525e43598a074c334eb91ebaf20ba2d004794a78ca059818ce595d",
+      "street": "flop",
+      "actor": "BTN",
+      "board": "As7d2c"
+    },
+    {
+      "decision_id": "52ef028be959308231f9123c14d061d783a33c8db3e987246a8f28f03e767b4e",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-single-response-v1/decisions/52ef028be959308231f9123c14d061d783a33c8db3e987246a8f28f03e767b4e.json",
+      "raw_file_sha256": "e2341805c8184943f4a7d2be65b5eb57991b1f57c89d71b38c293ecaa5d1e399",
+      "street": "turn",
+      "actor": "BB",
+      "board": "As7d2c9h"
+    },
+    {
+      "decision_id": "6f9b28e4a8b7e1c30d4f4a1da188d013e2ca9528bb40b02f67676edbccfd5af2",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-single-response-v1/decisions/6f9b28e4a8b7e1c30d4f4a1da188d013e2ca9528bb40b02f67676edbccfd5af2.json",
+      "raw_file_sha256": "367a6df2585a131b378e30bc900b14a342f9fb37dce6512af632ba1acdaee876",
+      "street": "river",
+      "actor": "BB",
+      "board": "As7d2c9h3s"
+    },
+    {
+      "decision_id": "744fb2ef8bb0a5fd9e0f5d5a59538eddfafdd7545538dafda31f242432353e7f",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-single-response-v1/decisions/744fb2ef8bb0a5fd9e0f5d5a59538eddfafdd7545538dafda31f242432353e7f.json",
+      "raw_file_sha256": "8ab9e92341ede9ca82a4e13d38857251f3b92092e7c831109fe93bf60ede37ef",
+      "street": "river",
+      "actor": "BTN",
+      "board": "As7d2c9h3s"
+    },
+    {
+      "decision_id": "db36b233b2a0234cc36b87999597bc64c53e80525c99f604889faa38870ec445",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-single-response-v1/decisions/db36b233b2a0234cc36b87999597bc64c53e80525c99f604889faa38870ec445.json",
+      "raw_file_sha256": "01d858b35c9a0023a7ae80665df49b82838244347afbd7b160d3d2cfcc9a8f64",
+      "street": "turn",
+      "actor": "BTN",
+      "board": "As7d2c9h"
+    }
+  ],
+  "findings": [
+    {
+      "id": "turn-btn-85s-straight-completion",
+      "severity": "release-blocker",
+      "decision_id": "db36b233b2a0234cc36b87999597bc64c53e80525c99f604889faa38870ec445",
+      "artifact_raw_file_sha256": "01d858b35c9a0023a7ae80665df49b82838244347afbd7b160d3d2cfcc9a8f64",
+      "source_path": "source_response.groups[11].text / text_ja; combos[hand=85s].text / text_ja",
+      "warning": {
+        "en": "Saved explanation error: 85s has a one-card straight completion on As7d2c9h: any 6 makes 5-6-7-8-9. The saved English and Japanese reasons incorrectly say no one-card straight completion exists. The original 100% check frequency is preserved, not independently approved.",
+        "ja": "保存された説明に誤りがあります。As7d2c9hの85sは、6が出ると5-6-7-8-9のストレートが完成します。保存済みの日英理由は「残り1枚ではストレートが完成しない」と誤記しています。元の100%チェック頻度は保持しており、独立承認したものではありません。"
+      },
+      "evidence": {
+        "board": "As7d2c9h",
+        "completing_rank": "6",
+        "completed_straight_ranks": [
+          "5",
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "saved_mix": {
+          "check": 100,
+          "bet33": 0,
+          "bet66": 0,
+          "bet100": 0,
+          "bet125": 0
+        },
+        "positive_own_reach": {
+          "8s5s": 0.195,
+          "8h5h": 0.45499999999999996,
+          "8d5d": 0.195,
+          "8c5c": 0.195
+        },
+        "reason_claim_en": "Unpaired with no one-card straight or flush completion.",
+        "reason_claim_ja": "ノーペアで、残り1枚ではストレートもフラッシュも完成しない。"
+      },
+      "affected_combos": [
+        "8s5s",
+        "8h5h",
+        "8d5d",
+        "8c5c"
+      ]
+    },
+    {
+      "id": "river-bb-overpair-terminology",
+      "severity": "explanation-error",
+      "decision_id": "6f9b28e4a8b7e1c30d4f4a1da188d013e2ca9528bb40b02f67676edbccfd5af2",
+      "artifact_raw_file_sha256": "367a6df2585a131b378e30bc900b14a342f9fb37dce6512af632ba1acdaee876",
+      "source_path": "summary.text / summary.text_ja; source_response.range_summary",
+      "warning": {
+        "en": "Saved summary terminology error: this A-high board cannot have an overpair. Its reference to BTN retaining many overpairs is incorrect; pocket pairs below the ace are not overpairs. Original strategy data is preserved without semantic approval.",
+        "ja": "保存された概要の用語に誤りがあります。このAハイボードではオーバーペアは存在しません。「BTNに多数のオーバーペアが残る」は誤記で、Aより下のポケットペアはオーバーペアではありません。元の戦略データは保持し、意味内容を承認したものではありません。"
+      },
+      "evidence": {
+        "board": "As7d2c9h3s",
+        "highest_board_rank": "A",
+        "reason_claim_en": "BTN retains strong Ax, sets and many overpairs.",
+        "reason_claim_ja": "BTNにも強いAx・セット・多数のオーバーペアが残る。"
+      }
+    },
+    {
+      "id": "river-btn-overpair-terminology",
+      "severity": "explanation-error",
+      "decision_id": "744fb2ef8bb0a5fd9e0f5d5a59538eddfafdd7545538dafda31f242432353e7f",
+      "artifact_raw_file_sha256": "8ab9e92341ede9ca82a4e13d38857251f3b92092e7c831109fe93bf60ede37ef",
+      "source_path": "summary.text / summary.text_ja; source_response.range_summary",
+      "warning": {
+        "en": "Saved summary terminology error: this A-high board cannot have an overpair. Its reference to high overpairs is incorrect; pocket pairs below the ace are not overpairs. Original strategy data is preserved without semantic approval.",
+        "ja": "保存された概要の用語に誤りがあります。このAハイボードではオーバーペアは存在しません。「高いオーバーペア」は誤記で、Aより下のポケットペアはオーバーペアではありません。元の戦略データは保持し、意味内容を承認したものではありません。"
+      },
+      "evidence": {
+        "board": "As7d2c9h3s",
+        "highest_board_rank": "A",
+        "reason_claim_en": "BTN retains exclusive 54 nuts and high overpairs absent from BB's listed range.",
+        "reason_claim_ja": "BTNにはBBの記載レンジにない54のナッツと高いオーバーペアが残る。"
+      }
+    }
+  ],
+  "evidence": {
+    "reviewed_saved_postflop_groups": 66,
+    "review_work": [
+      "Read all 66 grouped saved English/Japanese explanations and five range summaries against their exact board and public history.",
+      "Performed a new limited combinatorial rank check for claimed no-one-card straight completion, gutshots, open-ended draws and selected pair categories; the direct contradiction found was the four 85s turn BTN combos.",
+      "Confirmed river BTN exclusive 54 claim is consistent with saved river BB check conditioning: river BB 54 takes bet125 at 100%, leaving zero 54 reach after check.",
+      "Inspected public loader allowlist and content-addressed hash binding, bilingual reason selection, named base65+20 publication checks, own-reach reconstruction and missing-path no-substitution behavior."
+    ],
+    "not_repeated": [
+      "Existing successful unit tests",
+      "Existing full numeric/dependency validation",
+      "Existing TypeScript checks"
+    ],
+    "mutations": "Only this new review-report file was created; original artifacts, policies and saved reasons were not changed."
+  },
+  "limitations": [
+    "This is a scoped prerelease review, not a solver/GTO proof, exploitability measurement or certification of all strategies.",
+    "No blanket semantic approval of all 85 preflop scenes or their complete bilingual reason corpus is given.",
+    "Combined publication payload SHA and exact release-plan identity were not independently established in this review.",
+    "No production deployment or public browser verification was performed by this reviewer.",
+    "The five decisions cover only one exact checkthrough runout, not all BTN-BB boards, bet-response branches or the full HU tree.",
+    "Numerical completeness and fluent matching English/Japanese text do not establish correctness of a strategic reason."
+  ],
+  "next_step": "Keep main release on hold. Any correction must use explicit versioning and appropriately scoped reevaluation/review; no regeneration or correction is authorized by this report."
+}

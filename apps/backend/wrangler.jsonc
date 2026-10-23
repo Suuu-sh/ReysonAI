@@ -29,6 +29,10 @@
     "ALLOWED_ORIGIN": "https://app.reysonai.com",
     // Google OAuth configured; live sign-in validation follows API deployment.
     "AUTH_ENABLED": "true",
+    // Explicit authenticated jobs only; missing owner secret/heartbeat fails closed.
+    "AIV2_ONDEMAND_ENABLED": "true",
+    "AIV2_ONDEMAND_IMPLEMENTATION_HASH": "96e53c3932c656a1a331e8e2e389ff5e30e75eeb65db95eda07bdf3fb204e84d",
+    "AIV2_ONDEMAND_SOURCE_HASH": "56e932510c9bb830422e62abc6dfdaf6b9dc0de97f11312dcbdeb48b12507a18",
     "AUTH_NATIVE_ENABLED": "false",
     "RANKED_ENABLED": "true",
     // Approved experimental beta: Free SQLite DO compute; provisional results rating, AI penalty 0.
