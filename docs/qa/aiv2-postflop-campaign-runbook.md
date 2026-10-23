@@ -66,3 +66,45 @@ The existing owner-status endpoint returns full saved results for completed jobs
 A halted campaign is not automatically resumed or adopted. If its already-saved wave is independently reviewed and the parent freshly verifies every broker job complete, preserve its original `campaign.json`, child journal and static review evidence unchanged. Do not manufacture a past checkpoint request or receipt. After the parent verifies no live owner/locks/unresolved journal entries, capture a new private broker snapshot no older than60 seconds and explicitly launch a new campaign with the corrected reader. Its new random nonce creates a different campaign ID. Local validated artifacts, all fresh snapshot boards and the completed prior journal entries exclude those saved targets; no provider replay is needed.
 
 To retain the same cumulative grant, explicitly subtract known spent calls/decisions from the new grant. For a prior16-call/16-decision wave, an original22,100/44,200 grant leaves22,084 decisions /44,184 calls. Unused structural reservations are not attempts; uncertain attempts must never be assumed unused or refunded. This is a parent-authorized fresh run, not a self-starting recovery path. Failed/queued/unknown historical targets remain excluded.
+
+## Explicit expired-lease quarantine (parent-only, never a retry)
+
+`owner/fail` can mark only a still-running job with the matching original token and **unexpired** lease failed. An expired lease is rejected409; do not POST it just to probe or retry. Already failed jobs have their lease hash cleared and are not a replay-success path. Quarantine is not a database terminalization, successful result, refund, completion retry or regeneration.
+
+When the parent has positively verified both old processes exited, no worker lock, exact halted campaign/journal bytes, expired running lease and no saved broker result, it may create a separate0600 JSON artifact with exactly this schema (fill actual evidence, never fictional values):
+
+```json
+{
+  "schema_version": 1,
+  "kind": "operator-expired-lease-quarantine",
+  "authorizedBy": "operator",
+  "recordedAt": "<actual UTC ISO time>",
+  "originalCampaignId": "<64hex>",
+  "originalCampaignSha256": "<raw original campaign.json SHA256>",
+  "originalBatchId": "<64hex>",
+  "originalJournalSha256": "<raw original global journal SHA256>",
+  "pins": {"revision": "<64hex>", "implementationHash": "<64hex>", "sourceHash": "<64hex>"},
+  "ownerPid": 12345,
+  "coordinatorPid": 12346,
+  "jobs": [{"id": "<exact uncertain job64hex>", "board": "AsTs4s", "path": [], "status": "running", "leaseUntil": 1, "hasResult": false, "checkedAt": "<actual fresh DB-read UTC ISO time>"}],
+  "approved": false,
+  "production_strategy_approved": false,
+  "gto_verified": false
+}
+```
+
+`leaseUntil` is the actual positive epoch-ms value, not the example1. It must precede the real DB observation. No bearer, lease token, raw completion, raw log or prompt belongs in this artifact. The original campaign must be halted, batch/pins exact; unknown claims, pending completions, saved decisions on the uncertain entry or a live/unknown PID reject quarantine. Every `failure_pending` entry must be exactly covered and have uncertain outcome, at least one consumed attempt, zero saved decisions and no completion payload. PID signal0 proves absence only when it returnsESRCH; permission errors remain fail-closed. This is explicit operator evidence, not a cryptographic signature or independent strategy approval.
+
+Use the parent-created file only after independent source/security review:
+
+- Add `--quarantine-file=<private-proof-file>` to the fresh campaign. Both coordinator and scoped bridge startup validate the original raw hashes and evidence; generic/unscoped or the original batch is forbidden.
+- The **original global journal stays byte-for-byte unchanged**. New child journals live at the fixed private `ondemand-bridge/quarantines/<originalJournalSha256>/bridge-journal.json`. The key is the original journal hash, not the proof hash, so editing a proof cannot select a fresh empty runtime to evade another unresolved outcome.
+- The derived runtime still enforces the normal previous-journal guard and shared worker lock. An unresolved outcome in that derived runtime stops again; no recursive quarantine escape is implemented.
+- All original journal boards are permanently excluded, including card-order aliases. New owner metadata contains `quarantineJournalSha256` only to select this fixed monitoring path; the monitor never treats original uncertainty as live work or success.
+- Historical spent/uncertain calls remain spent. The parent supplies the separately accounted remaining finite budget; no automatic refund occurs. Normal database claim expiry can later mark an expired running row failed, but no claim is issued merely to force expiry.
+
+Initial concurrency remains2 by default. The parent may explicitly select `--initial-concurrency=8` after separately confirmed prior stability; only2 or8 initial values are accepted and neither may exceed `--max-concurrency` (ceiling16). It starts with zero new stability credit; two new fully observed reviewed stable scopes are still required before8→16. No live launch is implied by this documentation.
+
+After each accepted independent receipt and exact artifact rehash, the coordinator refreshes the existing offline full-physical-flop coverage plan once, writing the existing fixed0600 plan atomically. This is not a per-second cache audit, provider call, queue action or new approval. The last actually observed global broker snapshot/timestamp is retained; successful local artifact recounting never fabricates fresh whole-DB evidence. A failed recount/write keeps the prior plan, records only `coverage_refresh_failed` in the private campaign, resets ramp stability and allows bounded work at the current level; the old plan remains visibly stale rather than inventing counts.
+
+For the currently authorized recovery the parent must preserve the original hashes and actual evidence, validate the proof using the read-only helper, then capture a fresh broker snapshot and launch only after no owners/locks are present. The invocation adds `--quarantine-file=<parent-created0600proof> --initial-concurrency=8` to the normal finite CLI, with the explicitly supplied remaining `--max-decisions=21573 --max-calls=43638 --batch-size=16 --max-concurrency=16` and the configured independent reviewer. These are remaining bounds, not a refund or authority to retry `AsTs4s`. Until the parent actually launches, generation remains stopped.

@@ -48,3 +48,14 @@ test('status reader rejects over32MiB before parse and retains strict pins IDs s
  for(const patch of [{revision:'d'.repeat(64)},{implementationHash:'d'.repeat(64)},{sourceHash:'d'.repeat(64)},{jobs:[{...job,id:'d'.repeat(64)}]},{jobs:[{...job,status:'invented'}]},{jobs:[{...job,board:'AsAhAc'}]},{jobs:[job,job]}])await assert.rejects(readCampaignStatusResponse(response(patch),[id],pins),{code:'campaign_status_invalid'});
  const chunk=new Uint8Array(1024*1024);let read=0,cancelled=false;const oversized=new Response(new ReadableStream({pull(controller){read++;controller.enqueue(chunk);},cancel(){cancelled=true;}}));await assert.rejects(readCampaignStatusResponse(oversized,[id],pins),{code:'campaign_status_oversize'});assert.equal(cancelled,true);assert.ok(read<=CAMPAIGN_STATUS_RESPONSE_LIMIT/chunk.length+2);
 });
+
+test('explicit initial8 preserves default2, starts with zero stability credit and never exceeds configured16',async()=>{
+ const f=fixture(48,16);try{await runCampaign({...f.options,initialConcurrency:8},f.deps);assert.deepEqual(f.workers,[8,8,16]);assert.equal(f.state().initialConcurrency,8);assert.equal(f.state().maxCalls,96);}finally{f.cleanup();}
+ const g=fixture();try{for(const initialConcurrency of [0,1,4,16,50,NaN])await assert.rejects(runCampaign({...g.options,initialConcurrency},g.deps));await assert.rejects(runCampaign({...g.options,initialConcurrency:8,maxConcurrency:4},g.deps));assert.equal(g.enqueueCount(),0);}finally{g.cleanup();}
+});
+
+test('offline coverage refresh occurs only after independent receipt and artifact rehash, failure preserves stale plan without new authority',async()=>{
+ const f=fixture(4);let reviews=0,refreshes=0;const plan=join(f.root,'coverage-plan.json');writeFileSync(plan,'original offline snapshot');
+ try{const review=f.deps.review;f.deps.review=async(...args)=>{const receipt=await review(...args);reviews++;assert.equal(refreshes,reviews-1);return receipt;};f.deps.refreshCoverage=async current=>{refreshes++;assert.deepEqual(current,pins);assert.equal(reviews,refreshes);assert.equal(f.state().phase,'review_wait');if(refreshes===1)throw Error('PRIVATE-io-detail');assert.equal(readFileSync(plan,'utf8'),'original offline snapshot');};const result=await runCampaign(f.options,f.deps);assert.equal(result.waves,2);assert.equal(refreshes,2);assert.equal(readFileSync(plan,'utf8'),'original offline snapshot');assert.deepEqual(f.workers,[2,2]);assert.equal(f.state().coverageRefresh.status,'updated');assert.equal(JSON.stringify(f.state()).includes('PRIVATE'),false);}finally{f.cleanup();}
+ const g=fixture(4);try{g.deps.refreshCoverage=async()=>{throw Error('PRIVATE-failure');};await runCampaign(g.options,g.deps);assert.equal(g.state().coverageRefresh.status,'failed');assert.equal(g.state().coverageRefresh.error,'coverage_refresh_failed');assert.equal(g.state().stableScopes,0);assert.equal(g.state().approved,false);}finally{g.cleanup();}
+});

@@ -470,3 +470,7 @@ test('transport diagnostics retain recovered lease rejection separately from fir
   const d=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8')).diagnostics;assert.equal(result.calls,0);assert.equal(beats,2);assert.equal(d.first_failure,null);assert.equal(d.lease_heartbeat_transport_retries[0].outcome,'confirmed');assert.equal(d.lease_heartbeat_transport_retries[0].transport.causeCode,'CERT_HAS_EXPIRED');assert.equal(d.lease_heartbeat_transport_retries[0].transport.phase,'lease_heartbeat');assert.equal(JSON.stringify(d).includes('SECRET'),false);
  }finally{f.cleanup();}
 });
+
+test('quarantine cannot enable unscoped owner or bypass missing-proof startup before network/provider',async()=>{
+ const f=await fixture();try{await assert.rejects(runBridge({...f.options,quarantineFile:'/definitely-missing-quarantine-proof'}),{code:'invalid_expired_job_quarantine'});await assert.rejects(runBridge({...f.options,operatorBatchId:'a'.repeat(64),quarantineFile:'/definitely-missing-quarantine-proof',providerFactory:()=>{throw Error('no provider');}}));assert.equal(f.requests.length,0);assert.equal(existsSync(join(f.root,'worker.lock')),false);}finally{f.cleanup();}
+});
