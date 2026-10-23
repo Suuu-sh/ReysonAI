@@ -22,8 +22,8 @@ export default function Aiv2OnDemandApp(){
   try{await startGoogleSignIn();}catch{setError(localized("Google sign-in could not start. Check the connection and try again when ready.","Googleログインを開始できませんでした。接続を確認してから再試行してください。"));}finally{setBusy(false);}
  };
  return <>
-  <header className="shell">
-   <div className="account-auth-actions"><BrandIcon/><strong>ReysonAI</strong><a href="/analyze/ranges">{localized("Back to range analysis","レンジ分析に戻る")}</a></div>
+  <header className="shell aiv2-ondemand-header">
+   <div className="aiv2-ondemand-brand"><BrandIcon/><strong>ReysonAI</strong><a href="/analyze/ranges">{localized("Back to range analysis","レンジ分析に戻る")}</a></div>
    <section className="account-card account-auth" aria-label={localized("Google account","Googleアカウント")}>
     {account.ready?user?<p>{localized("Signed in with Google","Googleでログイン中")} · <span translate="no">{user.email}</span></p>:<>
      <p>{localized("On-demand generation requires your Google account. After signing in, open the On-demand postflop link in range analysis to return here. No guest data is uploaded by this page.","オンデマンド生成にはGoogleアカウントが必要です。ログイン後はレンジ分析の「オンデマンド・ポストフロップ」リンクから戻れます。このページからゲストデータをアップロードすることはありません。")}</p>

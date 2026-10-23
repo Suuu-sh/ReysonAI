@@ -14,3 +14,15 @@ test('standalone on-demand boot is lazy and selected before ProductApp preflop l
  const workspace=readFileSync(new URL('../src/estimated/RangeWorkspace.tsx',import.meta.url),'utf8');
  assert.ok(workspace.includes('href="/analyze/ondemand"'));
 });
+
+
+test('standalone layout scopes document flow and gives the matrix an explicit square',()=>{
+ const css=readFileSync(new URL('../src/estimated/aiv2-ondemand.css',import.meta.url),'utf8');
+ const app=readFileSync(new URL('../src/estimated/Aiv2OnDemandApp.tsx',import.meta.url),'utf8');
+ const workspace=readFileSync(new URL('../src/estimated/Aiv2OnDemandWorkspace.tsx',import.meta.url),'utf8');
+ assert.ok(app.includes('shell aiv2-ondemand-header'));assert.ok(app.includes('className="aiv2-ondemand-brand"'));
+ assert.ok(workspace.includes('shell aiv2-ondemand-workspace'));assert.ok(workspace.includes('import "./aiv2-ondemand.css"'));
+ assert.ok(css.includes('aspect-ratio: 1'));assert.ok(css.includes('grid-template-rows: repeat(13, minmax(0, 1fr))'));
+ assert.ok(css.includes('min-height: 260px'));assert.ok(css.includes('height: auto'));
+ assert.ok(!/^\.matrix(?:\s|\s*\{)/m.test(css));
+});

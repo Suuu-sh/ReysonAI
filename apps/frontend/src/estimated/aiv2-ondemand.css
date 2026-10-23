@@ -1,0 +1,54 @@
+/* The standalone route is document-flow content, not the bounded range shell. */
+.aiv2-ondemand-header.shell,
+.aiv2-ondemand-workspace.shell {
+  display: block;
+  width: min(100%, 1100px);
+  height: auto;
+  min-height: 0;
+  margin: 0 auto;
+  padding: 16px;
+}
+.aiv2-ondemand-header.shell { padding-bottom: 0; }
+.aiv2-ondemand-brand {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.aiv2-ondemand-brand > img,
+.aiv2-ondemand-brand > svg {
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+}
+.aiv2-ondemand-brand > a { margin-left: auto; }
+.aiv2-ondemand-workspace > nav,
+.aiv2-ondemand-workspace > div[aria-label],
+.aiv2-ondemand-workspace > form {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block: 12px;
+}
+.aiv2-ondemand-workspace > .matrix-panel { width: min(100%, 680px); }
+.aiv2-ondemand-workspace .matrix-scroll {
+  flex: none;
+  width: 100%;
+  aspect-ratio: 1;
+  min-height: 260px;
+  overflow: visible;
+}
+.aiv2-ondemand-workspace .matrix {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 256px;
+  grid-template-rows: repeat(13, minmax(0, 1fr));
+}
+@media (max-width: 600px) {
+  .aiv2-ondemand-header.shell,
+  .aiv2-ondemand-workspace.shell { padding-inline: 12px; }
+  .aiv2-ondemand-brand > a { margin-left: 0; }
+}
