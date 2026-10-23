@@ -9525,8 +9525,8 @@
     },
     {
       "path": "configs/multiway-preflop-stage2.review.json",
-      "bytes": 578468,
-      "sha256": "3f4726a303a6f0e38271a719c8ca548dc415a673e1538010e0005cf1c3c43a57"
+      "bytes": 580779,
+      "sha256": "a762542d8ce03ab8503b72f606ae777468ddb81af80396f5aea49cb94d6cd922"
     },
     {
       "path": "configs/multiway-preflop-stage3.json",
@@ -9565,7 +9565,7 @@
     "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
     "format": "ustar+gzip-stage3-content-v1"
   },
-  "content_sha256": "014fb19a6026224cc0c4924582b99edeb3b0da615abcd3df0a61d9e77e29607b",
+  "content_sha256": "7fd4e8365423e4730fd50630b8429af0723fcc5005551c2854ab8040ca62a72c",
   "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
   "counts": {
     "catalog": 16132,
@@ -11159,6 +11159,50 @@
         "Source-only authority; all original numerical records, original review objects, prior amendments and limitations remain exact.",
         "No provider/model/D1/network calls or deployment performed for this renewal.",
         "50-way execution is not live verified; all strategy/GTO/production approval flags remain unchanged."
+      ]
+    }
+  ],
+  "nodonk_source_renewals": [
+    {
+      "date": "2026-10-24",
+      "status": "approved-source-only",
+      "reviewer": "Independent source-only static reviewer /root/parallel_safety_review",
+      "scope": "Source-only canonical renewal for exactly three nonsecret no-donk scope variables in apps/backend/wrangler.jsonc; legacy variables and all generation/model/quota/auth guards remain unchanged. No numerical, strategy/GTO, runtime capacity, production, deployment or generated-artifact approval.",
+      "prior_raw_receipt_sha256": "7dfa0ec3520e17adefd769e2328f9e30385acc2c486009be83e06497b5f06771",
+      "before_content_sha256": "014fb19a6026224cc0c4924582b99edeb3b0da615abcd3df0a61d9e77e29607b",
+      "after_content_sha256": "7fd4e8365423e4730fd50630b8429af0723fcc5005551c2854ab8040ca62a72c",
+      "review_reference": {
+        "path": "docs/qa/aiv2-postflop-nodonk-source-renewal.json"
+      },
+      "changed_sources": [
+        "configs/multiway-preflop-stage2.review.json"
+      ],
+      "preserved": {
+        "stage": 3,
+        "artifact_record_count": 1805,
+        "artifact_records_sha256": "5ee2be29e51a468e8e58fb9dcee0cc9017de1118e34ba4eb66986524aa542937",
+        "archive": {
+          "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+          "bytes": 2436451,
+          "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+          "format": "ustar+gzip-stage3-content-v1"
+        },
+        "archive_materialized_raw_rehashed": true,
+        "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+        "counts": {
+          "catalog": 16132,
+          "saved": 1801,
+          "unreachable": 5621,
+          "rare": 8710,
+          "hands": 304369
+        },
+        "original_review_sha256": "6d0afd9eebb7fc0db1767a5dfedd78126836b1abd25d0470255dadca50401c20",
+        "prior_receipt_metadata_sha256": "5c7e66040d4014527334bf26fefcce5926b7a7a726d08c29a65fa7d6ae93109d"
+      },
+      "limitations": [
+        "Source-only authority; all original numerical records, original review objects, prior amendments and limitations remain exact.",
+        "No provider/model/D1/network calls or deployment performed for this renewal.",
+        "New no-donk scope has not been live verified; this renewal approves no new numerical policy, strategy or GTO result."
       ]
     }
   ]

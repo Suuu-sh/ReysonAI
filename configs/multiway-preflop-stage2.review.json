@@ -10389,8 +10389,8 @@
     },
     {
       "path": "apps/backend/wrangler.jsonc",
-      "bytes": 2002,
-      "sha256": "47052331f965131b686497000705403415b5aad070806a15d44b203c7dcc6d03"
+      "bytes": 2243,
+      "sha256": "7df6cf3cb0d6a8b13afaa0d0b7ecb0198e66f6054dfb60e1cb96364a605edb26"
     },
     {
       "path": "apps/frontend/docs/mw3-source-identity/typescript-policy-source-parity.json",
@@ -11363,7 +11363,7 @@
       "sha256": "d8724863bbcb14ff075f0bc5c37bfed7ddef4ff38e16d16e2482a4a2c539267f"
     }
   ],
-  "content_sha256": "81d7d0fbe5be687ca72844e961c0190104fbe9e334ad84eada8dcb14ad263a5b",
+  "content_sha256": "cb8506aa5de503e82d77383d778b75c7aee63720f1443fa2bbb94bc43168db53",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -12021,6 +12021,49 @@
         "Source-only authority; all original numerical records, original review objects, prior amendments and limitations remain exact.",
         "No provider/model/D1/network calls or deployment performed for this renewal.",
         "50-way execution is not live verified; all strategy/GTO/production approval flags remain unchanged."
+      ]
+    }
+  ],
+  "nodonk_source_renewals": [
+    {
+      "date": "2026-10-24",
+      "status": "approved-source-only",
+      "reviewer": "Independent source-only static reviewer /root/parallel_safety_review",
+      "scope": "Source-only canonical renewal for exactly three nonsecret no-donk scope variables in apps/backend/wrangler.jsonc; legacy variables and all generation/model/quota/auth guards remain unchanged. No numerical, strategy/GTO, runtime capacity, production, deployment or generated-artifact approval.",
+      "prior_raw_receipt_sha256": "3f4726a303a6f0e38271a719c8ca548dc415a673e1538010e0005cf1c3c43a57",
+      "before_content_sha256": "81d7d0fbe5be687ca72844e961c0190104fbe9e334ad84eada8dcb14ad263a5b",
+      "after_content_sha256": "cb8506aa5de503e82d77383d778b75c7aee63720f1443fa2bbb94bc43168db53",
+      "review_reference": {
+        "path": "docs/qa/aiv2-postflop-nodonk-source-renewal.json"
+      },
+      "changed_sources": [
+        "apps/backend/wrangler.jsonc"
+      ],
+      "preserved": {
+        "stage": 2,
+        "artifact_record_count": 1888,
+        "artifact_records_sha256": "60179b68d2fe722deb3ac93f7db76101b065ee9453d397377a0db8550d73e73e",
+        "archive": {
+          "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+          "bytes": 1747857,
+          "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+          "format": "ustar+gzip"
+        },
+        "archive_materialized_raw_rehashed": true,
+        "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+        "counts": {
+          "catalog": 3115,
+          "saved": 1611,
+          "unreachable": 1504,
+          "hands": 272259
+        },
+        "original_review_sha256": "17f8ea0ba36f26311f30b59ada348033465372417edb5c817e0377a07bd94feb",
+        "prior_receipt_metadata_sha256": "573eba49d5c79e8c55478d40c7d859f1c36b3b545f75aac00f6165ccc16d6d73"
+      },
+      "limitations": [
+        "Source-only authority; all original numerical records, original review objects, prior amendments and limitations remain exact.",
+        "No provider/model/D1/network calls or deployment performed for this renewal.",
+        "New no-donk scope has not been live verified; this renewal approves no new numerical policy, strategy or GTO result."
       ]
     }
   ]
