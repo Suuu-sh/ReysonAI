@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { chmodSync, existsSync, lstatSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { enqueueOperatorBatch, operatorBatchManifest } from '../scripts/aiv2-postflop-operator-batch.ts';
+import { enqueueOperatorBatch, operatorBatchManifest, operatorBatchPath } from '../scripts/aiv2-postflop-operator-batch.ts';
 import { DEFAULT_STORE, CONFIG, implementationHash, loadRoot } from '../scripts/aiv2-postflop-ondemand-store.ts';
 import { postflopHash as hash } from '../scripts/aiv2-postflop-ondemand.ts';
 const source=resolve(DEFAULT_STORE,'source-snapshot'),operatorUserId='test-real-account-id';
@@ -88,4 +88,35 @@ test('existing failed/complete jobs are reported as accepted states, not new que
   const fetcher=async(url:any,init:any)=>{const response=await f.options.fetch(url,init),receipt=await response.json();receipt.jobs[0].status='failed';receipt.jobs[1].status='complete';return Response.json(receipt,{status:202});};
   const result=await enqueueOperatorBatch({...f.options,fetch:fetcher});assert.equal(result.accepted,2);assert.equal(result.queued,0);assert.deepEqual(result.states,{queued:0,running:0,complete:1,failed:1});
  }finally{f.cleanup();}
+});
+test('explicit check-child path preserves root defaults and pins while binding path-specific identity and ancestor budgets',async()=>{
+ const boards=['QsJhTd','9s8s6d'];
+ const roots=await operatorBatchManifest(boards,8,4,source,operatorUserId),explicitRoots=await operatorBatchManifest(boards,8,4,source,operatorUserId,[]),child=await operatorBatchManifest(boards,8,4,source,operatorUserId,['check']);
+ assert.deepEqual(roots,explicitRoots);assert.deepEqual(child.requests,boards.map(board=>({board,path:['check']})));assert.notEqual(child.batchId,roots.batchId);
+ for(const key of ['revision','implementationHash','sourceHash'] as const)assert.equal(child[key],roots[key]);
+ assert.notEqual(hash({revision:child.revision,...child.requests[0]}),hash({revision:roots.revision,...roots.requests[0]}));
+ for(const [calls,decisions] of [[4,2],[7,4],[8,3]])await assert.rejects(operatorBatchManifest(boards,calls,decisions,source,operatorUserId,['check']),{code:'invalid_operator_budget'});
+ for(const path of [['bet33'],['check','check'],['check,check'],[''],['fold'],['Kd']])await assert.rejects(operatorBatchManifest(boards,100,100,source,operatorUserId,path),{code:'operator_path_not_supported'});
+});
+test('explicit six check-child jobs reserve twelve decisions/twenty-four calls and replay only that exact manifest',async()=>{
+ const f=fixture(),boards=['9s8s6d','AhKd7c','Qs7s2s','JsJd4c','7s5h3d','Ts9d4c'];
+ try{
+  const options={...f.options,boards,path:['check'],maxCalls:24,maxDecisions:12};
+  const result=await enqueueOperatorBatch(options);assert.equal(result.status,'submitted');assert.equal(result.accepted,6);assert.equal(result.queued,6);assert.equal(f.requests.length,1);
+  assert.deepEqual(f.requests[0].requests,boards.map(board=>({board,path:['check']})));assert.equal(f.requests[0].maxCalls,24);assert.equal(f.requests[0].maxDecisions,12);
+  const journal=JSON.parse(readFileSync(join(f.options.runtimePath,result.batchId+'.json'),'utf8'));assert.ok(journal.manifest.requests.every((request:any)=>JSON.stringify(request.path)==='["check"]'));
+  const replay=await enqueueOperatorBatch(options);assert.equal(replay.status,'already_submitted');assert.equal(f.requests.length,1);
+  await assert.rejects(enqueueOperatorBatch({...options,path:[],retrySubmission:true}),{code:'operator_no_pending_submission'});assert.equal(f.requests.length,1);
+ }finally{f.cleanup();}
+});
+test('unsupported operator follow-up paths fail before any queue write',async()=>{
+ const f=fixture();try{
+  for(const path of [['bet33'],['check','bet33'],['check','check'],['allin']])await assert.rejects(enqueueOperatorBatch({...f.options,path,maxCalls:100,maxDecisions:100}),{code:'operator_path_not_supported'});
+  assert.equal(f.requests.length,0);assert.equal(existsSync(f.options.runtimePath),false);
+ }finally{f.cleanup();}
+});
+
+test('operator path CLI accepts only one exact check flag and never silently falls back for a malformed flag',()=>{
+ assert.deepEqual(operatorBatchPath([]),[]);assert.deepEqual(operatorBatchPath(['--boards=QsJhTd','--path=check']),['check']);
+ for(const args of [['--path'],['--path','check'],['--path='],['--path=bet33'],['--path=check,check'],['--path=check','--path=check']])assert.throws(()=>operatorBatchPath(args),{code:'operator_path_not_supported'});
 });

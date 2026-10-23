@@ -1,0 +1,743 @@
+{
+  "schema_version": "aiv2-postflop-operator-four-root-factual-review-v1",
+  "approved": false,
+  "production_strategy_approved": false,
+  "gto_verified": false,
+  "reviewed_at_utc": "2026-10-23T10:28:40.002947+00:00",
+  "reviewer": {
+    "task": "/root/operator_broker",
+    "scope": "Read-only exact saved-artifact numerical/provenance checks and representative EN/JA factual review of four new phase2 roots. Phase1 is bound by its existing report hash, not re-executed. No model/network/D1 calls, repairs or artifact edits."
+  },
+  "result": "numerical_and_provenance_checks_pass_representative_factual_read_no_concrete_contradiction_found",
+  "checks": {
+    "both_seats_full_1326_physical_combo_universe": true,
+    "both_seats_board_blocked_reach_zero": true,
+    "positive_actor_exact_once_coverage": true,
+    "own_reach_preserved_without_opponent_same_combo_product": true,
+    "all_mixes_legal_integer_sum100": true,
+    "group_mixes_and_bilingual_text_expand_exactly_to_saved_rows": true,
+    "all_169_hand_aggregates_independently_reach_weight_recalculated": true,
+    "saved_reader_accepts_exact_current_roots_and_frozen_implementation": true,
+    "every_actual_request_prompt_and_schema_provenance_matches": true,
+    "correct_requested_and_confirmed_model_effort_every_turn": true,
+    "distinct_threads_between_six_jobs_with_same_thread_only_for_allowed_repair": true,
+    "bilingual_nonempty_summary_and_group_reasons": true
+  },
+  "recorded_parallel_observation": {
+    "path": ".local/operator-phase2-overlap.json",
+    "raw_sha256": "7fa0c736be71e591ded6286e94dec64c9fd164bd673b7dde704ca4282d9cb540",
+    "concurrency": 4,
+    "calls": 4,
+    "decisions_at_capture": 0,
+    "all_four_lanes_marked_in_flight": true,
+    "interpretation": "Retained bridge observation shows four distinct board lanes marked in flight concurrently. Saved attestations use four distinct model threads. Review did not instrument live OS processes."
+  },
+  "phase2_totals": {
+    "saved_root_artifacts": 4,
+    "decisions": 4,
+    "provider_calls": 5,
+    "repairs": 1,
+    "explicit_max_decisions": 4,
+    "explicit_max_calls": 8
+  },
+  "bounded_correction": {
+    "board": "Qs7s2s",
+    "provider_calls": 2,
+    "same_thread": true,
+    "session_turns": [
+      1,
+      2
+    ],
+    "different_turn_ids": true,
+    "both_transport_statuses": "completed",
+    "recorded_validation_issue": "Duplicate/blocked/zero-reach/unknown combo",
+    "schema_hash_unchanged": true,
+    "effective_prompt_hash_changed_and_verified_against_recorded_issue": true,
+    "correction_scope": "Single frozen-generator schema/coverage correction; not a semantic review regeneration. Final artifact exact positive physical-combo coverage now passes.",
+    "limitation": "Rejected initial raw response is not stored in this envelope; this review verifies recorded validation category and exact prompt/session provenance, not identification of a particular rejected combo."
+  },
+  "artifacts": [
+    {
+      "decision_id": "bd2c2ff8e1468ee7b6fe771fc74dfc9126c686940e37ee6dcc0105b4b46f689a",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/bd2c2ff8e1468ee7b6fe771fc74dfc9126c686940e37ee6dcc0105b4b46f689a.json",
+      "raw_file_sha256": "4911149b8ab4baa04625b03f7ddce6e745aea99c6c31a69ffddadde911a10ac4",
+      "board": "Qs7s2s",
+      "actor": "BB",
+      "saved_at": "2026-10-23T10:24:04.224Z",
+      "implementation_hash": "96e53c3932c656a1a331e8e2e389ff5e30e75eeb65db95eda07bdf3fb204e84d",
+      "numeric": {
+        "physical_combos": 1326,
+        "board_legal_combos": 1176,
+        "ranges": {
+          "BB": {
+            "positive_combos": 836,
+            "reach_weight": 444.1
+          },
+          "BTN": {
+            "positive_combos": 664,
+            "reach_weight": 544.1
+          }
+        },
+        "group_count": 1,
+        "hand_count": 169,
+        "zero_reach_hands": 35,
+        "provider_calls": 2,
+        "repairs": 1,
+        "saved_mix": {
+          "check": 100,
+          "bet33": 0,
+          "bet66": 0,
+          "bet125": 0
+        }
+      },
+      "provenance": {
+        "thread_id": "01a16847-731e-7fa1-987e-ddad500c4eaf",
+        "turn_ids": [
+          "01a16847-7398-7211-8bde-3733d57a8e9f",
+          "01a16848-d591-72a2-b82c-27b877fdce27"
+        ],
+        "statuses": [
+          "completed",
+          "completed"
+        ],
+        "session_turns": [
+          1,
+          2
+        ],
+        "provider_calls": [
+          {
+            "session_turn": 1,
+            "validation_issue": null,
+            "effective_prompt_hash": "ee365b2aaa24eac719e20d2c9b04aba8a87f165f4584424d5a78d148d41118b0",
+            "schema_hash": "79cc90412aafe7d689b01694d119d54bc7122afdcccc2e525efbc1e235716566"
+          },
+          {
+            "session_turn": 2,
+            "validation_issue": "Duplicate/blocked/zero-reach/unknown combo",
+            "effective_prompt_hash": "8a5c8e3071bf80a70555acee002a8ec5c625ffc75285aa47f7040fd85dbb3d80",
+            "schema_hash": "79cc90412aafe7d689b01694d119d54bc7122afdcccc2e525efbc1e235716566"
+          }
+        ]
+      },
+      "representative_range_facts": {
+        "AA": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "KK": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "QQ": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "77": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 2.4
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "22": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 2.7
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "Q7o": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 1.2
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          }
+        },
+        "72s": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 0.45
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 0,
+            "reach_weight": 0
+          }
+        }
+      },
+      "representative_en_ja_factual_read": {
+        "status": "no_concrete_contradiction_found",
+        "summary_claims_checked": [
+          "Monotone three-spade Q72; two spades in hand make a flush, one spade a flush draw, no made straight possible.",
+          "BTN AsKs has reach1 and BB AsKs reach0; both languages correctly retain this nut-flush example for BTN, not BB.",
+          "BB has44positive made-flush combos versus40for BTN; count is not an equity/nut-advantage proof.",
+          "BB77/22 have positive set reach; BB Q7o and72s add reached two-pair combos absent from BTN.",
+          "Both summaries and generic group reason agree with full-range check100 and no leading size."
+        ],
+        "sample_combos": [
+          "AsKs",
+          "AsJs",
+          "7h7d",
+          "2h2d",
+          "Qh7h",
+          "7h2h",
+          "AsJh"
+        ],
+        "strategic_boundary": "No-clear-overall-nut-advantage and conservative checking are strategic judgments, not independently measured equity or optimality. Every flush strength is read as every reached BB flush strength, not a claim that BB contains absent AsKs."
+      }
+    },
+    {
+      "decision_id": "5aa180b4f57730a5fc5e663d79a35535ec61054b28c6cafaa6ed358e7c4400bf",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/5aa180b4f57730a5fc5e663d79a35535ec61054b28c6cafaa6ed358e7c4400bf.json",
+      "raw_file_sha256": "b19d5200eb367012c588c8a06682456a9ea68ccb18bcbfed3825055527716fbf",
+      "board": "Ts9d4c",
+      "actor": "BB",
+      "saved_at": "2026-10-23T10:23:02.485Z",
+      "implementation_hash": "96e53c3932c656a1a331e8e2e389ff5e30e75eeb65db95eda07bdf3fb204e84d",
+      "numeric": {
+        "physical_combos": 1326,
+        "board_legal_combos": 1176,
+        "ranges": {
+          "BB": {
+            "positive_combos": 828,
+            "reach_weight": 431.15
+          },
+          "BTN": {
+            "positive_combos": 650,
+            "reach_weight": 533.0
+          }
+        },
+        "group_count": 1,
+        "hand_count": 169,
+        "zero_reach_hands": 35,
+        "provider_calls": 1,
+        "repairs": 0,
+        "saved_mix": {
+          "check": 100,
+          "bet33": 0,
+          "bet66": 0,
+          "bet125": 0
+        }
+      },
+      "provenance": {
+        "thread_id": "01a16847-764f-72f2-b356-7a6ae5b9546f",
+        "turn_ids": [
+          "01a16847-76f4-7e52-8ed7-e2628045f675"
+        ],
+        "statuses": [
+          "completed"
+        ],
+        "session_turns": [
+          1
+        ],
+        "provider_calls": [
+          {
+            "session_turn": 1,
+            "validation_issue": null,
+            "effective_prompt_hash": "f221ec9f16e9c6f4591d787744e075a59603d13b8ecd94b248586682be00f407",
+            "schema_hash": "dc677879e5b450b20372fae1d8a7e0b9246f15afde863bfd7c6c6f2b47451cb8"
+          }
+        ]
+      },
+      "representative_range_facts": {
+        "AA": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "KK": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "QQ": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "JJ": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 0.6
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "TT": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 0.75
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "99": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 1.5
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "44": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 2.85
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "T9s": {
+          "BB": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 1.7
+          },
+          "BTN": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 2
+          }
+        }
+      },
+      "representative_en_ja_factual_read": {
+        "status": "no_concrete_contradiction_found",
+        "summary_claims_checked": [
+          "Unpaired rainbow T94; TT/99/44 are sets and T9 is top two pair, all reached by both seats.",
+          "BTN JJ reach6 versus BB0.6; BTN TT reach3 versus BB0.75; BTN retains AA/KK/QQ absent from BB.",
+          "QsJs is an open-ended straight draw, not a made straight; no made flush on this rainbow flop.",
+          "Both language summaries leave later betting responses unspecified and match check100/no bet sizing."
+        ],
+        "sample_combos": [
+          "ThTd",
+          "9s9h",
+          "4s4h",
+          "Th9h",
+          "QsJs"
+        ],
+        "strategic_boundary": "Top-end range examples are observable; exclusive/overall nut or range advantage and optimal checking are not solved."
+      }
+    },
+    {
+      "decision_id": "bdd7445025b50b85c983e67a122775118293b314362f5f0ad67e2cd6daaa7025",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/bdd7445025b50b85c983e67a122775118293b314362f5f0ad67e2cd6daaa7025.json",
+      "raw_file_sha256": "da5a09913e3905eff50e8aa2d9532feec4386eaf91698cf19462564d079ec5f3",
+      "board": "JsJd4c",
+      "actor": "BB",
+      "saved_at": "2026-10-23T10:22:55.158Z",
+      "implementation_hash": "96e53c3932c656a1a331e8e2e389ff5e30e75eeb65db95eda07bdf3fb204e84d",
+      "numeric": {
+        "physical_combos": 1326,
+        "board_legal_combos": 1176,
+        "ranges": {
+          "BB": {
+            "positive_combos": 834,
+            "reach_weight": 436.85
+          },
+          "BTN": {
+            "positive_combos": 649,
+            "reach_weight": 531.85
+          }
+        },
+        "group_count": 1,
+        "hand_count": 169,
+        "zero_reach_hands": 35,
+        "provider_calls": 1,
+        "repairs": 0,
+        "saved_mix": {
+          "check": 100,
+          "bet33": 0,
+          "bet66": 0,
+          "bet125": 0
+        }
+      },
+      "provenance": {
+        "thread_id": "01a16847-764f-7520-99b5-b89b091eca8d",
+        "turn_ids": [
+          "01a16847-76fd-7143-9982-8cf58b66932d"
+        ],
+        "statuses": [
+          "completed"
+        ],
+        "session_turns": [
+          1
+        ],
+        "provider_calls": [
+          {
+            "session_turn": 1,
+            "validation_issue": null,
+            "effective_prompt_hash": "b94b3302d1b7a5583ed6593c824139f243c6b0707e04a0eecf890bc9340ba1ad",
+            "schema_hash": "27f663ab28bf6cbc26ac5ca10c30e6f27472355b7bd901efed571ac754152ea5"
+          }
+        ]
+      },
+      "representative_range_facts": {
+        "AA": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "KK": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "QQ": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "JJ": {
+          "BB": {
+            "board_legal_combos": 1,
+            "positive_combos": 1,
+            "reach_weight": 0.1
+          },
+          "BTN": {
+            "board_legal_combos": 1,
+            "positive_combos": 1,
+            "reach_weight": 1
+          }
+        },
+        "44": {
+          "BB": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 2.85
+          },
+          "BTN": {
+            "board_legal_combos": 3,
+            "positive_combos": 3,
+            "reach_weight": 3
+          }
+        },
+        "J4s": {
+          "BB": {
+            "board_legal_combos": 1,
+            "positive_combos": 1,
+            "reach_weight": 0.4
+          },
+          "BTN": {
+            "board_legal_combos": 1,
+            "positive_combos": 1,
+            "reach_weight": 0.2
+          }
+        }
+      },
+      "representative_en_ja_factual_read": {
+        "status": "no_concrete_contradiction_found",
+        "summary_claims_checked": [
+          "Paired rainbow JJ4; JhJc is quads with BB reach0.1 and BTN reach1, so nut access is shared.",
+          "Jh4h and44 are full houses, not merely two pair or a set, and have positive BB reach.",
+          "A single remaining jack such as AsJh is trips; group text does not assign the same hand class to every holding.",
+          "BTN AA/KK/QQ remain present and absent from BB, matching EN/JA overpair examples.",
+          "Both language reasons explicitly describe all-range check100 and no leading size."
+        ],
+        "sample_combos": [
+          "JhJc",
+          "Jh4h",
+          "4s4h",
+          "AsJh"
+        ],
+        "strategic_boundary": "Protected checking and overpair advantage are qualitative strategic reasoning, not independent EV/solver approval."
+      }
+    },
+    {
+      "decision_id": "62881523c30217c0b6833c71081c559af012d5ea11b9a075a5d953c6cb891f6a",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/62881523c30217c0b6833c71081c559af012d5ea11b9a075a5d953c6cb891f6a.json",
+      "raw_file_sha256": "2e012abfec98a7859134c49e839d618b6df8534fffa6276c0760921db5ba448b",
+      "board": "7s5h3d",
+      "actor": "BB",
+      "saved_at": "2026-10-23T10:22:58.552Z",
+      "implementation_hash": "96e53c3932c656a1a331e8e2e389ff5e30e75eeb65db95eda07bdf3fb204e84d",
+      "numeric": {
+        "physical_combos": 1326,
+        "board_legal_combos": 1176,
+        "ranges": {
+          "BB": {
+            "positive_combos": 837,
+            "reach_weight": 444.2
+          },
+          "BTN": {
+            "positive_combos": 672,
+            "reach_weight": 556.05
+          }
+        },
+        "group_count": 1,
+        "hand_count": 169,
+        "zero_reach_hands": 35,
+        "provider_calls": 1,
+        "repairs": 0,
+        "saved_mix": {
+          "check": 100,
+          "bet33": 0,
+          "bet66": 0,
+          "bet125": 0
+        }
+      },
+      "provenance": {
+        "thread_id": "01a16847-7239-7411-ab33-8f189fb08b6f",
+        "turn_ids": [
+          "01a16847-72c5-71e0-ae1c-9deb37adeebb"
+        ],
+        "statuses": [
+          "completed"
+        ],
+        "session_turns": [
+          1
+        ],
+        "provider_calls": [
+          {
+            "session_turn": 1,
+            "validation_issue": null,
+            "effective_prompt_hash": "a5abfc9edc9d7d98cf276add2ce3d5ec6b240681d42224a3e681a4c863916f4f",
+            "schema_hash": "94476ef6e1f2c9867196467c5ee3a913bdc4d28a41e88bcfaa2ed868f8cdda90"
+          }
+        ]
+      },
+      "representative_range_facts": {
+        "AA": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "KK": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "QQ": {
+          "BB": {
+            "board_legal_combos": 6,
+            "positive_combos": 0,
+            "reach_weight": 0
+          },
+          "BTN": {
+            "board_legal_combos": 6,
+            "positive_combos": 6,
+            "reach_weight": 6
+          }
+        },
+        "64s": {
+          "BB": {
+            "board_legal_combos": 4,
+            "positive_combos": 4,
+            "reach_weight": 3.6
+          },
+          "BTN": {
+            "board_legal_combos": 4,
+            "positive_combos": 4,
+            "reach_weight": 3.6
+          }
+        },
+        "64o": {
+          "BB": {
+            "board_legal_combos": 12,
+            "positive_combos": 12,
+            "reach_weight": 0.6
+          },
+          "BTN": {
+            "board_legal_combos": 12,
+            "positive_combos": 0,
+            "reach_weight": 0
+          }
+        },
+        "75o": {
+          "BB": {
+            "board_legal_combos": 7,
+            "positive_combos": 7,
+            "reach_weight": 0.7
+          },
+          "BTN": {
+            "board_legal_combos": 7,
+            "positive_combos": 0,
+            "reach_weight": 0
+          }
+        },
+        "73s": {
+          "BB": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 1.2
+          },
+          "BTN": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 0.2
+          }
+        },
+        "53s": {
+          "BB": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 1.6
+          },
+          "BTN": {
+            "board_legal_combos": 2,
+            "positive_combos": 2,
+            "reach_weight": 1.3
+          }
+        }
+      },
+      "representative_en_ja_factual_read": {
+        "status": "no_concrete_contradiction_found",
+        "summary_claims_checked": [
+          "Unpaired rainbow753;64 makes a seven-high nut straight; no made flush is possible.",
+          "Both seats have4suited64 combos; BB additionally has12offsuit64 combos with totalreach0.6 while BTNoffsuit64 reach0.",
+          "BB has positive extra75o two-pair reach;73s/53s examples also have positive reaches.",
+          "BTN AA/KK/QQ reach remains positive while BB is zero.",
+          "Rake5% cap3BB is supplied by the exact effective-prompt base; rake is not a fabricated numeric EV calculation.",
+          "EN/JA group explanations match deliberate uniform check100 without later policy claims."
+        ],
+        "sample_combos": [
+          "6s4s",
+          "6s4h",
+          "7h5d",
+          "7h3h",
+          "5s3s"
+        ],
+        "strategic_boundary": "Rake discouraging marginal pot building is qualitative reasoning, not a measured EV/optimality result."
+      }
+    }
+  ],
+  "aggregate_phase1_plus_phase2": {
+    "phase1_report": {
+      "path": "docs/qa/aiv2-postflop-operator-phase1-review.json",
+      "raw_sha256": "9a5c90959904a5d78e962ca1f484e69cce5d5f9fd1f7217488b4471a86386504",
+      "existing_result": "numerical_and_provenance_checks_pass_representative_factual_read_no_concrete_contradiction_found",
+      "review_reexecuted": false
+    },
+    "new_saved_root_artifacts": 6,
+    "decisions": 6,
+    "provider_calls": 7,
+    "repairs": 1,
+    "distinct_model_threads": 6,
+    "phase1_real_overlap_lanes": 2,
+    "phase2_real_overlap_lanes": 4,
+    "all_six_saved_policies": "check100 for every positively reached BB combo; all lead sizes zero",
+    "approved": false,
+    "production_strategy_approved": false,
+    "gto_verified": false
+  },
+  "limitations": [
+    "No solver, EV/equity, exploitability, independent strategy-quality or GTO acceptance.",
+    "All six new roots choose uniform full-range check100. Successful bounded concurrency does not demonstrate diverse betting policy, strategic improvement or optimality.",
+    "Representative factual reading does not certify every possible interpretation or optimal action for every combo.",
+    "Only exact flop roots; no later-street policies or broader-board coverage inferred.",
+    "Saved marginal ranges are not independently established joint deal probabilities.",
+    "Broker completion, live browser display, quotas and zero-call reload are separate parent-owned audits, not re-queried here.",
+    "Original artifacts and semantic_review/publication/production fields are unchanged. This report does not authorize further generation."
+  ]
+}

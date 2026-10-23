@@ -8,14 +8,22 @@ import { bridgeOrigin } from './aiv2-postflop-ondemand-bridge.ts';
 
 type Manifest={batchId:string;operatorUserId:string;revision:string;implementationHash:string;sourceHash:string;requests:Array<{board:string;path:string[]}>;maxCalls:number;maxDecisions:number};
 type Receipt={batchId:string;revision:string;implementationHash:string;sourceHash:string;maxCalls:number;maxDecisions:number;jobs:Array<{id:string;board:string;path:string[];status:string}>};
-type Options={operatorUserId:string;origin:string;bearerFile:string;source:string;boards:string[];maxCalls:number;maxDecisions:number;confirmLocalGeneration:boolean;retrySubmission?:boolean;runtimePath?:string;allowLoopback?:boolean;fetch?:typeof fetch};
+type Options={operatorUserId:string;origin:string;bearerFile:string;source:string;boards:string[];path?:string[];maxCalls:number;maxDecisions:number;confirmLocalGeneration:boolean;retrySubmission?:boolean;runtimePath?:string;allowLoopback?:boolean;fetch?:typeof fetch};
 const failure=(code:string)=>Object.assign(new Error(code),{code});
-export async function operatorBatchManifest(boards:string[],maxCalls:number,maxDecisions:number,source:string,operatorUserId:string):Promise<Manifest>{
+export function operatorBatchPath(args:string[]){
+ const flags=args.filter(arg=>arg==='--path'||arg.startsWith('--path='));
+ if(!flags.length)return [];
+ if(flags.length!==1||flags[0]!=='--path=check')throw failure('operator_path_not_supported');
+ return ['check'];
+}
+export async function operatorBatchManifest(boards:string[],maxCalls:number,maxDecisions:number,source:string,operatorUserId:string,path:string[]=[]):Promise<Manifest>{
  if(typeof operatorUserId!=='string'||!operatorUserId||operatorUserId.length>200||/\s/.test(operatorUserId))throw failure('operator_user_id_required');
  if(!Array.isArray(boards)||boards.length<1||boards.length>16)throw failure('invalid_operator_boards');
- const requests=boards.map(board=>normalizeRequest(board,[])),unique=new Set(requests.map(request=>(request.board.match(/../g)??[]).sort().join('')));
+ if(!Array.isArray(path)||path.length>1||path.length===1&&path[0]!=='check')throw failure('operator_path_not_supported');
+ const requests=boards.map(board=>normalizeRequest(board,path)),unique=new Set(requests.map(request=>(request.board.match(/../g)??[]).sort().join('')));
  if(unique.size!==requests.length)throw failure('duplicate_operator_board');
- if(!Number.isInteger(maxCalls)||maxCalls<2*requests.length||maxCalls>100||!Number.isInteger(maxDecisions)||maxDecisions<requests.length||maxDecisions>100)throw failure('invalid_operator_budget');
+ const structuralDecisions=requests.length*(1+path.length);
+ if(!Number.isInteger(maxCalls)||maxCalls<2*structuralDecisions||maxCalls>100||!Number.isInteger(maxDecisions)||maxDecisions<structuralDecisions||maxDecisions>100)throw failure('invalid_operator_budget');
  if(typeof source!=='string'||!source)throw failure('operator_source_required');
  const implementation=implementationHash(),input=await loadRoot(requests[0].board,source),sourceHash=hash(input.upstream);
  const revision=hash({method:CONFIG.method,version:CONFIG.version,implementationHash:implementation,sourceHash});
@@ -43,7 +51,7 @@ function readBearer(file:string){
 export async function enqueueOperatorBatch(options:Options){
  if(options.confirmLocalGeneration!==true)throw failure('explicit_operator_confirmation_required');
  const origin=bridgeOrigin(options.origin,options.allowLoopback);
- const manifest=await operatorBatchManifest(options.boards,options.maxCalls,options.maxDecisions,options.source,options.operatorUserId);
+ const manifest=await operatorBatchManifest(options.boards,options.maxCalls,options.maxDecisions,options.source,options.operatorUserId,options.path);
  const runtime=options.runtimePath??resolve(fileURLToPath(new URL('../../../',import.meta.url)),'.local/range-dashboard/operator-batches');
  mkdirSync(runtime,{recursive:true,mode:0o700});
  const file=resolve(runtime,manifest.batchId+'.json'),lock=file+'.lock';
@@ -61,7 +69,7 @@ export async function enqueueOperatorBatch(options:Options){
   }else if(options.retrySubmission)throw failure('operator_no_pending_submission');
   // Check the source again immediately before writing intent/sending. Generation
   // pins are also validated by the owner endpoint before it mutates any queue row.
-  if(hash(await operatorBatchManifest(options.boards,options.maxCalls,options.maxDecisions,options.source,options.operatorUserId))!==hash(manifest))throw failure('operator_pins_changed');
+  if(hash(await operatorBatchManifest(options.boards,options.maxCalls,options.maxDecisions,options.source,options.operatorUserId,options.path))!==hash(manifest))throw failure('operator_pins_changed');
   persist({status:'submission_pending',origin,manifest});
   let response:Response;
   try{response=await (options.fetch??fetch)(origin+'/v1/aiv2/ondemand/owner/operator-batch',{method:'POST',headers:{authorization:'Bearer '+bearer,'content-type':'application/json'},body:JSON.stringify(manifest),redirect:'error',signal:AbortSignal.timeout(15_000)});}catch{throw failure('operator_submission_uncertain');}
@@ -87,7 +95,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  try{
   const origin=get('origin'),bearerFile=get('bearer-file'),source=get('source-dir'),boards=get('boards'),operatorUserId=get('operator-user-id');
   if(!origin||!bearerFile||!source||!boards||!operatorUserId||get('max-calls')===undefined||get('max-decisions')===undefined)throw failure('operator_explicit_arguments_required');
-  const result=await enqueueOperatorBatch({operatorUserId,origin,bearerFile,source:resolve(source),boards:boards.split(','),maxCalls:Number(get('max-calls')),maxDecisions:Number(get('max-decisions')),confirmLocalGeneration:args.includes('--confirm-local-generation'),retrySubmission:args.includes('--retry-submission'),allowLoopback:args.includes('--allow-loopback-test')});
+  const result=await enqueueOperatorBatch({operatorUserId,origin,bearerFile,source:resolve(source),boards:boards.split(','),path:operatorBatchPath(args),maxCalls:Number(get('max-calls')),maxDecisions:Number(get('max-decisions')),confirmLocalGeneration:args.includes('--confirm-local-generation'),retrySubmission:args.includes('--retry-submission'),allowLoopback:args.includes('--allow-loopback-test')});
   console.log(JSON.stringify(result));
  }catch(error){const code=(error as any)?.code;console.error(JSON.stringify({status:'failed',error:typeof code==='string'&&/^operator_[a-z_]+$/.test(code)?code:'operator_batch_failed_no_automatic_retry'}));process.exitCode=1;}
 }

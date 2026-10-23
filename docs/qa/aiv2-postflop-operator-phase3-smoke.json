@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "kind": "parent-recorded-bounded-operator-child-live-smoke",
+  "recorded_at_utc": "2026-10-23T10:46:14Z",
+  "approved": false,
+  "production_strategy_approved": false,
+  "gto_verified": false,
+  "factual_accuracy_approved": false,
+  "promotion_approved": false,
+  "observation_source": "Parent agent live observations; this report compiler did not repeat browser/provider/CI/remote-D1 checks.",
+  "release": {
+    "sha": "c4f2db7a7d46b4a6d33846bf39ff858461f4ef34",
+    "workflow_run_id": "39934614663",
+    "parent_recorded_conclusion": "success",
+    "local_source_head": "b1555286d530072a5f9cff23a12c2c2f3014792c",
+    "limitation": "Release identity/conclusion supplied by parent; no new deployment or network lookup performed by report compiler."
+  },
+  "phase3": {
+    "requested_path": [
+      "check"
+    ],
+    "configured_concurrency": 4,
+    "max_decisions": 12,
+    "max_calls": 24,
+    "target_jobs": 6,
+    "parent_recorded_completed_jobs": 6,
+    "parent_recorded_actual_calls": 6,
+    "parent_recorded_decisions": 6,
+    "parent_recorded_repairs": 0,
+    "observed_peak_concurrency": 4,
+    "owner_pid": 33358,
+    "parent_recorded_owner_exited": true,
+    "parent_recorded_worker_lock_removed": true
+  },
+  "parent_recorded_live_ui": {
+    "surface": "existing solver/range BTN saved-estimate view",
+    "flop_actions": "X",
+    "boards": [
+      {
+        "board": "9s8s6d",
+        "saved_cells": 169
+      },
+      {
+        "board": "AhKd7c",
+        "saved_cells": 169
+      },
+      {
+        "board": "Qs7s2s",
+        "saved_cells": 169
+      },
+      {
+        "board": "JsJd4c",
+        "saved_cells": 169
+      },
+      {
+        "board": "7s5h3d",
+        "saved_cells": 169
+      },
+      {
+        "board": "Ts9d4c",
+        "saved_cells": 169
+      }
+    ],
+    "reload_after_owner_exit": {
+      "board": "Ts9d4c",
+      "saved_cells": 169,
+      "extra_provider_calls": 0
+    }
+  },
+  "parent_recorded_readonly_broker_observation": {
+    "operator_complete": 12,
+    "user_complete": 3,
+    "user_complete_unchanged": true,
+    "operator_batches": 3,
+    "rows_written": 0,
+    "scope": "Observed scoped inventory, not a claim about all account history or all production paths."
+  },
+  "artifacts": [
+    {
+      "board": "9s8s6d",
+      "path": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/dd0b9a9cd50e04aad134979280d1c1e44041263f22e7328fda34927d9e0a63fb.json",
+      "sha256": "292b7b5a815c0cb203d04175bcaf1a68257e105f25822f5a6a0b6a46304f5e6c",
+      "decision_id": "dd0b9a9cd50e04aad134979280d1c1e44041263f22e7328fda34927d9e0a63fb",
+      "saved_provider_calls": 1,
+      "saved_actor": "BTN"
+    },
+    {
+      "board": "AhKd7c",
+      "path": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/4aa0af407ad7a21216a0f2da935208e366302f70858ffe081876f2e7e0677e3d.json",
+      "sha256": "4d63b8142e0ab12ba46f34d9390b9c796a85411c1b37bda7b161d68fb1d59f06",
+      "decision_id": "4aa0af407ad7a21216a0f2da935208e366302f70858ffe081876f2e7e0677e3d",
+      "saved_provider_calls": 1,
+      "saved_actor": "BTN"
+    },
+    {
+      "board": "Qs7s2s",
+      "path": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/c8b21e11c5244183a649c35b2fe7b7f420a580d3193c96a971e5cdefc72ccf2b.json",
+      "sha256": "ef7d8bb6ccdc6f81c56d5ca76fc35f7124e51db5e2b56c34c7e14cbf2ffe3e74",
+      "decision_id": "c8b21e11c5244183a649c35b2fe7b7f420a580d3193c96a971e5cdefc72ccf2b",
+      "saved_provider_calls": 1,
+      "saved_actor": "BTN"
+    },
+    {
+      "board": "JsJd4c",
+      "path": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/684ca24a293173915ad08cc4db86cc36c167b8377863f9524d37d6de0305f460.json",
+      "sha256": "72fc5ba031461922f623ed047a67fff24146fea3fa1851a7507648b7ae8315d2",
+      "decision_id": "684ca24a293173915ad08cc4db86cc36c167b8377863f9524d37d6de0305f460",
+      "saved_provider_calls": 1,
+      "saved_actor": "BTN"
+    },
+    {
+      "board": "7s5h3d",
+      "path": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/5fe2bb5a35a128c22302329a6318e3507d08d16098de0da595096765f66dd5b0.json",
+      "sha256": "317d538d622526de89a812c8b3cc463cf9cca4b1610d74752ea957a844442709",
+      "decision_id": "5fe2bb5a35a128c22302329a6318e3507d08d16098de0da595096765f66dd5b0",
+      "saved_provider_calls": 1,
+      "saved_actor": "BTN"
+    },
+    {
+      "board": "Ts9d4c",
+      "path": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/64b44ec0baf40e2018a352360918a3d375924b966b1f0f0c75273022b552998b.json",
+      "sha256": "5dea0e2ee790a75e4357f7e24001620f8121c7d1d4b09170881071ab817557b8",
+      "decision_id": "64b44ec0baf40e2018a352360918a3d375924b966b1f0f0c75273022b552998b",
+      "saved_provider_calls": 1,
+      "saved_actor": "BTN"
+    }
+  ],
+  "independent_review_path": "docs/qa/aiv2-postflop-operator-phase3-review.json",
+  "known_factual_blocker": {
+    "board": "9s8s6d",
+    "actor": "BTN",
+    "combo": "JsTs",
+    "saved_description_issue": "Described as double gutshot; the 8-9-T-J draw is open-ended with 7/Q completing it.",
+    "disposition": "Original artifact preserved unchanged; no repair, approval, promotion or automatic regeneration authorized.",
+    "finding_id": "phase3-986-jsts-straight-draw-label"
+  },
+  "limitations": [
+    "Successful generation, broker completion and UI saved-cell readback do not prove strategy quality, factual reason accuracy, GTO, full flop-tree coverage or production strategy approval.",
+    "The six requested nodes are BTN after BB check only; no further public-history nodes were requested or generated by this report.",
+    "All approval flags remain false because the independent review found a factual description blocker.",
+    "No screenshots, bearer values, lease capabilities, provider thread IDs or private journal contents are included."
+  ],
+  "recorded_parallel_observation": {
+    "source": "Parent captured whitelisted overlap observation, embedded here without lease capabilities.",
+    "source_path": ".local/operator-phase3-overlap.json",
+    "source_sha256": "9ee8bb2001c12821c1c8b537c9a232cb7a6f42767c188e21b6d6bde48c33404c",
+    "status": "running",
+    "concurrency": 4,
+    "calls": 4,
+    "decisions": 0,
+    "claim_pending": false,
+    "entries": [
+      {
+        "board": "7s5h3d",
+        "status": "running",
+        "calls": 1,
+        "decisions": 0,
+        "call_in_flight": true,
+        "error": null
+      },
+      {
+        "board": "JsJd4c",
+        "status": "running",
+        "calls": 1,
+        "decisions": 0,
+        "call_in_flight": true,
+        "error": null
+      },
+      {
+        "board": "AhKd7c",
+        "status": "running",
+        "calls": 1,
+        "decisions": 0,
+        "call_in_flight": true,
+        "error": null
+      },
+      {
+        "board": "9s8s6d",
+        "status": "running",
+        "calls": 1,
+        "decisions": 0,
+        "call_in_flight": true,
+        "error": null
+      }
+    ]
+  },
+  "independent_review": {
+    "path": "docs/qa/aiv2-postflop-operator-phase3-review.json",
+    "sha256": "39aae11c2affa47c65669918d5167882b028c07a3b3f2bcfa3706e2206b83c1f",
+    "approved": false,
+    "production_strategy_approved": false,
+    "gto_verified": false,
+    "factual_review_passed": false,
+    "finding_ids": [
+      "phase3-986-jsts-straight-draw-label"
+    ]
+  },
+  "aggregate_root_phases_plus_check_children": {
+    "saved_decisions": 12,
+    "roots": 6,
+    "check_children": 6,
+    "provider_calls": 13,
+    "repairs": 1,
+    "approved": false,
+    "production_strategy_approved": false,
+    "gto_verified": false,
+    "source_review": "docs/qa/aiv2-postflop-operator-phase3-review.json"
+  }
+}

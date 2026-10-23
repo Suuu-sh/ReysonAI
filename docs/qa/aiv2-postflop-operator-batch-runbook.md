@@ -1,10 +1,10 @@
-# Explicit postflop operator root batches
+# Explicit postflop operator batches
 
 ## Boundaries
 
 `apps/frontend/scripts/aiv2-postflop-operator-batch.ts` is **enqueue-only**. It does not instantiate a provider, start/stop a bridge, acquire/remove its `worker.lock`, claim a lease, or generate a response. It calls only the bearer-authenticated `POST /v1/aiv2/ondemand/owner/operator-batch` endpoint, not the ordinary authenticated-user daily request API. Operator entries use an explicitly named existing account, with separate batch provenance; no synthetic account or quota-disguising login is created. Broker global outstanding/daily call caps and the separate bridge invocation caps still apply.
 
-A batch is 1–16 explicit unique flop card sets, **root paths only**. Required independent `maxCalls`/`maxDecisions` limits must cover two possible responses and one decision per root, each capped at 100. There is no all-board discovery, unlimited queue, automatic generation, regeneration or model fallback. The existing frozen source reader verifies the supplied source snapshot, and the request and receipt bind implementation/source/revision pins. Poker outputs remain AI estimates, not independently validated GTO.
+A batch is 1–16 explicit unique flop card sets. Omitting `--path` preserves **root paths** (`[]`); the only optional follow-up is the exact `--path=check` (`["check"]`). Every request in one batch uses that explicitly selected path. Required independent `maxCalls`/`maxDecisions` limits must cover the full structural ancestor bound: `boards × (1 + path length)` decisions and twice that many possible responses, each cap at most 100. Cached parents do not reduce the reservation. There is no all-board discovery, unlimited queue, automatic generation, regeneration or model fallback. The existing frozen source reader verifies the supplied source snapshot, and the request and receipt bind implementation/source/revision pins. Poker outputs remain AI estimates, not independently validated GTO.
 
 ## Explicit enqueue
 
@@ -22,9 +22,26 @@ node /Users/yota/Projects/Products/ReysonAI/apps/frontend/scripts/aiv2-postflop-
 
 The result contains only the deterministic batch ID, returned job IDs, accepted/queued and per-status counts, explicit caps and submission status. Previously existing failed/complete jobs are not described as newly queued. A local `already_submitted` result replays the saved receipt and is not a live status refresh. Enqueueing is not proof of generation. Run the separately authorized single bridge owner with the corresponding caps; staged ramp-up requires verifying the smaller run first. Never start multiple bridge processes to increase parallelism. The operator CLI does not increase the bridge concurrency limit.
 
+## Explicit BTN child after observed BB check
+
+After independently verifying the saved BB roots, the following **separately authorized** command requests only the BTN node after `check` for the same six boards. It does not discover/follow additional actions or streets. No other path, repeated check, dealt card or bet flag is accepted; malformed/duplicate `--path` flags fail instead of falling back to a root request.
+
+```sh
+node /Users/yota/Projects/Products/ReysonAI/apps/frontend/scripts/aiv2-postflop-operator-batch.ts \
+  --origin=https://api.reysonai.com \
+  --bearer-file=/Users/yota/Projects/Secrets/ReysonAI/aiv2-ondemand-bridge.secret \
+  --source-dir=/Users/yota/Projects/Products/ReysonAI/apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/source-snapshot \
+  --operator-user-id=EXISTING_ACCOUNT_ID \
+  --boards=9s8s6d,AhKd7c,Qs7s2s,JsJd4c,7s5h3d,Ts9d4c \
+  --path=check --max-decisions=12 --max-calls=24 \
+  --confirm-local-generation
+```
+
+Six child paths reserve **12 decisions / 24 responses**, even when their six BB ancestors are already cached. The actual new-work count can be smaller but is not assumed when leasing. The exact path is included in the batch and job identities, private submission journal and receipt validation, so a child submission cannot replay a root submission. Run the unchanged single bridge separately with explicitly approved `--concurrency=4 --max-decisions=12 --max-calls=24`; after the six intended targets finish, an operator must stop an idle watch rather than leave an open-ended owner running. This CLI never starts or automatically stops that bridge.
+
 ## Submission uncertainty and idempotency
 
-Before the single POST, the CLI durably records the exact manifest in `/Users/yota/Projects/Products/ReysonAI/.local/range-dashboard/operator-batches/<batch-id>.json` with mode 0600. Its deterministic batch ID binds the account, boards/order, source/implementation/revision and both budgets. A per-manifest submission lock prevents competing local submitters. It never automatically clears a stale lock.
+Before the single POST, the CLI durably records the exact manifest in `/Users/yota/Projects/Products/ReysonAI/.local/range-dashboard/operator-batches/<batch-id>.json` with mode 0600. Its deterministic batch ID binds the account, boards/order, explicit path, source/implementation/revision and both budgets. A per-manifest submission lock prevents competing local submitters. It never automatically clears a stale lock.
 
 - A validated 202 receipt records `submitted`; repeating the exact normal command returns `already_submitted` **without a network request**.
 - Network loss, 5xx, invalid JSON or a mismatched receipt preserves `submission_pending`. A normal repeat refuses. Inspect the broker state before rerunning the **identical command plus `--retry-submission`**. The server enforces exact batch idempotency; the CLI does not automatically retry or choose a fresh batch ID.
