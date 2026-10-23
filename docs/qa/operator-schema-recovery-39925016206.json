@@ -1,0 +1,888 @@
+{
+  "schema_version": 1,
+  "kind": "exact-partial-release-readonly-evidence",
+  "failed_run_id": "39925016206",
+  "failed_sha": "f234b942eb6f3f86c40ea6a80a13e3f4315e0c68",
+  "limitations": "Read-only observed transport/schema and retained full MW3 readback evidence. Does not mark failed release successful or approve numerical strategies.",
+  "schema_readback": {
+    "observed_at": "2026-10-23 09:03:10 UTC",
+    "kind": "read-only-d1-schema-observation",
+    "failed_run_id": "39925016206",
+    "failed_sha": "f234b942eb6f3f86c40ea6a80a13e3f4315e0c68",
+    "response": {
+      "success": true,
+      "status": 200,
+      "result": [
+        {
+          "results": [],
+          "success": true,
+          "meta": {
+            "served_by": "v3-prod",
+            "served_by_region": "APAC",
+            "served_by_colo": "KIX",
+            "served_by_primary": true,
+            "timings": {
+              "sql_duration_ms": 0.3875
+            },
+            "duration": 0.3875,
+            "changes": 0,
+            "last_row_id": 0,
+            "changed_db": false,
+            "size_after": 189505536,
+            "rows_read": 101,
+            "rows_written": 0,
+            "total_attempts": 1
+          }
+        },
+        {
+          "results": [
+            {
+              "cid": 0,
+              "name": "id",
+              "type": "TEXT",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 1
+            },
+            {
+              "cid": 1,
+              "name": "revision",
+              "type": "TEXT",
+              "notnull": 1,
+              "dflt_value": null,
+              "pk": 0
+            },
+            {
+              "cid": 2,
+              "name": "board",
+              "type": "TEXT",
+              "notnull": 1,
+              "dflt_value": null,
+              "pk": 0
+            },
+            {
+              "cid": 3,
+              "name": "path_json",
+              "type": "TEXT",
+              "notnull": 1,
+              "dflt_value": null,
+              "pk": 0
+            },
+            {
+              "cid": 4,
+              "name": "creator",
+              "type": "TEXT",
+              "notnull": 1,
+              "dflt_value": null,
+              "pk": 0
+            },
+            {
+              "cid": 5,
+              "name": "day",
+              "type": "TEXT",
+              "notnull": 1,
+              "dflt_value": null,
+              "pk": 0
+            },
+            {
+              "cid": 6,
+              "name": "status",
+              "type": "TEXT",
+              "notnull": 1,
+              "dflt_value": null,
+              "pk": 0
+            },
+            {
+              "cid": 7,
+              "name": "created_at",
+              "type": "INTEGER",
+              "notnull": 1,
+              "dflt_value": null,
+              "pk": 0
+            },
+            {
+              "cid": 8,
+              "name": "lease_hash",
+              "type": "TEXT",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 0
+            },
+            {
+              "cid": 9,
+              "name": "lease_until",
+              "type": "INTEGER",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 0
+            },
+            {
+              "cid": 10,
+              "name": "reserved_calls",
+              "type": "INTEGER",
+              "notnull": 1,
+              "dflt_value": null,
+              "pk": 0
+            },
+            {
+              "cid": 11,
+              "name": "result_json",
+              "type": "TEXT",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 0
+            },
+            {
+              "cid": 12,
+              "name": "error",
+              "type": "TEXT",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 0
+            }
+          ],
+          "success": true,
+          "meta": {
+            "served_by": "v3-prod",
+            "served_by_region": "APAC",
+            "served_by_colo": "KIX",
+            "served_by_primary": true,
+            "timings": {
+              "sql_duration_ms": 0.2789
+            },
+            "duration": 0.2789,
+            "changes": 0,
+            "last_row_id": 0,
+            "changed_db": false,
+            "size_after": 189505536,
+            "rows_read": 0,
+            "rows_written": 0,
+            "total_attempts": 1
+          }
+        },
+        {
+          "results": [
+            {
+              "id": 0,
+              "seq": 0,
+              "table": "account_users",
+              "from": "creator",
+              "to": "id",
+              "on_update": "NO ACTION",
+              "on_delete": "NO ACTION",
+              "match": "NONE"
+            }
+          ],
+          "success": true,
+          "meta": {
+            "served_by": "v3-prod",
+            "served_by_region": "APAC",
+            "served_by_colo": "KIX",
+            "served_by_primary": true,
+            "timings": {
+              "sql_duration_ms": 0.1815
+            },
+            "duration": 0.1815,
+            "changes": 0,
+            "last_row_id": 0,
+            "changed_db": false,
+            "size_after": 189505536,
+            "rows_read": 0,
+            "rows_written": 0,
+            "total_attempts": 1
+          }
+        }
+      ],
+      "errors": []
+    }
+  },
+  "jobs": [
+    {
+      "name": "Classify reviewed code and data inputs",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check out commit metadata and pointers only",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Classify code and data against the last successful production release",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test deployment scope decisions with synthetic Git data",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Check out commit metadata and pointers only",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "Verify reviewed preflop snapshot",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Require successful scope classification",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Check out exact workflow revision",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install MCP runtime dependencies for backend verification",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Restore exact reviewed Git LFS payload",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify immutable MW3 production contract and exact accepted SQL",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify reviewed artifact and source hashes; serialize preflop only",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check continuation invariants and unchanged HU inputs",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify authenticated bounded AIv2 on-demand broker",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify bounded local owner bridge and enqueue-only operator command",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify authoritative ranked service without live credentials",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify continuous FastFold authentication, replay and atomic settlement",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify local D1 roundtrip, idempotency, isolation and failed-import rollback",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Typecheck and build compatible client",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check postflop policy delivery",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Retain exact validated delivery SQL",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Require proven release lineage before production changes",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Check out exact workflow revision",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "Deploy authoritative ranked API, compatible client and reviewed preflop data",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate deployment secrets",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check out repository",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Prepare deployment log directory",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install MCP runtime dependencies for the composed API Worker",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Restore exact reviewed Git LFS payload",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Fetch this run's validated delivery SQL",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Recheck delivery against this exact checkout",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Import exact reviewed MW3 data and require full D1 readback",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Apply exact ranked schema",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Apply exact FastFold schema",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Apply exact six-human ranked schema",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Ensure exact human avatar schema and require D1 readback",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Apply exact AIv2 on-demand broker schema",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Ensure exact AIv2 operator batch schema and require D1 readback",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Apply exact postflop profile schema",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Deploy ranked API before enabling the client",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Require live authoritative ranked readiness",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Require live FastFold API and compatible published data before client",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Build",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Deploy Worker",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Import reviewed preflop snapshot into D1",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Require live FastFold release gate after reviewed import",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Publish postflop policies into D1",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Require live MW3 payloads and actual consumer source identities",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Retain MW3 delivery plan, recovery reference and exact outcomes",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Retain preflop recovery reference and import outcome",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Check out repository",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "mw3_outcome": {
+    "status": "published-mw3-full-d1-payload-verified",
+    "imported_spots": 0,
+    "verified_deliveries": 32,
+    "verified_parts": 1552,
+    "github_sha": "f234b942eb6f3f86c40ea6a80a13e3f4315e0c68",
+    "tree": "f022ddac567d8307629a7261b76cf00d6805da0c",
+    "schema": {
+      "path": "apps/backend/scripts/sql/mw3-schema.sql",
+      "sha256": "79ce9814ec7a5737f1f8186a0733e1990ae789b2f584b02451d37ec7d2cf7894"
+    },
+    "spots": 16,
+    "deliveries": 32,
+    "parts": 1552,
+    "sql": [
+      {
+        "path": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.sql",
+        "sha256": "0c1ebd813bda009062043f262b68e90628ebb617ca039aab84b13547d3e91bbf",
+        "bytes": 1591059
+      },
+      {
+        "path": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.sql",
+        "sha256": "ddacae824b036d27707807005dded89d203f8658e43e6fe692aa9dbfdd1cc646",
+        "bytes": 1589911
+      },
+      {
+        "path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.sql",
+        "sha256": "1c9bfd804f39ff64fdc291a800a7c2d06fa5c5b5d8a206751a9f79ac6c325607",
+        "bytes": 1614488
+      },
+      {
+        "path": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.sql",
+        "sha256": "f8425f8250a390fd2a4963600afeb9a950da0bd9d348ae977a307b0a7caf14e1",
+        "bytes": 1576072
+      },
+      {
+        "path": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.sql",
+        "sha256": "bb00f58b44c4c9c8c1deb3fa4eaf622e5e82087e313c2908f0955508690c31e6",
+        "bytes": 1606790
+      },
+      {
+        "path": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.sql",
+        "sha256": "b54333925aa8c1c470260ed585eade4885f7b5b084c00d860c75c712d7ee5f7d",
+        "bytes": 1526887
+      },
+      {
+        "path": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.sql",
+        "sha256": "33f8e50ff98a7b0bc7d355dcb4626c0ca49f0188062b1d3094425bf026976a88",
+        "bytes": 1575504
+      },
+      {
+        "path": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.sql",
+        "sha256": "9da53574f5f43f879d8ad6c5d0ba20eeddfa7fc9f86a7471f4dba2ea1e7026a2",
+        "bytes": 1609439
+      },
+      {
+        "path": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.sql",
+        "sha256": "32fa40c61944f35d5ca82076003652f89f7121f3568534f654faebc1615872a4",
+        "bytes": 1574637
+      },
+      {
+        "path": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.sql",
+        "sha256": "85571d5005c700cf079c7e316bdedcca1c7749ae461f6e5abf07d90d87185a27",
+        "bytes": 1605208
+      },
+      {
+        "path": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.sql",
+        "sha256": "eb7f9d4d6e1e273258b5b9bea0b1d9f1aa360e431dcb662e04c11fe1caaecf6e",
+        "bytes": 1525883
+      },
+      {
+        "path": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.sql",
+        "sha256": "e69e53fb02ae82a0db574d67e2f25b6b6121f91faa0da718cbd8a9a3ab4a9520",
+        "bytes": 1568069
+      },
+      {
+        "path": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.sql",
+        "sha256": "8f86ba11d1cd879ba0f5c883265e615b795fb08454d8ccdfb98fa2d7d3ce341e",
+        "bytes": 1602292
+      },
+      {
+        "path": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.sql",
+        "sha256": "9cb16dc3b0ba34c23ad7d6633b11c41bf20602bc1b95da54f832b68f6423ea36",
+        "bytes": 1524093
+      },
+      {
+        "path": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.sql",
+        "sha256": "a11a2d9e12171a1b77dd39211eb113e228d961204575adc21b4dc56fe77e57ea",
+        "bytes": 1519315
+      },
+      {
+        "path": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.sql",
+        "sha256": "7d0c06192a7cf5809466ca4ec166fd6167d549bb2b213432afc197e99015acf1",
+        "bytes": 1562974
+      }
+    ],
+    "pins": [
+      {
+        "spotId": "CO_open_BTN_call_BB_call",
+        "stage": "flop",
+        "deliveryHash": "4c8d43795b1d11d85d938c877431a72be30bc68269d10f7e4bc26de1cdeed8ad",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "3682c70f1cd131a825d67dc564bb45706d5b8885c0de4ef6bfe8493fe13fef06",
+        "sourceHash": "9826ec09f4b8420f866c8ac656e6f755966423c2d843bcb604eff97dbd6a89c3"
+      },
+      {
+        "spotId": "CO_open_BTN_call_BB_call",
+        "stage": "later",
+        "deliveryHash": "bcdeb4ca96a84c211ef508bc422436a40a355c1e343218cd0fee509a422d8148",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "d840d8174ff3ad1fe983e5fbd0696b9c28296f5e4d8af394b12d76e070b18582",
+        "sourceHash": "9826ec09f4b8420f866c8ac656e6f755966423c2d843bcb604eff97dbd6a89c3"
+      },
+      {
+        "spotId": "CO_open_BTN_call_SB_call",
+        "stage": "flop",
+        "deliveryHash": "5d30c32819503b35eb4776cbb6ff3ccd65b83a30b4df48fa9ee57ad5b676735f",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "20fb64ba62887d36b0280c0b9c49b87d735713ec70f8797de22d0530654ee2bb",
+        "sourceHash": "3573dde6357353f3d848b0370205de4cc99ee11ced39267b35e65927bc235e0d"
+      },
+      {
+        "spotId": "CO_open_BTN_call_SB_call",
+        "stage": "later",
+        "deliveryHash": "300deabfd54fff4225a00ba8ff84d3aeef0f6c48517d592d446125b2fb2b6d23",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "214f4e53cea61b08d0941f6eaf083950eb24eeee95a7cab36f5dd6ba28bc7211",
+        "sourceHash": "3573dde6357353f3d848b0370205de4cc99ee11ced39267b35e65927bc235e0d"
+      },
+      {
+        "spotId": "HJ_open_BTN_call_BB_call",
+        "stage": "flop",
+        "deliveryHash": "da4cba6972420b5ff615d6392d47dc963b0638a29c747b9314f2cf871d95e7cc",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "6f6a824c47368119bfe3ac6761e0ac5993f9eec3a352d505ce949e5c0b76b593",
+        "sourceHash": "6762971b2c93bc1d26aec6a2e82cc9292a03fb22e6cc497c9b0e346ae3f9df45"
+      },
+      {
+        "spotId": "HJ_open_BTN_call_BB_call",
+        "stage": "later",
+        "deliveryHash": "c53b9061809b04c62af049e0a9eec8c37f4295e977384a5c3497f6132737b6ba",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "764e2765a604e30c5e981b481946918de916004e135d7b98619aa9670185b33c",
+        "sourceHash": "6762971b2c93bc1d26aec6a2e82cc9292a03fb22e6cc497c9b0e346ae3f9df45"
+      },
+      {
+        "spotId": "HJ_open_BTN_call_SB_call",
+        "stage": "flop",
+        "deliveryHash": "cee641a36e91368a41b1f7e79622dd90b464d425c4f5b127956ff4c90b9323c2",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "2b74e501f33fb5713bca56c692ff5834ace14ac146dbbe8dc73fbdc4cf3156e5",
+        "sourceHash": "380bee458c9d5e112d268dab4e0d4ef201a45a58babe78234c5e6af0c91f6235"
+      },
+      {
+        "spotId": "HJ_open_BTN_call_SB_call",
+        "stage": "later",
+        "deliveryHash": "2e6ce4d41eb9857465199f2774e702590b738530df09429c6b3523761b441cfc",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "2bcb06e852bc7de9a4dcf47b37016be0fea2d413e925971a921d0131d22b3234",
+        "sourceHash": "380bee458c9d5e112d268dab4e0d4ef201a45a58babe78234c5e6af0c91f6235"
+      },
+      {
+        "spotId": "HJ_open_CO_call_BB_call",
+        "stage": "flop",
+        "deliveryHash": "75fffa9b7c5af63da62d254fc23b06dfe85d79313bbde5e72ff2536556ed12e1",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "ddee6d15195c7b205e52b0c2d8da2dc32258ac1a1cdaeb61f3213877a65e4b0f",
+        "sourceHash": "23bc49a7a78a03506d6f0d73dfd541dc5cc81397b26a7338f47810f7326843c2"
+      },
+      {
+        "spotId": "HJ_open_CO_call_BB_call",
+        "stage": "later",
+        "deliveryHash": "7df78fdad444be2866905f02df9a05dd6d3e3b3de76103f5ba83cacf82da2607",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "c97fae4f58b39daaab0497253ae27e84b48527b492ccb687dffccd70c87d7403",
+        "sourceHash": "23bc49a7a78a03506d6f0d73dfd541dc5cc81397b26a7338f47810f7326843c2"
+      },
+      {
+        "spotId": "HJ_open_CO_call_BTN_call",
+        "stage": "flop",
+        "deliveryHash": "e7773c69bd680c1271612c3ebfc15c899872aa1655737b146d70497a673a323e",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "4d70d9c413145446820b4c528c98dad9f3b87f7968230bc4e7ac5b29c98645de",
+        "sourceHash": "278b706399c3efc7907abdc072b0060e2f40e188cb6b4fa05a633544ef86080d"
+      },
+      {
+        "spotId": "HJ_open_CO_call_BTN_call",
+        "stage": "later",
+        "deliveryHash": "7e499cb944dd020b96ac35b55cdfd26f2699e55acf251b123d4c18a0ef5ac216",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "c6c3a9dbba07d11d6ae3534f6c580fc7c5aa0c7ebc6094a3bd5eab80794e590c",
+        "sourceHash": "278b706399c3efc7907abdc072b0060e2f40e188cb6b4fa05a633544ef86080d"
+      },
+      {
+        "spotId": "HJ_open_CO_call_SB_call",
+        "stage": "flop",
+        "deliveryHash": "ce8132397a2eccb7c3b2c41dbb3d1058f4292d2c22100eb5292869cb16155704",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "78a92f687a5a4fcc623ae4b91608d12eead3592c8ab9b07244e1b2858a8a33fa",
+        "sourceHash": "d9d3209ec4900d28ca2d8259c813c5bd48d4019528f2123cc6ed168e22c8cbb1"
+      },
+      {
+        "spotId": "HJ_open_CO_call_SB_call",
+        "stage": "later",
+        "deliveryHash": "9029fab129d6d3dfc9b5cfb057343e4cac14500da275708cd40b7c0421e9ed94",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "1382306ac507d03a34e8222e9543e809c6fdd164470df7eaafafe76f69fb2586",
+        "sourceHash": "d9d3209ec4900d28ca2d8259c813c5bd48d4019528f2123cc6ed168e22c8cbb1"
+      },
+      {
+        "spotId": "UTG_open_BTN_call_BB_call",
+        "stage": "flop",
+        "deliveryHash": "4aa2ec01bfe9d59f86193b3a170390084cfed23513f3236353f34364b78517d5",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "5405d51426d387f652d4447e0afc54186c2a6ed22637083d9aed3e628824be70",
+        "sourceHash": "3effc9977afa66aa817c2e1c697f6789a593bdf3418741ab33fe34236dd5b7f2"
+      },
+      {
+        "spotId": "UTG_open_BTN_call_BB_call",
+        "stage": "later",
+        "deliveryHash": "d7c52388810b7944b23e242862e9e112b6a08fa26d73ca5a61ee373bd9c6df15",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "282afaf9fa0cecc7ae680a18707a1aa71a16bb4fc7dd15463031d7fddfe898aa",
+        "sourceHash": "3effc9977afa66aa817c2e1c697f6789a593bdf3418741ab33fe34236dd5b7f2"
+      },
+      {
+        "spotId": "UTG_open_BTN_call_SB_call",
+        "stage": "flop",
+        "deliveryHash": "029d0402b784532ad46b5e2ecce71c3a1540ea0a30539d64150bcf9d4811310e",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "c608d2b4eeaf2c9419f27fb7fa9ed818ee07ecb370e704db92268fcb806612d7",
+        "sourceHash": "2aa18f5793aa280d843bd3f175f391cc3409186c21e08bcc7b63570aab558858"
+      },
+      {
+        "spotId": "UTG_open_BTN_call_SB_call",
+        "stage": "later",
+        "deliveryHash": "08f2e05bd9745f5ad5d476b96930592bcf889325d984ca686acb61a287d7bfd3",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "2616b7536253785714314be66ae6084d7ae8004dbf8773cf5e183b22bc7396f7",
+        "sourceHash": "2aa18f5793aa280d843bd3f175f391cc3409186c21e08bcc7b63570aab558858"
+      },
+      {
+        "spotId": "UTG_open_CO_call_BB_call",
+        "stage": "flop",
+        "deliveryHash": "bd91d467dbaf60b1ae5bb4e265d81ede9173befd88ac613eabdec459d16dafee",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "e8ad7a1aa002559e51f485ef68f4163ce9ba5955be5d0bcc7b83f4250bda48ef",
+        "sourceHash": "4ca502b9b4c22ca9d67058d9be52c52539549f2442cfb08983296d09afacd95d"
+      },
+      {
+        "spotId": "UTG_open_CO_call_BB_call",
+        "stage": "later",
+        "deliveryHash": "f669db4d3263a3049fcf3ccaa1bf898670dad7214cad87cbf41e8ff464f01fa8",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "a9aea007ce66ddaae4d08843e6280f777d10f38aa4c353aa737e8a22e21bb772",
+        "sourceHash": "4ca502b9b4c22ca9d67058d9be52c52539549f2442cfb08983296d09afacd95d"
+      },
+      {
+        "spotId": "UTG_open_CO_call_BTN_call",
+        "stage": "flop",
+        "deliveryHash": "76bb1356d12a275d0351fd48e9b7c5d8bd2ea42f646552197d35a217be56d8f8",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "5b7868e198248e206b68b42934d11ae51a250695f3e80da609192bfce5fc4527",
+        "sourceHash": "e1328f1fc8ad265f473579189abf32246e4b7bf5bdd2cdc108bea1b2b59f15ed"
+      },
+      {
+        "spotId": "UTG_open_CO_call_BTN_call",
+        "stage": "later",
+        "deliveryHash": "c196c22dd82a699ceeb828a43edfb53cbc72db52ee5a6166bbe10a31ef367a27",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "20925575ef96ecf8af3bc94e84bf390a1a8a411acd8d0699f1a685233db05297",
+        "sourceHash": "e1328f1fc8ad265f473579189abf32246e4b7bf5bdd2cdc108bea1b2b59f15ed"
+      },
+      {
+        "spotId": "UTG_open_CO_call_SB_call",
+        "stage": "flop",
+        "deliveryHash": "0bb86ee2d5cb471d9954a7d7f3cc11a9629744f9934329662f2d1c55d6697a31",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "8c86933a924941071673fb70a6767b5c99a8db402fd5348a7c9a915d7b2574d0",
+        "sourceHash": "552657bcc5e1dd53785ecd44d152a9367e1296ec7e7263ef90d5b5b47394af60"
+      },
+      {
+        "spotId": "UTG_open_CO_call_SB_call",
+        "stage": "later",
+        "deliveryHash": "4141a16a5845c07afea24a466df27d0499e7ba4ff479561ede64e9800ed497fd",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "1968323969e89f53b7c792bccbf81ef7ea10555e19392b63d38a3e1b5b26b46d",
+        "sourceHash": "552657bcc5e1dd53785ecd44d152a9367e1296ec7e7263ef90d5b5b47394af60"
+      },
+      {
+        "spotId": "UTG_open_HJ_call_BB_call",
+        "stage": "flop",
+        "deliveryHash": "281abf5777b51568dc98ae2a7b7fbc37727062e99a882431b49a5807c73cbdde",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "92cdeb04b45c836e4f6e266bc3b985ef463386544423140ed8a661a60f30c2fc",
+        "sourceHash": "3d53be2b1a7c90f5950be69b82850ef81fa535e3442d836368e914fdf55b2862"
+      },
+      {
+        "spotId": "UTG_open_HJ_call_BB_call",
+        "stage": "later",
+        "deliveryHash": "742daf0c4e7d7a4a3c4a9b7012e1adbdab5ea6ed08dac28414412d190d9bb8d3",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "c7039fc8732099fa9d5e2d34eb938fc7e9342baa2c0a3ec789050abe2b3f0840",
+        "sourceHash": "3d53be2b1a7c90f5950be69b82850ef81fa535e3442d836368e914fdf55b2862"
+      },
+      {
+        "spotId": "UTG_open_HJ_call_BTN_call",
+        "stage": "flop",
+        "deliveryHash": "5439f957cdcbbc13d5d8ad23ec5b685e5b03a726e6111c96c1527134ac43cb9a",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "89473138898d53835332a3777235f611216427e2d653adc8808dfaafb3bc11d8",
+        "sourceHash": "bf2cc8a36a97c8b77c2ee525d9bebfb774814f3e21b1aea53cb46c1b21c45e8e"
+      },
+      {
+        "spotId": "UTG_open_HJ_call_BTN_call",
+        "stage": "later",
+        "deliveryHash": "234b4b1dde7a12b0d47fbbb508d7ee41c3616c369bb7eb3dc2f7acd3b9496068",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "8bdb93150f6528eb7613fae8a91a61a2f443a34ca6848526f63fb89063c0a287",
+        "sourceHash": "bf2cc8a36a97c8b77c2ee525d9bebfb774814f3e21b1aea53cb46c1b21c45e8e"
+      },
+      {
+        "spotId": "UTG_open_HJ_call_CO_call",
+        "stage": "flop",
+        "deliveryHash": "f957d312947d1eec25b3341bbf3f6e8d757265688cbf939cf6e781ac2f272cbb",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "d6ee35e17d0287de2150fade7b14a1eb32dd047a866d67e33510240fe83a9205",
+        "sourceHash": "f8d9dc162bd8bb8e401972747dba8e8ce8b8d244d7419af718376ad368d08734"
+      },
+      {
+        "spotId": "UTG_open_HJ_call_CO_call",
+        "stage": "later",
+        "deliveryHash": "adc75543803c6dceae64be212bf0a2fd63869babbcd2f8a8fbf3523b119f5af7",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "e67aaaf82ed04e6c290675cc2f6dc68c33bb9ef751d84ada53ebc171eb9e3f0e",
+        "sourceHash": "f8d9dc162bd8bb8e401972747dba8e8ce8b8d244d7419af718376ad368d08734"
+      },
+      {
+        "spotId": "UTG_open_HJ_call_SB_call",
+        "stage": "flop",
+        "deliveryHash": "70131b3742203fad717c5d2a418e270476ebd0f4906d9a99e55c21d7714ae9c8",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "a1e92759270e9fd3f0911b080cd42b46898bf0e3749ea7c403f0f6768dd688c1",
+        "sourceHash": "ced4f58d35c1636ee9b4197eef7c636823e8dd0a2f4718f39a3d0b84f5f267c9"
+      },
+      {
+        "spotId": "UTG_open_HJ_call_SB_call",
+        "stage": "later",
+        "deliveryHash": "af5e72db20253f928399c0fbba2413c232a323b5c0b8be005ccacfc28862b68b",
+        "implementationHash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+        "policyHash": "5c7413b2881aa52304ff3ebe7d2911dace4bb9a2deda13a7a838bc0fd03ac5d9",
+        "sourceHash": "ced4f58d35c1636ee9b4197eef7c636823e8dd0a2f4718f39a3d0b84f5f267c9"
+      }
+    ]
+  },
+  "mw3_outcome_raw_sha256": "15b5acc7b249cff520954ee9f7bd99ad57c21dc4002a2b38b9b8da84b3855e83"
+}

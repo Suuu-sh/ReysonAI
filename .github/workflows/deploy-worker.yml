@@ -109,6 +109,9 @@ jobs:
       baseline_run_id: ${{ steps.scope.outputs.baseline_run_id }}
       baseline_sha: ${{ steps.scope.outputs.baseline_sha }}
       input_hashes: ${{ steps.scope.outputs.input_hashes }}
+      recovery_run_id: ${{ steps.scope.outputs.recovery_run_id }}
+      recovery_sha: ${{ steps.scope.outputs.recovery_sha }}
+      recovery_proof_hash: ${{ steps.scope.outputs.recovery_proof_hash }}
     steps:
       - name: Check out commit metadata and pointers only
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -168,6 +171,9 @@ jobs:
       baseline_run_id: ${{ needs.scope.outputs.baseline_run_id }}
       baseline_sha: ${{ needs.scope.outputs.baseline_sha }}
       input_hashes: ${{ needs.scope.outputs.input_hashes }}
+      recovery_run_id: ${{ needs.scope.outputs.recovery_run_id }}
+      recovery_sha: ${{ needs.scope.outputs.recovery_sha }}
+      recovery_proof_hash: ${{ needs.scope.outputs.recovery_proof_hash }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
