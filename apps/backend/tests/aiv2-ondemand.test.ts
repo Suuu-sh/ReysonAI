@@ -147,7 +147,7 @@ test('operator batch uses real account, immutable idempotent manifest and separa
 test('operator batch rejects unbounded inputs and browser/incorrect bearer transports before writes',async()=>{
  const f=await fixture();try{
  const input=await operatorBatch(f);
- for(const patch of [{maxCalls:101},{maxDecisions:101},{maxCalls:3},{maxDecisions:1},{requests:[]},{requests:Array(17).fill(input.requests[0])},{requests:[input.requests[0],input.requests[0]]},{consent:true}])assert.equal((await f.owner('operator-batch',{...input,...patch})).status,400);
+ for(const patch of [{maxCalls:201},{maxDecisions:101},{maxCalls:3},{maxDecisions:1},{requests:[]},{requests:Array(51).fill(input.requests[0])},{requests:[input.requests[0],input.requests[0]]},{consent:true}])assert.equal((await f.owner('operator-batch',{...input,...patch})).status,400);
  assert.equal((await f.owner('operator-batch',{...input,sourceHash:'f'.repeat(64)})).status,409);
  const request=(url:string,method:string,headers:Record<string,string>)=>routeOnDemand(new Request(url,{method,headers:{'content-type':'application/json',...headers},...(method==='POST'?{body:JSON.stringify(input)}:{})}),f.env);
  const url='https://api.reysonai.com/v1/aiv2/ondemand/owner/operator-batch';
@@ -157,14 +157,13 @@ test('operator batch rejects unbounded inputs and browser/incorrect bearer trans
  assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM aiv2_ondemand_operator_batches').get()!.n,0);
  }finally{f.sqlite.close();}
 });
-test('operator batches share outstanding16 and reserved daily96, partial replay never exceeds manifest',async()=>{
+test('operator batches retain immutable reservations but do not consume public daily96 or slots16',async()=>{
  const f=await fixture();try{
  const input=await operatorBatch(f);
- for(let i=0;i<15;i++)f.sqlite.prepare("INSERT INTO aiv2_ondemand_jobs(id,revision,board,path_json,creator,day,status,created_at,reserved_calls) VALUES (?,'old',?,'[]','user','older','queued',0,2)").run('old'+i,'board'+i);
- const response=await f.owner('operator-batch',input);assert.equal(response.status,429);const partial=await response.json();assert.equal(partial.jobs.length,1);
- assert.equal((await f.owner('operator-batch',input)).status,429);assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM aiv2_ondemand_jobs').get()!.n,16);
- f.sqlite.prepare("UPDATE aiv2_ondemand_jobs SET status='failed' WHERE id='old0'").run();
+ for(let i=0;i<16;i++)f.sqlite.prepare("INSERT INTO aiv2_ondemand_jobs(id,revision,board,path_json,creator,day,status,created_at,reserved_calls) VALUES (?,'old',?,'[]','user','older','queued',0,2)").run('old'+i,'board'+i);
  assert.equal((await f.owner('operator-batch',input)).status,202);
+ assert.equal((await f.owner('operator-batch',input)).status,202);
+ assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM aiv2_ondemand_jobs').get()!.n,18);
  assert.equal(f.sqlite.prepare('SELECT SUM(reserved_calls) n FROM aiv2_ondemand_jobs WHERE operator_batch_id=?').get(input.batchId)!.n,4);
  assert.throws(()=>f.sqlite.prepare('UPDATE aiv2_ondemand_operator_batches SET manifest_hash=? WHERE id=?').run('x',input.batchId));
  }finally{f.sqlite.close();}
@@ -172,7 +171,90 @@ test('operator batches share outstanding16 and reserved daily96, partial replay 
  const input=await operatorBatch(g);
  g.sqlite.prepare("INSERT INTO aiv2_ondemand_jobs(id,revision,board,path_json,creator,day,status,created_at,reserved_calls) VALUES ('old','old','old','[]','user',?,'failed',0,64)").run(new Date().toISOString().slice(0,10));
  g.sqlite.prepare("INSERT INTO aiv2_ondemand_jobs(id,revision,board,path_json,creator,day,status,created_at,reserved_calls) VALUES ('old2','old','old2','[]','user',?,'failed',0,32)").run(new Date().toISOString().slice(0,10));
- assert.equal((await g.owner('operator-batch',input)).status,429);
- assert.equal(g.sqlite.prepare('SELECT COUNT(*) n FROM aiv2_ondemand_jobs WHERE operator_batch_id IS NOT NULL').get()!.n,0);
+ assert.equal((await g.owner('operator-batch',input)).status,202);
+ assert.equal((await g.call('requests',{board:'As7d2c',path:[],consent:true})).status,429);
  }finally{g.sqlite.close();}
+});
+function physicalBoards(n:number){const deck=[...'AKQJT98765432'].flatMap(r=>[...'shdc'].map(s=>r+s)),boards:string[]=[];for(let a=0;a<50&&boards.length<n;a++)for(let b=a+1;b<51&&boards.length<n;b++)for(let c=b+1;c<52&&boards.length<n;c++)boards.push(deck[a]+deck[b]+deck[c]);return boards;}
+function scopedClaim(input:any,overrides:Record<string,unknown>={}){return {operatorBatchId:input.batchId,revision:input.revision,implementationHash:input.implementationHash,sourceHash:input.sourceHash,remainingCalls:input.maxCalls,remainingDecisions:input.maxDecisions,...overrides};}
+test('private fifty check targets reserve exactly100 decisions/200 calls; public quota and slots stay separate',async()=>{
+ const f=await fixture();try{
+ const requests=physicalBoards(50).map(board=>({board,path:['check']}));
+ const input=await operatorBatch(f,{requests,maxCalls:200,maxDecisions:100});
+ assert.equal((await f.owner('operator-batch',input)).status,202);
+ assert.equal((await f.owner('operator-batch',input)).status,202);
+ assert.deepEqual({...f.sqlite.prepare('SELECT COUNT(*) n,SUM(reserved_calls) calls FROM aiv2_ondemand_jobs WHERE operator_batch_id=?').get(input.batchId)},{n:50,calls:200});
+ assert.equal((await f.owner('operator-batch',{...input,batchId:'e'.repeat(64),requests:[{board:'Ks7d2c',path:[]}],maxCalls:2,maxDecisions:1})).status,429);
+ assert.equal((await f.owner('operator-batch',{...input,maxCalls:201})).status,400);
+ assert.equal((await f.owner('operator-batch',{...input,maxDecisions:101})).status,400);
+ assert.equal((await f.owner('operator-batch',{...input,requests:[...requests,{board:'Qs7d2c',path:[]}]})).status,400);
+ for(const board of ['As7d2c','Ks7d2c','Qs7d2c'])assert.equal((await f.call('requests',{board,path:[],consent:true})).status,202);
+ assert.equal((await f.call('requests',{board:'Js7d2c',path:[],consent:true})).status,429);
+ assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM aiv2_ondemand_jobs').get()!.n,53);
+ const changed={...input,maxCalls:199};assert.equal((await f.owner('operator-batch',changed)).status,400);
+ }finally{f.sqlite.close();}
+});
+test('scoped claims never take public/other-batch/failed jobs and terminate only after scope settles',async()=>{
+ const f=await fixture();try{
+ const input=await operatorBatch(f),other=await operatorBatch(f,{batchId:'e'.repeat(64),requests:[{board:'Ks7d2c',path:[]}],maxCalls:2,maxDecisions:1});
+ await f.owner('operator-batch',input);await f.owner('operator-batch',other);await f.call('requests',{board:'As7d2c',path:[],consent:true});
+ assert.equal((await f.owner('claim',scopedClaim(input,{operatorBatchId:'f'.repeat(64)}))).status,404);
+ assert.equal((await f.owner('claim',scopedClaim(input,{sourceHash:'f'.repeat(64)}))).status,409);
+ for(const patch of [{remainingCalls:201},{remainingDecisions:101},{remainingCalls:undefined},{revision:undefined}])assert.ok([400,409].includes((await f.owner('claim',scopedClaim(input,patch))).status));
+ const first=await (await f.owner('claim',scopedClaim(input))).json();assert.equal(first.operatorBatchId,input.batchId);assert.equal(first.job.operatorBatchId,input.batchId);
+ const second=await (await f.owner('claim',scopedClaim(input))).json();assert.notEqual(second.job.id,first.job.id);
+ const active=await (await f.owner('claim',scopedClaim(input))).json();assert.equal(active.job,null);assert.equal(active.scopeComplete,false);
+ for(const claimed of [first,second])assert.equal((await f.owner('fail',{id:claimed.job.id,leaseToken:claimed.job.leaseToken,error:'uncertain_provider_outcome'})).status,200);
+ const done=await (await f.owner('claim',scopedClaim(input))).json();assert.equal(done.job,null);assert.equal(done.scopeComplete,true);assert.equal(done.scopeFailed,true);
+ assert.equal(f.sqlite.prepare("SELECT COUNT(*) n FROM aiv2_ondemand_jobs WHERE status='queued'").get()!.n,2);
+ const snapshots=f.sqlite.prepare('SELECT COUNT(*) n FROM aiv2_ondemand_jobs').get()!.n;
+ assert.equal((await f.owner('operator-batch',{...input,batchId:'a'.repeat(64)})).status,409);
+ assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM aiv2_ondemand_jobs').get()!.n,snapshots);
+ }finally{f.sqlite.close();}
+});
+test('scoped claim atomic combined running cap50 and legacy running cap4 cannot be exceeded',async()=>{
+ const f=await fixture();try{
+ const input=await operatorBatch(f,{requests:physicalBoards(50).map(board=>({board,path:[]})),maxCalls:100,maxDecisions:50});
+ f.sqlite.prepare("INSERT INTO aiv2_ondemand_jobs(id,revision,board,path_json,creator,day,status,created_at,reserved_calls,lease_until) VALUES ('public-running','other','Ks7d2c','[]','user','older','running',0,2,?)").run(Date.now()+3600000);await f.owner('operator-batch',input);
+ const claims=await Promise.all(Array.from({length:51},()=>f.owner('claim',scopedClaim(input))));const values=await Promise.all(claims.map(r=>r.json()));
+ assert.equal(values.filter(r=>r.job).length,49);assert.equal(f.sqlite.prepare("SELECT COUNT(*) n FROM aiv2_ondemand_jobs WHERE status='running'").get()!.n,50);
+ assert.equal((await (await f.owner('claim')).json()).job,null);
+ const next=await operatorBatch(f,{batchId:'e'.repeat(64),requests:[{board:'Ks7d2c',path:[]}],maxCalls:2,maxDecisions:1});assert.equal((await f.owner('operator-batch',next)).status,429);
+ }finally{f.sqlite.close();}
+ const g=await fixture();try{
+ const input=await operatorBatch(g,{requests:physicalBoards(6).map(board=>({board,path:[]})),maxCalls:12,maxDecisions:6});await g.owner('operator-batch',input);
+ const claims=await Promise.all(Array.from({length:5},()=>g.owner('claim'))),values=await Promise.all(claims.map(r=>r.json()));assert.equal(values.filter(v=>v.job).length,4);
+ assert.equal((await g.owner('claim',{remainingCalls:101,remainingDecisions:100})).status,400);
+ }finally{g.sqlite.close();}
+});
+test('operator pending/failed cross-scope or physical-alias conflicts fail before any new manifest/job insert',async()=>{
+ const f=await fixture();try{
+ const input=await operatorBatch(f);await f.owner('operator-batch',input);
+ const original=f.sqlite.prepare('SELECT COUNT(*) n FROM aiv2_ondemand_operator_batches').get()!.n;
+ for(const patch of [{batchId:'e'.repeat(64),requests:[{board:'Qs7d2c',path:[]},input.requests[0]]},{batchId:'f'.repeat(64),requests:[{board:'8s9s6d',path:[]}]}])assert.equal((await f.owner('operator-batch',{...input,...patch})).status,409);
+ assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM aiv2_ondemand_operator_batches').get()!.n,original);
+ assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM aiv2_ondemand_jobs').get()!.n,2);
+ assert.equal((await f.owner('operator-batch',{...input,batchId:'a'.repeat(64),requests:[{board:'As7d2c',path:[]},{board:'7dAs2c',path:[]}]})).status,400);
+ }finally{f.sqlite.close();}
+});
+
+test('combined outstanding admission accepts public16 plus operator50 only and scoped low budgets leave jobs queued',async()=>{
+ const f=await fixture();try{
+ const input=await operatorBatch(f,{requests:physicalBoards(50).map(board=>({board,path:['check']})),maxCalls:200,maxDecisions:100});
+ for(let i=0;i<16;i++)f.sqlite.prepare("INSERT INTO aiv2_ondemand_jobs(id,revision,board,path_json,creator,day,status,created_at,reserved_calls) VALUES (?,'old',?,'[]','user','older','queued',0,2)").run('p'+i,'board'+i);
+ assert.equal((await f.owner('operator-batch',input)).status,202);assert.equal(f.sqlite.prepare("SELECT COUNT(*) n FROM aiv2_ondemand_jobs WHERE status IN ('queued','running')").get()!.n,66);
+ assert.equal((await f.call('requests',{board:'Ks7d2c',path:[],consent:true})).status,429);
+ const blocked=await (await f.owner('claim',scopedClaim(input,{remainingCalls:3}))).json();assert.equal(blocked.job,null);assert.equal(blocked.budgetBlocked,true);assert.equal(blocked.scopeComplete,false);assert.equal(f.sqlite.prepare("SELECT COUNT(*) n FROM aiv2_ondemand_jobs WHERE status='running'").get()!.n,0);
+ const expired=await (await f.owner('claim',scopedClaim(input))).json();f.sqlite.prepare('UPDATE aiv2_ondemand_jobs SET lease_until=0 WHERE id=?').run(expired.job.id);
+ const next=await (await f.owner('claim',scopedClaim(input))).json();assert.equal(next.job,null);assert.equal(next.scopeFailed,true);assert.equal(next.scopeComplete,false);assert.equal(f.sqlite.prepare("SELECT COUNT(*) n FROM aiv2_ondemand_jobs WHERE status='running'").get()!.n,0);assert.equal(f.sqlite.prepare('SELECT error FROM aiv2_ondemand_jobs WHERE id=?').get(expired.job.id)!.error,'uncertain_provider_outcome');
+ }finally{f.sqlite.close();}
+});
+
+test('one failed scoped member fences every still-queued sibling without replay or a new lease',async()=>{
+ const f=await fixture();try{
+ const input=await operatorBatch(f);await f.owner('operator-batch',input);
+ const claimed=await (await f.owner('claim',scopedClaim(input))).json();await f.owner('fail',{id:claimed.job.id,leaseToken:claimed.job.leaseToken,error:'uncertain_provider_outcome'});
+ const stopped=await (await f.owner('claim',scopedClaim(input))).json();assert.equal(stopped.job,null);assert.equal(stopped.scopeFailed,true);assert.equal(stopped.scopeComplete,false);
+ assert.equal(f.sqlite.prepare("SELECT COUNT(*) n FROM aiv2_ondemand_jobs WHERE status='queued'").get()!.n,1);assert.equal(f.sqlite.prepare("SELECT COUNT(*) n FROM aiv2_ondemand_jobs WHERE status='running'").get()!.n,0);
+ }finally{f.sqlite.close();}
 });

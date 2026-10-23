@@ -1,0 +1,339 @@
+{
+  "schema_version": "aiv2-postflop-independent-pending-btn-review-v1",
+  "approved": false,
+  "production_strategy_approved": false,
+  "gto_verified": false,
+  "reviewer_task": "/root/parallel_safety_review",
+  "reviewer_model": "not-exposed",
+  "scope": "Independent narrow saved-child checks only; no provider/network calls, repair/regeneration, original artifacts or frozen bridge edits.",
+  "reviews": [
+    {
+      "approved": false,
+      "production_strategy_approved": false,
+      "gto_verified": false,
+      "reviewed_at_utc": "2026-10-23T12:08:29.209088+00:00",
+      "artifact": {
+        "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/92e30bc90b0107513a84b14fd0b2582bcd22fe0a39ed8f34b55745e2a8d672e3.json",
+        "decision_id": "92e30bc90b0107513a84b14fd0b2582bcd22fe0a39ed8f34b55745e2a8d672e3",
+        "raw_file_sha256": "378bf4c75ac607c957895d93a3a737e73bf2fa8e7133de63fcaf1e809e07dcd5",
+        "board": "8c8h2d",
+        "actor": "BTN",
+        "history": [
+          "BB check"
+        ],
+        "saved_at": "2026-10-23T12:05:36.066Z"
+      },
+      "actual_saved_parent": {
+        "checks": {
+          "savedReader": true,
+          "implementation": true,
+          "parentSavedReader": true,
+          "parentIsExactRoot": true,
+          "actualParentCheckInputExact": true,
+          "parentPolicyHashExact": true,
+          "config": true,
+          "prompt": true,
+          "schema": true,
+          "sourceHash": true,
+          "parentsHash": true,
+          "provenance": true
+        },
+        "parent_file": "/Users/yota/Projects/Products/ReysonAI/apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/e9e04f6ab0b2bdade070db3c0dabc6445c255337a2fc4c7322e857b5b6fe3d0f.json",
+        "parent_decision_id": "e9e04f6ab0b2bdade070db3c0dabc6445c255337a2fc4c7322e857b5b6fe3d0f",
+        "parent_policy_hash": "f0328b38352c2b0cc7318c2cb2eb84e3c27174b3dea07ac94acac5492426aa2a",
+        "parent_check_mixes": [
+          100
+        ],
+        "raw_file_sha256": "5aee01f0db1358bb2be93efdb47221f78aa937e46f2abc942a76d02cc1ad66d3"
+      },
+      "checks": {
+        "savedReader": true,
+        "implementation": true,
+        "parentSavedReader": true,
+        "parentIsExactRoot": true,
+        "actualParentCheckInputExact": true,
+        "parentPolicyHashExact": true,
+        "config": true,
+        "prompt": true,
+        "schema": true,
+        "sourceHash": true,
+        "parentsHash": true,
+        "provenance": true,
+        "physical_1326_range_universe_both_seats": true,
+        "board_blocked_reach_zero_both_seats": true,
+        "positive_own_reach_exactly_covered": true,
+        "group_exact_coverage_no_duplicates": true,
+        "no_board_blocked_combo": true,
+        "own_reach_preserved": true,
+        "all_mixes_complete_legal_integer_sum100": true,
+        "all_bilingual_reasons_present": true,
+        "groups_expand_exact_mix_and_bilingual_reason": true,
+        "169_hand_classes": true,
+        "hand_aggregates_independently_reach_weighted": true,
+        "all_group_made_hand_and_backdoor_flush_labels_checked": true
+      },
+      "numeric": {
+        "physical_combos": 1326,
+        "board_legal_combos": 1176,
+        "exact_actor_combos": 651,
+        "hand_classes": 169,
+        "reason_groups": 21,
+        "zero_actor_reach_hands": 57,
+        "reach_weighted_action_percent": {
+          "bet33": 55.03292482165721,
+          "bet125": 0.0,
+          "check": 44.96707517834278,
+          "bet66": 0.0
+        },
+        "ranges": {
+          "BB": {
+            "positive_combos": 828,
+            "reach_weight": 435.7,
+            "overpair_weight": 5.1,
+            "eight_x_weight": 43.25,
+            "eight_x_density": 0.09926554969015378,
+            "quads_weight": 0.7,
+            "pocket_22_weight": 2.7,
+            "trips_weight": 43.1,
+            "trips_density": 0.09892127610741336
+          },
+          "BTN": {
+            "positive_combos": 651,
+            "reach_weight": 546.7,
+            "overpair_weight": 36,
+            "eight_x_weight": 38.7,
+            "eight_x_density": 0.07078836656301445,
+            "quads_weight": 1,
+            "pocket_22_weight": 3,
+            "trips_weight": 38.7,
+            "trips_density": 0.07078836656301445
+          }
+        }
+      },
+      "provider": {
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "completed_physical_turns": 1,
+        "repairs": 0,
+        "elapsed_ms": 212737,
+        "thread_id": "01a168a3-bc52-7ed3-8f6c-0a67b4f2dcae",
+        "turn_id": "01a168a3-bd34-7803-865f-089b6f21d629",
+        "actual_call_provenance_verified": true
+      },
+      "factual_reason_review": {
+        "status": "no_concrete_factual_contradiction_found",
+        "checks": [
+          "Actual BB parent checks100 for all reached combos; no additional filtering claim matches saved transition.",
+          "All group quads/fullhouse/trips/overpair/underpair labels match their actual physical cards.",
+          "All claimed backdoor flush groups have two same-suit hole cards plus one matching flop card; no-backdoor groups do not. Spades cannot reach five spades in two runout cards.",
+          "Summary BTN overpair weight36 vs BB5.1 and BB eight-x reach density approximately9.93percent vs BTN7.08percent match supplied ranges; both retain quads and22.",
+          "EN/JA explanations consistently describe saved check/bet33 mixes and no bet66/bet125; future barrels/traps are prospective model rationale, not generated later policies.",
+          "After excluding BB82 fullhouses, actual trips density remains higher for BB:43.1/435.7 versus BTN38.7/546.7."
+        ],
+        "representative_combos": [
+          "8s8d",
+          "2s2h",
+          "Ad8d",
+          "As8s",
+          "AsAh",
+          "7s7h",
+          "Ah2h",
+          "As2s",
+          "AhKh",
+          "AsKs",
+          "KhQh",
+          "QsJs",
+          "Qh7h",
+          "Qs7s"
+        ],
+        "issues": []
+      },
+      "limitations": [
+        "Numerical/provenance/factual consistency only; no solver/EV/equity/exploitability or independent strategy-quality approval.",
+        "One exact flop after actual saved BBcheck only. No later policy inferred or regenerated.",
+        "This review does not establish general50way parallel reliability or approve replay of earlier uncertain jobs."
+      ]
+    },
+    {
+      "approved": false,
+      "production_strategy_approved": false,
+      "gto_verified": false,
+      "reviewed_at_utc": "2026-10-23T12:14:54.629439+00:00",
+      "artifact": {
+        "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/bf3e7683a820eb96076048ba80f6d477ddfc2dd1a6022fd0f05c9954c8d8528e.json",
+        "decision_id": "bf3e7683a820eb96076048ba80f6d477ddfc2dd1a6022fd0f05c9954c8d8528e",
+        "raw_file_sha256": "695fcf573a7b38b100191d7d19fab71961e637a914c437b984f68db8aca3b2c2",
+        "board": "Jc8d5s",
+        "actor": "BTN",
+        "history": [
+          "BB check"
+        ],
+        "saved_at": "2026-10-23T12:11:49.930Z"
+      },
+      "actual_saved_parent": {
+        "checks": {
+          "savedReader": true,
+          "implementation": true,
+          "parentSavedReader": true,
+          "parentIsExactRoot": true,
+          "actualParentCheckInputExact": true,
+          "parentPolicyHashExact": true,
+          "config": true,
+          "prompt": true,
+          "schema": true,
+          "sourceHash": true,
+          "parentsHash": true,
+          "provenance": true
+        },
+        "parent_file": "/Users/yota/Projects/Products/ReysonAI/apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/70b651187e716e4a10d225717495509985e239a11a75b5df937b3ce4c0ce2cdb.json",
+        "parent_decision_id": "70b651187e716e4a10d225717495509985e239a11a75b5df937b3ce4c0ce2cdb",
+        "parent_policy_hash": "82f17af754d7e7365c91fcbbf5b77e58c6557aed3290c3b11b0fae758c95d7f2",
+        "parent_check_mixes": [
+          100
+        ],
+        "raw_file_sha256": "771d634d17699e48f32bbe58213aa9466882d73855278cc1012e45a6a1576d5c"
+      },
+      "checks": {
+        "savedReader": true,
+        "implementation": true,
+        "parentSavedReader": true,
+        "parentIsExactRoot": true,
+        "actualParentCheckInputExact": true,
+        "parentPolicyHashExact": true,
+        "config": true,
+        "prompt": true,
+        "schema": true,
+        "sourceHash": true,
+        "parentsHash": true,
+        "provenance": true,
+        "physical_1326_range_universe_both_seats": true,
+        "board_blocked_reach_zero_both_seats": true,
+        "positive_own_reach_exactly_covered": true,
+        "group_exact_coverage_no_duplicates": true,
+        "no_board_blocked_combo": true,
+        "own_reach_preserved": true,
+        "all_mixes_complete_legal_integer_sum100": true,
+        "all_bilingual_reasons_present": true,
+        "groups_expand_exact_mix_and_bilingual_reason": true,
+        "169_hand_classes": true,
+        "hand_aggregates_independently_reach_weighted": true,
+        "all_group_made_hand_straight_draw_and_backdoor_labels_checked": true
+      },
+      "numeric": {
+        "physical_combos": 1326,
+        "board_legal_combos": 1176,
+        "exact_actor_combos": 645,
+        "hand_classes": 169,
+        "reason_groups": 24,
+        "zero_actor_reach_hands": 57,
+        "reach_weighted_action_percent": {
+          "check": 75.3665043999251,
+          "bet33": 12.219153716532484,
+          "bet66": 12.414341883542408,
+          "bet125": 0.0
+        },
+        "ranges": {
+          "BB": {
+            "positive_combos": 823,
+            "reach_weight": 431.95,
+            "overpair_weight": 0,
+            "JJ_weight": 0.30000000000000004,
+            "88_weight": 2.0999999999999996,
+            "55_weight": 2.7
+          },
+          "BTN": {
+            "positive_combos": 645,
+            "reach_weight": 534.1,
+            "overpair_weight": 18,
+            "JJ_weight": 3,
+            "88_weight": 3,
+            "55_weight": 3
+          }
+        }
+      },
+      "provider": {
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "completed_physical_turns": 1,
+        "repairs": 0,
+        "elapsed_ms": 150685,
+        "thread_id": "01a168aa-631a-70a1-9b4f-50d3c0cf5368",
+        "turn_id": "01a168aa-6483-7f80-b559-4e684b981b94",
+        "actual_call_provenance_verified": true
+      },
+      "factual_reason_review": {
+        "status": "no_concrete_hand_or_draw_contradiction_found",
+        "checks": [
+          "Actual BB parent check100 transition matches child input exactly; no additional check selection is invented.",
+          "All group overpair/set/two-pair/top-pair/8x/bottom-pair/pocket-pair labels match actual physical cards.",
+          "Every stated open-ended T9/76 has two distinct straight-completing ranks and four consecutive ranks;97 has double-gutshot6/T without four consecutive ranks. All specified gutshots have one completing rank.",
+          "BDF groups have matching board suit; heart-suited draw groups have no heart on Jc8d5s and no backdoor flush.",
+          "All no-immediate-draw groups have no one-card straight completion. All saved bet125 frequencies arezero; check/bet33/bet66 wording matches mixes.",
+          "EN/JA descriptions express matching prospective model rationale; no unavailable future policy or numerical EV/equity claimed."
+        ],
+        "representative_combos": [
+          "AsAh",
+          "JsJh",
+          "Js8s",
+          "AsJs",
+          "JsTs",
+          "Js7s",
+          "As8s",
+          "As5h",
+          "TsTh",
+          "7s7h",
+          "Ts9s",
+          "Th9h",
+          "9s7s",
+          "9h7h",
+          "7s6s",
+          "7h6h",
+          "QsTs",
+          "QhTh",
+          "Ts7s",
+          "Th7h",
+          "AsKs",
+          "AsTs",
+          "KsTs",
+          "Qs7s"
+        ],
+        "issues": [],
+        "wording_limitation": "Summary says generating BBcheck policy is unavailable. The actual saved parent does exist and is verified here; interpret unavailable only as absent from this one-response model prompt, not absent from application/cache. No semantic repair or new generation performed."
+      },
+      "limitations": [
+        "Numerical/provenance/factual consistency only; no solver/EV/equity/exploitability or independent strategy-quality approval.",
+        "One exact flop after actual saved BBcheck only. No later policy inferred or regenerated.",
+        "This review does not establish general50way parallel reliability or approve replay of earlier uncertain jobs."
+      ]
+    }
+  ],
+  "parent_reported_static_smoke": {
+    "recorded_at_utc": "2026-10-23T12:14:54.634269+00:00",
+    "source": "Parent current live browser checks; not independently repeated by this numeric reviewer.",
+    "boards": {
+      "8c8h2d": {
+        "actor": "BTN",
+        "saved_cells": 169,
+        "existing_product_page": true,
+        "worker_exited": true,
+        "worker_lock_absent": true,
+        "physical_calls": 1,
+        "repairs": 0
+      },
+      "Jc8d5s": {
+        "actor": "BTN",
+        "saved_cells": 169,
+        "existing_product_page": true,
+        "worker_exited": true,
+        "worker_lock_absent": true,
+        "reloaded_after_worker_exit_saved_cells": 169,
+        "physical_calls": 1,
+        "repairs": 0
+      }
+    },
+    "prior_uncertain_four_replay_performed": false,
+    "approved": false,
+    "production_strategy_approved": false,
+    "gto_verified": false
+  }
+}

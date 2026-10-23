@@ -18,12 +18,12 @@ export function operatorBatchPath(args:string[]){
 }
 export async function operatorBatchManifest(boards:string[],maxCalls:number,maxDecisions:number,source:string,operatorUserId:string,path:string[]=[]):Promise<Manifest>{
  if(typeof operatorUserId!=='string'||!operatorUserId||operatorUserId.length>200||/\s/.test(operatorUserId))throw failure('operator_user_id_required');
- if(!Array.isArray(boards)||boards.length<1||boards.length>16)throw failure('invalid_operator_boards');
+ if(!Array.isArray(boards)||boards.length<1||boards.length>50)throw failure('invalid_operator_boards');
  if(!Array.isArray(path)||path.length>1||path.length===1&&path[0]!=='check')throw failure('operator_path_not_supported');
  const requests=boards.map(board=>normalizeRequest(board,path)),unique=new Set(requests.map(request=>(request.board.match(/../g)??[]).sort().join('')));
  if(unique.size!==requests.length)throw failure('duplicate_operator_board');
  const structuralDecisions=requests.length*(1+path.length);
- if(!Number.isInteger(maxCalls)||maxCalls<2*structuralDecisions||maxCalls>100||!Number.isInteger(maxDecisions)||maxDecisions<structuralDecisions||maxDecisions>100)throw failure('invalid_operator_budget');
+ if(!Number.isInteger(maxCalls)||maxCalls<2*structuralDecisions||maxCalls>200||!Number.isInteger(maxDecisions)||maxDecisions<structuralDecisions||maxDecisions>100)throw failure('invalid_operator_budget');
  if(typeof source!=='string'||!source)throw failure('operator_source_required');
  const implementation=implementationHash(),input=await loadRoot(requests[0].board,source),sourceHash=hash(input.upstream);
  const revision=hash({method:CONFIG.method,version:CONFIG.version,implementationHash:implementation,sourceHash});

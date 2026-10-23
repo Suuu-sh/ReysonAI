@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync, rmSync, lstatSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve, join } from 'node:path';
 import { bridgeOrigin, runBridge, validateBridgeJob } from '../scripts/aiv2-postflop-ondemand-bridge.ts';
@@ -332,5 +332,33 @@ test('four-lane uncertainty prevents every sibling correction and drains all sta
   assert.equal(calls,4);assert.equal(drains,4);assert.equal(f.claimCount(),4);assert.equal(f.requests.some(r=>r.action==='complete'),false);
   const journal=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8'));assert.equal(journal.concurrency,4);assert.equal(journal.entries.length,4);assert.ok(journal.entries.every((entry:any)=>entry.status==='failed'&&entry.calls===1));
   for(const id of f.outputs.keys())assert.equal(existsSync(join(f.root,'decisions',id+'.json')),false);
+ }finally{f.cleanup();}
+});
+
+test('single-lane failure diagnostics are durable, private and strictly sanitized',async()=>{
+ for(const originalCode of ['quota_or_rate_limit','secret-bearer-prompt-output-code']){
+  const f=await fixture();try{
+   const metric={status:'failed',errorCode:originalCode,model:CONFIG.model,effort:CONFIG.effort,confirmedModel:CONFIG.model,confirmedEffort:CONFIG.effort,threadId:'01a1679f-4a9b-7e23-a46c-2fb9d6259e64',turnId:'01a1679f-4b53-7193-b228-ed00491a2c5c',elapsedMs:42,sessionTurn:1,message:'secret-bearer-prompt-output-message',errorDiagnostic:{message:'secret-bearer-prompt-output-diagnostic'},prompt:'secret-bearer-prompt-output-prompt',output:'secret-bearer-prompt-output-output',leaseToken:'secret-bearer-prompt-output-lease',authorization:'secret-bearer-prompt-output-auth'};
+   await assert.rejects(runBridge({...f.options,providerFactory:onMetric=>({withSession:async(fn:any)=>fn({run:async()=>{onMetric(metric);throw Object.assign(Error('secret-bearer-prompt-output-exception'),{code:originalCode});}}),close:()=>{},drain:async()=>{}})}),{code:'uncertain_provider_outcome'});
+   const file=join(f.options.runtimePath,'bridge-journal.json'),journal=JSON.parse(readFileSync(file,'utf8')),d=journal.diagnostics;
+   assert.equal(lstatSync(file).mode&0o077,0);assert.equal(journal.calls,1);assert.equal(journal.decisions,0);assert.equal(journal.error,'uncertain_provider_outcome');
+   assert.equal(d.first_failure.code,originalCode==='quota_or_rate_limit'?originalCode:'unclassified_failure');assert.equal(d.first_failure.phase,'provider');assert.ok(Number.isFinite(Date.parse(d.first_failure.at)));assert.ok(Number.isSafeInteger(d.first_failure.elapsed_ms));
+   const saved=d.jobs[f.job.id].metrics;assert.equal(saved.length,1);assert.equal(saved[0].threadId,metric.threadId);assert.equal(saved[0].turnId,metric.turnId);assert.equal(saved[0].elapsedMs,42);assert.equal(saved[0].model,CONFIG.model);assert.equal(saved[0].effort,CONFIG.effort);
+   assert.equal(JSON.stringify(d).includes('secret-bearer-prompt-output'),false);assert.equal(JSON.stringify(d).includes(f.job.leaseToken),false);assert.equal(f.requests.some(r=>r.action==='complete'),false);
+  }finally{f.cleanup();}
+ }
+});
+test('parallel diagnostics retain original cause across sibling and failure-upload errors without replay',async()=>{
+ const f=await parallelFixture();let calls=0,drains=0,release!:()=>void;
+ const started=new Promise<void>(resolve=>{release=resolve;});
+ try{
+  const fetcher=async(url:any,init:any)=>{if(String(url).endsWith('/fail'))throw Error('secret failure upload body');return f.options.fetch(url,init);};
+  await assert.rejects(runBridge({...f.options,fetch:fetcher as typeof fetch,providerFactory:onMetric=>({withSession:async(fn:any)=>fn({run:async()=>{
+   const number=++calls;if(number===2)release();await started;if(number===2)await wait(15);
+   const code=number===1?'quota_or_rate_limit':'authentication_required';onMetric({status:'failed',errorCode:code,model:CONFIG.model,effort:CONFIG.effort,threadId:'secret-must-not-be-a-thread-id',turnId:'secret-must-not-be-a-turn-id',stderr:'secret raw stderr'});throw Object.assign(Error('secret upstream message'),{code});
+  }}),close:()=>{},drain:async()=>{drains++;}})}),{code:'quota_or_rate_limit'});
+  const journal=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8')),d=journal.diagnostics;
+  assert.equal(calls,2);assert.equal(drains,2);assert.equal(f.claimCount(),2);assert.equal(d.first_failure.code,'quota_or_rate_limit');assert.equal(d.first_failure.phase,'provider');assert.equal(Object.keys(d.jobs).length,2);assert.ok(Object.values<any>(d.jobs).every(j=>j.metrics.length===1&&j.failure));assert.equal(JSON.stringify(d).includes('secret'),false);
+  assert.ok(journal.entries.every((e:any)=>e.status==='failure_pending'&&e.call_in_flight));assert.equal(f.requests.some(r=>r.action==='complete'),false);assert.equal(existsSync(join(f.root,'worker.lock')),false);
  }finally{f.cleanup();}
 });

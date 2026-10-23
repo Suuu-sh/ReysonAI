@@ -25,8 +25,8 @@ test('operator manifest validates explicit roots, duplicate card sets, caps and 
  assert.equal(manifest.sourceHash,sourceHash);assert.equal(manifest.implementationHash,implementation);assert.equal(manifest.revision,hash({method:CONFIG.method,version:CONFIG.version,implementationHash:implementation,sourceHash}));
  assert.deepEqual(manifest.requests,[{board:'QsJhTd',path:[]},{board:'9s8s6d',path:[]}]);
  const {batchId,...payload}=manifest;assert.equal(batchId,hash(payload));
- for(const boards of [[],Array(17).fill('QsJhTd'),['QsQsTd'],['QsJhTd','TdQsJh']])await assert.rejects(operatorBatchManifest(boards,100,100,source,operatorUserId));
- for(const [calls,decisions] of [[3,2],[4,1],[101,2],[4,101],[NaN,2],[4,1.5]])await assert.rejects(operatorBatchManifest(['QsJhTd','9s8s6d'],calls,decisions,source,operatorUserId));
+ for(const boards of [[],Array(51).fill('QsJhTd'),['QsQsTd'],['QsJhTd','TdQsJh']])await assert.rejects(operatorBatchManifest(boards,100,100,source,operatorUserId));
+ for(const [calls,decisions] of [[3,2],[4,1],[201,2],[4,101],[NaN,2],[4,1.5]])await assert.rejects(operatorBatchManifest(['QsJhTd','9s8s6d'],calls,decisions,source,operatorUserId));
  await assert.rejects(operatorBatchManifest(['QsJhTd'],2,1,'',operatorUserId));await assert.rejects(operatorBatchManifest(['QsJhTd'],2,1,source,''));
 });
 test('operator enqueue is one owner-only bounded request, no worker/provider, private receipt and exact replay',async()=>{
@@ -119,4 +119,23 @@ test('unsupported operator follow-up paths fail before any queue write',async()=
 test('operator path CLI accepts only one exact check flag and never silently falls back for a malformed flag',()=>{
  assert.deepEqual(operatorBatchPath([]),[]);assert.deepEqual(operatorBatchPath(['--boards=QsJhTd','--path=check']),['check']);
  for(const args of [['--path'],['--path','check'],['--path='],['--path=bet33'],['--path=check,check'],['--path=check','--path=check']])assert.throws(()=>operatorBatchPath(args),{code:'operator_path_not_supported'});
+});
+
+function fiftyOperatorBoards(n=50){const deck=[...'AKQJT98765432'].flatMap(r=>[...'shdc'].map(s=>r+s)),boards:string[]=[];for(let a=0;a<50&&boards.length<n;a++)for(let b=a+1;b<51&&boards.length<n;b++)for(let c=b+1;c<52&&boards.length<n;c++)boards.push(deck[a]+deck[b]+deck[c]);return boards;}
+test('owner-only fifty check targets bind finite100decision200call manifest and never start a bridge',async()=>{
+ const f=fixture();try{
+ const boards=fiftyOperatorBoards(),options={...f.options,boards,path:['check'],maxDecisions:100,maxCalls:200};
+ const manifest=await operatorBatchManifest(boards,200,100,source,operatorUserId,['check']);assert.equal(manifest.requests.length,50);assert.equal(manifest.maxCalls,200);assert.equal(manifest.maxDecisions,100);
+ const result=await enqueueOperatorBatch(options);assert.equal(result.accepted,50);assert.equal(f.requests.length,1);assert.equal(f.requests[0].requests.length,50);assert.ok(f.requests[0].requests.every((r:any)=>JSON.stringify(r.path)==='["check"]'));
+ const replay=await enqueueOperatorBatch(options);assert.equal(replay.status,'already_submitted');assert.equal(f.requests.length,1);
+ for(const [calls,decisions] of [[199,100],[200,99],[201,100],[200,101]])await assert.rejects(operatorBatchManifest(boards,calls,decisions,source,operatorUserId,['check']),{code:'invalid_operator_budget'});
+ await assert.rejects(operatorBatchManifest(fiftyOperatorBoards(51),200,100,source,operatorUserId),{code:'invalid_operator_boards'});
+ }finally{f.cleanup();}
+});
+test('cross-scope or failed target conflict is durable rejection, never an automatic submission retry',async()=>{
+ const f=fixture();try{
+ const fetcher=async()=>Response.json({error:'batch_scope_failed_job'},{status:409});
+ await assert.rejects(enqueueOperatorBatch({...f.options,fetch:fetcher}),{code:'operator_broker_conflict'});
+ await assert.rejects(enqueueOperatorBatch({...f.options,retrySubmission:true}),{code:'operator_submission_requires_explicit_retry'});assert.equal(f.requests.length,0);
+ }finally{f.cleanup();}
 });

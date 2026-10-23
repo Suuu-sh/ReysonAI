@@ -8,11 +8,13 @@ export type OnDemandEnv = AccountEnv & {
 const PREFIX='/v1/aiv2/ondemand/';
 const METHOD='llm-postflop-ondemand-v2';
 const VERSION='exact-combo-bilingual-srp33-66-125-3bp25-50-100-raise2p5-v2';
+// Public limits remain unchanged; private operator work has a finite immutable batch budget.
 const LIMITS={jobsPerUserDay:3,outstandingGlobal:16,reservedCallsPerDay:96,maxProviderCalls:64,maxDecisions:32};
+const OPERATOR_LIMITS={requests:50,maxCalls:200,maxDecisions:100,outstanding:50,combinedOutstanding:66,running:50};
 const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'cache-control':'no-store','referrer-policy':'no-referrer'}});
 const isHash=(value:unknown):value is string=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(value);
 const equal=(a:unknown,b:unknown)=>JSON.stringify(a)===JSON.stringify(b);
-type Job={id:string;revision:string;board:string;path_json:string;status:string;result_json:string|null;error:string|null;lease_hash:string|null;lease_until:number|null;reserved_calls:number};
+type Job={id:string;revision:string;board:string;path_json:string;status:string;result_json:string|null;error:string|null;lease_hash:string|null;lease_until:number|null;reserved_calls:number;operator_batch_id:string|null};
 export function normalizeBrokerRequest(board:unknown,path:unknown){
  if(typeof board!=='string'||board.length!==6||!Array.isArray(path)||path.length>64||path.some(v=>typeof v!=='string'||! /^(check|fold|call|raise|allin|bet33|bet66|bet125|[AKQJT98765432][shdc])$/.test(v)))throw Error('invalid_request');
  const cards=board.match(/../g)!;if(new Set(cards).size!==3||cards.some(c=>! /^[AKQJT98765432][shdc]$/.test(c)))throw Error('invalid_request');
@@ -61,10 +63,10 @@ async function handle(request:Request,env:OnDemandEnv):Promise<Response>{
    return json({revision,implementationHash,sourceHash,jobs});
   }
   if(path==='owner/operator-batch'){
-   if(Object.keys(input).some(k=>!['batchId','revision','implementationHash','sourceHash','requests','maxCalls','maxDecisions','operatorUserId'].includes(k))||typeof input.operatorUserId!=='string'||input.operatorUserId.length<1||input.operatorUserId.length>200||!isHash(input.batchId)||!Array.isArray(input.requests)||input.requests.length<1||input.requests.length>16||!Number.isInteger(input.maxCalls)||input.maxCalls<1||input.maxCalls>100||!Number.isInteger(input.maxDecisions)||input.maxDecisions<1||input.maxDecisions>100)throw Error('invalid_request');
+   if(Object.keys(input).some(k=>!['batchId','revision','implementationHash','sourceHash','requests','maxCalls','maxDecisions','operatorUserId'].includes(k))||typeof input.operatorUserId!=='string'||input.operatorUserId.length<1||input.operatorUserId.length>200||!isHash(input.batchId)||!Array.isArray(input.requests)||input.requests.length<1||input.requests.length>OPERATOR_LIMITS.requests||!Number.isInteger(input.maxCalls)||input.maxCalls<1||input.maxCalls>OPERATOR_LIMITS.maxCalls||!Number.isInteger(input.maxDecisions)||input.maxDecisions<1||input.maxDecisions>OPERATOR_LIMITS.maxDecisions)throw Error('invalid_request');
    if(input.revision!==revision||input.implementationHash!==implementationHash||input.sourceHash!==sourceHash)return json({error:'pin_mismatch'},409);
    const requests=input.requests.map((item:any)=>{if(!item||typeof item!=='object'||Array.isArray(item)||Object.keys(item).some(k=>!['board','path'].includes(k)))throw Error('invalid_request');return normalizeBrokerRequest(item.board,item.path);});
-   const keys=requests.map((item:any)=>JSON.stringify(item));
+   const keys=requests.map((item:any)=>JSON.stringify({board:(item.board.match(/../g)??[]).sort().join(''),path:item.path}));
    const reservedCalls=requests.map((item:any)=>2*(1+item.path.filter((v:string)=>! /^[AKQJT98765432][shdc]$/.test(v)).length));
    const totalCalls=reservedCalls.reduce((sum:number,n:number)=>sum+n,0);
    if(new Set(keys).size!==keys.length||totalCalls>input.maxCalls||totalCalls/2>input.maxDecisions)throw Error('invalid_request');
@@ -73,20 +75,38 @@ async function handle(request:Request,env:OnDemandEnv):Promise<Response>{
    const [operator]=await query<{id:string}>('SELECT id FROM account_users WHERE id=?',creator);
    if(!operator)return json({error:'operator_account_not_found'},404);
    const manifest=await digest(JSON.stringify({revision,operatorUserId:creator,requests,maxCalls:input.maxCalls,maxDecisions:input.maxDecisions}));
+   const [priorBatch]=await query<{manifest_hash:string}>('SELECT manifest_hash FROM aiv2_ondemand_operator_batches WHERE id=?',input.batchId);
+   if(priorBatch&&priorBatch.manifest_hash!==manifest)return json({error:'batch_conflict'},409);
+   const targets:Array<{id:string;board:string;path_json:string;reserved_calls:number;aliases:string[]}>=[];
+   // Check the whole list before inserting a manifest/job. Failed targets cannot be
+   // resurrected with a new batch ID, and pending work cannot change batch owner.
+   for(let i=0;i<requests.length;i++){
+    const request=requests[i],id=await digest(JSON.stringify({revision,...request})),cards=request.board.match(/../g)!;
+    const aliases=[cards.join(''),cards[0]+cards[2]+cards[1],cards[1]+cards[0]+cards[2],cards[1]+cards[2]+cards[0],cards[2]+cards[0]+cards[1],cards[2]+cards[1]+cards[0]];
+    const rows=await query('SELECT * FROM aiv2_ondemand_jobs WHERE revision=? AND path_json=? AND board IN (?,?,?,?,?,?)',revision,JSON.stringify(request.path),...aliases);
+    if(rows.some(row=>row.board!==request.board))return json({error:'physical_board_alias_conflict'},409);
+    if(rows.some(row=>row.status==='failed'))return json({error:'batch_scope_failed_job'},409);
+    if(rows.some(row=>['queued','running'].includes(row.status)&&row.operator_batch_id!==input.batchId))return json({error:'batch_scope_conflict'},409);
+    targets.push({id,board:request.board,path_json:JSON.stringify(request.path),reserved_calls:reservedCalls[i],aliases});
+   }
    await query('INSERT OR IGNORE INTO aiv2_ondemand_operator_batches(id,manifest_hash,operator_user_id,created_at) VALUES (?,?,?,?)',input.batchId,manifest,creator,now);
    const [batch]=await query<{manifest_hash:string}>('SELECT manifest_hash FROM aiv2_ondemand_operator_batches WHERE id=?',input.batchId);
    if(batch?.manifest_hash!==manifest)return json({error:'batch_conflict'},409);
    const jobs:Array<ReturnType<typeof publicJob>>=[];
-   for(let i=0;i<requests.length;i++){
-    const normalized=requests[i],id=await digest(JSON.stringify({revision,...normalized}));
-    // Each atomic insert still shares the public global outstanding/daily reservation bounds.
-    // Batch total is structurally bounded above; terminal canonical jobs are never requeued.
-    await query(`INSERT OR IGNORE INTO aiv2_ondemand_jobs(id,revision,board,path_json,creator,day,status,created_at,reserved_calls,operator_batch_id)
- SELECT ?,?,?,?,?,?,'queued',?,?,? WHERE
- (SELECT COUNT(*) FROM aiv2_ondemand_jobs WHERE status IN ('queued','running'))<? AND
- (SELECT COALESCE(SUM(reserved_calls),0) FROM aiv2_ondemand_jobs WHERE day=?)+?<=? AND
- (SELECT COALESCE(SUM(reserved_calls),0) FROM aiv2_ondemand_jobs WHERE operator_batch_id=?)+?<=?`,id,revision,normalized.board,JSON.stringify(normalized.path),creator,day,now,reservedCalls[i],input.batchId,LIMITS.outstandingGlobal,day,reservedCalls[i],LIMITS.reservedCallsPerDay,input.batchId,reservedCalls[i],input.maxCalls);
-    const [job]=await query('SELECT * FROM aiv2_ondemand_jobs WHERE id=? AND revision=?',id,revision);if(job)jobs.push(publicJob(job));
+   // One atomic INSERT SELECT admits the explicit list only if its NEW reservations
+   // fit. Concurrent batches cannot cross either slot limit or steal pending aliases.
+   const payload=JSON.stringify(targets);
+   await query(`INSERT OR IGNORE INTO aiv2_ondemand_jobs(id,revision,board,path_json,creator,day,status,created_at,reserved_calls,operator_batch_id)
+ SELECT json_extract(t.value,'$.id'),?,json_extract(t.value,'$.board'),json_extract(t.value,'$.path_json'),?,?,'queued',?,json_extract(t.value,'$.reserved_calls'),? FROM json_each(?) t WHERE
+ (SELECT COUNT(*) FROM aiv2_ondemand_jobs WHERE operator_batch_id IS NOT NULL AND status IN ('queued','running'))+(SELECT COUNT(*) FROM json_each(?) n WHERE NOT EXISTS(SELECT 1 FROM aiv2_ondemand_jobs j WHERE j.id=json_extract(n.value,'$.id')))<=? AND
+ (SELECT COUNT(*) FROM aiv2_ondemand_jobs WHERE status IN ('queued','running'))+(SELECT COUNT(*) FROM json_each(?) n WHERE NOT EXISTS(SELECT 1 FROM aiv2_ondemand_jobs j WHERE j.id=json_extract(n.value,'$.id')))<=? AND
+ (SELECT COALESCE(SUM(reserved_calls),0) FROM aiv2_ondemand_jobs WHERE operator_batch_id=?)+(SELECT COALESCE(SUM(json_extract(n.value,'$.reserved_calls')),0) FROM json_each(?) n WHERE NOT EXISTS(SELECT 1 FROM aiv2_ondemand_jobs j WHERE j.id=json_extract(n.value,'$.id')))<=? AND
+ NOT EXISTS(SELECT 1 FROM json_each(?) n JOIN aiv2_ondemand_jobs j ON j.revision=? AND j.path_json=json_extract(n.value,'$.path_json') AND j.board IN (SELECT value FROM json_each(n.value,'$.aliases')) WHERE j.board!=json_extract(n.value,'$.board') OR j.status='failed' OR (j.status IN ('queued','running') AND (j.operator_batch_id IS NULL OR j.operator_batch_id!=?)))`,revision,creator,day,now,input.batchId,payload,payload,OPERATOR_LIMITS.outstanding,payload,OPERATOR_LIMITS.combinedOutstanding,input.batchId,payload,input.maxCalls,payload,revision,input.batchId);
+   for(const target of targets){
+    const [job]=await query('SELECT * FROM aiv2_ondemand_jobs WHERE id=? AND revision=?',target.id,revision);
+    if(job&&job.status==='failed')return json({error:'batch_scope_failed_job'},409);
+    if(job&&['queued','running'].includes(job.status)&&job.operator_batch_id!==input.batchId)return json({error:'batch_scope_conflict'},409);
+    if(job)jobs.push(publicJob(job));
    }
    const exhausted=jobs.length!==requests.length;
    return json({batchId:input.batchId,revision,implementationHash,sourceHash,maxCalls:input.maxCalls,maxDecisions:input.maxDecisions,jobs,...(exhausted?{error:'generation_budget_exhausted'}:{})},exhausted?429:202);
@@ -102,15 +122,26 @@ async function handle(request:Request,env:OnDemandEnv):Promise<Response>{
    return json({ok:true,revision});
   }
   if(path==='owner/claim'){
-   if(Object.keys(input).some(k=>!['remainingCalls','remainingDecisions'].includes(k)))throw Error('invalid_request');
-   const remainingCalls=input.remainingCalls??100,remainingDecisions=input.remainingDecisions??100;
-   if(!Number.isInteger(remainingCalls)||remainingCalls<1||remainingCalls>100||!Number.isInteger(remainingDecisions)||remainingDecisions<1||remainingDecisions>100)throw Error('invalid_request');
+   const scoped=Object.hasOwn(input,'operatorBatchId');
+   if(Object.keys(input).some(k=>!(scoped?['operatorBatchId','remainingCalls','remainingDecisions','revision','implementationHash','sourceHash']:['remainingCalls','remainingDecisions']).includes(k)))throw Error('invalid_request');
+   if(scoped&&!isHash(input.operatorBatchId))throw Error('invalid_request');
+   const remainingCalls=input.remainingCalls??(scoped?NaN:100),remainingDecisions=input.remainingDecisions??(scoped?NaN:100);
+   if(!Number.isInteger(remainingCalls)||remainingCalls<1||remainingCalls>(scoped?OPERATOR_LIMITS.maxCalls:100)||!Number.isInteger(remainingDecisions)||remainingDecisions<1||remainingDecisions>100)throw Error('invalid_request');
+   if(scoped){
+    if(input.revision!==revision||input.implementationHash!==implementationHash||input.sourceHash!==sourceHash)return json({error:'pin_mismatch'},409);
+    const [batch]=await query('SELECT id FROM aiv2_ondemand_operator_batches WHERE id=?',input.operatorBatchId);
+    if(!batch)return json({error:'operator_batch_not_found'},404);
+    if((await query('SELECT id FROM aiv2_ondemand_jobs WHERE operator_batch_id=? AND revision!=? LIMIT 1',input.operatorBatchId,revision)).length)return json({error:'pin_mismatch'},409);
+   }
    // Lease expiry means possibly consumed subscription quota: never requeue it.
    await query("UPDATE aiv2_ondemand_jobs SET status='failed',error='uncertain_provider_outcome' WHERE status='running' AND lease_until<=?",now);
    const token=crypto.randomUUID()+crypto.randomUUID(),leaseHash=await digest(token);
-   const [job]=await query("UPDATE aiv2_ondemand_jobs SET status='running',lease_hash=?,lease_until=? WHERE id=(SELECT id FROM aiv2_ondemand_jobs WHERE status='queued' AND revision=? AND reserved_calls<=? AND reserved_calls/2<=? ORDER BY created_at,id LIMIT 1) AND status='queued' RETURNING *",leaseHash,now+120*60*1000,revision,remainingCalls,remainingDecisions);
-   const queued=job?[]:await query("SELECT id FROM aiv2_ondemand_jobs WHERE status='queued' AND revision=? LIMIT 1",revision);
-   return json({job:job?{id:job.id,board:job.board,path:JSON.parse(job.path_json),revision,implementationHash,sourceHash,leaseToken:token,maxProviderCalls:job.reserved_calls,maxDecisions:job.reserved_calls/2}:null,...(!job&&queued.length?{budgetBlocked:true}:{})});
+   const scopeSql=scoped?' AND operator_batch_id=?':'',scopeArgs=scoped?[input.operatorBatchId]:[],failedScopeSql=scoped?" AND NOT EXISTS(SELECT 1 FROM aiv2_ondemand_jobs WHERE operator_batch_id=? AND status='failed')":'';
+   const [job]=await query(`UPDATE aiv2_ondemand_jobs SET status='running',lease_hash=?,lease_until=? WHERE id=(SELECT id FROM aiv2_ondemand_jobs WHERE status='queued' AND revision=? AND reserved_calls<=? AND reserved_calls/2<=?${scopeSql} ORDER BY created_at,id LIMIT 1) AND status='queued' AND (SELECT COUNT(*) FROM aiv2_ondemand_jobs WHERE status='running')<?${failedScopeSql} RETURNING *`,leaseHash,now+120*60*1000,revision,remainingCalls,remainingDecisions,...scopeArgs,scoped?OPERATOR_LIMITS.running:4,...scopeArgs);
+   const queued=job?[]:await query(`SELECT id FROM aiv2_ondemand_jobs WHERE status='queued' AND revision=?${scopeSql} LIMIT 1`,revision,...scopeArgs);
+   const running=scoped&&!job?await query("SELECT id FROM aiv2_ondemand_jobs WHERE status='running' AND revision=? AND operator_batch_id=? LIMIT 1",revision,input.operatorBatchId):[];
+   const failed=scoped?await query("SELECT id FROM aiv2_ondemand_jobs WHERE status='failed' AND revision=? AND operator_batch_id=? LIMIT 1",revision,input.operatorBatchId):[];
+   return json({...(scoped?{operatorBatchId:input.operatorBatchId}:{}),job:job?{id:job.id,board:job.board,path:JSON.parse(job.path_json),revision,implementationHash,sourceHash,leaseToken:token,maxProviderCalls:job.reserved_calls,maxDecisions:job.reserved_calls/2,...(scoped?{operatorBatchId:job.operator_batch_id}:{})}:null,...(!job&&queued.length?{budgetBlocked:true}:{}),...(scoped?{scopeFailed:failed.length>0}:{}),...(scoped&&!job?{scopeComplete:queued.length===0&&running.length===0}:{})});
   }
   if(!['owner/complete','owner/fail'].includes(path)||!isHash(input.id)||typeof input.leaseToken!=='string'||input.leaseToken.length>200)return json({error:'invalid_request'},400);
   const [job]=await query('SELECT * FROM aiv2_ondemand_jobs WHERE id=? AND revision=? AND lease_hash=?',input.id,revision,await digest(input.leaseToken));
@@ -160,12 +191,13 @@ async function handle(request:Request,env:OnDemandEnv):Promise<Response>{
  if(rate.count>30)return json({error:'rate_limited'},429);
  const [existing]=await query('SELECT * FROM aiv2_ondemand_jobs WHERE id=?',id);
  if(!existing&&!ownerOnline)return json({error:'owner_offline'},503);
- // One atomic INSERT SELECT enforces both per-account and global provider budgets.
+ // One atomic INSERT SELECT preserves public-only account/day/slot limits and the combined hard bound.
  await query(`INSERT OR IGNORE INTO aiv2_ondemand_jobs(id,revision,board,path_json,creator,day,status,created_at,reserved_calls)
  SELECT ?,?,?,?,?,?,'queued',?,? WHERE
  (SELECT COUNT(*) FROM aiv2_ondemand_jobs WHERE creator=? AND day=? AND operator_batch_id IS NULL)<? AND
+ (SELECT COUNT(*) FROM aiv2_ondemand_jobs WHERE status IN ('queued','running') AND operator_batch_id IS NULL)<? AND
  (SELECT COUNT(*) FROM aiv2_ondemand_jobs WHERE status IN ('queued','running'))<? AND
- (SELECT COALESCE(SUM(reserved_calls),0) FROM aiv2_ondemand_jobs WHERE day=?)+?<=?`,id,revision,normalized.board,pathJSON,user,day,now,reservedCalls,user,day,LIMITS.jobsPerUserDay,LIMITS.outstandingGlobal,day,reservedCalls,LIMITS.reservedCallsPerDay);
+ (SELECT COALESCE(SUM(reserved_calls),0) FROM aiv2_ondemand_jobs WHERE day=? AND operator_batch_id IS NULL)+?<=?`,id,revision,normalized.board,pathJSON,user,day,now,reservedCalls,user,day,LIMITS.jobsPerUserDay,LIMITS.outstandingGlobal,OPERATOR_LIMITS.combinedOutstanding,day,reservedCalls,LIMITS.reservedCallsPerDay);
  const [job]=await query('SELECT * FROM aiv2_ondemand_jobs WHERE id=?',id);
  if(!job)return json({error:'generation_budget_exhausted'},429);
  await query('INSERT OR IGNORE INTO aiv2_ondemand_access(job_id,user_id) VALUES (?,?)',id,user);
