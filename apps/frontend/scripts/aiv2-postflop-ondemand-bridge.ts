@@ -38,9 +38,13 @@ function bridgeDiagnostics(){
  const started=Date.now(),codes=new Set(['quota_or_rate_limit','authentication_required','unsupported_model_effort_or_schema','upstream_error','process_failed','process_exited','transport_closed','session_lost','provider_closed','timeout','invalid_json','protocol_error','response_too_large','unexpected_server_request','missing_turn','missing_thread','model_or_effort_mismatch','unexpected_tool_call','overlapping_session_turn','session_closed_during_turn','bridge_transport_uncertain','bridge_lease_conflict','bridge_request_failed','bridge_response_invalid','pins_changed','budget_exhausted','invalid_or_stale_claim','snapshot_adapter_invalid','incomplete_validated_store','uncertain_provider_outcome','completion_upload_requires_explicit_retry','operator_scope_failed']);
  const code=(value:unknown)=>typeof value==='string'&&codes.has(value)?value:'unclassified_failure';
  type Cause={code:string;phase:DiagnosticPhase;at:string;elapsed_ms:number;job_id?:string};
- const state:{first_failure:Cause|null;jobs:Record<string,{metrics:Record<string,unknown>[];failure?:Cause}>}={first_failure:null,jobs:{}};
+ type Retry={code:string;phase:'lease_heartbeat';at:string;elapsed_ms:number;job_id:string;attempt:1;outcome:'pending'|'confirmed'|'failed';failure_code?:string};
+ const state:{first_failure:Cause|null;jobs:Record<string,{metrics:Record<string,unknown>[];failure?:Cause}>;lease_heartbeat_transport_retries:Retry[]}={first_failure:null,jobs:{},lease_heartbeat_transport_retries:[]};
  const job=(id:string)=>state.jobs[id]??={metrics:[]};
- return {state,recordFailure(error:unknown,phase:DiagnosticPhase,id?:string){
+ return {state,recordHeartbeatRetry(id:string){
+  if(!isHash(id)||state.lease_heartbeat_transport_retries.length>=64)throw failure('bridge_transport_uncertain');
+  const retry:Retry={code:'bridge_transport_uncertain',phase:'lease_heartbeat',at:new Date().toISOString(),elapsed_ms:Math.max(0,Date.now()-started),job_id:id,attempt:1,outcome:'pending'};state.lease_heartbeat_transport_retries.push(retry);return retry;
+ },safeCode:code,recordFailure(error:unknown,phase:DiagnosticPhase,id?:string){
   const cause:Cause={code:code((error as any)?.code),phase,at:new Date().toISOString(),elapsed_ms:Math.max(0,Date.now()-started)};
   if(isHash(id))cause.job_id=id;
   state.first_failure??=cause;if(isHash(id))job(id).failure??=cause;
@@ -55,6 +59,29 @@ function bridgeDiagnostics(){
   for(const key of ['elapsedMs','sessionTurn'])if(Number.isSafeInteger(value[key])&&value[key]>=0&&value[key]<=3_600_000)metric[key]=value[key];
   if(job(id).metrics.length<64)job(id).metrics.push(metric);
  }};
+}
+// Only lease renewal is idempotently re-confirmed. One extra POST per lease/job,
+// never a claim, completion, failure upload, owner-online beat or provider retry.
+function confirmedLeaseHeartbeat(send:()=>Promise<void>,id:string,diagnostics:ReturnType<typeof bridgeDiagnostics>,persist:()=>void,stopped:()=>boolean){
+ let retried=false;
+ return async()=>{
+  if(stopped())throw failure('uncertain_provider_outcome');
+  try{await send();}catch(error){
+   if((error as any)?.code!=='bridge_transport_uncertain'||retried||stopped())throw error;
+   retried=true;const retry=diagnostics.recordHeartbeatRetry(id);persist();
+   try{if(stopped())throw failure('uncertain_provider_outcome');await send();retry.outcome='confirmed';persist();}
+   catch(finalError){retry.outcome='failed';retry.failure_code=diagnostics.safeCode((finalError as any)?.code);persist();throw finalError;}
+  }
+ };
+}
+// Keep raw responses/corrections behind any in-flight lease confirmation without
+// modifying the frozen generator. A failed confirmation never reaches validation/save.
+function heartbeatGatedProvider(provider:Provider,confirm:()=>Promise<void>){
+ return {withSession:(fn:any)=>provider.withSession((session:any)=>fn({run:async(...args:any[])=>{
+  await confirm();
+  try{const raw=await session.run(...args);await confirm();return raw;}
+  catch(error){if((error as any)?.code==='invalid_json')await confirm();throw error;}
+ }}))};
 }
 export function bridgeOrigin(value:string,allowLoopback=false){
  let u:URL;try{u=new URL(value);}catch{throw failure('invalid_bridge_origin');}
@@ -159,9 +186,10 @@ export async function runBridge(options:Options):Promise<BridgeResult>{
     validateBridgeJob(job,implementation,sourceHash,operatorBatchId);
     await onDemandSnapshot(job.board,job.path,root,source);
     journal={status:'running',origin,job,calls,decisions,call_in_flight:false};persist();
-    const beat=async()=>{const result=await post('heartbeat',{id:job!.id,leaseToken:job!.leaseToken,revision:job!.revision,implementationHash:implementation,sourceHash});if(result.ok!==true)throw failure('bridge_response_invalid');};
+    const heartbeatBody={id:job!.id,leaseToken:job!.leaseToken,revision:job!.revision,implementationHash:implementation,sourceHash};
+    const beat=confirmedLeaseHeartbeat(async()=>{const result=await post('heartbeat',heartbeatBody);if(result.ok!==true)throw failure('bridge_response_invalid');},job!.id,diagnostics,persist,()=>stopped||idleFailed||heartbeatFailed);
     diagnosticPhase='lease_heartbeat';await beat();
-    timer=setInterval(()=>{if(heartbeatWork)return;heartbeatWork=beat().catch(error=>{heartbeatFailed=true;provider?.close();diagnostics.recordFailure(error,'lease_heartbeat',job?.id);persist();}).finally(()=>{heartbeatWork=undefined;});},heartbeatMs);
+    timer=setInterval(()=>{if(heartbeatWork||heartbeatFailed||stopped||idleFailed)return;heartbeatWork=beat().catch(error=>{heartbeatFailed=true;provider?.close();diagnostics.recordFailure(error,'lease_heartbeat',job?.id);persist();}).finally(()=>{heartbeatWork=undefined;});},heartbeatMs);
     while(!stopped&&!heartbeatFailed){
      const next=await resolveFrontier(job.board,job.path,root,source,implementation);
      if(next.status!=='missing')break;
@@ -172,12 +200,12 @@ export async function runBridge(options:Options):Promise<BridgeResult>{
      provider??=(options.providerFactory??(onMetric=>createAiv2SessionProvider({concurrency:1,onMetric})))(m=>metricReceiver(m));
      metricReceiver=m=>{metrics.push(m);diagnostics.recordMetric(job!.id,m);persist();};
      diagnosticPhase='provider';
-     const artifact=await generateOne(next.input,implementation,provider,()=>{
+     const artifact=await generateOne(next.input,implementation,heartbeatGatedProvider(provider,async()=>{await heartbeatWork;if(stopped||idleFailed||heartbeatFailed)throw failure('uncertain_provider_outcome');}),()=>{
       if(stopped||heartbeatFailed)throw failure('uncertain_provider_outcome');
       if(calls>=maxCalls||jobCalls>=job!.maxProviderCalls)throw failure('budget_exhausted');
       calls++;jobCalls++;journal={...journal,calls,decisions,call_in_flight:true};persist();
      },call=>provenance.push(call));
-     if(stopped||heartbeatFailed)throw failure('uncertain_provider_outcome');
+     await heartbeatWork;if(stopped||idleFailed||heartbeatFailed)throw failure('uncertain_provider_outcome');
      diagnosticPhase='decision_validation';saveDecision(artifact,metrics,root,provenance);
      loadDecision(next.input,implementation,root);
      decisions++;jobDecisions++;journal={...journal,calls,decisions,call_in_flight:false};persist();
@@ -310,7 +338,8 @@ async function runParallelBridge(options:Options):Promise<BridgeResult>{
     const sourceHash=hash((await loadRoot(job.board,source)).upstream);
     validateBridgeJob(job,implementation,sourceHash,operatorBatchId);
     await onDemandSnapshot(job.board,job.path,root,source);
-    const beat=async()=>{const result=await post('heartbeat',{id:job.id,leaseToken:job.leaseToken,revision:job.revision,implementationHash:implementation,sourceHash});if(result.ok!==true)throw failure('bridge_response_invalid');};
+    const heartbeatBody={id:job.id,leaseToken:job.leaseToken,revision:job.revision,implementationHash:implementation,sourceHash};
+    const beat=confirmedLeaseHeartbeat(async()=>{const result=await post('heartbeat',heartbeatBody);if(result.ok!==true)throw failure('bridge_response_invalid');},job.id,diagnostics,persist,()=>halted||lane.heartbeatFailed);
     lane.phase='lease_heartbeat';await beat();
     lane.heartbeat=setInterval(()=>{
      if(lane.heartbeatWork||halted)return;
@@ -328,12 +357,12 @@ async function runParallelBridge(options:Options):Promise<BridgeResult>{
      lane.receive=metric=>{metrics.push(metric);diagnostics.recordMetric(job.id,metric);persist();};
      lane.phase='provider';
      lane.provider??=(options.providerFactory??(onMetric=>createAiv2SessionProvider({concurrency:1,onMetric})))(metric=>lane.receive?.(metric));
-     const artifact=await generateOne(next.input,implementation,lane.provider,()=>{
+     const artifact=await generateOne(next.input,implementation,heartbeatGatedProvider(lane.provider,async()=>{await lane.heartbeatWork;if(halted||lane.heartbeatFailed)throw failure('uncertain_provider_outcome');}),()=>{
       if(halted||lane.heartbeatFailed)throw failure('uncertain_provider_outcome');
       if(calls>=maxCalls||entry.calls>=job.maxProviderCalls)throw failure('budget_exhausted');
       calls++;entry.calls++;entry.call_in_flight=true;persist();
      },call=>provenance.push(call));
-     if(halted||lane.heartbeatFailed)throw failure('uncertain_provider_outcome');
+     await lane.heartbeatWork;if(halted||lane.heartbeatFailed)throw failure('uncertain_provider_outcome');
      lane.phase='decision_validation';saveDecision(artifact,metrics,root,provenance);loadDecision(next.input,implementation,root);
      decisions++;entry.decisions++;entry.call_in_flight=false;persist();
     }
