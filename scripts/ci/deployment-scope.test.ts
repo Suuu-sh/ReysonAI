@@ -821,3 +821,34 @@ test('an unavailable exact production baseline stays fail-closed after fetch fai
   assert.equal(plan.data_release, false);assert.equal(plan.import_preflop, false);
   assert.match(plan.reason, /could not be proven/);
 });
+
+test('operator schema fingerprints and exact deployment gate do not publish strategy data', async t => {
+ const root=repository(t),base=commit(root,baseFiles());
+ const head=commit(root,{'apps/backend/migrations/0015_aiv2_operator_batches.sql':'CREATE TABLE IF NOT EXISTS operator_fixture(id TEXT PRIMARY KEY);'});
+ assert.deepEqual(changedGroups(fingerprintsAtCommit(root,base),fingerprintsAtCommit(root,head)),['operator_schema']);
+ const options={repoRoot:root,eventName:'push',ref:'refs/heads/main',sha:head,repository:'Suuu-sh/ReysonAI',runId:'200',fetcher:successFetcher(workflowRun({head_sha:base}))};
+ const plan=await classifyEvent(options);
+ for(const key of ['lineage_known','release_safe','verify_backend','data_release','apply_operator_schema'])assert.equal(plan[key],true,key);
+ for(const key of ['apply_ondemand_schema','import_preflop','publish_postflop','import_mw3','deploy_api','deploy_frontend'])assert.equal(plan[key],false,key);
+ for(const overrides of [{runAttempt:'2'},{fetcher:async()=>{throw Error('unavailable');}},{eventName:'pull_request',event:{pull_request:{base:{sha:base}}}}]){
+  const blocked=await classifyEvent({...options,...overrides});assert.equal(blocked.release_safe,false);assert.equal(blocked.apply_operator_schema,false);
+ }
+ const workflow=readFileSync(new URL('../../.github/workflows/deploy-worker.yml',import.meta.url),'utf8');
+ assert.match(workflow,/apply_operator_schema: \$\{\{ steps.scope.outputs.apply_operator_schema \}\}/);
+ assert.match(workflow,/apply_operator_schema: \$\{\{ needs.scope.outputs.apply_operator_schema \}\}/);
+ assert.match(workflow,/name: Ensure exact AIv2 operator batch schema and require D1 readback\n        if: needs.verify.outputs.apply_operator_schema == 'true'[\s\S]*?run: node scripts\/ensure-aiv2-operator-schema.ts/);
+ assert.ok(workflow.indexOf('name: Ensure exact AIv2 operator batch schema')<workflow.indexOf('name: Deploy ranked API before enabling the client'));
+ assert.match(workflow,/node --experimental-strip-types --test tests\/aiv2-ondemand.test.ts tests\/aiv2-operator-schema.test.ts/);
+ assert.match(workflow,/node --experimental-strip-types --test --test-concurrency=1 tests\/aiv2-postflop-ondemand-bridge.test.ts tests\/aiv2-postflop-operator-batch.test.ts/);
+});
+
+test('executed operator schema write never becomes a benign readiness-failure lineage', async t => {
+ const root=repository(t),base=commit(root,baseFiles());
+ const previous=workflowRun({id:99,head_sha:base}),failed=workflowRun({id:100,head_sha:base,conclusion:'failure'});
+ for(const conclusion of ['skipped','success']){
+  const steps=readinessFailureSteps();steps.push({name:'Ensure exact AIv2 operator batch schema and require D1 readback',status:'completed',conclusion});
+  const fetcher=jobsFetcher({runs:[failed,previous],jobs:{100:[{name:'Classify reviewed code and data inputs',status:'completed',conclusion:'success'},{name:'Verify reviewed preflop snapshot',status:'completed',conclusion:'success'},{name:'Deploy authoritative ranked API, compatible client and reviewed preflop data',status:'completed',conclusion:'failure',steps}],99:[{name:'Deploy authoritative ranked API, compatible client and reviewed preflop data',status:'completed',conclusion:'success'}]}});
+  if(conclusion==='skipped')assert.equal((await latestDeploymentRun({repository:'Suuu-sh/ReysonAI',currentRunId:'200',fetcher})).id,99);
+  else await assert.rejects(latestDeploymentRun({repository:'Suuu-sh/ReysonAI',currentRunId:'200',fetcher}),/partial/);
+ }
+});

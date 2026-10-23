@@ -7,6 +7,7 @@ import { bridgeOrigin, runBridge, validateBridgeJob } from '../scripts/aiv2-post
 import { CONFIG, DEFAULT_STORE, implementationHash, loadRoot } from '../scripts/aiv2-postflop-ondemand-store.ts';
 import { postflopHash as hash } from '../scripts/aiv2-postflop-ondemand.ts';
 
+const source=resolve(DEFAULT_STORE,'source-snapshot');
 const rootId='16c8f7aeff99422bc108d09a22ac8d6988d5df1329d6da1353a7a05854c20c71';
 const childId='7504f6574de683065bbc208f0cd783282617a7068f1ee55db7bca702684769c1';
 const child=JSON.parse(readFileSync(resolve(DEFAULT_STORE,'decisions',childId+'.json'),'utf8'));
@@ -16,7 +17,7 @@ async function fixture(path:string[]=['check'],full=false){
  writeFileSync(bearerFile,'test-only-not-a-production-secret-123456789',{mode:0o600});mkdirSync(join(root,'decisions'));
  copyFileSync(resolve(DEFAULT_STORE,'decisions',rootId+'.json'),join(root,'decisions',rootId+'.json'));
  if(full)copyFileSync(resolve(DEFAULT_STORE,'decisions',childId+'.json'),join(root,'decisions',childId+'.json'));
- const implementation=implementationHash(),sourceHash=hash((await loadRoot('As7d2c')).upstream),revision=hash({method:CONFIG.method,version:CONFIG.version,implementationHash:implementation,sourceHash});
+ const implementation=implementationHash(),sourceHash=hash((await loadRoot('As7d2c',source)).upstream),revision=hash({method:CONFIG.method,version:CONFIG.version,implementationHash:implementation,sourceHash});
  const maxDecisions=1+path.filter(token=>! /^[AKQJT98765432][shdc]$/.test(token)).length;
  const job={id:hash({revision,board:'As7d2c',path}),board:'As7d2c',path,revision,implementationHash:implementation,sourceHash,leaseToken:'test-only-lease-token-1234567890123456789',maxProviderCalls:2*maxDecisions,maxDecisions};
  const requests:Array<{action:string;body:any}>=[];
@@ -25,7 +26,7 @@ async function fixture(path:string[]=['check'],full=false){
   const action=String(url).split('/').at(-1)!,body=JSON.parse(init.body);requests.push({action,body});
   return Response.json(action==='claim'?{job}:{ok:true});
  };
- const options={origin:'http://127.0.0.1:43210',allowLoopback:true,bearerFile,root,runtimePath:join(root,'runtime'),fetch:fetcher as typeof fetch};
+ const options={source,origin:'http://127.0.0.1:43210',allowLoopback:true,bearerFile,root,runtimePath:join(root,'runtime'),fetch:fetcher as typeof fetch};
  return {root,job,requests,options,cleanup:()=>rmSync(root,{recursive:true,force:true})};
 }
 test('outbound origin allowlist cannot leak owner bearer through URLs or redirects',()=>{
@@ -163,7 +164,7 @@ async function parallelFixture(){
  const jobs=boards.map(board=>({...f.job,board,id:hash({revision:f.job.revision,board,path:[]})}));
  const outputs=new Map<string,{raw:any;metric:any}>();
  for(const job of jobs){
-  const input=await loadRoot(job.board),id=decisionIdentity(input,implementationHash());
+  const input=await loadRoot(job.board,source),id=decisionIdentity(input,implementationHash());
   outputs.set(id,{raw:{decision_id:id,range_summary:{text:'Test only AI estimate.',text_ja:'テスト専用のAI推定。'},groups:[{combos:Object.keys(input.ranges[input.actor]).filter(combo=>input.ranges[input.actor][combo]>0),mix:Object.fromEntries(postflopLegalActions(input).map(a=>[a.action,a.action==='check'?100:0])),text:'Test only check policy.',text_ja:'テスト専用チェック方針。'}]},metric:{...child.attestation[0],threadId:'test-'+job.board,turnId:'turn-'+job.board}});
  }
  let claims=0;

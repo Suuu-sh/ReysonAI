@@ -54,7 +54,43 @@ async function handle(request:Request,env:OnDemandEnv):Promise<Response>{
   if(url.protocol!=='https:'||request.method!=='POST'||request.headers.has('origin'))return json({error:'bridge_forbidden'},403);
   const auth=request.headers.get('authorization')??'';
   if(!auth.startsWith('Bearer ')||await digest(auth.slice(7))!==await digest(env.AIV2_ONDEMAND_BRIDGE_SECRET))return json({error:'bridge_forbidden'},403);
-  const input=await body(request,path==='owner/complete'?1_800_000:4096);
+  const input=await body(request,path==='owner/complete'?1_800_000:path==='owner/operator-batch'?32768:4096);
+  if(path==='owner/operator-status'){
+   if(Object.keys(input).some(k=>k!=='ids')||!Array.isArray(input.ids)||input.ids.length<1||input.ids.length>16||input.ids.some((id:unknown)=>!isHash(id)))throw Error('invalid_request');
+   const jobs:Array<ReturnType<typeof publicJob>>=[];for(const id of input.ids){const [job]=await query('SELECT * FROM aiv2_ondemand_jobs WHERE id=? AND revision=?',id,revision);if(job)jobs.push(publicJob(job));}
+   return json({revision,implementationHash,sourceHash,jobs});
+  }
+  if(path==='owner/operator-batch'){
+   if(Object.keys(input).some(k=>!['batchId','revision','implementationHash','sourceHash','requests','maxCalls','maxDecisions','operatorUserId'].includes(k))||typeof input.operatorUserId!=='string'||input.operatorUserId.length<1||input.operatorUserId.length>200||!isHash(input.batchId)||!Array.isArray(input.requests)||input.requests.length<1||input.requests.length>16||!Number.isInteger(input.maxCalls)||input.maxCalls<1||input.maxCalls>100||!Number.isInteger(input.maxDecisions)||input.maxDecisions<1||input.maxDecisions>100)throw Error('invalid_request');
+   if(input.revision!==revision||input.implementationHash!==implementationHash||input.sourceHash!==sourceHash)return json({error:'pin_mismatch'},409);
+   const requests=input.requests.map((item:any)=>{if(!item||typeof item!=='object'||Array.isArray(item)||Object.keys(item).some(k=>!['board','path'].includes(k)))throw Error('invalid_request');return normalizeBrokerRequest(item.board,item.path);});
+   const keys=requests.map((item:any)=>JSON.stringify(item));
+   const reservedCalls=requests.map((item:any)=>2*(1+item.path.filter((v:string)=>! /^[AKQJT98765432][shdc]$/.test(v)).length));
+   const totalCalls=reservedCalls.reduce((sum:number,n:number)=>sum+n,0);
+   if(new Set(keys).size!==keys.length||totalCalls>input.maxCalls||totalCalls/2>input.maxDecisions)throw Error('invalid_request');
+   // Explicit existing account, authorized by the private owner bearer; never invent users.
+   const creator=input.operatorUserId;
+   const [operator]=await query<{id:string}>('SELECT id FROM account_users WHERE id=?',creator);
+   if(!operator)return json({error:'operator_account_not_found'},404);
+   const manifest=await digest(JSON.stringify({revision,operatorUserId:creator,requests,maxCalls:input.maxCalls,maxDecisions:input.maxDecisions}));
+   await query('INSERT OR IGNORE INTO aiv2_ondemand_operator_batches(id,manifest_hash,operator_user_id,created_at) VALUES (?,?,?,?)',input.batchId,manifest,creator,now);
+   const [batch]=await query<{manifest_hash:string}>('SELECT manifest_hash FROM aiv2_ondemand_operator_batches WHERE id=?',input.batchId);
+   if(batch?.manifest_hash!==manifest)return json({error:'batch_conflict'},409);
+   const jobs:Array<ReturnType<typeof publicJob>>=[];
+   for(let i=0;i<requests.length;i++){
+    const normalized=requests[i],id=await digest(JSON.stringify({revision,...normalized}));
+    // Each atomic insert still shares the public global outstanding/daily reservation bounds.
+    // Batch total is structurally bounded above; terminal canonical jobs are never requeued.
+    await query(`INSERT OR IGNORE INTO aiv2_ondemand_jobs(id,revision,board,path_json,creator,day,status,created_at,reserved_calls,operator_batch_id)
+ SELECT ?,?,?,?,?,?,'queued',?,?,? WHERE
+ (SELECT COUNT(*) FROM aiv2_ondemand_jobs WHERE status IN ('queued','running'))<? AND
+ (SELECT COALESCE(SUM(reserved_calls),0) FROM aiv2_ondemand_jobs WHERE day=?)+?<=? AND
+ (SELECT COALESCE(SUM(reserved_calls),0) FROM aiv2_ondemand_jobs WHERE operator_batch_id=?)+?<=?`,id,revision,normalized.board,JSON.stringify(normalized.path),creator,day,now,reservedCalls[i],input.batchId,LIMITS.outstandingGlobal,day,reservedCalls[i],LIMITS.reservedCallsPerDay,input.batchId,reservedCalls[i],input.maxCalls);
+    const [job]=await query('SELECT * FROM aiv2_ondemand_jobs WHERE id=? AND revision=?',id,revision);if(job)jobs.push(publicJob(job));
+   }
+   const exhausted=jobs.length!==requests.length;
+   return json({batchId:input.batchId,revision,implementationHash,sourceHash,maxCalls:input.maxCalls,maxDecisions:input.maxDecisions,jobs,...(exhausted?{error:'generation_budget_exhausted'}:{})},exhausted?429:202);
+  }
   if(path==='owner/heartbeat'){
    if(Object.keys(input).some(k=>!['id','leaseToken','revision','implementationHash','sourceHash'].includes(k))||((input.id!==undefined||input.leaseToken!==undefined)&&(!isHash(input.id)||typeof input.leaseToken!=='string'||input.leaseToken.length>200)))throw Error('invalid_request');
    if((input.revision!==undefined&&input.revision!==revision)||(input.implementationHash!==undefined&&input.implementationHash!==implementationHash)||(input.sourceHash!==undefined&&input.sourceHash!==sourceHash))return json({error:'pin_mismatch'},409);
@@ -127,7 +163,7 @@ async function handle(request:Request,env:OnDemandEnv):Promise<Response>{
  // One atomic INSERT SELECT enforces both per-account and global provider budgets.
  await query(`INSERT OR IGNORE INTO aiv2_ondemand_jobs(id,revision,board,path_json,creator,day,status,created_at,reserved_calls)
  SELECT ?,?,?,?,?,?,'queued',?,? WHERE
- (SELECT COUNT(*) FROM aiv2_ondemand_jobs WHERE creator=? AND day=?)<? AND
+ (SELECT COUNT(*) FROM aiv2_ondemand_jobs WHERE creator=? AND day=? AND operator_batch_id IS NULL)<? AND
  (SELECT COUNT(*) FROM aiv2_ondemand_jobs WHERE status IN ('queued','running'))<? AND
  (SELECT COALESCE(SUM(reserved_calls),0) FROM aiv2_ondemand_jobs WHERE day=?)+?<=?`,id,revision,normalized.board,pathJSON,user,day,now,reservedCalls,user,day,LIMITS.jobsPerUserDay,LIMITS.outstandingGlobal,day,reservedCalls,LIMITS.reservedCallsPerDay);
  const [job]=await query('SELECT * FROM aiv2_ondemand_jobs WHERE id=?',id);
