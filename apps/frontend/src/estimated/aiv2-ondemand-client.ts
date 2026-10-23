@@ -45,9 +45,11 @@ export function savedSceneModel(result:SavedResult,cap:Capability,board:string,p
  if(!s||s.provenance?.method!==ONDEMAND_METHOD||s.provenance.verified!==true||s.provenance.independent_gto_approved!==false||s.board.join("")!==state.board||s.hero!==state.actor||s.street!==state.street||s.cells.length!==169||!s.range_reason.en?.trim()||!s.range_reason.ja?.trim())throw Error("Invalid saved scene");
  const legal=browseActions(state).map(a=>a.token);
  if(s.actions.length!==legal.length||legal.some(a=>!s.actions.includes(a)))throw Error("Invalid saved actions");
- const mixValid=(mix:Record<string,number>)=>Object.keys(mix).length===legal.length&&legal.every(a=>Number.isFinite(mix[a])&&mix[a]>=0&&mix[a]<=100)&&Math.abs(legal.reduce((n,a)=>n+mix[a],0)-100)<1e-6;
+ // Reach-weighted aggregation can produce 100.00000000000004. Allow only
+ // floating-point noise in aggregate bounds, never in saved physical-combo bounds.
+ const mixValid=(mix:Record<string,number>,boundTolerance=0)=>Object.keys(mix).length===legal.length&&legal.every(a=>Number.isFinite(mix[a])&&mix[a]>=-boundTolerance&&mix[a]<=100+boundTolerance)&&Math.abs(legal.reduce((n,a)=>n+mix[a],0)-100)<1e-6;
  return {actions:s.actions,aggregates:new Map(s.cells.map((c,i)=>{
-  if(c.hand!==hands[i]||!Number.isFinite(c.reach_weight)||c.reach_weight<0||c.unreachable!==(c.reach_weight===0)||!c.reason.en?.trim()||!c.reason.ja?.trim()||!c.unreachable&&!mixValid(c.mix)||!Array.isArray(c.overrides))throw Error("Invalid saved cell");
+  if(c.hand!==hands[i]||!Number.isFinite(c.reach_weight)||c.reach_weight<0||c.unreachable!==(c.reach_weight===0)||!c.reason.en?.trim()||!c.reason.ja?.trim()||!c.unreachable&&!mixValid(c.mix,1e-9)||!Array.isArray(c.overrides))throw Error("Invalid saved cell");
   for(const row of c.overrides)if(!row.reason.en?.trim()||!row.reason.ja?.trim()||!mixValid(row.mix)||!Number.isFinite(row.reach_weight)||row.reach_weight<=0)throw Error("Invalid saved combo");
   return [c.hand,{hand:c.hand,comboCount:c.reach_weight,unreachable:c.unreachable,actions:c.unreachable?{}:Object.fromEntries(legal.map(a=>[a,c.mix[a]/100])),combos:c.overrides.map(row=>({cards:row.combo,mix:Object.fromEntries(legal.map(a=>[a,row.mix[a]/100])),reachWeight:row.reach_weight}))}];
  }))};
