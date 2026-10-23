@@ -362,3 +362,78 @@ test('parallel diagnostics retain original cause across sibling and failure-uplo
   assert.ok(journal.entries.every((e:any)=>e.status==='failure_pending'&&e.call_in_flight));assert.equal(f.requests.some(r=>r.action==='complete'),false);assert.equal(existsSync(join(f.root,'worker.lock')),false);
  }finally{f.cleanup();}
 });
+
+test('lease confirmation retries one transport reject with identical capability and records only confirmed success, never a provider replay',async()=>{
+ for(const concurrency of [1,2]){
+  const f=await fixture(['check'],true);let beats=0,providers=0;const bodies:string[]=[];
+  try{
+   const fetcher=async(url:any,init:any)=>{
+    if(String(url).endsWith('/heartbeat')&&JSON.parse(init.body).id){bodies.push(init.body);beats++;if(beats===1)throw Error('secret-network-cause');const journal=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8'));assert.equal(journal.diagnostics.first_failure,null);assert.equal(journal.diagnostics.lease_heartbeat_transport_retries[0].outcome,'pending');}
+    return f.options.fetch(url,init);
+   };
+   const result=await runBridge({...f.options,concurrency,fetch:fetcher as typeof fetch,providerFactory:()=>{providers++;throw Error('no provider on cache');}});
+   const journal=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8')),d=journal.diagnostics;
+   assert.equal(result.jobs,1);assert.equal(result.calls,0);assert.equal(providers,0);assert.equal(beats,2);assert.equal(bodies[0],bodies[1]);assert.equal(d.first_failure,null);assert.equal(d.lease_heartbeat_transport_retries.length,1);assert.equal(d.lease_heartbeat_transport_retries[0].outcome,'confirmed');assert.equal(d.lease_heartbeat_transport_retries[0].attempt,1);assert.equal(f.requests.filter(r=>r.action==='claim').length,1);assert.equal(f.requests.filter(r=>r.action==='complete').length,1);assert.equal(JSON.stringify(d).includes('secret'),false);assert.equal(JSON.stringify(d).includes('leaseToken'),false);
+  }finally{f.cleanup();}
+ }
+});
+test('lease confirmation second transport reject or definitive rejection fails closed without a third attempt',async()=>{
+ for(const concurrency of [1,2])for(const rejection of ['transport',409,429,500,'json','not_ok']){
+  const f=await fixture(['check'],true);let beats=0,providers=0;
+  try{
+   const fetcher=async(url:any,init:any)=>{
+    if(String(url).endsWith('/heartbeat')&&JSON.parse(init.body).id){beats++;if(rejection==='transport')throw Error('secret-network-cause');if(rejection==='json')return new Response('invalid JSON');if(rejection==='not_ok')return Response.json({ok:false});return Response.json({error:'secret'}, {status:typeof rejection==='number'?rejection:500});}
+    return f.options.fetch(url,init);
+   };
+   await assert.rejects(runBridge({...f.options,concurrency,fetch:fetcher as typeof fetch,providerFactory:()=>{providers++;throw Error('no provider on failed lease');}}));
+   const d=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8')).diagnostics;assert.equal(beats,rejection==='transport'?2:1);assert.equal(providers,0);assert.equal(f.requests.some(r=>r.action==='complete'),false);assert.equal(d.lease_heartbeat_transport_retries.length,rejection==='transport'?1:0);if(rejection==='transport'){assert.equal(d.first_failure.code,'bridge_transport_uncertain');assert.equal(d.lease_heartbeat_transport_retries[0].outcome,'failed');assert.equal(d.lease_heartbeat_transport_retries[0].failure_code,'bridge_transport_uncertain');}assert.equal(JSON.stringify(d).includes('secret'),false);
+  }finally{f.cleanup();}
+ }
+});
+test('lease confirmation budget is once per job: recovered heartbeat followed by another reject stops without provider retry',async()=>{
+ for(const concurrency of [1,2]){
+  const f=await fixture();let beats=0,calls=0;
+  try{
+   const fetcher=async(url:any,init:any)=>{
+    if(String(url).endsWith('/heartbeat')&&JSON.parse(init.body).id){beats++;if(beats===2||beats>=4)throw Error('secret-network-cause');}
+    return f.options.fetch(url,init);
+   };
+   await assert.rejects(runBridge({...f.options,concurrency,heartbeatMs:2,fetch:fetcher as typeof fetch,providerFactory:onMetric=>({withSession:async(fn:any)=>fn({run:async()=>{calls++;await wait(30);onMetric(child.attestation[0]);return structuredClone(child.artifact.source_response);}}),close:()=>{},drain:async()=>{}})}));
+   const journal=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8')),d=journal.diagnostics;assert.equal(beats,4);assert.equal(calls,1);assert.equal(d.lease_heartbeat_transport_retries.length,1);assert.equal(d.lease_heartbeat_transport_retries[0].outcome,'confirmed');assert.equal(d.first_failure.code,'bridge_transport_uncertain');assert.equal(f.requests.some(r=>r.action==='complete'),false);assert.equal(existsSync(join(f.root,'decisions',childId+'.json')),false);
+  }finally{f.cleanup();}
+ }
+});
+test('lease confirmation never retries claim, complete or failure-upload transport errors',async()=>{
+ for(const action of ['claim','complete','fail']){
+  const f=await fixture(['check'],true);let rejected=0;
+  try{
+   const fetcher=async(url:any,init:any)=>{
+    const current=String(url).split('/').at(-1);if(action==='fail'&&current==='heartbeat'&&JSON.parse(init.body).id)return Response.json({error:'lease_conflict'},{status:409});
+    if(current===action){rejected++;throw Error('secret-transport');}return f.options.fetch(url,init);
+   };
+   await assert.rejects(runBridge({...f.options,fetch:fetcher as typeof fetch,providerFactory:()=>{throw Error('no provider');}}));assert.equal(rejected,1);const d=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8')).diagnostics;assert.equal(d.lease_heartbeat_transport_retries.length,0);
+  }finally{f.cleanup();}
+ }
+});
+
+test('lease confirmation pending fences response save and correction dispatch until confirmed, failed confirmation never saves',async()=>{
+ for(const concurrency of [1,2])for(const outcome of ['confirmed','failed','correction']){
+  const f=await fixture();let beats=0,calls=0,returned=false,release:()=>void=()=>{},pending:()=>void=()=>{};
+  const confirmation=new Promise<void>(r=>{release=r;}),started=new Promise<void>(r=>{pending=r;});
+  try{
+   const fetcher=async(url:any,init:any)=>{
+    if(String(url).endsWith('/heartbeat')&&JSON.parse(init.body).id){beats++;if(beats===2)throw Error('first heartbeat transport reject');if(beats===3){pending();await confirmation;if(outcome==='failed')throw Error('second heartbeat transport reject');}}
+    return f.options.fetch(url,init);
+   };
+   const work=runBridge({...f.options,concurrency,heartbeatMs:2,fetch:fetcher as typeof fetch,providerFactory:onMetric=>({withSession:async(fn:any)=>fn({run:async()=>{
+    calls++;if(calls===1){await started;returned=true;if(outcome==='correction')throw Object.assign(Error('invalid JSON'),{code:'invalid_json'});onMetric(child.attestation[0]);return structuredClone(child.artifact.source_response);}
+    assert.equal(outcome,'correction');const d=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8')).diagnostics;assert.equal(d.lease_heartbeat_transport_retries[0].outcome,'confirmed');throw Object.assign(Error('no third call'),{code:'quota_or_rate_limit'});
+   }}),close:()=>{},drain:async()=>{}})});
+   // Attach rejection handling before yielding; no unhandled rejection after release.
+   const settled=work.then(result=>({result,error:null as any}),error=>({result:null,error}));
+   await started;await wait(10);assert.equal(returned,true);assert.equal(calls,1);assert.equal(existsSync(join(f.root,'decisions',childId+'.json')),false);assert.equal(f.requests.some(r=>r.action==='complete'),false);const before=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8'));assert.equal(before.decisions,0);assert.equal(before.diagnostics.lease_heartbeat_transport_retries[0].outcome,'pending');
+   release();const result=await settled;
+   if(outcome==='confirmed'){assert.equal(result.error,null);assert.equal(result.result!.decisions,1);assert.equal(calls,1);assert.equal(existsSync(join(f.root,'decisions',childId+'.json')),true);}else{assert.ok(result.error);assert.equal(calls,outcome==='correction'?2:1);assert.equal(existsSync(join(f.root,'decisions',childId+'.json')),false);assert.equal(f.requests.some(r=>r.action==='complete'),false);}
+  }finally{release();f.cleanup();}
+ }
+});

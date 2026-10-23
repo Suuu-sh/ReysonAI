@@ -1,0 +1,3384 @@
+{
+  "schema_version": 1,
+  "approved": false,
+  "production_strategy_approved": false,
+  "gto_verified": false,
+  "reviewer_task": "/root/parallel_safety_review",
+  "runtime_model": "not-exposed",
+  "scope": "Independent numerical/provenance and sampled factual consistency of newly generated staged scoped-ramp artifacts only. No strategy-quality, provider capacity or deployment approval.",
+  "waves": [
+    {
+      "requested_concurrency": 2,
+      "status": "artifact_review_complete",
+      "artifacts": [
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:02:21.615684+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/b596a90bb950f311caa13ddc871685c0f256535ea7207818050b303f05a30df7.json",
+            "decision_id": "b596a90bb950f311caa13ddc871685c0f256535ea7207818050b303f05a30df7",
+            "raw_file_sha256": "a2007c565da8d847d9cf854ddd1e61f1a178301a8fd102f398395518dcc6709c",
+            "board": "AsAhAc",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:00:28.367Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 800,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 580,
+                "reach_weight": 453.3,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "quads_weight": 46.5
+              },
+              "BB": {
+                "positive_combos": 800,
+                "reach_weight": 414.4,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "quads_weight": 25.6
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet33": 0.0,
+              "bet125": 0.0,
+              "bet66": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168d7-b653-7b50-b8ca-2ef4dd503dc1",
+            "turn_id": "01a168d7-b6da-7683-9b1e-c0407ba58f5d",
+            "elapsed_ms": 98678,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "ae6d824c679e9e91b36b068bbea72fa3bd2f2d23ad68effb5d11a177fce0b59b",
+                "schema_hash": "1bddcea9bb0b4cf893bc76b226e0daecb7875687ee76d893552401e5cd703731"
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN KK/QQ positive and BB KK/QQ absent verified from exact saved root ranges.",
+              "Remaining ace quads positive in both ranges; pocket pairs yield full houses on triple-ace board.",
+              "Rainbow flop has no current flush; no future continuation/EV/equilibrium result inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:04:11.289406+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/dd44f52bd026aa0e719e0580e728571afbcc559995b500d9e27e14c698b49bf7.json",
+            "decision_id": "dd44f52bd026aa0e719e0580e728571afbcc559995b500d9e27e14c698b49bf7",
+            "raw_file_sha256": "2eabcfff61e5e09607adf2e706e6988fef0ec54f861ff6547214d8dc28ed58ca",
+            "board": "AsAhAd",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:00:39.557Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 800,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 580,
+                "reach_weight": 453.3,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "quads_weight": 46.5
+              },
+              "BB": {
+                "positive_combos": 800,
+                "reach_weight": 414.4,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "quads_weight": 25.6
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet125": 0.0,
+              "bet66": 0.0,
+              "check": 100.0,
+              "bet33": 0.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168d7-b4f1-7443-81ce-4e2de605c387",
+            "turn_id": "01a168d7-b5b9-7731-9f94-b649113e1665",
+            "elapsed_ms": 110252,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "e308c6fe1de585459575facbf617ebd13759eb5db33a6b46f0fbbc7d622f66d4",
+                "schema_hash": "d2c178da82554c255d2a0743fc84509553cc7d84a69abfd02e8f8ceb0c866be6"
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN KK/QQ positive and BB KK/QQ absent verified from exact saved root ranges.",
+              "Remaining ace quads positive in both ranges; pocket pairs yield full houses on triple-ace board.",
+              "Rainbow flop has no current flush; no future continuation/EV/equilibrium result inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        }
+      ],
+      "saved_reader_root_and_provenance_validation": "Both exact new roots passed trusted saved reader against frozen source snapshot and current implementation.",
+      "parent_reported_runtime": {
+        "calls": 2,
+        "decisions": 2,
+        "repairs": 0,
+        "first_failure": null,
+        "owner_exited": true,
+        "worker_lock_absent": true,
+        "entries_complete": 2,
+        "scope_complete_journal": false,
+        "scope_flag_limitation": "Decision budget reached before another empty claim; journal does not itself prove scope complete. Parent separately checked exact two batch jobs complete.",
+        "private_overlap_evidence": ".local/operator-ramp-2-overlap.json",
+        "independently_reexecuted": false
+      },
+      "approved": false,
+      "production_strategy_approved": false,
+      "gto_verified": false
+    },
+    {
+      "requested_concurrency": 4,
+      "status": "artifact_review_complete",
+      "artifacts": [
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:09:22.055004+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/9e4f1320ddb0ded897501a0c0d2184368a7442dbc3fa19c8d5bd163d7667ce49.json",
+            "decision_id": "9e4f1320ddb0ded897501a0c0d2184368a7442dbc3fa19c8d5bd163d7667ce49",
+            "raw_file_sha256": "d68ce0f7ed631bf9c7e242dab1cadaf7004b4b7280d58a1ea00c1006d80f11aa",
+            "board": "AsAhKs",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:07:35.750Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 800,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 586,
+                "reach_weight": 466.95,
+                "KK_weight": 3,
+                "QQ_weight": 6,
+                "AA_AK_KK_weight": 10,
+                "ace_holding_weight": 92.0
+              },
+              "BB": {
+                "positive_combos": 800,
+                "reach_weight": 417.85,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_AK_KK_weight": 0,
+                "ace_holding_weight": 51.2
+              }
+            },
+            "reach_weighted_action_percent": {
+              "check": 100.0,
+              "bet66": 0.0,
+              "bet33": 0.0,
+              "bet125": 0.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168de-42ff-7b31-be09-cce5769936ce",
+            "turn_id": "01a168de-438d-77b1-962c-763cd2c4cdf5",
+            "elapsed_ms": 96767,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "f24c590a17c9b6c729c5a6e25031d5b3135d5312791e42811bc95449f6d0c58c",
+                "schema_hash": "2d4ad88caf1701c28e356e7732d099c1f46a2fd1c4e33689e10ad52b2015b563"
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK/KK positive and BB AA/AK/KK absent verified from exact saved root ranges.",
+              "On AAK, AA yields quads; AK and KK yield full houses. No full house or quads reachable in BB range.",
+              "Both two-tone and rainbow variants checked; no current flush exists with at most two board cards of one suit. No unavailable continuation/EV/equilibrium inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:09:22.078605+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/4794f912e2a8f1984b5a3459b554b53d43113c6444395103e97d8bf8ff6713a9.json",
+            "decision_id": "4794f912e2a8f1984b5a3459b554b53d43113c6444395103e97d8bf8ff6713a9",
+            "raw_file_sha256": "24169b7ac02cee5c7bcd674e775300f1e3e81a382b5cdbcaf85b53cc0feef8a4",
+            "board": "AsAhKh",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:07:09.980Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 800,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 586,
+                "reach_weight": 466.95,
+                "KK_weight": 3,
+                "QQ_weight": 6,
+                "AA_AK_KK_weight": 10,
+                "ace_holding_weight": 92.0
+              },
+              "BB": {
+                "positive_combos": 800,
+                "reach_weight": 417.85,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_AK_KK_weight": 0,
+                "ace_holding_weight": 51.2
+              }
+            },
+            "reach_weighted_action_percent": {
+              "check": 100.0,
+              "bet66": 0.0,
+              "bet33": 0.0,
+              "bet125": 0.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168de-420a-7400-86e1-74d6c531c7b7",
+            "turn_id": "01a168de-428d-79f2-873f-ef00d202a93e",
+            "elapsed_ms": 71203,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "1075d52819ad2b4b54a193037cb9c8626067b736a30df41a4be75005729b49c9",
+                "schema_hash": "f6ecab974cc2d780ed7d2fba5fd107a87db56901e2be8dd86cb0ba91046114fd"
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK/KK positive and BB AA/AK/KK absent verified from exact saved root ranges.",
+              "On AAK, AA yields quads; AK and KK yield full houses. No full house or quads reachable in BB range.",
+              "Both two-tone and rainbow variants checked; no current flush exists with at most two board cards of one suit. No unavailable continuation/EV/equilibrium inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:09:22.103996+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/f4c98de22eb5c7ead504085ded0c465e4d048c77d7bed86437c9de9ddc3ee012.json",
+            "decision_id": "f4c98de22eb5c7ead504085ded0c465e4d048c77d7bed86437c9de9ddc3ee012",
+            "raw_file_sha256": "af3701cabff3f67d8a51899bf29c348ff598be38a5677e02aacafe52c461c4c3",
+            "board": "AsAhKd",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:07:32.825Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 800,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 586,
+                "reach_weight": 466.95,
+                "KK_weight": 3,
+                "QQ_weight": 6,
+                "AA_AK_KK_weight": 10,
+                "ace_holding_weight": 92.0
+              },
+              "BB": {
+                "positive_combos": 800,
+                "reach_weight": 417.85,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_AK_KK_weight": 0,
+                "ace_holding_weight": 51.2
+              }
+            },
+            "reach_weighted_action_percent": {
+              "check": 100.0,
+              "bet66": 0.0,
+              "bet33": 0.0,
+              "bet125": 0.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168de-4791-7951-ab4d-29a2380834fa",
+            "turn_id": "01a168de-4809-78c1-9255-e279ef7f24d8",
+            "elapsed_ms": 92639,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "0a8f6e4a4bd22c40b2979a98ce15e5a150c74c7d29ddd25d3511813665ddaa88",
+                "schema_hash": "193fe59ae282213f6134497f46a60288886dd92b3a35d51db81ee180186e1b98"
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK/KK positive and BB AA/AK/KK absent verified from exact saved root ranges.",
+              "On AAK, AA yields quads; AK and KK yield full houses. No full house or quads reachable in BB range.",
+              "Both two-tone and rainbow variants checked; no current flush exists with at most two board cards of one suit. No unavailable continuation/EV/equilibrium inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:09:22.128498+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/436712969a1d9670862b7fc090634f189c9b7e9cf231ec36b88c0f98581a47d7.json",
+            "decision_id": "436712969a1d9670862b7fc090634f189c9b7e9cf231ec36b88c0f98581a47d7",
+            "raw_file_sha256": "7572caaef018c7c7282adabd410fb50f1e8f690524c29cfb3ff9014fe215f787",
+            "board": "AsAhKc",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:07:32.512Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 800,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 586,
+                "reach_weight": 466.95,
+                "KK_weight": 3,
+                "QQ_weight": 6,
+                "AA_AK_KK_weight": 10,
+                "ace_holding_weight": 92.0
+              },
+              "BB": {
+                "positive_combos": 800,
+                "reach_weight": 417.85,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_AK_KK_weight": 0,
+                "ace_holding_weight": 51.2
+              }
+            },
+            "reach_weighted_action_percent": {
+              "check": 100.0,
+              "bet66": 0.0,
+              "bet33": 0.0,
+              "bet125": 0.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168de-42d2-75e0-80da-c4804ef6ee3c",
+            "turn_id": "01a168de-4375-7ea3-92d2-035a7772a56d",
+            "elapsed_ms": 93554,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "30290ef0e37b3fcfc05bc82b4a68f40e17ec1c192608b54a2e5b612dadc040ef",
+                "schema_hash": "f19817d710d044d42489dc8532f9045691dbcdce84d9750e0f5b2e031c0861a8"
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK/KK positive and BB AA/AK/KK absent verified from exact saved root ranges.",
+              "On AAK, AA yields quads; AK and KK yield full houses. No full house or quads reachable in BB range.",
+              "Both two-tone and rainbow variants checked; no current flush exists with at most two board cards of one suit. No unavailable continuation/EV/equilibrium inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        }
+      ],
+      "live_overlap_not_independently_reexecuted": true,
+      "saved_reader_root_and_provenance_validation": "Each of the four exact new roots passed saved reader against frozen source snapshot and current implementation.",
+      "parent_reported_runtime": {
+        "calls": 4,
+        "decisions": 4,
+        "repairs": 0,
+        "first_failure": null,
+        "owner_exited": true,
+        "worker_lock_absent": true,
+        "entries_complete": 4,
+        "private_overlap_evidence": ".local/operator-ramp-4-overlap.json",
+        "browser_completed_board_rows": 4,
+        "independently_reexecuted": false
+      }
+    },
+    {
+      "requested_concurrency": 8,
+      "status": "artifact_review_complete",
+      "artifacts": [
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:30:23.833261+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/899c417e2fff703cbe83909b6ab48f7041adc934be750ea3da14f763996dd677.json",
+            "decision_id": "899c417e2fff703cbe83909b6ab48f7041adc934be750ea3da14f763996dd677",
+            "raw_file_sha256": "b65cb3ee186ab17b3c63963c99eba23fcc672b9d13a4a4e4f2c4e68525040664",
+            "board": "AsAhQs",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:16:20.921Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 810,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 598,
+                "reach_weight": 472.45,
+                "KK_weight": 6,
+                "QQ_weight": 3,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "AQs_weight": 2,
+                "AQo_weight": 4,
+                "AJs_weight": 2,
+                "AJo_weight": 6,
+                "JJ_weight": 6
+              },
+              "BB": {
+                "positive_combos": 810,
+                "reach_weight": 421.45,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "AQs_weight": 0.2,
+                "AQo_weight": 0.6,
+                "AJs_weight": 0.6,
+                "AJo_weight": 3.0,
+                "JJ_weight": 0.6000000000000001
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet33": 0.0,
+              "check": 100.0,
+              "bet125": 0.0,
+              "bet66": 0.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168e6-1715-7ef0-81c6-412e6f660237",
+            "turn_id": "01a168e6-17a7-7ce3-a7c2-4b5006524fdf",
+            "elapsed_ms": 108863,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "9ef8925cf519e01a94b0f775704143d140838370e6a039be2faf7ba51f94f321",
+                "schema_hash": "8b89e9d2bcca55ac0019b6c572a4a333237a91256a90d7a144f00c48bcc61744"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168e6-1715-7ef0-81c6-412e6f660237",
+                "turnId": "01a168e6-17a7-7ce3-a7c2-4b5006524fdf",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 108863
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; Q variants have BTN QQ exclusively and greater AQ weighted reach. J variants have greater BTN AJ/JJ weighted reach.",
+              "Both players retain reachable AQ or AJ full houses and Ax trips as applicable; AA yields quads exclusively in BTN.",
+              "Heart draws exist on two-heart variants; diamond backdoor possibilities on AsAhJd. No current flush exists. No subsequent policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:30:23.860409+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/489623e7a1e56dc49bad87c837b8197b7830060582ba6df909ef0545d4303431.json",
+            "decision_id": "489623e7a1e56dc49bad87c837b8197b7830060582ba6df909ef0545d4303431",
+            "raw_file_sha256": "ca9c532a2ea339aeda0a29a1b037d99ecccac3525ef20edbf830d0394f207df9",
+            "board": "AsAhQh",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:16:00.156Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 810,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 598,
+                "reach_weight": 472.45,
+                "KK_weight": 6,
+                "QQ_weight": 3,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "AQs_weight": 2,
+                "AQo_weight": 4,
+                "AJs_weight": 2,
+                "AJo_weight": 6,
+                "JJ_weight": 6
+              },
+              "BB": {
+                "positive_combos": 810,
+                "reach_weight": 421.45,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "AQs_weight": 0.2,
+                "AQo_weight": 0.6,
+                "AJs_weight": 0.6,
+                "AJo_weight": 3.0,
+                "JJ_weight": 0.6000000000000001
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet33": 0.0,
+              "check": 100.0,
+              "bet125": 0.0,
+              "bet66": 0.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168e6-1788-7a81-bc3f-658e5ff8b9cf",
+            "turn_id": "01a168e6-1804-7d31-b229-8b28b5076b25",
+            "elapsed_ms": 87983,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "d1cab31f63865d5b219e1ab44a514deb5bfa16b12cac610658e5535a3837aa66",
+                "schema_hash": "6b1a5a52efa96c5a37e742686a4402427aacd379826559e9874b87f8357f53e3"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168e6-1788-7a81-bc3f-658e5ff8b9cf",
+                "turnId": "01a168e6-1804-7d31-b229-8b28b5076b25",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 87983
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; Q variants have BTN QQ exclusively and greater AQ weighted reach. J variants have greater BTN AJ/JJ weighted reach.",
+              "Both players retain reachable AQ or AJ full houses and Ax trips as applicable; AA yields quads exclusively in BTN.",
+              "Heart draws exist on two-heart variants; diamond backdoor possibilities on AsAhJd. No current flush exists. No subsequent policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:30:23.886689+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/006d2be96bbfc031faa33b63a2204bf2208b5c15f007e0794136d75e2a7e65b9.json",
+            "decision_id": "006d2be96bbfc031faa33b63a2204bf2208b5c15f007e0794136d75e2a7e65b9",
+            "raw_file_sha256": "63b6071daec7e6caff1f1918fac710ec2b84842dcfe6d639bec5f7137e51bfac",
+            "board": "AsAhQd",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:15:46.675Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 810,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 598,
+                "reach_weight": 472.45,
+                "KK_weight": 6,
+                "QQ_weight": 3,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "AQs_weight": 1,
+                "AQo_weight": 5,
+                "AJs_weight": 2,
+                "AJo_weight": 6,
+                "JJ_weight": 6
+              },
+              "BB": {
+                "positive_combos": 810,
+                "reach_weight": 421.5,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "AQs_weight": 0.1,
+                "AQo_weight": 0.75,
+                "AJs_weight": 0.6,
+                "AJo_weight": 3.0,
+                "JJ_weight": 0.6000000000000001
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet33": 0.0,
+              "check": 100.0,
+              "bet125": 0.0,
+              "bet66": 0.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168e6-1b56-7af3-b6d1-e6aa6cf207b5",
+            "turn_id": "01a168e6-1bd2-7ce1-b1e1-9f5257158362",
+            "elapsed_ms": 73534,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "45ffe56f64d304253a320e68de9a30d08810deaca349277d4d6bb93e20d0a4b9",
+                "schema_hash": "d449845c3ef3646b1712355fa525850b17ea3c0f2d806905ab2b7a5e14ea4116"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168e6-1b56-7af3-b6d1-e6aa6cf207b5",
+                "turnId": "01a168e6-1bd2-7ce1-b1e1-9f5257158362",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 73534
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; Q variants have BTN QQ exclusively and greater AQ weighted reach. J variants have greater BTN AJ/JJ weighted reach.",
+              "Both players retain reachable AQ or AJ full houses and Ax trips as applicable; AA yields quads exclusively in BTN.",
+              "Heart draws exist on two-heart variants; diamond backdoor possibilities on AsAhJd. No current flush exists. No subsequent policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:30:23.913273+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/b93e7cabdc20532f068b4ef7049dfc567ed31303c12ecd95ae367b98625425d7.json",
+            "decision_id": "b93e7cabdc20532f068b4ef7049dfc567ed31303c12ecd95ae367b98625425d7",
+            "raw_file_sha256": "a5127c79bfbd7c7dce985181c9fb89eece615ef93d2082000d9c47dada3f0fd0",
+            "board": "AsAhQc",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:17:27.454Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 810,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 598,
+                "reach_weight": 472.45,
+                "KK_weight": 6,
+                "QQ_weight": 3,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "AQs_weight": 1,
+                "AQo_weight": 5,
+                "AJs_weight": 2,
+                "AJo_weight": 6,
+                "JJ_weight": 6
+              },
+              "BB": {
+                "positive_combos": 810,
+                "reach_weight": 421.5,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "AQs_weight": 0.1,
+                "AQo_weight": 0.75,
+                "AJs_weight": 0.6,
+                "AJo_weight": 3.0,
+                "JJ_weight": 0.6000000000000001
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet33": 0.0,
+              "check": 100.0,
+              "bet125": 0.0,
+              "bet66": 0.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 2,
+            "repairs": 1,
+            "thread_id": "01a168e6-15f8-7451-8a52-33f05732e73d",
+            "turn_id": "01a168e6-1679-7b43-8723-d2940c9f8cf6",
+            "elapsed_ms": 92968,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "f81104eeb0211098b3895cc6b740360127f27d57496865136a9789358fd75dc0",
+                "schema_hash": "c562e301c0ae0bcb36ed7cf8532adb32e8bdd34e5ecdfc56966e8bf43b5652d7"
+              },
+              {
+                "session_turn": 2,
+                "validation_issue": "Incomplete positive physical-combo coverage",
+                "effective_prompt_hash": "fd603caa81b156c08299df2463be471212ee1289861573165f26a0f79cf6f87b",
+                "schema_hash": "c562e301c0ae0bcb36ed7cf8532adb32e8bdd34e5ecdfc56966e8bf43b5652d7"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168e6-15f8-7451-8a52-33f05732e73d",
+                "turnId": "01a168e6-1679-7b43-8723-d2940c9f8cf6",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 92968
+              },
+              {
+                "sessionTurn": 2,
+                "threadId": "01a168e6-15f8-7451-8a52-33f05732e73d",
+                "turnId": "01a168e7-80fb-7890-a451-06e59139aaa1",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 82690
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; Q variants have BTN QQ exclusively and greater AQ weighted reach. J variants have greater BTN AJ/JJ weighted reach.",
+              "Both players retain reachable AQ or AJ full houses and Ax trips as applicable; AA yields quads exclusively in BTN.",
+              "Heart draws exist on two-heart variants; diamond backdoor possibilities on AsAhJd. No current flush exists. No subsequent policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:30:23.939635+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/52ad68ebe3ff82d6aee9280e115b2eb1037e9f0f4d7ae4b748d43ef7fbbb23d7.json",
+            "decision_id": "52ad68ebe3ff82d6aee9280e115b2eb1037e9f0f4d7ae4b748d43ef7fbbb23d7",
+            "raw_file_sha256": "aaa2d2ae52a2ac83549740456d0389b6dfa2a463c62e26da01f0dce82d162b37",
+            "board": "AsAhJs",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:15:57.333Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 810,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 600,
+                "reach_weight": 475.2,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "AQs_weight": 2,
+                "AQo_weight": 6,
+                "AJs_weight": 2,
+                "AJo_weight": 4,
+                "JJ_weight": 3
+              },
+              "BB": {
+                "positive_combos": 810,
+                "reach_weight": 420.0,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "AQs_weight": 0.2,
+                "AQo_weight": 0.8999999999999999,
+                "AJs_weight": 0.6,
+                "AJo_weight": 2.0,
+                "JJ_weight": 0.30000000000000004
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet33": 0.0,
+              "check": 100.0,
+              "bet125": 0.0,
+              "bet66": 0.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168e6-1732-7010-b49e-08e5d841b0ad",
+            "turn_id": "01a168e6-17c7-7d73-b98a-64811a1dc54d",
+            "elapsed_ms": 85252,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "7be03f51f53bed607473ea728460680ee6005290c5c2851bcb3e7e3558c7c2f9",
+                "schema_hash": "3a9db814c0d5d70d80ed4bbbf3b4aa2f50acbee027b3677e2fdf41883f4572a8"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168e6-1732-7010-b49e-08e5d841b0ad",
+                "turnId": "01a168e6-17c7-7d73-b98a-64811a1dc54d",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 85252
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; Q variants have BTN QQ exclusively and greater AQ weighted reach. J variants have greater BTN AJ/JJ weighted reach.",
+              "Both players retain reachable AQ or AJ full houses and Ax trips as applicable; AA yields quads exclusively in BTN.",
+              "Heart draws exist on two-heart variants; diamond backdoor possibilities on AsAhJd. No current flush exists. No subsequent policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:30:23.966277+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/2ac5c1b8430ddbc637dcb42f0b8fbeb19be8865d6f9b6c1e429dce53148e767e.json",
+            "decision_id": "2ac5c1b8430ddbc637dcb42f0b8fbeb19be8865d6f9b6c1e429dce53148e767e",
+            "raw_file_sha256": "fcf3360d412bd58b59f50565cbbb46379a2dc3a91319f8dde88effa046cacd19",
+            "board": "AsAhJh",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:16:09.858Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 810,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 600,
+                "reach_weight": 475.2,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "AQs_weight": 2,
+                "AQo_weight": 6,
+                "AJs_weight": 2,
+                "AJo_weight": 4,
+                "JJ_weight": 3
+              },
+              "BB": {
+                "positive_combos": 810,
+                "reach_weight": 420.0,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "AQs_weight": 0.2,
+                "AQo_weight": 0.8999999999999999,
+                "AJs_weight": 0.6,
+                "AJo_weight": 2.0,
+                "JJ_weight": 0.30000000000000004
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet33": 0.0,
+              "check": 100.0,
+              "bet125": 0.0,
+              "bet66": 0.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168e6-1a40-71c0-b00c-af6828dc725e",
+            "turn_id": "01a168e6-1aca-78d0-bbf3-2b7485a02ae6",
+            "elapsed_ms": 96993,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "d262f3ca4024e10eec68d03a77b85067adc0a463c86041b77189961e63c7834d",
+                "schema_hash": "f623e19291b536375189e504e4ad0ba839bd0ef7f597a7f400917041280b6546"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168e6-1a40-71c0-b00c-af6828dc725e",
+                "turnId": "01a168e6-1aca-78d0-bbf3-2b7485a02ae6",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 96993
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; Q variants have BTN QQ exclusively and greater AQ weighted reach. J variants have greater BTN AJ/JJ weighted reach.",
+              "Both players retain reachable AQ or AJ full houses and Ax trips as applicable; AA yields quads exclusively in BTN.",
+              "Heart draws exist on two-heart variants; diamond backdoor possibilities on AsAhJd. No current flush exists. No subsequent policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:30:23.991789+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/b4198cb436a091aa48451b29b6212d742a086f312767144b1e17917005c38a98.json",
+            "decision_id": "b4198cb436a091aa48451b29b6212d742a086f312767144b1e17917005c38a98",
+            "raw_file_sha256": "9614a749bd7e64d1003ee691adfd27774f96b0ba75ed33d54c69067f74af4644",
+            "board": "AsAhJd",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:15:56.354Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 810,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 600,
+                "reach_weight": 475.2,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "AQs_weight": 2,
+                "AQo_weight": 6,
+                "AJs_weight": 1,
+                "AJo_weight": 5,
+                "JJ_weight": 3
+              },
+              "BB": {
+                "positive_combos": 810,
+                "reach_weight": 420.2,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "AQs_weight": 0.2,
+                "AQo_weight": 0.8999999999999999,
+                "AJs_weight": 0.3,
+                "AJo_weight": 2.5,
+                "JJ_weight": 0.30000000000000004
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet33": 0.0,
+              "check": 100.0,
+              "bet125": 0.0,
+              "bet66": 0.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168e6-183e-7e23-8558-eb3e23a1a262",
+            "turn_id": "01a168e6-18c3-7db3-9545-2a7ab050d6cf",
+            "elapsed_ms": 84007,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "fb4e503c3b2c792fcdc6f1981f09a5c5b00a7efc08e1eb4c66fd7c7a8e9b1114",
+                "schema_hash": "9ed609c8641405cecaf65c5258c25d5de06e15b8debb8d4e2d20feb1bb2c74b5"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168e6-183e-7e23-8558-eb3e23a1a262",
+                "turnId": "01a168e6-18c3-7db3-9545-2a7ab050d6cf",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 84007
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; Q variants have BTN QQ exclusively and greater AQ weighted reach. J variants have greater BTN AJ/JJ weighted reach.",
+              "Both players retain reachable AQ or AJ full houses and Ax trips as applicable; AA yields quads exclusively in BTN.",
+              "Heart draws exist on two-heart variants; diamond backdoor possibilities on AsAhJd. No current flush exists. No subsequent policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:30:24.017482+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/5e86c90abc1e09148618fd3a86370bcd4591af61e0dba9e65717179cd551b08b.json",
+            "decision_id": "5e86c90abc1e09148618fd3a86370bcd4591af61e0dba9e65717179cd551b08b",
+            "raw_file_sha256": "d8ec0d20f8cac8e9a8f405d162ad936f8e01dd36ec966f7b1871849279a25664",
+            "board": "AsAhJc",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:16:12.301Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 810,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 600,
+                "reach_weight": 475.2,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "AQs_weight": 2,
+                "AQo_weight": 6,
+                "AJs_weight": 1,
+                "AJo_weight": 5,
+                "JJ_weight": 3
+              },
+              "BB": {
+                "positive_combos": 810,
+                "reach_weight": 420.2,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "AQs_weight": 0.2,
+                "AQo_weight": 0.8999999999999999,
+                "AJs_weight": 0.3,
+                "AJo_weight": 2.5,
+                "JJ_weight": 0.30000000000000004
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet33": 0.0,
+              "check": 100.0,
+              "bet125": 0.0,
+              "bet66": 0.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168e6-1dd7-7253-920f-8938760c7120",
+            "turn_id": "01a168e6-1e63-7c71-ab97-c4bbc52b751d",
+            "elapsed_ms": 98508,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "24877c4f5043a2f550ea9b9fe7336f0368dceff228bbe44481d90c5700d35139",
+                "schema_hash": "6320640b664c9dc461a212cac588291634bf6d08578eee277b18a106e39dbb7e"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168e6-1dd7-7253-920f-8938760c7120",
+                "turnId": "01a168e6-1e63-7c71-ab97-c4bbc52b751d",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 98508
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; Q variants have BTN QQ exclusively and greater AQ weighted reach. J variants have greater BTN AJ/JJ weighted reach.",
+              "Both players retain reachable AQ or AJ full houses and Ax trips as applicable; AA yields quads exclusively in BTN.",
+              "Heart draws exist on two-heart variants; diamond backdoor possibilities on AsAhJd. No current flush exists. No subsequent policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        }
+      ],
+      "live_overlap_not_independently_reexecuted": true,
+      "saved_reader_root_and_provenance_validation": "All eight exact new roots passed saved reader against frozen source snapshot/current implementation; distinct8threads and9turns, repair on same lane/thread.",
+      "parent_reported_runtime": {
+        "calls": 9,
+        "decisions": 8,
+        "first_failure": null,
+        "owner_exited": true,
+        "worker_lock_absent": true,
+        "entries_complete": 8,
+        "independently_reexecuted": false
+      },
+      "repair_review": {
+        "board": "AsAhQc",
+        "repairs": 1,
+        "validation_issue": "Incomplete positive physical-combo coverage",
+        "numeric_only": true,
+        "same_thread_next_turn": true,
+        "corrected_prompt_hash_differs": true,
+        "schema_hash_unchanged": true,
+        "final_actor_coverage": 810
+      }
+    },
+    {
+      "requested_concurrency": 16,
+      "status": "artifact_review_complete",
+      "artifacts": [
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:38:12.740999+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/763a405b3c4fadbbd36dc0a3f685b7dde9c4d39645e13af157e302f69e29b59c.json",
+            "decision_id": "763a405b3c4fadbbd36dc0a3f685b7dde9c4d39645e13af157e302f69e29b59c",
+            "raw_file_sha256": "a36c01dead7b506b420a41e70214801d98b316591c315c930d7c2e087e35d3db",
+            "board": "AsAhTh",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:34:18.623Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 807,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 600,
+                "reach_weight": 475.55,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "ATs_weight": 2,
+                "ATo_weight": 4,
+                "TT_weight": 3
+              },
+              "BB": {
+                "positive_combos": 807,
+                "reach_weight": 417.9,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "ATs_weight": 1.0,
+                "ATo_weight": 3.0,
+                "TT_weight": 0.75
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet66": 0.0,
+              "bet125": 0.0,
+              "bet33": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168f6-a526-7c60-91b0-b61df3d835b8",
+            "turn_id": "01a168f6-a5e7-7572-9307-dffd0e117d82",
+            "elapsed_ms": 101651,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "f41ac196d70340af41a8968e6984e244614cac7e7c17d96595ecc2c23f58790a",
+                "schema_hash": "51bdd0cf3e83c3c1b475e3c61d6d4fe4dfe98047516bb2adc97ba7e6b5c22ff1"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168f6-a526-7c60-91b0-b61df3d835b8",
+                "turnId": "01a168f6-a5e7-7572-9307-dffd0e117d82",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 101651
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; KK/QQ absent in BB and present in BTN.",
+              "Both players have A-rank and rank-rank full houses on these AAT/AA9/AA8/AA7 boards; AA yields quads exclusively in BTN.",
+              "Two-tone variants permit corresponding flush draws; rainbow variants do not have current flush draws. No current flush on any flop. EN/JA uniformly choose check100; no subsequent action policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:38:12.770668+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/1ea42455858e13937401ae27c32062581f92a303ed563bc0618b33c8a7a0b43e.json",
+            "decision_id": "1ea42455858e13937401ae27c32062581f92a303ed563bc0618b33c8a7a0b43e",
+            "raw_file_sha256": "7b32d48c05b5b339d3a7d184835873f64cdc010d5156444439f0304b13eb78fd",
+            "board": "AsAh7h",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:34:10.942Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 804,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 608,
+                "reach_weight": 485.35,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "A7s_weight": 2,
+                "A7o_weight": 4,
+                "77_weight": 3
+              },
+              "BB": {
+                "positive_combos": 804,
+                "reach_weight": 420.4,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "A7s_weight": 1.7,
+                "A7o_weight": 2.8,
+                "77_weight": 2.4000000000000004
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet66": 0.0,
+              "bet125": 0.0,
+              "bet33": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168f6-a3c4-7871-ac84-b62f0c49cbb7",
+            "turn_id": "01a168f6-a4fe-7c82-94cb-96d751494e11",
+            "elapsed_ms": 94458,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "d466482f83c6fa1e881972df65464560e2a821567d0bb45632bd9b9aa083107e",
+                "schema_hash": "4dbc40b050f5cd260312c9f28a7e54623ead556aeb8628781082aaaace202bff"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168f6-a3c4-7871-ac84-b62f0c49cbb7",
+                "turnId": "01a168f6-a4fe-7c82-94cb-96d751494e11",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 94458
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; KK/QQ absent in BB and present in BTN.",
+              "Both players have A-rank and rank-rank full houses on these AAT/AA9/AA8/AA7 boards; AA yields quads exclusively in BTN.",
+              "Two-tone variants permit corresponding flush draws; rainbow variants do not have current flush draws. No current flush on any flop. EN/JA uniformly choose check100; no subsequent action policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:38:12.800812+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/28d7fda476d00cc5dddb85521ae0b434fb4c59354a246cbf0ffa30562345ca9e.json",
+            "decision_id": "28d7fda476d00cc5dddb85521ae0b434fb4c59354a246cbf0ffa30562345ca9e",
+            "raw_file_sha256": "5eb434b8ceb9419a9b3af09c1bc6c388c13d6e3e02c0a7dd6d5a36b3d4c1d9e0",
+            "board": "AsAhTc",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:33:59.747Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 807,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 600,
+                "reach_weight": 475.55,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "ATs_weight": 1,
+                "ATo_weight": 5,
+                "TT_weight": 3
+              },
+              "BB": {
+                "positive_combos": 807,
+                "reach_weight": 418.15,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "ATs_weight": 0.5,
+                "ATo_weight": 3.75,
+                "TT_weight": 0.75
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet66": 0.0,
+              "bet125": 0.0,
+              "bet33": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168f6-aa0f-7d00-bd88-eb2a796cba50",
+            "turn_id": "01a168f6-aada-7480-8e8b-e178e58a6aa8",
+            "elapsed_ms": 81585,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "c7028c910e75e8ce80a01e8753e013be8840dd60924a0e6ebb359de35e65c1f9",
+                "schema_hash": "8f251bd3dec8466f420d195e21a0acbee6765e937ec54e98d21b8ec1749c7767"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168f6-aa0f-7d00-bd88-eb2a796cba50",
+                "turnId": "01a168f6-aada-7480-8e8b-e178e58a6aa8",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 81585
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; KK/QQ absent in BB and present in BTN.",
+              "Both players have A-rank and rank-rank full houses on these AAT/AA9/AA8/AA7 boards; AA yields quads exclusively in BTN.",
+              "Two-tone variants permit corresponding flush draws; rainbow variants do not have current flush draws. No current flush on any flop. EN/JA uniformly choose check100; no subsequent action policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:38:12.830225+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/787df4a46837e5205848b76ff0f9526361f57053923977087168a0821e151304.json",
+            "decision_id": "787df4a46837e5205848b76ff0f9526361f57053923977087168a0821e151304",
+            "raw_file_sha256": "c34a65914bb73d5c71133c09559e9ff0d431625c30207a4e7585a268308ee68a",
+            "board": "AsAh8h",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:34:12.333Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 804,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 597,
+                "reach_weight": 480.45,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "A8s_weight": 2,
+                "A8o_weight": 4,
+                "88_weight": 3
+              },
+              "BB": {
+                "positive_combos": 804,
+                "reach_weight": 417.8,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "A8s_weight": 1.6,
+                "A8o_weight": 3.2,
+                "88_weight": 2.0999999999999996
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet66": 0.0,
+              "bet125": 0.0,
+              "bet33": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168f6-a312-7c23-a6b8-39557bff2f63",
+            "turn_id": "01a168f6-a473-7010-94df-68b15beb6a56",
+            "elapsed_ms": 95960,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "b411c7198dfdc5d0783248fc24dc230c5bd085cf52943798c3b89beb6143761a",
+                "schema_hash": "d9271176a822df160e89f4a81c0394f35faabd95567d2fd092f90cdbb6bad983"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168f6-a312-7c23-a6b8-39557bff2f63",
+                "turnId": "01a168f6-a473-7010-94df-68b15beb6a56",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 95960
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; KK/QQ absent in BB and present in BTN.",
+              "Both players have A-rank and rank-rank full houses on these AAT/AA9/AA8/AA7 boards; AA yields quads exclusively in BTN.",
+              "Two-tone variants permit corresponding flush draws; rainbow variants do not have current flush draws. No current flush on any flop. EN/JA uniformly choose check100; no subsequent action policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:38:12.859825+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/09d04c21a0ba6397a4405ca90bd40799d80035bdbe478757fe924c6ae4241a4d.json",
+            "decision_id": "09d04c21a0ba6397a4405ca90bd40799d80035bdbe478757fe924c6ae4241a4d",
+            "raw_file_sha256": "cdcbc7858ffd38d863fcb10a11a92a5a47d39822923643f3c25979d205625813",
+            "board": "AsAh9c",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:35:30.338Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 807,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 601,
+                "reach_weight": 476.0,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "A9s_weight": 1,
+                "A9o_weight": 5,
+                "99_weight": 3
+              },
+              "BB": {
+                "positive_combos": 807,
+                "reach_weight": 417.05,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "A9s_weight": 0.75,
+                "A9o_weight": 4.25,
+                "99_weight": 1.5
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet66": 0.0,
+              "bet125": 0.0,
+              "bet33": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 2,
+            "repairs": 1,
+            "thread_id": "01a168f6-ab74-71c0-9b58-d8bbbcb65f47",
+            "turn_id": "01a168f6-ac00-7850-a083-bb50105e097c",
+            "elapsed_ms": 93115,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "efe482d4d76b8608ae04e41367ba1ed4ecc8ff08742b9dfe0799e83bb40708b7",
+                "schema_hash": "b4ed034e3c76dd68e3d9bcbb3fae4d600069c8e940e659c5f8e638a55fbf4678"
+              },
+              {
+                "session_turn": 2,
+                "validation_issue": "Duplicate/blocked/zero-reach/unknown combo",
+                "effective_prompt_hash": "e5bddf704d72c573240311f42377d1677ea976d3ebec47762775013c008d7519",
+                "schema_hash": "b4ed034e3c76dd68e3d9bcbb3fae4d600069c8e940e659c5f8e638a55fbf4678"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168f6-ab74-71c0-9b58-d8bbbcb65f47",
+                "turnId": "01a168f6-ac00-7850-a083-bb50105e097c",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 93115
+              },
+              {
+                "sessionTurn": 2,
+                "threadId": "01a168f6-ab74-71c0-9b58-d8bbbcb65f47",
+                "turnId": "01a168f8-16d2-7920-863e-b6a48e331ab5",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 78640
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; KK/QQ absent in BB and present in BTN.",
+              "Both players have A-rank and rank-rank full houses on these AAT/AA9/AA8/AA7 boards; AA yields quads exclusively in BTN.",
+              "Two-tone variants permit corresponding flush draws; rainbow variants do not have current flush draws. No current flush on any flop. EN/JA uniformly choose check100; no subsequent action policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:38:12.889223+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/78d5e47a3079816c5ad9c2f74cd42ea67eb6dbe4271b7b96db35cc33e6ff2c4c.json",
+            "decision_id": "78d5e47a3079816c5ad9c2f74cd42ea67eb6dbe4271b7b96db35cc33e6ff2c4c",
+            "raw_file_sha256": "e692f426e6fc3ab9ffa78b964ef3dc0306ff1895cf152573ac2911b0c689fadb",
+            "board": "AsAh7s",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:33:52.189Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 804,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 608,
+                "reach_weight": 485.35,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "A7s_weight": 2,
+                "A7o_weight": 4,
+                "77_weight": 3
+              },
+              "BB": {
+                "positive_combos": 804,
+                "reach_weight": 420.4,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "A7s_weight": 1.7,
+                "A7o_weight": 2.8,
+                "77_weight": 2.4000000000000004
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet66": 0.0,
+              "bet125": 0.0,
+              "bet33": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168f6-a312-7251-a817-41540920609f",
+            "turn_id": "01a168f6-a472-7cd1-94c2-7db0aee656c8",
+            "elapsed_ms": 75839,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "ebe632a890385c21ec81c2c720f4813470b4611b0bb0608600605d5b6b3a278a",
+                "schema_hash": "4388a2a2cf9bb50d54d27edd229971e3bd81d7b54e0fcb991d6eab6f51cd7e44"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168f6-a312-7251-a817-41540920609f",
+                "turnId": "01a168f6-a472-7cd1-94c2-7db0aee656c8",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 75839
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; KK/QQ absent in BB and present in BTN.",
+              "Both players have A-rank and rank-rank full houses on these AAT/AA9/AA8/AA7 boards; AA yields quads exclusively in BTN.",
+              "Two-tone variants permit corresponding flush draws; rainbow variants do not have current flush draws. No current flush on any flop. EN/JA uniformly choose check100; no subsequent action policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:38:12.917885+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/63dd7492bbcd88c3cac8f5dc664b98946f4cb69db8a11bf7fca4280dc8793cb8.json",
+            "decision_id": "63dd7492bbcd88c3cac8f5dc664b98946f4cb69db8a11bf7fca4280dc8793cb8",
+            "raw_file_sha256": "98909864ea15e0d12356f425c383a142286636ae2bb1ef81639b18923dec4b92",
+            "board": "AsAhTd",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:34:05.699Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 807,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 600,
+                "reach_weight": 475.55,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "ATs_weight": 1,
+                "ATo_weight": 5,
+                "TT_weight": 3
+              },
+              "BB": {
+                "positive_combos": 807,
+                "reach_weight": 418.15,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "ATs_weight": 0.5,
+                "ATo_weight": 3.75,
+                "TT_weight": 0.75
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet66": 0.0,
+              "bet125": 0.0,
+              "bet33": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168f6-a7e2-76f2-bb05-9d0f84e7b14f",
+            "turn_id": "01a168f6-a8a3-7db1-9c92-a1257051f889",
+            "elapsed_ms": 88148,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "1f709151f182dbda7735880e7bdc3b4399efcfd8b342692d6902d786256edff0",
+                "schema_hash": "67fee5c3913e62ab390fb82ab16e865ef65dce823e936ecc041b333a75e0fb44"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168f6-a7e2-76f2-bb05-9d0f84e7b14f",
+                "turnId": "01a168f6-a8a3-7db1-9c92-a1257051f889",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 88148
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; KK/QQ absent in BB and present in BTN.",
+              "Both players have A-rank and rank-rank full houses on these AAT/AA9/AA8/AA7 boards; AA yields quads exclusively in BTN.",
+              "Two-tone variants permit corresponding flush draws; rainbow variants do not have current flush draws. No current flush on any flop. EN/JA uniformly choose check100; no subsequent action policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:38:12.945948+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/0cc56aab8027aa8e31afaf7419b64a9dcb6e97dfe35de901c18d0ff0ba85260a.json",
+            "decision_id": "0cc56aab8027aa8e31afaf7419b64a9dcb6e97dfe35de901c18d0ff0ba85260a",
+            "raw_file_sha256": "cd577fa0248b4d8a395af386e2831d5d17954bb944abb65a82b3dd73d461bdc2",
+            "board": "AsAh7c",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:34:15.681Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 804,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 608,
+                "reach_weight": 485.35,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "A7s_weight": 1,
+                "A7o_weight": 5,
+                "77_weight": 3
+              },
+              "BB": {
+                "positive_combos": 804,
+                "reach_weight": 420.25,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "A7s_weight": 0.85,
+                "A7o_weight": 3.5,
+                "77_weight": 2.4000000000000004
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet66": 0.0,
+              "bet125": 0.0,
+              "bet33": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168f6-ab23-71a3-8eac-234fa23c60d1",
+            "turn_id": "01a168f6-abb4-7d73-a7c5-75994f6a35d9",
+            "elapsed_ms": 97185,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "cd89e79b2a08fe16c350e9c2fbe296fdde6f909cf09c7d484efdd5c80852663e",
+                "schema_hash": "d553af9a45ea015ff3dd94e863c85b1443ea8c127d0d74264ffbdc2b30287505"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168f6-ab23-71a3-8eac-234fa23c60d1",
+                "turnId": "01a168f6-abb4-7d73-a7c5-75994f6a35d9",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 97185
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; KK/QQ absent in BB and present in BTN.",
+              "Both players have A-rank and rank-rank full houses on these AAT/AA9/AA8/AA7 boards; AA yields quads exclusively in BTN.",
+              "Two-tone variants permit corresponding flush draws; rainbow variants do not have current flush draws. No current flush on any flop. EN/JA uniformly choose check100; no subsequent action policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:38:12.977110+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/293f331e1db6af25446c70e62fde7a7428ae7a8f903a2b382f6d637c500a3a2d.json",
+            "decision_id": "293f331e1db6af25446c70e62fde7a7428ae7a8f903a2b382f6d637c500a3a2d",
+            "raw_file_sha256": "21d502d96c04dd81c5cec27365d214e312bb0690a21ded3393f4c1db0bbd7572",
+            "board": "AsAh8c",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:35:43.692Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 804,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 597,
+                "reach_weight": 480.45,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "A8s_weight": 1,
+                "A8o_weight": 5,
+                "88_weight": 3
+              },
+              "BB": {
+                "positive_combos": 804,
+                "reach_weight": 417.8,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "A8s_weight": 0.8,
+                "A8o_weight": 4.0,
+                "88_weight": 2.0999999999999996
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet66": 0.0,
+              "bet125": 0.0,
+              "bet33": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 2,
+            "repairs": 1,
+            "thread_id": "01a168f6-a364-7e53-a1dc-93b614572844",
+            "turn_id": "01a168f6-a474-7e42-a535-3bd461fb4317",
+            "elapsed_ms": 101008,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "5429d0a6080ad37f6a749ad7c3e4eba01dc4e6acd7b2feb48f534add456e30ad",
+                "schema_hash": "266d365b700305984c99633039f2803454ec9945058c58853038c9f1d7946d60"
+              },
+              {
+                "session_turn": 2,
+                "validation_issue": "Duplicate/blocked/zero-reach/unknown combo",
+                "effective_prompt_hash": "7e710df53bf9d99d3fe82517c7639ec41ae706842eec3b2b0f86f4ae7766ca4e",
+                "schema_hash": "266d365b700305984c99633039f2803454ec9945058c58853038c9f1d7946d60"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168f6-a364-7e53-a1dc-93b614572844",
+                "turnId": "01a168f6-a474-7e42-a535-3bd461fb4317",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 101008
+              },
+              {
+                "sessionTurn": 2,
+                "threadId": "01a168f6-a364-7e53-a1dc-93b614572844",
+                "turnId": "01a168f8-2d5c-7d43-9e41-ff18d9feeb98",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 86223
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; KK/QQ absent in BB and present in BTN.",
+              "Both players have A-rank and rank-rank full houses on these AAT/AA9/AA8/AA7 boards; AA yields quads exclusively in BTN.",
+              "Two-tone variants permit corresponding flush draws; rainbow variants do not have current flush draws. No current flush on any flop. EN/JA uniformly choose check100; no subsequent action policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:38:13.007123+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/c5dff9a8735d636a6731b8538845cd57c1729439f785ae85b9442ea26c3eb1b4.json",
+            "decision_id": "c5dff9a8735d636a6731b8538845cd57c1729439f785ae85b9442ea26c3eb1b4",
+            "raw_file_sha256": "5c66ee363af89519aac3b55b9443b324da751cd8b6756143ca9cc1a7f4bad718",
+            "board": "AsAh8s",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:35:40.202Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 804,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 597,
+                "reach_weight": 480.45,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "A8s_weight": 2,
+                "A8o_weight": 4,
+                "88_weight": 3
+              },
+              "BB": {
+                "positive_combos": 804,
+                "reach_weight": 417.8,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "A8s_weight": 1.6,
+                "A8o_weight": 3.2,
+                "88_weight": 2.0999999999999996
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet66": 0.0,
+              "bet125": 0.0,
+              "bet33": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 2,
+            "repairs": 1,
+            "thread_id": "01a168f6-a501-71d0-9bd4-1232b82dce66",
+            "turn_id": "01a168f6-a5cd-7c22-a65a-faca1a7345f0",
+            "elapsed_ms": 99034,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "e45a155ba3af34835ce2fc73bdc87d4125b2071171f58960caa50e1a3eb19265",
+                "schema_hash": "7590408379067af8ee5769aab4b3b741ded4c4c25ecd64525c9cf61c92e77597"
+              },
+              {
+                "session_turn": 2,
+                "validation_issue": "Duplicate/blocked/zero-reach/unknown combo",
+                "effective_prompt_hash": "ebf5dc937b5bebf947506a920e003a872f189f1262f6693142042a27a7f33fda",
+                "schema_hash": "7590408379067af8ee5769aab4b3b741ded4c4c25ecd64525c9cf61c92e77597"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168f6-a501-71d0-9bd4-1232b82dce66",
+                "turnId": "01a168f6-a5cd-7c22-a65a-faca1a7345f0",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 99034
+              },
+              {
+                "sessionTurn": 2,
+                "threadId": "01a168f6-a501-71d0-9bd4-1232b82dce66",
+                "turnId": "01a168f8-2756-7a10-841d-c7e8467e2f67",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 84283
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; KK/QQ absent in BB and present in BTN.",
+              "Both players have A-rank and rank-rank full houses on these AAT/AA9/AA8/AA7 boards; AA yields quads exclusively in BTN.",
+              "Two-tone variants permit corresponding flush draws; rainbow variants do not have current flush draws. No current flush on any flop. EN/JA uniformly choose check100; no subsequent action policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:38:13.036405+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/78c52b9435cd89f71a564995116a5ca05e51d9ba0a0a99ff33e7d09638c6a8d1.json",
+            "decision_id": "78c52b9435cd89f71a564995116a5ca05e51d9ba0a0a99ff33e7d09638c6a8d1",
+            "raw_file_sha256": "c41a93bec9fa75e879729734d070b24185c4c758885083671895cecc57368fd0",
+            "board": "AsAh9s",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:35:39.021Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 807,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 601,
+                "reach_weight": 476.0,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "A9s_weight": 2,
+                "A9o_weight": 4,
+                "99_weight": 3
+              },
+              "BB": {
+                "positive_combos": 807,
+                "reach_weight": 416.95,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "A9s_weight": 1.5,
+                "A9o_weight": 3.4,
+                "99_weight": 1.5
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet66": 0.0,
+              "bet125": 0.0,
+              "bet33": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 2,
+            "repairs": 1,
+            "thread_id": "01a168f6-adca-7962-8c50-53ed6c96e803",
+            "turn_id": "01a168f6-ae62-71c0-9529-4d4614af507e",
+            "elapsed_ms": 99172,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "da41d8885a1d41d980bd74fc12752fef70ce7c893b7f3fd586e03420488ec43a",
+                "schema_hash": "ebc54e25a9de9844c14302083bcd5ece9a6e5eb4c8d65b9cf33cb3e3c9555c24"
+              },
+              {
+                "session_turn": 2,
+                "validation_issue": "Duplicate/blocked/zero-reach/unknown combo",
+                "effective_prompt_hash": "2fe85e8877ab0261eab12f71a1ff1818d8dadff32475c350811140ca03d76a03",
+                "schema_hash": "ebc54e25a9de9844c14302083bcd5ece9a6e5eb4c8d65b9cf33cb3e3c9555c24"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168f6-adca-7962-8c50-53ed6c96e803",
+                "turnId": "01a168f6-ae62-71c0-9529-4d4614af507e",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 99172
+              },
+              {
+                "sessionTurn": 2,
+                "threadId": "01a168f6-adca-7962-8c50-53ed6c96e803",
+                "turnId": "01a168f8-30ff-7582-b0f9-b03e17b9b2c2",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 80622
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; KK/QQ absent in BB and present in BTN.",
+              "Both players have A-rank and rank-rank full houses on these AAT/AA9/AA8/AA7 boards; AA yields quads exclusively in BTN.",
+              "Two-tone variants permit corresponding flush draws; rainbow variants do not have current flush draws. No current flush on any flop. EN/JA uniformly choose check100; no subsequent action policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:38:13.065900+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/1e5f12c066008a244ce070a47eb1d8fdcd5eabd0befd6bdc0225908fb8f5305e.json",
+            "decision_id": "1e5f12c066008a244ce070a47eb1d8fdcd5eabd0befd6bdc0225908fb8f5305e",
+            "raw_file_sha256": "9bb9530b0f052b4e29a006e85241673bd63728f646d054dd0e466440ae4c804a",
+            "board": "AsAh9d",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:34:23.273Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 807,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 601,
+                "reach_weight": 476.0,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "A9s_weight": 1,
+                "A9o_weight": 5,
+                "99_weight": 3
+              },
+              "BB": {
+                "positive_combos": 807,
+                "reach_weight": 417.05,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "A9s_weight": 0.75,
+                "A9o_weight": 4.25,
+                "99_weight": 1.5
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet66": 0.0,
+              "bet125": 0.0,
+              "bet33": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168f6-a311-7353-ab40-7394776509a6",
+            "turn_id": "01a168f6-a474-74d1-902a-c937e4603de2",
+            "elapsed_ms": 106930,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "c9c19d2a8808a219c8197aaa2bd5ab25a254b89c48000320c8837b61b698f437",
+                "schema_hash": "28f9e20eb24d09601410ef514633b4149b8d98ac8843111d40e33623cad68338"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168f6-a311-7353-ab40-7394776509a6",
+                "turnId": "01a168f6-a474-74d1-902a-c937e4603de2",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 106930
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; KK/QQ absent in BB and present in BTN.",
+              "Both players have A-rank and rank-rank full houses on these AAT/AA9/AA8/AA7 boards; AA yields quads exclusively in BTN.",
+              "Two-tone variants permit corresponding flush draws; rainbow variants do not have current flush draws. No current flush on any flop. EN/JA uniformly choose check100; no subsequent action policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:38:13.095363+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/bdb145b5be987c53b714c81921799e3e1e43b2d6c0f60639a8393db13a8b45e3.json",
+            "decision_id": "bdb145b5be987c53b714c81921799e3e1e43b2d6c0f60639a8393db13a8b45e3",
+            "raw_file_sha256": "156779b491bb8fd0c435bd2a68cb914b2935851b7c82a9efff58929aab81d875",
+            "board": "AsAh8d",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:34:04.972Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 804,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 597,
+                "reach_weight": 480.45,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "A8s_weight": 1,
+                "A8o_weight": 5,
+                "88_weight": 3
+              },
+              "BB": {
+                "positive_combos": 804,
+                "reach_weight": 417.8,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "A8s_weight": 0.8,
+                "A8o_weight": 4.0,
+                "88_weight": 2.0999999999999996
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet66": 0.0,
+              "bet125": 0.0,
+              "bet33": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168f6-a620-75b1-ac71-e7a063ba1deb",
+            "turn_id": "01a168f6-a6a4-7aa0-9e3f-6108fe24b0b2",
+            "elapsed_ms": 87746,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "2dcc0ec72900b9724edc92f0009d3a7ec7c0df7991abea23f8e908fcd0414fc7",
+                "schema_hash": "77b5ca312c25a1733f9895bd7ffb1551e8d438798ffb0a2741fb1d7111c0641e"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168f6-a620-75b1-ac71-e7a063ba1deb",
+                "turnId": "01a168f6-a6a4-7aa0-9e3f-6108fe24b0b2",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 87746
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; KK/QQ absent in BB and present in BTN.",
+              "Both players have A-rank and rank-rank full houses on these AAT/AA9/AA8/AA7 boards; AA yields quads exclusively in BTN.",
+              "Two-tone variants permit corresponding flush draws; rainbow variants do not have current flush draws. No current flush on any flop. EN/JA uniformly choose check100; no subsequent action policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:38:13.124464+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/f47a24f42664bdafb00ee8fc1dbc929851bbb089d4953ab13c761e96ed31a569.json",
+            "decision_id": "f47a24f42664bdafb00ee8fc1dbc929851bbb089d4953ab13c761e96ed31a569",
+            "raw_file_sha256": "7e519e982486f0ab1092bd4299d44de14685ec92e409b103f902afa9efefd310",
+            "board": "AsAh9h",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:34:22.221Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 807,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 601,
+                "reach_weight": 476.0,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "A9s_weight": 2,
+                "A9o_weight": 4,
+                "99_weight": 3
+              },
+              "BB": {
+                "positive_combos": 807,
+                "reach_weight": 416.95,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "A9s_weight": 1.5,
+                "A9o_weight": 3.4,
+                "99_weight": 1.5
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet66": 0.0,
+              "bet125": 0.0,
+              "bet33": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168f6-a3c3-7fc0-bcd2-2ada2b589aa8",
+            "turn_id": "01a168f6-a4fe-71b0-a168-e6c903eecfb3",
+            "elapsed_ms": 105659,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "ff401bf02fd40628d43c211567f7fbeb4b4e24eaf3f29b3d4521cb087308baca",
+                "schema_hash": "2742b8478d58760bfa4deda358c0e87f8a7dd13eafc907ce0b763f78b1c64975"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168f6-a3c3-7fc0-bcd2-2ada2b589aa8",
+                "turnId": "01a168f6-a4fe-71b0-a168-e6c903eecfb3",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 105659
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; KK/QQ absent in BB and present in BTN.",
+              "Both players have A-rank and rank-rank full houses on these AAT/AA9/AA8/AA7 boards; AA yields quads exclusively in BTN.",
+              "Two-tone variants permit corresponding flush draws; rainbow variants do not have current flush draws. No current flush on any flop. EN/JA uniformly choose check100; no subsequent action policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:38:13.153406+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/b6170671f88aa34a832e1916cbbc5a6fb29f7f5a589b54afc8e6517d39593831.json",
+            "decision_id": "b6170671f88aa34a832e1916cbbc5a6fb29f7f5a589b54afc8e6517d39593831",
+            "raw_file_sha256": "896e52d836bebb59374169c5476969cdcfd45b5929fdb2be83b456e5cfc49ceb",
+            "board": "AsAhTs",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:34:09.933Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 807,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 600,
+                "reach_weight": 475.55,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "ATs_weight": 2,
+                "ATo_weight": 4,
+                "TT_weight": 3
+              },
+              "BB": {
+                "positive_combos": 807,
+                "reach_weight": 417.9,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "ATs_weight": 1.0,
+                "ATo_weight": 3.0,
+                "TT_weight": 0.75
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet66": 0.0,
+              "bet125": 0.0,
+              "bet33": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168f6-a8dd-7b21-9b85-668325c20bfd",
+            "turn_id": "01a168f6-a9a3-77b0-a01c-3a5352f8fca4",
+            "elapsed_ms": 92135,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "8944baa6ab3f62cec01e8b1200362a2168ef7ab2b659027c30f0f88405157251",
+                "schema_hash": "3e7fb6c5a9c31bc9161a26142c034ea9c67c6f1be7acdd99784b2438cbb42d18"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168f6-a8dd-7b21-9b85-668325c20bfd",
+                "turnId": "01a168f6-a9a3-77b0-a01c-3a5352f8fca4",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 92135
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; KK/QQ absent in BB and present in BTN.",
+              "Both players have A-rank and rank-rank full houses on these AAT/AA9/AA8/AA7 boards; AA yields quads exclusively in BTN.",
+              "Two-tone variants permit corresponding flush draws; rainbow variants do not have current flush draws. No current flush on any flop. EN/JA uniformly choose check100; no subsequent action policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        },
+        {
+          "approved": false,
+          "production_strategy_approved": false,
+          "gto_verified": false,
+          "reviewed_at_utc": "2026-10-23T13:38:13.182563+00:00",
+          "artifact": {
+            "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/fa3123b60f9edc4988ba7eb4bc917a8bd00e157d9943cd27941e33094ce795f4.json",
+            "decision_id": "fa3123b60f9edc4988ba7eb4bc917a8bd00e157d9943cd27941e33094ce795f4",
+            "raw_file_sha256": "7f2e4e3812d4db3710f13de4124e30595e93c7199015dead427470a0d9d1b958",
+            "board": "AsAh7d",
+            "actor": "BB",
+            "saved_at": "2026-10-23T13:34:21.733Z"
+          },
+          "checks": {
+            "both_ranges_1326_physical_combos": true,
+            "both_ranges_board_exclusions": true,
+            "exact_actor_coverage": true,
+            "group_exact_once_coverage": true,
+            "legal_complete_integer_mix_sum100": true,
+            "own_reach_preserved": true,
+            "group_expansion_bilingual_exact": true,
+            "169_hand_classes": true,
+            "all_hand_reach_weighted_aggregates": true
+          },
+          "numeric": {
+            "physical_combos": 1326,
+            "board_legal_combos": 1176,
+            "exact_actor_combos": 804,
+            "hand_classes": 169,
+            "reason_groups": 1,
+            "ranges": {
+              "BTN": {
+                "positive_combos": 608,
+                "reach_weight": 485.35,
+                "KK_weight": 6,
+                "QQ_weight": 6,
+                "AA_weight": 1,
+                "AKs_weight": 2,
+                "AKo_weight": 6,
+                "A7s_weight": 1,
+                "A7o_weight": 5,
+                "77_weight": 3
+              },
+              "BB": {
+                "positive_combos": 804,
+                "reach_weight": 420.25,
+                "KK_weight": 0,
+                "QQ_weight": 0,
+                "AA_weight": 0,
+                "AKs_weight": 0,
+                "AKo_weight": 0,
+                "A7s_weight": 0.85,
+                "A7o_weight": 3.5,
+                "77_weight": 2.4000000000000004
+              }
+            },
+            "reach_weighted_action_percent": {
+              "bet66": 0.0,
+              "bet125": 0.0,
+              "bet33": 0.0,
+              "check": 100.0
+            }
+          },
+          "provider": {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "completed_physical_turns": 1,
+            "repairs": 0,
+            "thread_id": "01a168f6-a9a8-7050-b668-30d279bfbd19",
+            "turn_id": "01a168f6-aa4a-7f30-aa9f-64d4b15d845a",
+            "elapsed_ms": 103672,
+            "call_provenance": [
+              {
+                "session_turn": 1,
+                "validation_issue": null,
+                "effective_prompt_hash": "73d5f34727cfa391d1b042b31f9c61cb4e727d2d6f3b3de2ce531b60d6f4b2a1",
+                "schema_hash": "9fe58c8d342d2ddec81d57c56468ce6cbac986e911d82103d2edfacca9a7d9c7"
+              }
+            ],
+            "completed_turns": [
+              {
+                "sessionTurn": 1,
+                "threadId": "01a168f6-a9a8-7050-b668-30d279bfbd19",
+                "turnId": "01a168f6-aa4a-7f30-aa9f-64d4b15d845a",
+                "status": "completed",
+                "model": "gpt-6.1-sol",
+                "effort": "medium",
+                "confirmedModel": "gpt-6.1-sol",
+                "confirmedEffort": "medium",
+                "elapsedMs": 103672
+              }
+            ]
+          },
+          "factual_reason_review": {
+            "status": "no_concrete_contradiction_found",
+            "checks": [
+              "All-group check100 and all bet sizes zero exactly match EN/JA full-range-check statements.",
+              "BTN AA/AK positive and BB absent; KK/QQ absent in BB and present in BTN.",
+              "Both players have A-rank and rank-rank full houses on these AAT/AA9/AA8/AA7 boards; AA yields quads exclusively in BTN.",
+              "Two-tone variants permit corresponding flush draws; rainbow variants do not have current flush draws. No current flush on any flop. EN/JA uniformly choose check100; no subsequent action policy or numerical EV inferred."
+            ],
+            "limitations": [
+              "Range/nut advantage and conservative strategy preference are unvalidated strategic opinions, not numerical/solver conclusions.",
+              "Marginal ranges are not a joint distribution; no same-combo opponent weighting used."
+            ]
+          }
+        }
+      ],
+      "live_overlap_not_independently_reexecuted": true,
+      "saved_reader_root_and_provenance_validation": "All16 exact new roots passed saved reader against frozen source snapshot/current implementation;16distinct lane threads20distinct completed turns.",
+      "parent_reported_runtime": {
+        "calls": 20,
+        "decisions": 16,
+        "first_failure": null,
+        "owner_exited": true,
+        "worker_lock_absent": true,
+        "entries_complete": 16,
+        "independently_reexecuted": false
+      },
+      "repair_review": [
+        {
+          "board": "AsAh9c",
+          "validation_issue": "Duplicate/blocked/zero-reach/unknown combo",
+          "same_thread_next_turn": true,
+          "numeric_only": true,
+          "final_actor_coverage": 807
+        },
+        {
+          "board": "AsAh8c",
+          "validation_issue": "Duplicate/blocked/zero-reach/unknown combo",
+          "same_thread_next_turn": true,
+          "numeric_only": true,
+          "final_actor_coverage": 804
+        },
+        {
+          "board": "AsAh8s",
+          "validation_issue": "Duplicate/blocked/zero-reach/unknown combo",
+          "same_thread_next_turn": true,
+          "numeric_only": true,
+          "final_actor_coverage": 804
+        },
+        {
+          "board": "AsAh9s",
+          "validation_issue": "Duplicate/blocked/zero-reach/unknown combo",
+          "same_thread_next_turn": true,
+          "numeric_only": true,
+          "final_actor_coverage": 807
+        }
+      ]
+    },
+    {
+      "requested_concurrency": 50,
+      "status": "runtime_uncertainty_failed_settled_not_data_approved",
+      "approved": false,
+      "production_strategy_approved": false,
+      "gto_verified": false,
+      "artifacts": [],
+      "recorded_at_utc": "2026-10-23T13:42:14.134846+00:00",
+      "evidence_source": "Parent sanitized runtime and broker observations; not independently reexecuted. No raw private journal or provider logs copied.",
+      "parent_reported_runtime": {
+        "owner_pid": 56955,
+        "owner_state": "draining",
+        "attempted_calls": 49,
+        "saved_decisions": 0,
+        "first_failure": {
+          "code": "bridge_transport_uncertain",
+          "phase": "lease_heartbeat",
+          "at": "2026-10-23T13:40:16.761Z",
+          "elapsed_ms": 52439,
+          "job_id": "437a65f305bd6f05ed4ccec995c8910eabe780b058a79648f78107eb84e68a64"
+        },
+        "broker_observation": {
+          "failed": 22,
+          "running": 28,
+          "final": false
+        }
+      },
+      "confirmed_boundary": [
+        "Recorded first cause concerns lease-heartbeat transport uncertainty, not an attested provider quota failure.",
+        "Attempted-call count is not proof of accepted/completed physical provider turns.",
+        "No artifact numerical/provenance PASS is granted for this wave; no saved artifact was reviewed.",
+        "Parent final observation reports owner exited/lock absent and all50 jobs failed in both journal and broker.",
+        "49 call-in-flight flags retained on terminal failed entries are unresolved-outcome markers, not49 live workers or accepted/completed/billed turns."
+      ],
+      "unknown": [
+        "Underlying transport/network/service cause and whether the failed heartbeat reached the broker.",
+        "Accepted/completed/billed physical provider turns for the49 attempted calls. Counts must not be inferred from attempted calls or terminal in-flight flags."
+      ],
+      "recovery_boundary": [
+        "Do not enqueue a replacement batch or replay uncertain jobs.",
+        "No automatic retry/model fallback/provider call is authorized by this record.",
+        "Root-cause investigation is assigned separately to operator_broker; append sanitized final evidence when available."
+      ],
+      "final_parent_reported_runtime": {
+        "observed_at_utc": "2026-10-23T13:42:44Z",
+        "owner_exited": true,
+        "worker_lock_absent": true,
+        "journal_status": "failed",
+        "journal_entries_failed": 50,
+        "attempted_calls": 49,
+        "saved_decisions": 0,
+        "terminal_inflight_flags": 49,
+        "actual_active": 0,
+        "broker_failed": 50,
+        "private_journal_backup": "bridge-journal.ramp-50-failed.json",
+        "backup_mode": "0600",
+        "independently_reexecuted": false
+      }
+    }
+  ]
+}
