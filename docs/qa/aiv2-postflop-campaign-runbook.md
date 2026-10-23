@@ -1,0 +1,60 @@
+# Finite root campaign coordinator — locally implemented, not live verified
+
+The coordinator reuses the existing enqueue-only CLI and launches one existing scoped bridge child at a time. It never directly creates a provider or modifies the four frozen generation/provider files. No scheduler/recurring automation is used. The parent alone may launch it; source implementation is not launch authorization.
+
+## Explicit finite launch (parent only)
+
+```sh
+node --experimental-strip-types apps/frontend/scripts/aiv2-postflop-campaign.ts \
+  --origin=https://api.reysonai.com \
+  --bearer-file=<existing-private-0600-file> \
+  --source-dir=<frozen-source-snapshot-directory> \
+  --operator-user-id=<existing-real-account-id> \
+  --broker-snapshot=<parent-fresh-private-broker-snapshot> \
+  --max-decisions=22100 --max-calls=44200 \
+  --batch-size=16 --max-concurrency=16 \
+  --reviewer-task=/root/parallel_safety_review \
+  --confirm-finite-campaign
+```
+
+The two positive finite total budgets are mandatory (ceilings 22,100 decisions / 44,200 calls); these example totals are not an instruction to launch. Root-only physical domain is 22,100, never a representative sample. One wave is at most 50 explicit roots; default 16. Start at two concurrent lanes, increasing 2→4→8→16 only after two independently reviewed stable scopes at each level, with observed overlap, valid numerical/provenance accounting and zero transport retries. Fifty concurrent lanes are prohibited. A smaller final wave cannot establish a higher-capacity ramp.
+
+The initial broker snapshot must match current pins, have `recordedAt` no older than 60 seconds, and include historical failed/queued/unknown exclusions. Existing local saved/unknown data, every snapshot board and prior terminal-journal board are excluded. Before each wave, all six card-order aliases receive fresh owner-status probes; existing complete, queued, running or failed targets are excluded, never regenerated. Unknown data or source drift stops admission. Atomic server conflict/partial/uncertain admission stops the campaign, not a blind retry.
+
+Only the coordinator may own this session. Do not run another manual bridge while its campaign lock exists, including during independent review. Its global private `ondemand-bridge/campaign.lock` prevents a second coordinator; the unchanged bridge `worker.lock` protects each child. Neither stale lock is automatically deleted. Restart/resume and completion-uncertainty repair remain explicit parent-reviewed operations, not automatic campaign behavior.
+
+## Independent review checkpoint — not self-approval
+
+After child exit and lock release, exact complete entries, new cache artifacts, actual attestations/correction provenance and fresh broker completion must agree. Then the process writes:
+
+`.local/range-dashboard/operator-campaigns/<campaignHex64>/waves/<batchHex64>.review-request.json`
+
+The private request binds `campaignId`, `batchId`, all source pins, exact new artifact byte hashes/decision IDs, actual call/decision/attestation counts, repair/retry counts, observed peak, and the child-journal raw hash. All strategy/production/GTO approval flags stay false. During `review_wait`, generation workers are inactive and **no new enqueue or provider request occurs**. A filesystem event, not periodic generation automation, resumes receipt checking.
+
+A separate independent reviewer—not the coordinator or its implementation author—must inspect the exact new artifacts and representative English/Japanese factual statements. It writes the sibling `<batchHex64>.review.json`, mode 0600, with exactly these fields:
+
+```json
+{
+  "schema_version": 1,
+  "kind": "independent-root-wave-review",
+  "campaignId": "<exact-request-campaign>",
+  "batchId": "<exact-request-batch>",
+  "requestSha256": "<SHA256-of-exact-request-file-bytes>",
+  "artifactRecordsSha256": "<exact-request-artifactRecordsSha256>",
+  "reviewerTask": "/root/parallel_safety_review",
+  "reviewedAt": "<actual-review-UTC-time-after-request>",
+  "numericProvenancePass": true,
+  "representativeFactsNoError": true,
+  "approved": false,
+  "production_strategy_approved": false,
+  "gto_verified": false
+}
+```
+
+This is a schema, **not a preapproved receipt**. Do not mechanically fill PASS values. A factual/numerical/provenance issue requires a negative independent finding and campaign halt, preserving the original data; it does not authorize semantic repair or regeneration. Identity/hash mismatch, stale/extra fields or a negative receipt stop the campaign. After receipt acceptance, artifact bytes are rechecked before the next wave. Local trusted reviewer identity is operationally enforced; this is hash-bound evidence, not a cryptographic signature or GTO approval.
+
+Private `campaign.json` preserves cumulative spent/reserved budgets, exclusions and `ready/running/review_wait/halted/done` state. Owner-process metadata retains actual child PID/start/batch/concurrency and separately records coordinator PID/campaign phase; an alive coordinator waiting for review is not an active generation worker. Any child failure, unresolved upload/claim, source change, quota event or budget exhaustion prevents new work; owned child shutdown drains before releasing ownership. Paid/model fallback is absent. Confirmed heartbeat reconfirmation resets ramp stability; it does not invent an earlier cause or refund an attempt.
+
+## Local validation
+
+Only focused temporary-file/mock tests and targeted TypeScript checks apply. Tests use synthetic independent-review fixtures, not real independent artifact approval, and start no real provider/queue operation. A real campaign and its future checkpoints require separate parent launch and actual reviewer evidence.
