@@ -50,13 +50,17 @@ export function render(doc:Document,snapshot:Snapshot,filter='all'):void {
  }
  set(doc,'capacity',`表示容量 50枠 / 起動設定 ${shown(snapshot.owner.configuredConcurrency)}並列 / 実稼働 ${active}件 · 試行数は受理済み応答数ではありません`);
  const lanes=doc.getElementById('lanes')!;lanes.replaceChildren();
- // A stopped/failed job with an in-flight marker is uncertainty, never live work.
+ // Journal lane numbers are cumulative job order, NOT stable worker identities.
+ // Display current active work only; completed/failed jobs remain in the history table.
+ const current=snapshot.lanes.filter(l=>laneState(l,snapshot)==='active').slice(0,50);
+ const configured=typeof snapshot.owner.configuredConcurrency==='number'?Math.min(50,number(snapshot.owner.configuredConcurrency)):null;
  for(let i=1;i<=50;i++) {
-  const lane=snapshot.lanes.find(l=>l.lane===i);const state=lane?laneState(lane,snapshot):'idle';
-  const item=el(doc,'article',undefined,`lane ${state}`);const top=el(doc,'div',undefined,'lane-top');top.append(el(doc,'span',String(i).padStart(2,'0')),el(doc,'span',lane?statusText(state):'未使用'));
+  const lane=current[i-1];const state=lane?'active':'idle';
+  const vacant=configured===null?'設定未確認':i<=configured?'待機':'設定外';
+  const item=el(doc,'article',undefined,`lane ${state}`);const top=el(doc,'div',undefined,'lane-top');top.append(el(doc,'span',String(i).padStart(2,'0')),el(doc,'span',lane?statusText(state):vacant));
   item.append(top,el(doc,'b',lane?boardText(lane.board):'—'));
-  item.append(el(doc,'p',lane?pathText(lane.path):'割り当てなし'));
-  const phase=lane?(state==='attention'?'停止・結果確認が必要':state==='complete'?'保存完了':lane.callInFlight?'応答待ち':phases[lane.phase??'']??'状態確認中'):'待機';
+  item.append(el(doc,'p',lane?pathText(lane.path):i<=(configured??0)?'処理中の記録なし':'—'));
+  const phase=lane?(lane.callInFlight?'応答待ち':phases[lane.phase??'']??'状態確認中'):vacant;
   item.append(el(doc,'p',phase,'phase'),el(doc,'p',lane?`${elapsed(lane.elapsedMs)}${lane.elapsedSource==='observation'?' · 観測経過':lane.elapsedSource==='metric'?' · 記録値':''}`:' '));lanes.append(item);
  }
  const jobs=doc.getElementById('jobs')!;jobs.replaceChildren();
