@@ -1,3 +1,4 @@
+import { ONDEMAND_WORKSPACE_SOURCE, onDemandRootSupported, onDemandHistorySelection } from "./aiv2-ondemand-workspace-state.ts";
 import type { Stage3Decision, Stage3Terminal } from "./stage3-types.ts";
 import type { ContinuationDecision, ContinuationTerminal, ContinuationFamily, HistoryAction } from "./continuation-tree.ts";
 import type { FormatKey, GameFormat } from "./game-formats.ts";
@@ -241,6 +242,7 @@ export type RangeUrlSelection = {
 };
 export type RangeUrlState = RangeUrlSelection & PostflopProfileState & {
   format: typeof defaultFormat; tableProfile: TableProfile;
+  postflopSource?: typeof ONDEMAND_WORKSPACE_SOURCE;
   showFlop: boolean; flopCards: string[]; flopActions: string[];
   turnCard: string; turnActions: string[]; riverCard: string; riverActions: string[];
 };
@@ -379,6 +381,11 @@ function parsePostflopActions(value: string | null) {
   }
   return actions;
 }
+function parseExactPostflopActions(value:string|null){
+  const tokens=splitActions(value);
+  if(tokens.length>32||tokens.some(token=>! /^(X|C|F|AI|R|B33|B66|B125)$/.test(token)))throw Error("Unsupported exact action token");
+  return parsePostflopActions(value);
+}
 // Native decision options enforce node reachability, stack caps, and street
 // termination. Never feed an imported illegal sequence to the UI replay engine.
 function reachablePostflopPrefix(actions: string[], decisionFor: (actions: string[]) => { options?: readonly { action: string }[] }) {
@@ -430,6 +437,9 @@ export function encodeRangeUrl(state: RangeEncodingState, actionBlocks = buildRa
   const flop = state.showFlop === false ? null : boardCards(state.flopCards?.join(""), 3);
   if (flop) {
     params.set("board", flop.join(""));
+    if (state.postflopSource === ONDEMAND_WORKSPACE_SOURCE && onDemandRootSupported({ ...state, format, callers: state.callers ?? [], foldedHero: !!state.foldedHero, defaultTable: profileLevel(state.tableProfile?.call) === "normal" && profileLevel(state.tableProfile?.three_bet) === "normal", opponentProfile: state.opponentProfile ?? "standard", context })) {
+      try { onDemandHistorySelection({flopCards:flop,flopActions:state.flopActions??[],turnCard:state.turnCard??"",turnActions:state.turnActions??[],riverCard:state.riverCard??"",riverActions:state.riverActions??[]});params.set("postflop_source",ONDEMAND_WORKSPACE_SOURCE); } catch { /* Never mark an illegal or legacy action path as exact AIv2. */ }
+    }
     const writeActions = (key: string, actions: string[] | undefined) => params.set(key, (actions ?? []).map(postflopToken).filter(Boolean).join("-"));
     writeActions("flop_actions", state.flopActions);
     const turn = boardCards(state.turnCard, 1, flop);
@@ -471,6 +481,14 @@ export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState |
   // without a pilot still has an active read-only placeholder in the workspace.
   if (!context) return state;
   state.showFlop = true; state.flopCards = flop;
+  if (params.get("postflop_source") === ONDEMAND_WORKSPACE_SOURCE && onDemandRootSupported({...state,defaultTable:state.tableProfile.call==="normal"&&state.tableProfile.three_bet==="normal",context})) {
+    const turn=boardCards(params.get("turn"),1,flop),river=turn?boardCards(params.get("river"),1,[...flop,...turn]):null;
+    try {
+      if ((params.has("turn") && !turn) || (params.has("river") && !river)) throw Error("Invalid exact street card");
+      const exact:RangeUrlState={...state,postflopSource:ONDEMAND_WORKSPACE_SOURCE,flopActions:parseExactPostflopActions(params.get("flop_actions")),turnCard:turn?.[0]??"",turnActions:parseExactPostflopActions(params.get("turn_actions")),riverCard:river?.[0]??"",riverActions:parseExactPostflopActions(params.get("river_actions"))};
+      onDemandHistorySelection(exact);return exact;
+    } catch { /* Keep the normal fail-closed legacy codec for invalid marked paths. */ }
+  }
   if (context.kind === "mw3_srp") {
     const turn = boardCards(params.get("turn"), 1, flop);
     const river = turn ? boardCards(params.get("river"), 1, [...flop, ...turn]) : null;
