@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS aiv2_ondemand_jobs (
  creator TEXT NOT NULL REFERENCES account_users(id), day TEXT NOT NULL,
  status TEXT NOT NULL CHECK(status IN ('queued','running','complete','failed')),
  created_at INTEGER NOT NULL, lease_hash TEXT, lease_until INTEGER,
- reserved_calls INTEGER NOT NULL CHECK(reserved_calls=8),
+ reserved_calls INTEGER NOT NULL CHECK(typeof(reserved_calls)='integer' AND reserved_calls BETWEEN 2 AND 64 AND reserved_calls%2=0),
  result_json TEXT, error TEXT,
  UNIQUE(revision,board,path_json)
 );

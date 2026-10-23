@@ -37,7 +37,7 @@ test('atomic caps/dedup/access and owner lease expiry never replay provider call
  assert.equal((await f.call('requests',{board:'Js7d2c',path:[],consent:true})).status,429);
  assert.equal((await f.call('requests/'+a.id,undefined,{cookie:''})).status,401);
  assert.equal((await f.call('requests/'+'f'.repeat(64))).status,404);
- const {job}=await (await f.owner('claim')).json();assert.equal(job.maxProviderCalls,8);
+ const {job}=await (await f.owner('claim')).json();assert.equal(job.maxProviderCalls,2);assert.equal(job.maxDecisions,1);
  assert.equal((await f.owner('complete',{id:job.id,leaseToken:'wrong',result:{}})).status,409);
  assert.equal((await f.owner('heartbeat',{id:job.id,leaseToken:job.leaseToken})).status,200);
  f.sqlite.prepare('UPDATE aiv2_ondemand_jobs SET lease_until=0 WHERE id=?').run(job.id);
@@ -92,4 +92,29 @@ test('browser on-demand credentialed CORS allows only exact app origin including
  }
  const denied=await worker.fetch(new Request('https://api.reysonai.com/v1/aiv2/ondemand/status',{headers:{origin:'https://evil.invalid'}}),{ALLOWED_ORIGIN:'*'} as any);
  assert.equal(denied.headers.get('access-control-allow-origin'),null);assert.equal(denied.headers.get('access-control-allow-credentials'),null);
+});
+test('deep path reserves bounded calls for every ancestor including target, without counting chance cards',async()=>{
+ const f=await fixture();try{
+ await f.owner('heartbeat');
+ const path=['check','bet33','call','4h','check','check','5h','check'];
+ const response=await f.call('requests',{board:'As7d2c',path,consent:true});assert.equal(response.status,202);
+ const {job}=await (await f.owner('claim')).json();assert.deepEqual(job.path,path);assert.equal(job.maxDecisions,7);assert.equal(job.maxProviderCalls,14);
+ assert.equal(f.sqlite.prepare('SELECT reserved_calls FROM aiv2_ondemand_jobs WHERE id=?').get(job.id)!.reserved_calls,14);
+ assert.equal((await f.call('requests',{board:'As7d2c',path:Array(32).fill('check'),consent:true})).status,400);
+ assert.throws(()=>f.sqlite.prepare('UPDATE aiv2_ondemand_jobs SET reserved_calls=65 WHERE id=?').run(job.id));
+ assert.throws(()=>f.sqlite.prepare('UPDATE aiv2_ondemand_jobs SET reserved_calls=3 WHERE id=?').run(job.id));
+ // Existing job reservation is immutable from request replay, including new configured hard caps.
+ assert.equal((await f.call('requests',{board:'As7d2c',path,consent:true})).status,202);
+ assert.equal(f.sqlite.prepare('SELECT reserved_calls FROM aiv2_ondemand_jobs WHERE id=?').get(job.id)!.reserved_calls,14);
+ }finally{f.sqlite.close();}
+});
+test('owner claim leaves a deep job queued when remaining cumulative budget cannot cover full reservation',async()=>{
+ const f=await fixture();try{
+ await f.owner('heartbeat');const response=await f.call('requests',{board:'As7d2c',path:['check','bet33','call','4h','check'],consent:true});const requested=await response.json();
+ const blocked=await (await f.owner('claim',{remainingCalls:9,remainingDecisions:100})).json();assert.deepEqual(blocked,{job:null,budgetBlocked:true});
+ assert.equal(f.sqlite.prepare('SELECT status,lease_hash FROM aiv2_ondemand_jobs WHERE id=?').get(requested.id)!.status,'queued');assert.equal(f.sqlite.prepare('SELECT lease_hash FROM aiv2_ondemand_jobs WHERE id=?').get(requested.id)!.lease_hash,null);
+ assert.equal((await f.owner('claim',{remainingCalls:101,remainingDecisions:100})).status,400);
+ const decisionBlocked=await (await f.owner('claim',{remainingCalls:100,remainingDecisions:4})).json();assert.equal(decisionBlocked.budgetBlocked,true);
+ const eligible=await (await f.owner('claim',{remainingCalls:10,remainingDecisions:5})).json();assert.equal(eligible.job.id,requested.id);assert.equal(eligible.job.maxDecisions,5);assert.equal(eligible.job.maxProviderCalls,10);
+ }finally{f.sqlite.close();}
 });

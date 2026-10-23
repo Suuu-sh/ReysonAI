@@ -17,7 +17,8 @@ async function fixture(path:string[]=['check'],full=false){
  copyFileSync(resolve(DEFAULT_STORE,'decisions',rootId+'.json'),join(root,'decisions',rootId+'.json'));
  if(full)copyFileSync(resolve(DEFAULT_STORE,'decisions',childId+'.json'),join(root,'decisions',childId+'.json'));
  const implementation=implementationHash(),sourceHash=hash((await loadRoot('As7d2c')).upstream),revision=hash({method:CONFIG.method,version:CONFIG.version,implementationHash:implementation,sourceHash});
- const job={id:hash({revision,board:'As7d2c',path}),board:'As7d2c',path,revision,implementationHash:implementation,sourceHash,leaseToken:'test-only-lease-token-1234567890123456789',maxProviderCalls:8,maxDecisions:4};
+ const maxDecisions=1+path.filter(token=>! /^[AKQJT98765432][shdc]$/.test(token)).length;
+ const job={id:hash({revision,board:'As7d2c',path}),board:'As7d2c',path,revision,implementationHash:implementation,sourceHash,leaseToken:'test-only-lease-token-1234567890123456789',maxProviderCalls:2*maxDecisions,maxDecisions};
  const requests:Array<{action:string;body:any}>=[];
  const fetcher=async(url:any,init:any)=>{
   assert.equal(init.redirect,'error');assert.match(init.headers.authorization,/^Bearer test-only-/);assert.equal(init.headers.origin,undefined);
@@ -35,7 +36,14 @@ test('outbound origin allowlist cannot leak owner bearer through URLs or redirec
 test('claim pins, revision, identity and per-job budgets are strictly bound',async()=>{
  const f=await fixture();try{
   validateBridgeJob(f.job,f.job.implementationHash,f.job.sourceHash);
-  for(const patch of [{implementationHash:'0'.repeat(64)},{sourceHash:'0'.repeat(64)},{revision:'0'.repeat(64)},{id:'0'.repeat(64)},{maxDecisions:5},{maxProviderCalls:9},{path:['bet66']},{leaseToken:'short'}])assert.throws(()=>validateBridgeJob({...f.job,...patch},f.job.implementationHash,f.job.sourceHash));
+  for(const patch of [{implementationHash:'0'.repeat(64)},{sourceHash:'0'.repeat(64)},{revision:'0'.repeat(64)},{id:'0'.repeat(64)},{maxDecisions:33},{maxProviderCalls:65},{maxProviderCalls:3},{maxDecisions:1},{path:['bet66']},{leaseToken:'short'}])assert.throws(()=>validateBridgeJob({...f.job,...patch},f.job.implementationHash,f.job.sourceHash));
+  const withPath=(path:string[],maxDecisions:number,maxProviderCalls:number)=>({...f.job,path,id:hash({revision:f.job.revision,board:f.job.board,path}),maxDecisions,maxProviderCalls});
+  // These test only envelope bounds; the snapshot reader separately rejects illegal poker paths.
+  validateBridgeJob(withPath(Array(31).fill('check'),32,64),f.job.implementationHash,f.job.sourceHash);
+  assert.throws(()=>validateBridgeJob(withPath(Array(31).fill('check'),32,65),f.job.implementationHash,f.job.sourceHash));
+  assert.throws(()=>validateBridgeJob(withPath(Array(32).fill('check'),33,66),f.job.implementationHash,f.job.sourceHash));
+  validateBridgeJob(withPath([],1,2),f.job.implementationHash,f.job.sourceHash);
+  validateBridgeJob(withPath(['check','check','Kd'],3,6),f.job.implementationHash,f.job.sourceHash);
  }finally{f.cleanup();}
 });
 test('cache-hit claim uploads locally validated proof with zero provider creation',async()=>{
@@ -62,6 +70,23 @@ test('idle watch announces pinned readiness before claim and maintains heartbeat
   assert.ok(f.requests.filter(r=>r.action==='heartbeat').length>1);
   assert.equal(f.requests[0].body.sourceHash,f.job.sourceHash);
   assert.equal(f.requests[0].body.revision,f.job.revision);
+ }finally{f.cleanup();}
+});
+test('claim capacity prevents leasing an unaffordable job and exits watch cleanly',async()=>{
+ const f=await fixture();let claims=0;
+ try{
+  const fetcher=async(url:any,init:any)=>{
+   if(String(url).endsWith('/claim')){
+    claims++;assert.deepEqual(JSON.parse(init.body),{remainingCalls:7,remainingDecisions:5});
+    return Response.json({job:null,budgetBlocked:true});
+   }
+   return f.options.fetch(url,init);
+  };
+  const result=await runBridge({...f.options,fetch:fetcher as typeof fetch,watch:true,maxCalls:7,maxDecisions:5,providerFactory:()=>{throw Error('no provider without fitting lease');}});
+  assert.deepEqual(result,{status:'budget_blocked',calls:0,decisions:0,jobs:0});assert.equal(claims,1);
+  assert.equal(f.requests.some(r=>r.action==='fail'||r.action==='complete'),false);
+  assert.equal(JSON.parse(readFileSync(join(f.root,'runtime','bridge-journal.json'),'utf8')).status,'idle');
+  assert.equal(existsSync(join(f.root,'worker.lock')),false);
  }finally{f.cleanup();}
 });
 test('one saved missing decision, exact metrics and heartbeat while provider call is pending',async()=>{

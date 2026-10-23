@@ -46,12 +46,13 @@ function readBearer(path:string){
 export function validateBridgeJob(value:any,implementation:string,sourceHash:string):asserts value is Job {
  if(!value)throw failure('invalid_or_stale_claim');
  const request=normalizeRequest(value.board,value.path);
+ const pathDecisions=1+request.path.filter(token=>! /^[AKQJT98765432][shdc]$/.test(token)).length;
  if(!value||!isHash(value.id)||!isHash(value.revision)||value.implementationHash!==implementation||value.sourceHash!==sourceHash||
   value.id!==hash({revision:value.revision,...request})||
   value.revision!==hash({method:CONFIG.method,version:CONFIG.version,implementationHash:implementation,sourceHash})||
   typeof value.leaseToken!=='string'||value.leaseToken.length<32||value.leaseToken.length>200||
-  !Number.isInteger(value.maxDecisions)||value.maxDecisions<1||value.maxDecisions>4||
-  !Number.isInteger(value.maxProviderCalls)||value.maxProviderCalls<1||value.maxProviderCalls>8)throw failure('invalid_or_stale_claim');
+  !Number.isInteger(value.maxDecisions)||value.maxDecisions<1||value.maxDecisions>32||value.maxDecisions!==pathDecisions||
+  !Number.isInteger(value.maxProviderCalls)||value.maxProviderCalls<1||value.maxProviderCalls>64||value.maxProviderCalls!==2*value.maxDecisions)throw failure('invalid_or_stale_claim');
 }
 
 export async function runBridge(options:Options){
@@ -67,7 +68,7 @@ export async function runBridge(options:Options){
  try{writeFileSync(lock,JSON.stringify({pid:process.pid,kind:'outbound-owner-bridge',started_at:new Date().toISOString()}),{flag:'wx',mode:0o600});}catch{throw failure('owner_worker_locked');}
  let provider:Provider|undefined,stopped=false,job:Job|undefined,timer:ReturnType<typeof setInterval>|undefined;
  let metricReceiver=(_metric:any):void=>{};
- let heartbeatWork:Promise<void>|undefined,heartbeatFailed=false,calls=0,decisions=0,jobs=0;
+ let heartbeatWork:Promise<void>|undefined,heartbeatFailed=false,calls=0,decisions=0,jobs=0,budgetBlocked=false;
  let idleTimer:ReturnType<typeof setInterval>|undefined,idleWork:Promise<void>|undefined,idleFailed=false;
  let journal:any={status:'idle',calls,decisions};
  const persist=()=>{const temp=journalFile+'.tmp';writeFileSync(temp,JSON.stringify(journal)+'\n',{mode:0o600});renameSync(temp,journalFile);};
@@ -109,8 +110,8 @@ export async function runBridge(options:Options){
    if(implementationHash()!==implementation||hash((await loadRoot('As7d2c',source)).upstream)!==onlineSourceHash)throw failure('pins_changed');
    // A claim is not retried after a transport failure: it may already own a lease.
    journal={status:'claim_pending',origin,calls,decisions};persist();
-   const claimed=await post('claim',{});
-   if(claimed.job===null){journal={status:'idle',origin,calls,decisions};persist();if(!options.watch)break;await new Promise(r=>setTimeout(r,pollMs));continue;}
+   const claimed=await post('claim',{remainingCalls:maxCalls-calls,remainingDecisions:maxDecisions-decisions});
+   if(claimed.job===null){journal={status:'idle',origin,calls,decisions};persist();if(claimed.budgetBlocked===true){budgetBlocked=true;break;}if(!options.watch)break;await new Promise(r=>setTimeout(r,pollMs));continue;}
    job=claimed.job;
    // Pin checks and structural path validation happen before provider creation.
    let jobCalls=0,jobDecisions=0;heartbeatFailed=false;
@@ -169,7 +170,7 @@ export async function runBridge(options:Options){
    if(!options.watch)break;
   }
   if(idleFailed)throw failure('uncertain_provider_outcome');
-  return {status:stopped?'stopped':'finished',calls,decisions,jobs};
+  return {status:budgetBlocked?'budget_blocked':stopped?'stopped':'finished',calls,decisions,jobs};
  }finally{
   if(idleTimer)clearInterval(idleTimer);await idleWork;
   await endHeartbeat();await provider?.drain();

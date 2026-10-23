@@ -8,14 +8,15 @@ export type OnDemandEnv = AccountEnv & {
 const PREFIX='/v1/aiv2/ondemand/';
 const METHOD='llm-postflop-ondemand-v2';
 const VERSION='exact-combo-bilingual-srp33-66-125-3bp25-50-100-raise2p5-v2';
-const LIMITS={jobsPerUserDay:3,outstandingGlobal:16,reservedCallsPerDay:96,maxProviderCalls:8,maxDecisions:4};
+const LIMITS={jobsPerUserDay:3,outstandingGlobal:16,reservedCallsPerDay:96,maxProviderCalls:64,maxDecisions:32};
 const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'cache-control':'no-store','referrer-policy':'no-referrer'}});
 const isHash=(value:unknown):value is string=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(value);
 const equal=(a:unknown,b:unknown)=>JSON.stringify(a)===JSON.stringify(b);
-type Job={id:string;revision:string;board:string;path_json:string;status:string;result_json:string|null;error:string|null;lease_hash:string|null;lease_until:number|null};
+type Job={id:string;revision:string;board:string;path_json:string;status:string;result_json:string|null;error:string|null;lease_hash:string|null;lease_until:number|null;reserved_calls:number};
 export function normalizeBrokerRequest(board:unknown,path:unknown){
  if(typeof board!=='string'||board.length!==6||!Array.isArray(path)||path.length>64||path.some(v=>typeof v!=='string'||! /^(check|fold|call|raise|allin|bet33|bet66|bet125|[AKQJT98765432][shdc])$/.test(v)))throw Error('invalid_request');
  const cards=board.match(/../g)!;if(new Set(cards).size!==3||cards.some(c=>! /^[AKQJT98765432][shdc]$/.test(c)))throw Error('invalid_request');
+ if(1+path.filter(v=>! /^[AKQJT98765432][shdc]$/.test(v)).length>LIMITS.maxDecisions)throw Error('invalid_request');
  return {board,path:path as string[]};
 }
 async function body(request:Request,max:number):Promise<Record<string,any>>{
@@ -65,12 +66,15 @@ async function handle(request:Request,env:OnDemandEnv):Promise<Response>{
    return json({ok:true,revision});
   }
   if(path==='owner/claim'){
-   if(Object.keys(input).length)return json({error:'invalid_request'},400);
+   if(Object.keys(input).some(k=>!['remainingCalls','remainingDecisions'].includes(k)))throw Error('invalid_request');
+   const remainingCalls=input.remainingCalls??100,remainingDecisions=input.remainingDecisions??100;
+   if(!Number.isInteger(remainingCalls)||remainingCalls<1||remainingCalls>100||!Number.isInteger(remainingDecisions)||remainingDecisions<1||remainingDecisions>100)throw Error('invalid_request');
    // Lease expiry means possibly consumed subscription quota: never requeue it.
    await query("UPDATE aiv2_ondemand_jobs SET status='failed',error='uncertain_provider_outcome' WHERE status='running' AND lease_until<=?",now);
    const token=crypto.randomUUID()+crypto.randomUUID(),leaseHash=await digest(token);
-   const [job]=await query("UPDATE aiv2_ondemand_jobs SET status='running',lease_hash=?,lease_until=? WHERE id=(SELECT id FROM aiv2_ondemand_jobs WHERE status='queued' AND revision=? ORDER BY created_at,id LIMIT 1) AND status='queued' RETURNING *",leaseHash,now+120*60*1000,revision);
-   return json({job:job?{id:job.id,board:job.board,path:JSON.parse(job.path_json),revision,implementationHash,sourceHash,leaseToken:token,maxProviderCalls:LIMITS.maxProviderCalls,maxDecisions:LIMITS.maxDecisions}:null});
+   const [job]=await query("UPDATE aiv2_ondemand_jobs SET status='running',lease_hash=?,lease_until=? WHERE id=(SELECT id FROM aiv2_ondemand_jobs WHERE status='queued' AND revision=? AND reserved_calls<=? AND reserved_calls/2<=? ORDER BY created_at,id LIMIT 1) AND status='queued' RETURNING *",leaseHash,now+120*60*1000,revision,remainingCalls,remainingDecisions);
+   const queued=job?[]:await query("SELECT id FROM aiv2_ondemand_jobs WHERE status='queued' AND revision=? LIMIT 1",revision);
+   return json({job:job?{id:job.id,board:job.board,path:JSON.parse(job.path_json),revision,implementationHash,sourceHash,leaseToken:token,maxProviderCalls:job.reserved_calls,maxDecisions:job.reserved_calls/2}:null,...(!job&&queued.length?{budgetBlocked:true}:{})});
   }
   if(!['owner/complete','owner/fail'].includes(path)||!isHash(input.id)||typeof input.leaseToken!=='string'||input.leaseToken.length>200)return json({error:'invalid_request'},400);
   const [job]=await query('SELECT * FROM aiv2_ondemand_jobs WHERE id=? AND revision=? AND lease_hash=?',input.id,revision,await digest(input.leaseToken));
@@ -115,16 +119,17 @@ async function handle(request:Request,env:OnDemandEnv):Promise<Response>{
  const input=await body(request,4096);
  if(input.consent!==true||Object.keys(input).some(k=>!['board','path','consent'].includes(k)))throw Error('invalid_request');
  const normalized=normalizeBrokerRequest(input.board,input.path),pathJSON=JSON.stringify(normalized.path),id=await digest(JSON.stringify({revision,...normalized}));
+ const reservedCalls=2*(1+normalized.path.filter(v=>! /^[AKQJT98765432][shdc]$/.test(v)).length);
  const [rate]=await query<{count:number}>('INSERT INTO account_rate_limits(bucket,count,expires_at) VALUES (?,1,?) ON CONFLICT(bucket) DO UPDATE SET count=count+1 RETURNING count',`ondemand:${user}:${Math.floor(now/60000)}`,Math.floor(now/1000)+120);
  if(rate.count>30)return json({error:'rate_limited'},429);
  const [existing]=await query('SELECT * FROM aiv2_ondemand_jobs WHERE id=?',id);
  if(!existing&&!ownerOnline)return json({error:'owner_offline'},503);
  // One atomic INSERT SELECT enforces both per-account and global provider budgets.
  await query(`INSERT OR IGNORE INTO aiv2_ondemand_jobs(id,revision,board,path_json,creator,day,status,created_at,reserved_calls)
- SELECT ?,?,?,?,?,?,'queued',?,8 WHERE
+ SELECT ?,?,?,?,?,?,'queued',?,? WHERE
  (SELECT COUNT(*) FROM aiv2_ondemand_jobs WHERE creator=? AND day=?)<? AND
  (SELECT COUNT(*) FROM aiv2_ondemand_jobs WHERE status IN ('queued','running'))<? AND
- (SELECT COALESCE(SUM(reserved_calls),0) FROM aiv2_ondemand_jobs WHERE day=?)+8<=?`,id,revision,normalized.board,pathJSON,user,day,now,user,day,LIMITS.jobsPerUserDay,LIMITS.outstandingGlobal,day,LIMITS.reservedCallsPerDay);
+ (SELECT COALESCE(SUM(reserved_calls),0) FROM aiv2_ondemand_jobs WHERE day=?)+?<=?`,id,revision,normalized.board,pathJSON,user,day,now,reservedCalls,user,day,LIMITS.jobsPerUserDay,LIMITS.outstandingGlobal,day,reservedCalls,LIMITS.reservedCallsPerDay);
  const [job]=await query('SELECT * FROM aiv2_ondemand_jobs WHERE id=?',id);
  if(!job)return json({error:'generation_budget_exhausted'},429);
  await query('INSERT OR IGNORE INTO aiv2_ondemand_access(job_id,user_id) VALUES (?,?)',id,user);
