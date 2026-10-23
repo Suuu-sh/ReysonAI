@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "mw3-operator-preservation-extension-proposal",
+  "status": "source-only-proposal",
+  "scope": "operator-batch-verification-preservation-only-no-numerical-or-gto-renewal",
+  "author_task": "/root/parallel_safety_review",
+  "rows": [
+    {
+      "classification": "operator-preservation-extension",
+      "prior": {
+        "path": "apps/frontend/scripts/ci/mw3-local-d1-oracle.ts",
+        "bytes": 50261,
+        "sha256": "287386599f433aa31ac45b00f059de24d730d897c08406a9d12c47a6b8434cb8"
+      },
+      "current": {
+        "path": "apps/frontend/scripts/ci/mw3-local-d1-oracle.ts",
+        "bytes": 50295,
+        "sha256": "afb8a14a35589a461ca652f900b9ab2a0e6f536890217fb23c58764668bcf588"
+      }
+    },
+    {
+      "classification": "operator-preservation-extension",
+      "prior": {
+        "path": "apps/frontend/scripts/verify-preflop-local-d1.ts",
+        "bytes": 24026,
+        "sha256": "34551a2e261d441b5fb4e70e9c4bbf399c0379c7bbcaf5a659cb813ad593ff5c"
+      },
+      "current": {
+        "path": "apps/frontend/scripts/verify-preflop-local-d1.ts",
+        "bytes": 24290,
+        "sha256": "b234759c77656a57949d4d33cc3855f80a53709f56616c7544cc4b884f69ef01"
+      }
+    }
+  ]
+}

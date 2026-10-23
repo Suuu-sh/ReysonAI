@@ -101,8 +101,17 @@ test('existing migrations get a preservation sentinel in every application table
     assert.deepEqual(Object.keys(snapshot.rows).sort(), UNRELATED_TABLES);
     for (const [name, rows] of Object.entries(snapshot.rows)) assert.equal(fixtureValue<{ length: any }>(rows).length, 1, `${name}: missing preservation row`);
     assert.deepEqual(db.prepare('PRAGMA foreign_key_check').all(), []);
-    const job = db.prepare('SELECT status,reserved_calls,result_json FROM aiv2_ondemand_jobs').get()!;
+    const job = db.prepare('SELECT status,reserved_calls,result_json,operator_batch_id FROM aiv2_ondemand_jobs').get()!;
     assert.equal(job.status, 'complete'); assert.equal(job.reserved_calls, 2);
+    assert.equal(job.operator_batch_id, 'local-operator-batch');
+    const batch = db.prepare('SELECT id,manifest_hash,operator_user_id,created_at FROM aiv2_ondemand_operator_batches').get()!;
+    assert.deepEqual({ ...batch }, { id: 'local-operator-batch', manifest_hash: 'local-operator-manifest', operator_user_id: 'local-user', created_at: 1 });
+    const jobFk = db.prepare('PRAGMA foreign_key_list(aiv2_ondemand_jobs)').all();
+    assert.ok(jobFk.some(row => row.from === 'operator_batch_id' && row.table === 'aiv2_ondemand_operator_batches' && row.to === 'id'));
+    assert.ok(db.prepare('PRAGMA foreign_key_list(aiv2_ondemand_operator_batches)').all().some(row => row.from === 'operator_user_id' && row.table === 'account_users' && row.to === 'id'));
+    assert.throws(() => db.exec("UPDATE aiv2_ondemand_operator_batches SET manifest_hash='changed'"), /operator batch manifest is immutable/);
+    assert.throws(() => db.exec("INSERT INTO aiv2_ondemand_operator_batches VALUES ('orphan-batch','manifest','missing-account',1)"), /FOREIGN KEY constraint failed/);
+    assert.throws(() => db.exec("INSERT INTO aiv2_ondemand_jobs (id,revision,board,path_json,creator,day,status,created_at,reserved_calls,operator_batch_id) VALUES ('orphan-job','rev','Ks7d2c','[]','local-user','2000-01-01','queued',1,2,'missing-batch')"), /FOREIGN KEY constraint failed/);
     assert.equal(JSON.parse(String(job.result_json)).synthetic_local_preservation_fixture, true);
     assert.throws(() => db.exec("UPDATE aiv2_ondemand_jobs SET result_json='{}'"), /terminal on-demand job is immutable/);
     assert.deepEqual(databaseSnapshot(db, { excludeMw3: true }), snapshot);
@@ -163,7 +172,9 @@ test('database value ledger includes unrelated schema, binary and Unicode row ch
     `UPDATE fastfold_actions SET request_json='{"changed":true}'`, `UPDATE fastfold_dataset_parts SET body='{"changed":true}'`,
     "UPDATE fastfold_players SET public_name='Changed FastFold sentinel'", 'UPDATE fastfold_results SET at=2', 'UPDATE fastfold_sessions SET updated_at=2',
     "UPDATE human_rank_players SET public_name='Changed human sentinel'", `UPDATE human_rank_receipts SET request_json='{"changed":true}'`,
-    'UPDATE human_rank_results SET at=2', 'UPDATE human_rank_tables SET updated_at=2']) {
+    'UPDATE human_rank_results SET at=2', 'UPDATE human_rank_tables SET updated_at=2',
+    "INSERT INTO aiv2_ondemand_operator_batches VALUES ('extra-operator-batch','extra-manifest','local-user',2)",
+    "INSERT INTO aiv2_ondemand_jobs (id,revision,board,path_json,creator,day,status,created_at,reserved_calls,operator_batch_id) VALUES ('extra-operator-job','rev','Ks7d2c','[]','local-user','2000-01-01','queued',1,2,'local-operator-batch')"]) {
     const db = seededDatabase();
     try { const before = databaseSnapshot(db); db.exec(sql); assert.notDeepEqual(databaseSnapshot(db), before); } finally { db.close(); }
   }

@@ -213,7 +213,9 @@ INSERT INTO account_sessions VALUES ('local-session', 'local-user', 1);
 INSERT INTO account_oauth_states VALUES ('local-state', 'local-verifier', 'local-nonce', 1);
 INSERT INTO account_rate_limits VALUES ('local-bucket', 1, 1);
 INSERT INTO account_data VALUES ('local-user', '{"keep":true}', 1);
-INSERT INTO aiv2_ondemand_jobs (id, revision, board, path_json, creator, day, status, created_at, reserved_calls, result_json) VALUES ('local-ondemand-job', 'local-ondemand-revision', 'As7d2c', '[]', 'local-user', '2000-01-01', 'complete', 1, 2, '{"synthetic_local_preservation_fixture":true,"keep":true}');
+-- Synthetic preservation only: exact operator/account/job relationships, never generation approval.
+INSERT INTO aiv2_ondemand_operator_batches VALUES ('local-operator-batch', 'local-operator-manifest', 'local-user', 1);
+INSERT INTO aiv2_ondemand_jobs (id, revision, board, path_json, creator, day, status, created_at, reserved_calls, result_json, operator_batch_id) VALUES ('local-ondemand-job', 'local-ondemand-revision', 'As7d2c', '[]', 'local-user', '2000-01-01', 'complete', 1, 2, '{"synthetic_local_preservation_fixture":true,"keep":true}', 'local-operator-batch');
 INSERT INTO aiv2_ondemand_access VALUES ('local-ondemand-job', 'local-user');
 INSERT INTO aiv2_ondemand_owner VALUES (1, 'local-ondemand-revision', 1);
 INSERT INTO account_native_attempts (attempt_hash, code_challenge, app_state, redirect_id, status, oauth_state_hash, user_id, expires_at) VALUES ('local-native-attempt', 'local-native-challenge', 'local-native-app-state', 'reysonai-mobile', 'authorizing', 'local-native-state', 'local-user', 1);

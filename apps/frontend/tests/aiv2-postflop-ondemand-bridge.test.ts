@@ -7,6 +7,7 @@ import { bridgeOrigin, runBridge, validateBridgeJob } from '../scripts/aiv2-post
 import { CONFIG, DEFAULT_STORE, implementationHash, loadRoot } from '../scripts/aiv2-postflop-ondemand-store.ts';
 import { postflopHash as hash } from '../scripts/aiv2-postflop-ondemand.ts';
 
+const source=resolve(DEFAULT_STORE,'source-snapshot');
 const rootId='16c8f7aeff99422bc108d09a22ac8d6988d5df1329d6da1353a7a05854c20c71';
 const childId='7504f6574de683065bbc208f0cd783282617a7068f1ee55db7bca702684769c1';
 const child=JSON.parse(readFileSync(resolve(DEFAULT_STORE,'decisions',childId+'.json'),'utf8'));
@@ -16,7 +17,7 @@ async function fixture(path:string[]=['check'],full=false){
  writeFileSync(bearerFile,'test-only-not-a-production-secret-123456789',{mode:0o600});mkdirSync(join(root,'decisions'));
  copyFileSync(resolve(DEFAULT_STORE,'decisions',rootId+'.json'),join(root,'decisions',rootId+'.json'));
  if(full)copyFileSync(resolve(DEFAULT_STORE,'decisions',childId+'.json'),join(root,'decisions',childId+'.json'));
- const implementation=implementationHash(),sourceHash=hash((await loadRoot('As7d2c')).upstream),revision=hash({method:CONFIG.method,version:CONFIG.version,implementationHash:implementation,sourceHash});
+ const implementation=implementationHash(),sourceHash=hash((await loadRoot('As7d2c',source)).upstream),revision=hash({method:CONFIG.method,version:CONFIG.version,implementationHash:implementation,sourceHash});
  const maxDecisions=1+path.filter(token=>! /^[AKQJT98765432][shdc]$/.test(token)).length;
  const job={id:hash({revision,board:'As7d2c',path}),board:'As7d2c',path,revision,implementationHash:implementation,sourceHash,leaseToken:'test-only-lease-token-1234567890123456789',maxProviderCalls:2*maxDecisions,maxDecisions};
  const requests:Array<{action:string;body:any}>=[];
@@ -25,7 +26,7 @@ async function fixture(path:string[]=['check'],full=false){
   const action=String(url).split('/').at(-1)!,body=JSON.parse(init.body);requests.push({action,body});
   return Response.json(action==='claim'?{job}:{ok:true});
  };
- const options={origin:'http://127.0.0.1:43210',allowLoopback:true,bearerFile,root,runtimePath:join(root,'runtime'),fetch:fetcher as typeof fetch};
+ const options={source,origin:'http://127.0.0.1:43210',allowLoopback:true,bearerFile,root,runtimePath:join(root,'runtime'),fetch:fetcher as typeof fetch};
  return {root,job,requests,options,cleanup:()=>rmSync(root,{recursive:true,force:true})};
 }
 test('outbound origin allowlist cannot leak owner bearer through URLs or redirects',()=>{
@@ -154,4 +155,182 @@ test('shared local-worker lock and insecure token permissions fail closed before
   const {chmodSync}=await import('node:fs');chmodSync(g.options.bearerFile,0o644);
   await assert.rejects(runBridge(g.options),{code:'unsafe_bearer_file'});assert.equal(g.requests.length,0);
  }finally{g.cleanup();}
+});
+
+// Parallel tests use generated test-only JSON, never the real provider/network.
+async function parallelFixture(boards=['QsJhTd','9s8s6d']){
+ const f=await fixture([]);
+ const {decisionIdentity,postflopLegalActions}=await import('../scripts/aiv2-postflop-ondemand.ts');
+ const jobs=boards.map(board=>({...f.job,board,id:hash({revision:f.job.revision,board,path:[]})}));
+ const outputs=new Map<string,{raw:any;metric:any}>();
+ for(const job of jobs){
+  const input=await loadRoot(job.board,source),id=decisionIdentity(input,implementationHash());
+  outputs.set(id,{raw:{decision_id:id,range_summary:{text:'Test only AI estimate.',text_ja:'テスト専用のAI推定。'},groups:[{combos:Object.keys(input.ranges[input.actor]).filter(combo=>input.ranges[input.actor][combo]>0),mix:Object.fromEntries(postflopLegalActions(input).map(a=>[a.action,a.action==='check'?100:0])),text:'Test only check policy.',text_ja:'テスト専用チェック方針。'}]},metric:{...child.attestation[0],threadId:'test-'+job.board,turnId:'turn-'+job.board}});
+ }
+ let claims=0;
+ const fetcher=async(url:any,init:any)=>{
+  if(String(url).endsWith('/claim')){
+   const job=jobs[claims++];f.requests.push({action:'claim',body:JSON.parse(init.body)});
+   return Response.json(job?{job}:{job:null,budgetBlocked:true});
+  }
+  return f.options.fetch(url,init);
+ };
+ return {...f,jobs,outputs,options:{...f.options,fetch:fetcher as typeof fetch,concurrency:2,watch:true,maxDecisions:boards.length,maxCalls:2*boards.length},claimCount:()=>claims};
+}
+test('parallel concurrency is bounded and invalid values fail before network',async()=>{
+ const f=await parallelFixture();try{
+  for(const concurrency of [0,5,1.5,NaN])await assert.rejects(runBridge({...f.options,concurrency}),{code:'invalid_bridge_concurrency'});
+  assert.equal(f.requests.length,0);
+ }finally{f.cleanup();}
+});
+test('two root jobs overlap with isolated evidence, one lock, and reserved aggregate capacity',async()=>{
+ const f=await parallelFixture();let active=0,peak=0,providers=0,drains=0;
+ try{
+  mkdirSync(f.options.runtimePath);writeFileSync(join(f.options.runtimePath,'bridge-journal.json'),JSON.stringify({status:'idle',calls:0,decisions:0}));
+  const result=await runBridge({...f.options,heartbeatMs:2,providerFactory:onMetric=>{
+   providers++;
+   return {withSession:async(fn:any)=>fn({run:async(_prompt:any,options:any)=>{
+    assert.equal(existsSync(join(f.root,'worker.lock')),true);active++;peak=Math.max(peak,active);
+    await wait(35);const output=f.outputs.get(options.outputSchema.properties.decision_id.const)!;
+    onMetric(output.metric);active--;return structuredClone(output.raw);
+   }}),close:()=>{},drain:async()=>{drains++;}};
+  }});
+  assert.deepEqual(result,{status:'finished',calls:2,decisions:2,jobs:2});assert.equal(peak,2);assert.equal(providers,2);assert.equal(drains,2);assert.equal(f.claimCount(),2);
+  assert.deepEqual(f.requests.filter(r=>r.action==='claim').map(r=>r.body),[{remainingCalls:4,remainingDecisions:2},{remainingCalls:2,remainingDecisions:1}]);
+  for(const [id,output] of f.outputs){const envelope=JSON.parse(readFileSync(join(f.root,'decisions',id+'.json'),'utf8'));assert.equal(envelope.attestation[0].threadId,output.metric.threadId);assert.equal(envelope.provider_calls.length,1);}
+  const journal=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8'));
+  assert.equal(journal.format,'parallel-owner-v1');assert.equal(journal.status,'complete');assert.equal(journal.entries.length,2);assert.ok(journal.entries.every((e:any)=>e.status==='complete'&&e.calls===1&&e.decisions===1&&!e.call_in_flight));
+  assert.equal(existsSync(join(f.root,'worker.lock')),false);
+ }finally{f.cleanup();}
+});
+test('parallel reservation prevents a second lease beyond the aggregate decision budget',async()=>{
+ const f=await parallelFixture();let calls=0;
+ try{
+  const result=await runBridge({...f.options,maxDecisions:1,maxCalls:2,providerFactory:onMetric=>({withSession:async(fn:any)=>fn({run:async(_prompt:any,options:any)=>{calls++;await wait(10);const output=f.outputs.get(options.outputSchema.properties.decision_id.const)!;onMetric(output.metric);return output.raw;}}),close:()=>{},drain:async()=>{}})});
+  assert.equal(result.decisions,1);assert.equal(calls,1);assert.equal(f.claimCount(),1);
+ }finally{f.cleanup();}
+});
+test('one lane uncertainty blocks sibling correction/new claims and drains both providers',async()=>{
+ const f=await parallelFixture();let calls=0,drains=0;
+ try{
+  await assert.rejects(runBridge({...f.options,providerFactory:()=>({withSession:async(fn:any)=>fn({run:async()=>{
+   const number=++calls;await wait(number===1?15:35);if(number===1)throw Object.assign(Error('test failure'),{code:'test_uncertain'});return {}; // Invalid sibling JSON must not trigger its correction after halt.
+  }}),close:()=>{},drain:async()=>{drains++;}})}));
+  assert.equal(calls,2);assert.equal(drains,2);assert.equal(f.claimCount(),2);assert.equal(f.requests.some(r=>r.action==='complete'),false);
+  const journal=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8'));
+  assert.equal(journal.status,'failed');assert.equal(journal.entries.length,2);assert.ok(journal.entries.every((e:any)=>e.status==='failed'&&e.calls===1&&e.call_in_flight));
+  for(const id of f.outputs.keys())assert.equal(existsSync(join(f.root,'decisions',id+'.json')),false);
+ }finally{f.cleanup();}
+});
+test('parallel lost completion is retained per job and supports explicit upload-only retry',async()=>{
+ const f=await parallelFixture();let calls=0,completions=0;
+ try{
+  const fetcher=async(url:any,init:any)=>{if(String(url).endsWith('/complete')&&++completions===1)throw Error('lost ack');return f.options.fetch(url,init);};
+  await assert.rejects(runBridge({...f.options,fetch:fetcher as typeof fetch,providerFactory:onMetric=>({withSession:async(fn:any)=>fn({run:async(_prompt:any,options:any)=>{const number=++calls;await wait(number===1?15:45);const output=f.outputs.get(options.outputSchema.properties.decision_id.const)!;onMetric(output.metric);return output.raw;}}),close:()=>{},drain:async()=>{}})}),{code:'completion_upload_requires_explicit_retry'});
+  let journal=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8'));
+  assert.equal(journal.status,'completion_pending');assert.equal(journal.entries.filter((e:any)=>e.status==='completion_pending').length,1);assert.equal(journal.entries.filter((e:any)=>e.status==='failed').length,1);
+  await assert.rejects(runBridge({...f.options,concurrency:1}),{code:'previous_owner_outcome_requires_manual_review'});
+  await assert.rejects(runBridge(f.options),{code:'previous_owner_outcome_requires_manual_review'});
+  const before=f.requests.length;
+  const result=await runBridge({...f.options,retryCompletion:true,providerFactory:()=>{throw Error('upload only');}});
+  assert.equal(result.status,'completion_uploaded');assert.deepEqual(f.requests.slice(before).map(r=>r.action),['complete']);assert.equal(calls,2);
+  journal=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8'));assert.ok(journal.entries.every((e:any)=>['complete','failed'].includes(e.status)));
+ }finally{f.cleanup();}
+});
+test('same-board overlapping paths serialize ancestors without duplicate cache writes',async()=>{
+ const f=await fixture([]);let claims=0,calls=0,active=0,peak=0;
+ const rootEnvelope=JSON.parse(readFileSync(join(f.root,'decisions',rootId+'.json'),'utf8'));
+ rmSync(join(f.root,'decisions',rootId+'.json'));
+ const jobs=[f.job,{...f.job,path:['check'],id:hash({revision:f.job.revision,board:f.job.board,path:['check']}),maxDecisions:2,maxProviderCalls:4}];
+ try{
+  const fetcher=async(url:any,init:any)=>{
+   if(String(url).endsWith('/claim')){const job=jobs[claims++];f.requests.push({action:'claim',body:JSON.parse(init.body)});return Response.json(job?{job}:{job:null,budgetBlocked:true});}
+   return f.options.fetch(url,init);
+  };
+  const result=await runBridge({...f.options,fetch:fetcher as typeof fetch,concurrency:2,watch:true,maxDecisions:3,maxCalls:6,pollMs:2,providerFactory:onMetric=>({withSession:async(fn:any)=>fn({run:async(_prompt:any,options:any)=>{
+   calls++;active++;peak=Math.max(peak,active);await wait(20);const envelope=options.outputSchema.properties.decision_id.const===rootId?rootEnvelope:child;onMetric(envelope.attestation[0]);active--;return structuredClone(envelope.artifact.source_response);
+  }}),close:()=>{},drain:async()=>{}})});
+  assert.equal(result.decisions,2);assert.equal(calls,2);assert.equal(peak,1);assert.equal(f.requests.filter(r=>r.action==='complete').length,2);
+ }finally{f.cleanup();}
+});
+test('parallel two-turn corrections retain per-job metric provenance and aggregate four-call cap',async()=>{
+ const f=await parallelFixture(),turns=new Map<string,number>();let calls=0;
+ try{
+  const result=await runBridge({...f.options,providerFactory:onMetric=>({withSession:async(fn:any)=>fn({run:async(_prompt:any,options:any)=>{
+   calls++;const id=options.outputSchema.properties.decision_id.const,turn=(turns.get(id)??0)+1;turns.set(id,turn);await wait(15);
+   const output=f.outputs.get(id)!;onMetric({...output.metric,sessionTurn:turn,turnId:output.metric.turnId+'-'+turn});return turn===1?{}:structuredClone(output.raw);
+  }}),close:()=>{},drain:async()=>{}})});
+  assert.equal(result.calls,4);assert.equal(result.decisions,2);assert.equal(calls,4);assert.equal(f.claimCount(),2);
+  for(const [id,output] of f.outputs){const envelope=JSON.parse(readFileSync(join(f.root,'decisions',id+'.json'),'utf8'));assert.equal(envelope.attestation.length,2);assert.ok(envelope.attestation.every((m:any)=>m.threadId===output.metric.threadId));assert.equal(envelope.provider_calls[1].session_turn,2);assert.ok(envelope.provider_calls[1].validation_issue);}
+ }finally{f.cleanup();}
+});
+test('uncertain parallel claim is never retried and blocks both restart modes',async()=>{
+ const f=await parallelFixture();let claims=0;
+ try{
+  const fetcher=async(url:any,init:any)=>{if(String(url).endsWith('/claim')){claims++;throw Error('lost claim');}return f.options.fetch(url,init);};
+  await assert.rejects(runBridge({...f.options,fetch:fetcher as typeof fetch,providerFactory:()=>{throw Error('must not create provider');}}),{code:'bridge_transport_uncertain'});
+  const journal=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8'));assert.equal(journal.claim_pending,true);assert.equal(claims,1);
+  for(const concurrency of [1,2,4])await assert.rejects(runBridge({...f.options,concurrency}),{code:'previous_owner_outcome_requires_manual_review'});
+  await assert.rejects(runBridge({...f.options,retryCompletion:true}),{code:'no_pending_completion'});
+ }finally{f.cleanup();}
+});
+test('parallel job heartbeat loss stops sibling calls and unresolved fail upload blocks restart',async()=>{
+ const f=await parallelFixture();let calls=0,beats=0;
+ try{
+  const fetcher=async(url:any,init:any)=>{
+   const action=String(url).split('/').at(-1);if(action==='heartbeat'&&JSON.parse(init.body).id&&++beats>2)throw Error('lost lease heartbeat');
+   if(action==='fail')throw Error('lost failure acknowledgement');return f.options.fetch(url,init);
+  };
+  await assert.rejects(runBridge({...f.options,fetch:fetcher as typeof fetch,heartbeatMs:2,providerFactory:()=>({withSession:async(fn:any)=>fn({run:async()=>{calls++;await wait(35);return {};}}),close:()=>{},drain:async()=>{}})}));
+  assert.equal(calls,2);assert.equal(f.requests.some(r=>r.action==='complete'),false);
+  const journal=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8'));assert.ok(journal.entries.some((e:any)=>e.status==='failure_pending'));
+  for(const concurrency of [1,2,4])await assert.rejects(runBridge({...f.options,concurrency}),{code:'previous_owner_outcome_requires_manual_review'});
+ }finally{f.cleanup();}
+});
+test('parallel idle heartbeat failure is surfaced even while the final claim exits cleanly',async()=>{
+ const f=await parallelFixture();let beats=0;
+ try{
+  const fetcher=async(url:any,init:any)=>{
+   if(String(url).endsWith('/heartbeat')&&++beats>1){await wait(20);throw Error('late idle heartbeat failure');}
+   if(String(url).endsWith('/claim')){await wait(10);return Response.json({job:null,budgetBlocked:true});}
+   return f.options.fetch(url,init);
+  };
+  await assert.rejects(runBridge({...f.options,fetch:fetcher as typeof fetch,heartbeatMs:2,providerFactory:()=>{throw Error('no provider while idle');}}),{code:'bridge_transport_uncertain'});
+  assert.equal(existsSync(join(f.root,'worker.lock')),false);
+ }finally{f.cleanup();}
+});
+test('four disjoint roots overlap with isolated evidence, exact aggregate reservations and safe old journal migration',async()=>{
+ const f=await parallelFixture(['QsJhTd','9s8s6d','AhKd7c','Tc9h5s']);let calls=0,active=0,peak=0,drains=0,release!:()=>void;
+ const allStarted=new Promise<void>(resolve=>{release=resolve;});
+ try{
+  mkdirSync(f.options.runtimePath);writeFileSync(join(f.options.runtimePath,'bridge-journal.json'),JSON.stringify({format:'parallel-owner-v1',status:'complete',origin:f.options.origin,concurrency:2,claim_pending:false,calls:2,decisions:2,entries:[]}));
+  const result=await runBridge({...f.options,concurrency:4,providerFactory:onMetric=>({withSession:async(fn:any)=>fn({run:async(_prompt:any,options:any)=>{
+   calls++;active++;peak=Math.max(peak,active);if(calls===4)release();await allStarted;
+   const output=f.outputs.get(options.outputSchema.properties.decision_id.const)!;onMetric(output.metric);active--;return structuredClone(output.raw);
+  }}),close:()=>{},drain:async()=>{drains++;}})});
+  assert.deepEqual(result,{status:'finished',calls:4,decisions:4,jobs:4});assert.equal(peak,4);assert.equal(drains,4);assert.equal(f.claimCount(),4);
+  assert.deepEqual(f.requests.filter(r=>r.action==='claim').map(r=>r.body),[{remainingCalls:8,remainingDecisions:4},{remainingCalls:6,remainingDecisions:3},{remainingCalls:4,remainingDecisions:2},{remainingCalls:2,remainingDecisions:1}]);
+  for(const [id,output] of f.outputs){const envelope=JSON.parse(readFileSync(join(f.root,'decisions',id+'.json'),'utf8'));assert.equal(envelope.attestation[0].threadId,output.metric.threadId);assert.equal(envelope.provider_calls.length,1);}
+  const journal=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8'));assert.equal(journal.concurrency,4);assert.equal(journal.entries.length,4);assert.ok(journal.entries.every((entry:any)=>entry.status==='complete'&&entry.calls===1));
+ }finally{f.cleanup();}
+});
+test('four-lane setting never leases a fourth root when only three reservations fit',async()=>{
+ const f=await parallelFixture(['QsJhTd','9s8s6d','AhKd7c','Tc9h5s']);let calls=0;
+ try{
+  const result=await runBridge({...f.options,concurrency:4,maxDecisions:3,maxCalls:6,providerFactory:onMetric=>({withSession:async(fn:any)=>fn({run:async(_prompt:any,options:any)=>{calls++;await wait(10);const output=f.outputs.get(options.outputSchema.properties.decision_id.const)!;onMetric(output.metric);return output.raw;}}),close:()=>{},drain:async()=>{}})});
+  assert.equal(result.decisions,3);assert.equal(calls,3);assert.equal(f.claimCount(),3);
+ }finally{f.cleanup();}
+});
+test('four-lane uncertainty prevents every sibling correction and drains all started work',async()=>{
+ const f=await parallelFixture(['QsJhTd','9s8s6d','AhKd7c','Tc9h5s']);let calls=0,drains=0,release!:()=>void;
+ const allStarted=new Promise<void>(resolve=>{release=resolve;});
+ try{
+  await assert.rejects(runBridge({...f.options,concurrency:4,providerFactory:()=>({withSession:async(fn:any)=>fn({run:async()=>{
+   const number=++calls;if(number===4)release();await allStarted;
+   if(number===1)throw Object.assign(Error('mock uncertain response'),{code:'test_uncertain'});await wait(15);return {};
+  }}),close:()=>{},drain:async()=>{drains++;}})}));
+  assert.equal(calls,4);assert.equal(drains,4);assert.equal(f.claimCount(),4);assert.equal(f.requests.some(r=>r.action==='complete'),false);
+  const journal=JSON.parse(readFileSync(join(f.options.runtimePath,'bridge-journal.json'),'utf8'));assert.equal(journal.concurrency,4);assert.equal(journal.entries.length,4);assert.ok(journal.entries.every((entry:any)=>entry.status==='failed'&&entry.calls===1));
+  for(const id of f.outputs.keys())assert.equal(existsSync(join(f.root,'decisions',id+'.json')),false);
+ }finally{f.cleanup();}
 });

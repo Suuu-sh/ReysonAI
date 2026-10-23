@@ -3,6 +3,7 @@
 // by authoring a candidate or assigning a new numerical identity.
 import { createHash } from 'node:crypto';
 import { verifyPreservationExtension, PRESERVATION_IMPORTED, PRESERVATION_EXTRA_PATHS } from './mw3-verification-preservation-extension.ts';
+import { verifyOperatorPreservationExtension, OPERATOR_PRESERVATION_IMPORTED, OPERATOR_PRESERVATION_EXTRA_PATHS } from './mw3-operator-preservation-extension.ts';
 import { constants, closeSync, fstatSync, lstatSync, openSync, readSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -25,7 +26,7 @@ const LEGACY_EXTRA_CURRENT_PATHS = Object.freeze([ADAPTER, INVENTORY, REVIEW, EV
   'apps/frontend/scripts/postflop-ai/mw3-typescript-source-identity-pairs.json',
   'apps/frontend/scripts/postflop-ai/policy.d.mts',
   'configs/source-identity-typescript.review.json'].sort());
-const EXTRA_CURRENT_PATHS = Object.freeze([...LEGACY_EXTRA_CURRENT_PATHS, ...PRESERVATION_EXTRA_PATHS].sort());
+const EXTRA_CURRENT_PATHS = Object.freeze([...LEGACY_EXTRA_CURRENT_PATHS, ...PRESERVATION_EXTRA_PATHS, ...OPERATOR_PRESERVATION_EXTRA_PATHS].sort());
 const BASELINE = 'df2370690e9b3172f2c109f80113b320880f940a';
 const SHA = /^[a-f0-9]{64}$/;
 const fail = (message: string): never => { throw new Error(`Unapproved or changed MW3 archive source identity: ${message}`); };
@@ -65,8 +66,17 @@ function approvedArchiveSources(): any {
   if (!same(JSON.parse(preservationBytes.toString('utf8')), PRESERVATION_IMPORTED.proposal)
       || !same(JSON.parse(preservationReviewBytes.toString('utf8')), PRESERVATION_IMPORTED.review)
       || !same(JSON.parse(preservationBaselineBytes.toString('utf8')), PRESERVATION_IMPORTED.baseline)) fail('imported preservation metadata differs');
+  const operatorProposalBytes=readBound('configs/source-identity-mw3-operator-preservation.json');
+  const operatorReviewBytes=readBound('configs/source-identity-mw3-operator-preservation.review.json');
+  const operatorBaselineBytes=readBound('apps/frontend/docs/mw3-source-identity/operator-preservation-adapter-baseline.json');
+  if(!same(JSON.parse(operatorProposalBytes.toString('utf8')),OPERATOR_PRESERVATION_IMPORTED.proposal)
+      ||!same(JSON.parse(operatorReviewBytes.toString('utf8')),OPERATOR_PRESERVATION_IMPORTED.review)
+      ||!same(JSON.parse(operatorBaselineBytes.toString('utf8')),OPERATOR_PRESERVATION_IMPORTED.baseline))fail('imported operator preservation metadata differs');
+  const operatorPreservation=verifyOperatorPreservationExtension({proposal:operatorProposalBytes,review:operatorReviewBytes,baseline:operatorBaselineBytes,
+    priorProposal:preservationBytes,priorReview:preservationReviewBytes,adapter:adapterBytes,
+    validator:readBound('apps/frontend/scripts/postflop-ai/mw3-operator-preservation-extension.ts')});
   const preservation = verifyPreservationExtension({proposal:preservationBytes,review:preservationReviewBytes,baseline:preservationBaselineBytes,
-    legacyInventory:inventoryBytes,legacyReview:reviewBytes,legacyEvidence:evidenceBytes,adapter:adapterBytes,
+    legacyInventory:inventoryBytes,legacyReview:reviewBytes,legacyEvidence:evidenceBytes,adapter:operatorPreservation.priorAdapter,
     validator:readBound('apps/frontend/scripts/postflop-ai/mw3-verification-preservation-extension.ts')});
   exactKeys(inventory, ['schema_version', 'kind', 'status', 'rows', 'archived_recipe_sources', 'accepted_manifests', 'extra_current_sources'], 'inventory shape');
   if (inventory.schema_version !== 1 || inventory.kind !== 'mw3-typescript-archive-source-inventory' || inventory.status !== 'source-only-proposal'
@@ -99,7 +109,7 @@ function approvedArchiveSources(): any {
     const { current, historical, classification } = row;
     if (!same(evidence.rows[index], { historical, current, classification })) fail('evidence pair differs');
     if (index > 0 && inventory.rows[index - 1].historical.path >= historical.path) fail('source pairs are not canonically sorted');
-    const effective = preservation.overrides.get(current.path) ?? current;
+    const effective = operatorPreservation.overrides.get(current.path) ?? preservation.overrides.get(current.path) ?? current;
     const currentBytes = readBound(current.path);
     if (currentBytes.length !== effective.bytes || digest(currentBytes) !== effective.sha256) fail(`current source drift: ${current.path}`);
     byHistorical.set(historical.path, row); byCurrent.set(current.path, row);
@@ -145,8 +155,8 @@ function approvedArchiveSources(): any {
     }
     acceptedManifests.set(record.spot, record);
   }
-  const currentSourceRecords = [...inventory.rows.map((row: any) => preservation.overrides.get(row.current.path) ?? row.current), ...extras,
-    ...PRESERVATION_EXTRA_PATHS.map(path => { const bytes=readBound(path); return {path,bytes:bytes.length,sha256:digest(bytes)}; }),
+  const currentSourceRecords = [...inventory.rows.map((row: any) => operatorPreservation.overrides.get(row.current.path) ?? preservation.overrides.get(row.current.path) ?? row.current), ...extras,
+    ...[...PRESERVATION_EXTRA_PATHS,...OPERATOR_PRESERVATION_EXTRA_PATHS].map(path => { const bytes=readBound(path); return {path,bytes:bytes.length,sha256:digest(bytes)}; }),
     { path: INVENTORY, bytes: inventoryBytes.length, sha256: digest(inventoryBytes) },
     { path: REVIEW, bytes: reviewBytes.length, sha256: digest(reviewBytes) },
     { path: EVIDENCE, bytes: evidenceBytes.length, sha256: digest(evidenceBytes) },

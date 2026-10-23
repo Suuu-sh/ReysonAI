@@ -25,7 +25,12 @@ const EXT_PROPOSAL = 'configs/source-identity-mw3-verification-preservation.json
 const EXT_REVIEW = 'configs/source-identity-mw3-verification-preservation.review.json';
 const EXT_BASELINE = 'apps/frontend/docs/mw3-source-identity/verification-preservation-adapter-baseline.json';
 const EXT_EXTRAS = [EXT_BASELINE, EXTENSION, EXT_PROPOSAL, EXT_REVIEW];
-const CURRENT_EXTRAS = [...EXTRAS, ...EXT_EXTRAS].sort();
+const OP_EXTENSION='apps/frontend/scripts/postflop-ai/mw3-operator-preservation-extension.ts';
+const OP_PROPOSAL='configs/source-identity-mw3-operator-preservation.json';
+const OP_REVIEW='configs/source-identity-mw3-operator-preservation.review.json';
+const OP_BASELINE='apps/frontend/docs/mw3-source-identity/operator-preservation-adapter-baseline.json';
+const OP_EXTRAS=[OP_EXTENSION,OP_PROPOSAL,OP_REVIEW,OP_BASELINE];
+const CURRENT_EXTRAS = [...EXTRAS, ...EXT_EXTRAS, ...OP_EXTRAS].sort();
 const PRESERVATION_PATHS = ['apps/frontend/scripts/ci/mw3-local-d1-oracle.ts', 'apps/frontend/scripts/verify-preflop-local-d1.ts'];
 const RECIPE_PATHS = ['apps/frontend/scripts/data/mw3-authored/context-judgments.mjs', 'apps/frontend/scripts/data/mw3-authored/emit.mjs',
   'apps/frontend/scripts/data/mw3-authored/registry.mjs', 'apps/frontend/scripts/data/mw3-co-btn-bb-authored.mjs'];
@@ -84,13 +89,18 @@ function fixture(t: any) {
   const review = { schema_version: 1, kind: 'mw3-typescript-archive-source-compatibility-review', status: 'approved', scope: 'source-only-no-strategy-or-runtime-renewal',
     baseline_commit: 'df2370690e9b3172f2c109f80113b320880f940a', source_head_sha: 'a'.repeat(40), reviewer: 'synthetic test only', requested_model: 'gpt-6.1-sol',
     runtime_model_attestation: 'unavailable in synthetic fixture', inventory_sha256: sha(readFileSync(join(root, INVENTORY))), adapter_sha256: sha("synthetic old adapter bytes"),
-    evidence_sha256: sha(readFileSync(join(root, EVIDENCE))), source_count: 152, extra_current_paths: EXTRAS };
+    evidence_sha256: sha(readFileSync(join(root, EVIDENCE))), source_count: 152, extra_current_paths: [...EXTRAS] };
   put(root, REVIEW, json(review));
   const validator=readFileSync(new URL('../../../'+EXTENSION,import.meta.url));put(root,EXTENSION,validator);
   const extensionProposal={schema_version:1,kind:'mw3-verification-preservation-extension-proposal',status:'source-only-proposal',scope:'verification-preservation-only-no-numerical-or-gto-renewal',author_task:'/root/production_path',rows:PRESERVATION_PATHS.map(path=>({classification:'verification-preservation-extension',prior:rows.find(row=>row.current.path===path).current,current:{path,bytes:readFileSync(join(root,path)).length,sha256:sha(readFileSync(join(root,path)))}}))};
   put(root,EXT_PROPOSAL,json(extensionProposal));put(root,EXT_BASELINE,json({schema_version:1,kind:'mw3-preservation-legacy-adapter-bytes',path:ADAPTER,source:'synthetic old adapter bytes'}));
   const extensionReview={schema_version:1,kind:'mw3-verification-preservation-extension-review',status:'approved',scope:extensionProposal.scope,reviewer:'synthetic contract fixture only',reviewer_task:'/synthetic-independent-review-not-real-approval',reviewer_model:'not-exposed',proposal_sha256:sha(readFileSync(join(root,EXT_PROPOSAL))),adapter_sha256:sha(helper),validator_sha256:sha(validator),baseline_snapshot_sha256:sha(readFileSync(join(root,EXT_BASELINE))),legacy_inventory_sha256:sha(readFileSync(join(root,INVENTORY))),legacy_review_sha256:sha(readFileSync(join(root,REVIEW))),legacy_evidence_sha256:sha(readFileSync(join(root,EVIDENCE))),notes:['Synthetic fixture only; no real approval.']};put(root,EXT_REVIEW,json(extensionReview));
-  return { extensionProposal, extensionReview, root, inventory, rows, evidence, review, saveInventory: () => { put(root, INVENTORY, json(inventory)); review.inventory_sha256 = sha(readFileSync(join(root, INVENTORY))); put(root, REVIEW, json(review)); },
+  const operatorValidator=readFileSync(new URL('../../../'+OP_EXTENSION,import.meta.url));put(root,OP_EXTENSION,operatorValidator);
+  put(root,OP_BASELINE,json({schema_version:1,kind:'mw3-operator-preservation-prior-adapter-bytes',path:ADAPTER,source:helper.toString('utf8')}));
+  const operatorProposal={schema_version:1,kind:'mw3-operator-preservation-extension-proposal',status:'source-only-proposal',scope:'operator-batch-verification-preservation-only-no-numerical-or-gto-renewal',author_task:'/root/parallel_safety_review',rows:extensionProposal.rows.map(row=>{const body=Buffer.from('synthetic operator preservation '+row.current.path);put(root,row.current.path,body);return {classification:'operator-preservation-extension',prior:row.current,current:{path:row.current.path,bytes:body.length,sha256:sha(body)}};})};
+  put(root,OP_PROPOSAL,json(operatorProposal));
+  const operatorReview={schema_version:1,kind:'mw3-operator-preservation-extension-review',status:'approved',scope:operatorProposal.scope,reviewer:'Synthetic source-only test fixture',reviewer_task:'/synthetic-independent-operator-review',reviewer_model:'not-exposed',proposal_sha256:sha(readFileSync(join(root,OP_PROPOSAL))),adapter_sha256:sha(helper),validator_sha256:sha(operatorValidator),baseline_snapshot_sha256:sha(readFileSync(join(root,OP_BASELINE))),prior_proposal_sha256:sha(readFileSync(join(root,EXT_PROPOSAL))),prior_review_sha256:sha(readFileSync(join(root,EXT_REVIEW))),notes:['Synthetic contract fixture only, not actual acceptance.']};put(root,OP_REVIEW,json(operatorReview));
+  return { operatorProposal, operatorReview, extensionProposal, extensionReview, root, inventory, rows, evidence, review, saveInventory: () => { put(root, INVENTORY, json(inventory)); review.inventory_sha256 = sha(readFileSync(join(root, INVENTORY))); put(root, REVIEW, json(review)); },
     saveReview: () => put(root, REVIEW, json(review)), load: () => import(pathToFileURL(join(root, ADAPTER)).href) };
 }
 
@@ -143,4 +153,25 @@ test('synthetic preservation addendum returns exact two new current pins and ret
  for(const path of PRESERVATION_PATHS){const actual=readFileSync(join(f.root,path)),pin=records.find((r:any)=>r.path===path);assert.deepEqual(pin,{path,bytes:actual.length,sha256:sha(actual)});}
  for(const path of EXT_EXTRAS)assert.equal(records.filter((r:any)=>r.path===path).length,1);
  assert.equal(f.inventory.rows.length,152);assert.equal(f.inventory.accepted_manifests.length,16);assert.equal(f.inventory.archived_recipe_sources.length,4);
+});
+
+for(const[name,mutate]of [
+ ['prior pin',(f:any)=>{f.operatorProposal.rows[0].prior.sha256='0'.repeat(64);}],
+ ['third path',(f:any)=>{f.operatorProposal.rows.push(structuredClone(f.operatorProposal.rows[0]));}],
+ ['changed helper path',(f:any)=>{f.operatorProposal.rows[0].current.path='unreviewed/new.ts';}],
+ ['parity relabelling',(f:any)=>{f.operatorProposal.rows[0].classification='typescript-source-parity';}],
+]as[string,(f:any)=>void][])test(`synthetic operator preservation rejects ${name} even with matching digest`,async t=>{
+ const f=fixture(t);mutate(f);put(f.root,OP_PROPOSAL,json(f.operatorProposal));f.operatorReview.proposal_sha256=sha(readFileSync(join(f.root,OP_PROPOSAL)));put(f.root,OP_REVIEW,json(f.operatorReview));const api=await f.load();assert.throws(()=>api.mw3ApprovedCurrentSourceRecords(),/source identity/);
+});
+for(const[name,mutate]of [
+ ['self review',(f:any)=>{f.operatorReview.reviewer_task='/root/parallel_safety_review';}],
+ ['pending review',(f:any)=>{f.operatorReview.status='pending';}],
+ ['prior authority drift',(f:any)=>{put(f.root,EXT_REVIEW,Buffer.concat([readFileSync(join(f.root,EXT_REVIEW)),Buffer.from(' ')]));}],
+ ['prior adapter snapshot drift',(f:any)=>{const b=JSON.parse(readFileSync(join(f.root,OP_BASELINE),'utf8'));b.source+=' ';put(f.root,OP_BASELINE,json(b));f.operatorReview.baseline_snapshot_sha256=sha(readFileSync(join(f.root,OP_BASELINE)));}],
+ ['validator drift',(f:any)=>{put(f.root,OP_EXTENSION,Buffer.concat([readFileSync(join(f.root,OP_EXTENSION)),Buffer.from('\n')]));}],
+]as[string,(f:any)=>void][])test(`synthetic operator preservation rejects ${name}`,async t=>{
+ const f=fixture(t);mutate(f);put(f.root,OP_REVIEW,json(f.operatorReview));const api=await f.load();assert.throws(()=>api.mw3ApprovedCurrentSourceRecords(),/source identity/);
+});
+test('synthetic operator preservation returns second exact pins and both authority dependency sets',async t=>{
+ const f=fixture(t),api=await f.load(),records=api.mw3ApprovedCurrentSourceRecords();for(const row of f.operatorProposal.rows)assert.deepEqual(records.find((r:any)=>r.path===row.current.path),row.current);for(const path of [...EXT_EXTRAS,...OP_EXTRAS])assert.equal(records.filter((r:any)=>r.path===path).length,1);assert.equal(records.length,171);
 });

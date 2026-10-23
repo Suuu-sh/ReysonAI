@@ -10344,8 +10344,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 30925,
-      "sha256": "ed41354e6f2e88122fef372ea09e2e37547cc481bb1ef866494b37902add98b7"
+      "bytes": 32010,
+      "sha256": "8603d563f2f9ce3c2e729b766d4a01b997c168600a995d6bc0979b2541132550"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -10904,8 +10904,8 @@
     },
     {
       "path": "apps/frontend/scripts/verify-preflop-local-d1.ts",
-      "bytes": 24026,
-      "sha256": "34551a2e261d441b5fb4e70e9c4bbf399c0379c7bbcaf5a659cb813ad593ff5c"
+      "bytes": 24290,
+      "sha256": "b234759c77656a57949d4d33cc3855f80a53709f56616c7544cc4b884f69ef01"
     },
     {
       "path": "apps/frontend/scripts/verify-reviewed-preflop.ts",
@@ -11354,16 +11354,16 @@
     },
     {
       "path": "scripts/ci/deployment-scope.test.ts",
-      "bytes": 46475,
-      "sha256": "0d485a28adbd14d7549c48c4e65f2cb251d830ddabc255139a65d804c171785c"
+      "bytes": 49984,
+      "sha256": "abef3a564a55cb17752e0c0a7675258c49417222d73c8bdd7a65f70a479126f2"
     },
     {
       "path": "scripts/ci/deployment-scope.ts",
-      "bytes": 33798,
-      "sha256": "3bed19652756ff1b79ee26274aa0944b590b5ec2db1d420d0acbba395d9f1e28"
+      "bytes": 34108,
+      "sha256": "ba05c69c21a0d4e85d3ddad4e5be7c81b8f0cc032639581940b15c5a3045d47f"
     }
   ],
-  "content_sha256": "34be4063f5153f7211c9cabdf00aa07714ce463667b2a1dccb97a24e6ae06840",
+  "content_sha256": "0a3add52c87478f65f826768b046bf8f6ce641ee09fdbe44428ecd830ffc85f5",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -11812,6 +11812,92 @@
         "original_review_sha256": "17f8ea0ba36f26311f30b59ada348033465372417edb5c817e0377a07bd94feb"
       },
       "limitations": "No numerical, strategy-quality/GTO, runtime, production or deployment acceptance renewed."
+    }
+  ],
+  "operator_batch_release_source_renewals": [
+    {
+      "date": "2026-10-23",
+      "reviewer": "Independent source-only CI guard reviewer /root/operator_broker",
+      "status": "approved-source-only",
+      "scope": "Canonical source-only receipt amendment for three legitimate CI release integrations plus final renewed Stage2 receipt binding in Stage3. Preserve every prior receipt field except current sources/content_sha256, append new amendment only. No numerical generation, strategy-quality/GTO, semantic-policy, archive acceptance, runtime, UI, production or deployment approval is renewed.",
+      "prior_raw_receipt_sha256": "f359e5fc850758f41f4873f78e825cc8b8b1dcb55d1b03cedfa0795685d66a1c",
+      "before_content_sha256": "34be4063f5153f7211c9cabdf00aa07714ce463667b2a1dccb97a24e6ae06840",
+      "after_content_sha256": "ba3b68653bdd43a953b1f83f38072294c1224e594414cfaeb4734e3af1d20b55",
+      "review_reference": {
+        "path": "docs/qa/aiv2-operator-batch-release-source-renewal.json",
+        "sha256": "b9d1b2679f65cccf3094d85e5be5e85b953da8e511970c97b738403a70cd2a71"
+      },
+      "changed_sources": [
+        ".github/workflows/deploy-worker.yml",
+        "scripts/ci/deployment-scope.test.ts",
+        "scripts/ci/deployment-scope.ts"
+      ],
+      "preserved": {
+        "stage": 2,
+        "artifact_record_count": 1888,
+        "artifact_records_sha256": "60179b68d2fe722deb3ac93f7db76101b065ee9453d397377a0db8550d73e73e",
+        "archive": {
+          "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+          "bytes": 1747857,
+          "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+          "format": "ustar+gzip"
+        },
+        "archive_materialized_bytes_rehashed": true,
+        "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+        "counts": {
+          "catalog": 3115,
+          "saved": 1611,
+          "unreachable": 1504,
+          "hands": 272259
+        },
+        "original_review_sha256": "17f8ea0ba36f26311f30b59ada348033465372417edb5c817e0377a07bd94feb",
+        "tracked_artifact_or_archive_changes_since_baseline": []
+      },
+      "limitations": "No historical numerical, strategy-quality/GTO, runtime, production or deployment acceptance renewed."
+    }
+  ],
+  "operator_preservation_source_renewals": [
+    {
+      "date": "2026-10-23",
+      "status": "approved-source-only",
+      "reviewer": "Independent source-only extension reviewer /root/flop_parallel_audit",
+      "scope": "Canonical source identity amendment only for additive local verification preservation of operator batch table/provenance and final Stage2 receipt binding in Stage3. Original numerical artifacts, archives, counts, policy fingerprints, original reviews and all historical amendments retained. No strategy/GTO, numerical, runtime, production or deployment acceptance renewed.",
+      "prior_raw_receipt_sha256": "df9a002fb1462d926daf05a1b106b57b5b8757490f00d7e45a5cdc846a6d9732",
+      "before_content_sha256": "ba3b68653bdd43a953b1f83f38072294c1224e594414cfaeb4734e3af1d20b55",
+      "after_content_sha256": "0a3add52c87478f65f826768b046bf8f6ce641ee09fdbe44428ecd830ffc85f5",
+      "review_reference": {
+        "path": "docs/qa/aiv2-operator-preservation-source-renewal.json",
+        "sha256": "79968690a90dd5f934c3fda0d7d81bcfb3c455be8766b9bd64493786bc1958ea"
+      },
+      "independent_extension_review": {
+        "path": "configs/source-identity-mw3-operator-preservation.review.json",
+        "bytes": 2142,
+        "sha256": "239721dac5cc810b2dcf0c50342d72242167d35eefbe7771ffaa4a7e334d967f"
+      },
+      "changed_sources": [
+        "apps/frontend/scripts/verify-preflop-local-d1.ts"
+      ],
+      "preserved": {
+        "stage": 2,
+        "artifact_record_count": 1888,
+        "artifact_records_sha256": "60179b68d2fe722deb3ac93f7db76101b065ee9453d397377a0db8550d73e73e",
+        "archive": {
+          "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+          "bytes": 1747857,
+          "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+          "format": "ustar+gzip"
+        },
+        "materialized_archive_raw_rehashed": true,
+        "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+        "counts": {
+          "catalog": 3115,
+          "saved": 1611,
+          "unreachable": 1504,
+          "hands": 272259
+        },
+        "original_review_sha256": "17f8ea0ba36f26311f30b59ada348033465372417edb5c817e0377a07bd94feb"
+      },
+      "limitations": "No renewal/replacement of historical numerical, strategy-quality/GTO, runtime, production or deployment approval."
     }
   ]
 }
