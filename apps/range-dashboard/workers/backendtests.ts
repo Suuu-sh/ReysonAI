@@ -1,0 +1,45 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtemp, mkdir, writeFile, symlink, rm, realpath } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { projectWorkers, createWorkersReader, readBounded, type Inputs } from './projection.ts';
+import { permittedRequest, workersHandler } from './server.ts';
+const id='a'.repeat(64),batchId='b'.repeat(64),now=Date.now();
+const read=(value:any,mtime=now)=>({value,mtime});
+const base=():Inputs=>({owner:read({pid:123,startedAt:new Date(now-1000).toISOString(),concurrency:50,maxCalls:200,maxDecisions:100,operatorBatchId:batchId}),journal:read({operatorBatchId:batchId,status:'running',calls:1,decisions:0,entries:[{job:{id,board:'As7d2c',path:['check'],operatorBatchId:batchId,leaseToken:'PRIVATE_LEASE'},status:'running',call_in_flight:true}]}),batch:null,coverage:null,snapshot:null,alive:true,now});
+const request=(overrides:any={})=>({method:'GET',url:'/api/workers',headers:{host:'127.0.0.1:5189'},socket:{remoteAddress:'127.0.0.1'},...overrides}) as any;
+test('strict projection preserves capacity/configured/actual distinction and never exposes private extras',()=>{
+ const input=base();input.owner!.value.secret='PRIVATE_SECRET';input.journal!.value.completion={output:'PRIVATE_COMPLETION'};input.journal!.value.diagnostics={jobs:{[id]:{metrics:[{elapsedMs:314,at:new Date(now).toISOString(),threadId:'PRIVATE_THREAD',raw:'PRIVATE_RAW'}]}}};
+ const value=projectWorkers(input),json=JSON.stringify(value);assert.equal(value.capacity,50);assert.equal(value.owner.configuredConcurrency,50);assert.equal(value.run.active,1);assert.equal(value.lanes[0].phase,'provider');assert.equal(value.lanes[0].elapsedMs,314);assert.equal(value.lanes[0].elapsedSource,'metric');assert.doesNotMatch(json,/PRIVATE_|leaseToken|completion"|threadId/);assert.equal(value.counts.queued,null);
+});
+test('dead owner, failed inflight, scope mismatch and old journal never masquerade as live workers',()=>{
+ let input=base();input.alive=false;let value=projectWorkers(input);assert.equal(value.run.active,0);assert.equal(value.lanes[0].status,'stale');
+ input=base();input.journal!.value.entries[0].status='failed';input.journal!.value.entries[0].error='arbitrary secret';value=projectWorkers(input);assert.equal(value.run.active,0);assert.equal(value.lanes[0].status,'uncertain');assert.equal(value.counts.failed,1);assert.equal(value.counts.uncertain,1);assert.equal(value.lanes[0].errorCode,'unclassified_failure');
+ input=base();delete input.owner!.value.startedAt;assert.equal(projectWorkers(input).run.active,0);assert.ok(projectWorkers(input).warnings.includes('owner_identity_unverified'));
+ input=base();delete input.owner!.value.operatorBatchId;assert.equal(projectWorkers(input).run.active,0);
+ input=base();input.journal!.value.operatorBatchId='c'.repeat(64);assert.equal(projectWorkers(input).run.active,0);input=base();input.journal!.value.entries[0].job.operatorBatchId='c'.repeat(64);assert.equal(projectWorkers(input).run.active,0);
+ input=base();input.owner!.value.startedAt=new Date(now).toISOString();input.journal!.mtime=now-10_000;assert.equal(projectWorkers(input).run.active,0);
+});
+test('long provider calls remain observed active with stale-age warning; observation elapsed is not model timing',()=>{
+ const input=base(),observations=new Map<string,number>();input.owner!.value.startedAt=new Date(now-120_000).toISOString();input.journal!.mtime=now-60_000;let value=projectWorkers(input,observations);assert.equal(value.run.stale,true);assert.equal(value.run.active,1);assert.equal(value.lanes[0].elapsedSource,'observation');assert.equal(value.lanes[0].elapsedMs,0);input.now+=1000;value=projectWorkers(input,observations);assert.equal(value.lanes[0].elapsedMs,1000);
+});
+test('current immutable batch counts use exact IDs and timestamped snapshot, never other batch jobs',()=>{
+ const input=base();input.batch=read({manifest:{batchId,revision:'c'.repeat(64),maxCalls:200,maxDecisions:100},receipt:{batchId,jobs:[{id,board:'As7d2c',path:['check'],status:'queued'}]}});input.snapshot=read({revision:'c'.repeat(64),recordedAt:new Date(now-1000).toISOString(),jobs:[{id,status:'complete'},{id:'d'.repeat(64),status:'queued'}]});let value=projectWorkers(input);assert.equal(value.counts.running,1);assert.equal(value.counts.complete,0);assert.equal(value.counts.queued,0);assert.equal(value.counts.recordedAt,new Date(now-1000).toISOString());input.journal!.value.entries=[];value=projectWorkers(input);assert.equal(value.counts.complete,1);assert.equal(value.counts.queued,0);
+});
+test('coverage separate root/check denominator22100 and unknown values remain unknown, not GTO',()=>{
+ const input=base(),counts={S:15,M:22085,B:0,U:0,P:0,Z:0};input.coverage=read({kind:'offline-all-physical-flop-coverage-plan',approved:false,gto_verified:false,summary:{physical_flops:22100,root:counts,check:{S:9,M:2,B:4,U:0,P:22085,Z:0}},broker_snapshot:{recordedAt:new Date(now-120_000).toISOString()}});let value=projectWorkers(input);assert.equal(value.coverage.root.saved,15);assert.equal(value.coverage.check.saved,9);assert.equal(value.coverage.stale,true);assert.equal(value.coverage.locallyValidatedNotGto,true);input.coverage.value.summary.root.S=22101;assert.equal(projectWorkers(input).coverage.root.saved,null);
+});
+test('literal loopback host/socket GET-only same-origin allowlist rejects forwarding, traversal, queries and cross-site',()=>{
+ assert.equal(permittedRequest(request()),true);assert.equal(permittedRequest(request({url:'/'})),true);
+ for(const change of [{method:'POST'},{url:'/api/workers?path=secret'},{url:'/../secret'},{url:'/%2e%2e/secret'},{url:'/api/status'},{headers:{host:'localhost:5189'}},{headers:{host:'127.0.0.1:5189','x-forwarded-host':'evil'}},{headers:{host:'127.0.0.1:5189',forwarded:'for=127.0.0.1'}},{headers:{host:'127.0.0.1:5189',origin:'https://evil'}},{headers:{host:'127.0.0.1:5189','sec-fetch-site':'cross-site'}},{socket:{remoteAddress:'10.0.0.1'}}])assert.equal(permittedRequest(request(change)),false);
+});
+test('bounded fixed runtime reads reject final/ancestor symlinks, oversized JSON, arbitrary batch paths and secrets',async()=>{
+ const root=await realpath(await mkdtemp(join(tmpdir(),'workers-read-')));try{const runtime=join(root,'.local/range-dashboard');await mkdir(join(runtime,'ondemand-bridge'),{recursive:true});await writeFile(join(runtime,'ondemand-bridge/owner-process.json'),JSON.stringify({pid:123,operatorBatchId:'../../secret',secret:'PRIVATE'}));await writeFile(join(runtime,'ondemand-bridge/bridge-journal.json'),JSON.stringify({status:'complete',calls:1,decisions:1,completion:'PRIVATE'}));const reader=createWorkersReader(root,()=>false),value=await reader();assert.equal(value.run.active,0);assert.equal(value.run.status,'complete');assert.equal(value.run.batchId,null);assert.doesNotMatch(JSON.stringify(value),/PRIVATE/);
+ await writeFile(join(root,'large.json'),' '.repeat(100));assert.equal(await readBounded(join(root,'large.json'),10),null);await symlink(join(root,'large.json'),join(root,'link.json'));assert.equal(await readBounded(join(root,'link.json'),1000),null);await symlink(runtime,join(root,'alias'));assert.equal(await readBounded(join(root,'alias/ondemand-bridge/bridge-journal.json'),1000),null);
+ }finally{await rm(root,{recursive:true,force:true});}
+});
+test('handler rejects before reading, no error details/CORS, repeated GET only invokes readonly reader',async()=>{
+ let reads=0;const handler=workersHandler({reader:async()=>{reads++;return{active:0};}});const response=()=>{let body='';const headers:Record<string,unknown>={};return{statusCode:200,setHeader:(k:string,v:unknown)=>{headers[k]=v;},end:(v:string)=>{body=v;},get body(){return body;},headers};};let res=response();await handler(request({method:'POST'}),res as any);assert.equal(reads,0);assert.equal(res.statusCode,403);for(let i=0;i<2;i++){res=response();await handler(request(),res as any);}assert.equal(reads,2);assert.equal(res.headers['Access-Control-Allow-Origin'],undefined);
+ res=response();await workersHandler({reader:async()=>{throw Error('/private/secret');}})(request(),res as any);assert.equal(res.statusCode,503);assert.doesNotMatch(res.body,/private|secret/);
+});
