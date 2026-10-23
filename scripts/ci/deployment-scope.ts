@@ -291,6 +291,10 @@ export function changedGroups(before?: any, after?: any): any {
 
 export function changedPaths(repoRoot?: any, beforeSha?: any, afterSha?: any): any {
   if (!SHA_RE.test(beforeSha) || !SHA_RE.test(afterSha)) throw new Error('invalid tree comparison SHA');
+  // PR checkouts may contain only the head. Materialize both exact validated
+  // commit objects before any diff or reviewed-source/tree comparison.
+  ensureCommit(repoRoot, beforeSha);
+  ensureCommit(repoRoot, afterSha);
   const raw = runGit(repoRoot, ['diff', '--name-only', '-z', '--no-renames', beforeSha, afterSha], { encoding: null, maxBuffer: 128 * 1024 * 1024 });
   return raw.toString('utf8').split('\0').filter(Boolean);
 }

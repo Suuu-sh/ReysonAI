@@ -2,6 +2,7 @@
 // This adapter is used only by saved-archive verification/preservation, never
 // by authoring a candidate or assigning a new numerical identity.
 import { createHash } from 'node:crypto';
+import { verifyPreservationExtension, PRESERVATION_IMPORTED, PRESERVATION_EXTRA_PATHS } from './mw3-verification-preservation-extension.ts';
 import { constants, closeSync, fstatSync, lstatSync, openSync, readSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,7 +14,7 @@ const INVENTORY = 'configs/source-identity-mw3-typescript-archive.json';
 const REVIEW = 'configs/source-identity-mw3-typescript-archive.review.json';
 const EVIDENCE = 'apps/frontend/docs/mw3-source-identity/typescript-archive-sources-parity.json';
 const ADAPTER = 'apps/frontend/scripts/postflop-ai/mw3-manifest-source-identity.ts';
-const EXTRA_CURRENT_PATHS = Object.freeze([ADAPTER, INVENTORY, REVIEW, EVIDENCE,
+const LEGACY_EXTRA_CURRENT_PATHS = Object.freeze([ADAPTER, INVENTORY, REVIEW, EVIDENCE,
   'apps/frontend/docs/mw3-source-identity/typescript-executable-parity.json',
   // AIv2 readiness is now a consumed source-level guard in the shared dataset
   // path. Keep it explicit in this overlay rather than allowing it to drift
@@ -24,6 +25,7 @@ const EXTRA_CURRENT_PATHS = Object.freeze([ADAPTER, INVENTORY, REVIEW, EVIDENCE,
   'apps/frontend/scripts/postflop-ai/mw3-typescript-source-identity-pairs.json',
   'apps/frontend/scripts/postflop-ai/policy.d.mts',
   'configs/source-identity-typescript.review.json'].sort());
+const EXTRA_CURRENT_PATHS = Object.freeze([...LEGACY_EXTRA_CURRENT_PATHS, ...PRESERVATION_EXTRA_PATHS].sort());
 const BASELINE = 'df2370690e9b3172f2c109f80113b320880f940a';
 const SHA = /^[a-f0-9]{64}$/;
 const fail = (message: string): never => { throw new Error(`Unapproved or changed MW3 archive source identity: ${message}`); };
@@ -57,6 +59,15 @@ function approvedArchiveSources(): any {
   try { inventory = JSON.parse(inventoryBytes.toString('utf8')); review = JSON.parse(reviewBytes.toString('utf8')); evidence = JSON.parse(evidenceBytes.toString('utf8')); }
   catch { fail('malformed JSON'); }
   if (!same(inventory, proposal)) fail('imported inventory differs from current bytes');
+  const preservationBytes = readBound('configs/source-identity-mw3-verification-preservation.json');
+  const preservationReviewBytes = readBound('configs/source-identity-mw3-verification-preservation.review.json');
+  const preservationBaselineBytes = readBound('apps/frontend/docs/mw3-source-identity/verification-preservation-adapter-baseline.json');
+  if (!same(JSON.parse(preservationBytes.toString('utf8')), PRESERVATION_IMPORTED.proposal)
+      || !same(JSON.parse(preservationReviewBytes.toString('utf8')), PRESERVATION_IMPORTED.review)
+      || !same(JSON.parse(preservationBaselineBytes.toString('utf8')), PRESERVATION_IMPORTED.baseline)) fail('imported preservation metadata differs');
+  const preservation = verifyPreservationExtension({proposal:preservationBytes,review:preservationReviewBytes,baseline:preservationBaselineBytes,
+    legacyInventory:inventoryBytes,legacyReview:reviewBytes,legacyEvidence:evidenceBytes,adapter:adapterBytes,
+    validator:readBound('apps/frontend/scripts/postflop-ai/mw3-verification-preservation-extension.ts')});
   exactKeys(inventory, ['schema_version', 'kind', 'status', 'rows', 'archived_recipe_sources', 'accepted_manifests', 'extra_current_sources'], 'inventory shape');
   if (inventory.schema_version !== 1 || inventory.kind !== 'mw3-typescript-archive-source-inventory' || inventory.status !== 'source-only-proposal'
       || !Array.isArray(inventory.rows) || inventory.rows.length !== 152 || !Array.isArray(inventory.archived_recipe_sources)
@@ -68,8 +79,8 @@ function approvedArchiveSources(): any {
       || review.scope !== 'source-only-no-strategy-or-runtime-renewal' || review.baseline_commit !== BASELINE
       || !/^[a-f0-9]{40}$/.test(review.source_head_sha) || typeof review.reviewer !== 'string' || !review.reviewer.trim()
       || review.requested_model !== 'gpt-6.1-sol' || typeof review.runtime_model_attestation !== 'string' || !review.runtime_model_attestation.trim()
-      || review.inventory_sha256 !== digest(inventoryBytes) || review.adapter_sha256 !== digest(adapterBytes)
-      || review.evidence_sha256 !== digest(evidenceBytes) || review.source_count !== 152 || !same(review.extra_current_paths, EXTRA_CURRENT_PATHS)) fail('independent review binding');
+      || review.inventory_sha256 !== digest(inventoryBytes) || review.adapter_sha256 !== digest(preservation.legacyAdapter)
+      || review.evidence_sha256 !== digest(evidenceBytes) || review.source_count !== 152 || !same(review.extra_current_paths, LEGACY_EXTRA_CURRENT_PATHS)) fail('independent review binding');
   if (typeof evidence !== 'object' || Array.isArray(evidence) || evidence.kind !== 'mw3-typescript-archive-source-parity' || evidence.status !== 'independently-reviewed') fail('parity evidence shape');
   if (!Array.isArray(inventory.rows) || !Array.isArray(evidence.rows) || evidence.rows.length !== inventory.rows.length) fail('closed evidence rows');
   const byHistorical = new Map<string, any>(), byCurrent = new Map<string, any>();
@@ -88,8 +99,9 @@ function approvedArchiveSources(): any {
     const { current, historical, classification } = row;
     if (!same(evidence.rows[index], { historical, current, classification })) fail('evidence pair differs');
     if (index > 0 && inventory.rows[index - 1].historical.path >= historical.path) fail('source pairs are not canonically sorted');
+    const effective = preservation.overrides.get(current.path) ?? current;
     const currentBytes = readBound(current.path);
-    if (currentBytes.length !== current.bytes || digest(currentBytes) !== current.sha256) fail(`current source drift: ${current.path}`);
+    if (currentBytes.length !== effective.bytes || digest(currentBytes) !== effective.sha256) fail(`current source drift: ${current.path}`);
     byHistorical.set(historical.path, row); byCurrent.set(current.path, row);
   }
   const recipePaths = ['apps/frontend/scripts/data/mw3-authored/context-judgments.mjs', 'apps/frontend/scripts/data/mw3-authored/emit.mjs',
@@ -104,7 +116,7 @@ function approvedArchiveSources(): any {
     archiveRecipeSources.set(row.path, row.source);
   }
   const extras = inventory.extra_current_sources;
-  const expectedPinnedExtras = EXTRA_CURRENT_PATHS.filter(path => ![ADAPTER, INVENTORY, REVIEW, EVIDENCE].includes(path));
+  const expectedPinnedExtras = LEGACY_EXTRA_CURRENT_PATHS.filter(path => ![ADAPTER, INVENTORY, REVIEW, EVIDENCE].includes(path));
   if (extras.length !== expectedPinnedExtras.length || !same(extras.map((row: any) => row.path), expectedPinnedExtras)) fail('extra current source scope');
   for (const row of extras) {
     exactKeys(row, ['path', 'bytes', 'sha256'], 'extra current source pin');
@@ -133,7 +145,8 @@ function approvedArchiveSources(): any {
     }
     acceptedManifests.set(record.spot, record);
   }
-  const currentSourceRecords = [...inventory.rows.map((row: any) => row.current), ...extras,
+  const currentSourceRecords = [...inventory.rows.map((row: any) => preservation.overrides.get(row.current.path) ?? row.current), ...extras,
+    ...PRESERVATION_EXTRA_PATHS.map(path => { const bytes=readBound(path); return {path,bytes:bytes.length,sha256:digest(bytes)}; }),
     { path: INVENTORY, bytes: inventoryBytes.length, sha256: digest(inventoryBytes) },
     { path: REVIEW, bytes: reviewBytes.length, sha256: digest(reviewBytes) },
     { path: EVIDENCE, bytes: evidenceBytes.length, sha256: digest(evidenceBytes) },

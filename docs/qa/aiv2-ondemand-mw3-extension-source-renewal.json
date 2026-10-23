@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "kind": "aiv2-ondemand-mw3-extension-and-classifier-source-only-renewal",
+  "status": "approved-source-only",
+  "reviewed_at_utc": "2026-10-23T00:58:41.605Z",
+  "reviewer": {
+    "task": "/root/cache_review",
+    "runtime_model": "not-exposed",
+    "relationship": "Independent read of adapter/closed-extension security, actual two-helper functional deltas and parent-authored classifier delta. No generation, provider or numerical work."
+  },
+  "baseline_commit": "e7e734942bedcb18b70496d2cf84f1db8ec5d775",
+  "scope": "Canonical Stage2/Stage3 source identity renewal for the exact two classifier files; separate new MW3 preservation-extension source approval is referenced, not substituted for historical TS parity or numerical approval. No numerical/data-quality/GTO/runtime/publication/deploy approval.",
+  "reviewed_snapshot": "Exact9stagedfiles copied from index into .local/ondemand-release-validation. Every frozen reviewed file matched index and source bytes before renewal. Unrelated dirty dataset/UI/partial files excluded.",
+  "frozen_files": [
+    {
+      "path": "apps/frontend/docs/mw3-source-identity/verification-preservation-adapter-baseline.json",
+      "bytes": 17321,
+      "sha256": "fc8dbcfe93e3f514dbff72ca871029ec85becfd9c29582c01684f30735bedb21"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-manifest-source-identity.ts",
+      "bytes": 18547,
+      "sha256": "0b6c91c2d745675e4ef6021ccb8bf708b6c0a3c09efce55b97fceda83bbf1e38"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-verification-preservation-extension.ts",
+      "bytes": 5274,
+      "sha256": "d79ac546b040c46a9d108e2356b273311466a6e335b7a23553f629b34087d68d"
+    },
+    {
+      "path": "apps/frontend/tests/mw3-manifest-source-identity.test.ts",
+      "bytes": 16257,
+      "sha256": "006fbe0f2dc6ae727038fbbf550d014e989fad4f4a2c8bbf8cfbddd9e04f1e08"
+    },
+    {
+      "path": "configs/source-identity-mw3-verification-preservation.json",
+      "bytes": 1219,
+      "sha256": "3e7e643f55b63dc66dbe9b56eb15cb1bd45f2c63955df2028a9a3dd7520ecf34"
+    },
+    {
+      "path": "configs/source-identity-mw3-verification-preservation.review.json",
+      "bytes": 2299,
+      "sha256": "c46ca5191d90381b31360d0f655bc2d8c7801ec30cb4514d479439e2adf50bb1"
+    },
+    {
+      "path": "docs/qa/aiv2-ondemand-mw3-preservation-extension-review.json",
+      "bytes": 7303,
+      "sha256": "bddf49a548a12b38cfb47e8641545f83cf58b3ac61eb9a53ce983c31ba204612"
+    },
+    {
+      "path": "scripts/ci/deployment-scope.test.ts",
+      "bytes": 46475,
+      "sha256": "0d485a28adbd14d7549c48c4e65f2cb251d830ddabc255139a65d804c171785c"
+    },
+    {
+      "path": "scripts/ci/deployment-scope.ts",
+      "bytes": 33798,
+      "sha256": "3bed19652756ff1b79ee26274aa0944b590b5ec2db1d420d0acbba395d9f1e28"
+    }
+  ],
+  "independent_extension_approval": {
+    "review": {
+      "path": "configs/source-identity-mw3-verification-preservation.review.json",
+      "bytes": 2299,
+      "sha256": "c46ca5191d90381b31360d0f655bc2d8c7801ec30cb4514d479439e2adf50bb1"
+    },
+    "report": {
+      "path": "docs/qa/aiv2-ondemand-mw3-preservation-extension-review.json",
+      "bytes": 7303,
+      "sha256": "bddf49a548a12b38cfb47e8641545f83cf58b3ac61eb9a53ce983c31ba204612"
+    },
+    "scope": "verification-preservation-only-no-numerical-or-gto-renewal",
+    "original_inventory_review_parity_unchanged": true,
+    "legacy_current_source_pins_retained": 150,
+    "closed_functional_overrides": 2,
+    "accepted_manifest_records": 16,
+    "accepted_artifact_records": 112,
+    "raw_recipe_sources": 4,
+    "real_clean_guard_result": "mw3ApprovedCurrentSourceRecords accepted exact frozen independently approved real addendum and returned167bound current records, including4closed extension dependencies; no archive payload/numerical rerun."
+  },
+  "classifier_findings": [
+    {
+      "path": "scripts/ci/deployment-scope.ts",
+      "finding": "Exactly ensureCommit(repoRoot,beforeSha) and ensureCommit(repoRoot,afterSha) added after anchored SHA validation and before git diff. Existing helper materializes only exact validated origin SHA using bounded no-tags depth1 fetch, then rechecks SHA^{commit}; --no-replace-objects and original fail-closed event/lineage behavior remain unchanged. No branch fallback, HEAD movement, inferred baseline, broad history fetch, release gate bypass or policy change."
+    },
+    {
+      "path": "scripts/ci/deployment-scope.test.ts",
+      "finding": "Adds actual shallow local clone with absent exact PR base and verifies exact base retrieval without moving HEAD or claiming production lineage; unavailable production baseline fetch failure remains full-verification/release-closed. Existing assertions are retained. Author reported2new+2existing focused tests passed; reviewer did not repeat them."
+    }
+  ],
+  "canonical_source_review": [
+    {
+      "stage": 2,
+      "source_count": 205,
+      "added_records": [],
+      "removed_records": [],
+      "initial_modified_source_paths": [
+        "scripts/ci/deployment-scope.test.ts",
+        "scripts/ci/deployment-scope.ts"
+      ],
+      "before_content_sha256": "ea2980e4704e8894371dd80bf6d8aa5dc23200195b8249a1835b410befb81505",
+      "after_content_sha256": "34be4063f5153f7211c9cabdf00aa07714ce463667b2a1dccb97a24e6ae06840"
+    },
+    {
+      "stage": 3,
+      "source_count": 106,
+      "added_records": [],
+      "removed_records": [],
+      "initial_modified_source_paths": [
+        "scripts/ci/deployment-scope.test.ts",
+        "scripts/ci/deployment-scope.ts"
+      ],
+      "before_content_sha256": "f470c5611084036239818c69e2963856512285e496444c2f57b1081f7ea6475d",
+      "final_binding": "After finalStage2receipt renewal, only classifier2files plusconfigs/multiway-preflop-stage2.review.json may differ."
+    }
+  ],
+  "canonical_boundary": "Actual canonical preflop collectors include classifier2files but not the MW3 adapter/newhelper/extensionJSON. Do not append noncanonical records. The MW3 committed-tree guard independently binds all167current records including new4dependencies.",
+  "prior_receipts": [
+    {
+      "stage": 2,
+      "path": "configs/multiway-preflop-stage2.review.json",
+      "raw_sha256": "092905e02c7269286d78686df9939b4ee53d61753d059c7eebf25374c9110944",
+      "content_sha256": "ea2980e4704e8894371dd80bf6d8aa5dc23200195b8249a1835b410befb81505"
+    },
+    {
+      "stage": 3,
+      "path": "configs/multiway-preflop-stage3.review.json",
+      "raw_sha256": "15644c787b07b308fbe7db21159c6097da191005fb795de3d74092c46a0b0b72",
+      "content_sha256": "f470c5611084036239818c69e2963856512285e496444c2f57b1081f7ea6475d"
+    }
+  ],
+  "preserved": [
+    {
+      "stage": 2,
+      "artifact_record_count": 1888,
+      "artifact_records_sha256": "60179b68d2fe722deb3ac93f7db76101b065ee9453d397377a0db8550d73e73e",
+      "archive": {
+        "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+        "bytes": 1747857,
+        "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+        "format": "ustar+gzip"
+      },
+      "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+      "counts": {
+        "catalog": 3115,
+        "saved": 1611,
+        "unreachable": 1504,
+        "hands": 272259
+      },
+      "original_review_sha256": "17f8ea0ba36f26311f30b59ada348033465372417edb5c817e0377a07bd94feb"
+    },
+    {
+      "stage": 3,
+      "artifact_record_count": 1805,
+      "artifact_records_sha256": "5ee2be29e51a468e8e58fb9dcee0cc9017de1118e34ba4eb66986524aa542937",
+      "archive": {
+        "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+        "bytes": 2436451,
+        "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+        "format": "ustar+gzip-stage3-content-v1"
+      },
+      "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+      "counts": {
+        "catalog": 16132,
+        "saved": 1801,
+        "unreachable": 5621,
+        "rare": 8710,
+        "hands": 304369
+      },
+      "original_review_sha256": "6d0afd9eebb7fc0db1767a5dfedd78126836b1abd25d0470255dadca50401c20"
+    }
+  ],
+  "renewal_method": "Modify exact canonical sources/content_sha256 only; retain every old field/amendment/artifact/archive/count/policy fingerprint. Append ondemand_mw3_extension_source_renewals with prior rawreceiptSHA and this reportSHA. Stage3 binds the final newly renewedStage2receipt. Check final canonicalsource equality on clean snapshot only.",
+  "limitations": [
+    "Source-only approval; no replacement of original numerical, GTO, data-quality, runtime, production or deployment acceptance.",
+    "Actual normal CI source/restore/deployment gates remain required, with no skip/fallback. Existing archived payload evidence is preserved, not falsely rerun.",
+    "No provider/model invocation, archive/policy regeneration, production mutation or successful-test repeat by reviewer.",
+    "New reviewer model not exposed; no inherited requested_model value is claimed as a new model/provider attestation."
+  ]
+}

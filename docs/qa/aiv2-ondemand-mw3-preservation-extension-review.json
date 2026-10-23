@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "kind": "mw3-verification-preservation-independent-source-review",
+  "status": "approved-source-only",
+  "reviewed_at_utc": "2026-10-23T00:56:17.519Z",
+  "reviewer": {
+    "task": "/root/cache_review",
+    "relationship": "Independent reviewer; did not author the adapter, validator, proposal or two functional preservation helper changes. Prior receipt bookkeeping was separately reviewed source-only.",
+    "runtime_model": "not-exposed"
+  },
+  "baseline_commit": "e7e734942bedcb18b70496d2cf84f1db8ec5d775",
+  "scope": "verification-preservation-only-no-numerical-or-gto-renewal",
+  "reviewed_files": [
+    {
+      "path": "configs/source-identity-mw3-verification-preservation.json",
+      "bytes": 1219,
+      "sha256": "3e7e643f55b63dc66dbe9b56eb15cb1bd45f2c63955df2028a9a3dd7520ecf34"
+    },
+    {
+      "path": "configs/source-identity-mw3-verification-preservation.review.json",
+      "bytes": 2299,
+      "sha256": "c46ca5191d90381b31360d0f655bc2d8c7801ec30cb4514d479439e2adf50bb1"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-manifest-source-identity.ts",
+      "bytes": 18547,
+      "sha256": "0b6c91c2d745675e4ef6021ccb8bf708b6c0a3c09efce55b97fceda83bbf1e38"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-verification-preservation-extension.ts",
+      "bytes": 5274,
+      "sha256": "d79ac546b040c46a9d108e2356b273311466a6e335b7a23553f629b34087d68d"
+    },
+    {
+      "path": "apps/frontend/docs/mw3-source-identity/verification-preservation-adapter-baseline.json",
+      "bytes": 17321,
+      "sha256": "fc8dbcfe93e3f514dbff72ca871029ec85becfd9c29582c01684f30735bedb21"
+    }
+  ],
+  "legacy_files": [
+    {
+      "path": "configs/source-identity-mw3-typescript-archive.json",
+      "bytes": 188667,
+      "sha256": "eed9316796066dd396f6b6aa7917d41a09bb467f6a60cb4b6360131bf2b79f7f"
+    },
+    {
+      "path": "configs/source-identity-mw3-typescript-archive.review.json",
+      "bytes": 1659,
+      "sha256": "1cf5294f6fe6ec601eabf1670353afc5d3b909ff82ac84adc5fbc977350065e0"
+    },
+    {
+      "path": "apps/frontend/docs/mw3-source-identity/typescript-archive-sources-parity.json",
+      "bytes": 261093,
+      "sha256": "ceb437a661843d11b5f0b7c07bf621ffd9190911ab2d0e55196ba3d88b3a8656"
+    }
+  ],
+  "functional_extension_rows": [
+    {
+      "classification": "verification-preservation-extension",
+      "prior": {
+        "path": "apps/frontend/scripts/ci/mw3-local-d1-oracle.ts",
+        "bytes": 50190,
+        "sha256": "a23c85492777c8b4df293959c363030126bc62ae84642f07403289a41ee100b3"
+      },
+      "current": {
+        "path": "apps/frontend/scripts/ci/mw3-local-d1-oracle.ts",
+        "bytes": 50261,
+        "sha256": "287386599f433aa31ac45b00f059de24d730d897c08406a9d12c47a6b8434cb8"
+      }
+    },
+    {
+      "classification": "verification-preservation-extension",
+      "prior": {
+        "path": "apps/frontend/scripts/verify-preflop-local-d1.ts",
+        "bytes": 23566,
+        "sha256": "d15b1f5f1dcc59471e9d4483447f06340bb76d53d6fa61d3c8b5f2e7ec3eac0c"
+      },
+      "current": {
+        "path": "apps/frontend/scripts/verify-preflop-local-d1.ts",
+        "bytes": 24026,
+        "sha256": "34551a2e261d441b5fb4e70e9c4bbf399c0379c7bbcaf5a659cb813ad593ff5c"
+      }
+    }
+  ],
+  "findings": [],
+  "approval_rationale": [
+    "Adapter retains original152row inventory/evidence/historical records and all legacy classifications. Only the effective current-byte comparison and emitted current committed-tree pins use the closed two-row extension; the original rows are not rewritten or pretended to have AST parity.",
+    "Validator requires exact proposal/review/baseline shapes; separate approved reviewer task; literal truthful not-exposed model field; exact raw hashes of proposal,new adapter,new validator,baseline snapshot and all original legacy metadata.",
+    "Exactly two ordered hard-coded helper paths are permitted. Every prior pin equals the original inventory current pin; each current pin keeps the same exact path and explicitly uses verification-preservation-extension. Third rows, arbitrary paths, unchanged/relabelled pins and malformed hashes are rejected.",
+    "Original adapter bytes are retained as a separately bound JSON source snapshot and checked against the untouched original review.adapter_sha256; the old review is not rebound to the changed adapter or amended to claim a new review.",
+    "Original150 other current source pins remain exact at reviewed HEAD. Both extended helpers match committed new pins; their actual deltas are only the synthetic completed-job2call/FK access/owner INSERTs and addition of the3on-demand preservation table names.",
+    "Unchanged readBound path traversal/symlink/regular-file/race/size checks read extension dependencies as well as current sources. Imported extension metadata must equal safely read bytes. The extension helper and3JSON files join the closed extra dependency set and final current source records; unknown dependencies remain rejected.",
+    "Original16 accepted manifest/archive/receipt sets,112artifact pins and4raw recipe sources remain in the byte-identical legacy inventory and retain existing exact use-time verification. No archive/policy/numerical bytes are changed by this addendum.",
+    "Candidate authoring and numerical identity assignment do not use the saved-archive compatibility adapter. Existing restore/source-tree/normal CI gates remain required; this is not a skip/fallback or runtime acceptance receipt."
+  ],
+  "independent_verification": {
+    "legacy_inventory_review_evidence_raw_bytes_equal_HEAD": true,
+    "legacy_baseline_source_equals_original_adapter_bytes_at_HEAD": true,
+    "baseline_source_sha256": "7f18530cf5c0b8db58f019a221afc9303363e3afe55e5fdd04a2d32c11b76e37",
+    "unchanged_legacy_current_source_pin_count": 150,
+    "committed_functional_extension_pin_count": 2,
+    "prior_pins_equal_original_inventory": true,
+    "accepted_manifest_record_count": 16,
+    "accepted_artifact_record_count": 112,
+    "archived_recipe_source_count": 4,
+    "actual_two_helper_diff_review": "Read git diff9adcc495..e7e73494; precisely three seed INSERTs and three required-table names. No policy formula, EV/equity, saved frequencies or strategic reason changed.",
+    "author_tests": "Author separately reports5focused existing adapter tests plus10new negative/positive extension tests and focused TypeScript checks passed; reviewer read the tests without duplicating successful executions."
+  },
+  "limitations": [
+    "Only source compatibility for closed functional verification-preservation changes is approved. No new or renewed data-quality, GTO, numerical, generated-policy, runtime, UI, production or deployment acceptance.",
+    "No provider/model calls, production reads/writes, full numerical/archive restore or original test-suite rerun by this reviewer. Actual normal CI remains required.",
+    "Byte-identical legacy inventory preserves all original manifest/archive/artifact/recipe records; original archive payload verification is not re-presented as a new payload scan.",
+    "Historical review attribution and original advisories/limitations remain unchanged. New reviewer runtime model is not exposed and is not attested by an inherited requested_model field."
+  ]
+}
