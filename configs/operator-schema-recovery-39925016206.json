@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "single-failed-operator-schema-scoped-recovery",
+  "failed_run_id": "39925016206",
+  "failed_sha": "f234b942eb6f3f86c40ea6a80a13e3f4315e0c68",
+  "baseline_run_id": "39909085961",
+  "baseline_sha": "1dc784f5a606d5f9d9523ae0d393ab9961aabcf6",
+  "proof": {
+    "path": "docs/qa/operator-schema-recovery-39925016206.json",
+    "sha256": "ca4dd2d07a2fd95475f0a808cfd40596b051e084295a1207b8a8820c0707af14"
+  },
+  "jobs_sha256": "254d057fc26f0a9910bcaa0318b48da34b59ae4ef2435c52669cb5eb1dfd30a5",
+  "artifact": {
+    "id": 12489599024,
+    "name": "mw3-delivery-outcome-f234b942eb6f3f86c40ea6a80a13e3f4315e0c68-1",
+    "digest": "sha256:a01b078525c4752d1e7109b82a9235d5e7b3f6236009e8919e41bd5b500ad159"
+  },
+  "source_fix_hashes": {
+    "apps/backend/scripts/ensure-aiv2-operator-schema.ts": "22deb865155a4dd0ff351c557e5b06ff05c6f49a90f3845e5f4e3875898df876",
+    "apps/backend/tests/aiv2-operator-schema.test.ts": "481cbcc2f5071c0f9ea43846d045f89d36b4c1e401e59820c9bec04a9da27d49"
+  },
+  "allowed_paths": [
+    "apps/backend/scripts/ensure-aiv2-operator-schema.ts",
+    "apps/backend/tests/aiv2-operator-schema.test.ts",
+    "scripts/ci/deployment-scope.ts",
+    "scripts/ci/deployment-scope.test.ts",
+    ".github/workflows/deploy-worker.yml",
+    "configs/operator-schema-recovery-39925016206.json",
+    "docs/qa/operator-schema-recovery-39925016206.json",
+    "configs/multiway-preflop-stage2.review.json",
+    "configs/multiway-preflop-stage3.review.json",
+    "docs/qa/operator-schema-recovery-source-renewal.json"
+  ]
+}

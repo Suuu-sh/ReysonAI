@@ -1,0 +1,293 @@
+{
+  "schema_version": 1,
+  "kind": "operator-schema-recovery-source-only-canonical-renewal",
+  "status": "independently-reviewed-source-only",
+  "reviewed_at_utc": "2026-10-23T09:13:04.280Z",
+  "author_task": "/root/parallel_safety_review",
+  "independent_static_reviewer": {
+    "task": "/root/flop_parallel_audit",
+    "runtime_model": "not-exposed",
+    "result": "Parent-confirmed independent PASS for helper fix and closed recovery source diff. Final receipt preservation reviewed separately before commit; no duplicate tests."
+  },
+  "scope": "Source-only canonical receipt amendment for the exact reviewed schema CLI argument fix and single-failed-run conservative deployment recovery. Change current canonical sources/content identity and append operator_schema_recovery_source_renewals only; retain all prior fields/amendments/strategy fingerprints/numerical artifacts/archives/counts/reviews. This neither renews historical strategy/GTO or numerical acceptance nor grants new runtime/production/deployment approval.",
+  "source_candidate_commit": "c29967e0b06d59a8084e2234d7492696482d1532",
+  "failed_run_id": "39925016206",
+  "failed_sha": "f234b942eb6f3f86c40ea6a80a13e3f4315e0c68",
+  "baseline_run_id": "39909085961",
+  "baseline_sha": "1dc784f5a606d5f9d9523ae0d393ab9961aabcf6",
+  "static_files": [
+    {
+      "path": "apps/backend/scripts/ensure-aiv2-operator-schema.ts",
+      "bytes": 5631,
+      "sha256": "22deb865155a4dd0ff351c557e5b06ff05c6f49a90f3845e5f4e3875898df876"
+    },
+    {
+      "path": "apps/backend/tests/aiv2-operator-schema.test.ts",
+      "bytes": 4522,
+      "sha256": "481cbcc2f5071c0f9ea43846d045f89d36b4c1e401e59820c9bec04a9da27d49"
+    },
+    {
+      "path": "scripts/ci/deployment-scope.ts",
+      "bytes": 44472,
+      "sha256": "327c89298fc013c94e94736fe62c85f0f114d16c62ac895722c2502c6af4cd40"
+    },
+    {
+      "path": "scripts/ci/deployment-scope.test.ts",
+      "bytes": 54811,
+      "sha256": "0da501bc0bbe9b393b1d0d838323f0b5491c4b47e6bc061c660efea1765613df"
+    },
+    {
+      "path": ".github/workflows/deploy-worker.yml",
+      "bytes": 32410,
+      "sha256": "7218cebb0b9ae08c6d4fe8ec0a7bcb88d881abba3eaedec0f0137f91876d47c4"
+    },
+    {
+      "path": "configs/operator-schema-recovery-39925016206.json",
+      "bytes": 1555,
+      "sha256": "264e806380a12f035b2d733495dc42818bb13b792fecc798877416685e43d49a"
+    },
+    {
+      "path": "docs/qa/operator-schema-recovery-39925016206.json",
+      "bytes": 33487,
+      "sha256": "ca4dd2d07a2fd95475f0a808cfd40596b051e084295a1207b8a8820c0707af14"
+    }
+  ],
+  "reviewed_recovery_proof": {
+    "path": "docs/qa/operator-schema-recovery-39925016206.json",
+    "sha256": "ca4dd2d07a2fd95475f0a808cfd40596b051e084295a1207b8a8820c0707af14"
+  },
+  "retained_mw3_outcome_artifact": {
+    "id": 12489599024,
+    "name": "mw3-delivery-outcome-f234b942eb6f3f86c40ea6a80a13e3f4315e0c68-1",
+    "digest": "sha256:a01b078525c4752d1e7109b82a9235d5e7b3f6236009e8919e41bd5b500ad159"
+  },
+  "clean_snapshot": "Canonical source files copied only from exact c29967e0 Git blobs. No dirty UI/datasets changes or three untracked AIv2 imports included. Renew Stage2 then Stage3, binding exact final Stage2 raw bytes.",
+  "source_changes": [
+    {
+      "stage": 2,
+      "source_count": 205,
+      "added": [],
+      "removed": [],
+      "changes": [
+        {
+          "before": {
+            "path": ".github/workflows/deploy-worker.yml",
+            "bytes": 32010,
+            "sha256": "8603d563f2f9ce3c2e729b766d4a01b997c168600a995d6bc0979b2541132550"
+          },
+          "after": {
+            "path": ".github/workflows/deploy-worker.yml",
+            "bytes": 32410,
+            "sha256": "7218cebb0b9ae08c6d4fe8ec0a7bcb88d881abba3eaedec0f0137f91876d47c4"
+          }
+        },
+        {
+          "before": {
+            "path": "scripts/ci/deployment-scope.test.ts",
+            "bytes": 49984,
+            "sha256": "abef3a564a55cb17752e0c0a7675258c49417222d73c8bdd7a65f70a479126f2"
+          },
+          "after": {
+            "path": "scripts/ci/deployment-scope.test.ts",
+            "bytes": 54811,
+            "sha256": "0da501bc0bbe9b393b1d0d838323f0b5491c4b47e6bc061c660efea1765613df"
+          }
+        },
+        {
+          "before": {
+            "path": "scripts/ci/deployment-scope.ts",
+            "bytes": 34108,
+            "sha256": "ba05c69c21a0d4e85d3ddad4e5be7c81b8f0cc032639581940b15c5a3045d47f"
+          },
+          "after": {
+            "path": "scripts/ci/deployment-scope.ts",
+            "bytes": 44472,
+            "sha256": "327c89298fc013c94e94736fe62c85f0f114d16c62ac895722c2502c6af4cd40"
+          }
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "source_count": 106,
+      "added": [],
+      "removed": [],
+      "changes": [
+        {
+          "before": {
+            "path": ".github/workflows/deploy-worker.yml",
+            "bytes": 32010,
+            "sha256": "8603d563f2f9ce3c2e729b766d4a01b997c168600a995d6bc0979b2541132550"
+          },
+          "after": {
+            "path": ".github/workflows/deploy-worker.yml",
+            "bytes": 32410,
+            "sha256": "7218cebb0b9ae08c6d4fe8ec0a7bcb88d881abba3eaedec0f0137f91876d47c4"
+          }
+        },
+        {
+          "before": {
+            "path": "scripts/ci/deployment-scope.test.ts",
+            "bytes": 49984,
+            "sha256": "abef3a564a55cb17752e0c0a7675258c49417222d73c8bdd7a65f70a479126f2"
+          },
+          "after": {
+            "path": "scripts/ci/deployment-scope.test.ts",
+            "bytes": 54811,
+            "sha256": "0da501bc0bbe9b393b1d0d838323f0b5491c4b47e6bc061c660efea1765613df"
+          }
+        },
+        {
+          "before": {
+            "path": "scripts/ci/deployment-scope.ts",
+            "bytes": 34108,
+            "sha256": "ba05c69c21a0d4e85d3ddad4e5be7c81b8f0cc032639581940b15c5a3045d47f"
+          },
+          "after": {
+            "path": "scripts/ci/deployment-scope.ts",
+            "bytes": 44472,
+            "sha256": "327c89298fc013c94e94736fe62c85f0f114d16c62ac895722c2502c6af4cd40"
+          }
+        }
+      ]
+    }
+  ],
+  "preservation": [
+    {
+      "stage": 2,
+      "artifact_record_count": 1888,
+      "artifact_records_sha256": "60179b68d2fe722deb3ac93f7db76101b065ee9453d397377a0db8550d73e73e",
+      "archive": {
+        "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+        "bytes": 1747857,
+        "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+        "format": "ustar+gzip"
+      },
+      "archive_materialized_raw_rehashed": true,
+      "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+      "counts": {
+        "catalog": 3115,
+        "saved": 1611,
+        "unreachable": 1504,
+        "hands": 272259
+      },
+      "original_review_sha256": "17f8ea0ba36f26311f30b59ada348033465372417edb5c817e0377a07bd94feb"
+    },
+    {
+      "stage": 3,
+      "artifact_record_count": 1805,
+      "artifact_records_sha256": "5ee2be29e51a468e8e58fb9dcee0cc9017de1118e34ba4eb66986524aa542937",
+      "archive": {
+        "path": "artifacts/preflop/stage3-reviewed.tar.gz",
+        "bytes": 2436451,
+        "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
+        "format": "ustar+gzip-stage3-content-v1"
+      },
+      "archive_materialized_raw_rehashed": true,
+      "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
+      "counts": {
+        "catalog": 16132,
+        "saved": 1801,
+        "unreachable": 5621,
+        "rare": 8710,
+        "hands": 304369
+      },
+      "original_review_sha256": "6d0afd9eebb7fc0db1767a5dfedd78126836b1abd25d0470255dadca50401c20"
+    }
+  ],
+  "unchanged_protected_authority_and_generation": [
+    {
+      "path": "configs/source-identity-mw3-typescript-archive.json",
+      "bytes": 188667,
+      "sha256": "eed9316796066dd396f6b6aa7917d41a09bb467f6a60cb4b6360131bf2b79f7f"
+    },
+    {
+      "path": "configs/source-identity-mw3-typescript-archive.review.json",
+      "bytes": 1659,
+      "sha256": "1cf5294f6fe6ec601eabf1670353afc5d3b909ff82ac84adc5fbc977350065e0"
+    },
+    {
+      "path": "apps/frontend/docs/mw3-source-identity/typescript-archive-sources-parity.json",
+      "bytes": 261093,
+      "sha256": "ceb437a661843d11b5f0b7c07bf621ffd9190911ab2d0e55196ba3d88b3a8656"
+    },
+    {
+      "path": "configs/source-identity-mw3-verification-preservation.json",
+      "bytes": 1219,
+      "sha256": "3e7e643f55b63dc66dbe9b56eb15cb1bd45f2c63955df2028a9a3dd7520ecf34"
+    },
+    {
+      "path": "configs/source-identity-mw3-verification-preservation.review.json",
+      "bytes": 2299,
+      "sha256": "c46ca5191d90381b31360d0f655bc2d8c7801ec30cb4514d479439e2adf50bb1"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-verification-preservation-extension.ts",
+      "bytes": 5274,
+      "sha256": "d79ac546b040c46a9d108e2356b273311466a6e335b7a23553f629b34087d68d"
+    },
+    {
+      "path": "apps/frontend/docs/mw3-source-identity/verification-preservation-adapter-baseline.json",
+      "bytes": 17321,
+      "sha256": "fc8dbcfe93e3f514dbff72ca871029ec85becfd9c29582c01684f30735bedb21"
+    },
+    {
+      "path": "configs/source-identity-mw3-operator-preservation.json",
+      "bytes": 1229,
+      "sha256": "6478e81458ea1da44e4a0c9a964e746d1e01bf091bbe7f271b93e630202eba47"
+    },
+    {
+      "path": "configs/source-identity-mw3-operator-preservation.review.json",
+      "bytes": 2142,
+      "sha256": "239721dac5cc810b2dcf0c50342d72242167d35eefbe7771ffaa4a7e334d967f"
+    },
+    {
+      "path": "apps/frontend/docs/mw3-source-identity/operator-preservation-adapter-baseline.json",
+      "bytes": 18950,
+      "sha256": "ec98cadb4b2df3a1c89f3dc8bfe6e2e83ba10d472fb0b319e9694fb0005eef77"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-operator-preservation-extension.ts",
+      "bytes": 4737,
+      "sha256": "5daea4071e74dbde02d295b159af39ec3efef4dbe78df2c3d6b5cef3b4b28d12"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-manifest-source-identity.ts",
+      "bytes": 19970,
+      "sha256": "938fc4a3e7d72e1466364aec89fd7c9fa42f617d518bb47a94d2568f4b4ff4c8"
+    },
+    {
+      "path": "apps/frontend/scripts/aiv2-postflop-ondemand.ts",
+      "bytes": 21119,
+      "sha256": "5cd5b4864e21565ac4a23c4d44481db64de6129f5fe942031f2658bab5e19a9a"
+    },
+    {
+      "path": "apps/frontend/scripts/aiv2-postflop-ondemand-store.ts",
+      "bytes": 9156,
+      "sha256": "8d057ef9c5fc4dafdc2ea8bba1e1dc6cc692931b8de9cfd7679f6c5906f94c10"
+    },
+    {
+      "path": "apps/frontend/scripts/aiv2-postflop-ondemand-cli.ts",
+      "bytes": 6304,
+      "sha256": "90a5d9f78b9f00d709a2324711d2b511376c72ffe67a5bb4b793dad5ca4cd396"
+    },
+    {
+      "path": "apps/frontend/scripts/lib/aiv2-provider-session.ts",
+      "bytes": 13657,
+      "sha256": "bd669c375179e8c623e20185547d09d326fb2a490c025c4c0af1be8eae6e1ec6"
+    }
+  ],
+  "numerical_path_changes_since_failed_candidate": [],
+  "checks": {
+    "helper_fix": "Installed Wrangler4.147.0 reproduced leading SQLcomment as option with separate --command value; --command=SQL preserves every SQL byte and passes isolatedlocalD1 firstapply/replay/exactschema readback. No remote writes.",
+    "helper_tests": "7 focused helper tests and targeted TypeScript passed by helperauthor.",
+    "recovery_review": "Exact failedrun/SHA, retained authenticated GitHubartifact digest and raw outcome, original successfulbaseline, read-only absent schema proof, two helper SHA pins and narrow changedpath/numerical-fingerprint checks retained. No force flag or broad failed-run/rerun bypass.",
+    "canonical": "Complete ordered205/106 source lists retained; same3CI records update in each, plus final renewedStage2 raw bytes in Stage3. All old receipt fields remain exact; final canonical hashes and drift sentinels required."
+  },
+  "limitations": [
+    "No new numerical model/provider call, data authoring, raw MW3 payload reevaluation or strategy-quality/GTO approval.",
+    "Schema readback proof is read-only historical observation, not migration completion; subsequent normal CI/recovery must enforce live schema readback.",
+    "Successful prior MW3 step is not a complete production release; final live MW3/readiness gates remain mandatory.",
+    "Original historical review authority, first/second preservation extensions and frozen generation/provider bytes remain unchanged."
+  ]
+}

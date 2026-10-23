@@ -55,7 +55,7 @@ const OUTPUT_KEYS = [
   'data_release', 'import_preflop', 'publish_postflop', 'import_mw3', 'apply_ranked_schema',
   'apply_fastfold_schema', 'apply_human_schema', 'apply_human_avatar_schema', 'apply_ondemand_schema', 'apply_operator_schema', 'apply_profile_schema', 'apply_mw3_schema',
   'mw3_live', 'fastfold_predeploy', 'fastfold_postimport', 'mode', 'reason', 'baseline_run_id',
-  'baseline_sha', 'input_hashes',
+  'baseline_sha', 'input_hashes', 'recovery_run_id', 'recovery_sha', 'recovery_proof_hash',
 ];
 
 function emptyPlan(reason: any = 'no relevant changes'): any {
@@ -67,7 +67,7 @@ function emptyPlan(reason: any = 'no relevant changes'): any {
     apply_ranked_schema: false, apply_fastfold_schema: false, apply_human_schema: false,
     apply_human_avatar_schema: false, apply_ondemand_schema: false, apply_operator_schema: false, apply_profile_schema: false, apply_mw3_schema: false, mw3_live: false,
     fastfold_predeploy: false, fastfold_postimport: false, mode: 'no-op', reason,
-    baseline_run_id: '', baseline_sha: '', input_hashes: '',
+    baseline_run_id: '', baseline_sha: '', input_hashes: '', recovery_run_id:'',recovery_sha:'',recovery_proof_hash:'',
   };
 }
 
@@ -441,7 +441,72 @@ function isDeploymentWorkflowPath(value?: any): any {
   return value === WORKFLOW_PATH || value.startsWith(`${WORKFLOW_PATH}@`);
 }
 
-export async function latestDeploymentRun({ repository, currentRunId, token, fetcher = fetch }: any): Promise<any> {
+const OPERATOR_RECOVERY_PATH='configs/operator-schema-recovery-39925016206.json';
+const OPERATOR_FAILED_RUN='39925016206',OPERATOR_FAILED_SHA='f234b942eb6f3f86c40ea6a80a13e3f4315e0c68';
+const sha256=(bytes:any)=>createHash('sha256').update(bytes).digest('hex');
+const jobEvidence=(jobs:any[])=>jobs.map(j=>({name:j.name,status:j.status,conclusion:j.conclusion,steps:j.steps?.map((s:any)=>({name:s.name,status:s.status,conclusion:s.conclusion}))}));
+// This is not a generic partial-release exemption: the sole accepted failed run,
+// schema absence, completed MW3 readback and exact fixes are separately reviewed.
+export function assertOperatorRecoveryEvidence(policy:any,run:any,jobsBody:any,artifactsBody:any,proofBytes:any){
+ if(policy?.schema_version!==1||policy.kind!=='single-failed-operator-schema-scoped-recovery'||policy.failed_run_id!==OPERATOR_FAILED_RUN||policy.failed_sha!==OPERATOR_FAILED_SHA||policy.baseline_run_id!=='39909085961'||policy.baseline_sha!=='1dc784f5a606d5f9d9523ae0d393ab9961aabcf6'||String(run.id)!==policy.failed_run_id||run.head_sha!==policy.failed_sha||run.head_branch!=='main'||run.event!=='push'||run.status!=='completed'||run.conclusion!=='failure'||run.run_attempt!==1)throw Error('unreviewed operator recovery identity');
+ if(jobsBody.total_count!==3||jobsBody.jobs?.length!==3||sha256(JSON.stringify(jobEvidence(jobsBody.jobs)))!==policy.jobs_sha256)throw Error('operator recovery job evidence drift');
+ const jobs=jobsBody.jobs;
+ if(jobs.filter((j:any)=>j.name===SCOPE_JOB_NAME&&j.conclusion==='success').length!==1||jobs.filter((j:any)=>j.name===VERIFY_JOB_NAME&&j.conclusion==='success').length!==1)throw Error('operator recovery verification incomplete');
+ const deploy=jobs.find((j:any)=>j.name===DEPLOY_JOB_NAME),failures=deploy?.steps?.filter((s:any)=>s.conclusion==='failure');
+ if(deploy?.conclusion!=='failure'||failures?.length!==1||failures[0].name!=='Ensure exact AIv2 operator batch schema and require D1 readback'||deploy.steps.find((s:any)=>s.name==='Import exact reviewed MW3 data and require full D1 readback')?.conclusion!=='success')throw Error('operator recovery step outcome invalid');
+ const artifact=artifactsBody.artifacts?.filter((a:any)=>a.id===policy.artifact?.id);
+ if(!Number.isInteger(artifactsBody.total_count)||artifactsBody.total_count!==artifactsBody.artifacts?.length||artifact?.length!==1||artifact[0].name!==policy.artifact.name||artifact[0].digest!==policy.artifact.digest||artifact[0].expired!==false)throw Error('operator recovery retained artifact invalid');
+ if(sha256(proofBytes)!==policy.proof?.sha256)throw Error('operator recovery readonly proof drift');
+ const proof=JSON.parse(String(proofBytes)),schema=proof.schema_readback,results=schema?.response?.result,outcome=proof.mw3_outcome;
+ if(proof.failed_run_id!==policy.failed_run_id||proof.failed_sha!==policy.failed_sha||sha256(JSON.stringify(proof.jobs))!==policy.jobs_sha256||schema?.kind!=='read-only-d1-schema-observation'||schema.failed_run_id!==policy.failed_run_id||schema.failed_sha!==policy.failed_sha||schema.response?.success!==true||results?.length!==3||results.some((r:any)=>r.success!==true||r.meta?.rows_written!==0||r.meta?.changed_db!==false)||results[0].results?.length!==0||results[1].results?.length!==13||results[1].results.some((c:any)=>c.name==='operator_batch_id')||results[2].results?.length!==1||results[2].results[0].from!=='creator'||results[2].results[0].table!=='account_users')throw Error('operator recovery schema absence not proven');
+ if(outcome?.status!=='published-mw3-full-d1-payload-verified'||outcome.github_sha!==policy.failed_sha||outcome.imported_spots!==0||outcome.verified_deliveries!==32||outcome.verified_parts!==1552||outcome.sql?.length!==16)throw Error('operator recovery full MW3 readback not proven');
+ return proof;
+}
+export function assertOperatorRecoveryArchive(policy:any,proof:any,bytes:Uint8Array){
+ if(bytes.byteLength>1_000_000||'sha256:'+sha256(bytes)!==policy.artifact.digest)throw Error('operator recovery artifact bytes differ');
+ const outcome=execFileSync('python3',['-c',"import io,sys,zipfile; z=zipfile.ZipFile(io.BytesIO(sys.stdin.buffer.read())); assert sorted(z.namelist())==['delivery-plan.json','import-outcome.json']; i=z.getinfo('import-outcome.json'); assert i.file_size<=1000000; sys.stdout.buffer.write(z.read(i))"],{input:bytes,maxBuffer:1_000_000});
+ if(sha256(outcome)!==proof.mw3_outcome_raw_sha256||JSON.stringify(JSON.parse(String(outcome)))!==JSON.stringify(proof.mw3_outcome))throw Error('operator recovery retained readback bytes differ');
+}
+export function assertOperatorRecoverySourceScope(policy:any,paths:string[],before:any,after:any,readBlob:(path:string)=>any){
+ const allowed=['apps/backend/scripts/ensure-aiv2-operator-schema.ts','apps/backend/tests/aiv2-operator-schema.test.ts','scripts/ci/deployment-scope.ts','scripts/ci/deployment-scope.test.ts',WORKFLOW_PATH,OPERATOR_RECOVERY_PATH,policy.proof.path,...REVIEW_RECEIPTS,'docs/qa/operator-schema-recovery-source-renewal.json'];
+ if(JSON.stringify(policy.allowed_paths)!==JSON.stringify(allowed)||paths.some((p:string)=>!allowed.includes(p)))throw Error('operator recovery source scope exceeded');
+ const expectedFixes=['apps/backend/scripts/ensure-aiv2-operator-schema.ts','apps/backend/tests/aiv2-operator-schema.test.ts'];
+ if(JSON.stringify(Object.keys(policy.source_fix_hashes??{}).sort())!==JSON.stringify(expectedFixes)||expectedFixes.some(p=>!paths.includes(p)||sha256(readBlob(p))!==policy.source_fix_hashes[p]))throw Error('operator recovery exact source fix missing');
+ if(HASH_GROUPS.filter(g=>!['full','review_receipt'].includes(g)).some(g=>JSON.stringify(before[g])!==JSON.stringify(after[g])))throw Error('operator recovery numerical/schema fingerprints changed');
+ }
+export function assertOperatorRecoveryReceipt(before:any,after:any){
+ const prior={...before},next={...after};
+ delete prior.sources;delete prior.content_sha256;
+ delete next.sources;delete next.content_sha256;delete next.operator_schema_recovery_source_renewals;
+ if(JSON.stringify(prior)!==JSON.stringify(next)||!Array.isArray(after.operator_schema_recovery_source_renewals)||after.operator_schema_recovery_source_renewals.length!==1||JSON.stringify(before.sources?.map((r:any)=>r.path))!==JSON.stringify(after.sources?.map((r:any)=>r.path)))throw Error('operator recovery historical receipt changed');
+}
+async function reviewedOperatorRecovery({repoRoot,sha,run,jobsBody,matches,repository,headers,fetcher}:any){
+ if(String(run.id)!==OPERATOR_FAILED_RUN||!repoRoot||!SHA_RE.test(sha??''))return null;
+ const blob=(path:string)=>runGit(repoRoot,['show',`${sha}:${path}`],{maxBuffer:32*1024*1024});
+ const policy=JSON.parse(String(blob(OPERATOR_RECOVERY_PATH)));
+ if(policy.proof?.path!=='docs/qa/operator-schema-recovery-39925016206.json')throw Error('unexpected recovery proof path');
+ const response=await fetcher(`https://api.github.com/repos/${repository}/actions/runs/${OPERATOR_FAILED_RUN}/artifacts?per_page=100`,{headers,signal:AbortSignal.timeout(10000)});
+ if(!response?.ok)throw Error('operator recovery artifact history unavailable');
+ const proof=assertOperatorRecoveryEvidence(policy,run,jobsBody,await response.json(),blob(policy.proof.path));
+ const archiveResponse=await fetcher(`https://api.github.com/repos/${repository}/actions/artifacts/${policy.artifact.id}/zip`,{headers,signal:AbortSignal.timeout(20000)});
+ if(!archiveResponse?.ok||Number(archiveResponse.headers?.get('content-length'))>1_000_000)throw Error('operator recovery retained archive unavailable');
+ assertOperatorRecoveryArchive(policy,proof,new Uint8Array(await archiveResponse.arrayBuffer()));
+ const baseline=matches.find((r:any)=>String(r.id)===policy.baseline_run_id);
+ if(!baseline||baseline.head_sha!==policy.baseline_sha||baseline.status!=='completed'||baseline.conclusion!=='success'||baseline.run_attempt!==1)throw Error('operator recovery original success unavailable');
+ const baselineResponse=await fetcher(`https://api.github.com/repos/${repository}/actions/runs/${baseline.id}/jobs?per_page=100`,{headers,signal:AbortSignal.timeout(10000)});
+ if(!baselineResponse?.ok)throw Error('operator recovery baseline job unavailable');
+ const baselineJobs=await baselineResponse.json();
+ if(baselineJobs.total_count!==3||baselineJobs.jobs?.length!==3||baselineJobs.jobs.some((j:any)=>j.status!=='completed'||j.conclusion!=='success')||new Set(baselineJobs.jobs.map((j:any)=>j.name)).size!==3||baselineJobs.jobs.some((j:any)=>!EXPECTED_DEPLOYMENT_JOB_NAMES.has(j.name)))throw Error('operator recovery baseline job incomplete');
+ ensureCommit(repoRoot,policy.failed_sha);runGit(repoRoot,['merge-base','--is-ancestor',policy.failed_sha,sha]);
+ const paths=changedPaths(repoRoot,policy.failed_sha,sha);
+ assertOperatorRecoverySourceScope(policy,paths,fingerprintsAtCommit(repoRoot,policy.failed_sha),fingerprintsAtCommit(repoRoot,sha),blob);
+ for(const path of REVIEW_RECEIPTS)assertOperatorRecoveryReceipt(JSON.parse(String(runGit(repoRoot,['show',`${policy.failed_sha}:${path}`]))),JSON.parse(String(blob(path))));
+ // Bind the retained readback's exact SQL identities to committed blobs as well.
+ if(proof.mw3_outcome.sql.some((r:any)=>sha256(blob(r.path))!==r.sha256||blob(r.path).length!==r.bytes))throw Error('operator recovery MW3 SQL bytes changed');
+ return {...baseline,recovery:{run_id:policy.failed_run_id,sha:policy.failed_sha,proof_hash:policy.proof.sha256}};
+}
+
+export async function latestDeploymentRun({ repository, currentRunId, token, fetcher = fetch, recoveryContext }: any): Promise<any> {
   const safeRepo = githubRepository(repository);
   const matches: any[] = [];
   let historyComplete = false;
@@ -527,6 +592,10 @@ export async function latestDeploymentRun({ repository, currentRunId, token, fet
           uniqueNamedSteps && requiredWritesSkipped && optionalWritesSkipped &&
           onlyKnownReadOnlyExecution && otherJobsSafe) continue;
     }
+    if(recoveryContext){
+      const recovery=await reviewedOperatorRecovery({...recoveryContext,run,jobsBody:body,matches,repository:safeRepo,headers:{Accept:'application/vnd.github+json','User-Agent':'ReysonAI-deployment-scope',...(token?{Authorization:`Bearer ${token}`}:{})},fetcher});
+      if(recovery)return recovery;
+    }
     throw new Error(`deployment job in latest main run ${run.id} is ${deployJob.status}/${deployJob.conclusion ?? 'unknown'}; production state may be partial`);
   }
   return null;
@@ -576,7 +645,7 @@ export async function classifyEvent({ repoRoot, eventName, ref, sha, repository,
   }
 
   try {
-    const baseline = await latestDeploymentRun({ repository, currentRunId: runId, token, fetcher });
+    const baseline = await latestDeploymentRun({ repository, currentRunId: runId, token, fetcher, ...(eventName==='push'?{recoveryContext:{repoRoot,sha}}:{}) });
     if (!baseline) {
       return fullValidationPlan('latest main deployment is missing or not successful; production deployment requires manual recovery', {
         baselineRunId: Number.isInteger(baseline?.id) ? String(baseline.id) : '',
@@ -601,6 +670,11 @@ export async function classifyEvent({ repoRoot, eventName, ref, sha, repository,
     else if (sourceChanges.length && !groups.length) plan.reason = `reviewed source changed: ${sourceChanges.join(', ')}`;
     else if (groups.length) plan.reason = `data input hashes changed: ${groups.join(', ')}`;
     plan.fastfold_predeploy ||= plan.deploy_api || plan.deploy_frontend || plan.data_release;
+    if(baseline.recovery){
+      plan.mode='scoped-partial-recovery';plan.reason='reviewed exact failed operator schema release; prior successful baseline retained, completed MW3 readback reused';
+      plan.recovery_run_id=baseline.recovery.run_id;plan.recovery_sha=baseline.recovery.sha;plan.recovery_proof_hash=baseline.recovery.proof_hash;
+      plan.import_mw3=false;plan.mw3_live=true;
+    }
     return plan;
   } catch (error: any) {
     return fullValidationPlan(`deployment lineage/hash could not be proven (${error.message}); production deployment requires manual recovery`);

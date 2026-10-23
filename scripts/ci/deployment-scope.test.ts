@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import test from 'node:test';
-import { classifyChangedPaths, classifyEvent, changedGroups, fingerprintsAtCommit, latestDeploymentRun } from './deployment-scope.ts';
+import { classifyChangedPaths, classifyEvent, changedGroups, fingerprintsAtCommit, latestDeploymentRun, assertOperatorRecoveryEvidence, assertOperatorRecoverySourceScope, assertOperatorRecoveryReceipt, assertOperatorRecoveryArchive } from './deployment-scope.ts';
 
 const workflowRun = (overrides: any = {}): any => {
   const run = {
@@ -851,4 +851,46 @@ test('executed operator schema write never becomes a benign readiness-failure li
   if(conclusion==='skipped')assert.equal((await latestDeploymentRun({repository:'Suuu-sh/ReysonAI',currentRunId:'200',fetcher})).id,99);
   else await assert.rejects(latestDeploymentRun({repository:'Suuu-sh/ReysonAI',currentRunId:'200',fetcher}),/partial/);
  }
+});
+
+function operatorRecoveryFixture(){
+ const policy=JSON.parse(readFileSync(new URL('../../configs/operator-schema-recovery-39925016206.json',import.meta.url),'utf8'));
+ const proofBytes=readFileSync(new URL('../../'+policy.proof.path,import.meta.url));
+ const proof=JSON.parse(String(proofBytes));
+ const run=workflowRun({id:Number(policy.failed_run_id),head_sha:policy.failed_sha,conclusion:'failure'});
+ const jobs={total_count:3,jobs:structuredClone(proof.jobs)},artifacts={total_count:1,artifacts:[{...policy.artifact,expired:false}]};
+ return {policy,proofBytes,run,jobs,artifacts};
+}
+test('exact operator recovery evidence binds failed identity, full readback, absent schema and artifact digest',()=>{
+ const f=operatorRecoveryFixture();assert.equal(assertOperatorRecoveryEvidence(f.policy,f.run,f.jobs,f.artifacts,f.proofBytes).mw3_outcome.verified_deliveries,32);
+ for(const patch of [{id:39925016207},{head_sha:'a'.repeat(40)},{run_attempt:2},{conclusion:'success'},{event:'workflow_dispatch'},{head_branch:'development'}])assert.throws(()=>assertOperatorRecoveryEvidence(f.policy,{...f.run,...patch},f.jobs,f.artifacts,f.proofBytes));
+ for(const mutate of [(j:any)=>j.jobs.pop(),(j:any)=>j.total_count=4,(j:any)=>j.jobs[2].steps.push({name:'unexpected-write',status:'completed',conclusion:'success'}),(j:any)=>j.jobs[2].steps.find((s:any)=>s.name==='Deploy ranked API before enabling the client').conclusion='success']){
+  const jobs=structuredClone(f.jobs);mutate(jobs);assert.throws(()=>assertOperatorRecoveryEvidence(f.policy,f.run,jobs,f.artifacts,f.proofBytes));
+ }
+ for(const patch of [{expired:true},{digest:'sha256:'+'0'.repeat(64)},{id:1}])assert.throws(()=>assertOperatorRecoveryEvidence(f.policy,f.run,f.jobs,{total_count:1,artifacts:[{...f.artifacts.artifacts[0],...patch}]},f.proofBytes));
+ assert.throws(()=>assertOperatorRecoveryEvidence(f.policy,f.run,f.jobs,f.artifacts,Buffer.concat([f.proofBytes,Buffer.from(' ')])));
+});
+test('operator recovery source scope cannot widen fixes, numerical/schema groups or arbitrary code',()=>{
+ const f=operatorRecoveryFixture(),paths=Object.keys(f.policy.source_fix_hashes),readBlob=(p:string)=>readFileSync(new URL('../../'+p,import.meta.url)),before:any={};
+ for(const g of ['preflop','postflop','mw3','mw3_schema','ranked_schema','fastfold_schema','human_schema','human_avatar_schema','ondemand_schema','operator_schema','profile_schema','review_receipt','full'])before[g]={sha256:'x',files:1};
+ assert.doesNotThrow(()=>assertOperatorRecoverySourceScope(f.policy,paths,before,{...before,full:{sha256:'new',files:2}},readBlob));
+ assert.throws(()=>assertOperatorRecoverySourceScope(f.policy,[...paths,'apps/backend/src/aiv2-ondemand.ts'],before,before,readBlob));
+ assert.throws(()=>assertOperatorRecoverySourceScope({...f.policy,allowed_paths:[...f.policy.allowed_paths,'apps/backend/src/aiv2-ondemand.ts']},paths,before,before,readBlob));
+ assert.throws(()=>assertOperatorRecoverySourceScope(f.policy,paths.slice(1),before,before,readBlob));
+ assert.throws(()=>assertOperatorRecoverySourceScope(f.policy,paths,before,before,()=>Buffer.from('drift')));
+ for(const group of Object.keys(before).filter(g=>!['full','review_receipt'].includes(g)))assert.throws(()=>assertOperatorRecoverySourceScope(f.policy,paths,before,{...before,[group]:{sha256:'changed',files:1}},readBlob));
+ const workflow=readFileSync(new URL('../../.github/workflows/deploy-worker.yml',import.meta.url),'utf8');
+ for(const key of ['recovery_run_id','recovery_sha','recovery_proof_hash']){assert.ok(workflow.includes(key+': ${{ steps.scope.outputs.'+key+' }}'));assert.ok(workflow.includes(key+': ${{ needs.scope.outputs.'+key+' }}'));}
+});
+
+test('operator recovery preserves every historical receipt field and source path',()=>{
+ const before={sources:[{path:'source',sha256:'old'}],content_sha256:'old',artifacts:[{sha256:'immutable'}],review:{approved:false},old_amendments:[{keep:true}]};
+ const after={...before,sources:[{path:'source',sha256:'new'}],content_sha256:'new',operator_schema_recovery_source_renewals:[{scope:'source-only'}]};
+ assert.doesNotThrow(()=>assertOperatorRecoveryReceipt(before,after));
+ for(const patch of [{artifacts:[]},{review:{approved:true}},{old_amendments:[]},{sources:[{path:'replacement'}]},{operator_schema_recovery_source_renewals:[]},{unknown_review_override:true}])assert.throws(()=>assertOperatorRecoveryReceipt(before,{...after,...patch}));
+});
+
+test('operator recovery refuses unbound archive bytes before readback extraction',()=>{
+ const f=operatorRecoveryFixture(),proof=JSON.parse(String(f.proofBytes));
+ assert.throws(()=>assertOperatorRecoveryArchive(f.policy,proof,Buffer.from('unbound archive bytes')));
 });
