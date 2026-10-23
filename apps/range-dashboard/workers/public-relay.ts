@@ -27,7 +27,7 @@ export function publicSnapshot(value:any){
 }
 export function permittedPublicRequest(request:Pick<IncomingMessage,'method'|'url'|'headers'|'socket'>){
  if(request.method!=='GET'||!['127.0.0.1','::ffff:127.0.0.1'].includes(request.socket.remoteAddress??''))return false;
- const host=String(request.headers.host??'');if(host!=='127.0.0.1:5197'&&!/^[a-z0-9]+(?:-[a-z0-9]+)*\.trycloudflare\.com$/.test(host))return false;
+ const host=String(request.headers.host??'');if(host!=='127.0.0.1:5197'&&host!=='monitor.reysonai.com'&&!/^[a-z0-9]+(?:-[a-z0-9]+)*\.trycloudflare\.com$/.test(host))return false;
  return request.url==='/api/workers'||Object.hasOwn(routes,request.url??'');
 }
 async function readLocal(){const response=await fetch('http://127.0.0.1:5189/api/workers',{method:'GET',redirect:'error',signal:AbortSignal.timeout(4000),headers:{accept:'application/json'}});if(!response.ok)throw Error('unavailable');if(!response.body)throw Error('unavailable');const reader=response.body.getReader(),chunks:Uint8Array[]=[];let size=0;try{while(true){const part=await reader.read();if(part.done)break;size+=part.value.byteLength;if(size>256*1024){await reader.cancel();throw Error('unavailable');}chunks.push(part.value);}return JSON.parse(Buffer.concat(chunks).toString('utf8'));}finally{reader.releaseLock();}}

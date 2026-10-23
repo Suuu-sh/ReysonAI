@@ -30,7 +30,7 @@ export function render(doc:Document,snapshot:Snapshot,filter='all'):void {
  const connection=doc.getElementById('connection')!;
  const bound=snapshot.owner.bindingAvailable!==false;
  // Only a settled, positively completed batch is a normal exit. Unknown/partial stays warning.
- const batchDone=!alive&&snapshot.run.status==='complete'&&snapshot.run.active===0&&snapshot.counts.queued===0&&snapshot.counts.running===0&&snapshot.counts.failed===0&&snapshot.counts.uncertain===0&&snapshot.counts.complete>0&&snapshot.lanes.length>0&&snapshot.lanes.every(l=>['complete','completed'].includes(l.status)&&!l.callInFlight);
+ const batchDone=!alive&&snapshot.owner.phase!=='halted'&&snapshot.run.status==='complete'&&snapshot.run.active===0&&snapshot.counts.queued===0&&snapshot.counts.running===0&&snapshot.counts.failed===0&&snapshot.counts.uncertain===0&&snapshot.counts.complete>0&&snapshot.lanes.length>0&&snapshot.lanes.every(l=>['complete','completed'].includes(l.status)&&!l.callInFlight);
  const waiting=alive&&bound&&snapshot.lanes.some(l=>laneState(l,snapshot)==='active'&&l.callInFlight);
  const reviewWait=!alive&&snapshot.run.active===0&&snapshot.owner.phase==='review_wait';
  const halted=!alive&&snapshot.owner.phase==='halted';
@@ -41,13 +41,13 @@ export function render(doc:Document,snapshot:Snapshot,filter='all'):void {
  set(doc,'owner',reviewWait?'生成ワーカーなし・独立検証待ち':batchDone?'バッチ完了・正常終了':alive&&snapshot.owner.bindingAvailable===false?'プロセス検出・実行との対応未確認':alive?`起動設定 ${shown(snapshot.owner.configuredConcurrency)}並列`:'稼働プロセスなし');
  const warning=doc.getElementById('notice')!;
  const needsAttention=number(snapshot.counts.failed)>0||number(snapshot.counts.uncertain)>0;
- warning.hidden=reviewWait||batchDone||!(stale||needsAttention||snapshot.warnings.length>0);
+ warning.hidden=reviewWait||batchDone||!(halted||stale||needsAttention||snapshot.warnings.length>0);
  const journalAge=typeof snapshot.run.lastUpdatedAt==='string'?Date.parse(snapshot.observedAt)-Date.parse(snapshot.run.lastUpdatedAt):NaN;
  warning.dataset.tone=needsAttention||!alive||!bound?'warning':'amber';
- warning.textContent=needsAttention?'停止・結果不確定の記録があります。再試行はしていません。失敗した呼び出しは、受理済み応答数を意味しません。':!alive?'ワーカーは停止しています。最後の記録を保持しています。':!bound?'プロセスと今回の実行の対応は未確認です。':stale?`ジョブ記録は${Number.isFinite(journalAge)?elapsed(Math.max(0,journalAge))+'前':'時刻不明'}。${waiting?'応答待ちの記録・更新なし。':'記録更新待ち。'}稼働数は記録値です。プロバイダーの受理・応答完了は未確認です。`:'一部の情報を取得できません。未確認の項目は「—」で表示します。';
+ warning.textContent=halted&&!needsAttention?'キャンペーンは停止しています。保存処理が完了していても、独立レビュー不合格などで次の生成を休止する場合があります。停止理由・復旧可否は別途確認が必要です。':needsAttention?'停止・結果不確定の記録があります。再試行はしていません。失敗した呼び出しは、受理済み応答数を意味しません。':!alive?'ワーカーは停止しています。最後の記録を保持しています。':!bound?'プロセスと今回の実行の対応は未確認です。':stale?`ジョブ記録は${Number.isFinite(journalAge)?elapsed(Math.max(0,journalAge))+'前':'時刻不明'}。${waiting?'応答待ちの記録・更新なし。':'記録更新待ち。'}稼働数は記録値です。プロバイダーの受理・応答完了は未確認です。`:'一部の情報を取得できません。未確認の項目は「—」で表示します。';
  const metrics=doc.getElementById('metrics')!;metrics.replaceChildren();
  const active=alive?`${shown(snapshot.run.active)}${stale?'（記録値）':''}`:'0';
- for(const [label,value,note] of [['観測した稼働',active,reviewWait?'独立検証待ち・新しい生成は休止中':batchDone?'今回のバッチは完了・次は未起動':!alive?'ワーカー停止・最後の記録':snapshot.owner.bindingAvailable===false?'所有者未確認':stale?'プロセス存在・古いジョブ記録':'現在のプロセスとジョブ記録'],['待機中',shown(snapshot.counts.queued),`記録時点 ${dateText(snapshot.counts.recordedAt)}`],['完了ジョブ（一覧分）',shown(snapshot.counts.complete),'一覧の件数のみ・保存判断数とは別'],['要確認',shown(Math.max(number(snapshot.counts.failed),number(snapshot.counts.uncertain))),'失敗・結果不確定'],['呼び出し試行',`${shown(snapshot.run.calls)} / ${shown(snapshot.run.maxCalls)}`,`保存判断 ${shown(snapshot.run.decisions)} / ${shown(snapshot.run.maxDecisions)} 上限`]]) {
+ for(const [label,value,note] of [['観測した稼働',active,reviewWait?'独立検証待ち・新しい生成は休止中':batchDone?'今回のバッチは完了・次は未起動':!alive?'ワーカー停止・最後の記録':snapshot.owner.bindingAvailable===false?'所有者未確認':stale?'プロセス存在・古いジョブ記録':'現在のプロセスとジョブ記録'],['待機中',shown(snapshot.counts.queued),`記録時点 ${dateText(snapshot.counts.recordedAt)}`],['完了ジョブ（一覧分）',shown(snapshot.counts.complete),'一覧の件数のみ・保存判断数とは別'],['ジョブ要確認',shown(Math.max(number(snapshot.counts.failed),number(snapshot.counts.uncertain))),'処理失敗・結果不確定のみ（独立レビューは別）'],['呼び出し試行',`${shown(snapshot.run.calls)} / ${shown(snapshot.run.maxCalls)}`,`保存判断 ${shown(snapshot.run.decisions)} / ${shown(snapshot.run.maxDecisions)} 上限`]]) {
   const item=el(doc,'div',undefined,'metric');item.append(el(doc,'small',label),el(doc,'strong',value),el(doc,'span',note));metrics.append(item);
  }
  set(doc,'capacity',`表示容量 50枠 / 起動設定 ${shown(snapshot.owner.configuredConcurrency)}並列 / 実稼働 ${active}件 · 試行数は受理済み応答数ではありません`);
