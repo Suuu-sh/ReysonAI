@@ -39,3 +39,21 @@ test("workspace generation is click-only and reuses project matrix and saved bil
  const ui=readFileSync(new URL("../src/estimated/Aiv2OnDemandWorkspace.tsx",import.meta.url),"utf8");
  assert.ok(ui.includes('onClick={()=>void generate()}'));assert.equal((ui.match(/base,"requests",/g)??[]).length,1);assert.ok(ui.includes('`requests/${encodeURIComponent(job.id)}`'));assert.ok(ui.includes("<StrategyMatrix"));assert.ok(ui.includes("ja?exact.reason.ja:exact.reason.en"));assert.ok(!ui.includes("Aiv2PostflopPilot"));assert.ok(!ui.includes("publishedDataset"));
 });
+
+
+test("saved reach-weighted check100 aggregate accepts only machine-precision bound noise",()=>{
+ // Numerical shape observed in the production Ks8d3c KJs cell; physical policies
+ // remain exact check100. No generated artifact or saved policy is rewritten.
+ const value=result(),scene=value.snapshot.scene!,cell=scene.cells.find(c=>c.hand==="KJs")!;
+ scene.board=["Ks","8d","3c"];
+ Object.assign(cell,{reach_weight:1.6500000000000001,unreachable:false,mix:{check:100.00000000000001,bet33:0,bet66:0,bet125:0},overrides:["KhJh","KdJd","KcJc"].map(combo=>({combo,reach_weight:.55,mix:{check:100,bet33:0,bet66:0,bet125:0},reason:{en:"Saved physical-combo reason.",ja:"保存済み物理コンボ理由。"}}))});
+ const before=JSON.stringify(value);
+ assert.equal(savedSceneModel(value,cap,"Ks8d3c",[])?.aggregates.size,169);
+ assert.equal(JSON.stringify(value),before);
+ for(const invalid of [100.001,100.00001,NaN,Infinity]){cell.mix.check=invalid;assert.throws(()=>savedSceneModel(value,cap,"Ks8d3c",[]),/Invalid saved cell/);}
+ cell.mix.check=100.00000000000001;
+ cell.overrides[0].mix.check=100.00000000000001;
+ assert.throws(()=>savedSceneModel(value,cap,"Ks8d3c",[]),/Invalid saved combo/);
+ cell.overrides[0].mix.check=100;
+ assert.throws(()=>savedSceneModel(value,{...cap,sourceHash:"wrong-source"},"Ks8d3c",[]),/Source snapshot mismatch/);
+});
