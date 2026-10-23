@@ -24,7 +24,7 @@ async function onDemandSnapshot(board:string,path:string[],root:string,source:st
 }
 type Options = {
  origin:string; bearerFile:string; allowLoopback?:boolean; watch?:boolean; retryCompletion?:boolean;
- maxDecisions?:number; maxCalls?:number; root?:string; source?:string; runtimePath?:string;
+ maxDecisions?:number; maxCalls?:number; concurrency?:number; root?:string; source?:string; runtimePath?:string;
  // Injection points are for isolated tests; the CLI never accepts these dependencies.
  fetch?:typeof fetch; providerFactory?:(onMetric:(m:any)=>void)=>Provider;
  heartbeatMs?:number; pollMs?:number; signal?:AbortSignal;
@@ -55,7 +55,15 @@ export function validateBridgeJob(value:any,implementation:string,sourceHash:str
   !Number.isInteger(value.maxProviderCalls)||value.maxProviderCalls<1||value.maxProviderCalls>64||value.maxProviderCalls!==2*value.maxDecisions)throw failure('invalid_or_stale_claim');
 }
 
+function settledJournal(value:any){
+ if(!value)return true;
+ if(value.format==='parallel-owner-v1')return value.claim_pending===false&&Array.isArray(value.entries)&&value.entries.every((entry:any)=>['complete','failed'].includes(entry.status))&&['idle','complete','failed'].includes(value.status);
+ return ['idle','complete','failed'].includes(value.status);
+}
 export async function runBridge(options:Options){
+ const concurrency=options.concurrency??1;
+ if(!Number.isInteger(concurrency)||concurrency<1||concurrency>2)throw failure('invalid_bridge_concurrency');
+ if(concurrency===2)return runParallelBridge(options);
  const origin=bridgeOrigin(options.origin,options.allowLoopback),maxDecisions=budget(options.maxDecisions,100),maxCalls=budget(options.maxCalls,100);
  const root=options.root??DEFAULT_STORE,source=options.source??DEFAULT_SOURCE,implementation=implementationHash();
  const heartbeatMs=options.heartbeatMs??30_000,pollMs=options.pollMs??3_000;
@@ -94,7 +102,7 @@ export async function runBridge(options:Options){
    journal={status:'complete',origin,calls:previous.calls,decisions:previous.decisions};persist();
    return {status:'completion_uploaded',calls:0,decisions:0,jobs:0};
   }
-  if(previous&&!['idle','complete','failed'].includes(previous.status))throw failure('previous_owner_outcome_requires_manual_review');
+  if(!settledJournal(previous))throw failure('previous_owner_outcome_requires_manual_review');
   const onlineSourceHash=hash((await loadRoot('As7d2c',source)).upstream);
   const onlinePins={revision:hash({method:CONFIG.method,version:CONFIG.version,implementationHash:implementation,sourceHash:onlineSourceHash}),implementationHash:implementation,sourceHash:onlineSourceHash};
   process.once('SIGTERM',stop);process.once('SIGINT',stop);options.signal?.addEventListener('abort',stop,{once:true});
@@ -178,13 +186,199 @@ export async function runBridge(options:Options){
  }
 }
 
+
+// A single owner/lock schedules at most two independent jobs. Each lane has its own
+// provider, metrics, lease heartbeat and journal entry; the journal is atomically
+// replaced as one aggregate so concurrent updates cannot overwrite another lane.
+async function runParallelBridge(options:Options){
+ const origin=bridgeOrigin(options.origin,options.allowLoopback),maxDecisions=budget(options.maxDecisions,100),maxCalls=budget(options.maxCalls,100);
+ const root=options.root??DEFAULT_STORE,source=options.source??DEFAULT_SOURCE,implementation=implementationHash();
+ const heartbeatMs=options.heartbeatMs??30_000,pollMs=options.pollMs??3_000;
+ if(!Number.isInteger(heartbeatMs)||heartbeatMs<1||heartbeatMs>30_000||!Number.isInteger(pollMs)||pollMs<1||pollMs>10_000)throw failure('invalid_bridge_interval');
+ const runtime=options.runtimePath??resolve(fileURLToPath(new URL('../../../',import.meta.url)),'.local/range-dashboard/ondemand-bridge');
+ mkdirSync(root,{recursive:true});mkdirSync(runtime,{recursive:true,mode:0o700});
+ const lock=resolve(root,'worker.lock'),journalFile=resolve(runtime,'bridge-journal.json');
+ try{writeFileSync(lock,JSON.stringify({pid:process.pid,kind:'outbound-owner-bridge',concurrency:2,started_at:new Date().toISOString()}),{flag:'wx',mode:0o600});}catch{throw failure('owner_worker_locked');}
+ type Entry={job:Job;status:string;calls:number;decisions:number;call_in_flight:boolean;completion?:any;error?:string};
+ type Lane={entry:Entry;provider?:Provider;heartbeat?:ReturnType<typeof setInterval>;heartbeatWork?:Promise<void>;heartbeatFailed:boolean;receive?:(metric:any)=>void;work?:Promise<void>};
+ const entries:Entry[]=[],active=new Set<Lane>(),boards=new Set<string>();
+ let calls=0,decisions=0,jobs=0,claimPending=false,stopped=false,halted=false,budgetBlocked=false,firstError:unknown;
+ let idleTimer:ReturnType<typeof setInterval>|undefined,idleWork:Promise<void>|undefined;
+ let journal:any;
+ const persist=()=>{
+  const status=claimPending?'claim_pending':entries.some(e=>e.status==='completion_pending')?'completion_pending':entries.some(e=>!['complete','failed'].includes(e.status))?'running':halted?'failed':entries.length?'complete':'idle';
+  journal={format:'parallel-owner-v1',status,origin,concurrency:2,claim_pending:claimPending,calls,decisions,entries};
+  const temp=journalFile+'.tmp';writeFileSync(temp,JSON.stringify(journal)+'\n',{mode:0o600});renameSync(temp,journalFile);
+ };
+ const halt=(error:unknown)=>{halted=true;firstError??=error;};
+ // Do not interrupt unrelated in-flight responses: block all new calls, then drain
+ // every lane. Returned responses after a stop are not saved or published.
+ const stop=()=>{stopped=true;halted=true;};
+ const endHeartbeat=async(lane:Lane)=>{if(lane.heartbeat)clearInterval(lane.heartbeat);lane.heartbeat=undefined;await lane.heartbeatWork;lane.heartbeatWork=undefined;};
+ const pendingBudget=()=>({
+  calls:[...active].reduce((n,l)=>n+Math.max(0,l.entry.job.maxProviderCalls-l.entry.calls),0),
+  decisions:[...active].reduce((n,l)=>n+Math.max(0,l.entry.job.maxDecisions-l.entry.decisions),0),
+ });
+ try{
+  const bearer=readBearer(options.bearerFile),fetcher=options.fetch??fetch;
+  const post=async(action:string,body:unknown)=>{
+   let response:Response;try{response=await fetcher(origin+'/v1/aiv2/ondemand/owner/'+action,{method:'POST',headers:{authorization:'Bearer '+bearer,'content-type':'application/json'},body:JSON.stringify(body),redirect:'error',signal:AbortSignal.timeout(15_000)});}catch{throw failure('bridge_transport_uncertain');}
+   if(!response.ok)throw failure(response.status===409?'bridge_lease_conflict':'bridge_request_failed');
+   try{return await response.json() as any;}catch{throw failure('bridge_response_invalid');}
+  };
+  const previous=existsSync(journalFile)?JSON.parse(readFileSync(journalFile,'utf8')):null;
+  if(options.retryCompletion){
+   const parallel=previous?.format==='parallel-owner-v1';
+   const pending=parallel?previous.entries?.filter((e:any)=>e.status==='completion_pending'):previous?.status==='completion_pending'?[previous]:[];
+   if(previous?.origin!==origin||!Array.isArray(pending)||!pending.length||parallel&&(previous.claim_pending!==false||previous.entries.some((e:any)=>!['complete','failed','completion_pending'].includes(e.status))))throw failure('no_pending_completion');
+   // Validate every payload before sending any; retries are upload-only and never
+   // turn a lost claim/running lane into implicitly replayed generation.
+   for(const entry of pending){
+    const payload=entry.completion;if(!payload)throw failure('no_pending_completion');
+    const input=await loadRoot(payload.result.snapshot.board,source);
+    if(payload.result.proof.implementationHash!==implementation||payload.result.proof.sourceHash!==hash(input.upstream))throw failure('completion_pins_changed');
+    const snapshot=await onDemandSnapshot(payload.result.snapshot.board,payload.result.snapshot.path,root,source);
+    if(hash(snapshot)!==hash(payload.result.snapshot))throw failure('completion_cache_changed');
+   }
+   if(parallel){entries.push(...previous.entries);calls=previous.calls;decisions=previous.decisions;}
+   for(const entry of pending){
+    const result=await post('complete',entry.completion);if(result.ok!==true)throw failure('bridge_response_invalid');
+    if(parallel){entry.status='complete';entry.call_in_flight=false;delete entry.completion;persist();}
+    else{const temp=journalFile+'.tmp';writeFileSync(temp,JSON.stringify({status:'complete',origin,calls:previous.calls,decisions:previous.decisions})+'\n',{mode:0o600});renameSync(temp,journalFile);}
+   }
+   return {status:'completion_uploaded',calls:0,decisions:0,jobs:0};
+  }
+  if(!settledJournal(previous))throw failure('previous_owner_outcome_requires_manual_review');
+  const onlineSourceHash=hash((await loadRoot('As7d2c',source)).upstream);
+  const onlinePins={revision:hash({method:CONFIG.method,version:CONFIG.version,implementationHash:implementation,sourceHash:onlineSourceHash}),implementationHash:implementation,sourceHash:onlineSourceHash};
+  const assertPins=async()=>{if(implementationHash()!==implementation||hash((await loadRoot('As7d2c',source)).upstream)!==onlineSourceHash)throw failure('pins_changed');};
+  process.once('SIGTERM',stop);process.once('SIGINT',stop);options.signal?.addEventListener('abort',stop,{once:true});
+  if(options.signal?.aborted)stop();
+  if(stopped)return {status:'stopped',calls,decisions,jobs};
+  const online=await post('heartbeat',onlinePins);if(online.ok!==true)throw failure('bridge_response_invalid');
+  persist();
+  idleTimer=setInterval(()=>{
+   if(active.size||idleWork||halted)return;
+   idleWork=post('heartbeat',onlinePins).then(result=>{if(result.ok!==true)throw failure('bridge_response_invalid');}).catch(error=>halt(error)).finally(()=>{idleWork=undefined;});
+  },heartbeatMs);
+  const runLane=async(lane:Lane)=>{
+   const entry=lane.entry,job=entry.job;
+   // Equivalent card-order boards serialize too. This prevents overlapping paths
+   // from concurrently generating/writing the same immutable decision file.
+   const boardKey=(job.board.match(/../g)??[]).sort().join('');let ownsBoard=false;
+   try{
+    if(halted)throw failure('uncertain_provider_outcome');
+    const sourceHash=hash((await loadRoot(job.board,source)).upstream);
+    validateBridgeJob(job,implementation,sourceHash);
+    await onDemandSnapshot(job.board,job.path,root,source);
+    const beat=async()=>{const result=await post('heartbeat',{id:job.id,leaseToken:job.leaseToken,revision:job.revision,implementationHash:implementation,sourceHash});if(result.ok!==true)throw failure('bridge_response_invalid');};
+    await beat();
+    lane.heartbeat=setInterval(()=>{
+     if(lane.heartbeatWork||halted)return;
+     lane.heartbeatWork=beat().catch(error=>{lane.heartbeatFailed=true;halt(error);}).finally(()=>{lane.heartbeatWork=undefined;});
+    },heartbeatMs);
+    while(boards.has(boardKey)&&!halted)await new Promise(r=>setTimeout(r,pollMs));
+    if(halted)throw failure('uncertain_provider_outcome');boards.add(boardKey);ownsBoard=true;
+    while(!halted){
+     const next=await resolveFrontier(job.board,job.path,root,source,implementation);
+     if(next.status!=='missing')break;
+     if(entry.decisions>=job.maxDecisions||entry.calls>=job.maxProviderCalls||decisions>=maxDecisions||calls>=maxCalls)throw failure('budget_exhausted');
+     await assertPins();if(halted)throw failure('uncertain_provider_outcome');
+     const metrics:any[]=[],provenance:any[]=[];
+     // One provider per job keeps response attestations disjoint even when calls overlap.
+     lane.receive=metric=>metrics.push(metric);
+     lane.provider??=(options.providerFactory??(onMetric=>createAiv2SessionProvider({concurrency:1,onMetric})))(metric=>lane.receive?.(metric));
+     const artifact=await generateOne(next.input,implementation,lane.provider,()=>{
+      if(halted||lane.heartbeatFailed)throw failure('uncertain_provider_outcome');
+      if(calls>=maxCalls||entry.calls>=job.maxProviderCalls)throw failure('budget_exhausted');
+      calls++;entry.calls++;entry.call_in_flight=true;persist();
+     },call=>provenance.push(call));
+     if(halted||lane.heartbeatFailed)throw failure('uncertain_provider_outcome');
+     saveDecision(artifact,metrics,root,provenance);loadDecision(next.input,implementation,root);
+     decisions++;entry.decisions++;entry.call_in_flight=false;persist();
+    }
+    if(halted)throw failure('uncertain_provider_outcome');
+    await endHeartbeat(lane);if(halted||lane.heartbeatFailed)throw failure('uncertain_provider_outcome');
+    await assertPins();if(halted)throw failure('uncertain_provider_outcome');
+    const frontier=await resolveFrontier(job.board,job.path,root,source,implementation),snapshot=await onDemandSnapshot(job.board,job.path,root,source);
+    if(halted)throw failure('uncertain_provider_outcome');
+    if(frontier.status==='missing'||!['generated','terminal','chance','zero-reach'].includes(snapshot.status))throw failure('incomplete_validated_store');
+    if(frontier.status==='generated')loadDecision(frontier.artifact.input,implementation,root);
+    entry.completion={id:job.id,leaseToken:job.leaseToken,result:{status:snapshot.status,snapshot,proof:{revision:job.revision,implementationHash:implementation,sourceHash,validatedStore:true}}};
+    entry.status='completion_pending';persist();
+    const result=await post('complete',entry.completion);if(result.ok!==true)throw failure('bridge_response_invalid');
+    entry.status='complete';delete entry.completion;jobs++;persist();
+   }catch(error){
+    // Halt synchronously before awaiting heartbeats/fail uploads. Another lane may
+    // finish its current response, but can never start its correction/next response.
+    halt(entry.status==='completion_pending'?failure('completion_upload_requires_explicit_retry'):error);
+    await endHeartbeat(lane);
+    if(entry.status==='completion_pending')return;
+    const code=(error as any)?.code;
+    const outcome=entry.call_in_flight||lane.heartbeatFailed||stopped||code==='uncertain_provider_outcome'?'uncertain_provider_outcome':code==='budget_exhausted'?'budget_exhausted':'generation_failed';
+    entry.status='failure_pending';entry.error=outcome;persist();
+    try{
+     if(isHash(job.id)&&typeof job.leaseToken==='string'){
+      const response=await post('fail',{id:job.id,leaseToken:job.leaseToken,error:outcome});if(response.ok!==true)throw failure('bridge_response_invalid');
+     }
+     entry.status='failed';persist();
+    }catch(uploadError){halt(uploadError);}
+   }finally{
+    if(ownsBoard)boards.delete(boardKey);
+    await endHeartbeat(lane);await lane.provider?.drain();
+   }
+  };
+  try{
+   while(!halted&&calls<maxCalls&&decisions<maxDecisions){
+    if(active.size>=2){await Promise.race([...active].map(l=>l.work));continue;}
+    const reserved=pendingBudget(),remainingCalls=maxCalls-calls-reserved.calls,remainingDecisions=maxDecisions-decisions-reserved.decisions;
+    if(remainingCalls<1||remainingDecisions<1){
+     if(active.size){await Promise.race([...active].map(l=>l.work));continue;}
+     budgetBlocked=true;break;
+    }
+    await assertPins();if(halted)break;
+    claimPending=true;persist();
+    const claimed=await post('claim',{remainingCalls,remainingDecisions});
+    // Keep claim_pending durable on transport/shape uncertainty: never reclaim or retry.
+    if(!claimed||!Object.hasOwn(claimed,'job'))throw failure('bridge_response_invalid');
+    if(claimed.job===null){
+     claimPending=false;persist();
+     if(claimed.budgetBlocked===true){
+      if(active.size){await Promise.race([...active].map(l=>l.work));continue;}
+      budgetBlocked=true;break;
+     }
+     if(!options.watch)break;
+     await new Promise(r=>setTimeout(r,pollMs));continue;
+    }
+    const job=claimed.job as Job;
+    // Validate before accepting claimed capacity; malformed/over-budget leases remain
+    // uncertain in the journal and cannot reach any provider factory.
+    validateBridgeJob(job,implementation,onlineSourceHash);
+    if(job.maxProviderCalls>remainingCalls||job.maxDecisions>remainingDecisions||entries.some(e=>e.job.id===job.id))throw failure('invalid_or_stale_claim');
+    const lane:Lane={entry:{job,status:'running',calls:0,decisions:0,call_in_flight:false},heartbeatFailed:false};
+    entries.push(lane.entry);active.add(lane);claimPending=false;persist();
+    lane.work=runLane(lane).catch(error=>halt(error)).finally(()=>{active.delete(lane);});
+    if(!options.watch)break; // --run-once still means at most one job, even at concurrency 2.
+   }
+  }catch(error){halt(error);}
+  await Promise.all([...active].map(l=>l.work));
+  if(idleTimer)clearInterval(idleTimer);idleTimer=undefined;await idleWork;
+  if(firstError)throw firstError;
+  return {status:budgetBlocked?'budget_blocked':stopped?'stopped':'finished',calls,decisions,jobs};
+ }finally{
+  if(idleTimer)clearInterval(idleTimer);await idleWork;
+  await Promise.all([...active].map(l=>l.work));
+  process.removeListener('SIGTERM',stop);process.removeListener('SIGINT',stop);options.signal?.removeEventListener('abort',stop);unlinkSync(lock);
+ }
+}
+
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  const args=process.argv.slice(2),get=(name:string)=>args.find(a=>a.startsWith('--'+name+'='))?.slice(name.length+3);
  try{
   const retry=args.includes('--retry-completion');
   if(!retry&&(!args.includes('--confirm-local-generation')||(!args.includes('--run-once')&&!args.includes('--watch'))))throw failure('explicit_owner_generation_confirmation_required');
   const origin=get('origin'),bearerFile=get('bearer-file');if(!origin||!bearerFile)throw failure('origin_and_bearer_file_required');
-  const result=await runBridge({origin,bearerFile,source:get('source-dir')===undefined?undefined:resolve(get('source-dir')!),watch:args.includes('--watch'),retryCompletion:retry,allowLoopback:args.includes('--allow-loopback-test'),maxDecisions:get('max-decisions')===undefined?undefined:Number(get('max-decisions')),maxCalls:get('max-calls')===undefined?undefined:Number(get('max-calls'))});
+  const result=await runBridge({origin,bearerFile,source:get('source-dir')===undefined?undefined:resolve(get('source-dir')!),watch:args.includes('--watch'),concurrency:get('concurrency')===undefined?undefined:Number(get('concurrency')),retryCompletion:retry,allowLoopback:args.includes('--allow-loopback-test'),maxDecisions:get('max-decisions')===undefined?undefined:Number(get('max-decisions')),maxCalls:get('max-calls')===undefined?undefined:Number(get('max-calls'))});
   console.log(JSON.stringify(result));
  }catch{console.error(JSON.stringify({status:'failed',error:'owner_bridge_stopped_check_local_journal_no_automatic_retry'}));process.exitCode=1;}
 }

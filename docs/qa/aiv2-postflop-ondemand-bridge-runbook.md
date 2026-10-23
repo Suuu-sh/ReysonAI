@@ -36,6 +36,14 @@ Each claim sends the bridge's remaining global call/decision capacity. The broke
 
 The production destination is strictly `https://api.reysonai.com`; redirects, URL credentials, alternate ports/paths and query strings are rejected. Explicit `--allow-loopback-test` permits only an HTTP IP-literal loopback origin with a port, for isolated testing, not a production bypass.
 
+## Opt-in bounded parallel generation
+
+Default `--concurrency=1` preserves the original serial owner. Explicit `--concurrency=2 --watch` allows at most two leased jobs inside **one** bridge process, with the same shared `worker.lock`; never launch a second owner. `--run-once` still claims at most one job. Values outside 1–2 fail before any request. For a first two-root trial use `--max-decisions=2 --max-calls=4`; each root reserves one decision/two calls, including its possible correction. Existing broker account/daily quotas remain unchanged.
+
+Claims are serialized and subtract all active jobs' remaining structural reservations before advertising capacity. Providers, metrics/provenance, lease heartbeats and durable journal entries are isolated per job. Boards containing the same three cards serialize to avoid duplicate ancestor writes. Any uncertain lane/claim/lease stops new claims and all new provider responses, including corrections; already-started responses drain without being saved/published after that stop. No automatic retry is added.
+
+After deliberately stopping an **idle** serial owner, a scalar `idle`/`complete`/acknowledged `failed` journal can start the parallel owner safely. The parallel journal is one atomically replaced `parallel-owner-v1` envelope with per-job entries, aggregate counters and a `claim_pending` marker. Never display it: job entries contain lease capabilities. Unresolved claims/running/failure-upload entries block either serial or parallel restart. A lost completion retains its exact per-job payload. Use the same command with `--concurrency=2 --retry-completion` for explicit **upload-only** retry; every pending payload is locally validated before any upload, and no claim/provider is created. Unresolved non-completion entries require manual review rather than an upload retry. Keep this journal and its temporary file private and out of Git.
+
 ## Lock, journal and interruptions
 
 The bridge shares the candidate store's `worker.lock` with the original local worker, so two owners cannot run together. It does **not** reclaim stale locks automatically. Do not configure automatic process restarts. After a crash, first establish that the previous owner process has stopped and inspect the broker job state; expired in-flight work remains failed/uncertain, never automatically requeued. Removal of a stale lock is a deliberate operator action after that investigation, not a retry instruction.
