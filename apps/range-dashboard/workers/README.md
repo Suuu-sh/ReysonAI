@@ -20,7 +20,7 @@ Focused mock UI checks（既存frontendのjsdomを使用、サーバー・生成
 
 静的チェックは新UI単体を対象に実施。親担当によりデスクトップ実ブラウザーで、実2並列の応答待ち→完了、および4並列設定の完了記録（実稼働0）を確認済み。375pxはレスポンシブ実装・静的確認のみで、実ブラウザー確認は未実施。
 
-## Optional temporary public read-only URL
+## Public read-only URLs
 
 The separate relay (`node apps/range-dashboard/workers/public-relay.ts`) binds **127.0.0.1:5197 only**. An operator may explicitly start a separate quick tunnel to that port after review. Do not reuse or reconfigure the existing 5188 tunnel. No relay/tunnel is automatically launched. A temporary URL works only while this Mac, the monitor, relay and tunnel remain running; it is not a fixed domain.
 
@@ -29,3 +29,5 @@ Only exact GET `/`, `/app.js`, `/style.css`, `/api/workers` are served. POST/oth
 Coverage numbers are **locally validated saved artifacts**, not live broker completion counts. Local collection file update time and the referenced broker snapshot time are shown separately; one locally saved artifact may still have an incomplete/uncertain upload. Historical `halted` phase remains a stopped record even if its coordinator exited, never a claim that recovery has started.
 
 If owner metadata has `quarantineJournalSha256`, the reader accepts only a 64-hex original-journal digest and derives the fixed quarantine journal path. The original global journal must still match that digest byte-for-byte. Invalid/missing/mismatched selections yield unknown status, never fallback to another journal. Existing owner start/scope/concurrency and symlink guards remain in force.
+
+The exact hostname `monitor.reysonai.com` is additionally allowlisted for a separately configured named Cloudflare Tunnel. Existing temporary `*.trycloudflare.com` hosts and localhost:5197 remain supported. No wildcard ReysonAI subdomains, alternate ports or lookalike names are accepted. The fixed hostname does not remove the loopback socket, exact GET route, sanitized DTO or original 5189 protections. DNS/named-tunnel setup is a separate operator action; this code change does not publish or provision it. A fixed address still requires this Mac, monitor, relay and tunnel to be running.
