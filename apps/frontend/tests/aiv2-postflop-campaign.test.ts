@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import { mkdtempSync, realpathSync, readFileSync, writeFileSync, readdirSync, existsSync, rmSync } from 'node:fs';import { join } from 'node:path';import { tmpdir } from 'node:os';import { createHash } from 'node:crypto';
-import { runCampaign, validateCampaignReceipt, type CampaignDependencies, type CampaignOptions, type CampaignReviewRequest, type CampaignReviewReceipt, type CampaignArtifact } from '../scripts/aiv2-postflop-campaign.ts';
+import { runCampaign, validateCampaignReceipt, readCampaignStatusResponse, CAMPAIGN_STATUS_RESPONSE_LIMIT, type CampaignDependencies, type CampaignOptions, type CampaignReviewRequest, type CampaignReviewReceipt, type CampaignArtifact } from '../scripts/aiv2-postflop-campaign.ts';
 import { enumeratePhysicalFlops } from '../scripts/aiv2-postflop-flop-coverage.ts';import { postflopHash as hash } from '../scripts/aiv2-postflop-ondemand.ts';
 const sha=(b:Buffer)=>createHash('sha256').update(b).digest('hex'),pins={revision:'a'.repeat(64),implementationHash:'b'.repeat(64),sourceHash:'c'.repeat(64)};
 function fixture(count=8,batchSize=2){
@@ -37,4 +37,14 @@ test('source drift, numeric provenance mismatch, corpus mutation and existing ow
 test('second coordinator lock and cancellation during review do not start a second owner or new queue',async()=>{
  const f=fixture(6),controller=new AbortController();let entered:()=>void=()=>{};const waiting=new Promise<void>(r=>entered=r);
  try{f.deps.review=async(_r,_file,signal)=>{entered();return new Promise((_done,reject)=>signal!.addEventListener('abort',()=>reject(Object.assign(Error('stopped'),{code:'campaign_stopped'})),{once:true}));};const work=runCampaign({...f.options,signal:controller.signal},f.deps),settled=work.catch(e=>e);await waiting;await assert.rejects(runCampaign(f.options,f.deps));assert.equal(f.enqueueCount(),1);controller.abort();assert.equal((await settled).code,'campaign_stopped');assert.equal(f.enqueueCount(),1);assert.equal(f.state().phase,'halted');}finally{controller.abort();f.cleanup();}
+});
+
+test('status reader accepts real-shaped completed169cell snapshots beyond128KiB and projects no result/private extras',async()=>{
+ const boards=enumeratePhysicalFlops().slice(0,16),jobs=boards.map(board=>({id:hash({revision:pins.revision,board,path:[]}),board,path:[],status:'complete',result:{status:'generated',snapshot:{board,path:[],scene:{cells:Array.from({length:169},(_,i)=>({hand:'AA',reason:{en:'Synthetic saved response text '.repeat(12),ja:'合成保存テキスト'.repeat(12)},index:i})),provenance:{independent_gto_approved:false}}},proof:{validatedStore:true}},error:'PRIVATE-extra'}));
+ const serialized=JSON.stringify({...pins,jobs});assert.ok(Buffer.byteLength(serialized)>128*1024);const projected=await readCampaignStatusResponse(new Response(serialized),jobs.map(j=>j.id),pins);assert.equal(projected.length,16);assert.deepEqual(Object.keys(projected[0]),['id','board','path','status']);assert.equal(JSON.stringify(projected).includes('Synthetic'),false);assert.equal(JSON.stringify(projected).includes('PRIVATE'),false);
+});
+test('status reader rejects over32MiB before parse and retains strict pins IDs statuses and duplicate checks',async()=>{
+ const board='AsAhAd',id=hash({revision:pins.revision,board,path:[]}),job={id,board,path:[],status:'complete'},response=(patch:any={})=>new Response(JSON.stringify({...pins,jobs:[job],...patch}));
+ for(const patch of [{revision:'d'.repeat(64)},{implementationHash:'d'.repeat(64)},{sourceHash:'d'.repeat(64)},{jobs:[{...job,id:'d'.repeat(64)}]},{jobs:[{...job,status:'invented'}]},{jobs:[{...job,board:'AsAhAc'}]},{jobs:[job,job]}])await assert.rejects(readCampaignStatusResponse(response(patch),[id],pins),{code:'campaign_status_invalid'});
+ const chunk=new Uint8Array(1024*1024);let read=0,cancelled=false;const oversized=new Response(new ReadableStream({pull(controller){read++;controller.enqueue(chunk);},cancel(){cancelled=true;}}));await assert.rejects(readCampaignStatusResponse(oversized,[id],pins),{code:'campaign_status_oversize'});assert.equal(cancelled,true);assert.ok(read<=CAMPAIGN_STATUS_RESPONSE_LIMIT/chunk.length+2);
 });
