@@ -7,6 +7,7 @@ import { productLocale } from "../locale.ts";
 import { browseActions, browsePath, onDemandRequest, savedSceneModel, validBoard } from "./aiv2-ondemand-client.ts";
 import type { Capability, Job, SavedResult } from "./aiv2-ondemand-client.ts";
 import "./ranges.css";
+import "./aiv2-ondemand.css";
 const storageKey="reysonai:aiv2:ondemand:browse:v1";
 function restored(){try{const saved=JSON.parse(sessionStorage.getItem(storageKey)??"null");if(saved&&typeof saved.board==="string"&&Array.isArray(saved.path)){browsePath(saved.board,saved.path);return saved as {board:string;path:string[]};}}catch{}return {board:"As7d2c",path:[] as string[]};}
 export function Aiv2OnDemandWorkspace(){
@@ -38,7 +39,7 @@ export function Aiv2OnDemandWorkspace(){
   try{const value=await onDemandRequest<Job>(base,"requests",{board:location.board,path:location.path,consent:true});setJob(value);if(value.status==="complete"&&value.result)setLoaded({key,result:value.result});if(value.status==="failed")setError("generation_failed");}catch(e){setError(e instanceof Error?e.message:"request_failed");}finally{setSubmitting(false);}
  };
  const errorCopy=error==="sign_in_required"?t("Sign in to use on-demand AIv2.","オンデマンドAIv2を利用するにはログインしてください。"):error==="quota_exceeded"?t("Generation quota reached. No new request was created.","生成上限に達しました。新しい生成は開始していません。"):error==="disabled"?t("On-demand generation is not enabled on this deployment.","この環境ではオンデマンド生成は有効になっていません。"):t("Service unavailable or offline. No substitute is shown. Retry only when ready; no automatic generation retry.","サービスに接続できないか処理に失敗しました。代替表示や生成の自動再試行は行いません。");
- return <main className="shell"><h1>AIv2 · {t("On-demand postflop","オンデマンド・ポストフロップ")}</h1>
+ return <main className="shell aiv2-ondemand-workspace"><h1>AIv2 · {t("On-demand postflop","オンデマンド・ポストフロップ")}</h1>
  <p>100BB · BTN open 2.5BB → BB call · SRP · bet 33/66/125% · raise-to 2.5×</p>
  <p>{t("AI estimates, not GTO or solver solutions; strategic explanations are not independently reviewed. BB acts first; no assumed check. Missing decisions never use AI/GTO or the legacy five-board data. Only an explicit generation request can make provider calls.","AIによる近似推定で、GTO・ソルバー解ではありません。戦略説明の独立検証は未完了です。BBから開始し、チェックを仮定しません。未生成の局面はAI/GTOや旧5ボードで代用しません。明示的な生成操作のみ外部生成を開始します。")}</p>
  <form onSubmit={e=>{e.preventDefault();if(validBoard(draft)){setLocation({board:draft,path:[]});setJob(null);setError("");}}}><label>{t("Three-card flop","フロップ3枚")} <input value={draft} onChange={e=>setDraft(e.target.value)} placeholder="As7d2c" aria-invalid={!validBoard(draft)} maxLength={6}/></label> <button disabled={!validBoard(draft)||pending}>{t("Open flop","フロップを開く")}</button>{!validBoard(draft)&&<span role="status">{t("Enter three unique cards, e.g. As7d2c.","重複のない3枚をAs7d2cの形式で入力してください。")}</span>}</form>
