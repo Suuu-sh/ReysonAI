@@ -14,8 +14,8 @@ test("compact defaults preserve all 1326 exact mixes independently of weighted d
   const reach = Object.fromEntries(CONCRETE_COMBOS.map(({ combo, hand }) => [combo, hand === "AA" ? 0 : combo === "AsKh" ? 0.17 : 0.83]));
   const before = expandConcretePolicy(policy, reach);
   const display = compressConcretePolicy(before, actions).map(({ hand, mix }) => ({ hand, ...mix }));
-  assert.notEqual(display.find(row => row.hand === "AKo")!.fold, policy.class_mixes.AKo.fold);
-  assert.notEqual(display.find(row => row.hand === "AA")!.fold, policy.class_mixes.AA.fold);
+  assert.notEqual((display.find(row => row.hand === "AKo")! as { hand: string; fold: number }).fold, policy.class_mixes.AKo.fold);
+  assert.notEqual((display.find(row => row.hand === "AA")! as { hand: string; fold: number }).fold, policy.class_mixes.AA.fold);
   const compact = encodeCompactPolicy(policy);
   assert.equal(compact.class_defaults.length, 169);
   const restored = decodeCompactPolicy({ id: "codec", hands: display, ...JSON.parse(JSON.stringify(compact)) }, actions);

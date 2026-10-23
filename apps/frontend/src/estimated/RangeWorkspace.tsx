@@ -1,3 +1,4 @@
+import { Aiv2OnDemandWorkspace } from "./Aiv2OnDemandWorkspace.tsx";
 /// <reference lib="es2023.array" />
 import type { CSSProperties, MouseEvent, ReactNode } from "react";
 import type { Profile } from "../profile.ts";
@@ -1241,5 +1242,6 @@ export function RangeWorkspace({ profile, onEditProfile, onSectionChange }: Work
     return () => window.removeEventListener(RANGE_SOURCE_CHANGED, update);
   }, []);
   useEffect(() => { try { window.sessionStorage.setItem(workspaceSourceStorageKey, rangeSource); } catch {} }, [rangeSource]);
+  if (rangeSource === "aiv2") return <Aiv2OnDemandWorkspace />;
   return <EstimatedRanges profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} rangeSource={rangeSource} previousRangeSource={previousRangeSource} previousSemanticNode={previousSemanticNode} initialRangeType={isLocalAiv2SampleMode() ? "open" : "response"} />;
 }

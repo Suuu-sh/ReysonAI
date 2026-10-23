@@ -1,0 +1,222 @@
+{
+  "schema_version": "aiv2-postflop-independent-review-v1",
+  "approved": false,
+  "reviewed_at_utc": "2026-10-23T00:09:09.699Z",
+  "reviewer": {
+    "actor": "independent-saved-child-factual-review",
+    "relationship": "Separate review agent; no policy generation, regeneration, provider calls, or source/cache changes.",
+    "model": null,
+    "model_attestation": "Reviewer runtime model identity not independently attested."
+  },
+  "scope": {
+    "decision_id": "7504f6574de683065bbc208f0cd783282617a7068f1ee55db7bca702684769c1",
+    "actor": "BTN",
+    "street": "flop",
+    "board": "As7d2c",
+    "public_history": "BB check",
+    "status": "factual-provenance-reviewed-strategy-not-approved",
+    "parent_scope": "Parent read only for lineage and own-actor range conditioning; no duplicate strategic review of root.",
+    "not_an_approval_receipt": true
+  },
+  "hash_binding": {
+    "algorithm": "SHA-256",
+    "input": "Exact raw file bytes, not parsed/canonicalized JSON.",
+    "warning_rule": "Apply findings only when decision_id and artifact_raw_file_sha256 match these exact loaded bytes; never replace policy/reason text silently."
+  },
+  "artifacts": [
+    {
+      "decision_id": "7504f6574de683065bbc208f0cd783282617a7068f1ee55db7bca702684769c1",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/7504f6574de683065bbc208f0cd783282617a7068f1ee55db7bca702684769c1.json",
+      "raw_file_sha256": "e819661275a2be93253cf0a5a3f666aae3036f2d26e33d98f9cd6a681852ac5f",
+      "role": "reviewed-child"
+    },
+    {
+      "decision_id": "16c8f7aeff99422bc108d09a22ac8d6988d5df1329d6da1353a7a05854c20c71",
+      "file": "apps/frontend/candidates/aiv2-postflop/llm-postflop-ondemand-v2/decisions/16c8f7aeff99422bc108d09a22ac8d6988d5df1329d6da1353a7a05854c20c71.json",
+      "raw_file_sha256": "9af67f7972b2570fd418e626ced2068ae5694b3b6ee398d82ddd39cec0da46dc",
+      "role": "lineage-evidence-only"
+    }
+  ],
+  "sources": [
+    {
+      "file": "/Users/yota/Projects/Products/ReysonAI/apps/frontend/candidates/aiv2-preflop/llm-range-single-response-v6/spots/base/opening-ranges/BTN_open.json",
+      "key": "base/opening-ranges/BTN_open",
+      "raw_file_sha256": "ab3f89db0240e0082360cbd94f4e51befaff4be0b0c582c521db2306d540f738",
+      "saved_json_sha256": "e326d1ccbbe3ed935edb700a44168d922430c5d6aa522d92ddd6666f0d288fab",
+      "recomputed_json_sha256": "e326d1ccbbe3ed935edb700a44168d922430c5d6aa522d92ddd6666f0d288fab",
+      "saved_policy_hash": "6dabe569bf10969d5bed697e3cb4ef8f18bc8dfa5047fdcfa04c53070af15e1c",
+      "recomputed_policy_hash": "6dabe569bf10969d5bed697e3cb4ef8f18bc8dfa5047fdcfa04c53070af15e1c"
+    },
+    {
+      "file": "/Users/yota/Projects/Products/ReysonAI/apps/frontend/candidates/aiv2-preflop/llm-range-single-response-v6/spots/base/preflop-ranges/BB_vs_BTN.json",
+      "key": "base/preflop-ranges/BB_vs_BTN",
+      "raw_file_sha256": "e5073cd844015b1012d6c519dde1ea396c4e3e0f7835cf73601afd22ebdb3e7a",
+      "saved_json_sha256": "b275ec3066c9ce7ffe95fac9058fd099174fe3acb02a3e8853853c4ac5862762",
+      "recomputed_json_sha256": "b275ec3066c9ce7ffe95fac9058fd099174fe3acb02a3e8853853c4ac5862762",
+      "saved_policy_hash": "6764fdf7eb8831bb1d018f276be3a6380a99f3206d212165e5f791d4f21fdbee",
+      "recomputed_policy_hash": "6764fdf7eb8831bb1d018f276be3a6380a99f3206d212165e5f791d4f21fdbee"
+    }
+  ],
+  "provenance": {
+    "checks": {
+      "current_reader_accepts_saved_child": true,
+      "current_implementation_matches": true,
+      "child_input_equals_saved_parent_check_transition": true,
+      "root_input_equals_current_saved_preflop_sources": true,
+      "all_upstream_content_and_policy_hashes_match": true,
+      "history_parent_id_and_policy_match": true,
+      "btn_range_unchanged_from_root": true,
+      "bb_range_equals_parent_own_reach_times_check_probability": true,
+      "no_duplicate_combos": true,
+      "no_missing_or_extra_positive_own_reach_combos": true,
+      "no_board_blocked_combos": true,
+      "saved_actor_reach_equals_own_input_only": true,
+      "all_mixes_complete_legal_integer_percentages_summing_100": true,
+      "all_en_ja_reasons_present": true
+    },
+    "implementation_hash": "96e53c3932c656a1a331e8e2e389ff5e30e75eeb65db95eda07bdf3fb204e84d",
+    "input_hash": "a2a8b5bf18bc0182e514e0eec20f9a93cb832a372bfab987dbaf9ac7789e6dc2",
+    "response_hash": "41345aa63d606aba49d09f1165b71338531317d1039e020bd1778c83ecae41a0",
+    "policy_hash": "e8648745ee0ee46a5fdb52ef448e33c588b35a62d4676863e59baadbc2e9912e",
+    "config_hash": "ac3cc43c76d9ad0c8b7cf1105ed0ae6f37f2a084334e5e78ad2973ee0548a9ff",
+    "prompt_hash": "3a2605a74130e234bafa5824b69b3da0d8fd72a2c99d2b1d403aea8135cadda4",
+    "schema_hash": "ecd6a5a25905d9a05aed625157d722b17b6bfe017f468eb2f3a9b4c3fe1ed448",
+    "source_hash": "56e932510c9bb830422e62abc6dfdaf6b9dc0de97f11312dcbdeb48b12507a18",
+    "parents_hash": "999d03c06a3aa475111b45ad70a28eab0a4bac66d5de5bf8db3c5fd80c8ff886",
+    "provider_evidence": {
+      "model": "gpt-6.1-sol",
+      "confirmed_model": "gpt-6.1-sol",
+      "reasoning_effort": "medium",
+      "confirmed_effort": "medium",
+      "transport": "pooled-app-server",
+      "session_turn": 1,
+      "status": "completed",
+      "provider_calls": [
+        {
+          "session_turn": 1,
+          "validation_issue": null,
+          "effective_prompt_hash": "3a2605a74130e234bafa5824b69b3da0d8fd72a2c99d2b1d403aea8135cadda4",
+          "schema_hash": "ecd6a5a25905d9a05aed625157d722b17b6bfe017f468eb2f3a9b4c3fe1ed448"
+        }
+      ],
+      "limitation": "Saved local attestation fields verified for consistency; external provider execution not independently re-attested."
+    }
+  },
+  "numeric": {
+    "group_count": 16,
+    "reached_combo_count": 646,
+    "btn_reach_weight": 525.25,
+    "bb_positive_combo_count": 827,
+    "bb_reach_weight": 436.95,
+    "legal_actions": [
+      {
+        "action": "check",
+        "paid_bb": 0,
+        "to_bb": 0,
+        "all_in": false
+      },
+      {
+        "action": "bet33",
+        "paid_bb": 1.82,
+        "to_bb": 1.82,
+        "all_in": false
+      },
+      {
+        "action": "bet66",
+        "paid_bb": 3.63,
+        "to_bb": 3.63,
+        "all_in": false
+      },
+      {
+        "action": "bet125",
+        "paid_bb": 6.88,
+        "to_bb": 6.88,
+        "all_in": false
+      }
+    ],
+    "reach_weighted_action_percent": {
+      "check": 58.3798191337,
+      "bet33": 41.6201808663,
+      "bet66": 0,
+      "bet125": 0
+    },
+    "interpretation": "bet66/bet125 are available legal actions assigned zero probability by this saved response, not forced off by the game. Root check100 for all 827 positive BB combos is a saved model choice, not a forced check rule."
+  },
+  "bilingual_factual_review": {
+    "reviewed": "Range summary and all 16 distinct group reasons in English/Japanese, against exact cards, reach and saved frequencies.",
+    "consistent_facts": [
+      "AA is top set; 77/22 are lower sets; A7/A2 are two pair; other Ax are top pair.",
+      "Spade, diamond and club suited unpaired groups have backdoor flush routes on As7d2c; hearts do not.",
+      "54/53/43 are wheel gutshots; suited spade/diamond/club versions also have backdoor flush routes.",
+      "The spade explanation excludes an opponent holding As in hand, not all possible higher spade flushes.",
+      "All stated group bet/check frequency comparisons match the recorded mixes.",
+      "English/Japanese convey the same group actions and frequencies; no definite translation inversion found."
+    ],
+    "limitations": [
+      "No independent equity, EV, exploitability or solver benchmark computed. Range/nut-advantage and value-target assertions are strategic estimates, not numerically verified facts.",
+      "Having zero equity/EV fields does not imply strategic validation. Generic grouped reasons can omit combo-specific blocker detail; no substitute rationale was invented."
+    ]
+  },
+  "findings": [
+    {
+      "id": "child-summary-nut-advantage-inference",
+      "priority": 2,
+      "category": "unsupported-strategic-summary-inference",
+      "decision_id": "7504f6574de683065bbc208f0cd783282617a7068f1ee55db7bca702684769c1",
+      "artifact_raw_file_sha256": "e819661275a2be93253cf0a5a3f666aae3036f2d26e33d98f9cd6a681852ac5f",
+      "locations": [
+        "artifact.summary.text",
+        "artifact.summary.text_ja",
+        "artifact.source_response.range_summary.text",
+        "artifact.source_response.range_summary.text_ja"
+      ],
+      "evidence": {
+        "en": "BB retains 77, 22, A7 and A2, so nut advantage is not exclusive.",
+        "ja": "BBにも77・22・A7・A2があり、ナッツ優位は独占的ではない。",
+        "btn_aa": [
+          [
+            "AhAd",
+            1
+          ],
+          [
+            "AhAc",
+            1
+          ],
+          [
+            "AdAc",
+            1
+          ]
+        ],
+        "bb_aa": [
+          [
+            "AhAd",
+            0
+          ],
+          [
+            "AhAc",
+            0
+          ],
+          [
+            "AdAc",
+            0
+          ]
+        ]
+      },
+      "finding": "Both languages infer non-exclusive nut advantage from BB lower sets/two pair. The actual flop nuts AA have positive BTN reach and zero BB reach. BB strong-value coverage alone does not establish the stated nut-advantage conclusion; the summary should distinguish exclusive actual nuts from broader strong-hand coverage.",
+      "severity_limit": "This is an unsupported/misleading inference, not proof the saved frequencies are strategically wrong or a claim that nut advantage is defined only by the single strongest holding.",
+      "required_action": "Clarify in a separately authorized explanation change or independent review; preserve the original response and its hashes."
+    }
+  ],
+  "production_blockers": [
+    "The bilingual nut-advantage inference above is not established by its cited physical-hand evidence.",
+    "No independent strategy-quality/GTO approval has been performed; numeric/provenance checks alone are not release approval."
+  ],
+  "preservation": {
+    "source_and_cache_unchanged": true,
+    "provider_calls_made_by_review": 0,
+    "regenerated_decisions": 0,
+    "files_created": [
+      "docs/qa/aiv2-postflop-ondemand-review.json"
+    ]
+  }
+}

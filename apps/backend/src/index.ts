@@ -1,3 +1,4 @@
+import { routeOnDemand, type OnDemandEnv } from "./aiv2-ondemand.ts";
 import { dispatchFastFold, type FastFoldRuntimeEnv } from "./fastfold-dispatch.ts";
 import { routeRanked } from "./ranked.ts";
 import { isNativeAccountRequest, routeNativeAccount } from "./native-account.ts";
@@ -60,7 +61,7 @@ type Manifest = {
   edge?: EdgeManifest;
 };
 type R2Bucket = { get(key: string): Promise<{ text(): Promise<string> } | null> };
-type Env = AccountEnv & FastFoldRuntimeEnv & { AUTH_NATIVE_ENABLED?: string; RANKED_ENABLED?: string; FASTFOLD_ENABLED?: string } & { SOLUTIONS: R2Bucket; DB?: D1Database; ALLOWED_ORIGIN?: string };
+type Env = AccountEnv & OnDemandEnv & FastFoldRuntimeEnv & { AUTH_NATIVE_ENABLED?: string; RANKED_ENABLED?: string; FASTFOLD_ENABLED?: string } & { SOLUTIONS: R2Bucket; DB?: D1Database; ALLOWED_ORIGIN?: string };
 type PublishedData = {
   summary: Solution;
   nodesIndex: NodeSummary[];
@@ -140,6 +141,7 @@ function notModified(request: Request, response: Response, cacheControl?: string
 }
 
 async function route(request: Request, env: Env, url: URL): Promise<Response> {
+  if (url.pathname.startsWith("/v1/aiv2/ondemand/")) return routeOnDemand(request, env);
   // Dedicated three-player bytes have a build-pinned approval boundary. Keep
   // this separate from HU caches/dataset versions, and never infer approval
   // from a database row, preflop path, query parameter or existing HU policy.
@@ -579,9 +581,9 @@ function withCors(response: Response, request: Request, env: Env): Response {
   if (configured.includes("*")) headers.set("access-control-allow-origin", "*");
   else if (requestOrigin && configured.includes(requestOrigin)) headers.set("access-control-allow-origin", requestOrigin);
   const pathname = new URL(request.url).pathname;
-  // Ranked and FastFold use the same HttpOnly account cookie. Credentialed browser fetches
+  // Ranked, FastFold and explicit on-demand jobs use the same HttpOnly account cookie. Credentialed browser fetches
   // (including OPTIONS and error responses) require an exact allowed origin.
-  if (pathname.startsWith("/v1/account/") || pathname.startsWith("/v1/ranked/") || pathname.startsWith("/v1/fastfold/")) {
+  if (pathname.startsWith("/v1/account/") || pathname.startsWith("/v1/ranked/") || pathname.startsWith("/v1/fastfold/") || pathname.startsWith("/v1/aiv2/ondemand/")) {
     headers.delete("access-control-allow-origin");
     headers.delete("access-control-allow-credentials");
     if (requestOrigin && configured.filter(value => value !== "*").includes(requestOrigin)) {

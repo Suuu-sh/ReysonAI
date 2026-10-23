@@ -10344,8 +10344,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 29895,
-      "sha256": "1f9e7e19f60de723da2a0790b13d7c77b82365f23490c02166925c39f68d1410"
+      "bytes": 30925,
+      "sha256": "ed41354e6f2e88122fef372ea09e2e37547cc481bb1ef866494b37902add98b7"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -10389,8 +10389,8 @@
     },
     {
       "path": "apps/backend/wrangler.jsonc",
-      "bytes": 1669,
-      "sha256": "7c6895420fedb903b401667f46dc2826b00da388232a0667d49f089b2d379c06"
+      "bytes": 2002,
+      "sha256": "47052331f965131b686497000705403415b5aad070806a15d44b203c7dcc6d03"
     },
     {
       "path": "apps/frontend/docs/mw3-source-identity/typescript-policy-source-parity.json",
@@ -11039,8 +11039,8 @@
     },
     {
       "path": "apps/frontend/src/estimated/english-reasons.ts",
-      "bytes": 14526,
-      "sha256": "d34914e02db033aadd8f59ea4d425c14e10d8adc70748ab477d0c5c97b272063"
+      "bytes": 15045,
+      "sha256": "82623b518a86b0a80a74d4ab59a2e6658861dc30622a5577bb5a1335ed079cae"
     },
     {
       "path": "apps/frontend/src/estimated/eqr.ts",
@@ -11354,16 +11354,16 @@
     },
     {
       "path": "scripts/ci/deployment-scope.test.ts",
-      "bytes": 42814,
-      "sha256": "840336b3f99219b8441e36f9a82181b9d1aade85ebb7b05d4e84d4352c01e065"
+      "bytes": 43794,
+      "sha256": "78e3726ac7ed2cc8980a6c60b34abf1352dcffb6d420a435e088a3fe44747ee7"
     },
     {
       "path": "scripts/ci/deployment-scope.ts",
-      "bytes": 33296,
-      "sha256": "991c219917fb4b05ef6553b62e6006f4e03bfa06099f2331d4f522f71758f34a"
+      "bytes": 33575,
+      "sha256": "10988ca59ad77c1e5027ae149500b5d35f1207da0c66b3cc8579d214c96ab7bf"
     }
   ],
-  "content_sha256": "7aaf2d3d2d6276dc44c57dbd8cd92f26cb6edf47866d0ff992196277d3b9dbd0",
+  "content_sha256": "c58a335fe79a06fdf75642ce3d6995543170bb21813be7cab5c886be002264d1",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -11695,5 +11695,45 @@
     "preserved": "All existing receipt fields except exact sources/content_sha256 retained verbatim, including every numerical artifact/archive/fingerprint/count and original review/earlier source-only amendment.",
     "prior_content_sha256": "cf8ef891d2ad2d74a15d5b068fe12b9c497940c4db752d25a60e3d7402cf363b",
     "current_content_sha256": "0aa89d05a65a0ce39ddd5dba838ad48bb231e2b22101a3238e9bc5d02dac8510"
-  }
+  },
+  "ondemand_release_source_renewals": [
+    {
+      "date": "2026-10-23",
+      "reviewer": "Codex independent release source reviewer",
+      "reviewer_task": "/root/production_path",
+      "status": "approved-source-only",
+      "scope": "Exact current-source provenance renewal only for the five bound source deltas per prior Stage 2/3 receipt and the final renewed Stage 2 receipt binding in Stage 3. No new strategy-quality, numerical, GTO, generated-policy, semantic-reason, runtime-acceptance, UI-acceptance, production, or deployment approval.",
+      "prior_raw_receipt_sha256": "538a3ff13b50795115608110f1e7d7da598a6f84ea1d8aa506f21f47a2e4f804",
+      "before_content_sha256": "7aaf2d3d2d6276dc44c57dbd8cd92f26cb6edf47866d0ff992196277d3b9dbd0",
+      "after_content_sha256": "c58a335fe79a06fdf75642ce3d6995543170bb21813be7cab5c886be002264d1",
+      "review_reference": {
+        "path": "docs/qa/aiv2-ondemand-release-source-review.json",
+        "sha256": "0fe6d41f61155fbb4d260bcfb1c8e5a47b56f65b41993d7796d6e6cc7f47e076"
+      },
+      "changed_sources": [
+        ".github/workflows/deploy-worker.yml",
+        "apps/backend/wrangler.jsonc",
+        "apps/frontend/src/estimated/english-reasons.ts",
+        "scripts/ci/deployment-scope.test.ts",
+        "scripts/ci/deployment-scope.ts"
+      ],
+      "preserved": {
+        "artifact_records_sha256": "60179b68d2fe722deb3ac93f7db76101b065ee9453d397377a0db8550d73e73e",
+        "archive": {
+          "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+          "bytes": 1747857,
+          "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+          "format": "ustar+gzip"
+        },
+        "policy_source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+        "counts": {
+          "catalog": 3115,
+          "saved": 1611,
+          "unreachable": 1504,
+          "hands": 272259
+        }
+      },
+      "limitations": "No replacement/renewal of historical numerical or strategy-quality approval. No new generated-policy, GTO, semantic-reason, production or deployment approval."
+    }
+  ]
 }

@@ -765,3 +765,17 @@ test('repository TypeScript tooling changes verify code without numerical public
     for (const key of ['verify_data', 'verify_preflop', 'verify_postflop', 'verify_mw3', 'data_release', 'import_preflop', 'publish_postflop', 'import_mw3', 'deploy_api', 'deploy_frontend']) assert.equal(plan[key], false, `${path}: ${key}`);
   }
 });
+
+test('on-demand broker schema has a dedicated additive release scope', async (t: any) => {
+  const root = repository(t);
+  const base = commit(root, baseFiles());
+  const head = commit(root, {'apps/backend/migrations/0014_aiv2_ondemand.sql':'CREATE TABLE IF NOT EXISTS broker_fixture(id TEXT PRIMARY KEY);'});
+  const plan = await classifyEvent({repoRoot:root,eventName:'push',ref:'refs/heads/main',sha:head,repository:'Suuu-sh/ReysonAI',runId:'200',fetcher:successFetcher(workflowRun({head_sha:base}))});
+  assert.equal(plan.lineage_known,true);
+  assert.equal(plan.apply_ondemand_schema,true);
+  assert.equal(plan.import_preflop,false);
+  assert.equal(plan.publish_postflop,false);
+  assert.equal(plan.import_mw3,false);
+  const workflow = readFileSync(new URL('../../.github/workflows/deploy-worker.yml', import.meta.url),'utf8');
+  assert.match(workflow,/name: Apply exact AIv2 on-demand broker schema\n        if: needs.verify.outputs.apply_ondemand_schema == 'true'/);
+});

@@ -1,11 +1,13 @@
-// Read-only dashboard: no provider imports, child processes, writes, or generation calls.
+// Public read-only dashboard with strict localhost-only explicit queue management; no provider calls.
 import { createServer } from 'node:http';
+import { stripTypeScriptTypes } from 'node:module';
 import { readFile, realpath } from 'node:fs/promises';
 import { resolve, dirname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { postflopSnapshot } from './postflop.ts';
 import { treeSnapshot } from './tree.ts';
+import { handleOnDemand } from './ondemand.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 export const POSTFLOP_ROOT=resolve(HERE,'../frontend/candidates/aiv2-postflop/llm-postflop-single-response-v1');
@@ -91,14 +93,15 @@ export async function snapshot(root=ROOT) {
   if(root===ROOT){cache=value;cachedAt=Date.now();}return value;
 }
 const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Referrer-Policy':'no-referrer','X-Robots-Tag':'noindex, nofollow','Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; frame-ancestors 'none'; form-action 'none'"};
-const assets={'/':['index.html','text/html; charset=utf-8'],'/app.js':['app.js','text/javascript; charset=utf-8'],'/style.css':['style.css','text/css; charset=utf-8']};
+const assets={'/':['index.html','text/html; charset=utf-8'],'/app.js':['app.ts','text/javascript; charset=utf-8'],'/style.css':['style.css','text/css; charset=utf-8']};
 export function createDashboardServer(root=ROOT,postflopRoot=POSTFLOP_ROOT){return createServer(async(req,res)=>{
   const send=(status,type,value)=>{res.writeHead(status,{...headers,'Content-Type':type});res.end(value);};
   try{
+    if(await handleOnDemand(req,res,send))return;
     if(req.method!=='GET' && req.method!=='HEAD'){send(405,'application/json','{"error":"Read-only service"}');return;}
     // Exact path allowlist before URL normalization defeats encoded traversal.
     const raw=(req.url??'').split('?')[0];
-    if(Object.hasOwn(assets,raw)){const [name,type]=assets[raw];send(200,type,req.method==='HEAD'?'':await readFile(resolve(HERE,name)));return;}
+    if(Object.hasOwn(assets,raw)){const [name,type]=assets[raw];send(200,type,req.method==='HEAD'?'':name==='app.ts'?stripTypeScriptTypes(await readFile(resolve(HERE,name),'utf8')):await readFile(resolve(HERE,name)));return;}
     if(raw==='/api/postflop/tree'){try{const query=new URL(req.url,'http://localhost').searchParams;if((query.get('path')??'').length>1200)throw Error('Path too long');const path=JSON.parse(query.get('path')??'[]'),data=await postflopSnapshot(postflopRoot);send(200,'application/json',JSON.stringify(treeSnapshot(data.scenes,query.get('board')??'As7d2c',path)));}catch{send(400,'application/json',JSON.stringify({error:'Invalid flop or legal action/card path'}));}return;}
     if(raw==='/api/postflop/scenes'){const data=await postflopSnapshot(postflopRoot);send(200,'application/json',JSON.stringify({status:data.status,scenes:data.scenes.map(({cells,summary,provenance,...scene})=>scene)}));return;}
     if(raw==='/api/postflop/scene'){const key=new URL(req.url,'http://localhost').searchParams.get('key');const data=await postflopSnapshot(postflopRoot);const scene=data.scenes.find(s=>s.key===key);send(scene?200:404,'application/json',JSON.stringify(scene??{error:'Scene not generated or unavailable'}));return;}

@@ -26,6 +26,7 @@ const REQUIRED_SKIPPED_PRODUCTION_WRITE_STEPS = new Set([
 ]);
 const OPTIONAL_NEW_PRODUCTION_WRITE_STEPS = new Set([
   'Ensure exact human avatar schema and require D1 readback',
+  'Apply exact AIv2 on-demand broker schema',
 ]);
 const MAIN_DEPLOY_EVENTS = new Set(['push', 'workflow_dispatch']);
 const RUNS_PER_PAGE = 100;
@@ -43,13 +44,14 @@ const MIGRATIONS = new Map([
   ['apps/backend/migrations/0011_human_ranked.sql', 'human_schema'],
   ['apps/backend/migrations/0012_postflop_profile_policies.sql', 'profile_schema'],
   ['apps/backend/migrations/0013_human_rank_avatar.sql', 'human_avatar_schema'],
+  ['apps/backend/migrations/0014_aiv2_ondemand.sql', 'ondemand_schema'],
 ]);
-const HASH_GROUPS = ['preflop', 'postflop', 'mw3', 'mw3_schema', 'ranked_schema', 'fastfold_schema', 'human_schema', 'human_avatar_schema', 'profile_schema', 'review_receipt', 'full'];
+const HASH_GROUPS = ['preflop', 'postflop', 'mw3', 'mw3_schema', 'ranked_schema', 'fastfold_schema', 'human_schema', 'human_avatar_schema', 'ondemand_schema', 'profile_schema', 'review_receipt', 'full'];
 const OUTPUT_KEYS = [
   'lineage_known', 'release_safe', 'verify_data', 'verify_preflop', 'verify_postflop', 'verify_mw3',
   'verify_backend', 'verify_frontend', 'needs_frontend_deps', 'needs_mcp_deps', 'deploy_api', 'deploy_frontend',
   'data_release', 'import_preflop', 'publish_postflop', 'import_mw3', 'apply_ranked_schema',
-  'apply_fastfold_schema', 'apply_human_schema', 'apply_human_avatar_schema', 'apply_profile_schema', 'apply_mw3_schema',
+  'apply_fastfold_schema', 'apply_human_schema', 'apply_human_avatar_schema', 'apply_ondemand_schema', 'apply_profile_schema', 'apply_mw3_schema',
   'mw3_live', 'fastfold_predeploy', 'fastfold_postimport', 'mode', 'reason', 'baseline_run_id',
   'baseline_sha', 'input_hashes',
 ];
@@ -61,7 +63,7 @@ function emptyPlan(reason: any = 'no relevant changes'): any {
     needs_frontend_deps: false, needs_mcp_deps: false, deploy_api: false, deploy_frontend: false,
     data_release: false, import_preflop: false, publish_postflop: false, import_mw3: false,
     apply_ranked_schema: false, apply_fastfold_schema: false, apply_human_schema: false,
-    apply_human_avatar_schema: false, apply_profile_schema: false, apply_mw3_schema: false, mw3_live: false,
+    apply_human_avatar_schema: false, apply_ondemand_schema: false, apply_profile_schema: false, apply_mw3_schema: false, mw3_live: false,
     fastfold_predeploy: false, fastfold_postimport: false, mode: 'no-op', reason,
     baseline_run_id: '', baseline_sha: '', input_hashes: '',
   };
@@ -366,6 +368,7 @@ function applyDataChanges(plan?: any, groups?: any, allowed?: any): any {
   schemaOutput(plan, 'fastfold_schema', groups.includes('fastfold_schema'), allowed);
   schemaOutput(plan, 'human_schema', groups.includes('human_schema'), allowed);
   schemaOutput(plan, 'human_avatar_schema', groups.includes('human_avatar_schema'), allowed);
+  schemaOutput(plan, 'ondemand_schema', groups.includes('ondemand_schema'), allowed);
   schemaOutput(plan, 'profile_schema', groups.includes('profile_schema'), allowed);
   schemaOutput(plan, 'mw3_schema', groups.includes('mw3_schema'), allowed);
   plan.mw3_live ||= plan.import_mw3 || preflop;
